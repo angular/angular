@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {SchemaPath, SchemaPathRules} from '../api/types';
-import {Predicate} from './logic';
+import type {SchemaPath, SchemaPathRules} from '../api/types';
+import type {Predicate} from './logic';
 import {LogicNodeBuilder} from './logic_node';
 import type {SchemaImpl} from './schema';
 

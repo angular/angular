@@ -34,7 +34,7 @@
 
 Импортируйте `FormsModule` из `@angular/forms` и добавьте его в массив `imports` компонента `User`.
 
-<docs-code language="ts" highlight="[2, 7]">
+```ts {highlight:[2,6]}
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
@@ -43,7 +43,7 @@ import {FormsModule} from '@angular/forms';
 imports: [FormsModule],
 })
 export class User {}
-</docs-code>
+```
 
 </docs-step>
 
@@ -54,12 +54,12 @@ export class User {}
 Обновите поле ввода, чтобы использовать директиву `ngModel`, используя синтаксис `[(ngModel)]="favoriteFramework"` для
 привязки к свойству `favoriteFramework`.
 
-<docs-code language="html" highlight="[3]">
+```html {highlight:[3]}
 <label for="framework">
   Favorite Framework:
   <input id="framework" type="text" [(ngModel)]="favoriteFramework" />
 </label>
-</docs-code>
+```
 
 После внесения изменений попробуйте ввести значение в поле ввода. Обратите внимание, как оно обновляется на экране (да,
 очень круто).

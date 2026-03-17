@@ -17,25 +17,25 @@ _Откладываемые представления_ (deferrable views) в An
 <docs-step title="Добавьте блок `@defer` в секцию шаблона">
 В файле `app.ts` оберните компонент `article-comments` в блок `@defer` для его отложенной загрузки.
 
-<docs-code language="angular-html">
+```angular-html
 @defer {
   <article-comments />
 }
-</docs-code>
+```
 
 По умолчанию `@defer` загружает компонент `article-comments`, когда браузер находится в состоянии простоя (idle).
 
 В консоли разработчика в браузере вы можете увидеть, что файл lazy-чанка `article-comments-component` загружается
 отдельно (конкретные имена файлов могут меняться от запуска к запуску):
 
-<docs-code language="markdown">
-Initial chunk files | Names                      |  Raw size
-chunk-NNSQHFIE.js   | -                          | 769.00 kB | 
-main.js             | main                       | 229.25 kB |
+```markdown
+Initial chunk files | Names | Raw size
+chunk-NNSQHFIE.js | - | 769.00 kB |
+main.js | main | 229.25 kB |
 
 Lazy chunk files | Names | Raw size
 chunk-T5UYXUSI.js | article-comments-component | 1.84 kB |
-</docs-code>
+```
 
 </docs-step>
 </docs-workflow>

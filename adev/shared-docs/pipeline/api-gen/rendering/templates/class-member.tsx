@@ -17,7 +17,6 @@ import {
 } from '../entities/categorization.mjs';
 import {MemberEntryRenderable, MethodEntryRenderable} from '../entities/renderables.mjs';
 import {
-  PARAM_KEYWORD_CLASS_NAME,
   REFERENCE_MEMBER_CARD,
   REFERENCE_MEMBER_CARD_BODY,
   REFERENCE_MEMBER_CARD_HEADER,

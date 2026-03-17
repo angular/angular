@@ -15,14 +15,14 @@
 
 Чтобы сервис мог быть внедрен системой DI, используйте декоратор `@Injectable`. Например:
 
-<docs-code language="ts" highlight="[1, 2, 3]">
+```ts {highlight:[1,2,3]}
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 class UserService {
   // methods to retrieve and return data
 }
-</docs-code>
+```
 
 Декоратор `@Injectable` уведомляет систему DI о том, что `UserService` доступен для запроса в классе. Свойство
 `providedIn` задает область видимости, в которой доступен этот ресурс. На данный момент достаточно понимать, что

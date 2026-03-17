@@ -51,7 +51,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should report a @let declaration that is not used', () => {
+    it('should report a @let declaration that is not used (with other @let declarations)', () => {
       const diags = diagnose(`
         @let used = 1;
         @let unused = 2;
@@ -64,7 +64,7 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('@let unused = 2');
     });
 
-    it('should report a @let declaration that is not used', () => {
+    it('should report a solo @let declaration that is not used', () => {
       const diags = diagnose(`
         @let foo = 1;
 

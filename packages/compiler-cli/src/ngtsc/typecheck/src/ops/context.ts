@@ -7,11 +7,9 @@
  */
 
 import {BoundTarget, SchemaMetadata} from '@angular/compiler';
-import ts from 'typescript';
 import {DomSchemaChecker} from '../dom';
 import {OutOfBandDiagnosticRecorder} from '../oob';
-import {TypeCheckableDirectiveMeta, TypeCheckId} from '../../api';
-import {PipeMeta} from '../../../metadata';
+import {TypeCheckId, TcbDirectiveMetadata, TcbPipeMetadata} from '../../api';
 import {Environment} from '../environment';
 
 /**
@@ -57,8 +55,8 @@ export class Context {
     readonly domSchemaChecker: DomSchemaChecker,
     readonly oobRecorder: OutOfBandDiagnosticRecorder,
     readonly id: TypeCheckId,
-    readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-    private pipes: Map<string, PipeMeta> | null,
+    readonly boundTarget: BoundTarget<TcbDirectiveMetadata>,
+    private pipes: Map<string, TcbPipeMetadata> | null,
     readonly schemas: SchemaMetadata[],
     readonly hostIsStandalone: boolean,
     readonly hostPreserveWhitespaces: boolean,
@@ -70,11 +68,11 @@ export class Context {
    * Currently this uses a monotonically increasing counter, but in the future the variable name
    * might change depending on the type of data being stored.
    */
-  allocateId(): ts.Identifier {
-    return ts.factory.createIdentifier(`_t${this.nextId++}`);
+  allocateId(): string {
+    return `_t${this.nextId++}`;
   }
 
-  getPipeByName(name: string): PipeMeta | null {
+  getPipeByName(name: string): TcbPipeMetadata | null {
     if (this.pipes === null || !this.pipes.has(name)) {
       return null;
     }

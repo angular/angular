@@ -1,461 +1,387 @@
-# Подготовка компонента к переводу
+# Prepare component for translation
 
-Чтобы подготовить ваш проект к переводу, выполните следующие действия.
+To prepare your project for translation, complete the following actions.
 
-- Используйте атрибут `i18n` для разметки текста в шаблонах компонентов.
-- Используйте атрибут `i18n-` для разметки текстовых строк атрибутов в шаблонах компонентов.
-- Используйте тегированную строку сообщения `$localize` для разметки текстовых строк в коде компонента.
+- Use the `i18n` attribute to mark text in component templates
+- Use the `i18n-` attribute to mark attribute text strings in component templates
+- Use the `$localize` tagged message string to mark text strings in component code
 
-## Разметка текста в шаблоне компонента
+## Mark text in component template
 
-В шаблоне компонента метаданными i18n является значение атрибута `i18n`.
+In a component template, the i18n metadata is the value of the `i18n` attribute.
 
 ```html
 <element i18n="{i18n_metadata}">{string_to_translate}</element>
 ```
 
-Используйте атрибут `i18n`, чтобы пометить статическое текстовое сообщение в шаблонах компонентов для перевода.
-Размещайте его на каждом теге элемента, содержащем фиксированный текст, который вы хотите перевести.
+Use the `i18n` attribute to mark a static text message in your component templates for translation.
+Place it on every element tag that contains fixed text you want to translate.
 
-ПОЛЕЗНО: Атрибут `i18n` — это пользовательский атрибут, который распознается инструментами и компиляторами Angular.
+HELPFUL: The `i18n` attribute is a custom attribute that the Angular tools and compilers recognize.
 
-### Пример `i18n`
+### `i18n` example
 
-Следующий тег `<h1>` отображает простое приветствие на английском языке: "Hello i18n!".
+The following `<h1>` tag displays a simple English language greeting, "Hello i18n!".
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" region="greeting"/>
 
-Чтобы пометить приветствие для перевода, добавьте атрибут `i18n` к тегу `<h1>`.
+To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" region="i18n-attribute"/>
 
-### Использование условных операторов с `i18n`
+### using conditional statement with `i18n`
 
-Следующий тег `<div>` будет отображать переведенный текст как часть `div` и `aria-label` в зависимости от статуса
-переключателя.
+The following `<div>` tag will display translated text as part of `div` and `aria-label` based on toggle status
 
 <docs-code-multifile>
     <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"  region="i18n-conditional"/>
     <docs-code header="app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[14,21],[33,37]]"/>
 </docs-code-multifile>
 
-### Перевод встроенного текста без HTML-элемента
+### Translate inline text without HTML element
 
-Используйте элемент `<ng-container>`, чтобы связать поведение перевода с конкретным текстом, не изменяя способ его
-отображения.
+Use the `<ng-container>` element to associate a translation behavior for specific text without changing the way text is displayed.
 
-ПОЛЕЗНО: Каждый HTML-элемент создает новый DOM-элемент.
-Чтобы избежать создания нового DOM-элемента, оберните текст в элемент `<ng-container>`.
-В следующем примере показано, как элемент `<ng-container>` преобразуется в неотображаемый HTML-комментарий.
+HELPFUL: Each HTML element creates a new DOM element.
+To avoid creating a new DOM element, wrap the text in an `<ng-container>` element.
+The following example shows the `<ng-container>` element transformed into a non-displayed HTML comment.
 
 <docs-code path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-ng-container"/>
 
-## Разметка атрибутов элементов для перевода
+## Mark element attributes for translations
 
-В шаблоне компонента метаданными i18n является значение атрибута `i18n-{attribute_name}`.
+In a component template, the i18n metadata is the value of the `i18n-{attribute_name}` attribute.
 
 ```html
 <element i18n-{attribute_name}="{i18n_metadata}" {attribute_name}="{attribute_value}" />
 ```
 
-Атрибуты HTML-элементов содержат текст, который должен быть переведен вместе с остальным отображаемым текстом в шаблоне
-компонента.
+The attributes of HTML elements include text that should be translated along with the rest of the displayed text in the component template.
 
-Используйте `i18n-{attribute_name}` с любым атрибутом любого элемента, заменив `{attribute_name}` на имя атрибута.
-Используйте следующий синтаксис для назначения значения (meaning), описания (description) и пользовательского ID.
-
-<!--todo: replace with docs-code -->
+Use `i18n-{attribute_name}` with any attribute of any element and replace `{attribute_name}` with the name of the attribute.
+Use the following syntax to assign a meaning, description, and custom ID.
 
 ```html
 i18n-{attribute_name}="{meaning}|{description}@@{id}"
 ```
 
-### Пример `i18n-title`
+### `i18n-title` example
 
-Чтобы перевести заголовок изображения, рассмотрите этот пример.
-Следующий пример отображает изображение с атрибутом `title`.
+To translate the title of an image, review this example.
+The following example displays an image with a `title` attribute.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" region="i18n-title"/>
 
-Чтобы пометить атрибут title для перевода, выполните следующее действие.
+To mark the title attribute for translation, complete the following action.
 
-1. Добавьте атрибут `i18n-title`
+Add the `i18n-title` attribute
 
-   В следующем примере показано, как пометить атрибут `title` тега `img`, добавив `i18n-title`.
+The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
 
-   <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-title-translate"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-title-translate"/>
 
-## Разметка текста в коде компонента
+## Mark text in component code
 
-В коде компонента исходный текст перевода и метаданные заключены в обратные кавычки (`).
+In component code, the translation source text and the metadata are surrounded by backtick \(<code>&#96;</code>\) characters.
 
-Используйте тегированную строку сообщения [`$localize`][ApiLocalizeInitLocalize], чтобы пометить строку в коде для
-перевода.
+Use the [`$localize`][ApiLocalizeInitLocalize] tagged message string to mark a string in your code for translation.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
+```ts
 $localize`string_to_translate`;
-</docs-code>
+```
 
-Метаданные i18n заключены в двоеточия (`:`) и предшествуют исходному тексту перевода.
+The i18n metadata is surrounded by colon \(`:`\) characters and prepends the translation source text.
 
-<!--todo: replace with docs-code -->
+```ts
+$localize`:{i18n_metadata}:string_to_translate`;
+```
 
-<docs-code language="typescript">
-$localize`:{i18n_metadata}:string_to_translate`
-</docs-code>
+### Include interpolated text
 
-### Включение интерполированного текста
+Include [interpolations](guide/templates/binding#render-dynamic-text-with-text-interpolation) in a [`$localize`][ApiLocalizeInitLocalize] tagged message string.
 
-Включайте [интерполяции](guide/templates/binding#render-dynamic-text-with-text-interpolation) в тегированную строку
-сообщения [`$localize`][ApiLocalizeInitLocalize].
-
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
+```ts
 $localize`string_to_translate ${variable_name}`;
-</docs-code>
+```
 
-### Именование заполнителя интерполяции
+### Name the interpolation placeholder
 
-<docs-code language="typescript">
+```ts
 $localize`string_to_translate ${variable_name}:placeholder_name:`;
-</docs-code>
+```
 
-### Условный синтаксис для переводов
+### Conditional syntax for translations
 
-<docs-code language="typescript">
+```ts
 return this.show ? $localize`Show Tabs` : $localize`Hide tabs`;
-</docs-code>
+```
 
-## Метаданные i18n для перевода
-
-<!--todo: replace with docs-code -->
+## i18n metadata for translation
 
 ```html
 {meaning}|{description}@@{custom_id}
 ```
 
-Следующие параметры предоставляют контекст и дополнительную информацию, чтобы уменьшить путаницу для переводчика.
+The following parameters provide context and additional information to reduce confusion for your translator.
 
-| Параметр метаданных | Детали                                                            |
-| :------------------ | :---------------------------------------------------------------- |
-| Custom ID           | Предоставьте пользовательский идентификатор                       |
-| Description         | Предоставьте дополнительную информацию или контекст               |
-| Meaning             | Предоставьте значение или намерение текста в конкретном контексте |
+| Metadata parameter | Details                                                               |
+| :----------------- | :-------------------------------------------------------------------- |
+| Custom ID          | Provide a custom identifier                                           |
+| Description        | Provide additional information or context                             |
+| Meaning            | Provide the meaning or intent of the text within the specific context |
 
-Для получения дополнительной информации о пользовательских ID
-см. [Управление помеченным текстом с помощью пользовательских ID][GuideI18nOptionalManageMarkedText].
+For additional information about custom IDs, see [Manage marked text with custom IDs][GuideI18nOptionalManageMarkedText].
 
-### Добавление полезных описаний и значений
+### Add helpful descriptions and meanings
 
-Чтобы точно перевести текстовое сообщение, предоставьте переводчику дополнительную информацию или контекст.
+To translate a text message accurately, provide additional information or context for the translator.
 
-Добавьте _описание_ текстового сообщения в качестве значения атрибута `i18n` или тегированной строки сообщения [
-`$localize`][ApiLocalizeInitLocalize].
+Add a _description_ of the text message as the value of the `i18n` attribute or [`$localize`][ApiLocalizeInitLocalize] tagged message string.
 
-В следующем примере показано значение атрибута `i18n`.
+The following example shows the value of the `i18n` attribute.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" region="i18n-attribute-desc"/>
 
-В следующем примере показано значение тегированной строки сообщения [`$localize`][ApiLocalizeInitLocalize] с описанием.
+The following example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a description.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
-
+```ts
 $localize`:An introduction header for this sample:Hello i18n!`;
+```
 
-</docs-code>
+The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
+Start the `i18n` attribute value with the _meaning_ and separate it from the _description_ with the `|` character: `{meaning}|{description}`.
 
-Переводчику также может потребоваться знать значение или намерение текстового сообщения в данном конкретном контексте
-приложения, чтобы перевести его так же, как и другой текст с тем же значением.
-Начните значение атрибута `i18n` со _значения_ (meaning) и отделите его от _описания_ символом `|`:
-`{meaning}|{description}`.
+#### `h1` example
 
-#### Пример `h1`
+For example, you may want to specify that the `<h1>` tag is a site header that you need translated the same way, whether it is used as a header or referenced in another section of text.
 
-Например, вы можете захотеть указать, что тег `<h1>` является заголовком сайта, который нужно переводить одинаково,
-независимо от того, используется ли он как заголовок или упоминается в другом разделе текста.
-
-В следующем примере показано, как указать, что тег `<h1>` должен переводиться как заголовок или упоминаться в другом
-месте.
+The following example shows how to specify that the `<h1>` tag must be translated as a header or referenced elsewhere.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" region="i18n-attribute-meaning"/>
 
-В результате любой текст, помеченный как `site header` (заголовок сайта), поскольку _значение_ переводится абсолютно
-одинаково.
+The result is any text marked with `site header`, as the _meaning_ is translated exactly the same way.
 
-В следующем примере кода показано значение тегированной строки сообщения [`$localize`][ApiLocalizeInitLocalize] со
-значением и описанием.
+The following code example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a meaning and a description.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
-
+```ts
 $localize`:site header|An introduction header for this sample:Hello i18n!`;
+```
 
-</docs-code>
+<docs-callout title="How meanings control text extraction and merges">
 
-<docs-callout title="Как значения управляют извлечением и слиянием текста">
+The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
+The Angular extraction tool assigns each translation unit a unique ID based on the _meaning_ and _description_.
 
-Инструмент извлечения Angular генерирует запись модуля перевода для каждого атрибута `i18n` в шаблоне.
-Инструмент извлечения Angular присваивает каждому модулю перевода уникальный ID на основе _значения_ и _описания_.
+HELPFUL: For more information about the Angular extraction tool, see [Work with translation files](guide/i18n/translation-files).
 
-ПОЛЕЗНО: Для получения дополнительной информации об инструменте извлечения Angular
-см. [Работа с файлами перевода](guide/i18n/translation-files).
+The same text elements with different _meanings_ are extracted with different IDs.
+For example, if the word "right" uses the following two definitions in two different locations, the word is translated differently and merged back into the application as different translation entries.
 
-Одинаковые текстовые элементы с разными _значениями_ извлекаются с разными ID.
-Например, если слово "right" использует следующие два определения в двух разных местах, слово переводится по-разному и
-объединяется обратно в приложение как разные записи перевода.
+- `correct` as in "you are right"
+- `direction` as in "turn right"
 
-- `correct` (правильно), как в "you are right" (вы правы)
-- `direction` (направление), как в "turn right" (поверните направо)
+If the same text elements meet the following conditions, the text elements are extracted only once and use the same ID.
 
-Если одни и те же текстовые элементы соответствуют следующим условиям, они извлекаются только один раз и используют один
-и тот же ID.
+- Same meaning or definition
+- Different descriptions
 
-- Одинаковое значение или определение
-- Разные описания
-
-Эта единственная запись перевода объединяется обратно в приложение везде, где появляются эти текстовые элементы.
+That one translation entry is merged back into the application wherever the same text elements appear.
 
 </docs-callout>
 
-## ICU-выражения
+## ICU expressions
 
-ICU-выражения помогают помечать альтернативный текст в шаблонах компонентов для соответствия условиям.
-ICU-выражение включает свойство компонента, ICU-предложение (clause) и операторы выбора (case statements), заключенные в
-открывающую (`{`) и закрывающую (`}`) фигурные скобки.
-
-<!--todo: replace with docs-code -->
+ICU expressions help you mark alternate text in component templates to meet conditions.
+An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 ```html
-
 { component_property, icu_clause, case_statements }
 ```
 
-Свойство компонента определяет переменную.
-ICU-предложение определяет тип условного текста.
+The component property defines the variable.
+An ICU clause defines the type of conditional text.
 
-| ICU-предложение                                                      | Детали                                                                                  |
-| :------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
-| [`plural`][GuideI18nCommonPrepareMarkPlurals]                        | Отметить использование множественного числа                                             |
-| [`select`][GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions] | Отметить варианты альтернативного текста на основе определенных вами строковых значений |
+| ICU clause                                                           | Details                                                             |
+| :------------------------------------------------------------------- | :------------------------------------------------------------------ |
+| [`plural`][GuideI18nCommonPrepareMarkPlurals]                        | Mark the use of plural numbers                                      |
+| [`select`][GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions] | Mark choices for alternate text based on your defined string values |
 
-Чтобы упростить перевод, используйте предложения International Components for Unicode (ICU-предложения) с регулярными
-выражениями.
+To simplify translation, use International Components for Unicode clauses \(ICU clauses\) with regular expressions.
 
-ПОЛЕЗНО: ICU-предложения соответствуют [формату сообщений ICU][GithubUnicodeOrgIcuUserguideFormatParseMessages],
-указанному в [правилах плюрализации CLDR][UnicodeCldrIndexCldrSpecPluralRules].
+HELPFUL: The ICU clauses adhere to the [ICU Message Format][GithubUnicodeOrgIcuUserguideFormatParseMessages] specified in the [CLDR pluralization rules][UnicodeCldrIndexCldrSpecPluralRules].
 
-### Разметка множественного числа
+### Mark plurals
 
-В разных языках существуют разные правила плюрализации, что усложняет перевод.
-Поскольку другие локали выражают количественность по-разному, вам может потребоваться установить категории плюрализации,
-которые не совпадают с английским языком.
-Используйте предложение `plural`, чтобы пометить выражения, которые могут потерять смысл при дословном переводе.
-
-<!--todo: replace with docs-code -->
+Different languages have different pluralization rules that increase the difficulty of translation.
+Because other locales express cardinality differently, you may need to set pluralization categories that do not align with English.
+Use the `plural` clause to mark expressions that may not be meaningful if translated word-for-word.
 
 ```html
-
 { component_property, plural, pluralization_categories }
 ```
 
-После категории плюрализации введите текст по умолчанию (английский), заключенный в открывающую (`{`) и закрывающую (
-`}`) фигурные скобки.
-
-<!--todo: replace with docs-code -->
+After the pluralization category, enter the default text \(English\) surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 ```html
-
 pluralization_category { }
 ```
 
-Следующие категории плюрализации доступны для английского языка и могут меняться в зависимости от локали.
+The following pluralization categories are available for English and may change based on the locale.
 
-| Категория плюрализации | Детали                     | Пример                     |
+| Pluralization category | Details                    | Example                    |
 | :--------------------- | :------------------------- | :------------------------- |
-| `zero`                 | Количество равно нулю      | `=0 { }` <br /> `zero { }` |
-| `one`                  | Количество равно 1         | `=1 { }` <br /> `one { }`  |
-| `two`                  | Количество равно 2         | `=2 { }` <br /> `two { }`  |
-| `few`                  | Количество 2 или более     | `few { }`                  |
-| `many`                 | Количество — большое число | `many { }`                 |
-| `other`                | Количество по умолчанию    | `other { }`                |
+| `zero`                 | Quantity is zero           | `=0 { }` <br /> `zero { }` |
+| `one`                  | Quantity is 1              | `=1 { }` <br /> `one { }`  |
+| `two`                  | Quantity is 2              | `=2 { }` <br /> `two { }`  |
+| `few`                  | Quantity is 2 or more      | `few { }`                  |
+| `many`                 | Quantity is a large number | `many { }`                 |
+| `other`                | The default quantity       | `other { }`                |
 
-Если ни одна из категорий плюрализации не совпадает, Angular использует `other` для соответствия стандартному варианту (
-fallback) при отсутствии категории.
-
-<!--todo: replace with docs-code -->
+If none of the pluralization categories match, Angular uses `other` to match the standard fallback for a missing category.
 
 ```html
-
 other { default_quantity }
 ```
 
-ПОЛЕЗНО: Для получения дополнительной информации о категориях плюрализации
-см. [Выбор имен категорий множественного числа][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]
-в [CLDR - Общем репозитории данных локали Unicode][UnicodeCldrMain].
+HELPFUL: For more information about pluralization categories, see [Choosing plural category names][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames] in the [CLDR - Unicode Common Locale Data Repository][UnicodeCldrMain].
 
-<docs-callout header='Справка: Локали могут не поддерживать некоторые категории плюрализации'>
+<docs-callout header='Background: Locales may not support some pluralization categories'>
 
-Многие локали не поддерживают некоторые категории плюрализации.
-Локаль по умолчанию (`en-US`) использует очень простую функцию `plural()`, которая не поддерживает категорию
-плюрализации `few`.
-Другая локаль с простой функцией `plural()` — это `es`.
-В следующем примере кода показана функция [
-`plural()` для en-US][GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18].
+Many locales don't support some of the pluralization categories.
+The default locale \(`en-US`\) uses a very simple `plural()` function that doesn't support the `few` pluralization category.
+Another locale with a simple `plural()` function is `es`.
+The following code example shows the [en-US `plural()`][GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18] function.
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/locale_plural_function.ts" class="no-box" hideCopy/>
 
-Функция `plural()` возвращает только 1 (`one`) или 5 (`other`).
-Категория `few` никогда не совпадает.
+The `plural()` function only returns 1 \(`one`\) or 5 \(`other`\).
+The `few` category never matches.
 
 </docs-callout>
 
-#### Пример `minutes`
+#### `minutes` example
 
-Если вы хотите отобразить следующую фразу на английском языке, где `x` — это число.
+If you want to display the following phrase in English, where `x` is a number.
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated x minutes ago
 ```
 
-И вы также хотите отображать следующие фразы в зависимости от количественного значения `x`.
+And you also want to display the following phrases based on the cardinality of `x`.
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated just now
 ```
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated one minute ago
 ```
 
-Используйте HTML-разметку и [интерполяции](guide/templates/binding#render-dynamic-text-with-text-interpolation).
-В следующем примере кода показано, как использовать предложение `plural` для выражения трех предыдущих ситуаций в
-элементе `<span>`.
+Use HTML markup and [interpolations](guide/templates/binding#render-dynamic-text-with-text-interpolation).
+The following code example shows how to use the `plural` clause to express the previous three situations in a `<span>` element.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-plural"/>
 
-Рассмотрите следующие детали в предыдущем примере кода.
+Review the following details in the previous code example.
 
-| Параметры                         | Детали                                                                                                                        |
-| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
-| `minutes`                         | Первый параметр указывает, что свойство компонента — `minutes`, и определяет количество минут.                                |
-| `plural`                          | Второй параметр указывает, что ICU-предложение — `plural`.                                                                    |
-| `=0 {just now}`                   | Для нуля минут категория плюрализации — `=0`. Значение — `just now`.                                                          |
-| `=1 {one minute}`                 | Для одной минуты категория плюрализации — `=1`. Значение — `one minute`.                                                      |
-| `other {{{minutes}} minutes ago}` | Для любой несовпадающей количественности категория плюрализации по умолчанию — `other`. Значение — `{{minutes}} minutes ago`. |
+| Parameters                        | Details                                                                                                               |
+| :-------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `minutes`                         | The first parameter specifies the component property is `minutes` and determines the number of minutes.               |
+| `plural`                          | The second parameter specifies the ICU clause is `plural`.                                                            |
+| `=0 {just now}`                   | For zero minutes, the pluralization category is `=0`. The value is `just now`.                                        |
+| `=1 {one minute}`                 | For one minute, the pluralization category is `=1`. The value is `one minute`.                                        |
+| `other {{{minutes}} minutes ago}` | For any unmatched cardinality, the default pluralization category is `other`. The value is `{{minutes}} minutes ago`. |
 
-`{{minutes}}` — это [интерполяция](guide/templates/binding#render-dynamic-text-with-text-interpolation).
+`{{minutes}}` is an [interpolation](guide/templates/binding#render-dynamic-text-with-text-interpolation).
 
-### Разметка альтернатив и вложенных выражений
+### Mark alternates and nested expressions
 
-Предложение `select` отмечает варианты альтернативного текста на основе определенных вами строковых значений.
-
-<!--todo: replace with docs-code -->
+The `select` clause marks choices for alternate text based on your defined string values.
 
 ```html
-
 { component_property, select, selection_categories }
 ```
 
-Переведите все альтернативы, чтобы отображать альтернативный текст в зависимости от значения переменной.
+Translate all of the alternates to display alternate text based on the value of a variable.
 
-После категории выбора введите текст (английский), заключенный в открывающую (`{`) и закрывающую (`}`) фигурные скобки.
-
-<!--todo: replace with docs-code -->
+After the selection category, enter the text \(English\) surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 ```html
-
 selection_category { text }
 ```
 
-В разных локалях существуют разные грамматические конструкции, что усложняет перевод.
-Используйте HTML-разметку.
-Если ни одна из категорий выбора не совпадает, Angular использует `other` для соответствия стандартному варианту при
-отсутствии категории.
-
-<!--todo: replace with docs-code -->
+Different locales have different grammatical constructions that increase the difficulty of translation.
+Use HTML markup.
+If none of the selection categories match, Angular uses `other` to match the standard fallback for a missing category.
 
 ```html
-
 other { default_value }
 ```
 
-#### Пример `gender`
+#### `gender` example
 
-Если вы хотите отобразить следующую фразу на английском языке.
+If you want to display the following phrase in English.
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is other
 ```
 
-И вы также хотите отображать следующие фразы на основе свойства `gender` компонента.
+And you also want to display the following phrases based on the `gender` property of the component.
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is female
 ```
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is male
 ```
 
-В следующем примере кода показано, как привязать свойство `gender` компонента и использовать предложение `select` для
-выражения трех предыдущих ситуаций в элементе `<span>`.
+The following code example shows how to bind the `gender` property of the component and use the `select` clause to express the previous three situations in a `<span>` element.
 
-Свойство `gender` привязывает выходные данные к каждому из следующих строковых значений.
+The `gender` property binds the outputs to each of following string values.
 
-| Значение | Английское значение |
-| :------- | :------------------ |
-| female   | `female`            |
-| male     | `male`              |
-| other    | `other`             |
+| Value  | English value |
+| :----- | :------------ |
+| female | `female`      |
+| male   | `male`        |
+| other  | `other`       |
 
-Предложение `select` сопоставляет значения с соответствующими переводами.
-В следующем примере кода показано свойство `gender`, используемое с предложением select.
+The `select` clause maps the values to the appropriate translations.
+The following code example shows `gender` property used with the select clause.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-select"/>
 
-#### Пример `gender` и `minutes`
+#### `gender` and `minutes` example
 
-Комбинируйте различные предложения вместе, например, предложения `plural` и `select`.
-В следующем примере кода показаны вложенные предложения, основанные на примерах `gender` и `minutes`.
+Combine different clauses together, such as the `plural` and `select` clauses.
+The following code example shows nested clauses based on the `gender` and `minutes` examples.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-nested"/>
 
-## Что дальше
+## What's next
 
 <docs-pill-row>
-  <docs-pill href="guide/i18n/translation-files" title="Работа с файлами перевода"/>
+  <docs-pill href="guide/i18n/translation-files" title="Work with translation files"/>
 </docs-pill-row>
 
 [ApiLocalizeInitLocalize]: api/localize/init/$localize '$localize | init - localize - API  | Angular'
-[GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n/prepare#mark-alternates-and-nested-expressions 'Разметка альтернатив и вложенных выражений - Подготовка шаблонов к переводу | Angular'
-[GuideI18nCommonPrepareMarkPlurals]: guide/i18n/prepare#mark-plurals 'Разметка множественного числа - Подготовка компонента к переводу | Angular'
-[GuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text 'Управление помеченным текстом с помощью пользовательских ID | Angular'
-[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18 'Строки с 14 по 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub'
-[GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages 'Формат сообщений ICU - Документация ICU | Unicode | GitHub'
-[UnicodeCldrMain]: https://cldr.unicode.org 'Проект Unicode CLDR'
-[UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules 'Правила плюрализации | CLDR - Общий репозиторий данных локали Unicode | Unicode'
-[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names 'Выбор имен категорий множественного числа - Правила плюрализации | CLDR - Общий репозиторий данных локали Unicode | Unicode'
+[GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n/prepare#mark-alternates-and-nested-expressions 'Mark alternates and nested expressions - Prepare templates for translation | Angular'
+[GuideI18nCommonPrepareMarkPlurals]: guide/i18n/prepare#mark-plurals 'Mark plurals - Prepare component for translation | Angular'
+[GuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text 'Manage marked text with custom IDs | Angular'
+[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18 'Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub'
+[GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages 'ICU Message Format - ICU Documentation | Unicode | GitHub'
+[UnicodeCldrMain]: https://cldr.unicode.org 'Unicode CLDR Project'
+[UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules 'Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'
+[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names 'Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'

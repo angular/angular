@@ -137,11 +137,13 @@ Grid хорошо подходит для данных или интеракти
 Включите выбор с помощью `[enableSelection]="true"` и настройте взаимодействие фокуса и выбора.
 
 ```angular-html
-<table ngGrid
-       [enableSelection]="true"
-       [selectionMode]="'explicit'"
-       [multi]="true"
-       [focusMode]="'roving'">
+<table
+  ngGrid
+  [enableSelection]="true"
+  [selectionMode]="'explicit'"
+  [multi]="true"
+  [focusMode]="'roving'"
+>
   <tr ngGridRow>
     <td ngGridCell>Cell 1</td>
     <td ngGridCell>Cell 2</td>

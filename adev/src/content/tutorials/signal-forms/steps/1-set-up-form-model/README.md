@@ -37,8 +37,8 @@ interface LoginData {
 Импортируйте функцию `signal` из `@angular/core` и функцию `form` из `@angular/forms/signals`:
 
 ```ts
-import { Component, signal } from '@angular/core';
-import { form } from '@angular/forms/signals';
+import {Component, signal} from '@angular/core';
+import {form} from '@angular/forms/signals';
 ```
 
 </docs-step>

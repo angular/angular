@@ -110,15 +110,10 @@ describe('bluebird promise', () => {
 
   it('bluebird promise join method should be in zone', (done) => {
     zone.run(() => {
-      BluebirdPromise.join(
+      BluebirdPromise.join([
         BluebirdPromise.resolve('test1'),
         BluebirdPromise.resolve('test2'),
-        (r1: string, r2: string) => {
-          expect(r1).toEqual('test1');
-          expect(r2).toEqual('test2');
-          expect(Zone.current.name).toEqual('bluebird');
-        },
-      ).then(() => {
+      ]).then(() => {
         expect(Zone.current.name).toEqual('bluebird');
         expect(log.filter((item) => item === 'schedule bluebird task Promise.then').length).toBe(1);
         expect(log.filter((item) => item === 'invoke bluebird task Promise.then').length).toBe(1);

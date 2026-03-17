@@ -10,6 +10,7 @@ import {
   afterEveryRender,
   Component,
   provideZoneChangeDetection,
+  signal,
   ɵTracingAction as TracingAction,
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
@@ -27,13 +28,15 @@ describe('TracingService', () => {
   let fakeSnapshot: TracingSnapshot;
   let mockTracingService: TracingService<TracingSnapshot>;
   let clickCount: number;
+  let createdComponents: (string | null)[];
 
   beforeEach(() => {
     actions = [];
     listeners = [];
     clickCount = 0;
+    createdComponents = [];
     fakeSnapshot = {
-      run: function <T>(action: TracingAction, fn: () => T): T {
+      run: <T>(action: TracingAction, fn: () => T): T => {
         actions.push(action);
         return fn();
       },
@@ -54,6 +57,10 @@ describe('TracingService', () => {
           listeners.push({event, handler});
           return handler;
         }),
+      componentCreate: (name, fn) => {
+        createdComponents.push(name);
+        return fn();
+      },
     };
   });
 
@@ -126,4 +133,51 @@ describe('TracingService', () => {
 
     expect(clickCount).toBe(1);
   }));
+
+  it('should trace component creations', () => {
+    TestBed.configureTestingModule({
+      providers: [{provide: TracingService, useValue: mockTracingService}],
+    });
+
+    @Component({template: 'hello', selector: 'grandchild'})
+    class GrandChild {}
+
+    @Component({template: 'extra', selector: 'extra'})
+    class Extra {}
+
+    @Component({
+      template: '<grandchild/>',
+      selector: 'child',
+      imports: [GrandChild],
+    })
+    class Child {}
+
+    @Component({
+      template: ` <child />
+        <child />
+
+        @if (showExtra()) {
+          <extra />
+        }`,
+      imports: [Child, Extra],
+    })
+    class App {
+      showExtra = signal(false);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(createdComponents).toEqual(['App', 'Child', 'Child', 'GrandChild', 'GrandChild']);
+
+    fixture.componentInstance.showExtra.set(true);
+    fixture.detectChanges();
+    expect(createdComponents).toEqual([
+      'App',
+      'Child',
+      'Child',
+      'GrandChild',
+      'GrandChild',
+      'Extra',
+    ]);
+  });
 });

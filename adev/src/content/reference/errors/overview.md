@@ -1,49 +1,58 @@
-# Энциклопедия ошибок
+# Error Encyclopedia
 
-## Ошибки времени выполнения
+## Runtime errors
 
-| Код       | Название                                                                       |
-| :-------- | :----------------------------------------------------------------------------- |
-| `NG0100`  | [Выражение изменилось после проверки](errors/NG0100)                           |
-| `NG0200`  | [Циклическая зависимость в DI](errors/NG0200)                                  |
-| `NG0201`  | [Провайдер не найден](errors/NG0201)                                           |
-| `NG0203`  | [`inject()` должен вызываться из контекста внедрения](errors/NG0203)           |
-| `NG0209`  | [Неверный multi-провайдер](errors/NG0209)                                      |
-| `NG0300`  | [Конфликт селекторов](errors/NG0300)                                           |
-| `NG0301`  | [Экспорт не найден](errors/NG0301)                                             |
-| `NG0302`  | [Pipe не найден](errors/NG0302)                                                |
-| `NG0401`  | [Отсутствует платформа](errors/NG0401)                                         |
-| `NG0403`  | [Загружаемый NgModule не указывает компонент для инициализации](errors/NG0403) |
-| `NG0500`  | [Несоответствие узла гидратации](errors/NG0500)                                |
-| `NG0501`  | [Отсутствуют соседние элементы при гидратации](errors/NG0501)                  |
-| `NG0502`  | [Отсутствует узел при гидратации](errors/NG0502)                               |
-| `NG0503`  | [Гидратация: неподдерживаемая проекция DOM-узлов](errors/NG0503)               |
-| `NG0504`  | [Флаг пропуска гидратации применен к недопустимому узлу](errors/NG0504)        |
-| `NG0505`  | [Нет информации о гидратации в ответе сервера](errors/NG0505)                  |
-| `NG0506`  | [NgZone остается нестабильной](errors/NG0506)                                  |
-| `NG0507`  | [HTML-контент был изменен после SSR](errors/NG0507)                            |
-| `NG0750`  | [Не удалось загрузить зависимости @defer](errors/NG0750)                       |
-| `NG0910`  | [Небезопасные привязки в элементе iframe](errors/NG0910)                       |
-| `NG0912`  | [Коллизия генерации ID компонента](errors/NG0912)                              |
-| `NG0955`  | [Выражение track привело к дублированию ключей в коллекции](errors/NG0955)     |
-| `NG0956`  | [Выражение отслеживания вызвало пересоздание DOM-структуры](errors/NG0956)     |
-| `NG01101` | [Неверный тип возвращаемого значения асинхронного валидатора](errors/NG01101)  |
-| `NG01203` | [Отсутствует value accessor](errors/NG01203)                                   |
-| `NG02200` | [Отсутствует Iterable Differ](errors/NG02200)                                  |
-| `NG02800` | [Поддержка JSONP в конфигурации HttpClient](errors/NG02800)                    |
-| `NG02802` | [Заголовки не переданы через HttpTransferCache](errors/NG02802)                |
-| `NG05000` | [Гидратация с неподдерживаемым экземпляром Zone.js.](errors/NG05000)           |
-| `NG05104` | [Корневой элемент не найден.](errors/NG05104)                                  |
+| Code      | Name                                                                                 |
+| :-------- | :----------------------------------------------------------------------------------- |
+| `NG0100`  | [Expression Changed After Checked](errors/NG0100)                                    |
+| `NG0200`  | [Circular Dependency in DI](errors/NG0200)                                           |
+| `NG0201`  | [No Provider Found](errors/NG0201)                                                   |
+| `NG0203`  | [`inject()` must be called from an injection context](errors/NG0203)                 |
+| `NG0204`  | [Invalid Injection Token](errors/NG0204)                                             |
+| `NG0205`  | [Injector has already been destroyed](errors/NG0205)                                 |
+| `NG0207`  | [EnvironmentProviders in wrong context](errors/NG0207)                               |
+| `NG0209`  | [Invalid multi provider](errors/NG0209)                                              |
+| `NG0300`  | [Selector Collision](errors/NG0300)                                                  |
+| `NG0301`  | [Export Not Found](errors/NG0301)                                                    |
+| `NG0302`  | [Pipe Not Found](errors/NG0302)                                                      |
+| `NG0401`  | [Missing platform](errors/NG0401)                                                    |
+| `NG0403`  | [Bootstrapped NgModule doesn't specify which component to initialize](errors/NG0403) |
+| `NG0500`  | [Hydration Node Mismatch](errors/NG0500)                                             |
+| `NG0501`  | [Hydration Missing Siblings](errors/NG0501)                                          |
+| `NG0502`  | [Hydration Missing Node](errors/NG0502)                                              |
+| `NG0503`  | [Hydration Unsupported Projection of DOM Nodes](errors/NG0503)                       |
+| `NG0504`  | [Skip hydration flag is applied to an invalid node](errors/NG0504)                   |
+| `NG0505`  | [No hydration info in server response](errors/NG0505)                                |
+| `NG0506`  | [NgZone remains unstable](errors/NG0506)                                             |
+| `NG0507`  | [HTML content was altered after SSR](errors/NG0507)                                  |
+| `NG0602`  | [Disallowed function call inside reactive context](errors/NG0602)                    |
+| `NG0750`  | [@defer dependencies failed to load](errors/NG0750)                                  |
+| `NG0751`  | [@defer behavior when HMR is enabled](errors/NG0751)                                 |
+| `NG0910`  | [Unsafe bindings on an iframe element](errors/NG0910)                                |
+| `NG0912`  | [Component ID generation collision](errors/NG0912)                                   |
+| `NG0913`  | [Runtime Performance Warnings](errors/NG0913)                                        |
+| `NG0919`  | [Circular Dependency Detected](errors/NG0919)                                        |
+| `NG0950`  | [Required input is accessed before a value is set](errors/NG0950)                    |
+| `NG0951`  | [Child query result is required but no value is available](errors/NG0951)            |
+| `NG0955`  | [Track expression resulted in duplicated keys for a given collection](errors/NG0955) |
+| `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
+| `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
+| `NG01203` | [Missing value accessor](errors/NG01203)                                             |
+| `NG02200` | [Missing Iterable Differ](errors/NG02200)                                            |
+| `NG02800` | [JSONP support in HttpClient configuration](errors/NG02800)                          |
+| `NG02802` | [Headers not transferred by HttpTransferCache](errors/NG02802)                       |
+| `NG05000` | [Hydration with unsupported Zone.js instance.](errors/NG05000)                       |
+| `NG05104` | [Root element was not found.](errors/NG05104)                                        |
 
-## Ошибки компилятора
+## Compiler errors
 
-| Код      | Название                                                         |
-| :------- | :--------------------------------------------------------------- |
-| `NG1001` | [Аргумент не является литералом](errors/NG1001)                  |
-| `NG2003` | [Отсутствует токен](errors/NG2003)                               |
-| `NG2009` | [Неверный селектор Shadow DOM](errors/NG2009)                    |
-| `NG3003` | [Обнаружен цикл импорта](errors/NG3003)                          |
-| `NG6100` | [Антипаттерн: NgModule.id установлен в module.id](errors/NG6100) |
-| `NG8001` | [Недопустимый элемент](errors/NG8001)                            |
-| `NG8002` | [Недопустимый атрибут](errors/NG8002)                            |
-| `NG8003` | [Отсутствует цель ссылки](errors/NG8003)                         |
+| Code     | Name                                                       |
+| :------- | :--------------------------------------------------------- |
+| `NG1001` | [Argument Not Literal](errors/NG1001)                      |
+| `NG2003` | [Missing Token](errors/NG2003)                             |
+| `NG2009` | [Invalid Shadow DOM selector](errors/NG2009)               |
+| `NG3003` | [Import Cycle Detected](errors/NG3003)                     |
+| `NG6100` | [NgModule.id Set to module.id anti-pattern](errors/NG6100) |
+| `NG8001` | [Invalid Element](errors/NG8001)                           |
+| `NG8002` | [Invalid Attribute](errors/NG8002)                         |
+| `NG8003` | [Missing Reference Target](errors/NG8003)                  |

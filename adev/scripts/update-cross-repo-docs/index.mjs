@@ -26,7 +26,7 @@ async function main() {
   await updateAssets({
     repo: 'angular/cli-builds',
     assetsPath: 'help',
-    destPath: join(import.meta.dirname, '../../src/content/cli/help'),
+    destPath: join(import.meta.dirname, '../../src/content/cli'),
   });
 
   console.log('\n-----------------------------------------------');

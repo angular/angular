@@ -1,0 +1,5 @@
+ignore_directories([
+    ".git",
+    "dist",
+    "**/node_modules/**",
+])

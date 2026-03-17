@@ -49,7 +49,7 @@ export type ComponentAlignment = 'left' | 'center' | 'right';
       bottom: 30px;
       padding: 10px;
       border-radius: 12px;
-      background: rgba(0,0,0, 0.7);
+      background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       z-index: 999999;

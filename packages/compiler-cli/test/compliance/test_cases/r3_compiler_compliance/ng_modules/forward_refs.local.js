@@ -1,15 +1,15 @@
 export function provideModule() {
-    return { ngModule: ForwardModule };
+  return { ngModule: ForwardModule };
 }
 …
-class TestModule {}
-TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); };
-TestModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule, imports: function () { return [ForwardModule]; } });
-TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [provideModule()] });
-export { TestModule };
+export class TestModule {
+  static ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); };
+  static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule, imports: function () { return [ForwardModule]; } });
+  static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [provideModule()] });
+}
 …
-class ForwardModule {}
-ForwardModule.ɵfac = function ForwardModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || ForwardModule)(); };
-ForwardModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardModule });
-ForwardModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-export { ForwardModule };
+export class ForwardModule {
+  static ɵfac = function ForwardModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || ForwardModule)(); };
+  static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardModule });
+  static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+}

@@ -7,6 +7,13 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  PipeTransform,
+} from '../../src/change_detection/change_detection';
 import {
   Attribute,
   Compiler,
@@ -40,11 +47,6 @@ import {
   ViewRef,
   ɵsetClassDebugInfo,
 } from '../../src/core';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  PipeTransform,
-} from '../../src/change_detection/change_detection';
 import {ComponentFactoryResolver} from '../../src/linker/component_factory_resolver';
 import {ElementRef} from '../../src/linker/element_ref';
 import {QueryList} from '../../src/linker/query_list';
@@ -52,8 +54,6 @@ import {TemplateRef} from '../../src/linker/template_ref';
 import {ViewContainerRef} from '../../src/linker/view_container_ref';
 import {EmbeddedViewRef} from '../../src/linker/view_ref';
 import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '../../testing';
-import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/private/testing';
-import {expect} from '@angular/private/testing/matchers';
 
 import {stringify} from '../../src/util/stringify';
 
@@ -1240,7 +1240,7 @@ describe('integration tests', function () {
           ref.destroy();
           expect(() => {
             dynamicVp.insert(ref.hostView);
-          }).toThrowError('Cannot insert a destroyed View in a ViewContainer!');
+          }).toThrowError(/Cannot insert a destroyed View in a ViewContainer!/);
         }));
       });
 
@@ -1257,7 +1257,7 @@ describe('integration tests', function () {
           ref.destroy();
           expect(() => {
             dynamicVp.move(ref.hostView, 1);
-          }).toThrowError('Cannot move a destroyed View in a ViewContainer!');
+          }).toThrowError(/Cannot move a destroyed View in a ViewContainer!/);
         }));
       });
     });
@@ -1742,7 +1742,7 @@ describe('integration tests', function () {
       );
     });
 
-    it('should throw on bindings to unknown properties', () => {
+    it('should throw on bindings to unknown properties (micro-syntax)', () => {
       TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
       const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
@@ -2286,7 +2286,7 @@ describe('integration tests', function () {
 
 @Component({
   selector: 'cmp-with-default-interpolation',
-  template: `{{text}}`,
+  template: `{{ text }}`,
   standalone: false,
 })
 class ComponentWithDefaultInterpolation {
@@ -3097,7 +3097,8 @@ class DirectiveThrowingAnError {
 
 @Component({
   selector: 'component-with-template',
-  template: `No View Decorator: <div *ngFor="let item of items">{{item}}</div>`,
+  template: `No View Decorator:
+    <div *ngFor="let item of items">{{ item }}</div>`,
   standalone: false,
 })
 class ComponentWithTemplate {

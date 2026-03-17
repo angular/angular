@@ -8,6 +8,14 @@
 
 import {VERSION} from '@angular/compiler';
 
+export const DOC_PAGE_BASE_URL: string = (() => {
+  const full = VERSION.full;
+  const isPreRelease =
+    full.includes('-next') || full.includes('-rc') || full === '0.0.0' + '-PLACEHOLDER';
+  const prefix = isPreRelease ? 'next' : `v${VERSION.major}`;
+  return `https://${prefix}.angular.dev`;
+})();
+
 /**
  * Base URL for the error details page.
  *
@@ -16,6 +24,5 @@ import {VERSION} from '@angular/compiler';
  *  - packages/core/src/error_details_base_url.ts
  */
 export const ERROR_DETAILS_PAGE_BASE_URL: string = (() => {
-  const versionSubDomain = VERSION.major !== '0' ? `v${VERSION.major}.` : '';
-  return `https://${versionSubDomain}angular.dev/errors`;
+  return `${DOC_PAGE_BASE_URL}/errors`;
 })();

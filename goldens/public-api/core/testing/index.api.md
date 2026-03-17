@@ -4,6 +4,7 @@
 
 ```ts
 
+import * as _angular_core from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
@@ -119,6 +120,7 @@ export interface TestBed {
     execute(tokens: any[], fn: Function, context?: any): any;
     // @deprecated
     flushEffects(): void;
+    getLastFixture<T = unknown>(): ComponentFixture<T>;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {

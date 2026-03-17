@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '../../../utilities/index';
+import {runBenchmark, verifyNoBrowserErrors} from '../../../utilities/index.js';
 import {$} from 'protractor';
 
 interface Worker {

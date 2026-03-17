@@ -11,7 +11,7 @@ import '../../util/ng_i18n_closure_mode';
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
 import {
   getTemplateContent,
-  URI_ATTRS,
+  SENSITIVE_ATTRS,
   VALID_ATTRS,
   VALID_ELEMENTS,
 } from '../../sanitization/html_sanitizer';
@@ -388,7 +388,7 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
           previousElementIndex,
           attrName,
           countBindings(updateOpCodes),
-          null,
+          SENSITIVE_ATTRS[attrName.toLowerCase()] ? _sanitizeUrl : null,
         );
       }
     }
@@ -808,21 +808,16 @@ function walkIcuTree(
             const attr = elAttrs.item(i)!;
             const lowerAttrName = attr.name.toLowerCase();
             const hasBinding = !!attr.value.match(BINDING_REGEXP);
-            // we assume the input string is safe, unless it's using a binding
             if (hasBinding) {
               if (VALID_ATTRS.hasOwnProperty(lowerAttrName)) {
-                if (URI_ATTRS[lowerAttrName]) {
-                  generateBindingUpdateOpCodes(
-                    update,
-                    attr.value,
-                    newIndex,
-                    attr.name,
-                    0,
-                    _sanitizeUrl,
-                  );
-                } else {
-                  generateBindingUpdateOpCodes(update, attr.value, newIndex, attr.name, 0, null);
-                }
+                generateBindingUpdateOpCodes(
+                  update,
+                  attr.value,
+                  newIndex,
+                  attr.name,
+                  0,
+                  SENSITIVE_ATTRS[lowerAttrName] ? _sanitizeUrl : null,
+                );
               } else {
                 ngDevMode &&
                   console.warn(
@@ -831,8 +826,29 @@ function walkIcuTree(
                       `(see ${XSS_SECURITY_URL})`,
                   );
               }
+            } else if (VALID_ATTRS[lowerAttrName]) {
+              if (SENSITIVE_ATTRS[lowerAttrName]) {
+                // Don't sanitize, because no value is acceptable in sensitive attributes.
+                // Translators are not allowed to create URIs.
+                if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                  console.warn(
+                    `WARNING: ignoring unsafe attribute ` +
+                      `${lowerAttrName} on element ${tagName} ` +
+                      `(see ${XSS_SECURITY_URL})`,
+                  );
+                }
+                addCreateAttribute(create, newIndex, attr.name, 'unsafe:blocked');
+              } else {
+                addCreateAttribute(create, newIndex, attr.name, attr.value);
+              }
             } else {
-              addCreateAttribute(create, newIndex, attr);
+              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                console.warn(
+                  `WARNING: ignoring unknown attribute name ` +
+                    `${lowerAttrName} on element ${tagName} ` +
+                    `(see ${XSS_SECURITY_URL})`,
+                );
+              }
             }
           }
           const elementNode: I18nElementNode = {
@@ -945,10 +961,11 @@ function addCreateNodeAndAppend(
   );
 }
 
-function addCreateAttribute(create: IcuCreateOpCodes, newIndex: number, attr: Attr) {
-  create.push(
-    (newIndex << IcuCreateOpCode.SHIFT_REF) | IcuCreateOpCode.Attr,
-    attr.name,
-    attr.value,
-  );
+function addCreateAttribute(
+  create: IcuCreateOpCodes,
+  newIndex: number,
+  attrName: string,
+  attrValue: string,
+) {
+  create.push((newIndex << IcuCreateOpCode.SHIFT_REF) | IcuCreateOpCode.Attr, attrName, attrValue);
 }

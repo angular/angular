@@ -47,6 +47,7 @@ showSecretMessage() {
 <docs-step title="Привязка к событию в шаблоне">
 Обновите код шаблона в `app.ts`, чтобы выполнить привязку к событию `mouseover` элемента `section`.
 
+<!-- prettier-ignore -->
 ```angular-html
 <section (mouseover)="showSecretMessage()">
 ```

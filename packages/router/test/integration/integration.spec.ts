@@ -35,7 +35,7 @@ import {
   RoutesRecognized,
 } from '../../index';
 
-import {provideRouter, withPlatformNavigation} from '../../src/provide_router';
+import {provideRouter, withExperimentalPlatformNavigation} from '../../src/provide_router';
 import {
   BlankCmp,
   CollectParamsCmp,
@@ -72,7 +72,7 @@ import {navigationIntegrationTestSuite} from './navigation.spec';
 import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strategy.spec';
 import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
 import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
-import {useAutoTick} from '../helpers';
+import {useAutoTick} from '@angular/private/testing';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
   describe(`${browserAPI}-based routing`, () => {
@@ -87,7 +87,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           provideRouter(
             [{path: 'simple', component: SimpleCmp}],
             browserAPI === 'navigation'
-              ? withPlatformNavigation()
+              ? withExperimentalPlatformNavigation()
               : (makeEnvironmentProviders([]) as any),
           ),
         ],
@@ -129,7 +129,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       @Component({
         selector: 'need-cd',
-        template: `{{'it works!'}}`,
+        template: `{{ 'it works!' }}`,
         standalone: false,
       })
       class NeedCdCmp {}
@@ -215,7 +215,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should work when an outlet is added/removed', async () => {
       @Component({
         selector: 'someRoot',
-        template: `[<div *ngIf="cond()"><router-outlet></router-outlet></div>]`,
+        template: `[
+          <div *ngIf="cond()"><router-outlet></router-outlet></div>
+          ]`,
         standalone: false,
       })
       class RootCmpWithLink {
@@ -234,15 +236,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       router.navigateByUrl('/simple');
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
 
       fixture.componentInstance.cond.set(false);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[]');
+      expect(fixture.nativeElement).toHaveText('[  ]');
 
       fixture.componentInstance.cond.set(true);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
     });
 
     it('should update location when navigating', async () => {
@@ -863,7 +865,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should emit an event when an outlet gets activated', async () => {
       @Component({
         selector: 'container',
-        template: `<router-outlet (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`,
+        template: `<router-outlet
+          (activate)="recordActivate($event)"
+          (deactivate)="recordDeactivate($event)"
+        ></router-outlet>`,
         standalone: false,
       })
       class Container {
@@ -927,7 +932,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     navigationErrorsIntegrationSuite(browserAPI);
     eagerUrlUpdateStrategyIntegrationSuite();
-    duplicateInFlightNavigationsIntegrationSuite();
+    duplicateInFlightNavigationsIntegrationSuite(browserAPI);
     navigationIntegrationTestSuite(browserAPI);
     routeDataIntegrationSuite();
     routerLinkIntegrationSpec();

@@ -13,12 +13,12 @@
 
 Часто бывает полезно инициализировать свойства класса значениями, предоставляемыми системой DI. Вот пример:
 
-<docs-code language="ts" highlight="[3]">
+```ts {highlight:[3]}
 @Component({...})
 class PetCareDashboard {
   petRosterService = inject(PetRosterService);
 }
-</docs-code>
+```
 
 <docs-workflow>
 

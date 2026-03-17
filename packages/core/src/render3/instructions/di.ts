@@ -41,7 +41,7 @@ import {getCurrentTNode, getLView} from '../state';
  * @codeGenApi
  */
 export function ɵɵdirectiveInject<T>(token: ProviderToken<T>): T;
-export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags: InternalInjectFlags): T;
+export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags: number): T;
 export function ɵɵdirectiveInject<T>(
   token: ProviderToken<T>,
   flags = InternalInjectFlags.Default,

@@ -1,0 +1,185 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should handle arrow functions that do not depend on context",
+      "inputFiles": ["arrow_function_no_context.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_no_context.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function that only accesses the top-level context",
+      "inputFiles": ["arrow_function_top_level_context.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_top_level_context.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function that has a `this` access with same name as parameter",
+      "inputFiles": ["arrow_function_this_access.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_this_access.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function that accesses @let declarations across view boundaries",
+      "inputFiles": ["arrow_function_let_nested.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_let_nested.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function that access context in parent views, inside event listeners",
+      "inputFiles": ["arrow_function_nested_listeners.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_nested_listeners.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function that is defined inside a @let and used within the template",
+      "inputFiles": ["arrow_function_defined_let.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_defined_let.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function inside a host binding",
+      "inputFiles": ["arrow_function_host_binding.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_host_binding.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function inside a host listener",
+      "inputFiles": ["arrow_function_host_listener.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_host_listener.js"]
+        }
+      ]
+    },
+    {
+      "description": "should not produce pure functions for arrow function return values",
+      "inputFiles": ["arrow_function_pure_return_values.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_pure_return_values.js"]
+        }
+      ]
+    },
+    {
+      "description": "should be able to use arrow functions inside pure values",
+      "inputFiles": ["arrow_function_inside_pure_value.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_inside_pure_value.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function returning another arrow function with no context access",
+      "inputFiles": ["arrow_function_returning_arrow_function_no_context.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_returning_arrow_function_no_context.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function returning another arrow function with only top-level context access",
+      "inputFiles": ["arrow_function_returning_arrow_function_top_level_context.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_returning_arrow_function_top_level_context.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function returning another arrow function with access across multiple contexts",
+      "inputFiles": ["arrow_function_returning_arrow_function_nested_context.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_returning_arrow_function_nested_context.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function with optional reads",
+      "inputFiles": ["arrow_function_safe_access.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_safe_access.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function with optional reads in nested views",
+      "inputFiles": ["arrow_function_safe_access_nested_views.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_safe_access_nested_views.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function that is passed into a pipe",
+      "inputFiles": ["arrow_function_pipe.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_pipe.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function using $event",
+      "inputFiles": ["arrow_function_dollar_event.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_dollar_event.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function using loop variables",
+      "inputFiles": ["arrow_function_loop_variables.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_loop_variables.js"]
+        }
+      ]
+    }
+  ]
+}

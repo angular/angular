@@ -18,7 +18,7 @@ export function CodeLine(props: {line: CodeLineRenderable}) {
   const pattern = /<span[^>]*\bclass=["']line["'][^>]*>(.*)<\/span>/s;
   const match = line.contents.match(pattern);
 
-  // 
+  //
   let highlightedContent = match ? match[1] : line.contents;
 
   if (line.id) {

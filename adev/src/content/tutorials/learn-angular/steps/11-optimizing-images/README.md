@@ -36,14 +36,14 @@ import { NgOptimizedImage } from '@angular/common';
 Чтобы включить директиву `NgOptimizedImage`, замените атрибут `src` на `ngSrc`. Это относится как к статическим
 источникам изображений (т.е. `src`), так и к динамическим (т.е. `[src]`).
 
-<docs-code language="angular-ts" highlight="[[9], [13]]">
+```angular-ts {highlight:[[7],[11]]}
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
 template: `     ...
     <li>
       Static Image:
-      <img ngSrc="/assets/logo.svg" alt="Angular logo" width="32" height="32" />
+      <img ngSrc="/logo.svg" alt="Angular logo" width="32" height="32" />
     </li>
     <li>
       Dynamic Image:
@@ -53,7 +53,7 @@ template: `     ...
   `,
 imports: [NgOptimizedImage],
 })
-</docs-code>
+```
 
 </docs-step>
 
@@ -68,7 +68,8 @@ imports: [NgOptimizedImage],
 заполняя содержащий его элемент:
 
 ```angular-html
-<div class="image-container"> //Container div has 'position: "relative"'
+// Container div has 'position: "relative"'
+<div class="image-container">
   <img ngSrc="www.example.com/image.png" fill />
 </div>
 ```
@@ -99,9 +100,7 @@ imports: [NgOptimizedImage],
 изображения с помощью коротких относительных URL-адресов:
 
 ```ts
-providers: [
-  provideImgixLoader('https://my.base.url/'),
-]
+providers: [provideImgixLoader('https://my.base.url/')],
 ```
 
 Итоговый URL будет 'https://my.base.url/image.png'

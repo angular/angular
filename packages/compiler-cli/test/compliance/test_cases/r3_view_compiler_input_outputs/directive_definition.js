@@ -1,12 +1,15 @@
-MyDirective.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
+export class MyDirective {
   …
-  inputs:{
-    directiveInput: "directiveInput",
-    originalDirectiveInput: [0, "renamedDirectiveInput", "originalDirectiveInput"]
-  },
-  outputs: {
-    directiveOutput: "directiveOutput",
-    originalDirectiveOutput: "renamedDirectiveOutput"
-  }
-  …
-});
+  static ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
+    …
+    inputs:{
+      directiveInput: "directiveInput",
+      originalDirectiveInput: [0, "renamedDirectiveInput", "originalDirectiveInput"]
+    },
+    outputs: {
+      directiveOutput: "directiveOutput",
+      originalDirectiveOutput: "renamedDirectiveOutput"
+    }
+    …
+  });
+}

@@ -12,6 +12,7 @@ import { Injector } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Provider } from '@angular/core';
+import { ResourceParamsContext } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { ValueEqualityFn } from '@angular/core';
@@ -2680,7 +2681,9 @@ export enum HttpFeatureKind {
     // (undocumented)
     NoXsrfProtection = 3,
     // (undocumented)
-    RequestsMadeViaParent = 5
+    RequestsMadeViaParent = 5,
+    // (undocumented)
+    Xhr = 7
 }
 
 // @public
@@ -2978,43 +2981,43 @@ export const httpResource: HttpResourceFn;
 
 // @public
 export interface HttpResourceFn {
-    <TResult = unknown>(url: () => string | undefined, options: HttpResourceOptions<TResult, unknown> & {
+    <TResult = unknown>(url: (ctx: ResourceParamsContext) => string | undefined, options: HttpResourceOptions<TResult, unknown> & {
         defaultValue: NoInfer<TResult>;
     }): HttpResourceRef<TResult>;
-    <TResult = unknown>(url: () => string | undefined, options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
-    <TResult = unknown>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, unknown> & {
+    <TResult = unknown>(url: (ctx: ResourceParamsContext) => string | undefined, options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
+    <TResult = unknown>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, unknown> & {
         defaultValue: NoInfer<TResult>;
     }): HttpResourceRef<TResult>;
-    <TResult = unknown>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
+    <TResult = unknown>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, unknown>): HttpResourceRef<TResult | undefined>;
     arrayBuffer: {
-        <TResult = ArrayBuffer>(url: () => string | undefined, options: HttpResourceOptions<TResult, ArrayBuffer> & {
+        <TResult = ArrayBuffer>(url: (ctx: ResourceParamsContext) => string | undefined, options: HttpResourceOptions<TResult, ArrayBuffer> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = ArrayBuffer>(url: () => string | undefined, options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
-        <TResult = ArrayBuffer>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, ArrayBuffer> & {
+        <TResult = ArrayBuffer>(url: (ctx: ResourceParamsContext) => string | undefined, options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
+        <TResult = ArrayBuffer>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, ArrayBuffer> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = ArrayBuffer>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
+        <TResult = ArrayBuffer>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, ArrayBuffer>): HttpResourceRef<TResult | undefined>;
     };
     blob: {
-        <TResult = Blob>(url: () => string | undefined, options: HttpResourceOptions<TResult, Blob> & {
+        <TResult = Blob>(url: (ctx: ResourceParamsContext) => string | undefined, options: HttpResourceOptions<TResult, Blob> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = Blob>(url: () => string | undefined, options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
-        <TResult = Blob>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, Blob> & {
+        <TResult = Blob>(url: (ctx: ResourceParamsContext) => string | undefined, options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
+        <TResult = Blob>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, Blob> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = Blob>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
+        <TResult = Blob>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, Blob>): HttpResourceRef<TResult | undefined>;
     };
     text: {
-        <TResult = string>(url: () => string | undefined, options: HttpResourceOptions<TResult, string> & {
+        <TResult = string>(url: (ctx: ResourceParamsContext) => string | undefined, options: HttpResourceOptions<TResult, string> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = string>(url: () => string | undefined, options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
-        <TResult = string>(request: () => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, string> & {
+        <TResult = string>(url: (ctx: ResourceParamsContext) => string | undefined, options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
+        <TResult = string>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options: HttpResourceOptions<TResult, string> & {
             defaultValue: NoInfer<TResult>;
         }): HttpResourceRef<TResult>;
-        <TResult = string>(request: () => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
+        <TResult = string>(request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined, options?: HttpResourceOptions<TResult, string>): HttpResourceRef<TResult | undefined>;
     };
 }
 
@@ -3329,7 +3332,7 @@ export class JsonpInterceptor {
 // @public
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
 
-// @public
+// @public @deprecated
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch>;
 
 // @public
@@ -3348,7 +3351,10 @@ export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtec
 export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent>;
 
 // @public
-export function withXsrfConfiguration({ cookieName, headerName, }: {
+export function withXhr(): HttpFeature<HttpFeatureKind.Xhr>;
+
+// @public
+export function withXsrfConfiguration(input: {
     cookieName?: string;
     headerName?: string;
 }): HttpFeature<HttpFeatureKind.CustomXsrfConfiguration>;

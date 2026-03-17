@@ -51,7 +51,7 @@ import {ɵLog as Log, inject, TestBed} from '@angular/core/testing';
 import {BrowserModule} from '../../index';
 import {provideAnimations, provideNoopAnimations} from '../../animations';
 import {expect} from '@angular/private/testing/matchers';
-import {isNode} from '@angular/private/testing';
+import {isNode, withBody} from '@angular/private/testing';
 
 import {bootstrapApplication, platformBrowser} from '../../src/browser';
 
@@ -920,28 +920,37 @@ describe('providePlatformInitializer', () => {
 
     createPlatformInjector([
       {provide: TEST_TOKEN, useValue: 'test'},
-      providePlatformInitializer(() => {
-        injectedValue = _inject(TEST_TOKEN);
-      }),
+      providePlatformInitializer(() => (injectedValue = _inject(TEST_TOKEN))),
     ]);
 
     expect(injectedValue).toBe('test');
   });
 
-  function createPlatformInjector(providers: Array<EnvironmentProviders | Provider>) {
-    /* TODO: should we change `createOrReusePlatformInjector` type to allow `EnvironmentProviders`?
-     */
-    return createOrReusePlatformInjector(providers as any);
+  function createPlatformInjector(providers: Array<StaticProvider>) {
+    return createOrReusePlatformInjector(providers);
   }
-});
 
-/**
- * Typing tests.
- */
-@Component({
-  template: '',
-  // @ts-expect-error: `providePlatformInitializer()` should not work with Component.providers, as
-  // it wouldn't be executed anyway.
-  providers: [providePlatformInitializer(() => {})],
-})
-class Test {}
+  it('should bootstrap with platform initializers', async () => {
+    return withBody('<app></app>', async () => {
+      @Component({
+        selector: 'app',
+        template: '',
+      })
+      class App {}
+
+      let platformInitializerCalls = 0;
+
+      const platformRef = platformBrowser([
+        providePlatformInitializer(() => {
+          platformInitializerCalls++;
+        }),
+      ]);
+
+      expect(platformInitializerCalls).toBe(0);
+      await bootstrapApplication(App, undefined, {platformRef});
+      expect(platformInitializerCalls).toBe(1);
+      await bootstrapApplication(App, undefined, {platformRef});
+      expect(platformInitializerCalls).toBe(1);
+    });
+  });
+});

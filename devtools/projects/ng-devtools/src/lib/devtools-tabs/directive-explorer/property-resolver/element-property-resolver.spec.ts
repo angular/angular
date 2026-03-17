@@ -29,7 +29,7 @@ const mockIndexedNode: IndexedNode = {
       name: 'BazDir',
     },
   ],
-  defer: null,
+  controlFlowBlock: null,
   hasNativeElement: true,
   children: [],
   element: 'foo',

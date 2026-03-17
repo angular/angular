@@ -17,7 +17,7 @@ export function SectionHeading(props: {name: string}) {
 
   return (
     <h2 id={id} class={SECTION_HEADING}>
-      <a href={'#' + id} aria-label={label} tabIndex={-1}>
+      <a class="docs-anchor" href={'#' + id} aria-label={label} tabIndex={-1}>
         {props.name}
       </a>
     </h2>

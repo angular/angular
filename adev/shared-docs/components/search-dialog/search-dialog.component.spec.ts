@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ApplicationRef} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {Router, provideRouter} from '@angular/router';
 
 import {SearchDialog} from './search-dialog.component';
 import {ENVIRONMENT, WINDOW} from '../../providers';
 import {ALGOLIA_CLIENT, Search} from '../../services';
 import {FakeEventTarget} from '../../testing/index';
-import {By} from '@angular/platform-browser';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
-import {Router, provideRouter} from '@angular/router';
-import {ApplicationRef, provideZonelessChangeDetection, ResourceStatus} from '@angular/core';
 import {SearchResult} from '../../interfaces';
 
 describe('SearchDialog', () => {
@@ -34,7 +34,6 @@ describe('SearchDialog', () => {
       imports: [SearchDialog],
       providers: [
         provideRouter([]),
-        provideZonelessChangeDetection(),
         {provide: ENVIRONMENT, useValue: {algolia: {index: 'fakeIndex'}}},
         {provide: ALGOLIA_CLIENT, useValue: {search: searchResults}},
         {provide: WINDOW, useValue: fakeWindow},
@@ -42,8 +41,8 @@ describe('SearchDialog', () => {
     });
 
     fixture = TestBed.createComponent(SearchDialog);
-    fixture.detectChanges();
     search = TestBed.inject(Search);
+    await fixture.whenStable();
   });
 
   it('should navigate to active item when user pressed Enter', async () => {
@@ -98,7 +97,6 @@ describe('SearchDialog', () => {
 
   it('should display `Start typing to see results` message when there are no provided query', () => {
     searchResults.and.returnValue(undefined);
-    fixture.detectChanges();
 
     const startTypingContainer = fixture.debugElement.query(
       By.css('.docs-search-results__start-typing'),

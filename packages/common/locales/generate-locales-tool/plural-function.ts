@@ -12,7 +12,9 @@ import {load as createCldr} from 'cldr';
 
 // Load once to avoid re-parsing CLDR XML data on every invocation.
 const cldr = createCldr(
-  dirname(resolve(process.env['RUNFILES']!, process.env['CLDR_XML_DATA_RUNFILES_PATH']!)),
+  dirname(
+    resolve(process.env['JS_BINARY__RUNFILES']!, process.env['CLDR_XML_DATA_RUNFILES_PATH']!),
+  ),
 );
 
 /**

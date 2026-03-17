@@ -15,6 +15,7 @@ import {getSourceCodeForDiagnostic} from '../../../../../testing';
 import {getClass, setup} from '../../../../testing';
 import {factory as uninvokedTrackFunctionCheckFactory} from '../../../checks/uninvoked_track_function';
 import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
+import {formatExtendedError} from '@angular/compiler-cli/src/ngtsc/typecheck/extended/api';
 
 runInEachFileSystem(() => {
   describe('UninvokedTrackFunctionCheck', () => {
@@ -104,5 +105,8 @@ function diagnoseTestComponent(template: string, classField: string) {
 }
 
 function generateDiagnosticText(method: string): string {
-  return `The track function in the @for block should be invoked: ${method}(/* arguments */)`;
+  return formatExtendedError(
+    ErrorCode.UNINVOKED_TRACK_FUNCTION,
+    `The track function in the @for block should be invoked: ${method}(/* arguments */)`,
+  );
 }

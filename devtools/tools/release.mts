@@ -11,7 +11,7 @@ import {input} from '@inquirer/prompts';
 import chalk from 'chalk';
 import semver from 'semver';
 import {writeFile, mkdir, rm, readFile} from 'node:fs/promises';
-import {exec as nodeExec, spawn, SpawnOptions} from 'node:child_process';
+import {exec as nodeExec, spawn, type SpawnOptions} from 'node:child_process';
 import {promisify} from 'node:util';
 import {join} from 'node:path';
 
@@ -279,6 +279,9 @@ async function updateManifests(newVersion: string): Promise<void> {
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
     console.log(`- Updated version for manifest in: ${manifestPath}`);
   }
+
+  await exec(`pnpm ng-dev format files ${manifestPaths.map((f) => `"${f}"`).join(' ')}`);
+
   console.log(chalk.green('Manifest files updated successfully.'));
 }
 

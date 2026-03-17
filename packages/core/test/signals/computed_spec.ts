@@ -200,6 +200,12 @@ describe('computed', () => {
     expect(double + '').toBe('[Computed: 2]');
   });
 
+  it('should have a toString implementation with debugName', () => {
+    const counter = signal(1);
+    const double = computed(() => counter() * 2, {debugName: 'double'});
+    expect(double + '').toBe('[Computed (double): 2]');
+  });
+
   it('should set debugName when a debugName is provided', () => {
     const primitiveSignal = signal(0);
     const node = computed(() => primitiveSignal(), {debugName: 'computedSignal'})[

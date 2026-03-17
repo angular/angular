@@ -226,7 +226,7 @@ function getProviderTokenMeasureName<T>(token: any) {
  * Start listening to the Angular's internal performance-related events and route those to the Chrome DevTools performance panel.
  * This enables Angular-specific data visualization when recording a performance profile directly in the Chrome DevTools.
  *
- * Note: integration is enabled in the development mode only, this operation is noop in the production mode.
+ * NOTE: Integration is enabled in the development mode only, this operation is noop in the production mode.
  *
  * @publicApi v21.0
  *

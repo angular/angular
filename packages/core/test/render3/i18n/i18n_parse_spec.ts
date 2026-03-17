@@ -297,6 +297,50 @@ describe('i18n_parse', () => {
         );
       });
     });
+
+    it('should properly sanitize malicious URLs like `<a href="evil.test">` injected into translations', () => {
+      const tI18n = toT18n(`{
+        �0�, select,
+          A {<a href="javascript:console.log('hacked!');">malicious JS</a>}
+          other {<a href="https://evil.test">malicious link</a>}
+      }`);
+
+      fixture.apply(() => {
+        applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
+        expect(fixture.host.innerHTML).toEqual(`<!--ICU ${HEADER_OFFSET + 0}:0-->`);
+      });
+
+      fixture.apply(() => {
+        ɵɵi18nExp('A');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML).toEqual(
+          `<a href="unsafe:blocked">malicious JS</a><!--ICU ${HEADER_OFFSET + 0}:0-->`,
+        );
+      });
+
+      fixture.apply(() => {
+        ɵɵi18nExp('other');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML).toEqual(
+          `<a href="unsafe:blocked">malicious link</a><!--ICU ${HEADER_OFFSET + 0}:0-->`,
+        );
+      });
+    });
+
+    it('should ignore unknown attributes', () => {
+      const tI18n = toT18n(`{�0�, select, A {<div unknown="unknown"></div>} }`);
+
+      fixture.apply(() => {
+        applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
+        expect(fixture.host.innerHTML).toEqual(`<!--ICU ${HEADER_OFFSET + 0}:0-->`);
+      });
+
+      fixture.apply(() => {
+        ɵɵi18nExp('A');
+        ɵɵi18nApply(0);
+        expect(fixture.host.innerHTML).toEqual(`<div></div><!--ICU ${HEADER_OFFSET + 0}:0-->`);
+      });
+    });
   });
 
   function toT18n(text: string) {

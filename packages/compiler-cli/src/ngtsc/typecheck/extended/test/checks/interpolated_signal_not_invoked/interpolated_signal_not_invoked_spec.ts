@@ -794,7 +794,7 @@ runInEachFileSystem(() => {
     expect(diags.length).toBe(0);
   });
 
-  it('should not produce a warning with other Signal type', () => {
+  it('should not produce a warning when signal is an arg', () => {
     const fileName = absoluteFrom('/main.ts');
     const {program, templateTypeChecker} = setup([
       {
@@ -921,7 +921,7 @@ runInEachFileSystem(() => {
 
       [false, true].forEach((negate) => {
         // Control flow
-        it(`should produce a warning when a property named '${functionInstanceProperty}' of a not invoked signal is used in an @if control flow expression`, () => {
+        it(`should produce a warning when a property named '${functionInstanceProperty}' of a not invoked signal is used in an @if control flow expression (negate=${negate})`, () => {
           const fileName = absoluteFrom('/main.ts');
           const {program, templateTypeChecker} = setup([
             {
@@ -953,7 +953,7 @@ runInEachFileSystem(() => {
           expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal`);
         });
 
-        it(`should not produce a warning when a property named '${functionInstanceProperty}' of an invoked signal is used in an @if control flow expression`, () => {
+        it(`should not produce a warning when a property named '${functionInstanceProperty}' of an invoked signal is used in an @if control flow expression (negate=${negate})`, () => {
           const fileName = absoluteFrom('/main.ts');
           const {program, templateTypeChecker} = setup([
             {
@@ -982,7 +982,7 @@ runInEachFileSystem(() => {
           expect(diags.length).toBe(0);
         });
 
-        it(`should produce a warning when a property named '${functionInstanceProperty}' of a not invoked signal is used in an @switch control flow expression`, () => {
+        it(`should produce a warning when a property named '${functionInstanceProperty}' of a not invoked signal is used in an @switch control flow  (negate=${negate})`, () => {
           const fileName = absoluteFrom('/main.ts');
           const {program, templateTypeChecker} = setup([
             {
@@ -1014,7 +1014,7 @@ runInEachFileSystem(() => {
           expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal`);
         });
 
-        it(`should not produce a warning when a property named '${functionInstanceProperty}' of an invoked signal is used in an @switch control flow expression`, () => {
+        it(`should not produce a warning when a property named '${functionInstanceProperty}' of an invoked signal is used in an @switch control flow expression (negate=${negate})`, () => {
           const fileName = absoluteFrom('/main.ts');
           const {program, templateTypeChecker} = setup([
             {

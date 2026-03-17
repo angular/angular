@@ -1,11 +1,10 @@
-# Покрытие кода
+# Code coverage
 
-Отчеты о покрытии кода показывают те части вашей кодовой базы, которые могут быть недостаточно протестированы вашими
-юнит-тестами.
+Code coverage reports show you any parts of your code base that might not be properly tested by your unit tests.
 
-## Предварительные требования
+## Prerequisites
 
-Чтобы генерировать отчеты о покрытии кода с помощью Vitest, необходимо установить пакет `@vitest/coverage-v8`:
+To generate code coverage reports with Vitest, you must install the `@vitest/coverage-v8` package:
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">
@@ -22,19 +21,17 @@
   </docs-code>
 </docs-code-multifile>
 
-## Генерация отчета
+## Generating a report
 
-Чтобы сгенерировать отчет о покрытии, добавьте флаг `--coverage` к команде `ng test`:
+To generate a coverage report, add the `--coverage` flag to the `ng test` command:
 
 ```shell
 ng test --coverage
 ```
 
-После выполнения тестов команда создаст новую директорию `coverage/` в проекте. Откройте файл `index.html`, чтобы
-увидеть отчет с вашим исходным кодом и показателями покрытия.
+After the tests run, the command creates a new `coverage/` directory in the project. Open the `index.html` file to see a report with your source code and code coverage values.
 
-Если вы хотите создавать отчеты о покрытии кода при каждом запуске тестов, вы можете установить опцию `coverage` в
-значение `true` в вашем файле `angular.json`:
+If you want to create code-coverage reports every time you test, you can set the `coverage` option to `true` in your `angular.json` file:
 
 ```json
 {
@@ -53,13 +50,11 @@ ng test --coverage
 }
 ```
 
-## Контроль пороговых значений покрытия кода
+## Enforcing code coverage thresholds
 
-Проценты покрытия кода позволяют оценить, какая часть вашего кода протестирована. Если ваша команда определила
-минимальный объем, который должен быть покрыт юнит-тестами, вы можете закрепить этот минимум в конфигурации.
+The code coverage percentages let you estimate how much of your code is tested. If your team decides on a minimum amount to be unit tested, you can enforce this minimum in your configuration.
 
-Например, предположим, что вы хотите, чтобы кодовая база имела покрытие кода не менее 80%. Чтобы включить это, добавьте
-опцию `coverageThresholds` в ваш файл `angular.json`:
+For example, suppose you want the code base to have a minimum of 80% code coverage. To enable this, add the `coverageThresholds` option to your `angular.json` file:
 
 ```json
 {
@@ -84,16 +79,16 @@ ng test --coverage
 }
 ```
 
-Теперь, если при запуске тестов покрытие упадет ниже 80%, выполнение команды завершится с ошибкой.
+Now, if your coverage drops below 80% when you run your tests, the command will fail.
 
-## Расширенная конфигурация
+## Advanced configuration
 
-Вы можете настроить несколько других опций покрытия в вашем файле `angular.json`:
+You can configure several other coverage options in your `angular.json` file:
 
-- `coverageInclude`: Glob-шаблоны файлов для включения в отчет о покрытии.
-- `coverageReporters`: Массив используемых репортеров (например, `html`, `lcov`, `json`).
-- `coverageWatermarks`: Объект, определяющий `[low, high]` (низкий, высокий) уровни для HTML-репортера, которые влияют
-  на цветовую кодировку отчета.
+- `coverageInclude`: Glob patterns of files to include in the coverage report.
+- `coverageExclude`: Glob patterns of files to exclude in the coverage report.
+- `coverageReporters`: An array of reporters to use (e.g., `html`, `lcov`, `json`).
+- `coverageWatermarks`: An object specifying `[low, high]` watermarks for the HTML reporter, which can affect the color-coding of the report.
 
 ```json
 {

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {platform} from 'node:os';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
-import {platform} from 'node:os';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -44,7 +44,7 @@ runInEachFileSystem((os) => {
       expect(env.getContents('messages.xlf')).toEqual(EXPECTED_XLIFF);
     });
 
-    it('should extract xlf', () => {
+    it('should extract xlf2', () => {
       env.driveXi18n('xlf2', 'messages.xliff2.xlf');
       expect(env.getContents('messages.xliff2.xlf')).toEqual(EXPECTED_XLIFF2);
     });

@@ -1,4 +1,6 @@
-MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyComponent {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: [[__AttributeMarker.Bindings__, "someDirective"]],
   template: function MyComponent_Template(rf, ctx) {
@@ -13,3 +15,4 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   dependencies: [SomeDirective],
   encapsulation: 2
 });
+}

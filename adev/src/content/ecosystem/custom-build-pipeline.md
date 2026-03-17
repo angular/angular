@@ -1,55 +1,33 @@
-# Пользовательский конвейер сборки
+# Custom build pipeline
 
-При сборке приложения Angular мы настоятельно рекомендуем использовать Angular CLI, чтобы задействовать его
-функциональность обновлений, зависящую от структуры проекта, и абстракцию системы сборки. Таким образом, ваши проекты
-получают преимущества от последних улучшений безопасности, производительности и API, а также прозрачных улучшений
-процесса сборки.
+When building an Angular app we strongly recommend you to use the Angular CLI to leverage its structure-dependent update functionality and build system abstraction. This way your projects benefit from the latest security, performance, and API improvements and transparent build improvements.
 
-Эта страница рассматривает **редкие случаи**, когда вам необходим пользовательский конвейер сборки, не использующий
-Angular CLI. Все перечисленные ниже инструменты являются плагинами сборки с открытым исходным кодом, которые
-поддерживаются участниками сообщества Angular. Чтобы узнать больше о модели их поддержки и статусе обслуживания,
-обратитесь к их документации и репозиториям на GitHub.
+This page explores the **rare use cases** when you need a custom build pipeline that does not use the Angular CLI. All listed tools below are open source build plugins that are maintained by members of the Angular community. To learn more about their support model and maintenance status look at their documentation and GitHub repository URLs.
 
-## Когда следует использовать пользовательский конвейер сборки?
+## When should you use a custom build pipeline?
 
-Существуют некоторые нишевые случаи использования, когда вы можете захотеть поддерживать собственный конвейер сборки.
-Например:
+There are some niche use cases when you may want to maintain a custom build pipeline. For example:
 
-- У вас есть существующее приложение, использующее другой набор инструментов, и вы хотите добавить в него Angular.
-- Вы жестко привязаны к [module federation](https://module-federation.io/) и не можете перейти на не зависящую от
-  сборщика [native federation](https://www.npmjs.com/package/@angular-architects/native-federation).
-- Вы хотите создать краткосрочный эксперимент, используя свой любимый инструмент сборки.
+- You have an existing app using a different toolchain and you’d like to add Angular to it
+- You’re strongly coupled to [module federation](https://module-federation.io/) and unable to adopt bundler-agnostic [native federation](https://www.npmjs.com/package/@angular-architects/native-federation)
+- You’d like to create a short-lived experiment using your favorite build tool
 
-## Какие есть варианты?
+## What are the options?
 
-В настоящее время существуют два хорошо поддерживаемых сообществом инструмента, которые позволяют создать
-пользовательский конвейер сборки с помощью [плагина Vite](https://www.npmjs.com/package/@analogjs/vite-plugin-angular)
-и [плагина Rspack](https://www.npmjs.com/package/@nx/angular-rspack). Оба они используют базовые абстракции, на которых
-работает Angular CLI. Они позволяют создать гибкий конвейер сборки, но требуют ручного обслуживания и не предоставляют
-возможности автоматического обновления.
+Currently, there are two well supported community tools that enable you to create a custom build pipeline with a [Vite plugin](https://www.npmjs.com/package/@analogjs/vite-plugin-angular) and [Rspack plugin](https://www.npmjs.com/package/@nx/angular-rspack). Both of them use underlying abstractions that power the Angular CLI. They allow you to create a flexible build pipeline and require manual maintenance and no automated update experience.
 
 ### Rspack
 
-Rspack — это сборщик на основе Rust, целью которого является обеспечение совместимости с экосистемой плагинов webpack.
+Rspack is a Rust-based bundler that aims to provide compatibility with the webpack plugin ecosystem.
 
-Если ваш проект тесно связан с экосистемой webpack и сильно зависит от кастомной конфигурации webpack, вы можете
-использовать Rspack для ускорения времени сборки.
+If your project is tightly coupled to the webpack ecosystem, heavily relying on a custom webpack configuration you can leverage Rspack to improve your build times.
 
-Вы можете узнать больше об Angular Rspack
-на [веб-сайте документации](https://nx.dev/recipes/angular/rspack/introduction) проекта.
+You can find more about Angular Rspack on the project’s [documentation website](https://nx.dev/recipes/angular/rspack/introduction).
 
 ### Vite
 
-Vite — это инструмент сборки фронтенда, нацеленный на обеспечение более быстрого и легкого процесса разработки для
-современных веб-проектов. Vite также расширяем благодаря своей системе плагинов, которая позволяет экосистемам создавать
-интеграции с Vite, такие как Vitest для модульного и браузерного тестирования, Storybook для создания изолированных
-компонентов и многое другое. Angular CLI также использует Vite в качестве сервера разработки.
+Vite is a frontend build tool that aims to provide a faster and leaner development experience for modern web projects. Vite is also extensible through its plugin system that allows ecosystems to build integrations with Vite, such as Vitest for unit and browser testing, Storybook for authoring components in isolation, and more. The Angular CLI also uses Vite as its development server.
 
-[Плагин AnalogJS Vite для Angular](https://www.npmjs.com/package/@analogjs/vite-plugin-angular) позволяет внедрить
-Angular в проект или фреймворк, который использует Vite или построен на его основе. Это может включать разработку и
-сборку проекта Angular непосредственно с помощью Vite или добавление Angular в существующий проект или конвейер. Одним
-из примеров является интеграция UI-компонентов Angular в сайт документации с
-использованием [Astro и Starlight](https://analogjs.org/docs/packages/astro-angular/overview).
+The [AnalogJS Vite plugin for Angular](https://www.npmjs.com/package/@analogjs/vite-plugin-angular) enables the adoption of Angular with a project or framework that uses or is built on top of Vite. This can consist of developing and building an Angular project with Vite directly, or adding Angular to an existing project or pipeline. One example is integrating Angular UI components into a documentation website using [Astro and Starlight](https://analogjs.org/docs/packages/astro-angular/overview).
 
-Вы можете узнать больше об AnalogJS и о том, как использовать плагин, на
-его [странице документации](https://analogjs.org/docs/packages/vite-plugin-angular/overview).
+You can learn more about AnalogJS and how to use the plugin through its [documentation page](https://analogjs.org/docs/packages/vite-plugin-angular/overview).

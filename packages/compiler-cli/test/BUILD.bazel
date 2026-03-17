@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "angular_jasmine_test", "ts_project")
+load("//tools:defaults.bzl", "ts_project", "zoneless_jasmine_test")
 
 # Uses separate test rules to allow the tests to run in parallel
 
@@ -39,7 +39,7 @@ ts_project(
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "extract_i18n",
     data = [
         ":extract_i18n_lib",
@@ -66,7 +66,7 @@ ts_project(
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "perform_watch",
     data = [
         ":perform_watch_lib",
@@ -90,7 +90,7 @@ ts_project(
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "perform_compile",
     data = [
         ":perform_compile_lib",
@@ -110,7 +110,7 @@ ts_project(
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "typescript_support",
     data = [
         ":typescript_support_lib",
@@ -127,7 +127,7 @@ ts_project(
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "version_helpers",
     data = [
         ":version_helpers_lib",

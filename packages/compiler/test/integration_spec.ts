@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Input} from '@angular/core';
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 
@@ -15,7 +15,7 @@ describe('integration tests', () => {
   let fixture: ComponentFixture<TestComponent>;
 
   describe('directives', () => {
-    it('should support dotted selectors', waitForAsync(() => {
+    it('should support dotted selectors', () => {
       @Directive({
         selector: '[dot.name]',
         standalone: false,
@@ -33,11 +33,11 @@ describe('integration tests', () => {
       fixture.detectChanges();
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       expect(myDir.value).toEqual('foo');
-    }));
+    });
   });
 
   describe('ng-container', () => {
-    it('should work regardless the namespace', waitForAsync(() => {
+    it('should work regardless the namespace', () => {
       @Component({
         selector: 'comp',
         template:
@@ -50,7 +50,7 @@ describe('integration tests', () => {
       f.detectChanges();
 
       expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
-    }));
+    });
   });
 });
 

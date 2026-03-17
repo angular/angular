@@ -7,8 +7,8 @@
  */
 
 import {EnvironmentProviders, makeEnvironmentProviders} from '../di';
-import {UseExhaustiveCheckNoChanges} from './use_exhaustive_check_no_changes';
 import {exhaustiveCheckNoChangesInterval} from './scheduling/exhaustive_check_no_changes';
+import {UseExhaustiveCheckNoChanges} from './use_exhaustive_check_no_changes';
 
 /**
  * Used to disable exhaustive checks when verifying no expressions changed after they were checked.
@@ -26,7 +26,7 @@ export function provideCheckNoChangesConfig(options: {exhaustive: false}): Envir
  * - `interval` will periodically run `checkNoChanges` on application views. This can be useful
  *   in zoneless applications to periodically ensure no changes have been made without notifying
  *   Angular that templates need to be refreshed.
- * - The exhaustive option will treat all application views as if they were `ChangeDetectionStrategy.Default` when verifying
+ * - The exhaustive option will treat all application views as if they were `ChangeDetectionStrategy.Eager`/`Default` when verifying
  *   no expressions have changed. All views attached to `ApplicationRef` and all the descendants of
  *   those views will be checked for changes (excluding those subtrees which are detached via `ChangeDetectorRef.detach()`).
  *   This is useful because the check that runs after regular change detection does not work for components using `ChangeDetectionStrategy.OnPush`.

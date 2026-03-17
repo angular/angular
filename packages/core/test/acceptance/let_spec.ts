@@ -32,7 +32,7 @@ describe('@let declarations', () => {
       template: `
         @let multiplier = 2;
         @let result = value * multiplier;
-        {{value}} times {{multiplier}} is {{result}}
+        {{ value }} times {{ multiplier }} is {{ result }}
       `,
     })
     class TestComponent {
@@ -89,7 +89,7 @@ describe('@let declarations', () => {
         @if (true) {
           @if (true) {
             @let three = two + 1;
-            The result is {{three}}
+            The result is {{ three }}
           }
           @let two = one + 1;
         }
@@ -115,7 +115,7 @@ describe('@let declarations', () => {
     @Component({
       template: `
         @if (true) {
-          {{value}} times {{multiplier}} is {{result}}
+          {{ value }} times {{ multiplier }} is {{ result }}
         }
 
         @let multiplier = 2;
@@ -198,7 +198,7 @@ describe('@let declarations', () => {
     @Component({
       template: `
         @let result = value | double;
-        Result: {{result}}
+        Result: {{ result }}
       `,
       imports: [DoublePipe],
     })
@@ -218,10 +218,10 @@ describe('@let declarations', () => {
   it('should be able to use local references inside @let declarations', () => {
     @Component({
       template: `
-        <input #firstName value="Frodo" name="first-name">
-        <input #lastName value="Baggins">
+        <input #firstName value="Frodo" name="first-name" />
+        <input #lastName value="Baggins" />
         @let fullName = firstName.value + ' ' + lastName.value;
-        Hello, {{fullName}}
+        Hello, {{ fullName }}
       `,
     })
     class TestComponent {}
@@ -239,7 +239,7 @@ describe('@let declarations', () => {
   it('should be able to proxy a local reference through @let declarations', () => {
     @Component({
       template: `
-        <input #input value="foo">
+        <input #input value="foo" />
 
         @let one = input;
 
@@ -247,7 +247,7 @@ describe('@let declarations', () => {
           @let two = one;
 
           @if (true) {
-            The value is {{two.value}}
+            The value is {{ two.value }}
           }
         }
       `,
@@ -304,7 +304,7 @@ describe('@let declarations', () => {
         @if (true) {
           <div>
             @let bar = foo + 1;
-            bar is {{bar}}
+            bar is {{ bar }}
             <button (click)="callback(bar)">I'm here to prevent the optimization of "bar"</button>
           </div>
         }
@@ -330,7 +330,7 @@ describe('@let declarations', () => {
     @Component({
       template: `
         @let value = 1;
-        {{value}}
+        {{ value }}
       `,
     })
     class TestComponent {
@@ -347,7 +347,7 @@ describe('@let declarations', () => {
       selector: 'inner',
       template: `
         @let value = 123;
-        <ng-content>The value is {{value}}</ng-content>
+        <ng-content>The value is {{ value }}</ng-content>
       `,
     })
     class InnerComponent {}
@@ -378,9 +378,9 @@ describe('@let declarations', () => {
       template: `
         <inner>
           @let one = 1;
-          <footer>|Footer value {{one}}</footer>
+          <footer>|Footer value {{ one }}</footer>
           @let two = one + 1;
-          <header>Header value {{two}}|</header>
+          <header>Header value {{ two }}|</header>
         </inner>
       `,
       imports: [InnerComponent],
@@ -402,7 +402,7 @@ describe('@let declarations', () => {
         @let value = '@let';
 
         @if (true) {
-          The value comes from {{value}}
+          The value comes from {{ value }}
         }
       `,
     })
@@ -422,7 +422,7 @@ describe('@let declarations', () => {
 
         @if (true) {
           @let value = 'local';
-          The value comes from {{value}}
+          The value comes from {{ value }}
         }
       `,
     })
@@ -438,7 +438,7 @@ describe('@let declarations', () => {
       template: `
         @for (value of values; track $index) {
           @let calculation = value * $index;
-          {{calculation}}|
+          {{ calculation }}|
         }
       `,
     })

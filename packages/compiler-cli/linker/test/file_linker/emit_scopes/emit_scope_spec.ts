@@ -17,9 +17,13 @@ describe('EmitScope', () => {
   describe('translateDefinition()', () => {
     it('should translate the given output AST into a TExpression', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
-      const translator = new Translator<ts.Statement, ts.Expression>(factory);
+      const translator = new Translator<ts.Statement, ts.Expression, ts.TypeNode>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression, ts.TypeNode>(
+        ngImport,
+        translator,
+        factory,
+      );
 
       const def = emitScope.translateDefinition({
         expression: o.fn([], [], null, null, 'foo'),
@@ -30,9 +34,13 @@ describe('EmitScope', () => {
 
     it('should use an IIFE if the definition being emitted includes associated statements', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
-      const translator = new Translator<ts.Statement, ts.Expression>(factory);
+      const translator = new Translator<ts.Statement, ts.Expression, ts.TypeNode>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression, ts.TypeNode>(
+        ngImport,
+        translator,
+        factory,
+      );
 
       const def = emitScope.translateDefinition({
         expression: o.fn([], [], null, null, 'foo'),
@@ -43,9 +51,13 @@ describe('EmitScope', () => {
 
     it('should use the `ngImport` identifier for imports when translating', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
-      const translator = new Translator<ts.Statement, ts.Expression>(factory);
+      const translator = new Translator<ts.Statement, ts.Expression, ts.TypeNode>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression, ts.TypeNode>(
+        ngImport,
+        translator,
+        factory,
+      );
 
       const coreImportRef = new o.ExternalReference('@angular/core', 'foo');
       const def = emitScope.translateDefinition({
@@ -57,9 +69,13 @@ describe('EmitScope', () => {
 
     it('should not emit any shared constants in the replacement expression', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
-      const translator = new Translator<ts.Statement, ts.Expression>(factory);
+      const translator = new Translator<ts.Statement, ts.Expression, ts.TypeNode>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression, ts.TypeNode>(
+        ngImport,
+        translator,
+        factory,
+      );
 
       const constArray = o.literalArr([o.literal('CONST')]);
       // We have to add the constant twice or it will not create a shared statement
@@ -77,9 +93,13 @@ describe('EmitScope', () => {
   describe('getConstantStatements()', () => {
     it('should return any constant statements that were added to the `constantPool`', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
-      const translator = new Translator<ts.Statement, ts.Expression>(factory);
+      const translator = new Translator<ts.Statement, ts.Expression, ts.TypeNode>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new EmitScope<ts.Statement, ts.Expression, ts.TypeNode>(
+        ngImport,
+        translator,
+        factory,
+      );
 
       const constArray = o.literalArr([o.literal('CONST')]);
       // We have to add the constant twice or it will not create a shared statement

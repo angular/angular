@@ -9,8 +9,8 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule, Meta} from '../../index';
 import {expect} from '@angular/private/testing/matchers';
+import {BrowserModule, Meta} from '../../index';
 
 describe('Meta service', () => {
   let doc: Document;
@@ -198,21 +198,21 @@ describe('Meta service', () => {
     // clean up
     metaService.removeTagElement(meta);
   });
-});
 
-describe('integration test', () => {
-  @Injectable()
-  class DependsOnMeta {
-    constructor(public meta: Meta) {}
-  }
+  describe('integration test', () => {
+    @Injectable()
+    class DependsOnMeta {
+      constructor(public meta: Meta) {}
+    }
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [BrowserModule],
-      providers: [DependsOnMeta],
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [BrowserModule],
+        providers: [DependsOnMeta],
+      });
     });
-  });
 
-  it('should inject Meta service when using BrowserModule', () =>
-    expect(TestBed.inject(DependsOnMeta).meta).toBeInstanceOf(Meta));
+    it('should inject Meta service when using BrowserModule', () =>
+      expect(TestBed.inject(DependsOnMeta).meta).toBeInstanceOf(Meta));
+  });
 });

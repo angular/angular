@@ -1,89 +1,76 @@
-# Профилирование приложения
+# Profile your application
 
-Вкладка **Profiler** позволяет визуализировать выполнение обнаружения изменений Angular.
-Это полезно для определения того, когда и как обнаружение изменений влияет на производительность вашего приложения.
+The **Profiler** tab lets you visualize the execution of Angular's change detection.
+This is useful for determining when and how change detection impacts your application's performance.
 
-<img src="assets/images/guide/devtools/profiler.png" alt="Скриншот вкладки 'Profiler', на котором написано 'Click the play button to start a new recording, or upload a json file containing profiler data.' (Нажмите кнопку воспроизведения, чтобы начать новую запись, или загрузите json-файл с данными профилировщика). Рядом находится кнопка записи для начала нового профилирования, а также выбор файла для загрузки существующего профиля.">
+<img src="assets/images/guide/devtools/profiler.png" alt="A screenshot of the 'Profiler' tab which reads 'Click the play button to start a new recording, or upload a json file containing profiler data.' Next to this is a record button to begin recording a new profile as well as a file picker to select an existing profile.">
 
-Вкладка Profiler позволяет начать профилирование текущего приложения или импортировать существующий профиль из
-предыдущего запуска.
-Чтобы начать профилирование приложения, наведите курсор на круг в левом верхнем углу вкладки **Profiler** и нажмите \*
-\*Start recording\*\*.
+The Profiler tab lets you start profiling the current application or import an existing profile from a previous run.
+To start profiling your application, hover over the circle in the top-left corner within the **Profiler** tab and click **Start recording**.
 
-Во время профилирования Angular DevTools фиксирует события выполнения, такие как обнаружение изменений и выполнение
-хуков жизненного цикла.
-Взаимодействуйте с приложением, чтобы вызвать обнаружение изменений и сгенерировать данные, которые сможет использовать
-Angular DevTools.
-Чтобы завершить запись, снова нажмите на круг **Stop recording**.
+During profiling, Angular DevTools captures execution events, such as change detection and lifecycle hook execution.
+Interact with your application to trigger change detection and generate data Angular DevTools can use.
+To finish recording, click the circle again to **Stop recording**.
 
-Вы также можете импортировать существующую запись.
-Подробнее об этой функции читайте в разделе [Импорт записи](tools/devtools#import-and-export-recordings).
+You can also import an existing recording.
+Read more about this feature in the [Import recording](tools/devtools/profiler#import-and-export-recordings) section.
 
-## Понимание выполнения вашего приложения
+## Understand your application's execution
 
-После записи или импорта профиля Angular DevTools отображает визуализацию циклов обнаружения изменений.
+After recording or importing a profile, Angular DevTools displays a visualization of change detection cycles.
 
-<img src="assets/images/guide/devtools/default-profiler-view.png" alt="Скриншот вкладки 'Profiler' после записи или загрузки профиля. Отображается гистограмма, иллюстрирующая различные циклы обнаружения изменений, с текстом 'Select a bar to preview a particular change detection cycle' (Выберите столбец для просмотра конкретного цикла обнаружения изменений).">
+<img src="assets/images/guide/devtools/default-profiler-view.png" alt="A screenshot of the 'Profiler' tab after a profile has been recorded or uploaded. It displays a bar chart illustrating various change detection cycles with some text which reads 'Select a bar to preview a particular change detection cycle'.">
 
-Каждый столбец в последовательности представляет цикл обнаружения изменений в вашем приложении.
-Чем выше столбец, тем дольше приложение выполняло обнаружение изменений в этом цикле.
-При выборе столбца DevTools отображает полезную информацию о нем, включая:
+Each bar in the sequence represents a change detection cycle in your app.
+The taller a bar is, the longer the application spent running change detection in this cycle.
+When you select a bar, DevTools displays useful information about it including:
 
-- Гистограмму со всеми компонентами и директивами, зафиксированными в этом цикле.
-- Сколько времени Angular потратил на обнаружение изменений в этом цикле.
-- Оценочную частоту кадров (frame rate), воспринимаемую пользователем (если она ниже 60 кадров в секунду).
+- A bar chart with all the components and directives that it captured during this cycle
+- How much time Angular spent running change detection in this cycle.
+- An estimated frame rate as experienced by the user (if below 60fps)
 
-<img src="assets/images/guide/devtools/profiler-selected-bar.png" alt="Скриншот вкладки 'Profiler'. Пользователь выбрал один столбец, и в выпадающем меню рядом отображается 'Bar chart', показывая вторую гистограмму под ним. На новой диаграмме два столбца занимают большую часть пространства: один подписан как `TodosComponent`, другой — `NgForOf`. Остальные столбцы достаточно малы, чтобы ими можно было пренебречь.">
+<img src="assets/images/guide/devtools/profiler-selected-bar.png" alt="A screenshot of the 'Profiler' tab. A single bar has been selected by the user and a nearby dropdown menu displays 'Bar chart`, showing a second bar chart underneath it. The new chart has two bars which take up the majority of the space, one labeled `TodosComponent` and the other labeled `NgForOf`. The other bars are small enough to be negligible in comparison.">
 
-## Понимание выполнения компонентов
+## Understand component execution
 
-Гистограмма, отображаемая после клика по циклу обнаружения изменений, показывает детальное представление о том, сколько
-времени приложение потратило на выполнение обнаружения изменений в конкретном компоненте или директиве.
+The bar chart displayed after clicking on a change detection cycle displays a detailed view about how much time your application spent running change detection in that particular component or directive.
 
-Этот пример показывает общее время, затраченное директивой `NgForOf`, и какой метод был в ней вызван.
+This example shows the total time spent by the `NgForOf` directive and which method was called on it.
 
-<img src="assets/images/guide/devtools/directive-details.png" alt="Скриншот вкладки 'Profiler', где выбран столбец `NgForOf`. Справа виден детальный вид `NgForOf`, где указано 'Total time spent: 1.76 ms' (Общее затраченное время: 1.76 мс). Он включает таблицу с ровно одной строкой, перечисляющей `NgForOf` как директиву с методом `ngDoCheck`, который занял 1.76 мс. Также присутствует список с меткой 'Parent Hierarchy' (Иерархия родителей), содержащий родительские компоненты этой директивы.">
+<img src="assets/images/guide/devtools/directive-details.png" alt="A screenshot of the 'Profiler' tab where the `NgForOf` bar is selected. A detailed view of `NgForOf` is visible to the right where it lists 'Total time spent: 1.76 ms'. It includes a with exactly one row, listing `NgForOf` as a directives with an `ngDoCheck` method which took 1.76 ms. It also includes a list labeled 'Parent Hierarchy' containing the parent components of this directive.">
 
-## Иерархические представления
+## Hierarchical views
 
-<img src="assets/images/guide/devtools/flame-graph-view.png" alt="Скриншот вкладки 'Profiler'. Пользователь выбрал один столбец, и выпадающее меню рядом теперь отображает 'Flame graph', показывая пламенный граф под ним. Граф начинается со строки 'Entire application' и другой строки 'AppComponent'. Ниже строки начинают разбиваться на несколько элементов, начиная с `[RouterOutlet]` и `DemoAppComponent` в третьем ряду. На глубине нескольких слоев одна ячейка подсвечена красным.">
+<img src="assets/images/guide/devtools/flame-graph-view.png" alt="A screenshot of the 'Profiler' tab. A single bar has been selected by the user and a nearby dropdown menu now displays 'Flame graph', showing a flame graph underneath it. The flame graph starts with a row called 'Entire application' and another row called 'AppComponent'. Beneath those, the rows start to break up into multiple items, starting with `[RouterOutlet]` and `DemoAppComponent` on the third row. A few layers deep, one cell is highlighted red.">
 
-Вы также можете визуализировать выполнение обнаружения изменений в виде пламенного графа (flame graph).
+You can also visualize the change detection execution in a flame graph-like view.
 
-Каждая плитка на графике представляет элемент на экране в определенной позиции дерева рендеринга.
-Например, рассмотрим цикл обнаружения изменений, где `LoggedOutUserComponent` удаляется, а на его месте Angular рендерит
-`LoggedInUserComponent`. В этом сценарии оба компонента будут отображены в одной плитке.
+Each tile in the graph represents an element on the screen at a specific position in the render tree.
+For example, consider a change detection cycle where a `LoggedOutUserComponent` is removed and in its place Angular rendered a `LoggedInUserComponent`. In this scenario both components will be displayed in the same tile.
 
-Ось X представляет полное время, затраченное на рендеринг этого цикла обнаружения изменений.
-Ось Y представляет иерархию элементов. Выполнение обнаружения изменений для элемента требует рендеринга его директив и
-дочерних компонентов.
-Вместе этот график визуализирует, какие компоненты занимают больше всего времени на рендеринг и на что уходит это время.
+The x-axis represents the full time it took to render this change detection cycle.
+The y-axis represents the element hierarchy. Running change detection for an element requires rendering its directives and child components.
+Together, this graph visualizes which components are taking the longest time to render and where that time is going.
 
-Каждая плитка окрашена в зависимости от того, сколько времени Angular потратил на нее.
-Angular DevTools определяет интенсивность цвета по времени, затраченному относительно плитки, где рендеринг занял больше
-всего времени.
+Each tile is colored depending on how much time Angular spent there.
+Angular DevTools determines the intensity of the color by the time spent relative to the tile where rendering took the most time.
 
-При клике на определенную плитку вы увидите подробности о ней на панели справа.
-Двойной клик по плитке увеличивает масштаб, чтобы вы могли легче рассмотреть вложенные дочерние элементы.
+When you click on a certain tile, you'll see details about it in the panel on the right.
+Double-clicking the tile zooms it in so you can more easily view its nested children.
 
-## Отладка обнаружения изменений и компонентов `OnPush`
+## Debug change detection and `OnPush` components
 
-Обычно график визуализирует время, затрачиваемое на _рендеринг_ приложения для любого заданного кадра обнаружения
-изменений. Однако некоторые компоненты, такие как компоненты `OnPush`, будут перерисовываться только при изменении их
-входных свойств. Может быть полезно визуализировать пламенный граф без этих компонентов для конкретных кадров.
+Normally, the graph visualizes the time it takes to _render_ an application, for any given change detection frame. However some components such as `OnPush` components will only re-render if their input properties change. It can be useful to visualize the flame graph without these components for particular frames.
 
-Чтобы визуализировать только те компоненты в кадре обнаружения изменений, которые прошли через процесс обнаружения
-изменений, установите флажок **Change detection** вверху, над пламенным графом.
+To visualize only the components in a change detection frame that went through the change detection process, select the **Change detection** checkbox at the top, above the flame graph.
 
-Этот вид подсвечивает все компоненты, прошедшие через обнаружение изменений, и отображает серым цветом те, которые не
-прошли, например, компоненты `OnPush`, которые не перерисовывались.
+This view highlights all the components that went through change detection and displays those that did not in gray, such as `OnPush` components that did not re-render.
 
-<img src="assets/images/guide/devtools/debugging-onpush.png" alt="Скриншот вкладки 'Profiler', отображающий визуализацию цикла обнаружения изменений в виде пламенного графа. Флажок с надписью 'Show only change detection' теперь отмечен. Пламенный граф выглядит очень похоже на предыдущий, однако цвет компонентов изменился с оранжевого на синий. Несколько плиток с меткой `[RouterOutlet]` больше не подсвечены никаким цветом.">
+<img src="assets/images/guide/devtools/debugging-onpush.png" alt="A screenshot of the 'Profiler' tab displaying a flame chart visualization of a change detection cycle. A checkbox labeled 'Show only change detection' is now checked. The flame graph looks very similar to before, however the color of components has changed from orange to blue. Several tiles labeled `[RouterOutlet]` are no longer highlighted with any color.">
 
-## Импорт и экспорт записей
+## Import and export recordings
 
-Нажмите кнопку **Save Profile** в правом верхнем углу записанной сессии профилирования, чтобы экспортировать её в виде
-JSON-файла и сохранить на диск.
-Позже импортируйте файл в начальном окне профилировщика, нажав на поле ввода **Choose file**.
+Click the **Save Profile** button at the top-right of a recorded profiling session to export it as a JSON file and save it to the disk.
+Later, import the file in the initial view of the profiler by clicking the **Choose file** input.
 
-<img src="assets/images/guide/devtools/save-profile.png" alt="Скриншот вкладки 'Profiler', отображающий циклы обнаружения изменений. С правой стороны видна кнопка 'Save Profile'.">
+<img src="assets/images/guide/devtools/save-profile.png" alt="A screenshot of the 'Profiler' tab displaying change detection cycles. On the right side a 'Save Profile' button is visible.">

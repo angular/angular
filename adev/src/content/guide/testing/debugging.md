@@ -1,37 +1,20 @@
-# Отладка тестов
+# Debugging tests
 
-Если ваши тесты работают не так, как ожидается, вы можете отладить их как в среде Node.js по умолчанию, так и в реальном
-браузере.
+If your tests aren't working as you expect, you can debug them in both the default Node.js environment and in a real browser.
 
-## Отладка в Node.js
+## Debugging in Node.js
 
-Отладка в среде Node.js по умолчанию часто является самым быстрым способом диагностики проблем, не связанных со
-специфичными для браузера API или рендерингом.
+Debugging in the default Node.js environment is often the quickest way to diagnose issues that are not related to browser-specific APIs or rendering.
 
-1. Запустите команду `ng test` с флагом `--debug`:
-   ```shell
-   ng test --debug
-   ```
-2. Средство запуска тестов перейдет в режим отладки и будет ожидать подключения отладчика.
-3. Теперь вы можете подключить выбранный отладчик. Например, можно использовать встроенный отладчик Node.js в VS Code
-   или Chrome DevTools для Node.js.
+1.  Run the `ng test` command with the `--debug` flag:
+    ```shell
+    ng test --debug
+    ```
+2.  The test runner will start in debug mode and wait for a debugger to attach.
+3.  You can now attach your preferred debugger. For example, you can use the built-in Node.js debugger in VS Code or the Chrome DevTools for Node.js.
 
-## Отладка в браузере
+## Debugging in a browser
 
-Отладка в браузере рекомендуется для тестов, которые зависят от DOM или других специфичных для браузера API. Этот подход
-позволяет использовать собственные инструменты разработчика браузера.
+The same way you start a debugging session with in Node, you can use `ng test` with the `--debug` flag with Vitest and [browser mode](/guide/testing/migrating-to-vitest#5-configure-browser-mode-optional).
 
-1. Убедитесь, что у вас установлен провайдер браузера. См. инструкции по настройке в
-   разделе [Запуск тестов в браузере](guide/testing/overview#running-tests-in-a-browser).
-2. Запустите команду `ng test` с флагами `--browsers` и `--debug`:
-   ```shell
-   ng test --browsers=chromium --debug
-   ```
-3. Эта команда запускает тесты в браузере с графическим интерфейсом и оставляет его открытым после завершения тестов,
-   позволяя вам изучить результат.
-4. Откройте **Инструменты разработчика** (Developer Tools) браузера. В Windows нажмите `Ctrl-Shift-I`. В macOS нажмите
-   `Command-Option-I`.
-5. Перейдите на вкладку **Sources**.
-6. Используйте `Control/Command-P`, чтобы найти и открыть файл теста.
-7. Установите точку останова (breakpoint) в вашем тесте.
-8. Перезагрузите интерфейс запуска тестов в браузере. Теперь выполнение остановится на вашей точке останова.
+The test runner will start in debug mode and wait for you to open the browser devtools to debug the tests.

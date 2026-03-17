@@ -6,52 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, forwardRef, model, input, signal} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, input, model} from '@angular/core';
+import {FormCheckboxControl} from '@angular/forms/signals';
 
 @Component({
   selector: 'docs-slide-toggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './slide-toggle.component.html',
   styleUrls: ['./slide-toggle.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => SlideToggle),
-      multi: true,
-    },
-  ],
 })
-export class SlideToggle implements ControlValueAccessor {
+export class SlideToggle implements FormCheckboxControl {
   readonly buttonId = input.required<string>();
   readonly label = input.required<string>();
   readonly disabled = model(false);
 
-  // Implemented as part of ControlValueAccessor.
-  private onChange: (value: boolean) => void = (_: boolean) => {};
-  private onTouched: () => void = () => {};
-
-  protected readonly checked = signal(false);
-
-  // Implemented as part of ControlValueAccessor.
-  writeValue(value: boolean): void {
-    this.checked.set(value);
-  }
-
-  // Implemented as part of ControlValueAccessor.
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  // Implemented as part of ControlValueAccessor.
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  // Implemented as part of ControlValueAccessor.
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled.set(isDisabled);
-  }
+  readonly checked = model(false);
 
   // Toggles the checked state of the slide-toggle.
   toggle(): void {
@@ -60,7 +29,5 @@ export class SlideToggle implements ControlValueAccessor {
     }
 
     this.checked.update((checked) => !checked);
-    this.onChange(this.checked());
-    this.onTouched();
   }
 }

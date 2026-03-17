@@ -191,7 +191,9 @@ export class UserProfile {
 установленное Angular, не будет перезаписано.
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /*...*/
+})
 export class UserProfile {
   readonly userId = input();
   readonly userSaved = output();
@@ -203,7 +205,9 @@ export class UserProfile {
 output-свойствам и запросам, но не к input-свойствам.
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /*...*/
+})
 export class UserProfile {
   @Output() readonly userSaved = new EventEmitter<void>();
   @ViewChildren(PaymentMethod) readonly paymentMethods?: QueryList<PaymentMethod>;
@@ -215,18 +219,21 @@ export class UserProfile {
 Отдавайте предпочтение привязкам `class` и `style` вместо использования директив [`NgClass`](/api/common/NgClass) и [
 `NgStyle`](/api/common/NgStyle).
 
-```html
-<!-- PREFER -->
+```html {prefer}
 <div [class.admin]="isAdmin" [class.dense]="density === 'high'">
-<div [style.color]="textColor" [style.background-color]="backgroundColor">
-<!-- OR -->
-<div [class]="{admin: isAdmin, dense: density === 'high'}">
-<div [style]="{'color': textColor, 'background-color': backgroundColor}">
+  <div [style.color]="textColor" [style.background-color]="backgroundColor">
+    <!-- OR -->
+    <div [class]="{admin: isAdmin, dense: density === 'high'}">
+      <div [style]="{'color': textColor, 'background-color': backgroundColor}"></div>
+    </div>
+  </div>
+</div>
+```
 
-
-<!-- AVOID -->
+```html {avoid}
 <div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
-<div [ngStyle]="{'color': textColor, 'background-color': backgroundColor}">
+  <div [ngStyle]="{'color': textColor, 'background-color': backgroundColor}"></div>
+</div>
 ```
 
 Привязки `class` и `style` используют более простой синтаксис, который тесно согласуется со стандартными атрибутами
@@ -241,11 +248,11 @@ HTML. Это делает ваши шаблоны более легкими дл
 
 Предпочитайте называть обработчики событий по действию, которое они выполняют, а не по инициирующему событию:
 
-```html
-<!-- PREFER -->
+```html {prefer}
 <button (click)="saveUserData()">Save</button>
+```
 
-<!-- AVOID -->
+```html {avoid}
 <button (click)="handleClick()">Save</button>
 ```
 
@@ -262,8 +269,9 @@ HTML. Это делает ваши шаблоны более легкими дл
 более конкретным поведениям на основе деталей события:
 
 ```ts
-
-@Component({/* ... */})
+@Component({
+  /*...*/
+})
 class RichText {
   handleKeydown(event: KeyboardEvent) {
     if (event.ctrlKey) {
@@ -272,7 +280,7 @@ class RichText {
       } else if (event.key === 'I') {
         this.activateItalic();
       }
-// ...
+      // ...
     }
   }
 }
@@ -285,14 +293,14 @@ class RichText {
 Имена хуков жизненного цикла описывают, _когда_ они запускаются, а это означает, что код внутри не имеет осмысленного
 имени, описывающего, что именно он делает.
 
-```typescript
-// PREFER
+```ts {prefer}
 ngOnInit() {
   this.startLogging();
   this.runBackgroundTask();
 }
+```
 
-// AVOID
+```ts {avoid}
 ngOnInit() {
   this.logger.setMode('info');
   this.logger.monitorErrors();
@@ -308,10 +316,13 @@ Angular предоставляет интерфейс TypeScript для кажд
 ```ts
 import {Component, OnInit} from '@angular/core';
 
-@Component({/* ... */})
+@Component({
+  /*...*/
+})
 export class UserProfile implements OnInit {
-
   // The `OnInit` interface ensures this method is named correctly.
-  ngOnInit() { /* ... */ }
+  ngOnInit() {
+    /* ... */
+  }
 }
 ```

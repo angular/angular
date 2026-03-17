@@ -53,7 +53,7 @@ export function init(appRef: ApplicationRef, insertSsrContent = true) {
   }
 
   function createDom() {
-    const hostElement = document.getElementById('table');
+    const hostElement = document.getElementById('table')!;
     tableComponentRef = createComponent(TableComponent, {environmentInjector, hostElement});
     setInput(data);
   }
@@ -64,7 +64,7 @@ export function init(appRef: ApplicationRef, insertSsrContent = true) {
 
     if (insertSsrContent) {
       // Prepare DOM structure, similar to what SSR would produce.
-      const hostElement = document.getElementById('table');
+      const hostElement = document.getElementById('table')!;
       hostElement.setAttribute('ngh', '0');
       hostElement.textContent = ''; // clear existing DOM contents
       hostElement.appendChild(createTableDom(data));
@@ -90,7 +90,6 @@ function createTableDom(data: TableCell[][]) {
   const table = document.createElement('table');
   const tbody = document.createElement('tbody');
   table.appendChild(tbody);
-  this._renderCells = [];
   for (let r = 0; r < data.length; r++) {
     const dataRow = data[r];
     const tr = document.createElement('tr');

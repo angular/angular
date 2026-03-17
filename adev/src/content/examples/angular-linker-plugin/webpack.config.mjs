@@ -15,12 +15,12 @@ export default {
             plugins: [linkerPlugin],
             compact: false,
             cacheDirectory: true,
-          }
-        }
-      }
-    ]
-  }
+          },
+        },
+      },
+    ],
+  },
   // #enddocregion webpack-config
   // #docregion webpack-config
-}
+};
 // #enddocregion webpack-config

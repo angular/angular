@@ -340,7 +340,9 @@ export class SymbolBuilder {
       return null;
     }
 
-    const directive = directives.find((m) => m.ref.node === directiveDeclaration);
+    const directive = directives.find((m) =>
+      isSameDirectiveDeclaration(m.ref.node, directiveDeclaration),
+    );
     if (directive) {
       return directive;
     }
@@ -361,7 +363,10 @@ export class SymbolBuilder {
         // If we find one, we look for it in the directives array
         const classWithSameName = findMatchingDirective(originalFile, directiveDeclaration);
         if (classWithSameName !== null) {
-          return directives.find((m) => m.ref.node === classWithSameName) ?? null;
+          return (
+            directives.find((m) => isSameDirectiveDeclaration(m.ref.node, classWithSameName)) ??
+            null
+          );
         }
       }
     }
@@ -949,6 +954,30 @@ function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null 
     fieldExpr: expr.expression,
     typeExpr: expr,
   };
+}
+
+/**
+ * Checks whether two directive declarations are the same.
+ *
+ * This function accounts for the fact that TypeScript might return different `ClassDeclaration`
+ * instances for the same file, such as when resolving `ExternalExpr` imports from `tcb_adapter`s
+ * `NoAliasing` emit flag.
+ */
+function isSameDirectiveDeclaration(
+  a: ts.ClassDeclaration | ClassDeclaration,
+  b: ts.ClassDeclaration | ClassDeclaration,
+): boolean {
+  if (a === b) {
+    return true;
+  }
+  const aName = a.name?.text;
+  const bName = b.name?.text;
+  return (
+    aName !== undefined &&
+    bName !== undefined &&
+    aName === bName &&
+    a.getSourceFile().fileName === b.getSourceFile().fileName
+  );
 }
 
 /**

@@ -43,7 +43,6 @@
 Строгость проверки можно настроить как [опцию компилятора Angular](reference/configs/angular-compiler-options):
 
 ```json
-
 {
   "angularCompilerOptions": {
     "extendedDiagnostics": {

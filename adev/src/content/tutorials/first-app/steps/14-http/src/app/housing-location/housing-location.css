@@ -17,7 +17,7 @@
   padding: 10px 20px 20px 20px;
 }
 .listing-location::before {
-  content: url("/assets/location-pin.svg") / "";
+  content: url('/public/location-pin.svg') / '';
 }
 
 section.listing a {
@@ -26,6 +26,6 @@ section.listing a {
   color: var(--primary-color);
 }
 section.listing a::after {
-  content: "\203A";
+  content: '\203A';
   margin-left: 5px;
 }

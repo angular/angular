@@ -20,7 +20,7 @@ zoneless_jasmine_test(
         "docs-code.md",
         "example-with-eslint-comment.ts",
         "example-with-region.ts",
-        "messages.fr.xlf.html",
+        "messages.fr.xlf",
         "new-code.ts",
         "old-code.ts",
         ":docs-code",

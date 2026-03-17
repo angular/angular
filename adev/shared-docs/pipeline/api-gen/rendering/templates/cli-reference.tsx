@@ -26,19 +26,15 @@ export function CliCommandReference(entry: CliCommandRenderable) {
               <code>
                 <div className={'shiki line cli'}>
                   ng {commandName(entry, command)}
-                  {entry.argumentsLabel ? (
+                  {entry.argumentsLabel && (
                     <button member-id={'Arguments'} className="shiki-ln-line-argument">
                       {entry.argumentsLabel}
                     </button>
-                  ) : (
-                    <></>
                   )}
-                  {entry.hasOptions ? (
+                  {entry.optionsLabel && (
                     <button member-id={'Options'} className="shiki-ln-line-option">
-                      [options]
+                      {entry.optionsLabel}
                     </button>
-                  ) : (
-                    <></>
                   )}
                 </div>
               </code>

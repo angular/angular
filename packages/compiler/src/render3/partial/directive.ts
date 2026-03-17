@@ -98,6 +98,19 @@ export function createDirectiveDefinitionMap(
     definitionMap.set('usesOnChanges', o.literal(true));
   }
 
+  if (meta.controlCreate) {
+    definitionMap.set(
+      'controlCreate',
+      o.literalMap([
+        {
+          key: 'passThroughInput',
+          value: o.literal(meta.controlCreate.passThroughInput),
+          quoted: false,
+        },
+      ]),
+    );
+  }
+
   if (meta.hostDirectives?.length) {
     definitionMap.set('hostDirectives', createHostDirectives(meta.hostDirectives));
   }

@@ -15,26 +15,26 @@ Angular использует функцию `output()` для реализаци
 Чтобы создать канал связи от дочернего компонента к родительскому, используйте функцию `output` для инициализации
 свойства класса.
 
-<docs-code header="child.ts" language="ts">
+```ts {header:"child.ts"}
 @Component({...})
 class Child {
   incrementCountEvent = output<number>();
 }
-</docs-code>
+```
 
 Теперь компонент может генерировать события, которые может прослушивать родительский компонент. События вызываются с
 помощью метода `emit`:
 
-<docs-code header="child.ts" language="ts">
+```ts {header:"child.ts"}
 class Child {
   ...
 
-onClick() {
-this.count++;
-this.incrementCountEvent.emit(this.count);
+  onClick() {
+    this.count++;
+    this.incrementCountEvent.emit(this.count);
+  }
 }
-}
-</docs-code>
+```
 
 Функция emit сгенерирует событие того же типа, который был определен в `output`.
 
@@ -49,11 +49,11 @@ this.incrementCountEvent.emit(this.count);
 <docs-step title="Завершите метод `addItem`">
 В `child.ts` обновите метод `addItem`; используйте следующий код в качестве логики:
 
-<docs-code header="child.ts" highlight="[2]" language="ts">
+```ts {header:"child.ts", highlight:[2]}
 addItem() {
   this.addItemEvent.emit('🐢');
 }
-</docs-code>
+```
 
 </docs-step>
 

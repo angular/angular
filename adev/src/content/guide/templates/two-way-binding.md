@@ -1,25 +1,20 @@
-# Двусторонняя привязка
+# Two-way binding
 
-**Двусторонняя привязка** (Two-way binding) — это сокращенная запись для одновременной привязки значения к элементу и
-предоставления этому элементу возможности передавать изменения обратно через эту привязку.
+**Two way binding** is a shorthand to simultaneously bind a value into an element, while also giving that element the ability to propagate changes back through this binding.
 
-## Синтаксис
+## Syntax
 
-Синтаксис двусторонней привязки представляет собой комбинацию квадратных и круглых скобок: `[()]`. Он объединяет
-синтаксис привязки свойств `[]` и синтаксис привязки событий `()`. В сообществе Angular этот синтаксис неформально
-называют "банан в коробке" (banana-in-a-box).
+The syntax for two-way binding is a combination of square brackets and parentheses, `[()]`. It combines the syntax from property binding, `[]`, and the syntax from event binding, `()`. The Angular community informally refers to this syntax as "banana-in-a-box".
 
-## Двусторонняя привязка с элементами управления формы
+## Two-way binding with form controls
 
-Разработчики часто используют двустороннюю привязку для синхронизации данных компонента с элементом управления формы по
-мере взаимодействия пользователя с ним. Например, когда пользователь заполняет текстовое поле ввода, состояние в
-компоненте должно обновляться.
+Developers commonly use two-way binding to keep component data in sync with a form control as a user interacts with the control. For example, when a user fills out a text input, it should update the state in the component.
 
-Следующий пример динамически обновляет атрибут `firstName` на странице:
+The following example dynamically updates the `firstName` attribute on the page:
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   imports: [FormsModule],
@@ -28,41 +23,37 @@ import { FormsModule } from '@angular/forms';
       <h2>Hello {{ firstName }}!</h2>
       <input type="text" [(ngModel)]="firstName" />
     </main>
-  `
+  `,
 })
-export class AppComponent {
+export class App {
   firstName = 'Ada';
 }
 ```
 
-Чтобы использовать двустороннюю привязку с нативными элементами управления формы, необходимо:
+To use two-way binding with native form controls, you need to:
 
-1. Импортировать `FormsModule` из `@angular/forms`
-1. Использовать директиву `ngModel` с синтаксисом двусторонней привязки (например, `[(ngModel)]`)
-1. Присвоить ей состояние, которое вы хотите обновлять (например, `firstName`)
+1. Import the `FormsModule` from `@angular/forms`
+1. Use the `ngModel` directive with the two-way binding syntax (e.g., `[(ngModel)]`)
+1. Assign it the state that you want it to update (e.g., `firstName`)
 
-Как только это будет настроено, Angular гарантирует, что любые обновления в текстовом поле ввода будут корректно
-отражены в состоянии компонента!
+Once that is set up, Angular will ensure that any updates in the text input will reflect correctly inside of the component state!
 
-Узнайте больше об [`NgModel`](guide/directives#displaying-and-updating-properties-with-ngmodel) в официальной
-документации.
+Learn more about [`NgModel`](/api/forms/NgModel) in the official docs.
 
-## Двусторонняя привязка между компонентами
+## Two-way binding between components
 
-Использование двусторонней привязки между родительским и дочерним компонентами требует большей настройки по сравнению с
-элементами формы.
+Leveraging two-way binding between a parent and child component requires more configuration compared to form elements.
 
-Вот пример, где `AppComponent` отвечает за установку начального состояния счетчика, но логика обновления и рендеринга
-пользовательского интерфейса для счетчика в основном находится внутри его дочернего компонента `CounterComponent`.
+Here is an example where the `App` is responsible for setting the initial count state, but the logic for updating and rendering the UI for the counter primarily resides inside its child `Counter`.
 
 ```angular-ts
-// ./app.component.ts
-import { Component } from '@angular/core';
-import { CounterComponent } from './counter/counter.component';
+// ./app.ts
+import {Component} from '@angular/core';
+import {Counter} from './counter';
 
 @Component({
   selector: 'app-root',
-  imports: [CounterComponent],
+  imports: [Counter],
   template: `
     <main>
       <h1>Counter: {{ initialCount }}</h1>
@@ -70,14 +61,14 @@ import { CounterComponent } from './counter/counter.component';
     </main>
   `,
 })
-export class AppComponent {
+export class App {
   initialCount = 18;
 }
 ```
 
 ```angular-ts
-// './counter/counter.component.ts';
-import { Component, model } from '@angular/core';
+// './counter.ts';
+import {Component, model} from '@angular/core';
 
 @Component({
   selector: 'app-counter',
@@ -87,59 +78,61 @@ import { Component, model } from '@angular/core';
     <button (click)="updateCount(+1)">+</button>
   `,
 })
-export class CounterComponent {
+export class Counter {
   count = model<number>(0);
 
   updateCount(amount: number): void {
-    this.count.update(currentCount => currentCount + amount);
+    this.count.update((currentCount) => currentCount + amount);
   }
 }
 ```
 
-### Включение двусторонней привязки между компонентами
+### Enabling two-way binding between components
 
-Если разобрать приведенный выше пример до сути, каждая двусторонняя привязка для компонентов требует следующего:
+If we break down the example above to its core, each two-way binding for components requires the following:
 
-Дочерний компонент должен содержать свойство `model`.
+The child component must contain a `model` property.
 
-Вот упрощенный пример:
+Here is a simplified example:
 
 ```angular-ts
-// './counter/counter.component.ts';
-import { Component, model } from '@angular/core';
+// './counter.ts';
+import {Component, model} from '@angular/core';
 
-@Component({ /* Omitted for brevity */ })
-export class CounterComponent {
+@Component({
+  /* Omitted for brevity */
+})
+export class Counter {
   count = model<number>(0);
 
   updateCount(amount: number): void {
-    this.count.update(currentCount => currentCount + amount);
+    this.count.update((currentCount) => currentCount + amount);
   }
 }
 ```
 
-Родительский компонент должен:
+The parent component must:
 
-1. Обернуть имя свойства `model` в синтаксис двусторонней привязки.
-1. Присвоить свойство или сигнал свойству `model`.
+1. Wrap the `model` property name in the two-way binding syntax.
+1. Assign a property or a signal to the `model` property.
 
-Вот упрощенный пример:
+Here is a simplified example:
 
 ```angular-ts
-// ./app.component.ts
-import { Component } from '@angular/core';
-import { CounterComponent } from './counter/counter.component';
+// ./app.ts
+import {Component} from '@angular/core';
+import {Counter} from './counter';
 
 @Component({
   selector: 'app-root',
-  imports: [CounterComponent],
+  imports: [Counter],
   template: `
     <main>
       <app-counter [(count)]="initialCount"></app-counter>
     </main>
   `,
 })
-export class AppComponent {
+export class App {
   initialCount = 18;
 }
 ```

@@ -79,9 +79,10 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
   signalFn.update = update;
   signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
 
-  if (ngDevMode) {
-    signalFn.toString = () => `[Signal: ${signalFn()}]`;
-    node.debugName = options?.debugName;
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    const debugName = options?.debugName;
+    node.debugName = debugName;
+    signalFn.toString = () => `[Signal${debugName ? ' (' + debugName + ')' : ''}: ${signalFn()}]`;
   }
 
   return signalFn as WritableSignal<T>;

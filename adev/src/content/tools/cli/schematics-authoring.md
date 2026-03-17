@@ -64,15 +64,14 @@ export function helloWorld(\_options: any): Rule {
 проектами Angular CLI и многим другим.
 
 ```ts {header: "index.ts"}
-
 import {
-JsonAstObject,
-JsonObject,
-JsonValue,
-Path,
-normalize,
-parseJsonAst,
-strings,
+  JsonAstObject,
+  JsonObject,
+  JsonValue,
+  Path,
+  normalize,
+  parseJsonAst,
+  strings,
 } from '@angular-devkit/core';
 ```
 
@@ -169,19 +168,12 @@ world".
 создает меню из возможных значений.
 
 ```json {header: "schema.json"}
-
 {
   "style": {
     "description": "The file extension or preprocessor to use for style files.",
     "type": "string",
     "default": "css",
-    "enum": [
-      "css",
-      "scss",
-      "sass",
-      "less",
-      "styl"
-    ],
+    "enum": ["css", "scss", "sass", "less", "styl"],
     "x-prompt": "Which stylesheet format would you like to use?"
   }
 }
@@ -213,26 +205,23 @@ JSON-схеме.
 Используя полную форму, Schematic может обеспечить более явное форматирование вариантов меню.
 
 ```json {header: "schema.json"}
-
 {
   "style": {
     "description": "The file extension or preprocessor to use for style files.",
     "type": "string",
     "default": "css",
-    "enum": [
-      "css",
-      "scss",
-      "sass",
-      "less"
-    ],
+    "enum": ["css", "scss", "sass", "less"],
     "x-prompt": {
       "message": "Which stylesheet format would you like to use?",
       "type": "list",
       "items": [
-        { "value": "css", "label": "CSS" },
-        { "value": "scss", "label": "SCSS [ https://sass-lang.com/documentation/syntax#scss ]" },
-        { "value": "sass", "label": "Sass [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
-        { "value": "less", "label": "Less [ https://lesscss.org/ ]" }
+        {"value": "css", "label": "CSS"},
+        {"value": "scss", "label": "SCSS [ https://sass-lang.com/documentation/syntax#scss ]"},
+        {
+          "value": "sass",
+          "label": "Sass [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]"
+        },
+        {"value": "less", "label": "Less [ https://lesscss.org/ ]"}
       ]
     }
   }
@@ -247,7 +236,6 @@ JSON-схема, определяющая опции Schematic-а, поддер�
 Следующая JSON-схема является полным описанием синтаксиса полной формы для поля `x-prompt`.
 
 ```json {header: "x-prompt schema"}
-
 {
   "oneOf": [
     {
@@ -277,17 +265,13 @@ JSON-схема, определяющая опции Schematic-а, поддер�
                   },
                   "value": {}
                 },
-                "required": [
-                  "value"
-                ]
+                "required": ["value"]
               }
             ]
           }
         }
       },
-      "required": [
-        "message"
-      ]
+      "required": ["message"]
     }
   ]
 }
@@ -394,10 +378,8 @@ schematics blank --name=goodbye-world
 Каждый Schematic создается с именем, описанием и фабричной функцией.
 
 ```json
-
 {
-  "$schema":
-     "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
     "hello-world": {
       "description": "A blank schematic.",
@@ -405,7 +387,6 @@ schematics blank --name=goodbye-world
     }
   }
 }
-
 ```
 
 - Свойство `$schema` указывает схему, которую CLI использует для валидации.

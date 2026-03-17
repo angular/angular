@@ -247,7 +247,7 @@ function hash32(view: DataView, length: number, c: number): number {
     b += view.getUint32(index + 4, true);
     c += view.getUint32(index + 8, true);
     const res = mix(a, b, c);
-    (a = res[0]), (b = res[1]), (c = res[2]);
+    ((a = res[0]), (b = res[1]), (c = res[2]));
   }
 
   const remainder = length - index;

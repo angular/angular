@@ -7,11 +7,7 @@ interface Config {
 }
 
 @Component({
-  template: `
-    <span [id]="config.bla">
-      Test
-    </span>
-  `,
+  template: ` <span [id]="config.bla"> Test </span> `,
 })
 export class NestedTemplatePropAccess {
   @Input() config: Config = {};

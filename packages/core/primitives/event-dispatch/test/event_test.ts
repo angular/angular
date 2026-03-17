@@ -459,6 +459,8 @@ describe('event test.ts', () => {
       target: child,
     } as unknown as Event;
 
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
     expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child)).toBe(false);
     expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child)).toBe(false);
   });
@@ -575,20 +577,6 @@ describe('event test.ts', () => {
     expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, root)).toBe(false);
     expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
     expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, subchild)).toBe(true);
-  });
-
-  it('is mouse special event not mouse', () => {
-    const root = document.createElement('div');
-    const child = document.createElement('div');
-    root.appendChild(child);
-    const event = {
-      relatedTarget: root,
-      type: EventType.CLICK,
-      target: child,
-    } as unknown as Event;
-
-    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
-    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
   });
 
   it('create mouse special event pointerenter', () => {

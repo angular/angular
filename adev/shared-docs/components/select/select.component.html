@@ -1,10 +1,61 @@
-<select
-  [attr.id]="id()"
-  [attr.name]="name()"
-  [ngModel]="selectedOption()"
-  (ngModelChange)="setOption($event)"
->
-  @for (item of options(); track item) {
-    <option [value]="item.value">{{ item.label }}</option>
-  }
-</select>
+<div ngCombobox #outerCombobox="ngCombobox" [readonly]="true" [disabled]="disabled()">
+  <div class="docs-select-input-container">
+    <input
+      ngComboboxInput
+      [attr.id]="id()"
+      [attr.name]="name()"
+      [value]="displayValue()"
+      placeholder="Select an option..."
+      readonly
+    />
+    <span class="material-symbols-outlined docs-select-arrow" translate="no" aria-hidden="true"
+      >arrow_drop_down</span
+    >
+  </div>
+
+  <ng-template ngComboboxPopupContainer>
+    <dialog ngComboboxDialog class="docs-select-dialog">
+      <div ngCombobox #innerCombobox="ngCombobox" filterMode="manual" [alwaysExpanded]="true">
+        <div class="docs-select-search-container">
+          <span
+            class="material-symbols-outlined docs-select-search-icon"
+            translate="no"
+            aria-hidden="true"
+            >search</span
+          >
+          <input
+            ngComboboxInput
+            class="docs-select-search-input"
+            placeholder="Search..."
+            [(value)]="searchString"
+          />
+        </div>
+
+        <ng-template ngComboboxPopupContainer>
+          @if (filteredOptions().length === 0) {
+            <div class="docs-select-no-results">No results found</div>
+          }
+
+          <div ngListbox [(values)]="selectedValues" class="docs-select-listbox">
+            @for (option of filteredOptions(); track option.value) {
+              <div
+                ngOption
+                [value]="option.value"
+                [label]="option.label"
+                class="docs-select-option"
+              >
+                <span class="docs-select-option-label">{{ option.label }}</span>
+                <span
+                  class="material-symbols-outlined docs-select-check-icon"
+                  translate="no"
+                  aria-hidden="true"
+                  >check</span
+                >
+              </div>
+            }
+          </div>
+        </ng-template>
+      </div>
+    </dialog>
+  </ng-template>
+</div>

@@ -14,15 +14,9 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 
       <div class="status-controls">
         <!-- TODO: Add (click) and [disabled] bindings -->
-        <button>
-          Go Online
-        </button>
-        <button>
-          Go Offline
-        </button>
-        <button class="toggle-btn">
-          Toggle Status
-        </button>
+        <button>Go Online</button>
+        <button>Go Offline</button>
+        <button class="toggle-btn">Toggle Status</button>
       </div>
     </div>
   `,

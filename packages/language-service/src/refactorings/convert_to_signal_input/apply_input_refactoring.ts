@@ -9,7 +9,7 @@
 import {CompilerOptions} from '@angular/compiler-cli';
 import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import ts from 'typescript';
+import type ts from 'typescript';
 import {
   getMessageForClassIncompatibility,
   getMessageForFieldIncompatibility,

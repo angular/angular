@@ -101,7 +101,7 @@ export class NavigationState {
 
   private expand(item: NavigationItem): void {
     // Add item to the expanded items list
-    this._expandedItems.update((expandedItems) => {
+    this._expandedItems.update(() => {
       return [...(this.actualExpandedItems() ?? []), {...item, isExpanded: true}];
     });
 

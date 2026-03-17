@@ -318,6 +318,8 @@ export function extractDirectiveMetadata(
       !member.isStatic && member.kind === ClassMemberKind.Method && member.name === 'ngOnChanges',
   );
 
+  const controlCreate = extractControlDirectiveDefinition(members);
+
   // Parse exportAs.
   let exportAs: string[] | null = null;
   if (directive.has('exportAs')) {
@@ -392,7 +394,7 @@ export function extractDirectiveMetadata(
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
   const sourceFile = clazz.getSourceFile();
-  const type = wrapTypeReference(reflector, clazz);
+  const type = wrapTypeReference(clazz);
 
   const rawHostDirectives = directive.get('hostDirectives') || null;
   const hostDirectives =
@@ -442,6 +444,7 @@ export function extractDirectiveMetadata(
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: createSourceSpan(clazz.name),
     usesInheritance,
+    controlCreate,
     exportAs,
     providers,
     isStandalone,
@@ -1343,6 +1346,7 @@ function parseInputFields(
   emitDeclarationOnly: boolean,
 ): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
+  const bindings = new Map<string, ClassMember>();
 
   for (const member of members) {
     const classPropertyName = member.name;
@@ -1360,6 +1364,18 @@ function parseInputFields(
     if (inputMapping === null) {
       continue;
     }
+
+    const bindingPropertyName = inputMapping.bindingPropertyName;
+    if (bindings.has(bindingPropertyName)) {
+      const firstMember = bindings.get(bindingPropertyName)!;
+      throw new FatalDiagnosticError(
+        ErrorCode.DUPLICATE_BINDING_NAME,
+        member.node ?? clazz,
+        `Input '${bindingPropertyName}' is bound to both '${firstMember.name}' and '${member.name}'.`,
+        [makeRelatedInformation(firstMember.node ?? clazz, `The first binding is declared here.`)],
+      );
+    }
+    bindings.set(bindingPropertyName, member);
 
     if (member.isStatic) {
       throw new FatalDiagnosticError(
@@ -1577,6 +1593,64 @@ function assertEmittableInputType(
 }
 
 /**
+ * Extracts the `controlCreate` definition for the private control directive contract from the
+ * directive class.
+ *
+ * This looks for a lifecycle method called `ɵngControlCreate`. If present, a control directive
+ * definition will be extracted, and `ɵɵControlFeature` will be applied to the directive.
+ *
+ * A control directive may declare a pass-through input name, by including a generic type on the
+ * type of the `ControlDirectiveHost` parameter of `ɵngControlCreate`:
+ *
+ * ```ts
+ * class MyControlDirective {
+ *   ɵngControlCreate<T>(host: ControlDirectiveHost<'formField'>): void {}
+ * }
+ * ```
+ *
+ * If present, this will be extracted as the `passThroughInput` property of the control directive
+ * definition.
+ */
+function extractControlDirectiveDefinition(
+  members: ClassMember[],
+): R3DirectiveMetadata['controlCreate'] {
+  const controlCreateMember = members.find(
+    (member) =>
+      !member.isStatic &&
+      member.kind === ClassMemberKind.Method &&
+      member.name === 'ɵngControlCreate',
+  );
+
+  if (
+    controlCreateMember === undefined ||
+    controlCreateMember.node === null ||
+    !ts.isMethodDeclaration(controlCreateMember.node)
+  ) {
+    return null;
+  }
+
+  const {node} = controlCreateMember;
+  if (
+    node.parameters.length === 0 ||
+    node.parameters[0].type === undefined ||
+    !ts.isTypeReferenceNode(node.parameters[0].type)
+  ) {
+    return {passThroughInput: null};
+  }
+
+  const type = node.parameters[0].type;
+  if (
+    type.typeArguments?.length !== 1 ||
+    !ts.isLiteralTypeNode(type.typeArguments[0]) ||
+    !ts.isStringLiteral(type.typeArguments[0].literal)
+  ) {
+    return {passThroughInput: null};
+  }
+
+  return {passThroughInput: type.typeArguments[0].literal.text};
+}
+
+/**
  * Iterates through all specified class members and attempts to detect
  * view and content queries defined.
  *
@@ -1681,6 +1755,7 @@ function parseOutputFields(
   outputsFromMeta: Record<string, string>,
 ): Record<string, string> {
   const outputs = {} as Record<string, string>;
+  const bindings = new Map<string, ClassMember>();
 
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
@@ -1724,6 +1799,17 @@ function parseOutputFields(
     } else {
       continue;
     }
+
+    if (bindings.has(bindingPropertyName)) {
+      const firstMember = bindings.get(bindingPropertyName)!;
+      throw new FatalDiagnosticError(
+        ErrorCode.DUPLICATE_BINDING_NAME,
+        member.node ?? clazz,
+        `Output '${bindingPropertyName}' is bound to both '${firstMember.name}' and '${member.name}'.`,
+        [makeRelatedInformation(firstMember.node ?? clazz, `The first binding is declared here.`)],
+      );
+    }
+    bindings.set(bindingPropertyName, member);
 
     // Validate that initializer-based outputs are not accidentally declared
     // in the `outputs` class metadata.

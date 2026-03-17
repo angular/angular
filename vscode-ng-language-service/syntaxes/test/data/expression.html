@@ -37,6 +37,7 @@
 {{ call()?.conditional; }}
 {{ call()!.conditional }}
 {{ call()!.conditional; }}
+{{ call?.()}}
 
 <!-- Property read and method call: received -->
 {{ object.call() }}
@@ -47,6 +48,7 @@
 {{ object?.call()?.conditional; }}
 {{ object!.call()!.conditional }}
 {{ object!.call()!.conditional; }}
+{{ object.call?.()}}
 
 <!-- Method call with parameters -->
 {{ call(withParams) }}
@@ -98,3 +100,22 @@ as i }}
 {{ (let param of params?.get('value')!.property | async).anotherProperty | translate: ['language1', 'language2']; let i
 = index; }}
 
+<!-- Spread -->
+{{ [1, ...foo, 2, ...bar, 3] }}
+{{ {{a: 1, ...foo, b: 2, ...bar, c: 3}} }}
+
+<!-- Rest -->
+{{ someFn(1, ...foo, 2, ...bar, 3, ...baz) }}
+
+<!-- Arrow functions -->
+{{ foo => foo + 1 }}
+{{ (foo, bar, baz) => foo + bar + baz }}
+{{ (foo, bar) => [foo, bar, 1, 2] }}
+{{ (foo, bar) => ({foo: 1, bar: 2}) }}
+{{ a => (b, c) => (d, e) => f => a + b + c + d + e + f }}
+{{ ((a, b) => a * b)(2, 3) }}
+{{ [a => a + 1, (b, c) => b + c] }}
+{{ (a, b) =>
+    a / b + 123
+}}
+{{ someSignal.update(prev => prev + 1) }}

@@ -13,7 +13,8 @@ import {Component, input, signal, ChangeDetectionStrategy} from '@angular/core';
             Hide
           } @else {
             Show
-          } Details
+          }
+          Details
         </button>
       </div>
       @if (showDetails()) {

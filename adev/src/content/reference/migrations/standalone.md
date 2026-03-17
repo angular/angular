@@ -89,20 +89,20 @@ ng generate @angular/core:standalone
 // shared.module.ts
 @NgModule({
   imports: [CommonModule],
-  declarations: [GreeterComponent],
-  exports: [GreeterComponent]
+  declarations: [Greeter],
+  exports: [Greeter],
 })
 export class SharedModule {}
 ```
 
 ```angular-ts
-// greeter.component.ts
+// greeter.ts
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
   standalone: false,
 })
-export class GreeterComponent {
+export class Greeter {
   showGreeting = true;
 }
 ```
@@ -112,20 +112,20 @@ export class GreeterComponent {
 ```typescript
 // shared.module.ts
 @NgModule({
-  imports: [CommonModule, GreeterComponent],
-  exports: [GreeterComponent]
+  imports: [CommonModule, Greeter],
+  exports: [Greeter],
 })
 export class SharedModule {}
 ```
 
 ```angular-ts
-// greeter.component.ts
+// greeter.ts
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
-  imports: [NgIf]
+  imports: [NgIf],
 })
-export class GreeterComponent {
+export class Greeter {
   showGreeting = true;
 }
 ```
@@ -154,7 +154,7 @@ export class GreeterComponent {
 // importer.module.ts
 @NgModule({
   imports: [FooComponent, BarPipe],
-  exports: [FooComponent, BarPipe]
+  exports: [FooComponent, BarPipe],
 })
 export class ImporterModule {}
 ```
@@ -176,32 +176,34 @@ export class ImporterModule {}
 
 ```typescript
 // ./app/app.module.ts
-import { NgModule } from '@angular/core';
-import { AppComponent } from './app.component';
+import {NgModule} from '@angular/core';
+import {App} from './app';
 
 @NgModule({
-  declarations: [AppComponent],
-  bootstrap: [AppComponent]
+  declarations: [App],
+  bootstrap: [App],
 })
 export class AppModule {}
 ```
 
 ```typescript
-// ./app/app.component.ts
+// ./app/app.ts
 @Component({
   selector: 'app',
   template: 'hello',
   standalone: false,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 ```typescript
 // ./main.ts
-import { platformBrowser } from '@angular/platform-browser';
-import { AppModule } from './app/app.module';
+import {platformBrowser} from '@angular/platform-browser';
+import {AppModule} from './app/app.module';
 
-platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+platformBrowser()
+  .bootstrapModule(AppModule)
+  .catch((e) => console.error(e));
 ```
 
 **После:**
@@ -212,20 +214,20 @@ platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
 ```
 
 ```typescript
-// ./app/app.component.ts
+// ./app/app.ts
 @Component({
   selector: 'app',
-  template: 'hello'
+  template: 'hello',
 })
-export class AppComponent {}
+export class App {}
 ```
 
 ```typescript
 // ./main.ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {App} from './app';
 
-bootstrapApplication(AppComponent).catch(e => console.error(e));
+bootstrapApplication(App).catch((e) => console.error(e));
 ```
 
 ## Распространенные проблемы

@@ -20,7 +20,7 @@
 // Add resource to existing imports
 import {Component, signal, computed, resource, ChangeDetectionStrategy} from '@angular/core';
 // Import mock API function
-import {loadUser} from './user-api';
+import {getUserData} from './user-api';
 ```
 
 </docs-step>
@@ -32,8 +32,8 @@ import {loadUser} from './user-api';
 userId = signal(1);
 
 userResource = resource({
-  params: () => ({ id: this.userId() }),
-  loader: (params) => loadUser(params.params.id)
+  params: () => ({id: this.userId()}),
+  loader: (params) => getUserData(params.params.id),
 });
 ```
 

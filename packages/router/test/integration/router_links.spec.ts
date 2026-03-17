@@ -26,8 +26,9 @@ import {
   DivLinkWithState,
   createRoot,
   advance,
+  DivLinkWithBrowserUrl,
+  LinkWithBrowserUrl,
 } from './integration_helpers';
-import {timeout} from '../helpers';
 
 export function routerLinkIntegrationSpec() {
   describe('router links', () => {
@@ -117,11 +118,10 @@ export function routerLinkIntegrationSpec() {
       @Component({
         selector: 'someCmp',
         template: `<router-outlet></router-outlet>
-                <a [routerLink]="null">Link</a>
-                <button [routerLink]="null">Button</button>
-                <a [routerLink]="undefined">Link</a>
-                <button [routerLink]="undefined">Button</button>
-                `,
+          <a [routerLink]="null">Link</a>
+          <button [routerLink]="null">Button</button>
+          <a [routerLink]="undefined">Link</a>
+          <button [routerLink]="undefined">Button</button> `,
         standalone: false,
       })
       class CmpWithLink {}
@@ -142,7 +142,8 @@ export function routerLinkIntegrationSpec() {
     it('should not throw when some command is null', async () => {
       @Component({
         selector: 'someCmp',
-        template: `<router-outlet></router-outlet><a [routerLink]="[null]">Link</a><button [routerLink]="[null]">Button</button>`,
+        template: `<router-outlet></router-outlet><a [routerLink]="[null]">Link</a
+          ><button [routerLink]="[null]">Button</button>`,
         standalone: false,
       })
       class CmpWithLink {}
@@ -156,7 +157,8 @@ export function routerLinkIntegrationSpec() {
     it('should not throw when some command is undefined', async () => {
       @Component({
         selector: 'someCmp',
-        template: `<router-outlet></router-outlet><a [routerLink]="[undefined]">Link</a><button [routerLink]="[undefined]">Button</button>`,
+        template: `<router-outlet></router-outlet><a [routerLink]="[undefined]">Link</a
+          ><button [routerLink]="[undefined]">Button</button>`,
         standalone: false,
       })
       class CmpWithLink {}
@@ -170,7 +172,8 @@ export function routerLinkIntegrationSpec() {
     it('should update hrefs when query params or fragment change', async () => {
       @Component({
         selector: 'someRoot',
-        template: `<router-outlet></router-outlet><a routerLink="/home" queryParamsHandling="preserve" preserveFragment>Link</a>`,
+        template: `<router-outlet></router-outlet
+          ><a routerLink="/home" queryParamsHandling="preserve" preserveFragment>Link</a>`,
         standalone: false,
       })
       class RootCmpWithLink {}
@@ -198,7 +201,8 @@ export function routerLinkIntegrationSpec() {
     it('should correctly use the preserve strategy', async () => {
       @Component({
         selector: 'someRoot',
-        template: `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`,
+        template: `<router-outlet></router-outlet
+          ><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`,
         standalone: false,
       })
       class RootCmpWithLink {}
@@ -218,7 +222,13 @@ export function routerLinkIntegrationSpec() {
     it('should correctly use the merge strategy', async () => {
       @Component({
         selector: 'someRoot',
-        template: `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{removeMe: null, q: 456}" queryParamsHandling="merge">Link</a>`,
+        template: `<router-outlet></router-outlet
+          ><a
+            routerLink="/home"
+            [queryParams]="{removeMe: null, q: 456}"
+            queryParamsHandling="merge"
+            >Link</a
+          >`,
         standalone: false,
       })
       class RootCmpWithLink {}
@@ -412,6 +422,47 @@ export function routerLinkIntegrationSpec() {
 
         // Check the history entry
         expect(location.getState()).toEqual({foo: 'bar', navigationId: 3});
+      });
+    });
+    describe('should support browserUrl', () => {
+      let component: typeof LinkWithBrowserUrl | typeof DivLinkWithBrowserUrl;
+      it('for anchor elements', () => {
+        // Test logic in afterEach to reduce duplication
+        component = LinkWithBrowserUrl;
+      });
+
+      it('for non-anchor elements', () => {
+        // Test logic in afterEach to reduce duplication
+        component = DivLinkWithBrowserUrl;
+      });
+
+      afterEach(async () => {
+        const router: Router = TestBed.inject(Router);
+        const location: Location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {
+            path: 'team/:id',
+            component: TeamCmp,
+            children: [
+              {path: 'link', component},
+              {path: 'simple', component: SimpleCmp},
+            ],
+          },
+        ]);
+
+        router.navigateByUrl('/team/22/link');
+        await advance(fixture);
+
+        const native = fixture.nativeElement.querySelector('#link');
+        native.click();
+        await advance(fixture);
+
+        expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+
+        // Check the browser URL is the custom browserUrl value
+        expect(location.path()).toEqual('/custom');
       });
     });
 

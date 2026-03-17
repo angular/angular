@@ -37,7 +37,8 @@ available = input<boolean>(true);
 <div class="product-card">
   <h3>{{ name() }}</h3>
   <p class="price">\${{ price() }}</p>
-  <p class="status">Status:
+  <p class="status">
+    Status:
     @if (available()) {
       Available
     } @else {
@@ -55,18 +56,10 @@ Input-сигналы работают в шаблонах так же, как и
 
 ```html
 <!-- Change from static values: -->
-<product-card
-  name="Static Product"
-  price="99"
-  available="true"
-/>
+<product-card name="Static Product" price="99" available="true" />
 
 <!-- To dynamic signals: -->
-<product-card
-  [name]="productName()"
-  [price]="productPrice()"
-  [available]="productAvailable()"
-/>
+<product-card [name]="productName()" [price]="productPrice()" [available]="productAvailable()" />
 ```
 
 Квадратные скобки `[]` создают привязку свойств, которая передает текущие значения сигналов дочернему компоненту.

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '../../../utilities/index';
+import {verifyNoBrowserErrors} from '../../../utilities/index.js';
 import {browser} from 'protractor';
 
 describe('http', function () {

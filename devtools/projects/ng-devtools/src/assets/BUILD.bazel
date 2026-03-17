@@ -1,0 +1,11 @@
+package(default_visibility = ["//devtools:__subpackages__"])
+
+filegroup(
+    name = "assets",
+    srcs = glob(
+        include = [
+            "*.svg",
+        ],
+        allow_empty = True,
+    ),
+)

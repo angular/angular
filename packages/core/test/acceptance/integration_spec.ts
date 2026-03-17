@@ -9,6 +9,8 @@ import {animate, AnimationEvent, state, style, transition, trigger} from '@angul
 import {AnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   Component,
   ContentChild,
@@ -24,6 +26,7 @@ import {
   Pipe,
   provideZoneChangeDetection,
   QueryList,
+  signal,
   TemplateRef,
   ViewChild,
   ViewChildren,
@@ -37,8 +40,6 @@ import {isLView} from '../../src/render3/interfaces/type_checks';
 import {ID, LView, PARENT, TVIEW} from '../../src/render3/interfaces/view';
 import {getLView} from '../../src/render3/state';
 import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('acceptance integration tests', () => {
   beforeEach(() => {
@@ -1342,10 +1343,8 @@ describe('acceptance integration tests', () => {
 
         @Component({
           template: `
-                <div DirWithInitialStyling
-                  class="big"
-                  style="color:black; font-size:200px"></div>
-             `,
+            <div DirWithInitialStyling class="big" style="color:black; font-size:200px"></div>
+          `,
           standalone: false,
         })
         class App {}
@@ -1382,9 +1381,7 @@ describe('acceptance integration tests', () => {
         }
 
         @Component({
-          template: `
-              <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div>
-            `,
+          template: ` <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div> `,
           standalone: false,
         })
         class App {
@@ -2243,8 +2240,7 @@ describe('acceptance integration tests', () => {
     @Component({
       template: `
         <span [title]="'Your last name is ' + (lastName ?? lastNameFallback ?? 'unknown')">
-          Hello, {{ firstName ?? 'Frodo' }}!
-          You are a Balrog: {{ falsyValue ?? true }}
+          Hello, {{ firstName ?? 'Frodo' }}! You are a Balrog: {{ falsyValue ?? true }}
         </span>
       `,
       standalone: false,
@@ -2266,16 +2262,15 @@ describe('acceptance integration tests', () => {
     expect(content).toContain(`<span title="Your last name is Baggins">`);
   });
 
-  it('should handle safe keyed reads inside templates', () => {
+  it('should handle safe keyed reads inside templates (indexed access)', () => {
     @Component({
       template: `
-      <span [title]="'Your last name is ' + (unknownNames?.[0] || 'unknown')">
-        Hello, {{ knownNames?.[0]?.[1] }}!
-        You are a Balrog: {{ species?.[0]?.[1]?.[2]?.[3]?.[4]?.[5] || 'unknown' }}
-        You are an Elf: {{ speciesMap?.[keys?.[0] ?? 'key'] }}
-        You are an Orc: {{ speciesMap?.['key'] }}
-      </span>
-    `,
+        <span [title]="'Your last name is ' + (unknownNames?.[0] || 'unknown')">
+          Hello, {{ knownNames?.[0]?.[1] }}! You are a Balrog:
+          {{ species?.[0]?.[1]?.[2]?.[3]?.[4]?.[5] || 'unknown' }} You are an Elf:
+          {{ speciesMap?.[keys?.[0] ?? 'key'] }} You are an Orc: {{ speciesMap?.['key'] }}
+        </span>
+      `,
       standalone: false,
     })
     class App {
@@ -2301,8 +2296,8 @@ describe('acceptance integration tests', () => {
     @Component({
       template: `
         <span [title]="'Your last name is ' + (person.getLastName?.() ?? 'unknown')">
-          Hello, {{ person.getName?.() }}!
-          You are a Balrog: {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
+          Hello, {{ person.getName?.() }}! You are a Balrog:
+          {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
         </span>
       `,
       standalone: false,
@@ -2458,9 +2453,7 @@ describe('acceptance integration tests', () => {
 
   it('should handle calls to a safe access in templates', () => {
     @Component({
-      template: `
-      <span>Hello, {{ (person?.getName() || 'unknown') }}!</span>
-    `,
+      template: ` <span>Hello, {{ person?.getName() || 'unknown' }}!</span> `,
       standalone: false,
     })
     class App {
@@ -2491,8 +2484,14 @@ describe('acceptance integration tests', () => {
 
     @Component({
       template: `
-      <span>Hello, {{ (person?.getName(getConfig('showTitle')?.enabled ?? getDefaultShowTitle()) ?? getFallbackName()) }}!</span>
-    `,
+        <span
+          >Hello,
+          {{
+            person?.getName(getConfig('showTitle')?.enabled ?? getDefaultShowTitle()) ??
+              getFallbackName()
+          }}!</span
+        >
+      `,
       standalone: false,
     })
     class App {
@@ -2662,6 +2661,8 @@ describe('acceptance integration tests', () => {
   });
 
   it('should not throw for a non-null assertion after a safe access', () => {
+    // prettier will add parentheses which will change the meaning of the test
+    // prettier-ignore
     @Component({
       template: `
         {{ val?.foo!.bar }}
@@ -2739,6 +2740,61 @@ describe('acceptance integration tests', () => {
     fixture.nativeElement.click();
     expect(fixture.componentInstance.e).not.toBeNull();
     expect(fixture.componentInstance.e!.defaultPrevented).toBe(false);
+  });
+
+  it('should support object spread assigments in templates', () => {
+    @Component({
+      template: '@let obj = {a: {...foo}}; Hello, {{obj.a.b}}',
+    })
+    class TestComponent {
+      foo = {b: 'Frodo'};
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Frodo');
+
+    fixture.componentInstance.foo = {b: 'Bilbo'};
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Bilbo');
+  });
+
+  it('should support arrays with spread elements in templates', () => {
+    @Component({
+      template: "@let arr = [...[...[...foo]], 'Baggins']; Hello, {{arr[0]}} {{arr[1]}}",
+    })
+    class TestComponent {
+      foo = ['Frodo'];
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Frodo Baggins');
+
+    fixture.componentInstance.foo = ['Bilbo'];
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Bilbo Baggins');
+  });
+
+  it('should support calls with rest arguments in templates', () => {
+    @Component({
+      template: "{{fn('Hello', ...foo)}}",
+    })
+    class TestComponent {
+      foo = ['Frodo', 'Baggins'];
+
+      fn(prefix: string, ...args: string[]) {
+        return `${prefix}, ${args.join(' ')}`;
+      }
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Frodo Baggins');
+
+    fixture.componentInstance.foo = ['J.', 'R.', 'R.', 'Tolkien'];
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, J. R. R. Tolkien');
   });
 
   it('should have correct operator precedence', () => {
@@ -2982,7 +3038,7 @@ describe('acceptance integration tests', () => {
   it('should support tagged template literals with no interpolations in expressions', () => {
     @Component({
       template: `
-        <p>:{{ caps\`Hello, World!\` }}:{{ excited?.caps(3)\`Uncomfortably excited\` }}:</p>
+        <p>:{{ caps\`Hello, World!\` }}:{{ (excited?.caps(3))\`Uncomfortably excited\` }}:</p>
         <p>{{ greet\`Hi, I'm \${name}, and I'm \${age}\` }}</p>
       `,
     })
@@ -3027,7 +3083,7 @@ describe('acceptance integration tests', () => {
 
   it('should support "in" expressions', () => {
     @Component({
-      template: `{{'foo' in obj ? 'OK' : 'KO'}}`,
+      template: `{{ 'foo' in obj ? 'OK' : 'KO' }}`,
     })
     class TestComponent {
       obj: any = {foo: 'bar'};
@@ -3038,6 +3094,26 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('OK');
 
     fixture.componentInstance.obj = {bar: 'foo'};
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('KO');
+  });
+
+  it('should support "instanceof" expressions', () => {
+    class MyClass {}
+
+    @Component({
+      template: `{{ obj instanceof MyClass ? 'OK' : 'KO' }}`,
+    })
+    class TestComponent {
+      MyClass = MyClass;
+      obj: any = new MyClass();
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('OK');
+
+    fixture.componentInstance.obj = {};
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('KO');
   });
@@ -3103,11 +3179,7 @@ describe('acceptance integration tests', () => {
       }
 
       @Component({
-        template: `
-          <div *ngFor="let item of items" dir [attr.data-comp]="text">
-            ...
-          </div>
-        `,
+        template: ` <div *ngFor="let item of items" dir [attr.data-comp]="text">...</div> `,
         standalone: false,
       })
       class Cmp {
@@ -3144,9 +3216,7 @@ describe('acceptance integration tests', () => {
 
       @Component({
         template: `
-          <div *ngIf="showWarningMessage; else listOfItems">
-            Nooo!
-          </div>
+          <div *ngIf="showWarningMessage; else listOfItems">Nooo!</div>
 
           <ng-template #listOfItems>
             <animation-comp *ngFor="let item of items; trackBy: itemTrackFn">
@@ -3180,9 +3250,7 @@ describe('acceptance integration tests', () => {
             transition('* => *', [animate('1s')]),
           ]),
         ],
-        template: `
-                  <ng-content></ng-content>
-                `,
+        template: ` <ng-content></ng-content> `,
         standalone: false,
       })
       class AnimationComp {
@@ -3242,12 +3310,20 @@ describe('acceptance integration tests', () => {
         ],
         template: `
           <div *ngIf="showRoot" (@root.start)="track('root', $event)" @root>
-            <div *ngIf="showIfContents; else innerCompList" (@outer.start)="track('outer', $event)" @outer>
+            <div
+              *ngIf="showIfContents; else innerCompList"
+              (@outer.start)="track('outer', $event)"
+              @outer
+            >
               Nooo!
             </div>
 
             <ng-template #innerCompList>
-              <inner-comp *ngFor="let item of items; trackBy: itemTrackFn" (@inner.start)="track('inner', $event)" @inner>
+              <inner-comp
+                *ngFor="let item of items; trackBy: itemTrackFn"
+                (@inner.start)="track('inner', $event)"
+                @inner
+              >
                 {{ item.value }}
               </inner-comp>
             </ng-template>
@@ -3269,9 +3345,7 @@ describe('acceptance integration tests', () => {
       @Component({
         selector: 'inner-comp',
         animations: [trigger('host', [transition('* => *', [])])],
-        template: `
-                  <ng-content></ng-content>
-                `,
+        template: ` <ng-content></ng-content> `,
         standalone: false,
       })
       class InnerComp {
@@ -3321,6 +3395,296 @@ describe('acceptance integration tests', () => {
         'inner', // removal of the inner comp element
       ]);
     }));
+  });
+
+  describe('arrow functions', () => {
+    it('should support a basic arrow function in an event listener', () => {
+      @Component({
+        template: `<button (click)="value.update(prev => prev + 1)">Increment</button>`,
+      })
+      class TestComponent {
+        value = signal(0);
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      const button = fixture.nativeElement.querySelector('button');
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe(1);
+    });
+
+    it('should support an arrow function accessing value from different views in an event listener', () => {
+      @Component({
+        template: `
+          @let parent = 'parent';
+
+          @if (true) {
+            @let child = 'child';
+
+            @if (true) {
+              @let grandchild = 'grandchild';
+              <button
+                (click)="value.update(prev => prev + '->' + grandchild + '->' + child + '->' + parent)"
+              >
+                Assign
+              </button>
+            }
+          }
+        `,
+      })
+      class TestComponent {
+        value = signal('initial');
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(fixture.componentInstance.value()).toBe('initial');
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe('initial->grandchild->child->parent');
+    });
+
+    it('should support an arrow function in a binding', () => {
+      @Component({
+        template: `Result: {{((a) => a + b)(1)}}`,
+      })
+      class TestComponent {
+        b = 2;
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 3');
+
+      fixture.componentInstance.b = 5;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toContain('Result: 6');
+    });
+
+    it('should support an arrow function in a host binding', () => {
+      @Directive({
+        selector: '[test]',
+        host: {
+          '[attr.foo]': '((a) => a + 1 + directiveProp)(1000)',
+        },
+      })
+      class TestDir {
+        directiveProp = 0;
+      }
+
+      @Component({
+        imports: [TestDir],
+        template: '<div test></div>',
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const element = fixture.nativeElement.querySelector('[test]');
+      expect(element.getAttribute('foo')).toBe('1001');
+
+      fixture.componentInstance.testDir.directiveProp = 1;
+      fixture.detectChanges();
+      expect(element.getAttribute('foo')).toBe('1002');
+    });
+
+    it('should support a basic arrow function in a host listener', () => {
+      @Directive({
+        selector: '[test]',
+        host: {
+          '(click)': 'directiveSignal.update(prev => prev + 1)',
+        },
+      })
+      class TestDir {
+        directiveSignal = signal(0);
+      }
+
+      @Component({
+        imports: [TestDir],
+        template: '<button test></button>',
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(1);
+    });
+
+    it('should support an arrow function that accesses the context in a host listener', () => {
+      @Directive({
+        selector: '[test]',
+        host: {
+          '(click)': 'directiveSignal.update(prev => (prev + 2) * multiplier)',
+        },
+      })
+      class TestDir {
+        directiveSignal = signal(0);
+        multiplier = 10;
+      }
+
+      @Component({
+        imports: [TestDir],
+        template: '<button test></button>',
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(20);
+    });
+
+    it('should support an arrow function returning another arrow function with access across multiple views', () => {
+      @Component({
+        template: `
+          @let topLevelLet = 1;
+
+          @if (true) {
+            @let nestedLet = 2;
+
+            @if (true) {
+              Result:
+              {{(a => b => c => d => a + b + c + d + componentProp + topLevelLet + nestedLet)(1)(2)(3)(4)}}
+            }
+          }
+        `,
+      })
+      class App {
+        componentProp = 0;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 13');
+
+      fixture.componentInstance.componentProp = 1000;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 1013');
+    });
+
+    it('should support an arrow function using safe accesses', () => {
+      @Component({
+        template: `
+          @if (true) {
+            Result: {{(() => componentProp?.a?.b?.c?.()?.()?.()?.())()}}.
+          }
+        `,
+      })
+      class App {
+        componentProp: {a?: {b?: {c?: () => () => () => () => string}}} = {};
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: .');
+
+      fixture.componentInstance.componentProp = {a: {b: {c: () => () => () => () => 'hello'}}};
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: hello.');
+    });
+
+    it('should be able to use local references in an arrow function', () => {
+      @Component({
+        template: `
+          <input #inp />
+          @let fn = (prefix) => prefix + (inp.value || '<empty>');
+
+          {{ fn('Hello ') }}
+        `,
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Hello <empty>');
+
+      fixture.nativeElement.querySelector('input').value = 'Bilbo';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Hello Bilbo');
+    });
+
+    it('should be able to pass arrow functions through as inputs', () => {
+      @Directive({selector: '[test]'})
+      class TestDir {
+        @Input() callback!: () => void;
+      }
+
+      @Component({
+        template: `<button test [callback]="() => prop = prop + 1"></button> `,
+        imports: [TestDir],
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+        prop = 0;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.prop).toBe(0);
+
+      fixture.componentInstance.testDir.callback();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.prop).toBe(1);
+    });
+
+    it('should be able to use $event in an arrow function', () => {
+      @Component({
+        template: `<button (click)="value.update(prev => $event.type + prev)">Click</button>`,
+      })
+      class TestComponent {
+        value = signal('');
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      const button = fixture.nativeElement.querySelector('button');
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe('');
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe('click');
+    });
+
+    it('should be able to reference loop variables in an arrow function', () => {
+      @Component({
+        template: `
+          @for (item of items; track $index) {
+            {{ item }}: {{(() => prefix + ($even ? 'even' : 'odd'))()}}
+          }
+        `,
+      })
+      class TestComponent {
+        items = ['Zero', 'One', 'Two', 'Three'];
+        prefix = '';
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(
+        'Zero: even  One: odd  Two: even  Three: odd',
+      );
+
+      fixture.componentInstance.prefix = 'is ';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(
+        'Zero: is even  One: is odd  Two: is even  Three: is odd',
+      );
+    });
   });
 });
 

@@ -1,133 +1,140 @@
-<docs-decorative-header title="Встроенные директивы" imgSrc="adev/src/assets/images/directives.svg"> <!-- markdownlint-disable-line -->
-Директивы — это классы, которые добавляют дополнительное поведение элементам в ваших приложениях Angular.
+<docs-decorative-header title="Built-in directives" imgSrc="adev/src/assets/images/directives.svg"> <!-- markdownlint-disable-line -->
+Directives are classes that add additional behavior to elements in your Angular applications.
 </docs-decorative-header>
 
-Используйте встроенные директивы Angular для управления формами, списками, стилями и тем, что видят пользователи.
+Use Angular's built-in directives to manage forms, lists, styles, and what users see.
 
-Различные типы директив Angular:
+The different types of Angular directives are as follows:
 
-| Типы директив                                                    | Описание                                                                       |
-| :--------------------------------------------------------------- | :----------------------------------------------------------------------------- |
-| [Компоненты](guide/components)                                   | Используются с шаблоном. Этот тип директив является наиболее распространенным. |
-| [Директивы атрибутов](#built-in-attribute-directives)            | Изменяют внешний вид или поведение элемента, компонента или другой директивы.  |
-| [Структурные директивы](/guide/directives/structural-directives) | Изменяют структуру DOM, добавляя и удаляя DOM-элементы.                        |
+| Directive Types                                                  | Details                                                                           |
+| :--------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
+| [Components](guide/components)                                   | Used with a template. This type of directive is the most common directive type.   |
+| [Attribute directives](#built-in-attribute-directives)           | Change the appearance or behavior of an element, component, or another directive. |
+| [Structural directives](/guide/directives/structural-directives) | Change the DOM layout by adding and removing DOM elements.                        |
 
-В этом руководстве рассматриваются встроенные [директивы атрибутов](#built-in-attribute-directives).
+This guide covers built-in [attribute directives](#built-in-attribute-directives).
 
-## Встроенные директивы атрибутов {#built-in-attribute-directives}
+## Built-in attribute directives
 
-Директивы атрибутов отслеживают и изменяют поведение других HTML-элементов, атрибутов, свойств и компонентов.
+Attribute directives listen to and modify the behavior of other HTML elements, attributes, properties, and components.
 
-Наиболее распространенные директивы атрибутов:
+The most common attribute directives are as follows:
 
-| Распространенные директивы                             | Описание                                                      |
-| :----------------------------------------------------- | :------------------------------------------------------------ |
-| [`NgClass`](#adding-and-removing-classes-with-ngclass) | Добавляет и удаляет набор CSS-классов.                        |
-| [`NgStyle`](#setting-inline-styles-with-ngstyle)       | Добавляет и удаляет набор HTML-стилей.                        |
-| [`NgModel`](guide/forms/template-driven-forms)         | Добавляет двустороннюю привязку данных к элементу формы HTML. |
+| Common directives                                      | Details                                            |
+| :----------------------------------------------------- | :------------------------------------------------- |
+| [`NgClass`](#adding-and-removing-classes-with-ngclass) | Adds and removes a set of CSS classes.             |
+| [`NgStyle`](#setting-inline-styles-with-ngstyle)       | Adds and removes a set of HTML styles.             |
+| [`NgModel`](guide/forms/template-driven-forms)         | Adds two-way data binding to an HTML form element. |
 
-HELPFUL: Встроенные директивы используют только публичные API. Они не имеют специального доступа к каким-либо приватным
-API, недоступным для других директив.
+HELPFUL: Built-in directives use only public APIs. They do not have special access to any private APIs that other directives can't access.
 
-## Добавление и удаление классов с помощью NgClass {#adding-and-removing-classes-with-ngclass}
+## Adding and removing classes with `NgClass`
 
-Добавляйте или удаляйте несколько CSS-классов одновременно с помощью `ngClass`.
+Add or remove multiple CSS classes simultaneously with `ngClass`.
 
-HELPFUL: Чтобы добавить или удалить _один_ класс, используйте [привязку класса](guide/templates/class-binding) вместо
-`NgClass`.
+HELPFUL: To add or remove a _single_ class, use [class binding](/guide/templates/binding#css-class-and-style-property-bindings) rather than `NgClass`.
 
-### Импорт `NgClass` в компонент
+### Import `NgClass` in the component
 
-Чтобы использовать `NgClass`, добавьте его в список `imports` компонента.
+To use `NgClass`, add it to the component's `imports` list.
 
-<docs-code header="app.component.ts (NgClass import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="import-ng-class"/>
+```angular-ts
+import {NgClass} from '@angular/common';
 
-### Использование `NgClass` с выражением
+@Component({
+  /* ... */
+  imports: [NgClass],
+})
+export class AppComponent {}
+```
 
-Добавьте `[ngClass]` к элементу, который вы хотите стилизовать, и присвойте ему выражение.
-В этом случае `isSpecial` — это булево значение, установленное в `true` в `app.component.ts`.
-Поскольку `isSpecial` имеет значение `true`, `ngClass` применяет класс `special` к `<div>`.
+### Using `NgClass` with an expression
+
+On the element you'd like to style, add `[ngClass]` and set it equal to an expression.
+In this case, `isSpecial` is a boolean set to `true` in `app.component.ts`.
+Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<div>`.
 
 <docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="special-div"/>
 
-### Использование `NgClass` с методом
+### Using `NgClass` with a method
 
-1. Чтобы использовать `NgClass` с методом, добавьте метод в класс компонента.
-   В следующем примере `setCurrentClasses()` присваивает свойству `currentClasses` объект, который добавляет или удаляет
-   три класса на основе состояния (`true` или `false`) трех других свойств компонента.
+1. To use `NgClass` with a method, add the method to the component class.
+   In the following example, `setCurrentClasses()` sets the property `currentClasses` with an object that adds or removes three classes based on the `true` or `false` state of three other component properties.
 
-   Каждый ключ объекта — это имя CSS-класса.
-   Если значение ключа — `true`, `ngClass` добавляет класс.
-   Если значение ключа — `false`, `ngClass` удаляет класс.
+   Each key of the object is a CSS class name.
+   If a key is `true`, `ngClass` adds the class.
+   If a key is `false`, `ngClass` removes the class.
 
    <docs-code header="app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="setClasses"/>
 
-1. В шаблоне добавьте привязку свойства `ngClass` к `currentClasses`, чтобы установить классы элемента:
+1. In the template, add the `ngClass` property binding to `currentClasses` to set the element's classes:
 
-<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgClass-1"/>
+   <docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgClass-1"/>
 
-В этом случае Angular применяет классы при инициализации и при изменениях, вызванных переназначением объекта
-`currentClasses`.
-В полном примере `setCurrentClasses()` вызывается при инициализации в `ngOnInit()`, а также когда пользователь нажимает
-кнопку `Refresh currentClasses`.
-Эти шаги не являются обязательными для самой реализации `ngClass`.
+For this use case, Angular applies the classes on initialization and in case of changes caused by reassigning the `currentClasses` object.
+The full example calls `setCurrentClasses()` initially with `ngOnInit()` when the user clicks on the `Refresh currentClasses` button.
+These steps are not necessary to implement `ngClass`.
 
-## Установка встроенных стилей с помощью NgStyle {#setting-inline-styles-with-ngstyle}
+## Setting inline styles with `NgStyle`
 
-HELPFUL: Чтобы добавить или удалить _один_ стиль,
-используйте [привязки стилей](guide/templates/binding#css-class-and-style-property-bindings) вместо `NgStyle`.
+HELPFUL: To add or remove a _single_ style, use [style bindings](guide/templates/binding#css-class-and-style-property-bindings) rather than `NgStyle`.
 
-### Импорт `NgStyle` в компонент
+### Import `NgStyle` in the component
 
-Чтобы использовать `NgStyle`, добавьте его в список `imports` компонента.
+To use `NgStyle`, add it to the component's `imports` list.
 
-<docs-code header="app.component.ts (NgStyle import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="import-ng-style"/>
+```angular-ts
+import {NgStyle} from '@angular/common';
 
-Используйте `NgStyle` для одновременной установки нескольких встроенных стилей на основе состояния компонента.
+@Component({
+  /* ... */
+  imports: [NgStyle],
+})
+export class AppComponent {}
+```
 
-1. Чтобы использовать `NgStyle`, добавьте метод в класс компонента.
+Use `NgStyle` to set multiple inline styles simultaneously, based on the state of the component.
 
-   В следующем примере `setCurrentStyles()` присваивает свойству `currentStyles` объект, который определяет три стиля на
-   основе состояния трех других свойств компонента.
+1. To use `NgStyle`, add a method to the component class.
+
+   In the following example, `setCurrentStyles()` sets the property `currentStyles` with an object that defines three styles, based on the state of three other component properties.
 
    <docs-code header="app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="setStyles"/>
 
-1. Чтобы установить стили элемента, добавьте привязку свойства `ngStyle` к `currentStyles`.
+1. To set the element's styles, add an `ngStyle` property binding to `currentStyles`.
 
-<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgStyle-2"/>
+   <docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgStyle-2"/>
 
-В этом случае Angular применяет стили при инициализации и при изменениях.
-Для этого в полном примере `setCurrentStyles()` вызывается при инициализации в `ngOnInit()` и при изменении зависимых
-свойств по нажатию кнопки.
-Однако эти шаги не являются обязательными для реализации самого `ngStyle`.
+For this use case, Angular applies the styles upon initialization and in case of changes.
+To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
+However, these steps are not necessary to implement `ngStyle` on its own.
 
-## Размещение директивы без элемента DOM
+## Hosting a directive without a DOM element
 
-Angular `<ng-container>` — это группирующий элемент, который не влияет на стили или структуру, так как Angular не
-добавляет его в DOM.
+The Angular `<ng-container>` is a grouping element that doesn't interfere with styles or layout because Angular doesn't put it in the DOM.
 
-Используйте `<ng-container>`, когда нет подходящего элемента для размещения директивы.
+Use `<ng-container>` when there's no single element to host the directive.
 
-Ниже приведен пример условного отображения абзаца с использованием `<ng-container>`.
+Here's a conditional paragraph using `<ng-container>`.
 
 <docs-code header="app.component.html (ngif-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" region="ngif-ngcontainer"/>
 
 <img alt="ngcontainer paragraph with proper style" src="assets/images/guide/structural-directives/good-paragraph.png">
 
-1. Импортируйте директиву `ngModel` из `FormsModule`.
+1. Import the `ngModel` directive from `FormsModule`.
 
-1. Добавьте `FormsModule` в раздел imports соответствующего модуля Angular (или компонента).
+1. Add `FormsModule` to the imports section of the relevant Angular module.
 
-1. Чтобы условно исключить `<option>`, оберните `<option>` в `<ng-container>`.
+1. To conditionally exclude an `<option>`, wrap the `<option>` in an `<ng-container>`.
 
    <docs-code header="app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" region="select-ngcontainer"/>
 
    <img alt="ngcontainer options work properly" src="assets/images/guide/structural-directives/select-ngcontainer-anim.gif">
 
-## Что дальше
+## What's next
 
 <docs-pill-row>
-  <docs-pill href="guide/directives/attribute-directives" title="Директивы атрибутов"/>
-  <docs-pill href="guide/directives/structural-directives" title="Структурные директивы"/>
-  <docs-pill href="guide/directives/directive-composition-api" title="API композиции директив"/>
+  <docs-pill href="guide/directives/attribute-directives" title="Attribute Directives"/>
+  <docs-pill href="guide/directives/structural-directives" title="Structural Directives"/>
+  <docs-pill href="guide/directives/directive-composition-api" title="Directive composition API"/>
 </docs-pill-row>

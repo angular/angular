@@ -34,15 +34,15 @@ export const routes: Routes = [];
 1. Импортируйте `routes` из `./app.routes.ts`.
 1. Вызовите функцию `provideRouter`, передав `routes` в качестве аргумента, внутри массива `providers`.
 
-<docs-code language="ts" highlight="[2,3,6]">
+```ts {highlight:[2,3,6]}
 import {ApplicationConfig} from '@angular/core';
 import {provideRouter} from '@angular/router';
 import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-providers: [provideRouter(routes)],
+  providers: [provideRouter(routes)],
 };
-</docs-code>
+```
 
 </docs-step>
 
@@ -53,12 +53,13 @@ providers: [provideRouter(routes)],
 
 Обновите шаблон для `App`, добавив `<router-outlet />`
 
-<docs-code language="angular-ts" highlight="[11]">
+```angular-ts {highlight:[11]}
 import {RouterOutlet} from '@angular/router';
 
 @Component({
 ...
-template: `     <nav>
+template: `
+    <nav>
       <a href="/">Home</a>
       |
       <a href="/user">User</a>
@@ -68,7 +69,7 @@ template: `     <nav>
 imports: [RouterOutlet],
 })
 export class App {}
-</docs-code>
+```
 
 </docs-step>
 

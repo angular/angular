@@ -59,7 +59,7 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, _('/main.ts'));
       program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
       const main = host.readFile('/main.js');
-      expect(main).toMatch(/^var A_id = 3;/);
+      expect(main).toMatch(/var A_id = 3;/);
     });
 
     it('should add a statement before class inside function definition', () => {
@@ -78,7 +78,7 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, _('/main.ts'));
       program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
       const main = host.readFile(_('/main.js'));
-      expect(main).toMatch(/var x = 3;\s+var A_id = 2;\s+var A =/);
+      expect(main).toMatch(/var x = 3;\s+var A_id = 2;\s+class A {/);
     });
 
     it('handles nested statements', () => {
@@ -101,8 +101,8 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, _('/main.ts'));
       program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
       const main = host.readFile(_('/main.js'));
-      expect(main).toMatch(/var A_id = 3;\s+var A = /);
-      expect(main).toMatch(/var B_id = 4;\s+var B = /);
+      expect(main).toMatch(/var A_id = 3;\s+export class A {/);
+      expect(main).toMatch(/var B_id = 4;\s+class B {/);
     });
   });
 });

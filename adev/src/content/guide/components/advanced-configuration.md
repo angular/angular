@@ -1,38 +1,38 @@
-# Расширенная конфигурация компонентов
+# Advanced component configuration
 
-СОВЕТ: В этом руководстве предполагается, что вы уже ознакомились с [Руководством по основам](essentials). Если вы
-новичок в Angular, сначала прочитайте его.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 ## ChangeDetectionStrategy
 
-Декоратор `@Component` принимает опцию `changeDetection`, которая управляет **режимом обнаружения изменений**
-компонента. Существует два варианта режима обнаружения изменений.
+The `@Component` decorator accepts a `changeDetection` option that controls the component's **change
+detection mode**. There are two change detection mode options.
 
-**`ChangeDetectionStrategy.Default`** — это, как и следует из названия, стратегия по умолчанию. В этом режиме Angular
-проверяет, нуждается ли DOM компонента в обновлении, всякий раз, когда в приложении происходит какая-либо активность. К
-действиям, запускающим эту проверку, относятся взаимодействие с пользователем, сетевые ответы, таймеры и многое другое.
+**`ChangeDetectionStrategy.Eager`/`Default`** is, unsurprisingly, the default strategy. In this mode,
+Angular checks whether the component's DOM needs an update whenever any activity may have occurred
+application-wide. Activities that trigger this checking include user interaction, network response,
+timers, and more.
 
-**`ChangeDetectionStrategy.OnPush`** — это опциональный режим, который уменьшает количество проверок, выполняемых
-Angular. В этом режиме фреймворк проверяет необходимость обновления DOM компонента только в следующих случаях:
+**`ChangeDetectionStrategy.OnPush`** is an optional mode that reduces the amount of checking Angular
+needs to perform. In this mode, the framework only checks if a component's DOM needs an update when:
 
-- Input компонента изменился в результате привязки в шаблоне, или
-- Сработал слушатель событий (event listener) в этом компоненте
-- Компонент явно помечен для проверки с помощью `ChangeDetectorRef.markForCheck` или механизма, который его использует,
-  например `AsyncPipe`.
+- A component input has changes as a result of a binding in a template, or
+- An event listener in this component runs
+- The component is explicitly marked for check, via `ChangeDetectorRef.markForCheck` or something which wraps it, like `AsyncPipe`.
 
-Кроме того, когда проверяется компонент с OnPush, Angular _также_ проверяет все его родительские компоненты (предков),
-поднимаясь вверх по дереву приложения.
+Additionally, when an OnPush component is checked, Angular _also_ checks all of its ancestor
+components, traversing upwards through the application tree.
 
 ## PreserveWhitespaces
 
-По умолчанию Angular удаляет и сворачивает лишние пробелы в шаблонах, чаще всего возникающие из-за переносов строк и
-отступов. Вы можете изменить эту настройку, явно установив `preserveWhitespaces` в значение `true` в метаданных
-компонента.
+By default, Angular removes and collapses superfluous whitespace in templates, most commonly from
+newlines and indentation. You can change this setting by explicitly setting `preserveWhitespaces` to
+`true` in a component's metadata.
 
-## Схемы пользовательских элементов
+## Custom element schemas
 
-По умолчанию Angular выдает ошибку, когда встречает неизвестный HTML-элемент. Вы можете отключить это поведение для
-компонента, включив `CUSTOM_ELEMENTS_SCHEMA` в свойство `schemas` в метаданных вашего компонента.
+By default, Angular throws an error when it encounters an unknown HTML element. You can
+disable this behavior for a component by including `CUSTOM_ELEMENTS_SCHEMA` in the `schemas`
+property in your component metadata.
 
 ```angular-ts
 import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
@@ -40,9 +40,9 @@ import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 @Component({
   ...,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  template: '<some-unknown-component></some-unknown-component>'
+  template: '<some-unknown-component />'
 })
 export class ComponentWithCustomElements { }
 ```
 
-В настоящее время Angular не поддерживает никакие другие схемы.
+Angular does not support any other schemas at this time.

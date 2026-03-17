@@ -11,7 +11,7 @@ import {chromium} from 'playwright-core';
 import {Mermaid, MermaidConfig} from 'mermaid';
 import {resolve, join} from 'path';
 
-const runfilesDir = process.env['RUNFILES']!;
+const runfilesDir = process.env['JS_BINARY__RUNFILES']!;
 // Declare mermarid in the context of this file so that typescript doesn't get upset when we
 // access it within the `page.evaluate` function. At runtime the context in with the method
 // is run difference than this file, but this makes typescript happy.

@@ -927,7 +927,7 @@ function commonTests() {
       @Component({
         template: `
           <div class="clickable" (click)="clicked = true"></div>
-          {{clicked ? 'clicked' : '' }}
+          {{ clicked ? 'clicked' : '' }}
         `,
       })
       class OuterComponent {}

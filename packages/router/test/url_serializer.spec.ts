@@ -425,6 +425,22 @@ describe('url serializer', () => {
     it('should throw when missing closing )', () => {
       expect(() => url.parse('/one/(left')).toThrowError();
     });
+
+    it('should throw when the URL is too deeply nested', () => {
+      let urlStr = 'a';
+      for (let i = 0; i < 60; i++) {
+        urlStr = `p/(${urlStr})`;
+      }
+      expect(() => url.parse(`/${urlStr}`)).toThrowError(/URL is too deep/);
+    });
+
+    it('should not throw when the URL is nested within the limit', () => {
+      let urlStr = 'a';
+      for (let i = 0; i < 40; i++) {
+        urlStr = `p/(${urlStr})`;
+      }
+      expect(() => url.parse(`/${urlStr}`)).not.toThrow();
+    });
   });
 });
 

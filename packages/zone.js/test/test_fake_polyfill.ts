@@ -17,6 +17,19 @@ export function setupFakePolyfill(): void {
   NativeError.customProperty = 'customProperty';
   NativeError.customFunction = function () {};
 
+  // Polyfill Promise.try for testing pass-through
+  if (global.Promise && typeof global.Promise.try !== 'function') {
+    global.Promise.try = function (callback: any) {
+      return new global.Promise((resolve: any, reject: any) => {
+        try {
+          resolve(callback());
+        } catch (e) {
+          reject(e);
+        }
+      });
+    };
+  }
+
   // add fake cordova polyfill for test
   const fakeCordova = function () {};
 

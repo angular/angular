@@ -1,0 +1,241 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Angular options for TypeScript configuration files",
+  "type": "object",
+  "definitions": {
+    "diagnosticCategory": {
+      "type": "string",
+      "enum": ["warning", "error", "suppress"]
+    }
+  },
+  "properties": {
+    "angularCompilerOptions": {
+      "type": "object",
+      "properties": {
+        "allowEmptyCodegenFiles": {
+          "type": "boolean",
+          "description": "Generate all possible generated files. This option is not used anymore.",
+          "deprecated": true
+        },
+        "annotateForClosureCompiler": {
+          "type": "boolean",
+          "description": "Insert JSDoc type annotations needed by Closure Compiler."
+        },
+        "compilationMode": {
+          "type": "string",
+          "enum": ["full", "partial", "experimental-local"],
+          "default": "full",
+          "description": "Specifies the compilation mode to use."
+        },
+        "compileNonExportedClasses": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the compiler should avoid generating code for classes that haven't been exported."
+        },
+        "disableTypeScriptVersionCheck": {
+          "type": "boolean",
+          "description": "Disable TypeScript Version Check."
+        },
+        "enableI18nLegacyMessageIdFormat": {
+          "type": "boolean",
+          "default": true,
+          "description": "Render $localize messages with legacy format ids."
+        },
+        "extendedDiagnostics": {
+          "type": "object",
+          "description": "Options which control how diagnostics are emitted from the compiler.",
+          "properties": {
+            "defaultCategory": {
+              "$ref": "#/definitions/diagnosticCategory",
+              "description": "The category to use for configurable diagnostics which are not overridden by 'checks'."
+            },
+            "checks": {
+              "type": "object",
+              "description": "A map of each extended template diagnostic's name to its category.",
+              "properties": {
+                "controlFlowPreventingContentProjection": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "deferTriggerMisconfiguration": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "interpolatedSignalNotInvoked": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "invalidBananaInBox": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "missingControlFlowDirective": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "missingNgForOfLet": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "missingStructuralDirective": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "nullishCoalescingNotNullable": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "optionalChainNotNullable": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "skipHydrationNotStatic": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "suffixNotSupported": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "textAttributeNotBinding": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "uninvokedFunctionInEventBinding": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "uninvokedFunctionInTextInterpolation": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "uninvokedTrackFunction": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "unparenthesizedNullishCoalescing": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "unusedLetDeclaration": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
+                "unusedStandaloneImports": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                }
+              }
+            }
+          }
+        },
+        "flatModuleId": {
+          "type": "string",
+          "description": "Preferred module id to use for importing flat module. Only meaningful when 'flatModuleOutFile' is also supplied."
+        },
+        "flatModuleOutFile": {
+          "type": "string",
+          "description": "When used, generates a flat module index of the given name and the corresponding flat module metadata."
+        },
+        "forbidOrphanComponents": {
+          "type": "boolean",
+          "description": "Enables the runtime check to guard against rendering a component without first loading its NgModule."
+        },
+        "fullTemplateTypeCheck": {
+          "type": "boolean",
+          "description": "Whether to type check the entire template. Superseded by 'strictTemplates'.",
+          "deprecated": true
+        },
+        "generateDeepReexports": {
+          "type": "boolean",
+          "description": "Enables the generation of alias re-exports of directives/pipes that are visible from an NgModule from that NgModule's file."
+        },
+        "generateExtraImportsInLocalMode": {
+          "type": "boolean",
+          "description": "Generates extra imports in local compilation mode which imply the extra imports generated in full mode compilation."
+        },
+        "i18nInLocale": {
+          "type": "string",
+          "description": "Locale of the imported translations."
+        },
+        "i18nNormalizeLineEndingsInICUs": {
+          "type": "boolean",
+          "description": "Whether or not to normalize the line-endings (from \r\n to \n) when processing ICU expressions."
+        },
+        "i18nOutFile": {
+          "type": "string",
+          "description": "Path to the extracted message file to emit when the xi18n operation is requested."
+        },
+        "i18nOutFormat": {
+          "type": "string",
+          "description": "Export format (xlf, xlf2 or xmb) when the xi18n operation is requested."
+        },
+        "i18nOutLocale": {
+          "type": "string",
+          "description": "Locale of the application (used when xi18n is requested)."
+        },
+        "i18nPreserveWhitespaceForLegacyExtraction": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not to preserve whitespace when extracting messages with the legacy (View Engine) pipeline."
+        },
+        "i18nUseExternalIds": {
+          "type": "boolean",
+          "description": "Whether translation variable name should contain external message id."
+        },
+        "onlyExplicitDeferDependencyImports": {
+          "type": "boolean",
+          "description": "Specifies whether Angular compiler should rely on explicit imports via @Component.deferredImports field for @defer blocks."
+        },
+        "onlyPublishPublicTypingsForNgModules": {
+          "type": "boolean",
+          "description": "Whether the generated type definition for an NgModule will be filtered to only list those types which are publicly exported by the NgModule."
+        },
+        "preserveWhitespaces": {
+          "type": "boolean",
+          "description": "Whether to remove blank text nodes from compiled templates.",
+          "default": false
+        },
+        "strictAttributeTypes": {
+          "type": "boolean",
+          "description": "Whether to check text attributes that happen to be consumed by a directive or component."
+        },
+        "strictContextGenerics": {
+          "type": "boolean",
+          "description": "Whether to include the generic type of components when type-checking the template."
+        },
+        "strictDomEventTypes": {
+          "type": "boolean",
+          "description": "Whether to infer the type of the $event variable in event bindings to DOM events."
+        },
+        "strictDomLocalRefTypes": {
+          "type": "boolean",
+          "description": "Whether to infer the type of local references."
+        },
+        "strictInjectionParameters": {
+          "type": "boolean",
+          "description": "Whether to report an error when a parameter is supplied whose injection type cannot be determined."
+        },
+        "strictInputAccessModifiers": {
+          "type": "boolean",
+          "description": "Whether to check if the input binding attempts to assign to a restricted field (readonly, private, or protected) on the directive/component."
+        },
+        "strictInputTypes": {
+          "type": "boolean",
+          "description": "Whether to check the type of a binding to a directive/component input against the type of the field on the directive/component."
+        },
+        "strictLiteralTypes": {
+          "type": "boolean",
+          "description": "Whether object or array literals defined in templates use their inferred type, or are interpreted as 'any'."
+        },
+        "strictNullInputTypes": {
+          "type": "boolean",
+          "description": "Whether to use strict null types for input bindings for directives."
+        },
+        "strictOutputEventTypes": {
+          "type": "boolean",
+          "description": "Whether to infer the type of the $event variable in event bindings for directive outputs or animation events."
+        },
+        "strictSafeNavigationTypes": {
+          "type": "boolean",
+          "description": "Whether to use a strict type for null-safe navigation operations."
+        },
+        "strictStandalone": {
+          "type": "boolean",
+          "description": "If enabled, non-standalone declarations are prohibited and result in build errors."
+        },
+        "strictTemplates": {
+          "type": "boolean",
+          "description": "If 'true', implies all template strictness flags."
+        },
+        "typeCheckHostBindings": {
+          "type": "boolean",
+          "description": "Whether type checking of host bindings is enabled."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

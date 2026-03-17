@@ -20,8 +20,8 @@ ng generate @angular/core:common-to-standalone
 До:
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-example',
@@ -30,19 +30,19 @@ import { CommonModule } from '@angular/common';
     <div *ngIf="show">
       {{ data | async | json }}
     </div>
-  `
+  `,
 })
-export class ExampleComponent {
+export class Example {
   show = true;
-  data = Promise.resolve({ message: 'Hello' });
+  data = Promise.resolve({message: 'Hello'});
 }
 ```
 
 После запуска миграции (добавлены импорты компонента, удален `CommonModule`):
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
+import {Component} from '@angular/core';
+import {AsyncPipe, JsonPipe, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-example',
@@ -51,10 +51,10 @@ import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
     <div *ngIf="show">
       {{ data | async | json }}
     </div>
-  `
+  `,
 })
-export class ExampleComponent {
+export class Example {
   show = true;
-  data = Promise.resolve({ message: 'Hello' });
+  data = Promise.resolve({message: 'Hello'});
 }
 ```

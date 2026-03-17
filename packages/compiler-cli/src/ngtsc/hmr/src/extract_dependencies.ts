@@ -173,7 +173,7 @@ function getTopLevelDeclarationNames(sourceFile: ts.SourceFile): Set<string> {
       const importClause = node.importClause;
 
       // Skip over type-only imports since they won't be emitted to JS.
-      if (importClause.isTypeOnly) {
+      if (importClause.phaseModifier === ts.SyntaxKind.TypeKeyword) {
         continue;
       }
 

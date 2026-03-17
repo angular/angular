@@ -251,13 +251,15 @@ _представления_).
 ```ts
 import {Component, ElementRef, afterNextRender} from '@angular/core';
 
-@Component({...})
+@Component({
+  /*...*/
+})
 export class UserProfile {
   private prevPadding = 0;
   private elementHeight = 0;
 
   constructor() {
-    private elementRef = inject(ElementRef);
+    const elementRef = inject(ElementRef);
     const nativeElement = elementRef.nativeElement;
 
     afterNextRender({
@@ -276,7 +278,7 @@ export class UserProfile {
         if (didWrite) {
           this.elementHeight = nativeElement.getBoundingClientRect().height;
         }
-      }
+      },
     });
   }
 }

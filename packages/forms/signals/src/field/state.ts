@@ -7,11 +7,11 @@
  */
 
 import {computed, signal, Signal} from '@angular/core';
-import type {Field} from '../api/field_directive';
+import type {FormField} from '../directive/form_field_directive';
 import type {Debouncer, DisabledReason} from '../api/types';
 import {DEBOUNCER} from './debounce';
 import type {FieldNode} from './node';
-import {reduceChildren, shortCircuitTrue} from './util';
+import {shortCircuitTrue} from './util';
 
 /**
  * The non-validation and non-submit state associated with a `FieldNode`, such as touched and dirty
@@ -62,8 +62,8 @@ export class FieldNodeState {
     this.selfTouched.set(false);
   }
 
-  /** The {@link Field} directives that bind this field to a UI control. */
-  readonly fieldBindings = signal<readonly Field<unknown>[]>([]);
+  /** The {@link FormField} directives that bind this field to a UI control. */
+  readonly formFieldBindings = signal<readonly FormField<unknown>[]>([]);
 
   constructor(private readonly node: FieldNode) {}
 
@@ -76,8 +76,7 @@ export class FieldNodeState {
    */
   readonly dirty: Signal<boolean> = computed(() => {
     const selfDirtyValue = this.selfDirty() && !this.isNonInteractive();
-    return reduceChildren(
-      this.node,
+    return this.node.structure.reduceChildren(
       selfDirtyValue,
       (child, value) => value || child.nodeState.dirty(),
       shortCircuitTrue,
@@ -93,8 +92,7 @@ export class FieldNodeState {
    */
   readonly touched: Signal<boolean> = computed(() => {
     const selfTouchedValue = this.selfTouched() && !this.isNonInteractive();
-    return reduceChildren(
-      this.node,
+    return this.node.structure.reduceChildren(
       selfTouchedValue,
       (child, value) => value || child.nodeState.touched(),
       shortCircuitTrue,
@@ -163,8 +161,8 @@ export class FieldNodeState {
    */
   readonly debouncer: Signal<((signal: AbortSignal) => Promise<void> | void) | undefined> =
     computed(() => {
-      if (this.node.logicNode.logic.hasAggregateMetadata(DEBOUNCER)) {
-        const debouncerLogic = this.node.logicNode.logic.getAggregateMetadata(DEBOUNCER);
+      if (this.node.logicNode.logic.hasMetadata(DEBOUNCER)) {
+        const debouncerLogic = this.node.logicNode.logic.getMetadata(DEBOUNCER);
         const debouncer = debouncerLogic.compute(this.node.context);
 
         // Even if this field has a `debounce()` rule, it could be applied conditionally and currently

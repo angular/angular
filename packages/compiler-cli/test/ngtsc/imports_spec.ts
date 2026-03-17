@@ -24,7 +24,6 @@ runInEachFileSystem(() => {
       const tsconfig: {[key: string]: any} = {
         extends: '../tsconfig-base.json',
         compilerOptions: {
-          baseUrl: '.',
           rootDirs: ['/app'],
         },
         angularCompilerOptions: {},

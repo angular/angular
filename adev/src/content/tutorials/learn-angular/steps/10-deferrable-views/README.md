@@ -1,26 +1,22 @@
-# Откладываемые представления
+# Deferrable Views
 
-Иногда при разработке приложений у вас накапливается множество компонентов, на которые нужно ссылаться, но некоторые из
-них по разным причинам не нужно загружать сразу.
+Sometimes in app development, you end up with a lot of components that you need to reference in your app, but some of those don't need to be loaded right away for various reasons.
 
-Возможно, они находятся за пределами видимой области экрана или являются тяжелыми компонентами, взаимодействие с
-которыми происходит позже. В таком случае мы можем загрузить некоторые из этих ресурсов позже с помощью откладываемых
-представлений (deferrable views).
+Maybe they are below the visible fold or are heavy components that aren't interacted with until later. In that case, we can load some of those resources later with deferrable views.
 
-Примечание: Подробнее об [отложенной загрузке с помощью @defer читайте в подробном руководстве](/guide/templates/defer).
+NOTE: Learn more about [deferred loading with @defer in the in-depth guide](/guide/templates/defer).
 
-В этом упражнении вы узнаете, как использовать откладываемые представления для отложенной загрузки части шаблона вашего
-компонента.
+In this activity, you'll learn how to use deferrable views to defer load a section of your component template.
 
 <hr>
 
 <docs-workflow>
 
-<docs-step title="Добавьте блок `@defer` вокруг компонента комментариев">
+<docs-step title="Add a `@defer` block around the comments component">
 
-В вашем приложении на странице поста блога есть компонент комментариев, расположенный после деталей поста.
+In your app, the blog post page has a comment component after the post details.
 
-Оберните компонент комментариев в блок `@defer`, чтобы загрузить его отложенно.
+Wrap the comment component with a `@defer` block to defer load it.
 
 ```angular-html
 @defer {
@@ -28,32 +24,29 @@
 }
 ```
 
-Приведенный выше код — это пример использования базового блока `@defer`. По умолчанию `@defer` загрузит компонент
-`comments`, когда браузер будет в состоянии простоя (idle).
+The code above is an example of how to use a basic `@defer` block. By default `@defer` will load the `comments` component when the browser is idle.
 
 </docs-step>
 
-<docs-step title="Добавьте плейсхолдер">
+<docs-step title="Add a placeholder">
 
-Добавьте блок `@placeholder` к блоку `@defer`. В блоке `@placeholder` размещается HTML, который будет отображаться до
-начала отложенной загрузки. Контент в блоках `@placeholder` загружается сразу.
+Add a `@placeholder` block to the `@defer` block. The `@placeholder` block is where you put html that will show before the deferred loading starts. The content in `@placeholder` blocks is eagerly loaded.
 
-<docs-code language="angular-html" highlight="[3,4,5]">
+```angular-html {highlight:[3,4,5]}
 @defer {
   <comments />
 } @placeholder {
   <p>Future comments</p>
 }
-</docs-code>
+```
 
 </docs-step>
 
-<docs-step title="Добавьте блок загрузки">
+<docs-step title="Add a loading block">
 
-Добавьте блок `@loading` к блоку `@defer`. В блоке `@loading` размещается HTML, который будет отображаться _во время_
-активной загрузки отложенного контента, пока она еще не завершилась. Контент в блоках `@loading` загружается сразу.
+Add a `@loading` block to the `@defer` block. The `@loading` block is where you put html that will show _while_ the deferred content is actively being fetched, but hasn't finished yet. The content in `@loading` blocks is eagerly loaded.
 
-<docs-code language="angular-html" highlight="[5,6,7]">
+```angular-html {highlight:[5,6,7]}
 @defer {
   <comments />
 } @placeholder {
@@ -61,17 +54,15 @@
 } @loading {
   <p>Loading comments...</p>
 }
-</docs-code>
+```
 
 </docs-step>
 
-<docs-step title="Добавьте минимальную длительность">
+<docs-step title="Add a minimum duration">
 
-Секции `@placeholder` и `@loading` имеют необязательные параметры для предотвращения мерцания, возникающего при быстрой
-загрузке. У `@placeholder` есть параметр `minimum`, а у `@loading` — `minimum` и `after`. Добавьте длительность
-`minimum` к блоку `@loading`, чтобы он отображался не менее 2 секунд.
+Both `@placeholder` and `@loading` sections have optional parameters to prevent flickering from occurring when loading happens quickly. `@placeholder` has `minimum` and `@loading` has `minimum` and `after`. Add a `minimum` duration to the `@loading` block so it will be rendered for at least 2 seconds.
 
-<docs-code language="angular-html" highlight="[5]">
+```angular-html {highlight:[5]}
 @defer {
   <comments />
 } @placeholder {
@@ -79,49 +70,78 @@
 } @loading (minimum 2s) {
   <p>Loading comments...</p>
 }
-</docs-code>
+```
 
 </docs-step>
 
-<docs-step title="Добавьте триггер viewport">
+<docs-step title="Add a viewport trigger">
 
-Откладываемые представления имеют множество вариантов триггеров. Добавьте триггер viewport, чтобы контент загружался
-отложенно, как только он попадет в область просмотра.
+Deferrable views have a number of trigger options. Add a viewport trigger so the content will defer load once it enters the viewport.
 
-<docs-code language="angular-html" highlight="[1]">
+```angular-html {highlight:[1]}
 @defer (on viewport) {
   <comments />
 }
-</docs-code>
+```
 
 </docs-step>
 
-<docs-step title="Добавьте контент">
+<docs-step title="Add content">
 
-Триггер viewport лучше всего использовать, когда вы откладываете контент, находящийся достаточно далеко внизу страницы,
-до которого нужно прокрутить, чтобы увидеть. Поэтому давайте добавим немного контента в наш пост блога. Вы можете
-написать свой собственный текст или скопировать приведенный ниже контент и поместить его внутрь элемента `<article>`.
+A viewport trigger is best used when you're deferring content that's far enough down the page that it needs to be scrolled to see. So let's add some content to our blog post. You can either write your own, or you can copy the content below and put it inside the `<article>` element.
 
-<docs-code language="html" highlight="[1]">
+```html {highlight:[1]}
 <article>
-  <p>Angular is my favorite framework, and this is why. Angular has the coolest deferrable view feature that makes defer loading content the easiest and most ergonomic it could possibly be. The Angular community is also filled with amazing contributors and experts that create excellent content. The community is welcoming and friendly, and it really is the best community out there.</p>
-  <p>I can't express enough how much I enjoy working with Angular. It offers the best developer experience I've ever had. I love that the Angular team puts their developers first and takes care to make us very happy. They genuinely want Angular to be the best framework it can be, and they're doing such an amazing job at it, too. This statement comes from my heart and is not at all copied and pasted. In fact, I think I'll say these exact same things again a few times.</p>
-  <p>Angular is my favorite framework, and this is why. Angular has the coolest deferrable view feature that makes defer loading content the easiest and most ergonomic it could possibly be. The Angular community is also filled with amazing contributors and experts that create excellent content. The community is welcoming and friendly, and it really is the best community out there.</p>
-  <p>I can't express enough how much I enjoy working with Angular. It offers the best developer experience I've ever had. I love that the Angular team puts their developers first and takes care to make us very happy. They genuinely want Angular to be the best framework it can be, and they're doing such an amazing job at it, too. This statement comes from my heart and is not at all copied and pasted. In fact, I think I'll say these exact same things again a few times.</p>
-  <p>Angular is my favorite framework, and this is why. Angular has the coolest deferrable view feature that makes defer loading content the easiest and most ergonomic it could possibly be. The Angular community is also filled with amazing contributors and experts that create excellent content. The community is welcoming and friendly, and it really is the best community out there.</p>
-  <p>I can't express enough how much I enjoy working with Angular. It offers the best developer experience I've ever had. I love that the Angular team puts their developers first and takes care to make us very happy. They genuinely want Angular to be the best framework it can be, and they're doing such an amazing job at it, too. This statement comes from my heart and is not at all copied and pasted.</p>
+  <p>
+    Angular is my favorite framework, and this is why. Angular has the coolest deferrable view
+    feature that makes defer loading content the easiest and most ergonomic it could possibly be.
+    The Angular community is also filled with amazing contributors and experts that create excellent
+    content. The community is welcoming and friendly, and it really is the best community out there.
+  </p>
+  <p>
+    I can't express enough how much I enjoy working with Angular. It offers the best developer
+    experience I've ever had. I love that the Angular team puts their developers first and takes
+    care to make us very happy. They genuinely want Angular to be the best framework it can be, and
+    they're doing such an amazing job at it, too. This statement comes from my heart and is not at
+    all copied and pasted. In fact, I think I'll say these exact same things again a few times.
+  </p>
+  <p>
+    Angular is my favorite framework, and this is why. Angular has the coolest deferrable view
+    feature that makes defer loading content the easiest and most ergonomic it could possibly be.
+    The Angular community is also filled with amazing contributors and experts that create excellent
+    content. The community is welcoming and friendly, and it really is the best community out there.
+  </p>
+  <p>
+    I can't express enough how much I enjoy working with Angular. It offers the best developer
+    experience I've ever had. I love that the Angular team puts their developers first and takes
+    care to make us very happy. They genuinely want Angular to be the best framework it can be, and
+    they're doing such an amazing job at it, too. This statement comes from my heart and is not at
+    all copied and pasted. In fact, I think I'll say these exact same things again a few times.
+  </p>
+  <p>
+    Angular is my favorite framework, and this is why. Angular has the coolest deferrable view
+    feature that makes defer loading content the easiest and most ergonomic it could possibly be.
+    The Angular community is also filled with amazing contributors and experts that create excellent
+    content. The community is welcoming and friendly, and it really is the best community out there.
+  </p>
+  <p>
+    I can't express enough how much I enjoy working with Angular. It offers the best developer
+    experience I've ever had. I love that the Angular team puts their developers first and takes
+    care to make us very happy. They genuinely want Angular to be the best framework it can be, and
+    they're doing such an amazing job at it, too. This statement comes from my heart and is not at
+    all copied and pasted.
+  </p>
 </article>
-</docs-code>
+```
 
-После добавления этого кода прокрутите страницу вниз, чтобы увидеть, как отложенный контент загружается при попадании в
-область просмотра.
+Once you've added this code, now scroll down to see the deferred content load once you scroll it into the viewport.
 
 </docs-step>
 
 </docs-workflow>
 
-В этом упражнении вы узнали, как использовать откладываемые представления в ваших приложениях. Отличная работа. 🙌
+In the activity, you've learned how to use deferrable views in your applications. Great work. 🙌
 
-С ними можно делать еще больше: использовать различные триггеры, предзагрузку и блоки `@error`.
+There's even more you can do with them, like different triggers, prefetching, and `@error` blocks.
 
-Если вы хотите узнать больше, ознакомьтесь с [документацией по откладываемым представлениям](guide/defer).
+If you would like to learn more, check out the [documentation for Deferrable views](/guide/templates/defer).

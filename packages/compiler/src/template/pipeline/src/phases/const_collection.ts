@@ -27,8 +27,7 @@ export function collectElementConsts(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute) {
-        const attributes =
-          allElementAttributes.get(op.target) || new ElementAttributes(job.compatibility);
+        const attributes = allElementAttributes.get(op.target) || new ElementAttributes();
         allElementAttributes.set(op.target, attributes);
         attributes.add(op.bindingKind, op.name, op.expression, op.namespace, op.trustedValueFn);
         ir.OpList.remove<ir.CreateOp>(op);
@@ -138,8 +137,6 @@ class ElementAttributes {
     return this.byKind.get(ir.BindingKind.I18n) ?? FLYWEIGHT_ARRAY;
   }
 
-  constructor(private compatibility: ir.CompatibilityMode) {}
-
   private isKnown(kind: ir.BindingKind, name: string) {
     const nameToValue = this.known.get(kind) ?? new Set<string>();
     this.known.set(kind, nameToValue);
@@ -161,10 +158,9 @@ class ElementAttributes {
     // array. This seems inefficient, we can probably keep just the first one or the last value
     // (whichever actually gets applied when multiple values are listed for the same attribute).
     const allowDuplicates =
-      this.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-      (kind === ir.BindingKind.Attribute ||
-        kind === ir.BindingKind.ClassName ||
-        kind === ir.BindingKind.StyleProperty);
+      kind === ir.BindingKind.Attribute ||
+      kind === ir.BindingKind.ClassName ||
+      kind === ir.BindingKind.StyleProperty;
     if (!allowDuplicates && this.isKnown(kind, name)) {
       return;
     }

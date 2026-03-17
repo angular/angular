@@ -12,18 +12,18 @@ Pipes — это функции, которые используются для 
 
 Чтобы использовать pipe в шаблоне, включите его в выражение интерполяции. Взгляните на этот пример:
 
-<docs-code language="angular-ts" highlight="[1,5,6]">
+```angular-ts {highlight:[1,5,6]}
 import {UpperCasePipe} from '@angular/common';
 
 @Component({
-...
-template: `{{ loudMessage | uppercase }}`,
-imports: [UpperCasePipe],
+  ...
+  template: `{{ loudMessage | uppercase }}`,
+  imports: [UpperCasePipe],
 })
 export class App {
-loudMessage = 'we think you are doing great!'
+  loudMessage = 'we think you are doing great!'
 }
-</docs-code>
+```
 
 Теперь ваша очередь попробовать:
 
@@ -33,7 +33,7 @@ loudMessage = 'we think you are doing great!'
 Сначала обновите `app.ts`, добавив импорт `LowerCasePipe` из `@angular/common` на уровне файла.
 
 ```ts
-import { LowerCasePipe } from '@angular/common';
+import {LowerCasePipe} from '@angular/common';
 ```
 
 </docs-step>
@@ -41,20 +41,20 @@ import { LowerCasePipe } from '@angular/common';
 <docs-step title="Добавьте pipe в imports">
 Далее обновите массив `imports` в декораторе `@Component()`, добавив туда ссылку на `LowerCasePipe`.
 
-<docs-code language="ts" highlight="[3]">
+```ts {highlight:[3]}
 @Component({
   ...
   imports: [LowerCasePipe]
 })
-</docs-code>
+```
 
 </docs-step>
 
 <docs-step title="Добавьте pipe в шаблон">
 И наконец, в `app.ts` обновите шаблон, чтобы включить pipe `lowercase`:
 
-```ts
-template: `{{username | lowercase }}`
+```angular-html
+template: `{{ username | lowercase }}`
 ```
 
 </docs-step>

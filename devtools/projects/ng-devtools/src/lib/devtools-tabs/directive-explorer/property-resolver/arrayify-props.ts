@@ -7,8 +7,7 @@
  */
 
 import {Descriptor} from '../../../../../../protocol';
-
-import {Property} from './element-property-resolver';
+import {Property} from '../../../shared/object-tree-explorer/object-tree-types';
 
 export const arrayifyProps = (
   props: {[prop: string]: Descriptor} | Descriptor[],

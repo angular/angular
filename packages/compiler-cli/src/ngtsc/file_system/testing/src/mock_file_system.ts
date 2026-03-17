@@ -290,15 +290,37 @@ export abstract class MockFileSystem implements FileSystem {
 
   private copyInto(from: Folder, to: Folder): void {
     for (const path in from) {
-      const item = from[path];
       const canonicalPath = this.getCanonicalPath(path);
-      if (isSymLink(item)) {
-        to[canonicalPath] = new SymLink(this.getCanonicalPath(item.path));
-      } else if (isFolder(item)) {
-        to[canonicalPath] = this.cloneFolder(item);
-      } else {
-        to[canonicalPath] = from[path];
-      }
+      Object.defineProperty(to, canonicalPath, {
+        configurable: true,
+        enumerable: true,
+        get: () => {
+          const item = from[path];
+          let cloned: Entity;
+          if (isSymLink(item)) {
+            cloned = new SymLink(this.getCanonicalPath(item.path));
+          } else if (isFolder(item)) {
+            cloned = this.cloneFolder(item);
+          } else {
+            cloned = item;
+          }
+          Object.defineProperty(to, canonicalPath, {
+            configurable: true,
+            enumerable: true,
+            value: cloned,
+            writable: true,
+          });
+          return cloned;
+        },
+        set: (value) => {
+          Object.defineProperty(to, canonicalPath, {
+            configurable: true,
+            enumerable: true,
+            value: value,
+            writable: true,
+          });
+        },
+      });
     }
   }
 

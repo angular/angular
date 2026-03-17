@@ -54,7 +54,7 @@ describe('CliReferenceDetailsPage', () => {
     const harness = await RouterTestingHarness.create();
     fixture = harness.fixture;
     component = await harness.navigateByUrl('/', CliReferenceDetailsPage);
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

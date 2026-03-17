@@ -7,9 +7,11 @@
   multi
 >
   @for (amenity of amenities; track amenity) {
-  <div ngOption [value]="amenity" [label]="amenity">
-    <span class="check-icon material-symbols-outlined" translate="no">check</span>
-    <span class="option-label">{{ amenity }}</span>
-  </div>
+    <div ngOption [value]="amenity" [label]="amenity">
+      <span class="check-icon material-symbols-outlined" translate="no" aria-hidden="true"
+        >check</span
+      >
+      <span class="option-label">{{ amenity }}</span>
+    </div>
   }
 </div>

@@ -6,33 +6,27 @@
 Ниже приведен пример компонента `BaseButton`, который принимает любую разметку от своего родительского компонента.
 
 ```angular-ts
-// ./base-button/base-button.component.ts
-import { Component } from '@angular/core';
+// ./base-button/base-button.ts
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'button[baseButton]',
-  template: `
-      <ng-content />
-  `,
+  template: `<ng-content />`,
 })
 export class BaseButton {}
 ```
 
 ```angular-ts
-// ./app.component.ts
-import { Component } from '@angular/core';
-import { BaseButton } from './base-button/base-button.component';
+// ./app.ts
+import {Component} from '@angular/core';
+import {BaseButton} from './base-button';
 
 @Component({
   selector: 'app-root',
   imports: [BaseButton],
-  template: `
-    <button baseButton>
-      Next <span class="icon arrow-right"></span>
-    </button>
-  `,
+  template: `<button baseButton>Next <span class="icon arrow-right"></span></button>`,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 Чтобы узнать больше о других способах использования этого паттерна, ознакомьтесь с [подробным руководством по

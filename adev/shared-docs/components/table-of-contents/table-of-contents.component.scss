@@ -8,10 +8,18 @@
   top: 0;
   height: fit-content;
   width: 14rem;
-  padding-right: 2rem;
+  padding-right: 1rem;
   max-height: 100vh;
   overflow-y: scroll;
   box-sizing: border-box;
+
+  @include mq.for-large-desktop-up {
+    width: 16rem;
+  }
+
+  @include mq.for-extra-large-desktop-up {
+    width: 25rem;
+  }
 
   aside {
     margin-bottom: 2rem;

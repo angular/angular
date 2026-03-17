@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {
@@ -21,10 +20,6 @@ import {
 
 describe('find references and rename locations', () => {
   let env: LanguageServiceTestEnv;
-
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
 
   afterEach(() => {
     // Clear env so it's not accidentally carried over to the next test.
@@ -822,7 +817,7 @@ describe('find references and rename locations', () => {
       });
     });
 
-    describe('when cursor is on property read of variable', () => {
+    describe('when cursor is on property read of variable (inside listener callback)', () => {
       let file: OpenBuffer;
       beforeEach(() => {
         const files = {
@@ -2111,7 +2106,6 @@ describe('find references and rename locations', () => {
     let project: Project;
 
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',
@@ -2305,7 +2299,6 @@ describe('find references and rename locations', () => {
     let project: Project;
 
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',
@@ -2497,7 +2490,6 @@ describe('find references and rename locations', () => {
     let project: Project;
 
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',

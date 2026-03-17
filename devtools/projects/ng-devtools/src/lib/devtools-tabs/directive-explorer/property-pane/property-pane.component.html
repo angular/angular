@@ -1,0 +1,37 @@
+@let currentSelectedElement = this.currentSelectedElement();
+
+@if (currentSelectedElement) {
+  <ng-property-pane-header
+    [currentSelectedElement]="currentSelectedElement"
+    (showSignalGraph)="showSignalGraph.emit(null)"
+  />
+
+  <div class="body">
+    @let directives = currentDirectives();
+    @if (directives && directives.length) {
+      <div class="explorer-panel">
+        @for (directive of directives; track $index) {
+          <ng-property-view
+            (inspect)="inspect.emit($event)"
+            (viewSource)="viewSource.emit(directive.name)"
+            (showSignalGraph)="showSignalGraph.emit($event)"
+            [directive]="directive"
+          />
+        }
+      </div>
+    }
+
+    @let hydration = currentSelectedElement.hydration;
+    @if (hydration && hydration.status === 'dehydrated') {
+      <div class="dehydrated-component">This component is dehydrated</div>
+    }
+
+    @let block = currentSelectedElement.controlFlowBlock;
+
+    @if (BlockType.isDeferBlock(block)) {
+      <ng-defer-view [defer]="block" />
+    } @else if (BlockType.isForLoopBlock(block)) {
+      <ng-for-loop-view [forLoop]="block" />
+    }
+  </div>
+}

@@ -177,7 +177,7 @@ export class TransferStateComponent {
       const errorDetail =
         err instanceof Error ? `${err.name}: ${err.message}` : JSON.stringify(err);
 
-      this.snackBar.open(message, 'Dismiss', {duration: 3000});
+      this.snackBar.open(message, 'Dismiss', {duration: 3000, horizontalPosition: 'left'});
       this.messageBus.emit('log', [{level: 'error', message: `${message}: ${errorDetail}`}]);
     }
   }

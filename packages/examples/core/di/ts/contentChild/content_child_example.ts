@@ -29,10 +29,10 @@ export class Tab {
   imports: [Tab, Pane],
   template: `
     <tab>
-      @if(shouldShow()) {
-        <pane id="1"/>
+      @if (shouldShow()) {
+        <pane id="1" />
       } @else {
-        <pane id="2"/>
+        <pane id="2" />
       }
     </tab>
 

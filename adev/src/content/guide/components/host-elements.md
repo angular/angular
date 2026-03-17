@@ -1,32 +1,29 @@
-# Хост-элементы компонента
+# Component host elements
 
-TIP: В этом руководстве предполагается, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его
-в первую очередь, если вы новичок в Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
-Angular создает экземпляр компонента для каждого HTML-элемента, соответствующего селектору компонента. DOM-элемент,
-соответствующий селектору компонента, является его **хост-элементом** (host element). Содержимое шаблона компонента
-рендерится внутри его хост-элемента.
+Angular creates an instance of a component for every HTML element that matches the component's
+selector. The DOM element that matches a component's selector is that component's **host element**.
+The contents of a component's template are rendered inside its host element.
 
 ```angular-ts
-// Исходный код компонента
+// Component source
 @Component({
   selector: 'profile-photo',
-  template: `
-    <img src="profile-photo.jpg" alt="Your profile photo" />
-  `,
+  template: `<img src="profile-photo.jpg" alt="Your profile photo" />`,
 })
 export class ProfilePhoto {}
 ```
 
 ```angular-html
-<!-- Использование компонента -->
+<!-- Using the component -->
 <h3>Your profile photo</h3>
 <profile-photo />
 <button>Upload a new profile photo</button>
 ```
 
 ```angular-html
-<!-- Отрисованный DOM -->
+<!-- Rendered DOM -->
 <h3>Your profile photo</h3>
 <profile-photo>
   <img src="profile-photo.jpg" alt="Your profile photo" />
@@ -34,12 +31,13 @@ export class ProfilePhoto {}
 <button>Upload a new profile photo</button>
 ```
 
-В примере выше `<profile-photo>` является хост-элементом компонента `ProfilePhoto`.
+In the above example, `<profile-photo>` is the host element of the `ProfilePhoto` component.
 
-## Привязка к хост-элементу
+## Binding to the host element
 
-Компонент может привязывать свойства, атрибуты, стили и события к своему хост-элементу. Это работает так же, как
-привязки к элементам внутри шаблона компонента, но определяется с помощью свойства `host` в декораторе `@Component`:
+A component can bind properties, attributes, styles and events to its host element. This behaves
+identically to bindings on elements inside the component's template, but instead defined with
+the `host` property in the `@Component` decorator:
 
 ```angular-ts
 @Component({
@@ -64,12 +62,14 @@ export class CustomSlider {
 }
 ```
 
-## Декораторы `@HostBinding` и `@HostListener`
+NOTE: The global target names that can be used to prefix an event name are `document:`, `window:` and `body:`.
 
-В качестве альтернативы вы можете выполнить привязку к хост-элементу, применив декораторы `@HostBinding` и
-`@HostListener` к членам класса.
+## The `@HostBinding` and `@HostListener` decorators
 
-`@HostBinding` позволяет привязывать свойства и атрибуты хоста к свойствам и геттерам класса:
+You can alternatively bind to the host element by applying the `@HostBinding` and `@HostListener`
+decorator to class members.
+
+`@HostBinding` lets you bind host properties and attributes to properties and getters:
 
 ```ts
 @Component({
@@ -88,8 +88,8 @@ export class CustomSlider {
 }
 ```
 
-`@HostListener` позволяет привязывать слушатели событий к хост-элементу. Декоратор принимает имя события и
-необязательный массив аргументов:
+`@HostListener` lets you bind event listeners to the host element. The decorator accepts an event
+name and an optional array of arguments:
 
 ```ts
 export class CustomSlider {
@@ -100,14 +100,15 @@ export class CustomSlider {
 }
 ```
 
-<docs-callout critical title="Отдавайте предпочтение свойству host вместо декораторов">
-  **Всегда отдавайте предпочтение использованию свойства `host` вместо `@HostBinding` и `@HostListener`.** Эти декораторы существуют исключительно для обратной совместимости.
+<docs-callout critical title="Prefer using the `host` property over the decorators">
+  **Always prefer using the `host` property over `@HostBinding` and `@HostListener`.** These
+decorators exist exclusively for backwards compatibility.
 </docs-callout>
 
-## Конфликты привязок
+## Binding collisions
 
-Когда вы используете компонент в шаблоне, вы можете добавить привязки к элементу экземпляра этого компонента. Компонент
-может _также_ определять хост-привязки для тех же свойств или атрибутов.
+When you use a component in a template, you can add bindings to that component instance's element.
+The component may _also_ define host bindings for the same properties or attributes.
 
 ```angular-ts
 @Component({
@@ -124,55 +125,48 @@ export class ProfilePhoto { /* ... */ }
 <profile-photo role="group" [id]="otherId" />
 ```
 
-В таких случаях следующие правила определяют, какое значение победит:
+In cases like this, the following rules determine which value wins:
 
-- Если оба значения статические, побеждает привязка экземпляра (в шаблоне).
-- Если одно значение статическое, а другое динамическое, побеждает динамическое значение.
-- Если оба значения динамические, побеждает хост-привязка компонента.
+- If both values are static, the instance binding wins.
+- If one value is static and the other dynamic, the dynamic value wins.
+- If both values are dynamic, the component's host binding wins.
 
-## Стилизация с помощью пользовательских свойств CSS
+## Styling with CSS custom properties
 
-Разработчики часто полагаются
-на [пользовательские свойства CSS (CSS Custom Properties)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties)
-для обеспечения гибкой настройки стилей своих компонентов.
-Вы можете установить такие пользовательские свойства на хост-элементе с
-помощью [привязки стилей][style binding](guide/templates/binding#css-style-properties).
+Developers often rely on [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties) to enable a flexible configuration of their component's styles.
+You can set such custom properties on a host element with a [style binding][style binding](guide/templates/binding#css-style-properties).
 
 ```angular-ts
 @Component({
   /* ... */
   host: {
     '[style.--my-background]': 'color()',
-  }
+  },
 })
 export class MyComponent {
   color = signal('lightgreen');
 }
 ```
 
-В этом примере пользовательское CSS-свойство `--my-background` привязано к сигналу `color`. Значение пользовательского
-свойства будет автоматически обновляться при каждом изменении сигнала `color`. Это повлияет на текущий компонент и все
-его дочерние элементы, которые зависят от этого пользовательского свойства.
+In this example, the `--my-background` CSS custom property is bound to the `color` signal. The value of the custom property will automatically update whenever the `color` signal changes. This will affect the current component and all its children that rely on this custom property.
 
-### Установка пользовательских свойств на дочерних компонентах
+### Setting custom properties on children components
 
-В качестве альтернативы также можно установить пользовательские свойства CSS на хост-элементе дочерних компонентов с
-помощью [привязки стилей](guide/templates/binding#css-style-properties).
+Alternatively, it is also possible to set css custom properties on the host element of children components with a [style binding](guide/templates/binding#css-style-properties).
 
 ```angular-ts
 @Component({
   selector: 'my-component',
-  template: `<my-child [style.--my-background]="color()">`,
+  template: `<my-child [style.--my-background]="color()" />`,
 })
 export class MyComponent {
   color = signal('lightgreen');
 }
 ```
 
-## Внедрение атрибутов хост-элемента
+## Injecting host element attributes
 
-Компоненты и директивы могут считывать статические атрибуты со своего хост-элемента, используя `HostAttributeToken`
-вместе с функцией [`inject`](api/core/inject).
+Components and directives can read static attributes from their host element by using `HostAttributeToken` together with the [`inject`](api/core/inject) function.
 
 ```ts
 import { Component, HostAttributeToken, inject } from '@angular/core';
@@ -190,5 +184,4 @@ export class Button {
 <app-button variation="primary">Click me</app-button>
 ```
 
-HELPFUL: `HostAttributeToken` выбрасывает ошибку, если атрибут отсутствует, за исключением случаев, когда внедрение
-помечено как необязательное.
+HELPFUL: `HostAttributeToken` throws an error if the attribute is missing, unless the injection is marked as optional.

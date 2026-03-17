@@ -11,7 +11,7 @@ Angular присваивает каждой единице перевода ун
 
 В следующем примере показаны единицы перевода с уникальными ID.
 
-<docs-code header="messages.fr.xlf.html" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="generated-id"/>
+<docs-code header="messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="generated-id"/>
 
 При изменении переводимого текста экстрактор генерирует новый ID для этой единицы перевода.
 В большинстве случаев изменения в исходном тексте также требуют изменения перевода.
@@ -38,7 +38,7 @@ variableText1 = $localize`:@@introductionHeader:Hello i18n!`;
 
 Когда вы указываете пользовательский ID, экстрактор генерирует единицу перевода с этим ID.
 
-<docs-code header="messages.fr.xlf.html" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="custom-id"/>
+<docs-code header="messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="custom-id"/>
 
 Если вы измените текст, экстрактор не изменит ID.
 В результате вам не нужно предпринимать дополнительных шагов для обновления перевода.
@@ -83,7 +83,7 @@ variableText3 = $localize`:site header|An introduction header for this sample@@i
 
 Ниже показан перевод на французский язык.
 
-<docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="i18n-duplicate-custom-id"/>
+<docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="i18n-duplicate-custom-id"/>
 
 Оба элемента теперь используют один и тот же перевод \(`Bonjour`\), так как оба были определены с одним и тем же
 пользовательским ID.

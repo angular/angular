@@ -14,6 +14,7 @@ import {
   Conditional,
   ParsedEventType,
   PropertyRead,
+  ArrowFunction,
   SafeCall,
   SafePropertyRead,
   TmplAstBoundEvent,
@@ -23,7 +24,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 /**
  * Ensures that function in event bindings are called. For example, `<button (click)="myFunc"></button>`
@@ -84,6 +90,12 @@ function assertExpressionInvoked(
     return []; // If the method is called, skip it.
   }
 
+  if (expression instanceof ArrowFunction) {
+    const errorString =
+      'Arrow function will not be invoked in this event listener. Did you intend to call a method?';
+    return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
+  }
+
   if (!(expression instanceof PropertyRead) && !(expression instanceof SafePropertyRead)) {
     return []; // If the expression is not a property read, skip it.
   }
@@ -93,7 +105,11 @@ function assertExpressionInvoked(
   if (symbol !== null && symbol.kind === SymbolKind.Expression) {
     if (symbol.tsType.getCallSignatures()?.length > 0) {
       const fullExpressionText = generateStringFromExpression(expression, expressionText);
-      const errorString = `Function in event binding should be invoked: ${fullExpressionText}()`;
+      const errorString = formatExtendedError(
+        ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING,
+        `Function in event binding should be invoked: ${fullExpressionText}()`,
+      );
+
       return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
     }
   }

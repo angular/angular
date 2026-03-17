@@ -18,7 +18,7 @@ describe('status host binding classes', () => {
   it('work in OnPush components', async () => {
     @Component({
       selector: 'test-cmp',
-      template: `<input type="text" [formControl]="control">`,
+      template: `<input type="text" [formControl]="control" />`,
       imports: [FormsModule, ReactiveFormsModule],
       changeDetection: ChangeDetectionStrategy.OnPush,
     })

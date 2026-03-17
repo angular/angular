@@ -12,7 +12,7 @@ import {Component} from '../../../../../src/core';
 @Component({
   selector: 'basic',
   imports: [NgOptimizedImage],
-  template: `<img ngSrc="/e2e/a.png" width="150" height="150" priority>`,
+  template: `<img ngSrc="/e2e/a.png" width="150" height="150" priority />`,
   providers: [
     {
       provide: IMAGE_LOADER,

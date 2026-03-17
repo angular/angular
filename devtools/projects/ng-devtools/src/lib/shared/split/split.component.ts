@@ -101,9 +101,9 @@ import {
           (mouseup)="clickGutter($event, $index + 1)"
           (touchend)="clickGutter($event, $index + 1)"
         >
-        @if(showGutterIcon()) {  
-          <div class="as-split-gutter-icon"></div>
-        }
+          @if (showGutterIcon()) {
+            <div class="as-split-gutter-icon"></div>
+          }
         </div>
       }
     }`,

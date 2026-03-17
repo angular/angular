@@ -350,7 +350,7 @@
 .ͼ1 .cm-button {
   background-image: linear-gradient(var(--octonary-contrast), var(--page-background));
 
-  &:focus {
+  &:focus-visible {
     background-image: linear-gradient(var(--senary-contrast), var(--page-background));
   }
 }

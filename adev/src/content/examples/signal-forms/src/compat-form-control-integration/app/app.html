@@ -1,0 +1,25 @@
+<form>
+  <div>
+    <label>
+      Email:
+      <input [formField]="f.email" />
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Password:
+      <input [formField]="f.password" type="password" />
+    </label>
+
+    @if (f.password().touched() && f.password().invalid()) {
+      <div class="error-list">
+        @for (error of f.password().errors(); track error) {
+          <p>{{ error.message || error.kind }}</p>
+        }
+      </div>
+    }
+  </div>
+  <h3>Value</h3>
+  <pre>{{ formValue() | json }}</pre>
+</form>

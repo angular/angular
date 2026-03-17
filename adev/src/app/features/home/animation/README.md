@@ -34,11 +34,13 @@ class AnimationHost implements AfterViewInit {
   layers = viewChildren(AnimationLayerDirective);
 
   constructor() {
-    afterNextRender({ read: () => {
-      // The layers must be provided
-      const animation = this.animationCreator.createAnimation(this.layers());
-      // ...
-    }});
+    afterNextRender({
+      read: () => {
+        // The layers must be provided
+        const animation = this.animationCreator.createAnimation(this.layers());
+        // ...
+      },
+    });
   }
 }
 ```
@@ -73,8 +75,8 @@ const DEFINITION: AnimationDefinition = [
     },
     to: {
       'background-color': '#fff',
-    }
-  }
+    },
+  },
 ];
 ```
 

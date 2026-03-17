@@ -54,6 +54,7 @@
       display: inline-block;
       color: inherit;
       max-width: 100%;
+      text-wrap: pretty;
 
       code {
         // This can be useful on mobile if the heading contains a long code block
@@ -142,7 +143,7 @@
     height: fit-content;
 
     docs-icon {
-      color: var(--gray-400);
+      color: var(--quaternary-contrast);
       transition: color 0.3s ease;
     }
 

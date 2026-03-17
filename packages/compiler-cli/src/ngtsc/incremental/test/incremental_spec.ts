@@ -22,7 +22,7 @@ runInEachFileSystem(() => {
       const traitCompiler = {getAnalyzedRecords: () => new Map()} as TraitCompiler;
 
       const versionMapFirst = new Map([[FOO_PATH, 'version.1']]);
-      const firstCompilation = IncrementalCompilation.fresh(program, versionMapFirst);
+      const firstCompilation = IncrementalCompilation.fresh(versionMapFirst);
       firstCompilation.recordSuccessfulAnalysis(traitCompiler);
       firstCompilation.recordSuccessfulEmit(fooSf);
 

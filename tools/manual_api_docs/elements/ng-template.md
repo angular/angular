@@ -12,11 +12,11 @@ Angular won't render the middle "Hip!" in the phrase "Hip! Hip! Hooray!" because
 surrounding `<ng-template>`.
 
 ```html
+<p>Hip!</p>
+<ng-template>
   <p>Hip!</p>
-  <ng-template>
-    <p>Hip!</p>
-  </ng-template>
-  <p>Hooray!</p>
+</ng-template>
+<p>Hooray!</p>
 ```
 
 </div>

@@ -9,11 +9,13 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as t from '../../../../render3/r3_ast';
 import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
-import type {XrefId} from './operations';
+import {OpList, type XrefId} from './operations';
 import type {CreateOp} from './ops/create';
+import {createStatementOp} from './ops/shared';
 import {Interpolation, type UpdateOp} from './ops/update';
 import {
   ConsumesVarsTrait,
@@ -51,7 +53,8 @@ export type Expression =
   | TwoWayBindingSetExpr
   | ContextLetReferenceExpr
   | StoreLetExpr
-  | TrackContextExpr;
+  | TrackContextExpr
+  | ArrowFunctionExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -275,10 +278,6 @@ export class NextContextExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.NextContext;
 
   steps = 1;
-
-  constructor() {
-    super();
-  }
 
   override visitExpression(): void {}
 
@@ -1039,6 +1038,71 @@ export class ConstCollectedExpr extends ExpressionBase {
   }
 }
 
+export class ArrowFunctionExpr
+  extends ExpressionBase
+  implements ConsumesVarsTrait, UsesVarOffsetTrait
+{
+  override readonly kind = ExpressionKind.ArrowFunction;
+  readonly [ConsumesVarsTrait] = true;
+  readonly [UsesVarOffset] = true;
+  readonly contextName = CONTEXT_NAME;
+  readonly currentViewName = 'view';
+
+  varOffset: number | null = null;
+
+  ops: OpList<UpdateOp>;
+
+  constructor(
+    readonly parameters: o.FnParam[],
+    readonly body: o.Expression,
+  ) {
+    super();
+    this.ops = new OpList();
+    this.ops.push([createStatementOp(new o.ReturnStatement(body, body.sourceSpan))]);
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): void {
+    for (const op of this.ops) {
+      visitExpressionsInOp(op, (expr) => {
+        expr.visitExpression(visitor, context);
+      });
+    }
+  }
+
+  override isEquivalent(e: o.Expression): boolean {
+    return (
+      e instanceof ArrowFunctionExpr &&
+      e.parameters.length === this.parameters.length &&
+      e.parameters.every((param, index) => param.isEquivalent(this.parameters[index])) &&
+      e.body.isEquivalent(this.body)
+    );
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
+    for (const op of this.ops) {
+      transformExpressionsInOp(
+        op,
+        transform,
+        flags | (VisitorContextFlag.InChildOperation | VisitorContextFlag.InArrowFunctionOperation),
+      );
+    }
+  }
+
+  override clone(): ArrowFunctionExpr {
+    const expr = new ArrowFunctionExpr(this.parameters, this.body);
+    expr.varOffset = this.varOffset;
+    expr.ops = this.ops;
+    return expr;
+  }
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -1059,6 +1123,7 @@ export function visitExpressionsInOp(
 export enum VisitorContextFlag {
   None = 0b0000,
   InChildOperation = 0b0001,
+  InArrowFunctionOperation = 0b0010,
 }
 
 function transformExpressionsInInterpolation(
@@ -1103,7 +1168,6 @@ export function transformExpressionsInOp(
     case OpKind.Property:
     case OpKind.DomProperty:
     case OpKind.Attribute:
-    case OpKind.Control:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {
@@ -1234,6 +1298,7 @@ export function transformExpressionsInOp(
     case OpKind.SourceLocation:
     case OpKind.ConditionalCreate:
     case OpKind.ConditionalBranchCreate:
+    case OpKind.Control:
     case OpKind.ControlCreate:
       // These operations contain no expressions.
       break;
@@ -1275,12 +1340,12 @@ export function transformExpressionsInExpression(
       expr.entries[i] = transformExpressionsInExpression(expr.entries[i], transform, flags);
     }
   } else if (expr instanceof o.LiteralMapExpr) {
-    for (let i = 0; i < expr.entries.length; i++) {
-      expr.entries[i].value = transformExpressionsInExpression(
-        expr.entries[i].value,
-        transform,
-        flags,
-      );
+    for (const entry of expr.entries) {
+      if (entry instanceof o.LiteralMapSpreadAssignment) {
+        entry.expression = transformExpressionsInExpression(entry.expression, transform, flags);
+      } else {
+        entry.value = transformExpressionsInExpression(entry.value, transform, flags);
+      }
     }
   } else if (expr instanceof o.ConditionalExpr) {
     expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
@@ -1306,10 +1371,18 @@ export function transformExpressionsInExpression(
   } else if (expr instanceof o.ArrowFunctionExpr) {
     if (Array.isArray(expr.body)) {
       for (let i = 0; i < expr.body.length; i++) {
-        transformExpressionsInStatement(expr.body[i], transform, flags);
+        transformExpressionsInStatement(
+          expr.body[i],
+          transform,
+          flags | VisitorContextFlag.InChildOperation,
+        );
       }
     } else {
-      expr.body = transformExpressionsInExpression(expr.body, transform, flags);
+      expr.body = transformExpressionsInExpression(
+        expr.body,
+        transform,
+        flags | VisitorContextFlag.InChildOperation,
+      );
     }
   } else if (expr instanceof o.WrappedNodeExpr) {
     // TODO: Do we need to transform any TS nodes nested inside of this expression?
@@ -1319,6 +1392,8 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.ParenthesizedExpr) {
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
+  } else if (expr instanceof o.SpreadElementExpr) {
+    expr.expression = transformExpressionsInExpression(expr.expression, transform, flags);
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||

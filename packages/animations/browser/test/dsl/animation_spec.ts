@@ -1198,7 +1198,7 @@ describe('Animation', () => {
     });
 
     describe('query()', () => {
-      it('should delay the query operation if a delay option is provided', () => {
+      it('should delay the query operation if a delay option is provided (1)', () => {
         const steps = [
           style({opacity: 0}),
           animate(1000, style({opacity: 1})),
@@ -1244,7 +1244,7 @@ describe('Animation', () => {
         }).not.toThrow();
       });
 
-      it('should delay the query operation if a delay option is provided', () => {
+      it('should delay the query operation if a delay option is provided (2)', () => {
         const steps = [
           style({opacity: 0}),
           animate(1300, style({opacity: 1})),

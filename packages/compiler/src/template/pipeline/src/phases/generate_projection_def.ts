@@ -19,7 +19,7 @@ import {literalOrArrayLiteral} from '../conversion';
  */
 export function generateProjectionDefs(job: ComponentCompilationJob): void {
   // TODO: Why does TemplateDefinitionBuilder force a shared constant?
-  const share = job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder;
+  const share = true;
 
   // Collect all selectors from this component, and its nested views. Also, assign each projection a
   // unique ascending projection slot index.

@@ -1,64 +1,55 @@
-# Фоновая обработка с использованием Web Workers
+# Background processing using web workers
 
-[Web Workers](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) позволяют выполнять ресурсоемкие вычисления в
-фоновом потоке, освобождая основной поток для обновления пользовательского интерфейса.
-Приложения, выполняющие множество вычислений, например, генерацию чертежей в системах автоматизированного
-проектирования (САПР) или сложные геометрические расчеты, могут использовать Web Workers для повышения
-производительности.
+[Web workers](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) let you run CPU-intensive computations in a background thread, freeing the main thread to update the user interface.
+Application's performing a lot of computations, like generating Computer-Aided Design \(CAD\) drawings or doing heavy geometric calculations, can use web workers to increase performance.
 
-HELPFUL: Angular CLI не поддерживает запуск самого себя внутри Web Worker.
+HELPFUL: The Angular CLI does not support running itself in a web worker.
 
-## Добавление Web Worker
+## Adding a web worker
 
-Чтобы добавить Web Worker в существующий проект, используйте команду Angular CLI `ng generate`.
+To add a web worker to an existing project, use the Angular CLI `ng generate` command.
 
 ```shell
 ng generate web-worker <location>
 ```
 
-Вы можете добавить Web Worker в любое место вашего приложения.
-Например, чтобы добавить Web Worker к корневому компоненту `src/app/app.component.ts`, выполните следующую команду:
+You can add a web worker anywhere in your application.
+For example, to add a web worker to the root component, `src/app/app.component.ts`, run the following command.
 
 ```shell
 ng generate web-worker app
 ```
 
-Эта команда выполняет следующие действия:
+The command performs the following actions.
 
-1. Настраивает ваш проект для использования Web Workers, если это еще не сделано.
-1. Добавляет следующий шаблонный код в файл `src/app/app.worker.ts` для приема сообщений.
+1. Configures your project to use web workers, if it isn't already.
+1. Adds the following scaffold code to `src/app/app.worker.ts` to receive messages.
 
    ```ts {header:"src/app/app.worker.ts"}
-
-     addEventListener('message', ({ data }) => {
-        const response = `worker response to ${data}`;
-        postMessage(response);
-     });
-
+   addEventListener('message', ({data}) => {
+     const response = `worker response to ${data}`;
+     postMessage(response);
+   });
    ```
 
-1. Добавляет следующий шаблонный код в файл `src/app/app.component.ts` для использования воркера.
+1. Adds the following scaffold code to `src/app/app.component.ts` to use the worker.
 
    ```ts {header:"src/app/app.component.ts"}
-
-     if (typeof Worker !== 'undefined') {
-        // Create a new
-        const worker = new Worker(new URL('./app.worker', import.meta.url));
-        worker.onmessage = ({ data }) => {
-           console.log(`page got message: ${data}`);
-        };
-        worker.postMessage('hello');
-     } else {
-        // Web Workers не поддерживаются в этой среде.
-        // Вам следует добавить запасной вариант, чтобы программа продолжала работать корректно.
-     }
+   if (typeof Worker !== 'undefined') {
+     // Create a new
+     const worker = new Worker(new URL('./app.worker', import.meta.url));
+     worker.onmessage = ({data}) => {
+       console.log(`page got message: ${data}`);
+     };
+     worker.postMessage('hello');
+   } else {
+     // Web workers are not supported in this environment.
+     // You should add a fallback so that your program still executes correctly.
+   }
    ```
 
-После создания этого начального шаблона необходимо переработать код для использования Web Worker, организовав отправку
-сообщений в воркер и получение ответов от него.
+After you create this initial scaffold, you must refactor your code to use the web worker by sending messages to and from the worker.
 
-IMPORTANT: Некоторые среды или платформы, такие как `@angular/platform-server`, используемый
-при [рендеринге на стороне сервера (SSR)](guide/ssr), не поддерживают Web Workers.
+IMPORTANT: Some environments or platforms, such as `@angular/platform-server` used in [Server-side Rendering](guide/ssr), don't support web workers.
 
-Чтобы гарантировать работу приложения в таких средах, необходимо предусмотреть резервный механизм для выполнения
-вычислений, которые в противном случае выполнял бы воркер.
+To ensure that your application works in these environments, you must provide a fallback mechanism to perform the computations that the worker would otherwise perform.

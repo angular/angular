@@ -15,7 +15,11 @@ import {EmitScope} from './emit_scope';
  * there is no clear shared scope for constant statements. In this case they are bundled with the
  * translated definition and will be emitted into an IIFE.
  */
-export class LocalEmitScope<TStatement, TExpression> extends EmitScope<TStatement, TExpression> {
+export class LocalEmitScope<TStatement, TExpression, TType> extends EmitScope<
+  TStatement,
+  TExpression,
+  TType
+> {
   /**
    * Translate the given Output AST definition expression into a generic `TExpression`.
    *

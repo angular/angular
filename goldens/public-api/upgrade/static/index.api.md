@@ -42,14 +42,8 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
 // @public
 export function getAngularJSGlobal(): any;
 
-// @public @deprecated (undocumented)
-export function getAngularLib(): any;
-
 // @public
 export function setAngularJSGlobal(ng: any): void;
-
-// @public @deprecated (undocumented)
-export function setAngularLib(ng: any): void;
 
 // @public
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {

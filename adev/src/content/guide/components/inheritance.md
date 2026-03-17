@@ -12,7 +12,9 @@ export class ListboxBase {
   value: string;
 }
 
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class CustomListbox extends ListboxBase {
   // CustomListbox наследует свойство `value`.
 }
@@ -27,9 +29,7 @@ export class CustomListbox extends ListboxBase {
 ```angular-ts
 @Component({
   selector: 'base-listbox',
-  template: `
-    ...
-  `,
+  template: ` ... `,
   host: {
     '(keydown)': 'handleKey($event)',
   },
@@ -43,9 +43,7 @@ export class ListboxBase {
 
 @Component({
   selector: 'custom-listbox',
-  template: `
-    ...
-  `,
+  template: ` ... `,
   host: {
     '(click)': 'focusActiveOption()',
   },
@@ -71,12 +69,16 @@ export class CustomListbox extends ListboxBase {
 зависимости в `super`.
 
 ```ts
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class ListboxBase {
-  constructor(private element: ElementRef) { }
+  constructor(private element: ElementRef) {}
 }
 
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class CustomListbox extends ListboxBase {
   constructor(element: ElementRef) {
     super(element);
@@ -91,7 +93,9 @@ export class CustomListbox extends ListboxBase {
 базового класса, явно вызовите этот метод через `super`:
 
 ```ts
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class ListboxBase {
   protected isInitialized = false;
   ngOnInit() {
@@ -99,7 +103,9 @@ export class ListboxBase {
   }
 }
 
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class CustomListbox extends ListboxBase {
   override ngOnInit() {
     super.ngOnInit();

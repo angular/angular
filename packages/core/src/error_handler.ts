@@ -106,7 +106,7 @@ export const errorHandlerEnvironmentInitializer = {
 };
 
 const globalErrorListeners = new InjectionToken<void>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'GlobalErrorListeners' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'GlobalErrorListeners' : '',
   {
     factory: () => {
       if (typeof ngServerMode !== 'undefined' && ngServerMode) {

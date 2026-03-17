@@ -12,13 +12,13 @@ ng generate @angular/core:ngstyle-to-style
 #### До
 
 ```html
-<div [ngStyle]="{'background-color': 'red'}">
+<div [ngStyle]="{'background-color': 'red'}"></div>
 ```
 
 #### После
 
 ```html
-<div [style]="{'background-color': 'red'}">
+<div [style]="{'background-color': 'red'}"></div>
 ```
 
 ## Параметры конфигурации

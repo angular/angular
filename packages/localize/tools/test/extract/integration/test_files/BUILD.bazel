@@ -1,48 +1,19 @@
-load("@npm//:typescript/package_json.bzl", tsc = "bin")
-load("//tools:defaults.bzl", "copy_to_bin")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
 
 package(default_visibility = ["//packages/localize/tools/test/extract/integration:__pkg__"])
 
-tsc.tsc(
-    name = "compile_es5",
+ts_project(
+    name = "src",
     srcs = glob(["src/*.ts"]),
-    outs = [
-        "dist_es5/index.js",
-        "dist_es5/index.js.map",
-    ],
-    args = [
-        "--target",
-        "es5",
-        "--module",
-        "amd",
-        "--outFile",
-        "$(rootpath dist_es5/index.js)",
-        "--skipLibCheck",
-        "--sourceMap",
-        "--inlineSources",
-        "$(rootpath src/index.ts)",
-    ],
 )
 
-tsc.tsc(
-    name = "compile_es2015",
-    srcs = glob(["src/*.ts"]),
-    outs = [
-        "dist_es2015/index.js",
-        "dist_es2015/index.js.map",
-    ],
-    args = [
-        "--target",
-        "es2015",
-        "--module",
-        "amd",
-        "--outFile",
-        "$(rootpath dist_es2015/index.js)",
-        "--skipLibCheck",
-        "--sourceMap",
-        "--inlineSources",
-        "$(rootpath src/index.ts)",
-    ],
+esbuild(
+    name = "bundle",
+    entry_point = ":src/index.ts",
+    platform = "browser",
+    target = "es2015",
+    deps = [":src"],
 )
 
 # Use copy_to_bin since filegroup doesn't seem to work on Windows.

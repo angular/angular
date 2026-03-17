@@ -11,7 +11,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 /**
  * Ensures that attributes that have the "special" angular binding prefix (attr., style., and
@@ -52,6 +57,8 @@ class TextAttributeNotBindingSpec extends TemplateCheckWithVisitor<ErrorCode.TEX
       if (node.value) {
         errorString += ` For example, '${expectedKey}="${expectedValue}"'.`;
       }
+
+      errorString = formatExtendedError(ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING, errorString);
     }
     const diagnostic = ctx.makeTemplateDiagnostic(node.sourceSpan, errorString);
     return [diagnostic];

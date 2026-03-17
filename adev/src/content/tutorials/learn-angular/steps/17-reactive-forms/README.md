@@ -101,24 +101,23 @@ export class App {
 
 В классе компонента добавьте метод `handleSubmit()` для обработки отправки формы.
 
-<docs-code language="ts">
+```ts
 handleSubmit() {
   alert(
     this.profileForm.value.name + ' | ' + this.profileForm.value.email
   );
 }
-</docs-code>
+```
+
 </docs-step>
 
 <docs-step title="Добавление `ngSubmit` к форме">
 У вас есть доступ к значениям формы, теперь пришло время обработать событие отправки и использовать метод `handleSubmit`.
 В Angular для этой цели есть специальный обработчик событий под названием `ngSubmit`. Обновите элемент формы, чтобы вызывать метод `handleSubmit` при отправке формы.
 
-<docs-code language="angular-html" highlight="[3]">
-<form
-  [formGroup]="profileForm"
-  (ngSubmit)="handleSubmit()">
-</docs-code>
+```angular-html {highlight:[3]}
+<form [formGroup]="profileForm" (ngSubmit)="handleSubmit()"></form>
+```
 
 </docs-step>
 

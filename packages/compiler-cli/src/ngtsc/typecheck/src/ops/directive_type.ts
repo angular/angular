@@ -7,16 +7,12 @@
  */
 
 import {DirectiveOwner, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
-import ts from 'typescript';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbOp} from './base';
-import {TypeCheckableDirectiveMeta} from '../../api';
-import {Reference} from '../../../imports';
-import {ClassDeclaration} from '../../../reflection';
-import {addExpressionIdentifier, ExpressionIdentifier} from '../comments';
-import {addParseSpanInfo} from '../diagnostics';
-import {tsDeclareVariable} from '../ts_util';
+import {declareVariable, TcbExpr} from './codegen';
+import {TcbDirectiveMetadata} from '../../api';
+import {ExpressionIdentifier} from '../comments';
 
 /**
  * A `TcbOp` which constructs an instance of a directive. For generic directives, generic
@@ -27,7 +23,7 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
     protected tcb: Context,
     protected scope: Scope,
     protected node: DirectiveOwner,
-    protected dir: TypeCheckableDirectiveMeta,
+    protected dir: TcbDirectiveMetadata,
   ) {
     super();
   }
@@ -39,25 +35,22 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
     return true;
   }
 
-  override execute(): ts.Identifier {
-    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
+  override execute(): TcbExpr {
+    const rawType = this.tcb.env.referenceTcbValue(this.dir.ref);
 
-    const rawType = this.tcb.env.referenceType(this.dir.ref);
-
-    let type: ts.TypeNode;
+    let type: TcbExpr;
     let span: ParseSourceSpan;
-    if (this.dir.isGeneric === false || dirRef.node.typeParameters === undefined) {
+    if (
+      this.dir.isGeneric === false ||
+      this.dir.typeParameters === null ||
+      this.dir.typeParameters.length === 0
+    ) {
       type = rawType;
     } else {
-      if (!ts.isTypeReferenceNode(rawType)) {
-        throw new Error(
-          `Expected TypeReferenceNode when referencing the type for ${this.dir.ref.debugName}`,
-        );
-      }
-      const typeArguments = dirRef.node.typeParameters.map(() =>
-        ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-      );
-      type = ts.factory.createTypeReferenceNode(rawType.typeName, typeArguments);
+      const typeArguments = Array(this.dir.typeParameters?.length ?? 0)
+        .fill('any')
+        .join(', ');
+      type = new TcbExpr(`${rawType.print()}<${typeArguments}>`);
     }
 
     if (this.node instanceof TmplAstHostElement) {
@@ -66,10 +59,10 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
       span = this.node.startSourceSpan || this.node.sourceSpan;
     }
 
-    const id = this.tcb.allocateId();
-    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
-    addParseSpanInfo(id, span);
-    this.scope.addStatement(tsDeclareVariable(id, type));
+    const id = new TcbExpr(this.tcb.allocateId())
+      .addExpressionIdentifier(ExpressionIdentifier.DIRECTIVE)
+      .addParseSpanInfo(span);
+    this.scope.addStatement(declareVariable(id, type));
     return id;
   }
 }
@@ -88,10 +81,9 @@ export class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
    * Creates a variable declaration for this op's directive of the argument type. Returns the id of
    * the newly created variable.
    */
-  override execute(): ts.Identifier {
-    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
+  override execute(): TcbExpr {
     if (this.dir.isGeneric) {
-      throw new Error(`Assertion Error: expected ${dirRef.debugName} not to be generic.`);
+      throw new Error(`Assertion Error: expected ${this.dir.ref.name} not to be generic.`);
     }
     return super.execute();
   }
@@ -106,11 +98,10 @@ export class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
  * type parameters set to `any`.
  */
 export class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
-  override execute(): ts.Identifier {
-    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
-    if (dirRef.node.typeParameters === undefined) {
+  override execute(): TcbExpr {
+    if (this.dir.typeParameters === null || this.dir.typeParameters.length === 0) {
       throw new Error(
-        `Assertion Error: expected typeParameters when creating a declaration for ${dirRef.debugName}`,
+        `Assertion Error: expected typeParameters when creating a declaration for ${this.dir.ref.name}`,
       );
     }
 

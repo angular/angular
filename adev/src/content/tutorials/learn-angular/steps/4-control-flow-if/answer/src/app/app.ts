@@ -4,9 +4,9 @@ import {Component} from '@angular/core';
   selector: 'app-root',
   template: `
     @if (isServerRunning) {
-    <span>Yes, the server is running</span>
+      <span>Yes, the server is running</span>
     } @else {
-    <span>No, the server is not running</span>
+      <span>No, the server is not running</span>
     }
   `,
 })

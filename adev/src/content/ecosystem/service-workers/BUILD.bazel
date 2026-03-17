@@ -1,3 +1,4 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
 load("//adev/shared-docs:index.bzl", "generate_guides")
 
 generate_guides(
@@ -5,9 +6,14 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
-    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev/src/content/ecosystem:__pkg__"],
 )

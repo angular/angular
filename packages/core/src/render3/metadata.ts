@@ -70,7 +70,7 @@ export function setClassMetadataAsync(
  * being tree-shaken away during production builds.
  */
 export function setClassMetadata(
-  type: Type<any>,
+  type: any,
   decorators: any[] | null,
   ctorParameters: (() => any[]) | null,
   propDecorators: {[field: string]: any} | null,

@@ -1,210 +1,172 @@
-# Модели форм
+# Form models
 
-Модели форм являются основой Signal Forms, выступая в качестве единого источника истины для данных вашей формы. В этом
-руководстве рассматривается создание моделей форм, их обновление и проектирование для удобства поддержки.
+Form models are the foundation of Signal Forms, serving as the single source of truth for your form data. This guide explores how to create form models, update them, and design them for maintainability.
 
-NOTE: Модели форм отличаются от сигнала `model()` в Angular, используемого для двусторонней привязки компонентов. Модель
-формы — это записываемый (writable) сигнал, который хранит данные формы, тогда как `model()` создает input/output для
-взаимодействия родительского и дочернего компонентов.
+NOTE: Form models are distinct from Angular's `model()` signal used for component two-way binding. A form model is a writable signal that stores form data, while `model()` creates inputs/outputs for parent/child component communication.
 
-## Какие задачи решают модели форм
+## What form models solve
 
-Формы требуют управления данными, которые меняются со временем. Без четкой структуры эти данные могут быть разбросаны по
-свойствам компонента, что затрудняет отслеживание изменений, валидацию ввода или отправку данных на сервер.
+Forms require managing data that changes over time. Without a clear structure, this data can become scattered across component properties, making it difficult to track changes, validate input, or submit data to a server.
 
-Модели форм решают эту проблему, централизуя данные формы в одном записываемом сигнале. При обновлении модели форма
-автоматически отражает эти изменения. Когда пользователи взаимодействуют с формой, модель обновляется соответствующим
-образом.
+Form models solve this by centralizing form data in a single writable signal. When the model updates, the form automatically reflects those changes. When users interact with the form, the model updates accordingly.
 
-## Создание моделей
+## Creating models
 
-Модель формы — это записываемый сигнал, созданный с помощью функции `signal()` в Angular. Сигнал содержит объект,
-представляющий структуру данных вашей формы.
+A form model is a writable signal created with Angular's `signal()` function. The signal holds an object that represents your form's data structure.
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, Field } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-login',
-  imports: [Field],
+  imports: [FormField],
   template: `
-    <input type="email" [field]="loginForm.email" />
-    <input type="password" [field]="loginForm.password" />
-  `
+    <input type="email" [formField]="loginForm.email" />
+    <input type="password" [formField]="loginForm.password" />
+  `,
 })
 export class LoginComponent {
   loginModel = signal({
     email: '',
-    password: ''
-  })
+    password: '',
+  });
 
-  loginForm = form(this.loginModel)
+  loginForm = form(this.loginModel);
 }
 ```
 
-Функция `form()` принимает сигнал модели и создает **дерево полей** (field tree) — специальную структуру объекта,
-которая зеркально отражает форму вашей модели. Дерево полей поддерживает как навигацию (доступ к дочерним полям через
-точечную нотацию, например `loginForm.email`), так и вызов (вызов поля как функции для доступа к его состоянию).
+The [`form()`](api/forms/signals/form) function accepts the model signal and creates a **field tree** - a special object structure that mirrors your model's shape. The field tree is both navigable (access child fields with dot notation like `loginForm.email`) and callable (call a field as a function to access its state).
 
-Директива `[field]` привязывает каждый элемент ввода к соответствующему полю в дереве полей, обеспечивая автоматическую
-двустороннюю синхронизацию между UI и моделью.
+The `[formField]` directive binds each input element to its corresponding field in the field tree, enabling automatic two-way synchronization between the UI and model.
 
-### Использование типов TypeScript {#using-typescript-types}
+### Using TypeScript types
 
-Хотя TypeScript выводит типы из литералов объектов, явное определение типов улучшает качество кода и обеспечивает лучшую
-поддержку IntelliSense.
+While TypeScript infers types from object literals, defining explicit types improves code quality and provides better IntelliSense support.
 
 ```ts
 interface LoginData {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export class LoginComponent {
   loginModel = signal<LoginData>({
     email: '',
-    password: ''
-  })
+    password: '',
+  });
 
-  loginForm = form(this.loginModel)
+  loginForm = form(this.loginModel);
 }
 ```
 
-При наличии явных типов дерево полей обеспечивает полную типобезопасность. Доступ к `loginForm.email` типизируется как
-`FieldTree<string>`, а попытка доступа к несуществующему свойству приводит к ошибке во время компиляции.
+With explicit types, the field tree provides full type safety. Accessing `loginForm.email` is typed as `FieldTree<string>`, and attempting to access a non-existent property results in a compile-time error.
 
 ```ts
-// TypeScript знает, что это FieldTree<string>
-const emailField = loginForm.email
+// TypeScript knows this is FieldTree<string>
+const emailField = loginForm.email;
 
-// Ошибка TypeScript: Свойство 'username' не существует
-const usernameField = loginForm.username
+// TypeScript error: Property 'username' does not exist
+const usernameField = loginForm.username;
 ```
 
-### Инициализация всех полей
+### Initializing all fields
 
-Модели форм должны предоставлять начальные значения для всех полей, которые вы хотите включить в дерево полей.
+Form models should provide initial values for all fields you want to include in the field tree.
 
-```ts
-// Хорошо: Все поля инициализированы
+```ts {prefer}
+// Good: All fields initialized
 const userModel = signal({
   name: '',
   email: '',
-  age: 0
-})
-
-// Избегайте: Отсутствует начальное значение
-const userModel = signal({
-  name: '',
-  email: ''
-  // поле age не определено — доступ к userForm.age невозможен
-})
+  age: 0,
+});
 ```
 
-Для необязательных полей явно устанавливайте значение `null` или пустое значение:
+```ts {avoid}
+// Avoid: Missing initial value
+const userModel = signal({
+  name: '',
+  email: '',
+  // age field is not defined - cannot access userForm.age
+});
+```
+
+For optional fields, explicitly set them to an empty value or `null`:
 
 ```ts
 interface UserData {
-  name: string
-  email: string
-  phoneNumber: string | null
+  name: string;
+  email: string;
+  phoneNumber: string | null;
 }
 
 const userModel = signal<UserData>({
   name: '',
   email: '',
-  phoneNumber: null
-})
+  phoneNumber: null,
+});
 ```
 
-Поля, установленные в `undefined`, исключаются из дерева полей. Модель с `{value: undefined}` ведет себя идентично
-`{}`, — доступ к полю возвращает `undefined`, а не `FieldTree`.
+HELPFUL: Native text controls like `<input type=text>` and `<textarea>` don't support `null`, use `''` to represent an empty value.
 
-### Динамическое добавление полей
+Fields set to `undefined` are excluded from the field tree. A model with `{value: undefined}` behaves identically to `{}` - accessing the field returns `undefined` rather than a `FieldTree`.
 
-Вы можете динамически добавлять поля, обновляя модель новыми свойствами. Дерево полей автоматически обновляется, включая
-новые поля, когда они появляются в значении модели.
+## Reading model values
 
-```ts
-// Начинаем только с email
-const model = signal({ email: '' })
-const myForm = form(model)
+You can access form values in two ways: directly from the model signal, or through individual fields. Each approach serves a different purpose.
 
-// Позже добавляем поле пароля
-model.update(current => ({ ...current, password: '' }))
-// myForm.password теперь доступно
-```
+### Reading from the model
 
-Этот паттерн полезен, когда поля становятся актуальными в зависимости от выбора пользователя или загруженных данных.
-
-## Чтение значений модели
-
-Вы можете получить доступ к значениям формы двумя способами: непосредственно из сигнала модели или через отдельные поля.
-Каждый подход служит своей цели.
-
-### Чтение из модели
-
-Обращайтесь к сигналу модели, когда вам нужны полные данные формы, например, во время отправки формы:
+Access the model signal when you need the complete form data, such as during form submission:
 
 ```ts
-onSubmit() {
+async onSubmit() {
   const formData = this.loginModel();
   console.log(formData.email, formData.password);
 
-  // Отправка на сервер
+  // Send to server
   await this.authService.login(formData);
 }
 ```
 
-Сигнал модели возвращает весь объект данных, что делает его идеальным для операций, работающих с полным состоянием
-формы.
+The model signal returns the entire data object, making it ideal for operations that work with the complete form state.
 
-### Чтение из состояния поля
+### Reading from field state
 
-Каждое поле в дереве полей является функцией. Вызов поля возвращает объект `FieldState`, содержащий реактивные сигналы
-для значения поля, статуса валидации и состояния взаимодействия.
+Each field in the field tree is a function. Calling a field returns a `FieldState` object containing reactive signals for the field's value, validation status, and interaction state.
 
-Обращайтесь к состоянию поля при работе с отдельными полями в шаблонах или реактивных вычислениях:
+Access field state when working with individual fields in templates or reactive computations:
 
 ```angular-ts
 @Component({
   template: `
     <p>Current email: {{ loginForm.email().value() }}</p>
     <p>Password length: {{ passwordLength() }}</p>
-  `
+  `,
 })
 export class LoginComponent {
-  loginModel = signal({ email: '', password: '' })
-  loginForm = form(this.loginModel)
+  loginModel = signal({email: '', password: ''});
+  loginForm = form(this.loginModel);
 
   passwordLength = computed(() => {
-    return this.loginForm.password().value().length
-  })
+    return this.loginForm.password().value().length;
+  });
 }
 ```
 
-Состояние поля предоставляет реактивные сигналы для значения каждого поля, что делает его подходящим для отображения
-информации, специфичной для поля, или создания производного состояния.
+Field state provides reactive signals for each field's value, making it suitable for displaying field-specific information or creating derived state.
 
-TIP: Состояние поля включает в себя гораздо больше сигналов, помимо `value()`, таких как состояние валидации (например,
-valid, invalid, errors), отслеживание взаимодействия (например, touched, dirty) и видимость (например, hidden,
-disabled).
+TIP: Field state includes many more signals beyond `value()`, such as validation state (e.g., valid, invalid, errors), interaction tracking (e.g., touched, dirty), and visibility (e.g., hidden, disabled).
 
 <!-- TODO: UNCOMMENT BELOW WHEN GUIDE IS AVAILABLE -->
 <!-- See the [Field State Management guide](guide/forms/signals/field-state-management) for complete coverage. -->
 
-## Программное обновление моделей форм
+## Updating form models programmatically
 
-Модели форм обновляются с помощью программных механизмов:
+### Replacing form models with `set()`
 
-1. [Замена всей модели формы](#replacing-form-models-with-set) с помощью `set()`
-2. [Обновление одного или нескольких полей](#update-one-or-more-fields-with-update) с помощью `update()`
-3. [Обновление отдельного поля напрямую](#update-a-single-field-directly-with-set) через состояние поля
-
-### Замена моделей форм с помощью `set()` {#replacing-form-models-with-set}
-
-Используйте `set()` на модели формы, чтобы заменить все значение целиком:
+Use `set()` on the form model to replace the entire value:
 
 ```ts
 loadUserData() {
@@ -224,26 +186,11 @@ resetForm() {
 }
 ```
 
-Этот подход хорошо работает при загрузке данных из API или сбросе всей формы.
+This approach works well when loading data from an API or resetting the entire form.
 
-### Обновление одного или нескольких полей с помощью `update()` {#update-one-or-more-fields-with-update}
+### Update a single field directly with `set()` or `update()`
 
-Используйте `update()` для изменения конкретных полей при сохранении остальных:
-
-```ts
-updateEmail(newEmail: string) {
-  this.userModel.update(current => ({
-    ...current,
-    email: newEmail,
-  }));
-}
-```
-
-Этот паттерн полезен, когда нужно изменить одно или несколько полей на основе текущего состояния модели.
-
-### Обновление отдельного поля напрямую с помощью `set()` {#update-a-single-field-directly-with-set}
-
-Используйте `set()` на значениях отдельных полей, чтобы напрямую обновить состояние поля:
+Use `set()` on individual field values to directly update the field state:
 
 ```ts
 clearEmail() {
@@ -251,116 +198,111 @@ clearEmail() {
 }
 
 incrementAge() {
-  const currentAge = this.userForm.age().value();
-  this.userForm.age().value.set(currentAge + 1);
+  this.userForm.age().value.update(currentAge => currentAge + 1);
 }
 ```
 
-Это также известно как «обновления на уровне полей». Они автоматически распространяются на сигнал модели и поддерживают
-синхронизацию обоих.
+These are also known as "field-level updates." They automatically propagate to the model signal and keep both in sync.
 
-### Пример: Загрузка данных из API
+### Example: Loading data from an API
 
-Распространенный паттерн включает получение данных и заполнение модели:
+A common pattern involves fetching data and populating the model:
 
 ```ts
 export class UserProfileComponent {
   userModel = signal({
     name: '',
     email: '',
-    bio: ''
-  })
+    bio: '',
+  });
 
-  userForm = form(this.userModel)
-  private userService = inject(UserService)
+  userForm = form(this.userModel);
+  private userService = inject(UserService);
 
   ngOnInit() {
-    this.loadUserProfile()
+    this.loadUserProfile();
   }
 
   async loadUserProfile() {
-    const userData = await this.userService.getUserProfile()
-    this.userModel.set(userData)
+    const userData = await this.userService.getUserProfile();
+    this.userModel.set(userData);
   }
 }
 ```
 
-Поля формы автоматически обновляются при изменении модели, отображая полученные данные без дополнительного кода.
+The form fields automatically update when the model changes, displaying the fetched data without additional code.
 
-## Двусторонняя привязка данных
+## Two-way data binding
 
-Директива `[field]` создает автоматическую двустороннюю синхронизацию между моделью, состоянием формы и UI.
+The `[formField]` directive creates automatic two-way synchronization between the model, form state, and UI.
 
-### Как передаются данные
+### How data flows
 
-Изменения передаются в обоих направлениях:
+Changes flow bidirectionally:
 
-**Пользовательский ввод → Модель:**
+**User input → Model:**
 
-1. Пользователь вводит данные в элемент ввода
-2. Директива `[field]` обнаруживает изменение
-3. Состояние поля обновляется
-4. Сигнал модели обновляется
+1. User types in an input element
+2. The `[formField]` directive detects the change
+3. Field state updates
+4. Model signal updates
 
-**Программное обновление → UI:**
+**Programmatic update → UI:**
 
-1. Код обновляет модель с помощью `set()` или `update()`
-2. Сигнал модели уведомляет подписчиков
-3. Состояние поля обновляется
-4. Директива `[field]` обновляет элемент ввода
+1. Code updates the model with `set()` or `update()`
+2. Model signal notifies subscribers
+3. Field state updates
+4. The `[formField]` directive updates the input element
 
-Эта синхронизация происходит автоматически. Вам не нужно писать подписки или обработчики событий для синхронизации
-модели и UI.
+This synchronization happens automatically. You don't write subscriptions or event handlers to keep the model and UI in sync.
 
-### Пример: Оба направления
+### Example: Both directions
 
 ```angular-ts
 @Component({
   template: `
-    <input type="text" [field]="userForm.name" />
+    <input type="text" [formField]="userForm.name" />
     <button (click)="setName('Bob')">Set Name to Bob</button>
     <p>Current name: {{ userModel().name }}</p>
-  `
+  `,
 })
 export class UserComponent {
-  userModel = signal({ name: '' })
-  userForm = form(this.userModel)
+  userModel = signal({name: ''});
+  userForm = form(this.userModel);
 
   setName(name: string) {
-    this.userModel.update(current => ({ ...current, name }))
-    // Input автоматически отображает 'Bob'
+    this.userForm.name().value.set(name);
+    // Input automatically displays 'Bob'
   }
 }
 ```
 
-Когда пользователь вводит данные в поле ввода, `userModel().name` обновляется. При нажатии кнопки значение поля ввода
-меняется на «Bob». Ручной код синхронизации не требуется.
+When the user types in the input, `userModel().name` updates. When the button is clicked, the input value changes to "Bob". No manual synchronization code is required.
 
-## Паттерны структуры модели
+## Model structure patterns
 
-Модели форм могут быть плоскими объектами или содержать вложенные объекты и массивы. Выбранная структура влияет на то,
-как вы получаете доступ к полям и организуете валидацию.
+Form models can be flat objects or contain nested objects and arrays. The structure you choose affects how you access fields and organize validation.
 
-### Плоские и вложенные модели
+### Flat vs nested models
 
-Плоские модели форм хранят все поля на верхнем уровне:
+Flat form models keep all fields at the top level:
 
 ```ts
-// Плоская структура
+// Flat structure
 const userModel = signal({
   name: '',
   email: '',
   street: '',
   city: '',
   state: '',
-  zip: ''
-})
+  zip: '',
+});
 ```
 
-Вложенные модели группируют связанные поля:
+Nested models group related fields:
 
 ```ts
-// Вложенная структура
+// Nested structure
 const userModel = signal({
   name: '',
   email: '',
@@ -368,55 +310,55 @@ const userModel = signal({
     street: '',
     city: '',
     state: '',
-    zip: ''
-  }
-})
+    zip: '',
+  },
+});
 ```
 
-**Используйте плоские структуры, когда:**
+**Use flat structures when:**
 
-- Поля не имеют четкой концептуальной группировки
-- Вам нужен более простой доступ к полям (`userForm.city` против `userForm.address.city`)
-- Правила валидации охватывают несколько потенциальных групп
+- Fields don't have clear conceptual groupings
+- You want simpler field access (`userForm.city` vs `userForm.address.city`)
+- Validation rules span multiple potential groups
 
-**Используйте вложенные структуры, когда:**
+**Use nested structures when:**
 
-- Поля образуют четкую концептуальную группу (например, адрес)
-- Сгруппированные данные соответствуют структуре вашего API
-- Вы хотите валидировать группу как единое целое
+- Fields form a clear conceptual group (like an address)
+- The grouped data matches your API structure
+- You want to validate the group as a unit
 
-### Работа с вложенными объектами
+### Working with nested objects
 
-Вы можете получить доступ к вложенным полям, следуя по пути объекта:
+You can access nested fields by following the object path:
 
 ```ts
 const userModel = signal({
   profile: {
     firstName: '',
-    lastName: ''
+    lastName: '',
   },
   settings: {
     theme: 'light',
-    notifications: true
-  }
-})
+    notifications: true,
+  },
+});
 
-const userForm = form(userModel)
+const userForm = form(userModel);
 
-// Доступ к вложенным полям
-userForm.profile.firstName // FieldTree<string>
-userForm.settings.theme // FieldTree<string>
+// Access nested fields
+userForm.profile.firstName; // FieldTree<string>
+userForm.settings.theme; // FieldTree<string>
 ```
 
-В шаблонах вы привязываете вложенные поля так же, как и поля верхнего уровня:
+In templates, you bind nested fields the same way as top-level fields:
 
 ```angular-ts
 @Component({
   template: `
-    <input [field]="userForm.profile.firstName" />
-    <input [field]="userForm.profile.lastName" />
+    <input [formField]="userForm.profile.firstName" />
+    <input [formField]="userForm.profile.lastName" />
 
-    <select [field]="userForm.settings.theme">
+    <select [formField]="userForm.settings.theme">
       <option value="light">Light</option>
       <option value="dark">Dark</option>
     </select>
@@ -424,146 +366,35 @@ userForm.settings.theme // FieldTree<string>
 })
 ```
 
-### Работа с массивами
+### Working with arrays
 
-Модели могут включать массивы для коллекций элементов:
+Models can include arrays for collections of items:
 
 ```ts
 const orderModel = signal({
   customerName: '',
-  items: [{ product: '', quantity: 0, price: 0 }]
-})
+  items: [{product: '', quantity: 0, price: 0}],
+});
 
-const orderForm = form(orderModel)
+const orderForm = form(orderModel);
 
-// Доступ к элементам массива по индексу
-orderForm.items[0].product // FieldTree<string>
-orderForm.items[0].quantity // FieldTree<number>
+// Access array items by index
+orderForm.items[0].product; // FieldTree<string>
+orderForm.items[0].quantity; // FieldTree<number>
 ```
 
-Элементы массива, содержащие объекты, автоматически получают идентификаторы отслеживания, что помогает сохранять
-состояние полей даже при изменении позиции элементов в массиве. Это гарантирует, что состояние валидации и
-взаимодействия пользователя сохраняются корректно при переупорядочивании массивов.
+Array items containing objects automatically receive tracking identities, which helps maintain field state even when items change position in the array. This ensures validation state and user interactions persist correctly when arrays are reordered.
 
 <!-- TBD: For dynamic arrays and complex array operations, see the [Working with arrays guide](guide/forms/signals/arrays). -->
 
-## Лучшие практики проектирования моделей
+## Next steps
 
-Хорошо спроектированные модели форм делают формы проще в поддержке и расширении. Следуйте этим паттернам при
-проектировании ваших моделей.
-
-### Используйте конкретные типы
-
-Всегда определяйте интерфейсы или типы для ваших моделей, как показано в
-разделе [Использование типов TypeScript](#using-typescript-types). Явные типы обеспечивают лучший IntelliSense,
-отлавливают ошибки во время компиляции и служат документацией того, какие данные содержит форма.
-
-### Инициализируйте все поля
-
-Предоставляйте начальные значения для каждого поля в вашей модели:
-
-```ts
-// Хорошо: Все поля инициализированы
-const taskModel = signal({
-  title: '',
-  description: '',
-  priority: 'medium',
-  completed: false
-})
-```
-
-```ts
-// Избегайте: Частичная инициализация
-const taskModel = signal({
-  title: ''
-  // Отсутствуют description, priority, completed
-})
-```
-
-Отсутствие начальных значений означает, что эти поля не будут существовать в дереве полей, что сделает их недоступными
-для взаимодействия с формой.
-
-### Сохраняйте модели сфокусированными
-
-Каждая модель должна представлять одну форму или связный набор связанных данных:
-
-```ts
-// Хорошо: Сфокусировано на входе
-const loginModel = signal({
-  email: '',
-  password: ''
-})
-```
-
-```ts
-// Избегайте: Смешивание несвязанных задач
-const appModel = signal({
-  // Данные входа
-  email: '',
-  password: '',
-  // Настройки пользователя
-  theme: 'light',
-  language: 'en',
-  // Корзина покупок
-  cartItems: []
-})
-```
-
-Разделение моделей для разных задач делает формы проще для понимания и повторного использования. Создавайте несколько
-форм, если вы управляете различными наборами данных.
-
-### Учитывайте требования валидации
-
-Проектируйте модели с учетом валидации. Группируйте поля, которые валидируются вместе:
-
-```ts
-// Хорошо: Поля пароля сгруппированы для сравнения
-interface PasswordChangeData {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
-}
-```
-
-Такая структура делает перекрестную валидацию полей (например, проверку совпадения `newPassword` и `confirmPassword`)
-более естественной.
-
-### Планируйте начальное состояние
-
-Подумайте, начинается ли ваша форма пустой или предварительно заполненной:
-
-```ts
-// Форма, которая начинается пустой (новый пользователь)
-const newUserModel = signal({
-  name: '',
-  email: '',
-});
-
-// Форма, которая загружает существующие данные
-const editUserModel = signal({
-  name: '',
-  email: '',
-});
-
-// Позже, в ngOnInit:
-ngOnInit() {
-  this.loadExistingUser();
-}
-
-async loadExistingUser() {
-  const user = await this.userService.getUser(this.userId);
-  this.editUserModel.set(user);
-}
-```
-
-Для форм, которые всегда начинаются с существующих данных, вы можете подождать с рендерингом формы до загрузки данных,
-чтобы избежать мигания пустых полей.
+This guide covered creating models and updating values. Related guides explore other aspects of Signal Forms:
 
 <!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
-<!-- ## Next steps
-
 <docs-pill-row>
-  <docs-pill href="guide/forms/signals/field-state-management" title="Field State Management" />
+  <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />
-  <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" />
-</docs-pill-row> -->
+  <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
+  <!-- <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" /> -->
+</docs-pill-row>
