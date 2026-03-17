@@ -15,6 +15,9 @@ import {ComponentFactory} from './component_ref';
 import {getComponentDef} from './def_getters';
 import {Binding, DirectiveWithBindings} from './dynamic_bindings';
 import {assertComponentDef} from './errors';
+import {ON_ERROR} from './interfaces/view';
+import {ErrorDetails} from '../error_handler';
+import {ViewRef as R3ViewRef} from './view_ref';
 
 /**
  * Creates a `ComponentRef` instance based on provided component type and a set of options.
@@ -90,13 +93,14 @@ export function createComponent<C>(
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     bindings?: Binding[];
+    onError?: (error: Error, details: ErrorDetails) => void;
   },
 ): ComponentRef<C> {
   ngDevMode && assertComponentDef(component);
   const componentDef = getComponentDef(component)!;
   const elementInjector = options.elementInjector || getNullInjector();
   const factory = new ComponentFactory<C>(componentDef);
-  return factory.create(
+  const componentRef = factory.create(
     elementInjector,
     options.projectableNodes,
     options.hostElement,
@@ -104,6 +108,10 @@ export function createComponent<C>(
     options.directives,
     options.bindings,
   );
+  if (options.onError) {
+    (componentRef.hostView as R3ViewRef<any>)._lView![ON_ERROR] = options.onError;
+  }
+  return componentRef;
 }
 
 /**

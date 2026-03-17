@@ -8,6 +8,7 @@
 
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
+import {ErrorDetails} from '../error_handler';
 import {validateMatchingNode} from '../hydration/error_handling';
 import {CONTAINERS} from '../hydration/interfaces';
 import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
@@ -45,6 +46,7 @@ import {
   HEADER_OFFSET,
   HYDRATION,
   LView,
+  ON_ERROR,
   PARENT,
   RENDERER,
   T_HOST,
@@ -71,6 +73,7 @@ import {
 } from '../util/assert';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 import {addToEndOfViewTree} from '../render3/view/construction';
 import {addLViewToLContainer, createLContainer, detachView} from '../render3/view/container';
@@ -79,7 +82,6 @@ import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
-import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -190,6 +192,7 @@ export abstract class ViewContainerRef {
     options?: {
       index?: number;
       injector?: Injector;
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
   ): EmbeddedViewRef<C>;
 
@@ -242,6 +245,7 @@ export abstract class ViewContainerRef {
       projectableNodes?: Node[][];
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
   ): ComponentRef<C>;
 
@@ -362,6 +366,7 @@ class R3ViewContainerRef extends ViewContainerRef {
     options?: {
       index?: number;
       injector?: Injector;
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
   ): EmbeddedViewRef<C>;
   override createEmbeddedView<C>(
@@ -377,16 +382,19 @@ class R3ViewContainerRef extends ViewContainerRef {
       | {
           index?: number;
           injector?: Injector;
+          onError?: (error: Error, context: ErrorDetails) => void;
         },
   ): EmbeddedViewRef<C> {
     let index: number | undefined;
     let injector: Injector | undefined;
+    let onError: ((error: Error, context: ErrorDetails) => void) | undefined;
 
     if (typeof indexOrOptions === 'number') {
       index = indexOrOptions;
     } else if (indexOrOptions != null) {
       index = indexOrOptions.index;
       injector = indexOrOptions.injector;
+      onError = indexOrOptions.onError;
     }
 
     const dehydratedView = findMatchingDehydratedView(this._lContainer, templateRef.ssrId);
@@ -395,6 +403,9 @@ class R3ViewContainerRef extends ViewContainerRef {
       injector,
       dehydratedView,
     );
+    if (onError) {
+      (viewRef as R3ViewRef<any>)._lView![ON_ERROR] = onError;
+    }
     this.insertImpl(viewRef, index, shouldAddViewToDom(this._hostTNode, dehydratedView));
     return viewRef;
   }
@@ -408,6 +419,7 @@ class R3ViewContainerRef extends ViewContainerRef {
       ngModuleRef?: NgModuleRef<unknown>;
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
   ): ComponentRef<C>;
   override createComponent<C>(
@@ -420,6 +432,7 @@ class R3ViewContainerRef extends ViewContainerRef {
       projectableNodes?: Node[][];
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
     },
     injector?: Injector | undefined,
     projectableNodes?: any[][] | undefined,
@@ -428,6 +441,7 @@ class R3ViewContainerRef extends ViewContainerRef {
     bindings?: Binding[],
   ): ComponentRef<C> {
     let index: number | undefined;
+    let onError: ((error: Error, context: ErrorDetails) => void) | undefined;
 
     if (ngDevMode) {
       assertDefined(
@@ -452,6 +466,7 @@ class R3ViewContainerRef extends ViewContainerRef {
       projectableNodes?: Node[][];
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      onError?: (error: Error, context: ErrorDetails) => void;
     };
 
     if (ngDevMode && options.environmentInjector && options.ngModuleRef) {
@@ -465,6 +480,7 @@ class R3ViewContainerRef extends ViewContainerRef {
     environmentInjector = options.environmentInjector || options.ngModuleRef;
     directives = options.directives;
     bindings = options.bindings;
+    onError = options.onError;
 
     const componentFactory = new ComponentFactory(getComponentDef(componentType)!);
     const contextInjector = injector || this.parentInjector;
@@ -510,6 +526,9 @@ class R3ViewContainerRef extends ViewContainerRef {
       bindings,
       this._getHostElementNamespace(),
     );
+    if (onError) {
+      (componentRef.hostView as R3ViewRef<any>)._lView![ON_ERROR] = onError;
+    }
     this.insertImpl(
       componentRef.hostView,
       index,

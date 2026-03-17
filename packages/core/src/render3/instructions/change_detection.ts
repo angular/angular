@@ -17,10 +17,16 @@ import {
 } from '../../../primitives/signals';
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {encapsulateBoundaryError} from '../../error_handler';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {addAfterRenderSequencesForView} from '../after_render/view';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
-import {CONTAINER_HEADER_OFFSET, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
+import {
+  CONTAINER_HEADER_OFFSET,
+  LContainer,
+  LContainerFlags,
+  MOVED_VIEWS,
+} from '../interfaces/container';
 import {ComponentTemplate, HostBindingsFunction, RenderFlags} from '../interfaces/definition';
 import {
   CONTEXT,
@@ -30,6 +36,8 @@ import {
   InitPhaseState,
   LView,
   LViewFlags,
+  ON_ERROR,
+  PARENT,
   REACTIVE_TEMPLATE_CONSUMER,
   TVIEW,
   TView,
@@ -54,6 +62,7 @@ import {
   setIsRefreshingViews,
   setSelectedIndex,
 } from '../state';
+import {isLContainer} from '../interfaces/type_checks';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {
   getComponentLViewByIndex,
@@ -353,14 +362,42 @@ export function refreshView<T>(
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {
-    if (!isInCheckNoChangesPass) {
-      // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
-      // because the error might have caused a situation where views below the current location are
-      // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
-      // cleared during change detection and we failed to run to completion.
-      markAncestorsForTraversal(lView);
+    let handled = false;
+    let errorToHandle = e;
+    let currentLView: LView | LContainer | null = lView;
+    while (currentLView !== null) {
+      if (isLContainer(currentLView)) {
+        currentLView = currentLView[PARENT];
+        continue;
+      }
+      const onError = currentLView[ON_ERROR];
+      if (onError) {
+        // We found an error boundary / explicit error handler in the LView chain.
+        try {
+          const details = {caught: true};
+          onError(encapsulateBoundaryError(errorToHandle), details);
+          handled = true;
+          break;
+        } catch (boundaryError) {
+          // If the error handler itself throws, capture the new error and
+          // continue propagating it up the tree to the next error boundary.
+          errorToHandle = boundaryError;
+          handled = false;
+        }
+      }
+      currentLView = currentLView[PARENT];
     }
-    throw e;
+
+    if (!handled) {
+      if (!isInCheckNoChangesPass) {
+        // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
+        // because the error might have caused a situation where views below the current location are
+        // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
+        // cleared during change detection and we failed to run to completion.
+        markAncestorsForTraversal(lView);
+      }
+      throw errorToHandle;
+    }
   } finally {
     if (currentConsumer !== null) {
       consumerAfterComputation(currentConsumer, prevConsumer);
