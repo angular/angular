@@ -283,7 +283,11 @@ When the user types in the input, `userModel().name` updates. When the button is
 
 Form models can be flat objects or contain nested objects and arrays. The structure you choose affects how you access fields and organize validation.
 
+For larger or deeply nested forms, consider separating your domain model from the form model and using mapping approaches to transform between them. This helps keep the form state focused on UI concerns while preserving the integrity of your business data.
+
 ### Flat vs nested models
+
+In large applications, choosing between flat and nested structures also affects how easily you can manage validation, updates, and data transformations between domain and form models.
 
 Flat form models keep all fields at the top level:
 
@@ -365,6 +369,8 @@ In templates, you bind nested fields the same way as top-level fields:
   `,
 })
 ```
+
+For complex nested structures, it can be helpful to map nested domain objects into simpler form models and reconstruct them when submitting, rather than directly binding deeply nested domain data.
 
 ### Working with arrays
 
