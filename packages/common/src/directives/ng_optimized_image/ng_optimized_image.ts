@@ -406,6 +406,15 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         }
       });
     }
+
+    // Browsers might re-evaluate the image during DOM teardown when using `sizes="auto"`
+    // with `loading="lazy"`, potentially triggering an unnecessary image fetch.
+    // This is expected behavior per the HTML spec
+    // See: https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+    // See also: https://github.com/angular/angular/issues/67055#issuecomment-3898513831
+    this.destroyRef.onDestroy(() => {
+      this.renderer.removeAttribute(this.imgElement, 'loading');
+    });
   }
 
   /** @docs-private */
