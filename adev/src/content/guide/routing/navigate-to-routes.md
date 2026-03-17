@@ -110,12 +110,9 @@ export class AppDashboard {
 
 You can also build dynamic navigation paths relative to your component’s location in the routing tree using the `relativeTo` option.
 
-When using the commands array with `relativeTo`, be aware that navigation behavior depends on how the commands are interpreted. In some cases, combining segments into a single string (for example `'../../path'`) may produce the expected result, while splitting them into multiple entries (e.g. `'..', '..', 'path'`) can lead to unexpected navigation behavior.
-
-Also, if the first segment starts with `/`, the navigation becomes absolute and `relativeTo` is ignored.
+When navigating to parent routes using `relativeTo`, parent segments should be provided as a single command (for example `'../../path'`). Splitting them into multiple entries (e.g. `'..', '..', 'path'`) may not produce the expected navigation result.
 
 ```angular-ts
-
 import {Router, ActivatedRoute} from '@angular/router';
 
 @Component({
