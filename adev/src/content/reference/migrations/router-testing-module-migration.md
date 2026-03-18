@@ -11,15 +11,15 @@
 ng generate @angular/core:router-testing-module-migration
 ```
 
-## Опции
+## Опции {#options}
 
 | Опция  | Описание                                                                                                                        |
 | :----- | :------------------------------------------------------------------------------------------------------------------------------ |
 | `path` | Путь (относительно корня проекта) для миграции. По умолчанию `./`. Используйте это для поэтапной миграции части вашего проекта. |
 
-## Примеры
+## Примеры {#examples}
 
-### Сохранение настроек маршрутизатора
+### Сохранение настроек маршрутизатора {#preserve-router-options}
 
 До:
 
@@ -51,7 +51,7 @@ describe('test', () => {
 });
 ```
 
-### Добавление provideLocationMocks при импорте `SpyLocation` и использовании `urlChanges`
+### Добавление provideLocationMocks при импорте `SpyLocation` и использовании `urlChanges` {#add-providelocationmocks-when-spylocation-is-imported-and-urlchanges-is-used}
 
 До:
 

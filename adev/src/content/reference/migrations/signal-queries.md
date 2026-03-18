@@ -15,7 +15,7 @@ ng generate @angular/core:signal-queries-migration
 Установите последнюю версию расширения VSCode и нажмите, например, на поле с `@ViewChild`.
 Подробнее см. в разделе [ниже](#vscode-extension).
 
-## Что изменяет миграция?
+## Что изменяет миграция? {#what-does-the-migration-change}
 
 1. Члены класса с `@ViewChild()`, `@ViewChildren`, `@ContentChild` и `@ContentChildren`
    обновляются до их сигнальных эквивалентов.
@@ -61,7 +61,7 @@ export class MyComponent {
 }
 ```
 
-## Параметры конфигурации
+## Параметры конфигурации {#configuration-options}
 
 Миграция поддерживает несколько параметров для тонкой настройки под ваши конкретные нужды.
 

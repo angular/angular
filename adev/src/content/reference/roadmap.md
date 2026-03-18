@@ -18,13 +18,13 @@
 
 Начните разработку с использованием последних функций Angular из нашей дорожной карты. Этот список отражает текущий статус новых функций из нашей дорожной карты:
 
-### Доступно для экспериментов
+### Доступно для экспериментов {#available-to-experiment-with}
 
 - [Signal Forms](/guide/forms/signals/overview)
 - [Resource API](/guide/signals/resource)
 - [httpResource](/api/common/http/httpResource)
 
-### Готово к продакшену
+### Готово к продакшену {#production-ready}
 
 - [Zoneless-обнаружение изменений](/guide/zoneless)
 - [Linked Signal API](/guide/signals/linked-signal)

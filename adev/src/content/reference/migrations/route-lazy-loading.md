@@ -8,7 +8,7 @@
 ng generate @angular/core:route-lazy-loading
 ```
 
-### Параметр конфигурации `path`
+### Параметр конфигурации `path` {#path-config-option}
 
 По умолчанию миграция обходит всё приложение. Если вы хотите применить миграцию только к части файлов, можно передать аргумент `path` следующим образом:
 
@@ -18,7 +18,7 @@ ng generate @angular/core:route-lazy-loading --path src/app/sub-component
 
 Значение параметра `path` — это относительный путь внутри проекта.
 
-### Как это работает?
+### Как это работает? {#how-does-it-work}
 
 Схематик пытается найти все места, где определены маршруты приложения:
 
@@ -29,7 +29,7 @@ ng generate @angular/core:route-lazy-loading --path src/app/sub-component
 
 Миграция проверяет все компоненты в маршрутах, определяет, являются ли они standalone и загружаются немедленно, и если да — преобразует их в маршруты с ленивой загрузкой.
 
-#### До
+#### До {#before}
 
 ```typescript
 // app.module.ts
@@ -49,7 +49,7 @@ import {Home} from './home';
 export class AppModule {}
 ```
 
-#### После
+#### После {#after}
 
 ```typescript
 // app.module.ts

@@ -18,13 +18,13 @@
 
 ## Заголовки (h2) {#headers-h2}
 
-### Заголовки меньше (h3)
+### Заголовки меньше (h3) {#smaller-headers-h3}
 
-#### Ещё меньше (h4)
+#### Ещё меньше (h4) {#even-smaller-h4}
 
-##### Ещё меньше (h5)
+##### Ещё меньше (h5) {#even-more-smaller-h5}
 
-###### Самый маленький! (h6)
+###### Самый маленький! (h6) {#the-smallest-h6}
 
 ## Карточки {#cards}
 
@@ -40,7 +40,7 @@
   </docs-card>
 </docs-card-container>
 
-### Атрибуты `<docs-card>`
+### Атрибуты `<docs-card>` {#docs-card-attributes}
 
 | Атрибуты                | Описание                                                |
 | :---------------------- | :------------------------------------------------------ |
@@ -64,7 +64,7 @@
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla luctus metus blandit semper faucibus. Sed blandit diam quis tellus maximus, ac scelerisque ex egestas. Ut euismod lobortis mauris pretium iaculis. Quisque ullamcorper, elit ut lacinia blandit, magna sem finibus urna, vel suscipit tortor dolor id risus.
 </docs-callout>
 
-### Атрибуты `<docs-callout>`
+### Атрибуты `<docs-callout>` {#docs-callout-attributes}
 
 | Атрибуты                                         | Описание                                                   |
 | :----------------------------------------------- | :--------------------------------------------------------- |
@@ -85,7 +85,7 @@
   <docs-pill href="#pill-row" title="Link"/>
 </docs-pill-row>
 
-### Атрибуты `<docs-pill>`
+### Атрибуты `<docs-pill>` {#docs-pill-attributes}
 
 | Атрибуты         | Описание                                       |
 | :--------------- | :--------------------------------------------- |
@@ -141,7 +141,7 @@ template: '<h1>Hello World!</h1>',
 export class ComponentOverviewComponent {}
 </docs-code>
 
-### Стилизация примера
+### Стилизация примера {#styling-the-example}
 
 Вот полностью стилизованный пример кода:
 
@@ -168,7 +168,7 @@ console.log('Hello, World!');
 console.log('Awesome Angular Docs!');
 ```
 
-#### Атрибуты `<docs-code>`
+#### Атрибуты `<docs-code>` {#docs-code-attributes}
 
 | Атрибуты       | Тип                  | Описание                                                              |
 | :------------- | :------------------- | :-------------------------------------------------------------------- |
@@ -185,7 +185,7 @@ console.log('Awesome Angular Docs!');
 | `hideCode`     | `boolean`            | (False) Сворачивать ли пример кода по умолчанию.                      |
 | `hideDollar`   | `boolean`            | (False) Скрывать ли знак доллара в примерах кода для командной строки. |
 
-### Многофайловые примеры
+### Многофайловые примеры {#multifile-examples}
 
 Вы можете создавать многофайловые примеры, обернув примеры в `<docs-code-multifile>`.
 
@@ -200,7 +200,7 @@ console.log('Awesome Angular Docs!');
     path="adev/src/content/examples/hello-world/src/app/app.component.css" />
 </docs-code-multifile>
 
-#### Атрибуты `<docs-code-multifile>`
+#### Атрибуты `<docs-code-multifile>` {#docs-code-multifile-attributes}
 
 | Атрибуты      | Тип       | Описание                                                              |
 | :------------ | :-------- | :-------------------------------------------------------------------- |
@@ -210,13 +210,13 @@ console.log('Awesome Angular Docs!');
 | `hideCode`    | `boolean` | (False) Сворачивать ли пример кода по умолчанию.                      |
 | `hideDollar`  | `boolean` | (False) Скрывать ли знак доллара в примерах кода для командной строки. |
 
-### Добавление `preview` к примеру кода
+### Добавление `preview` к примеру кода {#adding-preview-to-your-code-example}
 
 Добавление флага `preview` создаёт запущенный пример кода под фрагментом кода. Это также автоматически добавляет кнопку для открытия запущенного примера в Stackblitz.
 
 NOTE: `preview` работает только со standalone-компонентами.
 
-### Стилизация предпросмотров примеров с помощью Tailwind CSS
+### Стилизация предпросмотров примеров с помощью Tailwind CSS {#styling-example-previews-with-tailwind-css}
 
 Утилитарные классы Tailwind можно использовать в примерах кода.
 
@@ -248,7 +248,7 @@ NOTE: `preview` работает только со standalone-компонент
 
 Стилизуйте нумерованные шаги с помощью `<docs-step>`. Нумерация создаётся с помощью CSS (удобно!).
 
-### Атрибуты `<docs-workflow>` и `<docs-step>`
+### Атрибуты `<docs-workflow>` и `<docs-step>` {#docs-workflow-and-docs-step-attributes}
 
 | Атрибуты           | Описание                                              |
 | :----------------- | :---------------------------------------------------- |
@@ -325,12 +325,12 @@ If your installation and setup was successful, you should see a page similar to 
 
 ![Rhubarb the cat](assets/images/kitchen-sink/rhubarb.jpg 'Optional title')
 
-### Добавьте `#small` и `#medium` для изменения размера изображения
+### Добавьте `#small` и `#medium` для изменения размера изображения {#add-small-and-medium-to-change-the-image-size}
 
 ![Rhubarb the small cat](assets/images/kitchen-sink/rhubarb.jpg#small)
 ![Rhubarb the medium cat](assets/images/kitchen-sink/rhubarb.jpg#medium)
 
-## Добавление атрибутов с помощью синтаксиса фигурных скобок
+## Добавление атрибутов с помощью синтаксиса фигурных скобок {#add-attributes-using-curly-braces-syntax}
 
 ![Lazy loaded image](assets/images/kitchen-sink/rhubarb.jpg {loading: 'lazy'})
 ![Combined attributes](assets/images/kitchen-sink/rhubarb.jpg#small {loading: 'lazy', decoding: 'async', fetchpriority: 'low'})

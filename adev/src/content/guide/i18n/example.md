@@ -6,7 +6,7 @@
 <!-- TODO: ссылка на GitHub -->
 <!-- <docs-code live path="adev/src/content/examples/i18n" title="живой пример"/> -->
 
-## Пример для `fr-CA` и `en-US`
+## Пример для `fr-CA` и `en-US` {#fr-ca-and-en-us-example}
 
 На следующих вкладках показаны пример приложения и связанные файлы перевода.
 
