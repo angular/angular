@@ -57,7 +57,7 @@ export {ParseTreeResult, TreeError} from './ml_parser/parser';
 export * from './ml_parser/tags';
 export {TokenType as LexerTokenType} from './ml_parser/tokens';
 export * from './ml_parser/xml_parser';
-export {EmitterVisitorContext} from './output/abstract_emitter';
+export {EmitterVisitorContext, AbstractEmitterVisitor} from './output/abstract_emitter';
 export {
   ArrayType,
   ArrowFunctionExpr,

@@ -212,10 +212,15 @@ export class EmitterVisitorContext {
   }
 }
 
-export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.ExpressionVisitor {
+export abstract class AbstractEmitterVisitor
+  implements o.StatementVisitor, o.ExpressionVisitor, o.TypeVisitor
+{
   private lastIfCondition: o.Expression | null = null;
 
-  constructor(private readonly printComments: boolean) {}
+  constructor(
+    protected readonly printComments: boolean,
+    protected readonly printTypes: boolean,
+  ) {}
 
   abstract visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): void;
   abstract visitWrappedNodeExpr(ast: o.WrappedNodeExpr<unknown>, ctx: EmitterVisitorContext): void;
@@ -266,10 +271,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 
     this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `${varKind} ${stmt.name}`);
+    stmt.type?.visitType(this, ctx);
+
     if (stmt.value) {
       ctx.print(stmt, ' = ');
       stmt.value.visitExpression(this, ctx);
     }
+
     ctx.println(stmt, `;`);
   }
 
@@ -379,10 +387,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, `(`);
     ast.condition.visitExpression(this, ctx);
-    ctx.print(ast, '? ');
+    ctx.print(ast, ' ? ');
     ast.trueCase.visitExpression(this, ctx);
-    ctx.print(ast, ': ');
-    ast.falseCase!.visitExpression(this, ctx);
+    ctx.print(ast, ' : ');
+    ast.falseCase?.visitExpression(this, ctx);
     ctx.print(ast, `)`);
   }
 
@@ -401,7 +409,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, `function${ast.name ? ' ' + ast.name : ''}(`);
     this.visitParams(ast.params, ctx);
-    ctx.println(ast, `) {`);
+    ctx.println(ast, `)`);
+    ast.type?.visitType(this, ctx);
+    ctx.println(ast, ` {`);
     ctx.incIndent();
     this.visitAllStatements(ast.statements, ctx);
     ctx.decIndent();
@@ -412,7 +422,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, '(');
     this.visitParams(ast.params, ctx);
-    ctx.print(ast, ') =>');
+    ctx.print(ast, ')');
+    ast.type?.visitType(this, ctx);
+    ctx.print(ast, ' =>');
 
     if (Array.isArray(ast.body)) {
       ctx.println(ast, `{`);
@@ -439,7 +451,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `function ${stmt.name}(`);
     this.visitParams(stmt.params, ctx);
-    ctx.println(stmt, `) {`);
+    ctx.println(stmt, `)`);
+    stmt.type?.visitType(this, ctx);
+    ctx.println(stmt, ` {`);
     ctx.incIndent();
     this.visitAllStatements(stmt.statements, ctx);
     ctx.decIndent();
@@ -498,7 +512,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, `[`);
-    this.visitAllExpressions(ast.entries, ctx, ',');
+    this.visitAllExpressions(ast.entries, ctx, ', ');
     ctx.print(ast, `]`);
   }
 
@@ -511,13 +525,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
           ctx.print(ast, '...');
           entry.expression.visitExpression(this, ctx);
         } else {
-          ctx.print(ast, `${escapeIdentifier(entry.key, entry.quoted)}:`);
+          ctx.print(ast, `${escapeIdentifier(entry.key, entry.quoted)}: `);
           entry.value.visitExpression(this, ctx);
         }
       },
       ast.entries,
       ctx,
-      ',',
+      ', ',
     );
     ctx.print(ast, `}`);
   }
@@ -525,7 +539,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitCommaExpr(ast: o.CommaExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, '(');
-    this.visitAllExpressions(ast.parts, ctx, ',');
+    this.visitAllExpressions(ast.parts, ctx, ', ');
     ctx.print(ast, ')');
   }
 
@@ -541,6 +555,85 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, '...');
     ast.expression.visitExpression(this, ctx);
+  }
+
+  visitBuiltinType(type: o.BuiltinType, ctx: EmitterVisitorContext): void {
+    if (!this.printTypes) {
+      return;
+    }
+
+    switch (type.name) {
+      case o.BuiltinTypeName.Bool:
+        ctx.print(null, ': boolean');
+        break;
+      case o.BuiltinTypeName.Dynamic:
+        ctx.print(null, ': any');
+        break;
+      case o.BuiltinTypeName.Int:
+      case o.BuiltinTypeName.Number:
+        ctx.print(null, ': number');
+        break;
+      case o.BuiltinTypeName.String:
+        ctx.print(null, ': string');
+        break;
+      case o.BuiltinTypeName.None:
+        ctx.print(null, ': void');
+        break;
+      case o.BuiltinTypeName.Inferred:
+        // Emits nothing
+        break;
+      case o.BuiltinTypeName.Function:
+        ctx.print(null, ': Function');
+        break;
+      default:
+        ctx.print(null, ': any');
+        break;
+    }
+  }
+
+  visitExpressionType(type: o.ExpressionType, ctx: EmitterVisitorContext): void {
+    if (!this.printTypes) {
+      return;
+    }
+
+    ctx.print(null, ': ');
+    type.value.visitExpression(this, ctx);
+
+    if (type.typeParams && type.typeParams.length > 0) {
+      ctx.print(null, '<');
+      this.visitAllObjects((param) => param.visitType(this, ctx), type.typeParams, ctx, ',');
+      ctx.print(null, '>');
+    }
+  }
+
+  visitArrayType(type: o.ArrayType, ctx: EmitterVisitorContext): void {
+    if (!this.printTypes) {
+      return;
+    }
+
+    ctx.print(null, ': ');
+    type.of.visitType(this, ctx);
+    ctx.print(null, '[]');
+  }
+
+  visitMapType(type: o.MapType, ctx: EmitterVisitorContext): void {
+    if (!this.printTypes) {
+      return;
+    }
+
+    ctx.print(null, ': { [key: string]: ');
+
+    if (type.valueType) {
+      type.valueType.visitType(this, ctx);
+    } else {
+      ctx.print(null, 'any');
+    }
+
+    ctx.print(null, '}');
+  }
+
+  visitTransplantedType(type: o.TransplantedType<unknown>, ctx: EmitterVisitorContext): void {
+    throw new Error('TransplantedType nodes are not supported');
   }
 
   visitAllExpressions(
@@ -585,8 +678,16 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     statements.forEach((stmt) => stmt.visitStatement(this, ctx));
   }
 
-  private visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects((param) => ctx.print(null, param.name), params, ctx, ',');
+  protected visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
+    this.visitAllObjects(
+      (param) => {
+        ctx.print(null, param.name);
+        param.type?.visitType(this, ctx);
+      },
+      params,
+      ctx,
+      ', ',
+    );
   }
 
   protected shouldParenthesize(
