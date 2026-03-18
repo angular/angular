@@ -50,6 +50,8 @@ export const NG_CONTROL_PARSE_ERRORS_PROVIDER: Provider = {
  * A base class that all `FormControl`-based directives extend. It binds a `FormControl`
  * object to a DOM element.
  *
+ * @see [Using NgControl](guide/forms/custom-form-controls#using-ngcontrol)
+ *
  * @publicApi
  */
 export abstract class NgControl extends AbstractControlDirective {
