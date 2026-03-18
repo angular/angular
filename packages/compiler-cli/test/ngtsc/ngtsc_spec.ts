@@ -162,7 +162,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
       );
       expect(jsContents).toContain("providedIn: 'root' })");
       expect(jsContents).not.toContain('__decorate');
@@ -494,7 +494,9 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(
         'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
       );
-      expect(jsContents).toContain('return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));');
+      expect(jsContents).toContain(
+        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      );
       expect(jsContents).toContain(
         '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep));',
       );
@@ -532,7 +534,9 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(
         'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
       );
-      expect(jsContents).toContain('return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));');
+      expect(jsContents).toContain(
+        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      );
       expect(jsContents).toContain(
         '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep, 10));',
       );
@@ -569,7 +573,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain('Mod.ɵmod =');
       expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
       );
       expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
@@ -626,7 +630,7 @@ runInEachFileSystem((os: string) => {
 
       expect(jsContents).toContain(
         `Service.ɵfac = function Service_Factory(__ngFactoryType__) { ` +
-          `return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
+          `/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
       );
     });
 
@@ -5123,7 +5127,7 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        `FooCmp.ɵfac = function FooCmp_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
+        `FooCmp.ɵfac = function FooCmp_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
       );
     });
 
@@ -6168,7 +6172,7 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
 
       expect(jsContents).toContain(
-        'function Base_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Base)(i0.ɵɵinject(Dep)); }',
+        'function Base_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Base)(i0.ɵɵinject(Dep)); }',
       );
       expect(jsContents).toContain(
         '(() => { let ɵChild_BaseFactory; return function Child_Factory(__ngFactoryType__) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(__ngFactoryType__ || Child); }; })();',

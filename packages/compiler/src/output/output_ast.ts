@@ -317,8 +317,8 @@ export abstract class Expression {
     return new BinaryOperatorExpr(BinaryOperator.NullishCoalesce, this, rhs, null, sourceSpan);
   }
 
-  toStmt(): Statement {
-    return new ExpressionStatement(this, null);
+  toStmt(leadingComments?: LeadingComment[]): Statement {
+    return new ExpressionStatement(this, null, leadingComments);
   }
 }
 

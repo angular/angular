@@ -3,87 +3,57 @@
   "cases": [
     {
       "description": "should define a basic NgModule (linked)",
-      "inputFiles": [
-        "basic_linked.ts"
-      ],
+      "inputFiles": ["basic_linked.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "basic_linked.js"
-          ]
+          "files": ["basic_linked.js"]
         }
       ],
-      "compilationModeFilter": [
-        "linked compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["linked compile", "declaration-only emit"]
     },
     {
-      "description": "should define a basic NgModule (full/local)",      
-      "inputFiles": [
-        "basic_full.ts"
-      ],
+      "description": "should define a basic NgModule (full/local)",
+      "inputFiles": ["basic_full.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "basic_full.js"
-          ]
+          "files": ["basic_full.js"]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "local compile", "declaration-only emit"]
     },
     {
       "description": "should define an NgModule with declarations and bootstrap",
-      "inputFiles": [
-        "declarations.ts"
-      ],
+      "inputFiles": ["declarations.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "declarations.js"
-          ]
+          "files": ["declarations.js"]
         }
       ]
     },
     {
       "description": "should define an NgModule with declarations and bootstrap (jit mode)",
-      "inputFiles": [
-        "declarations_jit_mode.ts"
-      ],
+      "inputFiles": ["declarations_jit_mode.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "declarations_jit_mode.js"
-          ]
+          "files": ["declarations_jit_mode.js"]
         }
       ],
-      "compilationModeFilter": [
-        "linked compile",
-        "declaration-only emit"
-      ],
+      "compilationModeFilter": ["linked compile", "declaration-only emit"],
       "angularCompilerOptions": {
         "linkerJitMode": true
       }
     },
     {
       "description": "should define an NgModule and injector with providers",
-      "inputFiles": [
-        "providers.ts"
-      ],
+      "inputFiles": ["providers.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "providers.js"
-          ]
+          "files": ["providers.js"]
         }
       ],
       "compilationModeFilter": [
@@ -95,55 +65,36 @@
     },
     {
       "description": "should define NgModules with imports and exports",
-      "inputFiles": [
-        "imports_exports.ts"
-      ],
+      "inputFiles": ["imports_exports.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "imports_exports.js"
-          ]
+          "files": ["imports_exports.js"]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "local compile", "declaration-only emit"]
     },
     {
       "description": "should define NgModules with imports and exports (jit mode)",
-      "inputFiles": [
-        "imports_exports_jit_mode.ts"
-      ],
+      "inputFiles": ["imports_exports_jit_mode.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "imports_exports_jit_mode.js"
-          ]
+          "files": ["imports_exports_jit_mode.js"]
         }
       ],
-      "compilationModeFilter": [
-        "linked compile",
-        "declaration-only emit"
-      ],
+      "compilationModeFilter": ["linked compile", "declaration-only emit"],
       "angularCompilerOptions": {
         "linkerJitMode": true
       }
     },
     {
       "description": "should not process NgModules that are marked `jit`",
-      "inputFiles": [
-        "no_aot.ts"
-      ],
+      "inputFiles": ["no_aot.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "no_aot.js"
-          ]
+          "files": ["no_aot.js"]
         }
       ],
       "compilationModeFilter": [
@@ -155,15 +106,11 @@
     },
     {
       "description": "should handle NgModules that extend other classes",
-      "inputFiles": [
-        "inheritance.ts"
-      ],
+      "inputFiles": ["inheritance.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "inheritance.js"
-          ]
+          "files": ["inheritance.js"]
         }
       ],
       "compilationModeFilter": [
@@ -175,36 +122,25 @@
     },
     {
       "description": "should handle NgModules with forward refs",
-      "inputFiles": [
-        "forward_refs.ts"
-      ],
+      "inputFiles": ["forward_refs.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid NgModule/Injector definition",
-          "files": [
-            "forward_refs.js"
-          ]
+          "files": ["forward_refs.js"]
         }
       ],
-      "compilationModeFilter": [
-        "linked compile",
-        "declaration-only emit"
-      ],
+      "compilationModeFilter": ["linked compile", "declaration-only emit"],
       "angularCompilerOptions": {
         "linkerJitMode": true
       }
     },
     {
       "description": "should not pass along empty array fields to the declaration",
-      "inputFiles": [
-        "empty_fields.ts"
-      ],
+      "inputFiles": ["empty_fields.ts"],
       "expectations": [
         {
           "failureMessage": "Empty declaration exists",
-          "files": [
-            "empty_fields.js"
-          ]
+          "files": ["empty_fields.js"]
         }
       ],
       "compilationModeFilter": [
@@ -216,15 +152,11 @@
     },
     {
       "description": "should handle providers passed in as a variable",
-      "inputFiles": [
-        "variable_providers.ts"
-      ],
+      "inputFiles": ["variable_providers.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid injector definition",
-          "files": [
-            "variable_providers.js"
-          ]
+          "files": ["variable_providers.js"]
         }
       ],
       "compilationModeFilter": [

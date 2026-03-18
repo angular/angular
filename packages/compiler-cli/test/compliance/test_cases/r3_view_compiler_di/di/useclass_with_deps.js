@@ -7,6 +7,7 @@ export class MyService {
       if (__ngFactoryType__) {
         __ngConditionalFactory__ = new __ngFactoryType__();
       } else {
+        /* @ts-ignore */
         __ngConditionalFactory__ = new MyAlternateService($r3$.ɵɵinject(SomeDep));
       }
       return __ngConditionalFactory__;
