@@ -368,17 +368,17 @@ describe('ShadowCss', () => {
   describe('comments', () => {
     // Comments should be kept in the same position as otherwise inline sourcemaps break due to
     // shift in lines.
-    it('should replace multiline comments with newline', () => {
-      expect(shim('/* b {c} */ b {c}', 'contenta')).toBe('\n b[contenta] {c}');
+    it('should remove inline comments without adding extra lines', () => {
+      expect(shim('/* b {c} */ b {c}', 'contenta')).toBe(' b[contenta] {c}');
     });
 
-    it('should replace multiline comments with newline in the original position', () => {
-      expect(shim('/* b {c}\n */ b {c}', 'contenta')).toBe('\n\n b[contenta] {c}');
+    it('should preserve internal newlines from multiline comments', () => {
+      expect(shim('/* b {c}\n */ b {c}', 'contenta')).toBe('\n b[contenta] {c}');
     });
 
-    it('should replace comments with newline in the original position', () => {
+    it('should remove multiple inline comments without adding extra lines', () => {
       expect(shim('/* b {c} */ b {c} /* a {c} */ a {c}', 'contenta')).toBe(
-        '\n b[contenta] {c} \n a[contenta] {c}',
+        ' b[contenta] {c}  a[contenta] {c}',
       );
     });
 
@@ -392,9 +392,7 @@ describe('ShadowCss', () => {
     });
 
     it('should handle adjacent comments', () => {
-      expect(shim('/* comment 1 */ /* comment 2 */ b {c}', 'contenta')).toBe(
-        '\n \n b[contenta] {c}',
-      );
+      expect(shim('/* comment 1 */ /* comment 2 */ b {c}', 'contenta')).toBe('  b[contenta] {c}');
     });
   });
 });
