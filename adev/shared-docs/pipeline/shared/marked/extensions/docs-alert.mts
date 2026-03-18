@@ -10,15 +10,15 @@ import {RendererThis, Token, TokenizerAndRendererExtension, TokenizerThis, Token
 
 /** Enum of all available alert severities. */
 export enum AlertSeverityLevel {
-  NOTE = 'NOTE',
-  TIP = 'TIP',
+  NOTE = 'ПРИМЕЧАНИЕ',
+  TIP = 'СОВЕТ',
   TODO = 'TODO',
-  QUESTION = 'QUESTION',
-  SUMMARY = 'SUMMARY',
-  TLDR = 'TL;DR',
-  CRITICAL = 'CRITICAL',
-  IMPORTANT = 'IMPORTANT',
-  HELPFUL = 'HELPFUL',
+  QUESTION = 'ВОПРОС',
+  SUMMARY = 'ИТОГ',
+  TLDR = 'КРАТКО',
+  CRITICAL = 'КРИТИЧНО',
+  IMPORTANT = 'ВАЖНО',
+  HELPFUL = 'ПОЛЕЗНО',
 }
 
 /** Token for docs-alerts */
