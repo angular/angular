@@ -1,19 +1,19 @@
-# Angular without ZoneJS (Zoneless)
+# Angular без ZoneJS (Zoneless) {#angular-without-zonejs-zoneless}
 
-## Why use Zoneless?
+## Зачем использовать Zoneless? {#why-use-zoneless}
 
-The main advantages to removing ZoneJS as a dependency are:
+Основные преимущества удаления ZoneJS как зависимости:
 
-- **Improved performance**: ZoneJS uses DOM events and async tasks as indicators of when application state _might_ have updated and subsequently triggers application synchronization to run change detection on the application's views. ZoneJS does not have any insight into whether application state actually changed and so this synchronization is triggered more frequently than necessary.
-- **Improved Core Web Vitals**: ZoneJS brings a fair amount of overhead, both in payload size and in startup time cost.
-- **Improved debugging experience**: ZoneJS makes debugging code more difficult. Stack traces are harder to understand with ZoneJS. It's also difficult to understand when code breaks as a result of being outside the Angular Zone.
-- **Better ecosystem compatibility**: ZoneJS works by patching browser APIs but does not automatically have patches for every new browser API. Some APIs cannot be patched effectively, such as `async`/`await`, and have to be downleveled to work with ZoneJS. Sometimes libraries in the ecosystem are also incompatible with the way ZoneJS patches the native APIs. Removing ZoneJS as a dependency ensures better long-term compatibility by removing a source of complexity, monkey patching, and ongoing maintenance.
+- **Улучшенная производительность**: ZoneJS использует DOM-события и асинхронные задачи как индикаторы возможного обновления состояния приложения и запускает синхронизацию приложения для обнаружения изменений в представлениях. ZoneJS не знает, действительно ли изменилось состояние приложения, поэтому синхронизация запускается чаще, чем необходимо.
+- **Улучшенные Core Web Vitals**: ZoneJS привносит значительные накладные расходы как по размеру полезной нагрузки, так и по стоимости времени запуска.
+- **Улучшенный опыт отладки**: ZoneJS усложняет отладку кода. Трассировки стека труднее понять с ZoneJS. Также сложно понять, когда код нарушается из-за выполнения вне Angular Zone.
+- **Лучшая совместимость с экосистемой**: ZoneJS работает путём патчинга браузерных API, но не имеет автоматических патчей для каждого нового браузерного API. Некоторые API не могут быть эффективно запатчены, например `async`/`await`, и должны понижаться для работы с ZoneJS. Иногда библиотеки в экосистеме также несовместимы со способом, которым ZoneJS патчит нативные API. Удаление ZoneJS как зависимости обеспечивает лучшую долгосрочную совместимость, устраняя источник сложности, monkey patching и текущего обслуживания.
 
-## Enabling Zoneless in an application
+## Включение Zoneless в приложении {#enabling-zoneless-in-an-application}
 
-Zoneless is the default in Angular v21+ so you do not need to do anything to enable it. You should verify that `provideZoneChangeDetection` is not used anywhere to override the default configuration.
+Zoneless используется по умолчанию в Angular v21+ и не требует никаких действий для включения. Убедитесь, что `provideZoneChangeDetection` нигде не используется для переопределения конфигурации по умолчанию.
 
-If you are using Angular v20, enable zoneless change detection by adding `provideZonelessChangeDetection()` at bootstrap:
+Если вы используете Angular v20, включите обнаружение изменений без zone, добавив `provideZonelessChangeDetection()` при загрузке:
 
 ```ts {header: 'standalone bootstrap'}
 bootstrapApplication(MyApp, {providers: [provideZonelessChangeDetection()]});
@@ -28,68 +28,65 @@ platformBrowser().bootstrapModule(AppModule);
 export class AppModule {}
 ```
 
-## Removing ZoneJS
+## Удаление ZoneJS {#removing-zonejs}
 
-Zoneless applications should remove ZoneJS entirely from the build to reduce bundle size. ZoneJS is typically
-loaded via the `polyfills` option in `angular.json`, both in the `build` and `test` targets. Remove `zone.js`
-and `zone.js/testing` from both to remove it from the build. Projects which use an explicit `polyfills.ts` file
-should remove `import 'zone.js';` and `import 'zone.js/testing';` from the file.
+Zoneless-приложениям следует полностью удалить ZoneJS из сборки для уменьшения размера бандла. ZoneJS обычно
+загружается через опцию `polyfills` в `angular.json`, как в целевых объектах `build`, так и `test`. Удалите `zone.js`
+и `zone.js/testing` из обоих, чтобы исключить его из сборки. Проекты, использующие явный файл `polyfills.ts`,
+должны удалить `import 'zone.js';` и `import 'zone.js/testing';` из файла.
 
-After removing ZoneJS from the build, there is no longer a need for a `zone.js` dependency either and the
-package can be removed entirely:
+После удаления ZoneJS из сборки зависимость от `zone.js` больше не нужна, и
+пакет можно полностью удалить:
 
 ```shell
 npm uninstall zone.js
 ```
 
-## Requirements for Zoneless compatibility
+## Требования для совместимости с Zoneless {#requirements-for-zoneless-compatibility}
 
-Angular relies on notifications from core APIs in order to determine when to run change detection and on which views.
-These notifications include:
+Angular полагается на уведомления от основных API для определения того, когда запускать обнаружение изменений и в каких представлениях.
+К таким уведомлениям относятся:
 
-- `ChangeDetectorRef.markForCheck` (called automatically by `AsyncPipe`)
+- `ChangeDetectorRef.markForCheck` (вызывается автоматически `AsyncPipe`)
 - `ComponentRef.setInput`
-- Updating a signal that's read in a template
-- Bound host or template listeners callbacks
-- Attaching a view that was marked dirty by one of the above
+- Обновление сигнала, читаемого в шаблоне
+- Обратные вызовы привязанных слушателей хоста или шаблона
+- Присоединение представления, помеченного как грязное одним из вышеуказанных
 
-### `OnPush`-compatible components
+### Компоненты, совместимые с `OnPush` {#onpush-compatible-components}
 
-One way to ensure that a component is using the correct notification mechanisms from above is to
-use [ChangeDetectionStrategy.OnPush](/best-practices/skipping-subtrees#using-onpush).
+Один из способов убедиться, что компонент использует правильные механизмы уведомлений, описанные выше, — использовать [ChangeDetectionStrategy.OnPush](/best-practices/skipping-subtrees#using-onpush).
 
-The `OnPush` change detection strategy is not required, but it is a recommended step towards zoneless compatibility for application components. It is not always possible for library components to use `ChangeDetectionStrategy.OnPush`.
-When a library component is a host for user-components which might use `ChangeDetectionStrategy.Eager`/`Default`, it cannot use `OnPush` because that would prevent the child component from being refreshed if it is not `OnPush` compatible and relies on ZoneJS to trigger change detection. Components can use the `Default` strategy as long as they notify Angular when change detection needs to run (calling `markForCheck`, using signals, `AsyncPipe`, etc.).
-Being a host for a user component means using an API such as `ViewContainerRef.createComponent` and not just hosting a portion of a template from a user component (i.e. content projection or using a template ref input).
+Стратегия обнаружения изменений `OnPush` не является обязательной, но является рекомендуемым шагом к совместимости с Zoneless для компонентов приложения. Для компонентов библиотек не всегда возможно использовать `ChangeDetectionStrategy.OnPush`.
+Когда компонент библиотеки является хостом для пользовательских компонентов, которые могут использовать `ChangeDetectionStrategy.Eager`/`Default`, он не может использовать `OnPush`, поскольку это предотвратит обновление дочернего компонента, если он не совместим с `OnPush` и зависит от ZoneJS для запуска обнаружения изменений. Компоненты могут использовать стратегию `Default`, если они уведомляют Angular о необходимости запуска обнаружения изменений (вызов `markForCheck`, использование сигналов, `AsyncPipe` и т. д.).
+Быть хостом для пользовательского компонента означает использование API, такого как `ViewContainerRef.createComponent`, а не просто размещение части шаблона из пользовательского компонента (т. е. проекция контента или использование входного шаблонного ref).
 
-### Remove `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`, `NgZone.isStable`, or `NgZone.onStable`
+### Удаление `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`, `NgZone.isStable` или `NgZone.onStable` {#remove-ngzone-onmicrotaskempty-ngzone-onunstable-ngzone-isstable-or-ngzone-onstable}
 
-Applications and libraries need to remove uses of `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable` and `NgZone.onStable`.
-These observables will never emit when an Application enables zoneless change detection.
-Similarly, `NgZone.isStable` will always be `true` and should not be used as a condition for code execution.
+Приложениям и библиотекам необходимо удалить использование `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable` и `NgZone.onStable`.
+Эти наблюдаемые никогда не будут генерировать события, когда приложение включает обнаружение изменений без zone.
+Аналогично, `NgZone.isStable` всегда будет `true` и не должен использоваться как условие для выполнения кода.
 
-The `NgZone.onMicrotaskEmpty` and `NgZone.onStable` observables are most often used to wait for Angular to
-complete change detection before performing a task. Instead, these can be replaced by `afterNextRender`
-if they need to wait for a single change detection or `afterEveryRender` if there is some condition that might span
-several change detection rounds. In other cases, these observables were used because they happened to be
-familiar and have similar timing to what was needed. More straightforward or direct DOM APIs can be used instead,
-such as `MutationObserver` when code needs to wait for certain DOM state (rather than waiting for it indirectly
-through Angular's render hooks).
+Наблюдаемые `NgZone.onMicrotaskEmpty` и `NgZone.onStable` чаще всего используются для ожидания завершения обнаружения изменений Angular перед выполнением задачи. Вместо них можно использовать `afterNextRender`,
+если нужно подождать одного цикла обнаружения изменений, или `afterEveryRender`, если есть условие, которое может охватывать
+несколько циклов. В других случаях эти наблюдаемые использовались потому, что они были знакомы и имели похожий тайминг с тем, что требовалось. Вместо них можно использовать более прямолинейные или прямые DOM API,
+например `MutationObserver`, когда коду нужно дождаться определённого состояния DOM (а не ждать этого косвенно
+через хуки рендеринга Angular).
 
-<docs-callout title="NgZone.run and NgZone.runOutsideAngular are compatible with Zoneless">
-`NgZone.run` and `NgZone.runOutsideAngular` do not need to be removed in order for code to be compatible with
-Zoneless applications. In fact, removing these calls can lead to performance regressions for libraries that
-are used in applications that still rely on ZoneJS.
+<docs-callout title="NgZone.run и NgZone.runOutsideAngular совместимы с Zoneless">
+`NgZone.run` и `NgZone.runOutsideAngular` не нужно удалять для того, чтобы код был совместим с
+Zoneless-приложениями. Фактически, удаление этих вызовов может привести к снижению производительности для библиотек,
+используемых в приложениях, которые по-прежнему зависят от ZoneJS.
 </docs-callout>
 
-### `PendingTasks` for Server Side Rendering (SSR)
+### `PendingTasks` для серверного рендеринга (SSR) {#pendingtasks-for-server-side-rendering-ssr}
 
-If you are using SSR with Angular, you may know that it relies on ZoneJS to help determine when the application
-is "stable" and can be serialized. If there are asynchronous tasks that should prevent serialization, an application
-not using ZoneJS must make Angular aware of these with the [PendingTasks](/api/core/PendingTasks) service. Serialization
-will wait for the first moment that all pending tasks have been removed.
+Если вы используете SSR с Angular, вы, вероятно, знаете, что он зависит от ZoneJS для определения момента, когда приложение
+«стабильно» и может быть сериализовано. Если есть асинхронные задачи, которые должны предотвратить сериализацию, приложение,
+не использующее ZoneJS, должно уведомить Angular об этом с помощью сервиса [PendingTasks](/api/core/PendingTasks). Сериализация
+будет ждать первого момента, когда все ожидающие задачи будут удалены.
 
-The two most straightforward uses of pending tasks are the `run` method:
+Два наиболее простых способа использования ожидающих задач — метод `run`:
 
 ```typescript
 const taskService = inject(PendingTasks);
@@ -99,7 +96,7 @@ taskService.run(async () => {
 });
 ```
 
-For more complicated use-cases, you can manually add and remove a pending task:
+Для более сложных случаев можно вручную добавлять и удалять ожидающую задачу:
 
 ```typescript
 const taskService = inject(PendingTasks);
@@ -113,29 +110,28 @@ try {
 }
 ```
 
-In addition, the [pendingUntilEvent](/api/core/rxjs-interop/pendingUntilEvent#) helper in `rxjs-interop` ensures
-the application remains unstable until the observable emits, completes, errors, or is unsubscribed.
+Кроме того, вспомогательная функция [pendingUntilEvent](/api/core/rxjs-interop/pendingUntilEvent#) в `rxjs-interop` гарантирует,
+что приложение остаётся нестабильным до тех пор, пока наблюдаемая не сгенерирует событие, не завершится, не выдаст ошибку или не отпишется.
 
 ```typescript
 readonly myObservableState = someObservable.pipe(pendingUntilEvent());
 ```
 
-The framework uses this service internally as well to prevent serialization until asynchronous tasks are complete. These include, but are not limited to,
-an ongoing Router navigation and an incomplete `HttpClient` request.
+Фреймворк также использует этот сервис внутри для предотвращения сериализации до завершения асинхронных задач. К ним относятся, но не ограничиваются: текущая навигация Router и незавершённый запрос `HttpClient`.
 
-### Reactive forms in zoneless applications
+### Реактивные формы в Zoneless-приложениях {#reactive-forms-in-zoneless-applications}
 
-Reactive forms model updates (`setValue`, `patchValue`, `FormArray.push`, and similar APIs) update form state and emit forms observables, but they do not automatically schedule component change detection.
+Обновления модели реактивных форм (`setValue`, `patchValue`, `FormArray.push` и аналогичные API) обновляют состояние формы и генерируют события форм, но не запускают автоматически обнаружение изменений компонента.
 
-If a template depends on reactive forms state, connect forms observables to a change-detection notification (for example `ChangeDetectorRef.markForCheck()`), or reflect the data through signals consumed by the template.
+Если шаблон зависит от состояния реактивных форм, подключите наблюдаемые форм к уведомлению об обнаружении изменений (например, `ChangeDetectorRef.markForCheck()`), или отразите данные через сигналы, потребляемые шаблоном.
 
-## Testing and Debugging
+## Тестирование и отладка {#testing-and-debugging}
 
-### Using Zoneless in `TestBed`
+### Использование Zoneless в `TestBed` {#using-zoneless-in-testbed}
 
-`TestBed` uses Zone-based change detection by default when `zone.js` is loaded via the `polyfills`.
+`TestBed` по умолчанию использует обнаружение изменений на основе Zone, когда `zone.js` загружается через `polyfills`.
 
-If `zone.js` is not present, `TestBed` runs zoneless by default. To force zoneless mode when `zone.js` is loaded, add `provideZonelessChangeDetection()`:
+Если `zone.js` отсутствует, `TestBed` по умолчанию работает без zone. Чтобы принудительно включить режим без zone при загруженном `zone.js`, добавьте `provideZonelessChangeDetection()`:
 
 ```typescript
 TestBed.configureTestingModule({
@@ -148,29 +144,29 @@ const fixture = TestBed.createComponent(MyComponent);
 await fixture.whenStable();
 ```
 
-To ensure tests have the most similar behavior to production code,
-avoid using `fixture.detectChanges()` when possible. This forces
-change detection to run when Angular might otherwise have not
-scheduled change detection. Tests should ensure these notifications
-are happening and allow Angular to handle when to synchronize
-state rather than manually forcing it to happen in the test.
+Чтобы тесты имели наиболее схожее поведение с производственным кодом,
+по возможности избегайте использования `fixture.detectChanges()`. Это принудительно
+запускает обнаружение изменений, когда Angular иначе мог бы не
+планировать его. Тесты должны гарантировать, что эти уведомления
+происходят, и позволить Angular управлять синхронизацией
+состояния, вместо принудительного запуска в тесте.
 
-For existing test suites, using `fixture.detectChanges()` is a common pattern
-and it is likely not worth the effort of converting these to
-`await fixture.whenStable()`. `TestBed` will still enforce that the
-fixture's component is `OnPush` compatible and throws `ExpressionChangedAfterItHasBeenCheckedError`
-if it finds that template values were updated without a
-change notification (i.e. `fixture.componentInstance.someValue = 'newValue';`).
-If the component is used in production, this issue should be addressed by updating
-the component to use signals for state or call `ChangeDetectorRef.markForCheck()`.
-If the component is only used as a test wrapper and never used in an application,
-it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
+Для существующих наборов тестов использование `fixture.detectChanges()` является распространённым паттерном,
+и вероятно, не стоит тратить усилия на их преобразование в
+`await fixture.whenStable()`. `TestBed` всё равно будет проверять, что компонент
+fixture совместим с `OnPush`, и выбрасывает `ExpressionChangedAfterItHasBeenCheckedError`,
+если обнаружит, что значения шаблона были обновлены без
+уведомления об изменении (т. е. `fixture.componentInstance.someValue = 'newValue';`).
+Если компонент используется в продакшене, эту проблему следует решить, обновив
+компонент для использования сигналов для хранения состояния или вызова `ChangeDetectorRef.markForCheck()`.
+Если компонент используется только как обёртка для теста и никогда не используется в приложении,
+допустимо использовать `fixture.changeDetectorRef.markForCheck()`.
 
-### Debug-mode check to ensure updates are detected
+### Проверка в режиме отладки для обеспечения обнаружения обновлений {#debug-mode-check-to-ensure-updates-are-detected}
 
-Angular also provides an additional tool to help verify that an application is making
-updates to state in a zoneless-compatible way. `provideCheckNoChangesConfig({exhaustive: true, interval: <milliseconds>})`
-can be used to periodically check to ensure that no bindings have been updated
-without a notification. Angular throws `ExpressionChangedAfterItHasBeenCheckedError`
-if there is an updated binding that would not have refreshed by the zoneless change
-detection.
+Angular также предоставляет дополнительный инструмент для проверки того, что приложение обновляет
+состояние способом, совместимым с Zoneless. `provideCheckNoChangesConfig({exhaustive: true, interval: <milliseconds>})`
+можно использовать для периодической проверки того, что никакие привязки не были обновлены
+без уведомления. Angular выбрасывает `ExpressionChangedAfterItHasBeenCheckedError`,
+если есть обновлённая привязка, которая не была бы обновлена обнаружением изменений
+без zone.

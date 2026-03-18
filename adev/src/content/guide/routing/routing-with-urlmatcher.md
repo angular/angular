@@ -1,56 +1,56 @@
-# Creating custom route matches
+# Создание пользовательских сопоставителей маршрутов {#creating-custom-route-matches}
 
-The Angular Router supports a powerful matching strategy that you can use to help users navigate your application.
-This matching strategy supports static routes, variable routes with parameters, wildcard routes, and so on.
-Also, build your own custom pattern matching for situations in which the URLs are more complicated.
+Angular Router поддерживает мощную стратегию сопоставления, которую можно использовать для удобной навигации по приложению.
+Эта стратегия поддерживает статические маршруты, переменные маршруты с параметрами, маршруты с подстановочными знаками и другие варианты.
+Также можно создавать собственные пользовательские шаблоны сопоставления для ситуаций, когда URL более сложные.
 
-In this tutorial, you'll build a custom route matcher using Angular's `UrlMatcher`.
-This matcher looks for a Twitter handle in the URL.
+В этом руководстве вы создадите пользовательский сопоставитель маршрутов с использованием `UrlMatcher` Angular.
+Этот сопоставитель ищет имя пользователя Twitter в URL.
 
-## Objectives
+## Цели {#objectives}
 
-Implement Angular's `UrlMatcher` to create a custom route matcher.
+Реализовать `UrlMatcher` Angular для создания пользовательского сопоставителя маршрутов.
 
-## Create a sample application
+## Создание примера приложения {#create-a-sample-application}
 
-Using the Angular CLI, create a new application, _angular-custom-route-match_.
-In addition to the default Angular application framework, you will also create a _profile_ component.
+С помощью Angular CLI создайте новое приложение _angular-custom-route-match_.
+Помимо стандартной структуры Angular-приложения, также будет создан компонент _profile_.
 
-1. Create a new Angular project, _angular-custom-route-match_.
+1. Создайте новый проект Angular _angular-custom-route-match_.
 
    ```shell
    ng new angular-custom-route-match
    ```
 
-   When prompted with `Would you like to add Angular routing?`, select `Y`.
+   На вопрос `Would you like to add Angular routing?` выберите `Y`.
 
-   When prompted with `Which stylesheet format would you like to use?`, select `CSS`.
+   На вопрос `Which stylesheet format would you like to use?` выберите `CSS`.
 
-   After a few moments, a new project, `angular-custom-route-match`, is ready.
+   Через некоторое время новый проект `angular-custom-route-match` будет готов.
 
-1. From your terminal, navigate to the `angular-custom-route-match` directory.
-1. Create a component, _profile_.
+1. В терминале перейдите в директорию `angular-custom-route-match`.
+1. Создайте компонент _profile_.
 
    ```shell
    ng generate component profile
    ```
 
-1. In your code editor, locate the file, `profile.html` and replace the placeholder content with the following HTML.
+1. В редакторе кода найдите файл `profile.html` и замените содержимое-заполнитель следующим HTML.
 
    <docs-code header="profile.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/profile/profile.html"/>
 
-1. In your code editor, locate the file, `app.html` and replace the placeholder content with the following HTML.
+1. В редакторе кода найдите файл `app.html` и замените содержимое-заполнитель следующим HTML.
 
    <docs-code header="app.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.html"/>
 
-## Configure your routes for your application
+## Настройка маршрутов приложения {#configure-your-routes-for-your-application}
 
-With your application framework in place, you next need to add routing capabilities to the `app.config.ts` file.
-As a part of this process, you will create a custom URL matcher that looks for a Twitter handle in the URL.
-This handle is identified by a preceding `@` symbol.
+Когда структура приложения готова, нужно добавить возможности маршрутизации в файл `app.config.ts`.
+В рамках этого процесса будет создан пользовательский URL-сопоставитель, который ищет имя пользователя Twitter в URL.
+Имя пользователя определяется предшествующим символом `@`.
 
-1. In your code editor, open your `app.config.ts` file.
-1. Add an `import` statement for Angular's `provideRouter` and `withComponentInputBinding` as well as the application routes.
+1. В редакторе кода откройте файл `app.config.ts`.
+1. Добавьте оператор `import` для `provideRouter` и `withComponentInputBinding` Angular, а также маршруты приложения.
 
    ```ts
    import {provideRouter, withComponentInputBinding} from '@angular/router';
@@ -58,59 +58,58 @@ This handle is identified by a preceding `@` symbol.
    import {routes} from './app.routes';
    ```
 
-1. In the providers array, add a `provideRouter(routes, withComponentInputBinding())` statement.
+1. В массив providers добавьте оператор `provideRouter(routes, withComponentInputBinding())`.
 
-1. Define the custom route matcher by adding the following code to the application routes.
+1. Определите пользовательский сопоставитель маршрутов, добавив следующий код в маршруты приложения.
 
    <docs-code header="app.routes.ts" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.routes.ts" region="matcher"/>
 
-This custom matcher is a function that performs the following tasks:
+Этот пользовательский сопоставитель — функция, выполняющая следующие задачи:
 
-- The matcher verifies that the array contains only one segment
-- The matcher employs a regular expression to ensure that the format of the username is a match
-- If there is a match, the function returns the entire URL, defining a `username` route parameter as a substring of the path
-- If there isn't a match, the function returns null and the router continues to look for other routes that match the URL
+- Сопоставитель проверяет, что массив содержит только один сегмент
+- Сопоставитель использует регулярное выражение, чтобы убедиться, что формат имени пользователя совпадает
+- Если совпадение есть, функция возвращает полный URL, определяя параметр маршрута `username` как подстроку пути
+- Если совпадения нет, функция возвращает `null`, и маршрутизатор продолжает поиск других маршрутов, соответствующих URL
 
-HELPFUL: A custom URL matcher behaves like any other route definition. Define child routes or lazy loaded routes as you would with any other route.
+HELPFUL: Пользовательский URL-сопоставитель ведёт себя как любое другое определение маршрута. Дочерние маршруты или лениво загружаемые маршруты определяются так же, как и в любом другом маршруте.
 
-## Reading the route parameters
+## Чтение параметров маршрута {#reading-the-route-parameters}
 
-With the custom matcher in place, you can now bind the route parameter in the `profile` component.
+После настройки пользовательского сопоставителя можно привязать параметр маршрута в компоненте `profile`.
 
-In your code editor, open your `profile.ts` file and create an `input` matching the `username` parameter.
-We added the `withComponentInputBinding` feature earlier
-in `provideRouter`. This allows the `Router` to bind information directly to the route components.
+В редакторе кода откройте файл `profile.ts` и создайте `input`, совпадающий с параметром `username`.
+Ранее была добавлена функция `withComponentInputBinding` в `provideRouter`. Это позволяет маршрутизатору `Router` передавать информацию непосредственно в компоненты маршрутов.
 
 ```ts
 username = input.required<string>();
 ```
 
-## Test your custom URL matcher
+## Тестирование пользовательского URL-сопоставителя {#test-your-custom-url-matcher}
 
-With your code in place, you can now test your custom URL matcher.
+Когда код готов, можно протестировать пользовательский URL-сопоставитель.
 
-1. From a terminal window, run the `ng serve` command.
+1. В окне терминала выполните команду `ng serve`.
 
    ```shell
    ng serve
    ```
 
-1. Open a browser to `http://localhost:4200`.
+1. Откройте браузер по адресу `http://localhost:4200`.
 
-   You should see a single web page, consisting of a sentence that reads `Navigate to my profile`.
+   Должна отобразиться веб-страница с одним предложением: `Navigate to my profile`.
 
-1. Click the **my profile** hyperlink.
+1. Нажмите на ссылку **my profile**.
 
-   A new sentence, reading `Hello, Angular!` appears on the page.
+   На странице появится новое предложение: `Hello, Angular!`.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-Pattern matching with the Angular Router provides you with a lot of flexibility when you have dynamic URLs in your application.
-To learn more about the Angular Router, see the following topics:
+Сопоставление шаблонов с помощью Angular Router предоставляет большую гибкость при работе с динамическими URL в приложении.
+Дополнительные сведения об Angular Router см. в следующих темах:
 
 <docs-pill-row>
-  <docs-pill href="guide/routing/common-router-tasks" title="In-app Routing and Navigation"/>
+  <docs-pill href="guide/routing/common-router-tasks" title="Маршрутизация и навигация в приложении"/>
   <docs-pill href="api/router/Router" title="Router API"/>
 </docs-pill-row>
 
-HELPFUL: This content is based on [Custom Route Matching with the Angular Router](https://medium.com/@brandontroberts/custom-route-matching-with-the-angular-router-fbdd48665483), by [Brandon Roberts](https://twitter.com/brandontroberts).
+HELPFUL: Этот контент основан на статье [Custom Route Matching with the Angular Router](https://medium.com/@brandontroberts/custom-route-matching-with-the-angular-router-fbdd48665483) автора [Brandon Roberts](https://twitter.com/brandontroberts).

@@ -1,10 +1,10 @@
-# Setting up `HttpClient`
+# Настройка `HttpClient` {#setting-up-httpclient}
 
-Before you can use `HttpClient` in your app, you must configure it using [dependency injection](guide/di).
+Перед использованием `HttpClient` в приложении необходимо настроить его с помощью [внедрения зависимостей](guide/di).
 
-## Providing `HttpClient` through dependency injection
+## Предоставление `HttpClient` через внедрение зависимостей {#providing-httpclient-through-dependency-injection}
 
-`HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `app.config.ts`.
+`HttpClient` предоставляется с помощью вспомогательной функции `provideHttpClient`, которую большинство приложений включает в `providers` приложения в файле `app.config.ts`.
 
 ```ts
 export const appConfig: ApplicationConfig = {
@@ -12,7 +12,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-If your app is using NgModule-based bootstrap instead, you can include `provideHttpClient` in the providers of your app's NgModule:
+Если приложение использует NgModule-based загрузку, можно включить `provideHttpClient` в providers NgModule приложения:
 
 ```ts
 @NgModule({
@@ -22,7 +22,7 @@ If your app is using NgModule-based bootstrap instead, you can include `provideH
 export class AppModule {}
 ```
 
-You can then inject the `HttpClient` service as a dependency of your components, services, or other classes:
+После этого сервис `HttpClient` можно внедрить как зависимость в компоненты, сервисы или другие классы:
 
 ```ts
 @Injectable({providedIn: 'root'})
@@ -32,11 +32,11 @@ export class ConfigService {
 }
 ```
 
-## Configuring features of `HttpClient`
+## Настройка функций `HttpClient` {#configuring-features-of-httpclient}
 
-`provideHttpClient` accepts a list of optional feature configurations, to enable or configure the behavior of different aspects of the client. This section details the optional features and their usages.
+`provideHttpClient` принимает список необязательных конфигураций функций для включения или настройки различных аспектов поведения клиента. В этом разделе описаны доступные функции и их применение.
 
-### `withXhr`
+### `withXhr` {#withxhr}
 
 ```ts
 export const appConfig: ApplicationConfig = {
@@ -44,57 +44,57 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-By default, `HttpClient` uses the [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API) API to make requests. The `withXhr` feature switches the client to use the [`XMLHttpRequest`](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest) API instead.
+По умолчанию `HttpClient` использует API [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API) для выполнения запросов. Функция `withXhr` переключает клиент на использование API [`XMLHttpRequest`](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest).
 
-`fetch` is a more modern API and is available in a few environments where `XMLHttpRequest` is not supported. It does have a few limitations, such as not producing upload progress events.
+`fetch` — более современный API, доступный в ряде сред, где `XMLHttpRequest` не поддерживается. Однако у него есть ограничения, например отсутствие событий прогресса загрузки.
 
-### `withInterceptors(...)`
+### `withInterceptors(...)` {#withinterceptors}
 
-`withInterceptors` configures the set of interceptor functions which will process requests made through `HttpClient`. See the [interceptor guide](guide/http/interceptors) for more information.
+`withInterceptors` настраивает набор функций-interceptors, которые будут обрабатывать запросы, выполненные через `HttpClient`. Подробнее см. в [руководстве по interceptors](guide/http/interceptors).
 
-### `withInterceptorsFromDi()`
+### `withInterceptorsFromDi()` {#withinterceptorsfromdi}
 
-`withInterceptorsFromDi` includes the older style of class-based interceptors in the `HttpClient` configuration. See the [interceptor guide](guide/http/interceptors) for more information.
+`withInterceptorsFromDi` включает interceptors старого стиля, основанные на классах, в конфигурацию `HttpClient`. Подробнее см. в [руководстве по interceptors](guide/http/interceptors).
 
-HELPFUL: Functional interceptors (through `withInterceptors`) have more predictable ordering and we recommend them over DI-based interceptors.
+HELPFUL: Функциональные interceptors (через `withInterceptors`) имеют более предсказуемый порядок применения, и мы рекомендуем их вместо DI-based interceptors.
 
-### `withRequestsMadeViaParent()`
+### `withRequestsMadeViaParent()` {#withrequestsmadeViaparent}
 
-By default, when you configure `HttpClient` using `provideHttpClient` within a given injector, this configuration overrides any configuration for `HttpClient` which may be present in the parent injector.
+По умолчанию при настройке `HttpClient` с помощью `provideHttpClient` в определённом инжекторе эта конфигурация переопределяет любую конфигурацию `HttpClient`, которая может присутствовать в родительском инжекторе.
 
-When you add `withRequestsMadeViaParent()`, `HttpClient` is configured to instead pass requests up to the `HttpClient` instance in the parent injector, once they've passed through any configured interceptors at this level. This is useful if you want to _add_ interceptors in a child injector, while still sending the request through the parent injector's interceptors as well.
+При добавлении `withRequestsMadeViaParent()` `HttpClient` настраивается таким образом, чтобы передавать запросы экземпляру `HttpClient` в родительском инжекторе после того, как они пройдут через настроенные interceptors текущего уровня. Это полезно, если нужно _добавить_ interceptors в дочерний инжектор, при этом запросы также проходят через interceptors родительского инжектора.
 
-CRITICAL: You must configure an instance of `HttpClient` above the current injector, or this option is not valid and you'll get a runtime error when you try to use it.
+CRITICAL: Выше текущего инжектора должен быть настроен экземпляр `HttpClient`, иначе данный параметр недействителен и при попытке его использовать возникнет ошибка во время выполнения.
 
-### `withJsonpSupport()`
+### `withJsonpSupport()` {#withjsonpsupport}
 
-Including `withJsonpSupport` enables the `.jsonp()` method on `HttpClient`, which makes a GET request via the [JSONP convention](https://en.wikipedia.org/wiki/JSONP) for cross-domain loading of data.
+Включение `withJsonpSupport` активирует метод `.jsonp()` на `HttpClient`, который выполняет GET-запрос по [соглашению JSONP](https://en.wikipedia.org/wiki/JSONP) для загрузки данных с других доменов.
 
-HELPFUL: Prefer using [CORS](https://developer.mozilla.org/docs/Web/HTTP/CORS) to make cross-domain requests instead of JSONP when possible.
+HELPFUL: По возможности предпочитайте [CORS](https://developer.mozilla.org/docs/Web/HTTP/CORS) для межсайтовых запросов вместо JSONP.
 
-### `withXsrfConfiguration(...)`
+### `withXsrfConfiguration(...)` {#withxsrfconfiguration}
 
-Including this option allows for customization of `HttpClient`'s built-in XSRF security functionality. See the [security guide](best-practices/security) for more information.
+Включение этой функции позволяет настроить встроенную защиту `HttpClient` от XSRF. Подробнее см. в [руководстве по безопасности](best-practices/security).
 
-### `withNoXsrfProtection()`
+### `withNoXsrfProtection()` {#withnoxsrfprotection}
 
-Including this option disables `HttpClient`'s built-in XSRF security functionality. See the [security guide](best-practices/security) for more information.
+Включение этой функции отключает встроенную защиту `HttpClient` от XSRF. Подробнее см. в [руководстве по безопасности](best-practices/security).
 
-## `HttpClientModule`-based configuration
+## Конфигурация на основе `HttpClientModule` {#httpclientmodule-based-configuration}
 
-Some applications may configure `HttpClient` using the older API based on NgModules.
+Некоторые приложения могут настраивать `HttpClient` с помощью устаревшего API на основе NgModules.
 
-This table lists the NgModules available from `@angular/common/http` and how they relate to the provider configuration functions above.
+В таблице ниже перечислены NgModules из `@angular/common/http` и их соответствие функциям конфигурации провайдеров.
 
-| **NgModule**                            | `provideHttpClient()` equivalent                         |
+| **NgModule**                            | Эквивалент `provideHttpClient()`                         |
 | --------------------------------------- | -------------------------------------------------------- |
 | `HttpClientModule`                      | `provideHttpClient(withInterceptorsFromDi(), withXhr())` |
 | `HttpClientJsonpModule`                 | `withJsonpSupport()`                                     |
 | `HttpClientXsrfModule.withOptions(...)` | `withXsrfConfiguration(...)`                             |
 | `HttpClientXsrfModule.disable()`        | `withNoXsrfProtection()`                                 |
 
-<docs-callout important title="Use caution when using HttpClientModule in multiple injectors">
-When `HttpClientModule` is present in multiple injectors, the behavior of interceptors is poorly defined and depends on the exact options and provider/import ordering.
+<docs-callout important title="Используйте HttpClientModule в нескольких инжекторах с осторожностью">
+При наличии `HttpClientModule` в нескольких инжекторах поведение interceptors плохо определено и зависит от точных параметров и порядка провайдеров/импортов.
 
-Prefer `provideHttpClient` for multi-injector configurations, as it has more stable behavior. See the `withRequestsMadeViaParent` feature above.
+Предпочитайте `provideHttpClient` для конфигураций с несколькими инжекторами, так как он имеет более стабильное поведение. См. функцию `withRequestsMadeViaParent` выше.
 </docs-callout>

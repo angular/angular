@@ -1,35 +1,35 @@
-# Migration to lazy-loaded routes
+# Миграция на ленивую загрузку маршрутов {#migration-to-lazy-loaded-routes}
 
-This schematic helps developers to convert eagerly loaded component routes to lazy loaded routes. This allows the build process to split the production bundle into smaller chunks, to avoid a big JS bundle that includes all routes, which negatively affects initial page load of an application.
+Этот схематик помогает разработчикам преобразовать маршруты с немедленной загрузкой компонентов на ленивую загрузку. Это позволяет процессу сборки разбить production-бандл на более мелкие части, избегая большого JS-бандла, включающего все маршруты, что негативно сказывается на начальной загрузке страницы приложения.
 
-Run the schematic using the following command:
+Запустите схематик с помощью следующей команды:
 
 ```shell
 ng generate @angular/core:route-lazy-loading
 ```
 
-### `path` config option
+### Параметр конфигурации `path`
 
-By default, migration will go over the entire application. If you want to apply this migration to a subset of the files, you can pass the path argument as shown below:
+По умолчанию миграция обходит всё приложение. Если вы хотите применить миграцию только к части файлов, можно передать аргумент `path` следующим образом:
 
 ```shell
 ng generate @angular/core:route-lazy-loading --path src/app/sub-component
 ```
 
-The value of the path parameter is a relative path within the project.
+Значение параметра `path` — это относительный путь внутри проекта.
 
-### How does it work?
+### Как это работает?
 
-The schematic will attempt to find all the places where the application routes as defined:
+Схематик пытается найти все места, где определены маршруты приложения:
 
-- `RouterModule.forRoot` and `RouterModule.forChild`
+- `RouterModule.forRoot` и `RouterModule.forChild`
 - `Router.resetConfig`
 - `provideRouter`
-- variables of type `Routes` or `Route[]` (e.g. `const routes: Routes = [{...}]`)
+- переменные типа `Routes` или `Route[]` (например, `const routes: Routes = [{...}]`)
 
-The migration will check all the components in the routes, check if they are standalone and eagerly loaded, and if so, it will convert them to lazy loaded routes.
+Миграция проверяет все компоненты в маршрутах, определяет, являются ли они standalone и загружаются немедленно, и если да — преобразует их в маршруты с ленивой загрузкой.
 
-#### Before
+#### До
 
 ```typescript
 // app.module.ts
@@ -40,7 +40,7 @@ import {Home} from './home';
     RouterModule.forRoot([
       {
         path: 'home',
-        // Home is standalone and eagerly loaded
+        // Home является standalone и загружается немедленно
         component: Home,
       },
     ]),
@@ -49,7 +49,7 @@ import {Home} from './home';
 export class AppModule {}
 ```
 
-#### After
+#### После
 
 ```typescript
 // app.module.ts
@@ -58,7 +58,7 @@ export class AppModule {}
     RouterModule.forRoot([
       {
         path: 'home',
-        // ↓ Home is now lazy loaded
+        // ↓ Home теперь загружается лениво
         loadComponent: () => import('./home').then((m) => m.Home),
       },
     ]),
@@ -67,4 +67,4 @@ export class AppModule {}
 export class AppModule {}
 ```
 
-This migration will also collect information about all the components declared in NgModules and output the list of routes that use them (including corresponding location of the file). Consider making those components standalone and run this migration again. You can use an existing migration ([see](reference/migrations/standalone)) to convert those components to standalone.
+Эта миграция также собирает информацию обо всех компонентах, объявленных в NgModules, и выводит список маршрутов, которые их используют (включая соответствующее расположение файла). Рассмотрите возможность сделать эти компоненты standalone и запустить миграцию снова. Для преобразования компонентов в standalone можно использовать существующую миграцию ([см.](reference/migrations/standalone)).

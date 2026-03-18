@@ -1,6 +1,6 @@
-# Dependent state with `linkedSignal`
+# Зависимое состояние с `linkedSignal` {#dependent-state-with-linkedsignal}
 
-You can use the `signal` function to hold some state in your Angular code. Sometimes, this state depends on some _other_ state. For example, imagine a component that lets the user select a shipping method for an order:
+Для хранения состояния в коде Angular можно использовать функцию `signal`. Иногда это состояние зависит от _другого_ состояния. Например, представьте компонент, позволяющий пользователю выбрать способ доставки для заказа:
 
 ```typescript
 @Component({
@@ -18,9 +18,9 @@ export class ShippingMethodPicker {
 }
 ```
 
-In this example, the `selectedOption` defaults to the first option, but changes if the user selects another option. But `shippingOptions` is a signal— its value may change! If `shippingOptions` changes, `selectedOption` may contain a value that is no longer a valid option.
+В этом примере `selectedOption` по умолчанию равен первому варианту, но меняется, если пользователь выбирает другой. Однако `shippingOptions` — это сигнал, его значение может измениться! Если `shippingOptions` изменится, `selectedOption` может содержать значение, которое больше не является допустимым вариантом.
 
-**The `linkedSignal` function lets you create a signal to hold some state that is intrinsically _linked_ to some other state.** Revisiting the example above, `linkedSignal` can replace `signal`:
+**Функция `linkedSignal` позволяет создать сигнал для хранения состояния, которое неразрывно _связано_ с другим состоянием.** Возвращаясь к примеру выше, `linkedSignal` может заменить `signal`:
 
 ```ts
 @Component({
@@ -38,9 +38,9 @@ export class ShippingMethodPicker {
 }
 ```
 
-`linkedSignal` works similarly to `signal` with one key difference— instead of passing a default value, you pass a _computation function_, just like `computed`. When the value of the computation changes, the value of the `linkedSignal` changes to the computation result. This helps ensure that the `linkedSignal` always has a valid value.
+`linkedSignal` работает аналогично `signal` с одним ключевым отличием — вместо начального значения передаётся _функция вычисления_, как в `computed`. Когда результат вычисления изменяется, значение `linkedSignal` меняется на результат вычисления. Это гарантирует, что `linkedSignal` всегда содержит допустимое значение.
 
-The following example shows how the value of a `linkedSignal` can change based on its linked state:
+Следующий пример показывает, как значение `linkedSignal` может меняться в зависимости от связанного состояния:
 
 ```ts
 const shippingOptions = signal(['Ground', 'Air', 'Sea']);
@@ -54,11 +54,11 @@ shippingOptions.set(['Email', 'Will Call', 'Postal service']);
 console.log(selectedOption()); // 'Email'
 ```
 
-## Accounting for previous state
+## Учёт предыдущего состояния {#accounting-for-previous-state}
 
-In some cases, the computation for a `linkedSignal` needs to account for the previous value of the `linkedSignal`.
+В некоторых случаях вычисление для `linkedSignal` должно учитывать предыдущее значение самого `linkedSignal`.
 
-In the example above, `selectedOption` always updates back to the first option when `shippingOptions` changes. You may, however, want to preserve the user's selection if their selected option is still somewhere in the list. To accomplish this, you can create a `linkedSignal` with a separate _source_ and _computation_:
+В примере выше `selectedOption` всегда сбрасывается к первому варианту при изменении `shippingOptions`. Однако может потребоваться сохранить выбор пользователя, если выбранный им вариант всё ещё присутствует в списке. Для этого можно создать `linkedSignal` с отдельными свойствами _source_ и _computation_:
 
 ```ts
 interface ShippingMethod {
@@ -106,17 +106,17 @@ export class ShippingMethodPicker {
 }
 ```
 
-When you create a `linkedSignal`, you can pass an object with separate `source` and `computation` properties instead of providing just a computation.
+При создании `linkedSignal` вместо одной функции вычисления можно передать объект с отдельными свойствами `source` и `computation`.
 
-The `source` can be any signal, such as a `computed` or component `input`. The `linkedSignal` updates its value when the `source` changes or when any signal referenced in the `computation` changes, updating its value with the result of the provided `computation`.
+`source` может быть любым сигналом, например `computed` или входным параметром компонента (`input`). `linkedSignal` обновляет своё значение при изменении `source` или любого сигнала, упомянутого в `computation`, устанавливая результат переданной функции `computation`.
 
-The `computation` is a function that receives the new value of `source` and a `previous` object. The `previous` object has two properties— `previous.source` is the previous value of `source`, and `previous.value` is the previous value of the `linkedSignal`. You can use these previous values to decide the new result of the computation.
+`computation` — это функция, получающая новое значение `source` и объект `previous`. Объект `previous` имеет два свойства: `previous.source` — предыдущее значение `source`, и `previous.value` — предыдущее значение самого `linkedSignal`. Эти предыдущие значения можно использовать для определения нового результата вычисления.
 
-HELPFUL: When using the `previous` parameter, it is necessary to provide the generic type arguments of `linkedSignal` explicitly. The first generic type corresponds with the type of `source` and the second generic type determines the output type of `computation`.
+HELPFUL: При использовании параметра `previous` необходимо явно указывать аргументы обобщённого типа для `linkedSignal`. Первый обобщённый тип соответствует типу `source`, второй определяет тип вывода `computation`.
 
-## Custom equality comparison
+## Пользовательское сравнение на равенство {#custom-equality-comparison}
 
-`linkedSignal`, as any other signal, can be configured with a custom equality function. This function is used by downstream dependencies to determine if that value of the `linkedSignal` (result of a computation) changed:
+`linkedSignal`, как и любой другой сигнал, можно настроить с помощью пользовательской функции равенства. Эта функция используется зависимостями ниже по потоку для определения того, изменилось ли значение `linkedSignal` (результат вычисления):
 
 ```typescript
 const activeUser = signal({id: 123, name: 'Morgan', isAdmin: true});

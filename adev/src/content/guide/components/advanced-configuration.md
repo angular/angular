@@ -1,38 +1,37 @@
-# Advanced component configuration
+# Расширенная конфигурация компонентов {#advanced-component-configuration}
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+СОВЕТ: Это руководство предполагает, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его в первую очередь, если вы новичок в Angular.
 
-## ChangeDetectionStrategy
+## ChangeDetectionStrategy {#changedetectionstrategy}
 
-The `@Component` decorator accepts a `changeDetection` option that controls the component's **change
-detection mode**. There are two change detection mode options.
+Декоратор `@Component` принимает опцию `changeDetection`, управляющую **режимом обнаружения изменений** компонента.
+Существует два режима обнаружения изменений.
 
-**`ChangeDetectionStrategy.Eager`/`Default`** is, unsurprisingly, the default strategy. In this mode,
-Angular checks whether the component's DOM needs an update whenever any activity may have occurred
-application-wide. Activities that trigger this checking include user interaction, network response,
-timers, and more.
+**`ChangeDetectionStrategy.Eager`/`Default`** — стратегия по умолчанию, как следует из названия. В этом режиме
+Angular проверяет, требуется ли обновление DOM компонента, при каждой потенциальной активности в приложении.
+Активности, запускающие эту проверку, включают взаимодействие с пользователем, ответы сети,
+таймеры и многое другое.
 
-**`ChangeDetectionStrategy.OnPush`** is an optional mode that reduces the amount of checking Angular
-needs to perform. In this mode, the framework only checks if a component's DOM needs an update when:
+**`ChangeDetectionStrategy.OnPush`** — дополнительный режим, уменьшающий объём проверок, выполняемых Angular.
+В этом режиме фреймворк проверяет, требуется ли обновление DOM компонента, только когда:
 
-- A component input has changes as a result of a binding in a template, or
-- An event listener in this component runs
-- The component is explicitly marked for check, via `ChangeDetectorRef.markForCheck` or something which wraps it, like `AsyncPipe`.
+- Input компонента изменился в результате привязки в шаблоне, или
+- Обработчик событий в этом компоненте выполнился,
+- Компонент явно помечен для проверки через `ChangeDetectorRef.markForCheck` или что-то оборачивающее его, например `AsyncPipe`.
 
-Additionally, when an OnPush component is checked, Angular _also_ checks all of its ancestor
-components, traversing upwards through the application tree.
+Кроме того, когда OnPush-компонент проверяется, Angular _также_ проверяет всех его предковых
+компонентов, обходя дерево приложения вверх.
 
-## PreserveWhitespaces
+## PreserveWhitespaces {#preservewhitespaces}
 
-By default, Angular removes and collapses superfluous whitespace in templates, most commonly from
-newlines and indentation. You can change this setting by explicitly setting `preserveWhitespaces` to
-`true` in a component's metadata.
+По умолчанию Angular удаляет и сворачивает лишние пробелы в шаблонах, чаще всего образующиеся
+из переносов строк и отступов. Это поведение можно изменить, явно установив `preserveWhitespaces` в
+`true` в метаданных компонента.
 
-## Custom element schemas
+## Пользовательские схемы элементов {#custom-element-schemas}
 
-By default, Angular throws an error when it encounters an unknown HTML element. You can
-disable this behavior for a component by including `CUSTOM_ELEMENTS_SCHEMA` in the `schemas`
-property in your component metadata.
+По умолчанию Angular выбрасывает ошибку при обнаружении неизвестного HTML-элемента. Это поведение можно
+отключить для компонента, включив `CUSTOM_ELEMENTS_SCHEMA` в свойство `schemas` в метаданных компонента.
 
 ```angular-ts
 import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
@@ -45,4 +44,4 @@ import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 export class ComponentWithCustomElements { }
 ```
 
-Angular does not support any other schemas at this time.
+В настоящее время Angular не поддерживает никаких других схем.

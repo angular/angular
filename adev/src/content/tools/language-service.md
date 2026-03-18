@@ -1,11 +1,11 @@
-# Angular Language Service
+# Angular Language Service {#angular-language-service}
 
-The Angular Language Service provides code editors with a way to get completions, errors, hints, and navigation inside Angular templates.
-It works with external templates in separate HTML files, and also with in-line templates.
+Angular Language Service предоставляет редакторам кода возможность получать автодополнения, ошибки, подсказки и навигацию внутри Angular-шаблонов.
+Он работает как с внешними шаблонами в отдельных HTML-файлах, так и с встроенными шаблонами.
 
-## Configuring compiler options for the Angular Language Service
+## Настройка параметров компилятора для Angular Language Service {#configuring-compiler-options-for-the-angular-language-service}
 
-To enable the latest Language Service features, set the `strictTemplates` option in `tsconfig.json` by setting `strictTemplates` to `true`, as shown in the following example:
+Чтобы включить последние функции Language Service, задайте параметр `strictTemplates` в `tsconfig.json`, установив `strictTemplates` в `true`, как показано в следующем примере:
 
 ```json
 
@@ -15,87 +15,87 @@ To enable the latest Language Service features, set the `strictTemplates` option
 
 ```
 
-For more information, see the [Angular compiler options](reference/configs/angular-compiler-options) guide.
+Дополнительную информацию см. в руководстве [Параметры Angular-компилятора](reference/configs/angular-compiler-options).
 
-## Features
+## Возможности {#features}
 
-Your editor autodetects that you are opening an Angular file.
-It then uses the Angular Language Service to read your `tsconfig.json` file, find all the templates you have in your application, and then provide language services for any templates that you open.
+Ваш редактор автоматически определяет, что вы открываете Angular-файл.
+Затем он использует Angular Language Service для чтения файла `tsconfig.json`, поиска всех шаблонов в вашем приложении и предоставления языковых сервисов для любых открытых шаблонов.
 
-Language services include:
+Языковые сервисы включают:
 
-- Completions lists
-- AOT Diagnostic messages
-- Quick info
-- Go to definition
+- Списки автодополнений
+- Диагностические сообщения AOT
+- Быстрая информация
+- Переход к определению
 
-### Autocompletion
+### Автодополнение {#autocompletion}
 
-Autocompletion can speed up your development time by providing you with contextual possibilities and hints as you type.
-This example shows autocomplete in an interpolation.
-As you type it out, you can press tab to complete.
+Автодополнение ускоряет разработку, предоставляя контекстные варианты и подсказки по мере набора текста.
+В этом примере показано автодополнение в интерполяции.
+При наборе текста можно нажать Tab для завершения.
 
 <img alt="autocompletion" src="assets/images/guide/language-service/language-completion.gif">
 
-There are also completions within elements.
-Any elements you have as a component selector will show up in the completion list.
+Автодополнение также работает внутри элементов.
+Любые элементы, имеющиеся в качестве селектора компонента, будут отображаться в списке автодополнений.
 
-### Error checking
+### Проверка ошибок {#error-checking}
 
-The Angular Language Service can forewarn you of mistakes in your code.
-In this example, Angular doesn't know what `orders` is or where it comes from.
+Angular Language Service может предупреждать вас об ошибках в коде.
+В этом примере Angular не знает, что такое `orders` и откуда оно берётся.
 
 <img alt="error checking" src="assets/images/guide/language-service/language-error.gif">
 
-### Quick info and navigation
+### Быстрая информация и навигация {#quick-info-and-navigation}
 
-The quick-info feature lets you hover to see where components, directives, and modules come from.
-You can then click "Go to definition" or press F12 to go directly to the definition.
+Функция быстрой информации позволяет навести курсор и увидеть, откуда берутся компоненты, директивы и модули.
+Затем можно нажать "Go to definition" или клавишу F12, чтобы перейти непосредственно к определению.
 
 <img alt="navigation" src="assets/images/guide/language-service/language-navigation.gif">
 
-## Angular Language Service in your editor
+## Angular Language Service в редакторе {#angular-language-service-in-your-editor}
 
-Angular Language Service is currently available as an extension for [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm), [Sublime Text](https://www.sublimetext.com), [Zed](https://zed.dev), [Neovim](https://neovim.io), and [Eclipse IDE](https://www.eclipse.org/eclipseide).
+Angular Language Service в настоящее время доступен как расширение для [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm), [Sublime Text](https://www.sublimetext.com), [Zed](https://zed.dev), [Neovim](https://neovim.io) и [Eclipse IDE](https://www.eclipse.org/eclipseide).
 
-### Visual Studio Code
+### Visual Studio Code {#visual-studio-code}
 
-In [Visual Studio Code](https://code.visualstudio.com), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template).
-Open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open \(⌘+P on Mac, CTRL+P on Windows\) and type "? ext".
-In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+В [Visual Studio Code](https://code.visualstudio.com) установите расширение из [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template).
+Откройте маркетплейс из редактора, используя иконку Extensions на левой панели меню, или воспользуйтесь VS Quick Open (⌘+P на Mac, CTRL+P на Windows) и введите "? ext".
+В маркетплейсе найдите расширение Angular Language Service и нажмите кнопку **Install**.
 
-The Visual Studio Code integration with the Angular language service is maintained and distributed by the Angular team.
+Интеграция Visual Studio Code с Angular Language Service поддерживается и распространяется командой Angular.
 
-### Visual Studio
+### Visual Studio {#visual-studio}
 
-In [Visual Studio](https://visualstudio.microsoft.com), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=TypeScriptTeam.AngularLanguageService).
-Open the marketplace from the editor selecting Extensions on the top menu pane, and then selecting Manage Extensions.
-In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+В [Visual Studio](https://visualstudio.microsoft.com) установите расширение из [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=TypeScriptTeam.AngularLanguageService).
+Откройте маркетплейс из редактора, выбрав Extensions в верхнем меню, затем Manage Extensions.
+В маркетплейсе найдите расширение Angular Language Service и нажмите кнопку **Install**.
 
-The Visual Studio integration with the Angular language service is maintained and distributed by Microsoft with help from the Angular team.
-Check out the project [here](https://github.com/microsoft/vs-ng-language-service).
+Интеграция Visual Studio с Angular Language Service поддерживается и распространяется Microsoft при помощи команды Angular.
+Ознакомьтесь с проектом [здесь](https://github.com/microsoft/vs-ng-language-service).
 
-### WebStorm
+### WebStorm {#webstorm}
 
-In [WebStorm](https://www.jetbrains.com/webstorm), enable the plugin [Angular and AngularJS](https://plugins.jetbrains.com/plugin/6971-angular-and-angularjs).
+В [WebStorm](https://www.jetbrains.com/webstorm) включите плагин [Angular and AngularJS](https://plugins.jetbrains.com/plugin/6971-angular-and-angularjs).
 
-Since WebStorm 2019.1, the `@angular/language-service` is not required anymore and should be removed from your `package.json`.
+Начиная с WebStorm 2019.1, `@angular/language-service` больше не требуется и должен быть удалён из `package.json`.
 
-### Sublime Text
+### Sublime Text {#sublime-text}
 
-In [Sublime Text](https://www.sublimetext.com), the Language Service supports only in-line templates when installed as a plug-in.
-You need a custom Sublime plug-in \(or modifications to the current plug-in\) for completions in HTML files.
+В [Sublime Text](https://www.sublimetext.com) Language Service поддерживает только встроенные шаблоны при установке в качестве плагина.
+Для автодополнения в HTML-файлах требуется пользовательский плагин Sublime (или модификации текущего плагина).
 
-To use the Language Service for in-line templates, you must first add an extension to allow TypeScript, then install the Angular Language Service plug-in.
-Starting with TypeScript 2.3, TypeScript has a plug-in model that the language service can use.
+Для использования Language Service со встроенными шаблонами необходимо сначала добавить расширение для TypeScript, затем установить плагин Angular Language Service.
+Начиная с TypeScript 2.3, TypeScript имеет модель плагинов, которую может использовать языковой сервис.
 
-1. Install the latest version of TypeScript in a local `node_modules` directory:
+1. Установите последнюю версию TypeScript в локальной директории `node_modules`:
 
    ```shell
    npm install --save-dev typescript
    ```
 
-1. Install the Angular Language Service package in the same location:
+1. Установите пакет Angular Language Service в том же месте:
 
    ```shell
 
@@ -103,7 +103,7 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
 
    ```
 
-1. Once the package is installed, add the following to the `"compilerOptions"` section of your project's `tsconfig.json`.
+1. После установки пакета добавьте следующее в раздел `"compilerOptions"` файла `tsconfig.json` проекта.
 
    ```json {header:"tsconfig.json"}
    "plugins": [
@@ -111,7 +111,7 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
    ]
    ```
 
-1. In your editor's user preferences \(`Cmd+,` or `Ctrl+,`\), add the following:
+1. В пользовательских настройках редактора (`Cmd+,` или `Ctrl+,`) добавьте следующее:
 
    ```json {header:"Sublime Text user preferences"}
 
@@ -119,25 +119,25 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
 
    ```
 
-This lets the Angular Language Service provide diagnostics and completions in `.ts` files.
+Это позволяет Angular Language Service предоставлять диагностику и автодополнение в файлах `.ts`.
 
-### Eclipse IDE
+### Eclipse IDE {#eclipse-ide}
 
-Either directly install the "Eclipse IDE for Web and JavaScript developers" package which comes with the Angular Language Server included, or from other Eclipse IDE packages, use Help > Eclipse Marketplace to find and install [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
+Либо установите напрямую пакет "Eclipse IDE for Web and JavaScript developers", который включает Angular Language Server, либо в других пакетах Eclipse IDE используйте Help > Eclipse Marketplace для поиска и установки [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
 
-### Neovim
+### Neovim {#neovim}
 
-#### Conquer of Completion with Node.js
+#### Conquer of Completion с Node.js {#conquer-of-completion-with-nodejs}
 
-The Angular Language Service uses the tsserver, which doesn't follow the LSP specifications exactly. Therefore if you are using neovim or vim with JavaScript or TypeScript or Angular you may find that [Conquer of Completion](https://github.com/neoclide/coc.nvim) (COC) has the fullest implementation of the Angular Language Service and the tsserver. This is because COC ports the VSCode implementation of the tsserver which accommodates the tsserver's implementation.
+Angular Language Service использует tsserver, который не строго следует спецификациям LSP. Поэтому если вы используете neovim или vim с JavaScript, TypeScript или Angular, вы можете обнаружить, что [Conquer of Completion](https://github.com/neoclide/coc.nvim) (COC) имеет наиболее полную реализацию Angular Language Service и tsserver. Это потому, что COC портирует реализацию VSCode tsserver, которая учитывает особенности реализации tsserver.
 
-1. [Setup coc.nvim](https://github.com/neoclide/coc.nvim)
+1. [Настройте coc.nvim](https://github.com/neoclide/coc.nvim)
 
-2. Configure the Angular Language Service
+2. Настройте Angular Language Service
 
-   Once installed run the `CocConfig` vim command line command to open the config file `coc-settings.json` and add the angular property.
+   После установки выполните vim-команду `CocConfig` для открытия файла конфигурации `coc-settings.json` и добавьте свойство angular.
 
-   Make sure to substitute the correct paths to your global `node_modules` such that they go to directories which contain `tsserver` and the `ngserver` respectively.
+   Обязательно подставьте правильные пути к вашим глобальным `node_modules`, чтобы они указывали на директории, содержащие `tsserver` и `ngserver` соответственно.
 
    ```json {header:"CocConfig example file coc-settings.json"}
    {
@@ -158,36 +158,36 @@ The Angular Language Service uses the tsserver, which doesn't follow the LSP spe
    }
    ```
 
-HELPFUL: `/usr/local/lib/node_modules/typescript/lib` and `/usr/local/lib/node_modules/@angular/language-server/bin` above should point to the location of your global node modules, which may be different.
+HELPFUL: `/usr/local/lib/node_modules/typescript/lib` и `/usr/local/lib/node_modules/@angular/language-server/bin` выше должны указывать на расположение ваших глобальных node modules, которое может отличаться.
 
-#### Built In Neovim LSP
+#### Встроенный LSP Neovim {#built-in-neovim-lsp}
 
-Angular Language Service can be used with Neovim by using the [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) plugin.
+Angular Language Service можно использовать с Neovim с помощью плагина [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig).
 
-1. [Install nvim-lspconfig](https://github.com/neovim/nvim-lspconfig?tab=readme-ov-file#install)
+1. [Установите nvim-lspconfig](https://github.com/neovim/nvim-lspconfig?tab=readme-ov-file#install)
 
-2. [Configure angularls for nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#angularls)
+2. [Настройте angularls для nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#angularls)
 
-### Zed
+### Zed {#zed}
 
-In [Zed](https://zed.dev), install the extension from [Extensions: Marketplace](https://zed.dev/extensions/angular).
+В [Zed](https://zed.dev) установите расширение из [Extensions: Marketplace](https://zed.dev/extensions/angular).
 
-## How the Language Service works
+## Как работает Language Service {#how-the-language-service-works}
 
-When you use an editor with a language service, the editor starts a separate language-service process and communicates with it through an [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call), using the [Language Server Protocol](https://microsoft.github.io/language-server-protocol).
-When you type into the editor, the editor sends information to the language-service process to track the state of your project.
+При использовании редактора с языковым сервисом редактор запускает отдельный процесс языкового сервиса и взаимодействует с ним через [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call), используя [Language Server Protocol](https://microsoft.github.io/language-server-protocol).
+При наборе текста редактор отправляет информацию процессу языкового сервиса для отслеживания состояния проекта.
 
-When you trigger a completion list within a template, the editor first parses the template into an HTML [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
-The Angular compiler interprets that tree to determine the context: which module the template is part of, the current scope, the component selector, and where your cursor is in the template AST.
-It can then determine the symbols that could potentially be at that position.
+При запросе списка автодополнений в шаблоне редактор сначала разбирает шаблон в HTML [абстрактное синтаксическое дерево (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+Angular-компилятор интерпретирует это дерево для определения контекста: какому модулю принадлежит шаблон, текущей области видимости, селектора компонента и где находится курсор в AST шаблона.
+Затем можно определить символы, которые потенциально могут быть на этой позиции.
 
-It's a little more involved if you are in an interpolation.
-If you have an interpolation of `{{data.---}}` inside a `div` and need the completion list after `data.---`, the compiler can't use the HTML AST to find the answer.
-The HTML AST can only tell the compiler that there is some text with the characters "`{{data.---}}`".
-That's when the template parser produces an expression AST, which resides within the template AST.
-The Angular Language Services then looks at `data.---` within its context, asks the TypeScript Language Service what the members of `data` are, and returns the list of possibilities.
+Если вы находитесь в интерполяции, процесс несколько сложнее.
+Если у вас есть интерполяция `{{data.---}}` внутри `div` и нужен список автодополнений после `data.---`, компилятор не может использовать HTML AST для получения ответа.
+HTML AST может только сообщить компилятору, что есть некий текст с символами `{{data.---}}`.
+Тогда парсер шаблонов создаёт AST выражения, находящийся внутри AST шаблона.
+Angular Language Services затем рассматривает `data.---` в контексте, запрашивает у TypeScript Language Service, какие члены есть у `data`, и возвращает список возможных вариантов.
 
-## More information
+## Дополнительная информация {#more-information}
 
-- For more in-depth information on the implementation, see the [Angular Language Service source](https://github.com/angular/angular/blob/main/packages/language-service/src)
-- For more on the design considerations and intentions, see [design documentation here](https://github.com/angular/vscode-ng-language-service/wiki/Design)
+- Для получения более подробной информации о реализации см. [исходный код Angular Language Service](https://github.com/angular/angular/blob/main/packages/language-service/src)
+- Для получения информации о дизайне и намерениях см. [документацию по дизайну](https://github.com/angular/vscode-ng-language-service/wiki/Design)

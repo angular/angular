@@ -1,36 +1,36 @@
-# Control route access with guards
+# Управление доступом к маршрутам с помощью Guard-ов {#control-route-access-with-guards}
 
-CRITICAL: Never rely on client-side guards as the sole source of access control. All JavaScript that runs in a web browser can be modified by the user running the browser. Always enforce user authorization server-side, in addition to any client-side guards.
+CRITICAL: Никогда не полагайтесь на клиентские Guard-ы как на единственный источник контроля доступа. Весь JavaScript, выполняемый в браузере, может быть изменён пользователем. Всегда применяйте авторизацию пользователей на стороне сервера в дополнение к любым клиентским Guard-ам.
 
-Route guards are functions that control whether a user can navigate to or leave a particular route. They are like checkpoints that manage whether a user can access specific routes. Common examples of using route guards include authentication and access control.
+Guard-ы маршрутов — это функции, управляющие тем, может ли пользователь переходить к определённому маршруту или покидать его. Они выполняют роль контрольных точек, управляющих доступом к конкретным маршрутам. Распространённые примеры использования Guard-ов маршрутов включают аутентификацию и контроль доступа.
 
-## Creating a route guard
+## Создание Guard-а маршрута {#creating-a-route-guard}
 
-You can generate a route guard using the Angular CLI:
+Guard маршрута можно сгенерировать с помощью Angular CLI:
 
 ```bash
 ng generate guard CUSTOM_NAME
 ```
 
-This will prompt you to select which [type of route guard](#types-of-route-guards) to use and then create the corresponding `CUSTOM_NAME-guard.ts` file.
+Это предложит выбрать [тип Guard-а маршрута](#types-of-route-guards), а затем создаст соответствующий файл `CUSTOM_NAME-guard.ts`.
 
-TIP: You can also create a route guard manually by creating a separate TypeScript file in your Angular project. Developers typically add a suffix of `-guard.ts` in the filename to distinguish it from other files.
+TIP: Также можно создать Guard маршрута вручную, создав отдельный файл TypeScript в проекте Angular. Разработчики обычно добавляют суффикс `-guard.ts` в имя файла для его отличия от других файлов.
 
-## Route guard return types
+## Возвращаемые типы Guard-ов маршрутов {#route-guard-return-types}
 
-All route guards share the same possible return types. This gives you flexibility in how you control navigation:
+Все Guard-ы маршрутов имеют одинаковые возможные возвращаемые типы. Это даёт гибкость в управлении навигацией:
 
-| Return types                    | Description                                                                       |
-| ------------------------------- | --------------------------------------------------------------------------------- |
-| `boolean`                       | `true` allows navigation, `false` blocks it (see note for `CanMatch` route guard) |
-| `UrlTree` or `RedirectCommand`  | Redirects to another route instead of blocking                                    |
-| `Promise<T>` or `Observable<T>` | Router uses the first emitted value and then unsubscribes                         |
+| Возвращаемые типы               | Описание                                                                                       |
+| ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `boolean`                       | `true` разрешает навигацию, `false` блокирует её (см. примечание для Guard-а `CanMatch`)       |
+| `UrlTree` или `RedirectCommand` | Перенаправляет на другой маршрут вместо блокировки                                             |
+| `Promise<T>` или `Observable<T>`| Маршрутизатор использует первое сгенерированное значение, затем отписывается                   |
 
-NOTE: `CanMatch` behaves differently— when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
+NOTE: `CanMatch` ведёт себя иначе — когда он возвращает `false`, Angular пробует другие подходящие маршруты вместо полной блокировки навигации.
 
-## Types of route guards
+## Типы Guard-ов маршрутов {#types-of-route-guards}
 
-Angular provides four types of route guards, each serving different purposes:
+Angular предоставляет четыре типа Guard-ов маршрутов, каждый из которых служит разным целям:
 
 <docs-pill-row>
   <docs-pill href="#canactivate" title="CanActivate"/>
@@ -39,18 +39,18 @@ Angular provides four types of route guards, each serving different purposes:
   <docs-pill href="#canmatch" title="CanMatch"/>
 </docs-pill-row>
 
-All the guards have access to [services provided at the route level](guide/di/defining-dependency-providers#route-providers) as well as route-specific information via the `route` argument.
+Все Guard-ы имеют доступ к [сервисам, предоставляемым на уровне маршрута](guide/di/defining-dependency-providers#route-providers), а также к специфичной для маршрута информации через аргумент `route`.
 
-### CanActivate
+### CanActivate {#canactivate}
 
-The `CanActivate` guard determines whether a user can access a route. It is most commonly used for authentication and authorization.
+Guard `CanActivate` определяет, может ли пользователь получить доступ к маршруту. Чаще всего используется для аутентификации и авторизации.
 
-It has access to the following default arguments:
+Имеет доступ к следующим аргументам по умолчанию:
 
-- `route`: `ActivatedRouteSnapshot` - Contains information about the route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `route`: `ActivatedRouteSnapshot` — содержит информацию об активируемом маршруте
+- `state`: `RouterStateSnapshot` — содержит текущее состояние маршрутизатора
 
-It can return the [standard return guard types](#route-guard-return-types).
+Может возвращать [стандартные возвращаемые типы Guard-ов](#route-guard-return-types).
 
 ```ts
 export const authGuard: CanActivateFn = (
@@ -62,20 +62,20 @@ export const authGuard: CanActivateFn = (
 };
 ```
 
-Tip: If you need to redirect the user, return a [`URLTree`](api/router/UrlTree) or [`RedirectCommand`](api/router/RedirectCommand). Do **not** return `false` and then programmatically `navigate` the user.
+Tip: Если нужно перенаправить пользователя, верните [`URLTree`](api/router/UrlTree) или [`RedirectCommand`](api/router/RedirectCommand). **Не** возвращайте `false` и затем программно выполняйте `navigate`.
 
-For more information, check out the [API docs for CanActivateFn](api/router/CanActivateFn).
+Дополнительные сведения см. в [документации API CanActivateFn](api/router/CanActivateFn).
 
-### CanActivateChild
+### CanActivateChild {#canactivatechild}
 
-The `CanActivateChild` guard determines whether a user can access child routes of a particular parent route. This is useful when you want to protect an entire section of nested routes. In other words, `canActivateChild` runs for _all_ children. If there is a child component with another child component underneath of it, `canActivateChild` will run once for both components.
+Guard `CanActivateChild` определяет, может ли пользователь получить доступ к дочерним маршрутам конкретного родительского маршрута. Это полезно, когда нужно защитить весь раздел вложенных маршрутов. Иными словами, `canActivateChild` выполняется для _всех_ дочерних элементов. Если есть дочерний компонент с другим дочерним компонентом под ним, `canActivateChild` выполнится один раз для обоих компонентов.
 
-It has access to the following default arguments:
+Имеет доступ к следующим аргументам по умолчанию:
 
-- `childRoute`: `ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `childRoute`: `ActivatedRouteSnapshot` — содержит информацию о «будущем» снимке (т.е. состоянии, к которому маршрутизатор пытается перейти) активируемого дочернего маршрута
+- `state`: `RouterStateSnapshot` — содержит текущее состояние маршрутизатора
 
-It can return the [standard return guard types](#route-guard-return-types).
+Может возвращать [стандартные возвращаемые типы Guard-ов](#route-guard-return-types).
 
 ```ts
 export const adminChildGuard: CanActivateChildFn = (
@@ -87,20 +87,20 @@ export const adminChildGuard: CanActivateChildFn = (
 };
 ```
 
-For more information, check out the [API docs for CanActivateChildFn](api/router/CanActivateChildFn).
+Дополнительные сведения см. в [документации API CanActivateChildFn](api/router/CanActivateChildFn).
 
-### CanDeactivate
+### CanDeactivate {#candeactivate}
 
-The `CanDeactivate` guard determines whether a user can leave a route. A common scenario is preventing navigation away from unsaved forms.
+Guard `CanDeactivate` определяет, может ли пользователь покинуть маршрут. Распространённый сценарий — предотвращение ухода с несохранённых форм.
 
-It has access to the following default arguments:
+Имеет доступ к следующим аргументам по умолчанию:
 
-- `component`: `T` - The component instance being deactivated
-- `currentRoute`: `ActivatedRouteSnapshot` - Contains information about the current route
-- `currentState`: `RouterStateSnapshot` - Contains the current router state
-- `nextState`: `RouterStateSnapshot` - Contains the next router state being navigated to
+- `component`: `T` — экземпляр деактивируемого компонента
+- `currentRoute`: `ActivatedRouteSnapshot` — содержит информацию о текущем маршруте
+- `currentState`: `RouterStateSnapshot` — содержит текущее состояние маршрутизатора
+- `nextState`: `RouterStateSnapshot` — содержит следующее состояние маршрутизатора, к которому выполняется переход
 
-It can return the [standard return guard types](#route-guard-return-types).
+Может возвращать [стандартные возвращаемые типы Guard-ов](#route-guard-return-types).
 
 ```ts
 export const unsavedChangesGuard: CanDeactivateFn<Form> = (
@@ -115,18 +115,18 @@ export const unsavedChangesGuard: CanDeactivateFn<Form> = (
 };
 ```
 
-For more information, check out the [API docs for CanDeactivateFn](api/router/CanDeactivateFn).
+Дополнительные сведения см. в [документации API CanDeactivateFn](api/router/CanDeactivateFn).
 
-### CanMatch
+### CanMatch {#canmatch}
 
-The `CanMatch` guard determines whether a route can be matched during path matching. Unlike other guards, rejection falls through to try other matching routes instead of blocking navigation entirely. This can be useful for feature flags, A/B testing, or conditional route loading.
+Guard `CanMatch` определяет, может ли маршрут быть сопоставлен в процессе сопоставления путей. В отличие от других Guard-ов, при отклонении происходит попытка сопоставления с другими маршрутами, а не полная блокировка навигации. Это может быть полезно для флагов функций, A/B-тестирования или условной загрузки маршрутов.
 
-It has access to the following default arguments:
+Имеет доступ к следующим аргументам по умолчанию:
 
-- `route`: `Route` - The route configuration being evaluated
-- `segments`: `UrlSegment[]` - The URL segments that have not been consumed by previous parent route evaluations
+- `route`: `Route` — оцениваемая конфигурация маршрута
+- `segments`: `UrlSegment[]` — сегменты URL, не использованные предыдущими оценками родительских маршрутов
 
-It can return the [standard return guard types](#route-guard-return-types), but when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
+Может возвращать [стандартные возвращаемые типы Guard-ов](#route-guard-return-types), но когда он возвращает `false`, Angular пробует другие подходящие маршруты вместо полной блокировки навигации.
 
 ```ts
 export const featureToggleGuard: CanMatchFn = (route: Route, segments: UrlSegment[]) => {
@@ -135,7 +135,7 @@ export const featureToggleGuard: CanMatchFn = (route: Route, segments: UrlSegmen
 };
 ```
 
-It can also allow you to use different components for the same path.
+Это также позволяет использовать разные компоненты для одного пути.
 
 ```ts
 // 📄 routes.ts
@@ -153,15 +153,15 @@ const routes: Routes = [
 ];
 ```
 
-In this example, when the user visits `/dashboard`, the first one that matches the correct guard will be used.
+В этом примере при посещении `/dashboard` будет использован первый маршрут, Guard которого даёт совпадение.
 
-For more information, check out the [API docs for CanMatchFn](api/router/CanMatchFn).
+Дополнительные сведения см. в [документации API CanMatchFn](api/router/CanMatchFn).
 
-## Applying guards to routes
+## Применение Guard-ов к маршрутам {#applying-guards-to-routes}
 
-Once you've created your route guards, you need to configure them in your route definitions.
+После создания Guard-ов маршрутов их необходимо настроить в определениях маршрутов.
 
-Guards are specified as arrays in the route configuration in order to allow you to apply multiple guards to a single route. They are executed in the order they appear in the array.
+Guard-ы указываются как массивы в конфигурации маршрута, что позволяет применять несколько Guard-ов к одному маршруту. Они выполняются в порядке, в котором указаны в массиве.
 
 ```ts
 import {Routes} from '@angular/router';

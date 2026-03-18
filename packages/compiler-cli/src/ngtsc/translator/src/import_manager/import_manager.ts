@@ -62,9 +62,10 @@ export type ModuleName = string & {__moduleName: boolean};
  * Those imports may be inserted via a TypeScript transform, or via manual string
  * manipulation using e.g. `magic-string`.
  */
-export class ImportManager
-  implements ImportGenerator<ts.SourceFile, ts.Identifier | ts.PropertyAccessExpression>
-{
+export class ImportManager implements ImportGenerator<
+  ts.SourceFile,
+  ts.Identifier | ts.PropertyAccessExpression
+> {
   /** List of new imports that will be inserted into given source files. */
   private newImports: Map<
     ts.SourceFile,

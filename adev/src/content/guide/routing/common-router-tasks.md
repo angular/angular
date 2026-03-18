@@ -1,25 +1,25 @@
-# Other common Routing Tasks
+# Другие распространённые задачи маршрутизации {#other-common-routing-tasks}
 
-This guide covers some other common tasks associated with using Angular router in your application.
+В этом руководстве рассматриваются другие распространённые задачи, связанные с использованием Angular-маршрутизатора в приложении.
 
-## Getting route information
+## Получение информации о маршруте {#getting-route-information}
 
-Often, as a user navigates your application, you want to pass information from one component to another.
-For example, consider an application that displays a shopping list of grocery items.
-Each item in the list has a unique `id`.
-To edit an item, users click an Edit button, which opens an `EditGroceryItem` component.
-You want that component to retrieve the `id` for the grocery item so it can display the right information to the user.
+Часто при навигации по приложению нужно передавать информацию из одного компонента в другой.
+Например, рассмотрим приложение, отображающее список покупок из продуктов.
+Каждый элемент в списке имеет уникальный `id`.
+Для редактирования элемента пользователи нажимают кнопку Edit, которая открывает компонент `EditGroceryItem`.
+Этот компонент должен получить `id` элемента списка, чтобы отображать правильную информацию пользователю.
 
-Use a route to pass this type of information to your application components.
-To do so, you use the `withComponentInputBinding` feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
+Используйте маршрут для передачи этого типа информации в компоненты приложения.
+Для этого используйте функцию `withComponentInputBinding` с `provideRouter` или опцию `bindToComponentInputs` в `RouterModule.forRoot`.
 
-To get information from a route:
+Чтобы получить информацию из маршрута:
 
 <docs-workflow>
 
-<docs-step title="Add `withComponentInputBinding`">
+<docs-step title="Добавьте `withComponentInputBinding`">
 
-Add the `withComponentInputBinding` feature to the `provideRouter` method.
+Добавьте функцию `withComponentInputBinding` в метод `provideRouter`.
 
 ```ts
 providers: [provideRouter(appRoutes, withComponentInputBinding())];
@@ -27,9 +27,9 @@ providers: [provideRouter(appRoutes, withComponentInputBinding())];
 
 </docs-step>
 
-<docs-step title="Add an `input` to the component">
+<docs-step title="Добавьте `input` в компонент">
 
-Update the component to have an `input()` property matching the name of the parameter.
+Обновите компонент, добавив свойство `input()`, совпадающее с именем параметра.
 
 ```ts
 id = input.required<string>();
@@ -37,12 +37,12 @@ hero = computed(() => this.service.getHero(id()));
 ```
 
 </docs-step>
-<docs-step title="Optional: Use a default value">
-The router assigns values to all inputs based on the current route when `withComponentInputBinding` is enabled.
-The router assigns `undefined` if no route data matches the input key, such as when an optional query parameter is missing.
-You should include `undefined` in the `input`'s type when there's a possibility that an input might not be matched by the route.
+<docs-step title="Необязательно: используйте значение по умолчанию">
+Маршрутизатор присваивает значения всем входным параметрам на основе текущего маршрута, когда включён `withComponentInputBinding`.
+Маршрутизатор присваивает `undefined`, если данные маршрута не совпадают с ключом входного параметра, например когда необязательный параметр запроса отсутствует.
+Следует включать `undefined` в тип `input`, когда есть вероятность, что входной параметр не будет сопоставлен маршрутом.
 
-Provide a default value by either using the `transform` option on the input or managing a local state with a `linkedSignal`.
+Укажите значение по умолчанию, используя опцию `transform` для входного параметра или управляя локальным состоянием с помощью `linkedSignal`.
 
 ```ts
 id = input.required({
@@ -56,13 +56,13 @@ internalId = linkedSignal(() => this.id() ?? getDefaultId());
 </docs-step>
 </docs-workflow>
 
-NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
-If you want to use the parent components route info you will need to set the router `paramsInheritanceStrategy` option:
-`withRouterConfig({paramsInheritanceStrategy: 'always'})` . See [router configuration options](guide/routing/customizing-route-behavior#router-configuration-options) for details on other available settings.
+NOTE: Можно привязать все данные маршрута с парами ключ-значение к входным параметрам компонента: статические или разрешённые данные маршрута, параметры пути, матричные параметры и параметры запроса.
+Если нужно использовать информацию маршрута родительского компонента, необходимо задать опцию маршрутизатора `paramsInheritanceStrategy`:
+`withRouterConfig({paramsInheritanceStrategy: 'always'})`. Подробности о других доступных настройках см. в [параметрах конфигурации маршрутизатора](guide/routing/customizing-route-behavior#router-configuration-options).
 
-## Displaying a 404 page
+## Отображение страницы 404 {#displaying-a-404-page}
 
-To display a 404 page, set up a [wildcard route](guide/routing/define-routes#wildcards) with the `component` property set to the component you'd like to use for your 404 page as follows:
+Для отображения страницы 404 настройте [маршрут с подстановочным знаком](guide/routing/define-routes#wildcards) со свойством `component`, указывающим на компонент, который нужно использовать для страницы 404:
 
 ```ts
 const routes: Routes = [
@@ -72,23 +72,23 @@ const routes: Routes = [
 ];
 ```
 
-The last route with the `path` of `**` is a wildcard route.
-The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFound`.
+Последний маршрут с `path` равным `**` является маршрутом с подстановочным знаком.
+Маршрутизатор выбирает этот маршрут, если запрошенный URL не совпадает ни с одним путём из предыдущих в списке, и отправляет пользователя на `PageNotFound`.
 
-## Link parameters array
+## Массив параметров ссылки {#link-parameters-array}
 
-A link parameters array holds the following ingredients for router navigation:
+Массив параметров ссылки содержит следующие компоненты для навигации маршрутизатора:
 
-- The path of the route to the destination component
-- Required and optional route parameters that go into the route URL
+- Путь маршрута к компоненту-назначению
+- Обязательные и необязательные параметры маршрута, включаемые в URL маршрута
 
-Bind the `RouterLink` directive to such an array like this:
+Привяжите директиву `RouterLink` к такому массиву следующим образом:
 
 ```angular-html
 <a [routerLink]="['/heroes']">Heroes</a>
 ```
 
-The following is a two-element array when specifying a route parameter:
+Вот двухэлементный массив при указании параметра маршрута:
 
 ```angular-html
 <a [routerLink]="['/hero', hero.id]">
@@ -97,44 +97,44 @@ The following is a two-element array when specifying a route parameter:
 </a>
 ```
 
-Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
+Предоставьте необязательные параметры маршрута в объекте, например `{ foo: 'foo' }`:
 
 ```angular-html
 <a [routerLink]="['/crisis-center', {foo: 'foo'}]">Crisis Center</a>
 ```
 
-This syntax passes matrix parameters, which are optional parameters associated with a specific URL segment. Learn more about [matrix parameters](/guide/routing/read-route-state#matrix-parameters).
+Этот синтаксис передаёт матричные параметры — необязательные параметры, связанные с конкретным сегментом URL. Подробнее о [матричных параметрах](guide/routing/read-route-state#matrix-parameters).
 
-These three examples cover the needs of an application with one level of routing.
-However, with a child router, such as in the crisis center, you create new link array possibilities.
+Эти три примера охватывают потребности приложения с одним уровнем маршрутизации.
+Однако с дочерним маршрутизатором, как в crisis center, появляются новые возможности для массива параметров ссылки.
 
-The following minimal `RouterLink` example builds upon a specified default child route for the crisis center.
+Следующий минимальный пример `RouterLink` основывается на указанном дочернем маршруте по умолчанию для crisis center.
 
 ```angular-html
 <a [routerLink]="['/crisis-center']">Crisis Center</a>
 ```
 
-Review the following:
+Обратите внимание на следующее:
 
-- The first item in the array identifies the parent route \(`/crisis-center`\)
-- There are no parameters for this parent route
-- There is no default for the child route so you need to pick one
-- You're navigating to the `CrisisList`, whose route path is `/`, but you don't need to explicitly add the slash
+- Первый элемент массива идентифицирует родительский маршрут \(`/crisis-center`\)
+- Для этого родительского маршрута нет параметров
+- Дочерний маршрут по умолчанию не задан, поэтому нужно выбрать его
+- Вы переходите к `CrisisList`, путь маршрута которого равен `/`, но не нужно явно добавлять косую черту
 
-Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
+Рассмотрим следующую ссылку маршрутизатора, которая переходит от корня приложения к Dragon Crisis:
 
 ```angular-html
 <a [routerLink]="['/crisis-center', 1]">Dragon Crisis</a>
 ```
 
-- The first item in the array identifies the parent route \(`/crisis-center`\)
-- There are no parameters for this parent route
-- The second item identifies the child route details about a particular crisis \(`/:id`\)
-- The details child route requires an `id` route parameter
-- You added the `id` of the Dragon Crisis as the second item in the array \(`1`\)
-- The resulting path is `/crisis-center/1`
+- Первый элемент массива идентифицирует родительский маршрут \(`/crisis-center`\)
+- Для этого родительского маршрута нет параметров
+- Второй элемент идентифицирует дочерний маршрут с деталями конкретного кризиса \(`/:id`\)
+- Дочернему маршруту деталей требуется параметр маршрута `id`
+- В качестве второго элемента массива добавлен `id` Dragon Crisis \(`1`\)
+- Итоговый путь — `/crisis-center/1`
 
-You could also redefine the `App` template with Crisis Center routes exclusively:
+Также можно переопределить шаблон `App`, используя исключительно маршруты Crisis Center:
 
 ```angular-ts
 @Component({
@@ -151,38 +151,38 @@ You could also redefine the `App` template with Crisis Center routes exclusively
 export class App {}
 ```
 
-In summary, you can write applications with one, two or more levels of routing.
-The link parameters array affords the flexibility to represent any routing depth and any legal sequence of route paths, \(required\) router parameters, and \(optional\) route parameter objects.
+Итак, можно писать приложения с одним, двумя или более уровнями маршрутизации.
+Массив параметров ссылки обеспечивает гибкость для представления любой глубины маршрутизации и любой допустимой последовательности путей маршрутов, \(обязательных\) параметров маршрутизатора и \(необязательных\) объектов параметров маршрута.
 
-## `LocationStrategy` and browser URL styles
+## `LocationStrategy` и стили URL браузера {#locationstrategy-and-browser-url-styles}
 
-When the router navigates to a new component view, it updates the browser's location and history with a URL for that view.
+Когда маршрутизатор переходит к новому представлению компонента, он обновляет местоположение и историю браузера URL-адресом для этого представления.
 
-Modern HTML5 browsers support [history.pushState](https://developer.mozilla.org/docs/Web/API/History_API/Working_with_the_History_API#adding_and_modifying_history_entries 'HTML5 browser history push-state'), a technique that changes a browser's location and history without triggering a server page request.
-The router can compose a "natural" URL that is indistinguishable from one that would otherwise require a page load.
+Современные браузеры HTML5 поддерживают [history.pushState](https://developer.mozilla.org/docs/Web/API/History_API/Working_with_the_History_API#adding_and_modifying_history_entries 'HTML5 browser history push-state') — технику, изменяющую местоположение и историю браузера без запроса к серверу.
+Маршрутизатор может составить «естественный» URL, неотличимый от URL, который иначе потребовал бы загрузки страницы.
 
-Here's the Crisis Center URL in this "HTML5 pushState" style:
+Вот URL Crisis Center в стиле «HTML5 pushState»:
 
 ```text
 localhost:3002/crisis-center
 ```
 
-Older browsers send page requests to the server when the location URL changes unless the change occurs after a "#" \(called the "hash"\).
-Routers can take advantage of this exception by composing in-application route URLs with hashes.
-Here's a "hash URL" that routes to the Crisis Center.
+Старые браузеры отправляют запросы страниц на сервер при изменении URL местоположения, если только изменение не происходит после «#» \(называемого «хешем»\).
+Маршрутизаторы могут воспользоваться этим исключением, составляя URL маршрутов внутри приложения с хешами.
+Вот «хеш-URL», ведущий к Crisis Center.
 
 ```text
 localhost:3002/src/#/crisis-center
 ```
 
-The router supports both styles with two `LocationStrategy` providers:
+Маршрутизатор поддерживает оба стиля с двумя провайдерами `LocationStrategy`:
 
-| Providers              | Details                              |
-| :--------------------- | :----------------------------------- |
-| `PathLocationStrategy` | The default "HTML5 pushState" style. |
-| `HashLocationStrategy` | The "hash URL" style.                |
+| Провайдеры             | Описание                               |
+| :--------------------- | :------------------------------------- |
+| `PathLocationStrategy` | Стиль по умолчанию «HTML5 pushState».  |
+| `HashLocationStrategy` | Стиль «хеш-URL».                       |
 
-The `RouterModule.forRoot()` function sets the `LocationStrategy` to the `PathLocationStrategy`, which makes it the default strategy.
-You also have the option of switching to the `HashLocationStrategy` with an override during the bootstrapping process.
+Функция `RouterModule.forRoot()` устанавливает `LocationStrategy` как `PathLocationStrategy`, делая её стратегией по умолчанию.
+Также можно переключиться на `HashLocationStrategy` через переопределение в процессе начальной загрузки.
 
-HELPFUL: For more information on providers and the bootstrap process, see [Dependency Injection](guide/di/defining-dependency-providers).
+HELPFUL: Дополнительные сведения о провайдерах и процессе начальной загрузки см. в [руководстве по внедрению зависимостей](guide/di/defining-dependency-providers).

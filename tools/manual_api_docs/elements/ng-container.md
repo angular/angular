@@ -43,9 +43,9 @@ tempted to try something like:
 
 ```angular-html
 <ul>
-    <li *ngFor="let item of items" *ngIf="item.isValid">
+  <li *ngFor="let item of items" *ngIf="item.isValid">
     {{ item.name }}
-    </li>
+  </li>
 </ul>
 ```
 
@@ -54,10 +54,9 @@ an `<ng-container>` element, which would then wrap the other one, like so:
 
 ```angular-html
 <ul>
-    <ng-container *ngFor="let item of items">
-        <li *ngIf="item.isValid"> {{ item.name }}
-        </li>
-    </ng-container>
+  <ng-container *ngFor="let item of items">
+    <li *ngIf="item.isValid">{{ item.name }}</li>
+  </ng-container>
 </ul>
 ```
 
@@ -85,11 +84,10 @@ Like so:
 <ng-container *ngTemplateOutlet="tmpl; context: {$implicit: 'World'}" />
 
 <ng-template #tmpl let-text>
-    <h1>
+  <h1>
     {{ text }}
-    </h1>
+  </h1>
 </ng-template>
-
 ```
 
 For more information regarding `NgTemplateOutlet`, see

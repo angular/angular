@@ -1,10 +1,10 @@
-# Code coverage
+# Покрытие кода {#code-coverage}
 
-Code coverage reports show you any parts of your code base that might not be properly tested by your unit tests.
+Отчёты о покрытии кода показывают, какие части кодовой базы могут быть недостаточно протестированы модульными тестами.
 
-## Prerequisites
+## Предварительные требования {#prerequisites}
 
-To generate code coverage reports with Vitest, you must install the `@vitest/coverage-v8` package:
+Для генерации отчётов о покрытии кода с помощью Vitest необходимо установить пакет `@vitest/coverage-v8`:
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">
@@ -21,17 +21,17 @@ To generate code coverage reports with Vitest, you must install the `@vitest/cov
   </docs-code>
 </docs-code-multifile>
 
-## Generating a report
+## Генерация отчёта {#generating-a-report}
 
-To generate a coverage report, add the `--coverage` flag to the `ng test` command:
+Для генерации отчёта о покрытии добавьте флаг `--coverage` к команде `ng test`:
 
 ```shell
 ng test --coverage
 ```
 
-After the tests run, the command creates a new `coverage/` directory in the project. Open the `index.html` file to see a report with your source code and code coverage values.
+После выполнения тестов команда создаёт новую директорию `coverage/` в проекте. Откройте файл `index.html`, чтобы увидеть отчёт с исходным кодом и значениями покрытия.
 
-If you want to create code-coverage reports every time you test, you can set the `coverage` option to `true` in your `angular.json` file:
+Если вы хотите создавать отчёты о покрытии кода при каждом тестировании, можно установить параметр `coverage` в значение `true` в файле `angular.json`:
 
 ```json
 {
@@ -50,11 +50,11 @@ If you want to create code-coverage reports every time you test, you can set the
 }
 ```
 
-## Enforcing code coverage thresholds
+## Установка порогов покрытия кода {#enforcing-code-coverage-thresholds}
 
-The code coverage percentages let you estimate how much of your code is tested. If your team decides on a minimum amount to be unit tested, you can enforce this minimum in your configuration.
+Процентные показатели покрытия кода позволяют оценить, насколько хорошо тестируется код. Если команда определила минимальный уровень покрытия для модульных тестов, это минимальное значение можно задать в конфигурации.
 
-For example, suppose you want the code base to have a minimum of 80% code coverage. To enable this, add the `coverageThresholds` option to your `angular.json` file:
+Например, предположим, что вы хотите, чтобы кодовая база имела минимальное покрытие 80%. Для этого добавьте параметр `coverageThresholds` в файл `angular.json`:
 
 ```json
 {
@@ -79,16 +79,16 @@ For example, suppose you want the code base to have a minimum of 80% code covera
 }
 ```
 
-Now, if your coverage drops below 80% when you run your tests, the command will fail.
+Теперь если при запуске тестов покрытие опустится ниже 80%, команда завершится с ошибкой.
 
-## Advanced configuration
+## Расширенная конфигурация {#advanced-configuration}
 
-You can configure several other coverage options in your `angular.json` file:
+В файле `angular.json` можно настроить несколько дополнительных параметров покрытия:
 
-- `coverageInclude`: Glob patterns of files to include in the coverage report.
-- `coverageExclude`: Glob patterns of files to exclude in the coverage report.
-- `coverageReporters`: An array of reporters to use (e.g., `html`, `lcov`, `json`).
-- `coverageWatermarks`: An object specifying `[low, high]` watermarks for the HTML reporter, which can affect the color-coding of the report.
+- `coverageInclude`: Glob-паттерны файлов для включения в отчёт о покрытии.
+- `coverageExclude`: Glob-паттерны файлов для исключения из отчёта о покрытии.
+- `coverageReporters`: Массив используемых репортёров (например, `html`, `lcov`, `json`).
+- `coverageWatermarks`: Объект, задающий пороговые значения `[low, high]` для HTML-репортёра, влияющие на цветовое кодирование отчёта.
 
 ```json
 {

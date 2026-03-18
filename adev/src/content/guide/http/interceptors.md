@@ -1,32 +1,32 @@
-# Interceptors
+# Interceptors {#interceptors}
 
-`HttpClient` supports a form of middleware known as _interceptors_.
+`HttpClient` поддерживает форму middleware, известную как _interceptors_.
 
-TLDR: Interceptors are middleware that allows common patterns around retrying, caching, logging, and authentication to be abstracted away from individual requests.
+TLDR: Interceptors — это middleware, позволяющий абстрагировать общие паттерны повтора запросов, кеширования, логирования и аутентификации от отдельных запросов.
 
-`HttpClient` supports two kinds of interceptors: functional and DI-based. Our recommendation is to use functional interceptors because they have more predictable behavior, especially in complex setups. Our examples in this guide use functional interceptors, and we cover [DI-based interceptors](#di-based-interceptors) in their own section at the end.
+`HttpClient` поддерживает два вида interceptors: функциональные и на основе DI. Мы рекомендуем использовать функциональные interceptors, поскольку они имеют более предсказуемое поведение, особенно в сложных конфигурациях. Примеры в этом руководстве используют функциональные interceptors; [DI-based interceptors](#di-based-interceptors) рассматриваются в отдельном разделе в конце.
 
-## Interceptors
+## Interceptors {#interceptors-overview}
 
-Interceptors are generally functions which you can run for each request, and have broad capabilities to affect the contents and overall flow of requests and responses. You can install multiple interceptors, which form an interceptor chain where each interceptor processes the request or response before forwarding it to the next interceptor in the chain.
+Interceptors — это в целом функции, которые можно выполнять для каждого запроса; они обладают широкими возможностями влиять на содержимое и общий ход запросов и ответов. Можно установить несколько interceptors, образующих цепочку, где каждый interceptor обрабатывает запрос или ответ перед передачей его следующему interceptor в цепочке.
 
-You can use interceptors to implement a variety of common patterns, such as:
+Interceptors можно использовать для реализации различных распространённых паттернов, таких как:
 
-- Adding authentication headers to outgoing requests to a particular API.
-- Retrying failed requests with exponential backoff.
-- Caching responses for a period of time, or until invalidated by mutations.
-- Customizing the parsing of responses.
-- Measuring server response times and log them.
-- Driving UI elements such as a loading spinner while network operations are in progress.
-- Collecting and batch requests made within a certain timeframe.
-- Automatically failing requests after a configurable deadline or timeout.
-- Regularly polling the server and refreshing results.
+- Добавление заголовков аутентификации к исходящим запросам к определённому API.
+- Повтор неудачных запросов с экспоненциальной задержкой.
+- Кеширование ответов на определённый период или до инвалидации мутациями.
+- Настройка разбора ответов.
+- Измерение времени ответа сервера и его логирование.
+- Управление элементами UI, такими как индикатор загрузки, во время сетевых операций.
+- Сбор и пакетная обработка запросов, сделанных в определённый промежуток времени.
+- Автоматическое завершение запросов с ошибкой после настраиваемого дедлайна или тайм-аута.
+- Регулярный опрос сервера и обновление результатов.
 
-## Defining an interceptor
+## Определение interceptor {#defining-an-interceptor}
 
-The basic form of an interceptor is a function which receives the outgoing `HttpRequest` and a `next` function representing the next processing step in the interceptor chain.
+Базовая форма interceptor — это функция, которая получает исходящий `HttpRequest` и функцию `next`, представляющую следующий шаг обработки в цепочке interceptors.
 
-For example, this `loggingInterceptor` will log the outgoing request URL to `console.log` before forwarding the request:
+Например, данный `loggingInterceptor` будет логировать URL исходящего запроса в `console.log` перед его перенаправлением:
 
 ```ts
 export function loggingInterceptor(
@@ -38,11 +38,11 @@ export function loggingInterceptor(
 }
 ```
 
-In order for this interceptor to actually intercept requests, you must configure `HttpClient` to use it.
+Чтобы этот interceptor действительно перехватывал запросы, необходимо настроить `HttpClient` для его использования.
 
-## Configuring interceptors
+## Настройка interceptors {#configuring-interceptors}
 
-You declare the set of interceptors to use when configuring `HttpClient` through dependency injection, by using the `withInterceptors` feature:
+Набор используемых interceptors объявляется при настройке `HttpClient` через внедрение зависимостей с помощью функции `withInterceptors`:
 
 ```ts
 bootstrapApplication(App, {
@@ -50,11 +50,11 @@ bootstrapApplication(App, {
 });
 ```
 
-The interceptors you configure are chained together in the order that you've listed them in the providers. In the above example, the `loggingInterceptor` would process the request and then forward it to the `cachingInterceptor`.
+Настроенные interceptors объединяются в цепочку в том порядке, в котором они перечислены в providers. В приведённом примере `loggingInterceptor` обработает запрос и затем передаст его `cachingInterceptor`.
 
-### Intercepting response events
+### Перехват событий ответа {#intercepting-response-events}
 
-An interceptor may transform the `Observable` stream of `HttpEvent`s returned by `next` in order to access or manipulate the response. Because this stream includes all response events, inspecting the `.type` of each event may be necessary in order to identify the final response object.
+Interceptor может преобразовывать поток `Observable` из `HttpEvent`s, возвращаемых `next`, для доступа к ответу или его изменения. Поскольку этот поток включает все события ответа, может потребоваться проверка `.type` каждого события для идентификации конечного объекта ответа.
 
 ```ts
 export function loggingInterceptor(
@@ -71,13 +71,13 @@ export function loggingInterceptor(
 }
 ```
 
-TIP: Interceptors naturally associate responses with their outgoing requests, because they transform the response stream in a closure that captures the request object.
+TIP: Interceptors естественным образом связывают ответы с исходящими запросами, поскольку преобразуют поток ответов в замыкании, захватывающем объект запроса.
 
-## Modifying requests
+## Изменение запросов {#modifying-requests}
 
-Most aspects of `HttpRequest` and `HttpResponse` instances are _immutable_, and interceptors cannot directly modify them. Instead, interceptors apply mutations by cloning these objects using the `.clone()` operation, and specifying which properties should be mutated in the new instance. This might involve performing immutable updates on the value itself (like `HttpHeaders` or `HttpParams`).
+Большинство аспектов экземпляров `HttpRequest` и `HttpResponse` _неизменяемы_, и interceptors не могут изменять их напрямую. Вместо этого interceptors применяют мутации путём клонирования этих объектов с помощью операции `.clone()` и указания свойств, которые должны быть изменены в новом экземпляре. Это может включать выполнение неизменяемых обновлений самого значения (например, `HttpHeaders` или `HttpParams`).
 
-For example, to add a header to a request:
+Например, для добавления заголовка к запросу:
 
 ```ts
 const reqWithHeader = req.clone({
@@ -85,15 +85,15 @@ const reqWithHeader = req.clone({
 });
 ```
 
-This immutability allows most interceptors to be idempotent if the same `HttpRequest` is submitted to the interceptor chain multiple times. This can happen for a few reasons, including when a request is retried after failure.
+Эта неизменяемость позволяет большинству interceptors быть идемпотентными, если один и тот же `HttpRequest` передаётся в цепочку interceptors несколько раз. Это может происходить по ряду причин, включая повтор запроса после неудачи.
 
-CRITICAL: The body of a request or response is **not** protected from deep mutations. If an interceptor must mutate the body, take care to handle running multiple times on the same request.
+CRITICAL: Тело запроса или ответа **не** защищено от глубоких мутаций. Если interceptor должен изменить тело, нужно предусмотреть обработку многократного выполнения на одном и том же запросе.
 
-## Dependency injection in interceptors
+## Внедрение зависимостей в interceptors {#dependency-injection-in-interceptors}
 
-Interceptors are run in the _injection context_ of the injector which registered them, and can use Angular's [`inject`](/api/core/inject) API to retrieve dependencies.
+Interceptors выполняются в _контексте внедрения_ инжектора, который их зарегистрировал, и могут использовать API Angular [`inject`](/api/core/inject) для получения зависимостей.
 
-For example, suppose an application has a service called `AuthService`, which creates authentication tokens for outgoing requests. An interceptor can inject and use this service:
+Например, предположим, что в приложении есть сервис `AuthService`, создающий токены аутентификации для исходящих запросов. Interceptor может внедрить и использовать этот сервис:
 
 ```ts
 export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
@@ -108,25 +108,25 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
 }
 ```
 
-## Request and response metadata
+## Метаданные запроса и ответа {#request-and-response-metadata}
 
-Often it's useful to include information in a request that's not sent to the backend, but is specifically meant for interceptors. `HttpRequest`s have a `.context` object which stores this kind of metadata as an instance of `HttpContext`. This object functions as a typed map, with keys of type `HttpContextToken`.
+Часто бывает полезно включить в запрос информацию, которая не отправляется на бэкенд, а предназначена специально для interceptors. Объекты `HttpRequest` имеют объект `.context`, хранящий такие метаданные в виде экземпляра `HttpContext`. Этот объект функционирует как типизированная карта с ключами типа `HttpContextToken`.
 
-To illustrate how this system works, let's use metadata to control whether a caching interceptor is enabled for a given request.
+Чтобы показать, как работает эта система, воспользуемся метаданными для управления тем, включён ли кеширующий interceptor для данного запроса.
 
-### Defining context tokens
+### Определение контекстных токенов {#defining-context-tokens}
 
-To store whether the caching interceptor should cache a particular request in that request's `.context` map, define a new `HttpContextToken` to act as a key:
+Для хранения того, должен ли кеширующий interceptor кешировать определённый запрос в карте `.context` этого запроса, определите новый `HttpContextToken` в качестве ключа:
 
 ```ts
 export const CACHING_ENABLED = new HttpContextToken<boolean>(() => true);
 ```
 
-The provided function creates the default value for the token for requests that haven't explicitly set a value for it. Using a function ensures that if the token's value is an object or array, each request gets its own instance.
+Предоставленная функция создаёт значение по умолчанию для токена для запросов, для которых значение не было явно установлено. Использование функции гарантирует, что если значение токена является объектом или массивом, каждый запрос получит свой собственный экземпляр.
 
-### Reading the token in an interceptor
+### Чтение токена в interceptor {#reading-the-token-in-an-interceptor}
 
-An interceptor can then read the token and choose to apply caching logic or not based on its value:
+Interceptor может затем прочитать токен и на основе его значения решить, применять ли логику кеширования:
 
 ```ts
 export function cachingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
@@ -140,9 +140,9 @@ export function cachingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
 }
 ```
 
-### Setting context tokens when making a request
+### Установка контекстных токенов при выполнении запроса {#setting-context-tokens-when-making-a-request}
 
-When making a request via the `HttpClient` API, you can provide values for `HttpContextToken`s:
+При выполнении запроса через API `HttpClient` можно указать значения для `HttpContextToken`s:
 
 ```ts
 const data$ = http.get('/sensitive/data', {
@@ -150,19 +150,19 @@ const data$ = http.get('/sensitive/data', {
 });
 ```
 
-Interceptors can read these values from the `HttpContext` of the request.
+Interceptors могут считывать эти значения из `HttpContext` запроса.
 
-### The request context is mutable
+### Контекст запроса изменяем {#the-request-context-is-mutable}
 
-Unlike other properties of `HttpRequest`s, the associated `HttpContext` is _mutable_. If an interceptor changes the context of a request that is later retried, the same interceptor will observe the context mutation when it runs again. This is useful for passing state across multiple retries if needed.
+В отличие от других свойств `HttpRequest`, связанный `HttpContext` _изменяем_. Если interceptor изменяет контекст запроса, который впоследствии повторяется, тот же interceptor увидит мутацию контекста при повторном выполнении. Это полезно для передачи состояния между несколькими повторными попытками при необходимости.
 
-## Synthetic responses
+## Синтетические ответы {#synthetic-responses}
 
-Most interceptors will simply invoke the `next` handler while transforming either the request or the response, but this is not strictly a requirement. This section discusses several of the ways in which an interceptor may incorporate more advanced behavior.
+Большинство interceptors просто вызывают обработчик `next`, преобразуя запрос или ответ, но это не является строгим требованием. В этом разделе рассматриваются несколько способов, которыми interceptor может реализовывать более сложное поведение.
 
-Interceptors are not required to invoke `next`. They may instead choose to construct responses through some other mechanism, such as from a cache or by sending the request through an alternate mechanism.
+Interceptors не обязаны вызывать `next`. Вместо этого они могут создавать ответы с помощью другого механизма, например из кеша или путём отправки запроса через альтернативный механизм.
 
-Constructing a response is possible using the `HttpResponse` constructor:
+Создание ответа возможно с помощью конструктора `HttpResponse`:
 
 ```ts
 const resp = new HttpResponse({
@@ -170,11 +170,11 @@ const resp = new HttpResponse({
 });
 ```
 
-## Working with redirect information
+## Работа с информацией о перенаправлениях {#working-with-redirect-information}
 
-When `HttpClient` uses the fetch backend , responses include a `redirected` property that indicates whether the response was the result of a redirect. This property aligns with the native Fetch API specification and can be useful in interceptors for handling redirect scenarios.
+Когда `HttpClient` использует бэкенд fetch, ответы включают свойство `redirected`, указывающее, является ли ответ результатом перенаправления. Это свойство соответствует спецификации нативного Fetch API и может быть полезно в interceptors для обработки сценариев перенаправления.
 
-An interceptor can access and act upon the redirect information:
+Interceptor может получить доступ к информации о перенаправлении и действовать на её основе:
 
 ```ts
 export function redirectTrackingInterceptor(
@@ -192,7 +192,7 @@ export function redirectTrackingInterceptor(
 }
 ```
 
-You can also use the redirect information to implement conditional logic in your interceptors:
+Также можно использовать информацию о перенаправлении для реализации условной логики в interceptors:
 
 ```ts
 export function authRedirectInterceptor(
@@ -213,19 +213,19 @@ export function authRedirectInterceptor(
 }
 ```
 
-## Working with response types
+## Работа с типами ответов {#working-with-response-types}
 
-When `HttpClient` uses the fetch backend , responses include a `type` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
+Когда `HttpClient` использует бэкенд fetch, ответы включают свойство `type`, указывающее, как браузер обработал ответ в соответствии с политиками CORS и режимом запроса. Это свойство соответствует спецификации нативного Fetch API и предоставляет ценную информацию для отладки проблем CORS и понимания доступности ответа.
 
-The response `type` property can have the following values:
+Свойство `type` ответа может принимать следующие значения:
 
-- `'basic'` - Same-origin response with all headers accessible
-- `'cors'` - Cross-origin response with CORS headers properly configured
-- `'opaque'` - Cross-origin response without CORS, headers and body may be limited
-- `'opaqueredirect'` - Response from a redirected request in no-cors mode
-- `'error'` - Network error occurred
+- `'basic'` — ответ с того же источника с доступом ко всем заголовкам
+- `'cors'` — кросс-доменный ответ с правильно настроенными заголовками CORS
+- `'opaque'` — кросс-доменный ответ без CORS, заголовки и тело могут быть ограничены
+- `'opaqueredirect'` — ответ от перенаправленного запроса в режиме no-cors
+- `'error'` — произошла сетевая ошибка
 
-An interceptor can use response type information for CORS debugging and error handling:
+Interceptor может использовать информацию о типе ответа для отладки CORS и обработки ошибок:
 
 ```ts
 export function responseTypeInterceptor(
@@ -256,11 +256,11 @@ export function responseTypeInterceptor(
 }
 ```
 
-## DI-based interceptors
+## DI-based interceptors {#di-based-interceptors}
 
-`HttpClient` also supports interceptors which are defined as injectable classes and configured through the DI system. The capabilities of DI-based interceptors are identical to those of functional interceptors, but the configuration mechanism is different.
+`HttpClient` также поддерживает interceptors, определённые как внедряемые классы и настроенные через систему DI. Возможности DI-based interceptors идентичны возможностям функциональных interceptors, но механизм конфигурации отличается.
 
-A DI-based interceptor is an injectable class which implements the `HttpInterceptor` interface:
+DI-based interceptor — это внедряемый класс, реализующий интерфейс `HttpInterceptor`:
 
 ```ts
 @Injectable()
@@ -272,7 +272,7 @@ export class LoggingInterceptor implements HttpInterceptor {
 }
 ```
 
-DI-based interceptors are configured through a dependency injection multi-provider:
+DI-based interceptors настраиваются через мульти-провайдер внедрения зависимостей:
 
 ```ts
 bootstrapApplication(App, {
@@ -287,4 +287,4 @@ bootstrapApplication(App, {
 });
 ```
 
-DI-based interceptors run in the order that their providers are registered. In an app with an extensive and hierarchical DI configuration, this order can be very hard to predict.
+DI-based interceptors выполняются в порядке регистрации их провайдеров. В приложении с обширной и иерархической конфигурацией DI этот порядок может быть очень сложно предсказать.

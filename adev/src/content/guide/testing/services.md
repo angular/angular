@@ -1,12 +1,12 @@
-# Testing services
+# Тестирование сервисов {#testing-services}
 
-Services typically contain your application's business logic that components rely on. Testing services verifies that the logic works correctly in isolation, independent of any component or template.
+Сервисы обычно содержат бизнес-логику вашего приложения, на которую опираются компоненты. Тестирование сервисов проверяет корректность этой логики в изоляции, независимо от каких-либо компонентов или шаблонов.
 
-This guide uses [Vitest](https://vitest.dev/), which Angular CLI projects include by default. For more on testing setup, see the [testing overview guide](guide/testing#set-up-for-testing).
+В этом руководстве используется [Vitest](https://vitest.dev/), который проекты Angular CLI включают по умолчанию. Подробнее о настройке тестирования см. [обзорное руководство по тестированию](guide/testing#set-up-for-testing).
 
-## Testing a service
+## Тестирование сервиса {#testing-a-service}
 
-Consider a `Calculator` service that performs basic arithmetic:
+Рассмотрим сервис `Calculator`, выполняющий базовые арифметические операции:
 
 ```ts { header: 'calculator.ts' }
 import {Injectable} from '@angular/core';
@@ -23,7 +23,7 @@ export class Calculator {
 }
 ```
 
-To test this service, configure a `TestBed`, which is Angular's testing utility for creating an isolated testing environment for each test. It sets up dependency injection and lets you retrieve service instances — simulating how Angular wires things together in a real application.
+Для тестирования этого сервиса настройте `TestBed` — утилиту Angular для создания изолированной тестовой среды для каждого теста. Она настраивает внедрение зависимостей и позволяет получать экземпляры сервисов — имитируя то, как Angular связывает всё вместе в реальном приложении.
 
 ```ts { header: 'calculator.spec.ts' }
 import {TestBed} from '@angular/core/testing';
@@ -49,13 +49,13 @@ describe('Calculator', () => {
 });
 ```
 
-In the example above, the `beforeEach` block injects a fresh instance of the service before every test. This ensures each test runs in isolation with no leaked state from previous tests.
+В приведённом примере блок `beforeEach` внедряет свежий экземпляр сервиса перед каждым тестом. Это гарантирует, что каждый тест выполняется в изоляции без утечки состояния из предыдущих тестов.
 
-## Testing services with dependencies
+## Тестирование сервисов с зависимостями {#testing-services-with-dependencies}
 
-Most services depend on other services to run properly. By default, `TestBed` provides the real implementations of these dependencies, which means your tests exercise the actual code paths your application uses. Sometimes, however, a dependency may be complex, slow, or unpredictable. In those cases, you can substitute it with a controlled replacement.
+Большинство сервисов зависят от других сервисов. По умолчанию `TestBed` предоставляет реальные реализации этих зависимостей, что означает, что тесты проверяют реальные пути кода, используемые приложением. Однако иногда зависимость может быть сложной, медленной или непредсказуемой. В таких случаях её можно заменить управляемой заглушкой.
 
-Consider an `OrderTotal` service that relies on a `TaxCalculator` to compute the final price of an order:
+Рассмотрим сервис `OrderTotal`, который полагается на `TaxCalculator` для вычисления итоговой цены заказа:
 
 ```ts { header: 'tax-calculator.ts' }
 import {Injectable} from '@angular/core';
@@ -82,13 +82,13 @@ export class OrderTotal {
 }
 ```
 
-In this example, `OrderTotal` uses `inject()` to request `TaxCalculator` from Angular's dependency injection system. By default, `TestBed` provides the real `TaxCalculator` which is perfect for simple calculations like this. However, if `TaxCalculator` involved complex logic, network requests, or unpredictable results, you might want to substitute it with a controlled replacement.
+В этом примере `OrderTotal` использует `inject()` для запроса `TaxCalculator` из системы внедрения зависимостей Angular. По умолчанию `TestBed` предоставляет реальный `TaxCalculator`, что отлично подходит для простых вычислений. Однако если бы `TaxCalculator` содержал сложную логику, сетевые запросы или возвращал непредсказуемые результаты, его можно было бы заменить управляемой заглушкой.
 
-### Replacing a dependency with a stub
+### Замена зависимости заглушкой {#replacing-a-dependency-with-a-stub}
 
-A stub is a way to replace a dependency or method with one that returns predictable values, which can make test results easier to verify.
+Заглушка (stub) — это способ заменить зависимость или метод таким, который возвращает предсказуемые значения, что упрощает проверку результатов тестов.
 
-To test `OrderTotal` without relying on the real `TaxCalculator`, you can provide a stub in the `TestBed` configuration.
+Для тестирования `OrderTotal` без зависимости от реального `TaxCalculator` можно предоставить заглушку в конфигурации `TestBed`.
 
 ```ts { header: 'order-total.spec.ts' }
 import {TestBed} from '@angular/core/testing';
@@ -123,11 +123,11 @@ describe('OrderTotal', () => {
 });
 ```
 
-With this stub, whenever `OrderTotal` requests `TaxCalculator`, the `TestBed` knows to use the `taxCalculatorStub` instead. Because the stub always returns 5, the test verifies that `OrderTotal` correctly adds the tax value to the subtotal regardless of whether the tax rate changes in `TaxCalculator`.
+С этой заглушкой всякий раз, когда `OrderTotal` запрашивает `TaxCalculator`, `TestBed` использует `taxCalculatorStub` вместо реального сервиса. Поскольку заглушка всегда возвращает 5, тест проверяет, что `OrderTotal` корректно прибавляет значение налога к подытогу независимо от изменения налоговой ставки в `TaxCalculator`.
 
-### Verifying interactions with spies
+### Проверка взаимодействий с помощью шпионов {#verifying-interactions-with-spies}
 
-A stub controls what a dependency returns, but sometimes you also need to verify that a service called its dependency with the correct arguments. This can be accomplished with spies, which track how a function is called. With Vitest, this functionality is built into `vi.fn()` and lets you assert on interactions between services.
+Заглушка контролирует, что возвращает зависимость, но иногда также нужно убедиться, что сервис вызвал зависимость с правильными аргументами. Это можно сделать с помощью шпионов (spies), которые отслеживают вызовы функций. В Vitest эта функциональность встроена в `vi.fn()` и позволяет проверять взаимодействия между сервисами.
 
 ```ts { header: 'order-total.spec.ts' }
 import {TestBed} from '@angular/core/testing';
@@ -163,10 +163,10 @@ describe('OrderTotal', () => {
 });
 ```
 
-The new test verifies that `OrderTotal` called `TaxCalculator.calculate` when computing the total. This is useful when verifying that the interaction between services happened correctly.
+Новый тест проверяет, что `OrderTotal` вызвал `TaxCalculator.calculate` при вычислении итоговой суммы. Это полезно при проверке корректности взаимодействия между сервисами.
 
-## Testing HTTP services
+## Тестирование HTTP-сервисов {#testing-http-services}
 
-Many services use Angular's `HttpClient` to fetch data from a server. Angular provides dedicated testing utilities for `HttpClient` that let you control HTTP responses without making real network requests.
+Многие сервисы используют `HttpClient` Angular для загрузки данных с сервера. Angular предоставляет специальные утилиты тестирования для `HttpClient`, позволяющие управлять HTTP-ответами без выполнения реальных сетевых запросов.
 
-For details on testing services that use `HttpClient`, see the [HTTP testing guide](guide/http/testing).
+Подробнее о тестировании сервисов, использующих `HttpClient`, см. в [руководстве по тестированию HTTP](guide/http/testing).

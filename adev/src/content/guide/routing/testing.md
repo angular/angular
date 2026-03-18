@@ -1,22 +1,22 @@
-# Testing routing and navigation
+# Тестирование маршрутизации и навигации {#testing-routing-and-navigation}
 
-Testing routing and navigation is essential to ensure your application behaves correctly when users navigate between different routes. This guide covers various strategies for testing routing functionality in Angular applications.
+Тестирование маршрутизации и навигации необходимо для обеспечения правильного поведения приложения при переходе пользователей между различными маршрутами. В этом руководстве рассматриваются различные стратегии тестирования функциональности маршрутизации в Angular-приложениях.
 
-## Prerequisites
+## Предварительные условия {#prerequisites}
 
-This guide assumes you are familiar with the following tools and libraries:
+В этом руководстве предполагается знакомство со следующими инструментами и библиотеками:
 
-- **[Vitest](https://vitest.dev/)** - JavaScript testing framework that provides the testing syntax (`describe`, `it`, `expect`)
-- **[Angular Testing Utilities](guide/testing)** - Angular's built-in testing tools ([`TestBed`](api/core/testing/TestBed), [`ComponentFixture`](api/core/testing/ComponentFixture))
-- **[`RouterTestingHarness`](api/router/testing/RouterTestingHarness)** - Test harness for testing routed components with built-in navigation and component testing capabilities
+- **[Vitest](https://vitest.dev/)** — JavaScript-фреймворк тестирования, предоставляющий синтаксис тестирования (`describe`, `it`, `expect`)
+- **[Angular Testing Utilities](guide/testing)** — встроенные инструменты тестирования Angular ([`TestBed`](api/core/testing/TestBed), [`ComponentFixture`](api/core/testing/ComponentFixture))
+- **[`RouterTestingHarness`](api/router/testing/RouterTestingHarness)** — тестовый стенд для тестирования компонентов маршрутов со встроенными возможностями навигации и тестирования компонентов
 
-## Testing scenarios
+## Сценарии тестирования {#testing-scenarios}
 
-### Route parameters
+### Параметры маршрута {#route-parameters}
 
-Components often rely on route parameters from the URL to fetch data, like a user ID for a profile page.
+Компоненты часто зависят от параметров маршрута из URL для получения данных, например идентификатора пользователя для страницы профиля.
 
-The following example shows how to test a `UserProfile` component that displays a user ID from the route.
+Следующий пример показывает, как тестировать компонент `UserProfile`, отображающий идентификатор пользователя из маршрута.
 
 ```ts { header: 'user-profile.spec.ts'}
 import {TestBed} from '@angular/core/testing';
@@ -53,11 +53,11 @@ export class UserProfile {
 }
 ```
 
-### Route guards
+### Guard-ы маршрутов {#route-guards}
 
-Route guards control access to routes based on conditions like authentication or permissions. When testing guards, focus on mocking dependencies and verifying navigation outcomes.
+Guard-ы маршрутов управляют доступом к маршрутам на основе условий, таких как аутентификация или разрешения. При тестировании Guard-ов следует сосредоточиться на имитации зависимостей и проверке результатов навигации.
 
-The following example tests an `authGuard` that allows navigation for authenticated users and redirects unauthenticated users to a login page.
+Следующий пример тестирует `authGuard`, который разрешает навигацию для аутентифицированных пользователей и перенаправляет неаутентифицированных на страницу входа.
 
 ```ts {header: 'auth.guard.spec.ts'}
 import {vi, type Mocked} from 'vitest';
@@ -122,11 +122,11 @@ export const authGuard: CanActivateFn = () => {
 };
 ```
 
-### Router outlets
+### Router outlet-ы {#router-outlets}
 
-Router outlet tests are more of an integration test since you're essentially testing the integration between the [`Router`](api/router/Router), the outlet, and the components being displayed.
+Тесты router outlet-ов — это скорее интеграционные тесты, поскольку вы по существу тестируете интеграцию между [`Router`](api/router/Router), outlet-ом и отображаемыми компонентами.
 
-Here's an example of how to set up a test that verifies different components are displayed for different routes:
+Вот пример настройки теста, проверяющего, что для разных маршрутов отображаются разные компоненты:
 
 ```ts {header: 'app.spec.ts'}
 import {TestBed} from '@angular/core/testing';
@@ -193,17 +193,17 @@ import {RouterOutlet, RouterLink} from '@angular/router';
 export class App {}
 ```
 
-### Nested routes
+### Вложенные маршруты {#nested-routes}
 
-Testing nested routes ensures that both the parent and child components render correctly when navigating to nested URLs. This is important because nested routes involve multiple layers.
+Тестирование вложенных маршрутов обеспечивает правильную отрисовку как родительских, так и дочерних компонентов при переходе к вложенным URL. Это важно, потому что вложенные маршруты задействуют несколько уровней.
 
-You need to verify that:
+Необходимо проверить:
 
-1. The parent component renders properly.
-2. The child component renders within it.
-3. Ensure that both components can access their respective route data.
+1. Корректную отрисовку родительского компонента.
+2. Отрисовку дочернего компонента внутри него.
+3. Доступность обоим компонентам их соответствующих данных маршрута.
 
-Here's an example of testing a parent-child route structure:
+Вот пример тестирования структуры маршрутов «родитель-потомок»:
 
 ```ts {header: 'nested-routes.spec.ts'}
 import {TestBed} from '@angular/core/testing';
@@ -259,13 +259,13 @@ export class Parent {}
 export class Child {}
 ```
 
-### Query parameters and fragments
+### Параметры запроса и фрагменты {#query-parameters-and-fragments}
 
-Query parameters (like `?search=angular&category=web`) and URL fragments (like `#section1`) provide additional data through the URL that doesn't affect which component loads, but does affect how the component behaves. Components that read query parameters through [`ActivatedRoute.queryParams`](api/router/ActivatedRoute#queryParams) need to be tested to ensure they handle different parameter scenarios correctly.
+Параметры запроса (например, `?search=angular&category=web`) и фрагменты URL (например, `#section1`) предоставляют дополнительные данные через URL, не влияющие на то, какой компонент загружается, но влияющие на то, как компонент себя ведёт. Компоненты, читающие параметры запроса через [`ActivatedRoute.queryParams`](api/router/ActivatedRoute#queryParams), необходимо тестировать, чтобы убедиться в корректной обработке различных сценариев с параметрами.
 
-Unlike route parameters that are part of the route definition, query parameters are optional and can change without triggering route navigation. This means you need to test both the initial loading and the reactive updates when query parameters change.
+В отличие от параметров маршрута, являющихся частью определения маршрута, параметры запроса необязательны и могут изменяться без запуска навигации маршрута. Это означает необходимость тестирования как первоначальной загрузки, так и реактивных обновлений при изменении параметров запроса.
 
-Here's an example of how to test query parameters and fragments:
+Вот пример тестирования параметров запроса и фрагментов:
 
 ```ts {header: 'search.spec.ts'}
 import {TestBed} from '@angular/core/testing';
@@ -310,11 +310,11 @@ export class Search {
 }
 ```
 
-## Best practices for router testing
+## Лучшие практики тестирования маршрутизатора {#best-practices-for-router-testing}
 
-1. **Use RouterTestingHarness** - For testing routed components, use [`RouterTestingHarness`](api/router/testing/RouterTestingHarness) which provides a cleaner API and eliminates the need for test host components. It offers direct component access, built-in navigation, and better type safety. However, it isn't as suitable for some scenarios, such as testing named outlets, where you may need to create custom host components.
-2. **Handle external dependencies thoughtfully** - Prefer real implementations when possible for more realistic tests. If real implementations aren't feasible (e.g., external APIs), use fakes that approximate the real behavior. Use mocks or stubs only as a last resort, as they can make tests brittle and less reliable.
-3. **Test navigation state** - Verify both the navigation action and the resulting application state, including URL changes and component rendering.
-4. **Handle asynchronous operations** - Router navigation is asynchronous. Use `async/await` to properly handle timing in your tests.
-5. **Test error scenarios** - Include tests for invalid routes, failed navigation, and guard rejections to ensure your application handles edge cases gracefully.
-6. **Do not mock Angular Router** - Instead, provide real route configurations and use the harness to navigate. This makes your tests more robust and less likely to break on internal Angular updates, while also ensuring you catch real issues when the router updates since mocks can hide breaking changes.
+1. **Используйте RouterTestingHarness** — для тестирования компонентов маршрутов используйте [`RouterTestingHarness`](api/router/testing/RouterTestingHarness), который предоставляет более чистый API и устраняет необходимость в тестовых хост-компонентах. Он обеспечивает прямой доступ к компонентам, встроенную навигацию и лучшую типовую безопасность. Однако он не подходит для некоторых сценариев, например тестирования именованных outlet-ов, где может потребоваться создание пользовательских хост-компонентов.
+2. **Вдумчиво обрабатывайте внешние зависимости** — при возможности предпочитайте реальные реализации для более реалистичных тестов. Если реальные реализации невозможны (например, внешние API), используйте имитации, приближённые к реальному поведению. Используйте моки или заглушки только в крайнем случае, так как они могут сделать тесты хрупкими и ненадёжными.
+3. **Тестируйте состояние навигации** — проверяйте как действие навигации, так и результирующее состояние приложения, включая изменения URL и отрисовку компонентов.
+4. **Обрабатывайте асинхронные операции** — навигация маршрутизатора асинхронна. Используйте `async/await` для корректной обработки времени в тестах.
+5. **Тестируйте сценарии ошибок** — включайте тесты для недопустимых маршрутов, неудачной навигации и отклонений Guard-ов, чтобы убедиться, что приложение корректно обрабатывает крайние случаи.
+6. **Не мокайте Angular Router** — вместо этого предоставляйте реальные конфигурации маршрутов и используйте стенд для навигации. Это делает тесты более надёжными и менее вероятно сломается при внутренних обновлениях Angular, а также гарантирует выявление реальных проблем при обновлении маршрутизатора, поскольку моки могут скрывать критические изменения.

@@ -1,32 +1,32 @@
 <docs-decorative-header title="Kitchen sink" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
-This is a visual list of all custom components and styles for Angular.dev.
+Это визуальный список всех пользовательских компонентов и стилей для Angular.dev.
 </docs-decorative-header>
 
-As a design system, this page contains visual and Markdown authoring guidance for:
+Как дизайн-система, эта страница содержит визуальные руководства и руководства по разметке Markdown для:
 
-- Custom Angular docs elements: [`docs-card`](#cards), [`docs-callout`](#callouts), [`docs-pill`](#pills), and [`docs-steps`](#workflow)
-- Custom text elements: [alerts](#alerts)
-- Code examples: [`docs-code`](#code)
-- Built-in Markdown styled elements: links, lists, [headers](#headers-h2), [horizontal lines](#horizontal-line-divider)
-- and more!
+- Пользовательских элементов Angular docs: [`docs-card`](#cards), [`docs-callout`](#callouts), [`docs-pill`](#pills) и [`docs-steps`](#workflow)
+- Пользовательских текстовых элементов: [оповещения](#alerts)
+- Примеров кода: [`docs-code`](#code)
+- Встроенных стилизованных элементов Markdown: ссылки, списки, [заголовки](#headers-h2), [горизонтальные разделители](#horizontal-line-divider)
+- и многое другое!
 
-Get ready to:
+Приготовьтесь:
 
-1. Write...
-2. great...
-3. docs!
+1. Писать...
+2. отличную...
+3. документацию!
 
-## Headers (h2)
+## Заголовки (h2) {#headers-h2}
 
-### Smaller headers (h3)
+### Заголовки меньше (h3)
 
-#### Even smaller (h4)
+#### Ещё меньше (h4)
 
-##### Even more smaller (h5)
+##### Ещё меньше (h5)
 
-###### The smallest! (h6)
+###### Самый маленький! (h6)
 
-## Cards
+## Карточки {#cards}
 
 <docs-card-container>
   <docs-card title="What is Angular?" link="Platform Overview" href="tutorials/first-app">
@@ -40,17 +40,17 @@ Get ready to:
   </docs-card>
 </docs-card-container>
 
-### `<docs-card>` Attributes
+### Атрибуты `<docs-card>`
 
-| Attributes              | Details                                           |
-| :---------------------- | :------------------------------------------------ |
-| `<docs-card-container>` | All cards must be nested inside a container       |
-| `title`                 | Card title                                        |
-| card body contents      | Anything between `<docs-card>` and `</docs-card>` |
-| `link`                  | (Optional) Call to Action link text               |
-| `href`                  | (Optional) Call to Action link href               |
+| Атрибуты                | Описание                                                |
+| :---------------------- | :------------------------------------------------------ |
+| `<docs-card-container>` | Все карточки должны быть вложены в контейнер            |
+| `title`                 | Заголовок карточки                                      |
+| содержимое тела         | Всё между `<docs-card>` и `</docs-card>`                |
+| `link`                  | (Необязательно) Текст ссылки призыва к действию         |
+| `href`                  | (Необязательно) Href ссылки призыва к действию          |
 
-## Callouts
+## Выноски {#callouts}
 
 <docs-callout title="Title of a callout that is helpful">
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla luctus metus blandit semper faucibus. Sed blandit diam quis tellus maximus, ac scelerisque ex egestas. Ut euismod lobortis mauris pretium iaculis. Quisque ullamcorper, elit ut lacinia blandit, magna sem finibus urna, vel suscipit tortor dolor id risus.
@@ -64,17 +64,17 @@ Get ready to:
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla luctus metus blandit semper faucibus. Sed blandit diam quis tellus maximus, ac scelerisque ex egestas. Ut euismod lobortis mauris pretium iaculis. Quisque ullamcorper, elit ut lacinia blandit, magna sem finibus urna, vel suscipit tortor dolor id risus.
 </docs-callout>
 
-### `<docs-callout>` Attributes
+### Атрибуты `<docs-callout>`
 
-| Attributes                                       | Details                                                   |
-| :----------------------------------------------- | :-------------------------------------------------------- |
-| `title`                                          | Callout title                                             |
-| card body contents                               | Anything between `<docs-callout>` and `</docs-callout>`   |
-| `helpful` (default) \| `critical` \| `important` | (Optional) Adds styling and icons based on severity level |
+| Атрибуты                                         | Описание                                                   |
+| :----------------------------------------------- | :--------------------------------------------------------- |
+| `title`                                          | Заголовок выноски                                          |
+| содержимое тела                                  | Всё между `<docs-callout>` и `</docs-callout>`             |
+| `helpful` (по умолчанию) \| `critical` \| `important` | (Необязательно) Добавляет стили и иконки по уровню серьёзности |
 
-## Pills
+## Пилюли {#pills}
 
-Pill rows are helpful as a sort of navigation with links to helpful resources.
+Строки пилюль полезны как своеобразная навигация со ссылками на полезные ресурсы.
 
 <docs-pill-row id=pill-row>
   <docs-pill href="#pill-row" title="Link"/>
@@ -85,51 +85,51 @@ Pill rows are helpful as a sort of navigation with links to helpful resources.
   <docs-pill href="#pill-row" title="Link"/>
 </docs-pill-row>
 
-### `<docs-pill>` Attributes
+### Атрибуты `<docs-pill>`
 
-| Attributes       | Details                                    |
-| :--------------- | :----------------------------------------- |
-| `<docs-pill-row` | All pills must be nested inside a pill row |
-| `title`          | Pill text                                  |
-| `href`           | Pill href                                  |
+| Атрибуты         | Описание                                       |
+| :--------------- | :--------------------------------------------- |
+| `<docs-pill-row` | Все пилюли должны быть вложены в строку пилюль |
+| `title`          | Текст пилюли                                   |
+| `href`           | Href пилюли                                    |
 
-Pills may also be used inline by themselves, but we haven't built that out yet.
+Пилюли также можно использовать отдельно, встроенными, но эта функция ещё не реализована.
 
-## Alerts
+## Оповещения {#alerts}
 
-Alerts are just special paragraphs. They are helpful to call out (not to be confused with call-out) something that's a bit more urgent. They gain font size from context and are available in many levels. Try not to use alerts to render too much content, but rather to enhance and call attention to surrounding content.
+Оповещения — это просто специальные абзацы. Они полезны для выделения (не путать с выноской) чего-то более срочного. Размер шрифта определяется контекстом, и они доступны на многих уровнях. Старайтесь не использовать оповещения для отображения слишком большого количества контента, а используйте их для усиления и привлечения внимания к окружающему контенту.
 
-Style alerts starting on a new line in Markdown using the format `SEVERITY_LEVEL` + `:` + `ALERT_TEXT`.
+Оповещения задаются с новой строки в Markdown в формате `УРОВЕНЬ_СЕРЬЁЗНОСТИ` + `:` + `ТЕКСТ_ОПОВЕЩЕНИЯ`.
 
-NOTE: Use Note for ancillary/additional information that's not _essential_ to the main text.
+NOTE: Используйте Note для вспомогательной/дополнительной информации, которая не является _обязательной_ для основного текста.
 
-TIP: Use Tip to call out a specific task/action users can perform, or a fact that plays directly into a task/action.
+TIP: Используйте Tip для выделения конкретной задачи/действия, которое могут выполнить пользователи, или факта, непосредственно связанного с задачей/действием.
 
-TODO: Use TODO for incomplete documentation that you plan to expand soon. You can also assign the TODO, e.g. TODO(emmatwersky): Text.
+TODO: Используйте TODO для незавершённой документации, которую вы планируете расширить в ближайшее время. Можно также назначить TODO, например TODO(emmatwersky): Текст.
 
-QUESTION: Use Question to pose a question to the reader, kind of like a mini-quiz that they should be able to answer.
+QUESTION: Используйте Question, чтобы задать читателю вопрос, своего рода мини-тест, на который он должен уметь ответить.
 
-SUMMARY: Use Summary to provide a two- or three-sentence synopsis of the page or section content, so readers can figure out whether this is the right place for them.
+SUMMARY: Используйте Summary для краткого изложения содержимого страницы или раздела в двух-трёх предложениях, чтобы читатели могли определить, то ли это место, которое им нужно.
 
-TLDR: Use TL;DR (or TLDR) if you can provide the essential information about a page or section in a sentence or two. For example, TLDR: Rhubarb is a cat.
+TLDR: Используйте TL;DR (или TLDR), если можете изложить основную информацию о странице или разделе в одном-двух предложениях. Например, TLDR: Ревень — это кот.
 
-CRITICAL: Use Critical to call out potential bad stuff or alert the reader they ought to be careful before doing something. For example, Warning: Running `rm` with the `-f` option will delete write-protected files or directories without prompting you.
+CRITICAL: Используйте Critical для предупреждения о потенциальных проблемах или для предупреждения читателя о необходимости соблюдать осторожность перед выполнением чего-либо. Например, Warning: Running `rm` with the `-f` option will delete write-protected files or directories without prompting you.
 
-IMPORTANT: Use Important for information that's crucial to comprehending the text or to completing some task.
+IMPORTANT: Используйте Important для информации, критически важной для понимания текста или выполнения какой-либо задачи.
 
-HELPFUL: Use Best practice to call out practices that are known to be successful or better than alternatives.
+HELPFUL: Используйте Best practice для выделения практик, которые известны как успешные или лучшие по сравнению с альтернативами.
 
-NOTE: Heads up `developers`! Alerts _can_ have a [link](#alerts) and other nested styles (but try to **use this sparingly**)!.
+NOTE: Обратите внимание, `разработчики`! Оповещения _могут_ содержать [ссылку](#alerts) и другие вложенные стили (но старайтесь **использовать это экономно**)!.
 
-## Code
+## Код {#code}
 
-You can display `code` using the built in triple backtick:
+Вы можете отобразить `код` с помощью встроенных тройных обратных кавычек:
 
 ```ts
 example code
 ```
 
-Or using the `<docs-code>` element.
+Или с помощью элемента `<docs-code>`.
 
 <docs-code header="Your first example" language="ts" linenums>
 import { Component } from '@angular/core';
@@ -141,9 +141,9 @@ template: '<h1>Hello World!</h1>',
 export class ComponentOverviewComponent {}
 </docs-code>
 
-### Styling the example
+### Стилизация примера
 
-Here's a code example fully styled:
+Вот полностью стилизованный пример кода:
 
 <docs-code
   path="adev/src/content/examples/hello-world/src/app/app.component-old.ts"
@@ -155,39 +155,39 @@ Here's a code example fully styled:
   visibleLines="[3,10]">
 </docs-code>
 
-We also have styling for the terminal, just set the language as `shell`:
+Также есть стилизация для терминала — просто задайте язык `shell`:
 
 ```shell
 npm install @angular/material --save
 ```
 
-You can style standard Markdown triple backticks with attributes for enhanced presentation:
+Вы можете стилизовать стандартные тройные обратные кавычки Markdown с атрибутами для расширенного представления:
 
 ```ts {header:"Awesome Title", linenums, highlight="[2]", hideCopy}
 console.log('Hello, World!');
 console.log('Awesome Angular Docs!');
 ```
 
-#### `<docs-code>` Attributes
+#### Атрибуты `<docs-code>`
 
-| Attributes     | Type                 | Details                                                         |
-| :------------- | :------------------- | :-------------------------------------------------------------- |
-| code           | `string`             | Anything between tags is treated as code                        |
-| `path`         | `string`             | Path to code example (root: `content/examples/`)                |
-| `header`       | `string`             | Title of the example (default: `file-name`)                     |
-| `language`     | `string`             | code language                                                   |
-| `linenums`     | `boolean`            | (False) displays line numbers                                   |
-| `highlight`    | `string of number[]` | lines highlighted                                               |
-| `diff`         | `string`             | path to changed code                                            |
-| `visibleLines` | `string of number[]` | range of lines for collapse mode                                |
-| `region`       | `string`             | only show the provided region.                                  |
-| `preview`      | `boolean`            | (False) display preview                                         |
-| `hideCode`     | `boolean`            | (False) Whether to collapse code example by default.            |
-| `hideDollar`   | `boolean`            | (False) Whether to hide the dollar sign in shell code examples. |
+| Атрибуты       | Тип                  | Описание                                                              |
+| :------------- | :------------------- | :-------------------------------------------------------------------- |
+| code           | `string`             | Всё между тегами интерпретируется как код                             |
+| `path`         | `string`             | Путь к примеру кода (корень: `content/examples/`)                     |
+| `header`       | `string`             | Заголовок примера (по умолчанию: `file-name`)                         |
+| `language`     | `string`             | Язык кода                                                             |
+| `linenums`     | `boolean`            | (False) отображает номера строк                                       |
+| `highlight`    | `string of number[]` | Выделенные строки                                                     |
+| `diff`         | `string`             | Путь к изменённому коду                                               |
+| `visibleLines` | `string of number[]` | Диапазон строк для режима свёртки                                     |
+| `region`       | `string`             | Показывать только указанный регион.                                   |
+| `preview`      | `boolean`            | (False) отображать предпросмотр                                       |
+| `hideCode`     | `boolean`            | (False) Сворачивать ли пример кода по умолчанию.                      |
+| `hideDollar`   | `boolean`            | (False) Скрывать ли знак доллара в примерах кода для командной строки. |
 
-### Multifile examples
+### Многофайловые примеры
 
-You can create multifile examples by wrapping the examples inside a `<docs-code-multifile>`.
+Вы можете создавать многофайловые примеры, обернув примеры в `<docs-code-multifile>`.
 
 <docs-code-multifile
   path="adev/src/content/examples/hello-world/src/app/app.component.ts"
@@ -200,25 +200,25 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
     path="adev/src/content/examples/hello-world/src/app/app.component.css" />
 </docs-code-multifile>
 
-#### `<docs-code-multifile>` Attributes
+#### Атрибуты `<docs-code-multifile>`
 
-| Attributes    | Type      | Details                                                         |
-| :------------ | :-------- | :-------------------------------------------------------------- |
-| body contents | `string`  | nested tabs of `docs-code` examples                             |
-| `path`        | `string`  | Path to code example for preview and external link              |
-| `preview`     | `boolean` | (False) display preview                                         |
-| `hideCode`    | `boolean` | (False) Whether to collapse code example by default.            |
-| `hideDollar`  | `boolean` | (False) Whether to hide the dollar sign in shell code examples. |
+| Атрибуты      | Тип       | Описание                                                              |
+| :------------ | :-------- | :-------------------------------------------------------------------- |
+| содержимое    | `string`  | Вложенные вкладки с примерами `docs-code`                             |
+| `path`        | `string`  | Путь к примеру кода для предпросмотра и внешней ссылки                |
+| `preview`     | `boolean` | (False) отображать предпросмотр                                       |
+| `hideCode`    | `boolean` | (False) Сворачивать ли пример кода по умолчанию.                      |
+| `hideDollar`  | `boolean` | (False) Скрывать ли знак доллара в примерах кода для командной строки. |
 
-### Adding `preview` to your code example
+### Добавление `preview` к примеру кода
 
-Adding the `preview` flag builds a running example of the code below the code snippet. This also automatically adds a button to open the running example in Stackblitz.
+Добавление флага `preview` создаёт запущенный пример кода под фрагментом кода. Это также автоматически добавляет кнопку для открытия запущенного примера в Stackblitz.
 
-NOTE: `preview` only works with standalone.
+NOTE: `preview` работает только со standalone-компонентами.
 
-### Styling example previews with Tailwind CSS
+### Стилизация предпросмотров примеров с помощью Tailwind CSS
 
-Tailwind utility classes can be used within code examples.
+Утилитарные классы Tailwind можно использовать в примерах кода.
 
 <docs-code-multifile
   path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts"
@@ -227,7 +227,7 @@ Tailwind utility classes can be used within code examples.
 <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts" />
 </docs-code-multifile>
 
-## Tabs
+## Вкладки {#tabs}
 
 <docs-tab-group>
   <docs-tab label="Code Example">
@@ -244,19 +244,19 @@ Tailwind utility classes can be used within code examples.
   </docs-tab>
 </docs-tab-group>
 
-## Workflow
+## Рабочий процесс {#workflow}
 
-Style numbered steps using `<docs-step>`. Numbering is created using CSS (handy!).
+Стилизуйте нумерованные шаги с помощью `<docs-step>`. Нумерация создаётся с помощью CSS (удобно!).
 
-### `<docs-workflow>` and `<docs-step>` Attributes
+### Атрибуты `<docs-workflow>` и `<docs-step>`
 
-| Attributes         | Details                                           |
-| :----------------- | :------------------------------------------------ |
-| `<docs-workflow>`  | All steps must be nested inside a workflow        |
-| `title`            | Step title                                        |
-| step body contents | Anything between `<docs-step>` and `</docs-step>` |
+| Атрибуты           | Описание                                              |
+| :----------------- | :---------------------------------------------------- |
+| `<docs-workflow>`  | Все шаги должны быть вложены в рабочий процесс        |
+| `title`            | Заголовок шага                                        |
+| содержимое шага    | Всё между `<docs-step>` и `</docs-step>`              |
 
-Steps must start on a new line, and can contain `docs-code`s and other nested elements and styles.
+Шаги должны начинаться с новой строки и могут содержать `docs-code` и другие вложенные элементы и стили.
 
 <docs-workflow>
 
@@ -319,29 +319,29 @@ If your installation and setup was successful, you should see a page similar to 
 
 </docs-workflow>
 
-## Images and video
+## Изображения и видео {#images-and-video}
 
-You can add images using the semantic Markdown image:
+Вы можете добавлять изображения с помощью семантической разметки Markdown:
 
 ![Rhubarb the cat](assets/images/kitchen-sink/rhubarb.jpg 'Optional title')
 
-### Add `#small` and `#medium` to change the image size
+### Добавьте `#small` и `#medium` для изменения размера изображения
 
 ![Rhubarb the small cat](assets/images/kitchen-sink/rhubarb.jpg#small)
 ![Rhubarb the medium cat](assets/images/kitchen-sink/rhubarb.jpg#medium)
 
-## Add attributes using curly braces syntax
+## Добавление атрибутов с помощью синтаксиса фигурных скобок
 
 ![Lazy loaded image](assets/images/kitchen-sink/rhubarb.jpg {loading: 'lazy'})
 ![Combined attributes](assets/images/kitchen-sink/rhubarb.jpg#small {loading: 'lazy', decoding: 'async', fetchpriority: 'low'})
 
-Embedded videos are created with `docs-video` and just need a `src` and `alt`:
+Встроенные видео создаются с помощью `docs-video` и требуют только `src` и `alt`:
 
 <docs-video src="https://www.youtube.com/embed/O47uUnJjbJc" alt=""/>
 
-## Charts & Graphs
+## Графики и диаграммы {#charts-graphs}
 
-Write diagrams and charts using [Mermaid](http://mermaid.js.org/) by setting the code language to `mermaid`, all theming is built-in.
+Создавайте диаграммы и графики с помощью [Mermaid](http://mermaid.js.org/), задав язык кода `mermaid` — все темы встроены.
 
 ```mermaid
     graph TD;
@@ -366,15 +366,15 @@ Write diagrams and charts using [Mermaid](http://mermaid.js.org/) by setting the
       "Rats" : 15
 ```
 
-## Horizontal Line Divider
+## Горизонтальный разделитель {#horizontal-line-divider}
 
-This can be used to separate page sections, like we're about to do below. These styles will be added by default, nothing custom needed.
+Его можно использовать для разделения разделов страницы, как показано ниже. Эти стили добавляются по умолчанию, никакой дополнительной настройки не требуется.
 
 <hr/>
 
-The end!
+Конец!
 
-## Prefer / Avoid
+## Предпочтительно / Следует избегать {#prefer-avoid}
 
 ```ts {prefer}
 const foo = 'bar';

@@ -1,31 +1,31 @@
-# Add HTTP communication to your app
+# Добавление HTTP-взаимодействия в приложение {#add-http-communication-to-your-app}
 
-This tutorial demonstrates how to integrate HTTP and an API into your app.
+В этом уроке показано, как интегрировать HTTP и API в ваше приложение.
 
-Up until this point your app has read data from a static array in an Angular service. The next step is to use a JSON server that your app will communicate with over HTTP. The HTTP request will simulate the experience of working with data from a server.
+До этого момента ваше приложение читало данные из статического массива в сервисе Angular. Следующий шаг — использовать JSON-сервер, с которым ваше приложение будет общаться через HTTP. HTTP-запросы будут имитировать работу с данными, поступающими с сервера.
 
 <docs-video src="https://www.youtube.com/embed/5K10oYJ5Y-E?si=TiuNKx_teR9baO7k"/>
 
-IMPORTANT: We recommend using your local environment for this step of the tutorial.
+ВАЖНО: Для этого шага руководства рекомендуется использовать локальную среду.
 
-## What you'll learn
+## Чему вы научитесь {#what-youll-learn}
 
-Your app will use data from a JSON server
+Ваше приложение будет использовать данные с JSON-сервера.
 
 <docs-workflow>
 
-<docs-step title="Configure the JSON server">
-JSON Server is an open source tool used to create mock REST APIs. You'll use it to serve the housing location data that is currently stored in the housing service.
+<docs-step title="Настройте JSON-сервер">
+JSON Server — это инструмент с открытым исходным кодом для создания имитации REST API. Вы будете использовать его для предоставления данных об объектах жилья, которые в настоящее время хранятся в сервисе жилья.
 
-1. Install `json-server` from npm by using the following command.
+1. Установите `json-server` из npm с помощью следующей команды.
 
    ```bash
    npm install -g json-server
    ```
 
-1. In the root directory of your project, create a file called `db.json`. This is where you will store the data for the `json-server`.
+1. В корневой директории вашего проекта создайте файл `db.json`. В нём будут храниться данные для `json-server`.
 
-1. Open `db.json` and copy the following code into the file
+1. Откройте `db.json` и скопируйте следующий код в файл
 
    ```json
    {
@@ -134,74 +134,74 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
    }
    ```
 
-1. Save this file.
+1. Сохраните этот файл.
 
-1. Time to test your configuration. From the command line, at the root of your project run the following commands.
+1. Время протестировать конфигурацию. В командной строке в корне проекта выполните следующие команды.
 
    ```bash
    json-server --watch db.json
    ```
 
-1. In your web browser, navigate to the `http://localhost:3000/locations` and confirm that the response includes the data stored in `db.json`.
+1. В браузере перейдите на `http://localhost:3000/locations` и убедитесь, что ответ содержит данные из `db.json`.
 
-If you have any trouble with your configuration, you can find more details in the [official documentation](https://www.npmjs.com/package/json-server).
+Если у вас возникли трудности с конфигурацией, дополнительные сведения можно найти в [официальной документации](https://www.npmjs.com/package/json-server).
 </docs-step>
 
-<docs-step title="Update service to use web server instead of local array">
-The data source has been configured, the next step is to update your web app to connect to it use the data.
+<docs-step title="Обновите сервис для использования веб-сервера вместо локального массива">
+Источник данных настроен, следующий шаг — обновить веб-приложение для подключения к нему.
 
-1.  In `src/app/housing.service.ts`, make the following changes:
+1.  В `src/app/housing.service.ts` внесите следующие изменения:
 
-1.  Update the code to remove `housingLocationList` property and the array containing the data, as well as the `baseUrl` property.
+1.  Удалите свойство `housingLocationList` и массив с данными, а также свойство `baseUrl`.
 
-1.  Add a string property called `url` and set its value to `'http://localhost:3000/locations'`
+1.  Добавьте строковое свойство `url` и установите его значение равным `'http://localhost:3000/locations'`
 
     <docs-code header="Add url property to housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[8]"/>
 
-    This code will result in errors in the rest of the file because it depends on the `housingLocationList` property. We're going to update the service methods next.
+    Этот код вызовет ошибки в остальной части файла, поскольку он зависит от свойства `housingLocationList`. Далее мы обновим методы сервиса.
 
-1.  Update the `getAllHousingLocations` function to make a call to the web server you configured.
+1.  Обновите функцию `getAllHousingLocations`, чтобы она выполняла вызов к настроенному веб-серверу.
 
      <docs-code header="Update the getAllHousingLocations method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[10,13]"/>
 
-    The code now uses asynchronous code to make a **GET** request over HTTP.
+    Теперь код использует асинхронный код для выполнения **GET**-запроса через HTTP.
 
-    HELPFUL: For this example, the code uses `fetch`. For more advanced use cases consider using `HttpClient` provided by Angular.
+    ПОЛЕЗНО: В данном примере код использует `fetch`. Для более сложных случаев использования рассмотрите `HttpClient`, предоставляемый Angular.
 
-1.  Update the `getHousingLocationsById` function to make a call to the web server you configured.
+1.  Обновите функцию `getHousingLocationsById`, чтобы она выполняла вызов к настроенному веб-серверу.
 
-    HELPFUL: Notice the `fetch` method has been updated to _query_ the data for location with a matching `id` property value. See [URL Search Parameter](https://developer.mozilla.org/en-US/docs/Web/API/URL/search) for more information.
+    ПОЛЕЗНО: Обратите внимание, что метод `fetch` обновлён для _запроса_ данных о локации с соответствующим значением свойства `id`. Подробнее см. [URL Search Parameter](https://developer.mozilla.org/en-US/docs/Web/API/URL/search).
 
      <docs-code header="Update the getHousingLocationById method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,19]"/>
 
-1.  Once all the updates are complete, your updated service should match the following code.
+1.  После внесения всех обновлений ваш обновлённый сервис должен соответствовать следующему коду.
 
      <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
 
 </docs-step>
 
-<docs-step title="Update the components to use asynchronous calls to the housing service">
-The server is now reading data from the HTTP request but the components that rely on the service now have errors because they were programmed to use the synchronous version of the service.
+<docs-step title="Обновите компоненты для использования асинхронных вызовов к сервису жилья">
+Теперь сервер читает данные из HTTP-запроса, но компоненты, которые зависят от сервиса, имеют ошибки, поскольку они были запрограммированы для использования синхронной версии сервиса.
 
-1.  In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method. Because we didn't use signals for our state, you have to notify Angular that a change happened that requires a synchronization. Call `this.changeDetectorRef.markForCheck()` to do this.
+1.  В `src/app/home/home.ts` обновите `constructor` для использования новой асинхронной версии метода `getAllHousingLocations`. Поскольку мы не использовали сигналы для состояния, вам нужно уведомить Angular об изменении, требующем синхронизации. Вызовите `this.changeDetectorRef.markForCheck()` для этого.
 
       <docs-code header="Update constructor in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[30,38]"/>
 
-1.  In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method. As before, you must also call `this.changeDetectorRef.markForCheck()` to notify Angular of the changes.
+1.  В `src/app/details/details.ts` обновите `constructor` для использования новой асинхронной версии метода `getHousingLocationById`. Как и прежде, вам также нужно вызвать `this.changeDetectorRef.markForCheck()` для уведомления Angular об изменениях.
 
       <docs-code header="Update constructor in details.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[60,66]"/>
 
-1.  Save your code.
+1.  Сохраните код.
 
-1.  Open the application in the browser and confirm that it runs without any errors.
+1.  Откройте приложение в браузере и убедитесь, что оно работает без ошибок.
     </docs-step>
 
 </docs-workflow>
 
-NOTE: This lesson relies on the `fetch` browser API. For the support of interceptors, please refer to the [Http Client documentation](/guide/http)
+ПРИМЕЧАНИЕ: Этот урок использует браузерный API `fetch`. Для поддержки перехватчиков обратитесь к [документации Http Client](/guide/http).
 
-SUMMARY: In this lesson, you updated your app to use a local web server (`json-server`), and use asynchronous service methods to retrieve data.
+РЕЗЮМЕ: В этом уроке вы обновили приложение для использования локального веб-сервера (`json-server`) и асинхронных методов сервиса для получения данных.
 
-Congratulations! You've successfully completed this tutorial and are ready to continue your journey with building even more complex Angular Apps.
+Поздравляем! Вы успешно завершили это руководство и готовы продолжить своё путешествие по созданию ещё более сложных приложений Angular.
 
-If you would like to learn more, please consider completing some of Angular's other developer [tutorials](tutorials) and [guides](overview).
+Если вы хотите узнать больше, рассмотрите возможность прохождения других [руководств](tutorials) и изучения [гайдов](overview) Angular.

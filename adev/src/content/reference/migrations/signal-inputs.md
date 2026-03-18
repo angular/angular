@@ -1,29 +1,27 @@
-# Migration to signal inputs
+# Миграция на signal inputs {#migration-to-signal-inputs}
 
-Angular introduced an improved API for inputs that is considered
-production ready as of v19.
-Read more about signal inputs and their benefits in the [dedicated guide](guide/components/inputs).
+В Angular был представлен улучшенный API для inputs, который считается готовым к использованию в продакшене начиная с v19.
+Подробнее о signal inputs и их преимуществах читайте в [специальном руководстве](guide/components/inputs).
 
-To support existing teams that would like to use signal inputs, the Angular team
-provides an automated migration that converts `@Input` fields to the new `input()` API.
+Для поддержки существующих команд, желающих использовать signal inputs, команда Angular предоставляет автоматизированную миграцию, которая преобразует поля `@Input` в новый API `input()`.
 
-Run the schematic using the following command:
+Запустите схематик с помощью следующей команды:
 
 ```bash
 ng generate @angular/core:signal-input-migration
 ```
 
-Alternatively, the migration is available as a [code refactor action](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) in VSCode.
-Install the latest version of the VSCode extension and click on an `@Input` field.
-See more details in the section [below](#vscode-extension).
+Кроме того, миграция доступна как [действие рефакторинга кода](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) в VSCode.
+Установите последнюю версию расширения VSCode и нажмите на поле с `@Input`.
+Подробнее см. в разделе [ниже](#vscode-extension).
 
-## What does the migration change?
+## Что изменяет миграция?
 
-1. `@Input()` class members are updated to their signal `input()` equivalent.
-2. References to migrated inputs are updated to call the signal.
-   - This includes references in templates, host bindings or TypeScript code.
+1. Члены класса с `@Input()` обновляются до их сигнального эквивалента с `input()`.
+2. Ссылки на мигрированные inputs в приложении обновляются для вызова сигнала.
+   - Это включает ссылки в шаблонах, host bindings и TypeScript-коде.
 
-**Before**
+**До**
 
 ```angular-ts
 import {Component, Input} from '@angular/core';
@@ -43,7 +41,7 @@ export class MyComponent {
 }
 ```
 
-**After**
+**После**
 
 ```angular-ts {[[4],[7], [10,12]]}
 import {Component, input} from '@angular/core';
@@ -64,27 +62,26 @@ export class MyComponent {
 }
 ```
 
-## Configuration options
+## Параметры конфигурации
 
-The migration supports a few options for fine tuning the migration to your specific needs.
+Миграция поддерживает несколько параметров для тонкой настройки под ваши конкретные нужды.
 
 ### `--path`
 
-By default, the migration will update your whole Angular CLI workspace.
-You can limit the migration to a specific sub-directory using this option.
+По умолчанию миграция обновляет всё рабочее пространство Angular CLI.
+Используйте этот параметр, чтобы ограничить миграцию конкретной поддиректорией.
 
 ### `--best-effort-mode`
 
-By default, the migration skips inputs that cannot be safely migrated.
-The migration tries to refactor code as safely as possible.
+По умолчанию миграция пропускает inputs, которые не могут быть безопасно мигрированы.
+Миграция стремится рефакторить код максимально безопасно.
 
-When the `--best-effort-mode` flag is enabled, the migration eagerly
-tries to migrate as much as possible, even if it could break your build.
+Когда флаг `--best-effort-mode` включён, миграция агрессивно пытается мигрировать как можно больше, даже если это может нарушить сборку.
 
 ### `--insert-todos`
 
-When enabled, the migration will add TODOs to inputs that couldn't be migrated.
-The TODOs will include reasoning on why inputs were skipped. E.g.
+Когда этот параметр включён, миграция добавляет TODO-комментарии к inputs, которые не удалось мигрировать.
+В комментариях будет указана причина пропуска. Например:
 
 ```ts
 // TODO: Skipped for migration because:
@@ -94,23 +91,21 @@ The TODOs will include reasoning on why inputs were skipped. E.g.
 
 ### `--analysis-dir`
 
-In large projects you may use this option to reduce the amount of files being analyzed.
-By default, the migration analyzes the whole workspace, regardless of the `--path` option, in
-order to update all references affected by an `@Input()` migration.
+В крупных проектах этот параметр позволяет сократить количество анализируемых файлов.
+По умолчанию миграция анализирует всё рабочее пространство, независимо от параметра `--path`, чтобы обновить все ссылки, затронутые миграцией `@Input()`.
 
-With this option, you can limit analysis to a sub-folder. Note that this means that any
-references outside this directory are silently skipped, potentially breaking your build.
+С помощью этого параметра можно ограничить анализ подпапкой. Обратите внимание, что в таком случае любые ссылки за пределами этой директории будут молча пропущены, что может привести к ошибкам сборки.
 
-## VSCode extension
+## Расширение VSCode {#vscode-extension}
 
-![Screenshot of the VSCode extension and clicking on an `@Input` field](assets/images/migrations/signal-inputs-vscode.png 'Screenshot of the VSCode extension and clicking on an `@Input` field.')
+![Снимок экрана расширения VSCode при нажатии на поле `@Input`](assets/images/migrations/signal-inputs-vscode.png 'Снимок экрана расширения VSCode при нажатии на поле `@Input`.')
 
-The migration is available as a [code refactor action](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) in VSCode.
+Миграция доступна как [действие рефакторинга кода](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) в VSCode.
 
-To make use of the migration via VSCode, install the latest version of the VSCode extension and either click:
+Чтобы использовать миграцию через VSCode, установите последнюю версию расширения VSCode и нажмите:
 
-- on a `@Input` field.
-- or, on a directive/component
+- на поле с `@Input`.
+- или на директиву/компонент
 
-Then, wait for the yellow lightbulb VSCode refactoring button to appear.
-Via this button you can then select the signal input migration.
+Затем дождитесь появления жёлтой кнопки рефакторинга VSCode с лампочкой.
+С помощью этой кнопки можно выбрать миграцию signal inputs.

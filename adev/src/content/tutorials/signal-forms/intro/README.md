@@ -1,24 +1,24 @@
-# Learn Angular Signal Forms
+# Изучение Signal Forms Angular {#learn-angular-signal-forms}
 
-This interactive tutorial will teach you how to build reactive forms using Angular's experimental Signal Forms API.
+В этом интерактивном руководстве вы научитесь создавать реактивные формы с помощью экспериментального API Signal Forms в Angular.
 
-IMPORTANT: Signal Forms is currently [experimental](reference/releases#experimental). The API may change before stabilizing. Check the [official documentation](guide/forms/signals/overview) for the latest updates.
+ВАЖНО: Signal Forms в настоящее время является [экспериментальным](reference/releases#experimental). API может измениться до стабилизации. Проверяйте [официальную документацию](guide/forms/signals/overview) для получения последних обновлений.
 
-## How to use this tutorial
+## Как пользоваться этим руководством {#how-to-use-this-tutorial}
 
-This tutorial assumes you understand Angular's core concepts and have basic familiarity with signals. If you're new to Angular, read our [essentials guide](/essentials). If you're new to signals, complete the [signals tutorial](/tutorials/signals) first.
+Это руководство предполагает, что вы понимаете основные концепции Angular и имеете базовые знания о сигналах. Если вы новичок в Angular, прочитайте наше [руководство по основам](/essentials). Если вы новичок в сигналах, сначала пройдите [руководство по сигналам](/tutorials/signals).
 
-Each step represents a concept in Signal Forms. You'll build a complete login form from scratch, learning the fundamentals step by step.
+Каждый шаг представляет концепцию Signal Forms. Вы создадите полноценную форму входа с нуля, изучая основы шаг за шагом.
 
-**Your learning path:**
+**Ваш путь обучения:**
 
-1. Set up the form model with TypeScript and signals
-2. Connect the form to your template
-3. Add validation rules
-4. Display validation errors to users
-5. Handle form submission
-6. Explore advanced topics and next steps
+1. Настройте модель формы с помощью TypeScript и сигналов
+2. Подключите форму к шаблону
+3. Добавьте правила валидации
+4. Отобразите ошибки валидации пользователям
+5. Обработайте отправку формы
+6. Изучите продвинутые темы и следующие шаги
 
-If you get stuck, click "Reveal answer" at the top.
+Если вы застряли, нажмите «Reveal answer» вверху страницы.
 
-Alright, let's [get started](/tutorials/signal-forms/1-set-up-form-model)!
+Итак, [начнём](/tutorials/signal-forms/1-set-up-form-model)!

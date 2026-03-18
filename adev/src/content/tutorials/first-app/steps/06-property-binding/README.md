@@ -1,50 +1,50 @@
-# Add a property binding to a component’s template
+# Добавление привязки свойств в шаблон компонента {#add-a-property-binding-to-a-components-template}
 
-This tutorial lesson demonstrates how to add property binding to a template and use it to pass dynamic data to components.
+В этом уроке показано, как добавить привязку свойств в шаблон и использовать её для передачи динамических данных в компоненты.
 
 <docs-video src="https://www.youtube.com/embed/eM3zi_n7lNs?si=AsiczpWnMz5HhJqB&amp;start=599"/>
 
-## What you'll learn
+## Чему вы научитесь {#what-youll-learn}
 
-- Your app has data bindings in the `Home` template.
-- Your app sends data from the `Home` to the `HousingLocation`.
+- В шаблоне `Home` вашего приложения появятся привязки данных.
+- Ваше приложение будет передавать данные из `Home` в `HousingLocation`.
 
-## Conceptual preview of Inputs
+## Концептуальный обзор Inputs {#conceptual-preview-of-inputs}
 
-In this lesson, you'll continue the process of sharing data from the parent component to the child component by binding data to those properties in the template using property binding.
+В этом уроке вы продолжите процесс передачи данных от родительского компонента к дочернему, привязав данные к этим свойствам в шаблоне с помощью привязки свойств.
 
-Property binding enables you to connect a variable to an `Input` in an Angular template. The data is then dynamically bound to the `Input`.
+Привязка свойств позволяет подключить переменную к `Input` в шаблоне Angular. Данные затем динамически привязываются к `Input`.
 
-For a more in depth explanation, please refer to the [Property binding](/guide/templates/binding#css-class-and-style-property-bindings) guide.
+Для более подробного объяснения обратитесь к руководству [Привязка свойств](/guide/templates/binding#css-class-and-style-property-bindings).
 
 <docs-workflow>
 
-<docs-step title="Update the `Home` template">
-This step adds property binding to the `<app-housing-location>` tag.
+<docs-step title="Обновите шаблон `Home`">
+На этом шаге добавляется привязка свойства к тегу `<app-housing-location>`.
 
-In the code editor:
+В редакторе кода:
 
-1.  Navigate to `src/app/home/home.ts`
-1.  In the template property of the `@Component` decorator, update the code to match the code below:
+1.  Перейдите к `src/app/home/home.ts`
+1.  В свойстве `template` декоратора `@Component` обновите код, чтобы он соответствовал коду ниже:
     <docs-code language="angular-ts" header="Add housingLocation property binding" path="adev/src/content/tutorials/first-app/steps/07-dynamic-template-values/src/app/home/home.ts" visibleLines="[15,17]"/>
 
-    When adding a property binding to a component tag, we use the `[attribute] = "value"` syntax to notify Angular that the assigned value should be treated as a property from the component class and not a string value.
+    При добавлении привязки свойства к тегу компонента мы используем синтаксис `[attribute] = "value"`, чтобы сообщить Angular, что присвоенное значение должно рассматриваться как свойство класса компонента, а не как строковое значение.
 
-    The value on the right-hand side is the name of the property from the `Home`.
+    Значение справа от знака равенства — это имя свойства из `Home`.
 
 </docs-step>
 
-<docs-step title="Confirm the code still works">
-1.  Save your changes and confirm the app does not have any errors.
-1.  Correct any errors before you continue to the next step.
+<docs-step title="Убедитесь, что код по-прежнему работает">
+1.  Сохраните изменения и убедитесь, что приложение не содержит ошибок.
+1.  Исправьте все ошибки перед переходом к следующему шагу.
 </docs-step>
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocation` has access to data that it can use to customize the component's display.
+РЕЗЮМЕ: В этом уроке вы добавили новую привязку свойства и передали ссылку на свойство класса. Теперь `HousingLocation` имеет доступ к данным, которые можно использовать для настройки отображения компонента.
 
-For more information about the topics covered in this lesson, visit:
+Для получения дополнительной информации по темам, затронутым в этом уроке, посетите:
 
 <docs-pill-row>
-  <docs-pill href="/guide/templates/binding#css-class-and-style-property-bindings" title="Property binding"/>
+  <docs-pill href="/guide/templates/binding#css-class-and-style-property-bindings" title="Привязка свойств"/>
 </docs-pill-row>

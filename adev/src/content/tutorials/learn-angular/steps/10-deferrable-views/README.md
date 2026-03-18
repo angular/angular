@@ -1,22 +1,23 @@
-# Deferrable Views
+# Отложенные представления (Deferrable Views) {#deferrable-views}
 
-Sometimes in app development, you end up with a lot of components that you need to reference in your app, but some of those don't need to be loaded right away for various reasons.
+При разработке приложений порой накапливается много компонентов, на которые нужно ссылаться в приложении, но некоторые из них не обязательно загружать сразу по разным причинам.
 
-Maybe they are below the visible fold or are heavy components that aren't interacted with until later. In that case, we can load some of those resources later with deferrable views.
+Возможно, они находятся ниже видимой области экрана или являются тяжёлыми компонентами, с которыми пользователь взаимодействует позже. В таком случае часть ресурсов можно загрузить позже с помощью отложенных представлений.
 
-NOTE: Learn more about [deferred loading with @defer in the in-depth guide](/guide/templates/defer).
+Примечание: Подробнее
+об [отложенной загрузке с `@defer` читайте в углублённом руководстве](/guide/templates/defer).
 
-In this activity, you'll learn how to use deferrable views to defer load a section of your component template.
+В этом упражнении вы узнаете, как использовать отложенные представления для отложенной загрузки части шаблона компонента.
 
 <hr>
 
 <docs-workflow>
 
-<docs-step title="Add a `@defer` block around the comments component">
+<docs-step title="Оберните компонент комментариев в блок `@defer`">
 
-In your app, the blog post page has a comment component after the post details.
+В вашем приложении страница записи блога содержит компонент комментариев после деталей публикации.
 
-Wrap the comment component with a `@defer` block to defer load it.
+Оберните компонент комментариев в блок `@defer`, чтобы загрузить его отложенно.
 
 ```angular-html
 @defer {
@@ -24,13 +25,13 @@ Wrap the comment component with a `@defer` block to defer load it.
 }
 ```
 
-The code above is an example of how to use a basic `@defer` block. By default `@defer` will load the `comments` component when the browser is idle.
+Приведённый выше код — пример использования базового блока `@defer`. По умолчанию `@defer` загружает компонент `comments`, когда браузер находится в состоянии простоя.
 
 </docs-step>
 
-<docs-step title="Add a placeholder">
+<docs-step title="Добавьте блок placeholder">
 
-Add a `@placeholder` block to the `@defer` block. The `@placeholder` block is where you put html that will show before the deferred loading starts. The content in `@placeholder` blocks is eagerly loaded.
+Добавьте блок `@placeholder` в блок `@defer`. В блоке `@placeholder` размещается HTML, который будет отображаться до начала отложенной загрузки. Содержимое блоков `@placeholder` загружается немедленно (eager).
 
 ```angular-html {highlight:[3,4,5]}
 @defer {
@@ -42,9 +43,9 @@ Add a `@placeholder` block to the `@defer` block. The `@placeholder` block is wh
 
 </docs-step>
 
-<docs-step title="Add a loading block">
+<docs-step title="Добавьте блок loading">
 
-Add a `@loading` block to the `@defer` block. The `@loading` block is where you put html that will show _while_ the deferred content is actively being fetched, but hasn't finished yet. The content in `@loading` blocks is eagerly loaded.
+Добавьте блок `@loading` в блок `@defer`. Блок `@loading` содержит HTML, который будет отображаться _в процессе_ активной загрузки отложенного контента, пока она ещё не завершена. Содержимое блоков `@loading` загружается немедленно (eager).
 
 ```angular-html {highlight:[5,6,7]}
 @defer {
@@ -58,9 +59,9 @@ Add a `@loading` block to the `@defer` block. The `@loading` block is where you 
 
 </docs-step>
 
-<docs-step title="Add a minimum duration">
+<docs-step title="Добавьте минимальную длительность">
 
-Both `@placeholder` and `@loading` sections have optional parameters to prevent flickering from occurring when loading happens quickly. `@placeholder` has `minimum` and `@loading` has `minimum` and `after`. Add a `minimum` duration to the `@loading` block so it will be rendered for at least 2 seconds.
+Оба блока — `@placeholder` и `@loading` — имеют необязательные параметры для предотвращения мерцания при быстрой загрузке. У `@placeholder` есть параметр `minimum`, у `@loading` — параметры `minimum` и `after`. Добавьте параметр `minimum` к блоку `@loading`, чтобы он отображался не менее 2 секунд.
 
 ```angular-html {highlight:[5]}
 @defer {
@@ -74,9 +75,9 @@ Both `@placeholder` and `@loading` sections have optional parameters to prevent 
 
 </docs-step>
 
-<docs-step title="Add a viewport trigger">
+<docs-step title="Добавьте триггер viewport">
 
-Deferrable views have a number of trigger options. Add a viewport trigger so the content will defer load once it enters the viewport.
+Отложенные представления поддерживают ряд триггеров. Добавьте триггер `viewport`, чтобы контент загружался отложенно при попадании в область видимости.
 
 ```angular-html {highlight:[1]}
 @defer (on viewport) {
@@ -86,9 +87,9 @@ Deferrable views have a number of trigger options. Add a viewport trigger so the
 
 </docs-step>
 
-<docs-step title="Add content">
+<docs-step title="Добавьте контент">
 
-A viewport trigger is best used when you're deferring content that's far enough down the page that it needs to be scrolled to see. So let's add some content to our blog post. You can either write your own, or you can copy the content below and put it inside the `<article>` element.
+Триггер `viewport` лучше всего использовать, когда вы откладываете контент, расположенный достаточно далеко на странице и требующий прокрутки для просмотра. Добавим немного контента в нашу запись блога. Можете написать собственный текст или скопировать содержимое ниже и поместить его внутрь элемента `<article>`.
 
 ```html {highlight:[1]}
 <article>
@@ -134,14 +135,14 @@ A viewport trigger is best used when you're deferring content that's far enough 
 </article>
 ```
 
-Once you've added this code, now scroll down to see the deferred content load once you scroll it into the viewport.
+После добавления этого кода прокрутите страницу вниз, чтобы увидеть, как отложенный контент загружается при попадании в область видимости.
 
 </docs-step>
 
 </docs-workflow>
 
-In the activity, you've learned how to use deferrable views in your applications. Great work. 🙌
+В этом упражнении вы узнали, как использовать отложенные представления в своих приложениях. Отличная работа. 🙌
 
-There's even more you can do with them, like different triggers, prefetching, and `@error` blocks.
+С их помощью можно делать ещё больше: использовать различные триггеры, предварительную загрузку (prefetching) и блоки `@error`.
 
-If you would like to learn more, check out the [documentation for Deferrable views](/guide/templates/defer).
+Если вы хотите узнать больше, ознакомьтесь с [документацией по отложенным представлениям](/guide/templates/defer).

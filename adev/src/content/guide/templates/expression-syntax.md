@@ -1,128 +1,128 @@
-# Expression Syntax
+# Синтаксис выражений {#expression-syntax}
 
-Angular expressions are based on JavaScript, but differ in some key ways. This guide walks through the similarities and differences between Angular expressions and standard JavaScript.
+Выражения Angular основаны на JavaScript, но отличаются от него в ряде ключевых аспектов. В этом руководстве рассматриваются сходства и различия между выражениями Angular и стандартным JavaScript.
 
-## Value literals
+## Литеральные значения {#value-literals}
 
-Angular supports a subset of [literal values](https://developer.mozilla.org/en-US/docs/Glossary/Literal) from JavaScript.
+Angular поддерживает подмножество [литеральных значений](https://developer.mozilla.org/en-US/docs/Glossary/Literal) из JavaScript.
 
-### Supported value literals
+### Поддерживаемые литеральные значения {#supported-value-literals}
 
-| Literal type           | Example values                  |
-| ---------------------- | ------------------------------- |
-| String                 | `'Hello'`, `"World"`            |
-| Boolean                | `true`, `false`                 |
-| Number                 | `123`, `3.14`                   |
-| Object                 | `{name: 'Alice'}`               |
-| Array                  | `['Onion', 'Cheese', 'Garlic']` |
-| null                   | `null`                          |
-| RegExp                 | `/\d+/`                         |
-| Template string        | `` `Hello ${name}` ``           |
-| Tagged template string | `` tag`Hello ${name}` ``        |
+| Тип литерала                   | Примеры значений                |
+| ------------------------------ | ------------------------------- |
+| String (строка)                | `'Hello'`, `"World"`            |
+| Boolean (булево)               | `true`, `false`                 |
+| Number (число)                 | `123`, `3.14`                   |
+| Object (объект)                | `{name: 'Alice'}`               |
+| Array (массив)                 | `['Onion', 'Cheese', 'Garlic']` |
+| null                           | `null`                          |
+| RegExp (регулярное выражение)  | `/\d+/`                         |
+| Template string (шаблонная строка) | `` `Hello ${name}` ``       |
+| Tagged template string (теговая шаблонная строка) | `` tag`Hello ${name}` `` |
 
-### Unsupported value literals
+### Неподдерживаемые литеральные значения {#unsupported-value-literals}
 
-| Literal type | Example values |
-| ------------ | -------------- |
-| BigInt       | `1n`           |
+| Тип литерала | Примеры значений |
+| ------------ | ---------------- |
+| BigInt       | `1n`             |
 
-## Globals
+## Глобальные объекты {#globals}
 
-Angular expressions support the following [globals](https://developer.mozilla.org/en-US/docs/Glossary/Global_object):
+Выражения Angular поддерживают следующие [глобальные объекты](https://developer.mozilla.org/en-US/docs/Glossary/Global_object):
 
 - [undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined)
 - [$any](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#any)
 
-No other JavaScript globals are supported. Common JavaScript globals include `Number`, `Boolean`, `NaN`, `Infinity`, `parseInt`, and more.
+Другие глобальные объекты JavaScript не поддерживаются. К распространённым глобальным объектам JavaScript относятся `Number`, `Boolean`, `NaN`, `Infinity`, `parseInt` и другие.
 
-## Local variables
+## Локальные переменные {#local-variables}
 
-Angular automatically makes special local variables available for use in expressions in specific contexts. These special variables always start with the dollar sign character (`$`).
+Angular автоматически делает специальные локальные переменные доступными для использования в выражениях в конкретных контекстах. Эти специальные переменные всегда начинаются со знака доллара (`$`).
 
-For example, `@for` blocks make several local variables corresponding to information about the loop, such as `$index`.
+Например, блоки `@for` предоставляют несколько локальных переменных, соответствующих информации о цикле, таких как `$index`.
 
-## What operators are supported?
+## Какие операторы поддерживаются? {#what-operators-are-supported}
 
-### Supported operators
+### Поддерживаемые операторы {#supported-operators}
 
-Angular supports the following operators from standard JavaScript.
+Angular поддерживает следующие операторы стандартного JavaScript.
 
-| Operator                      | Example(s)                                     |
-| ----------------------------- | ---------------------------------------------- |
-| Add / Concatenate             | `1 + 2`                                        |
-| Subtract                      | `52 - 3`                                       |
-| Multiply                      | `41 * 6`                                       |
-| Divide                        | `20 / 4`                                       |
-| Remainder (Modulo)            | `17 % 5`                                       |
-| Exponentiation                | `10 ** 3`                                      |
-| Parenthesis                   | `9 * (8 + 4)`                                  |
-| Conditional (Ternary)         | `a > b ? true : false`                         |
-| And (Logical)                 | `&&`                                           |
-| Or (Logical)                  | `\|\|`                                         |
-| Not (Logical)                 | `!`                                            |
-| Nullish Coalescing            | `possiblyNullValue ?? 'default'`               |
-| Comparison Operators          | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==`, `!=` |
-| Unary Negation                | `-x`                                           |
-| Unary Plus                    | `+y`                                           |
-| Property Accessor             | `person['name']`                               |
-| typeof                        | `typeof 42`                                    |
-| void                          | `void 1`                                       |
-| in                            | `'model' in car`                               |
-| instanceof                    | `car instanceof Automobile`                    |
-| Assignment                    | `a = b`                                        |
-| Addition Assignment           | `a += b`                                       |
-| Subtraction Assignment        | `a -= b`                                       |
-| Multiplication Assignment     | `a *= b`                                       |
-| Division Assignment           | `a /= b`                                       |
-| Remainder Assignment          | `a %= b`                                       |
-| Exponentiation Assignment     | `a **= b`                                      |
-| Logical AND Assignment        | `a &&= b`                                      |
-| Logical OR Assignment         | `a \|\|= b`                                    |
-| Nullish Coalescing Assignment | `a ??= b`                                      |
-| Spread in object literals     | `{...obj, foo: 'bar'}`                         |
-| Spread in array literals      | `[...arr, 1, 2, 3]`                            |
-| Rest in function calls        | `fn(...args)`                                  |
+| Оператор                            | Примеры                                        |
+| ----------------------------------- | ---------------------------------------------- |
+| Сложение / Конкатенация             | `1 + 2`                                        |
+| Вычитание                           | `52 - 3`                                       |
+| Умножение                           | `41 * 6`                                       |
+| Деление                             | `20 / 4`                                       |
+| Остаток (Modulo)                    | `17 % 5`                                       |
+| Возведение в степень                | `10 ** 3`                                      |
+| Скобки                              | `9 * (8 + 4)`                                  |
+| Условный (Тернарный)                | `a > b ? true : false`                         |
+| И (Логическое)                      | `&&`                                           |
+| ИЛИ (Логическое)                    | `\|\|`                                         |
+| НЕ (Логическое)                     | `!`                                            |
+| Нулевое слияние                     | `possiblyNullValue ?? 'default'`               |
+| Операторы сравнения                 | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==`, `!=` |
+| Унарное отрицание                   | `-x`                                           |
+| Унарный плюс                        | `+y`                                           |
+| Доступ к свойству                   | `person['name']`                               |
+| typeof                              | `typeof 42`                                    |
+| void                                | `void 1`                                       |
+| in                                  | `'model' in car`                               |
+| instanceof                          | `car instanceof Automobile`                    |
+| Присваивание                        | `a = b`                                        |
+| Присваивание со сложением           | `a += b`                                       |
+| Присваивание с вычитанием           | `a -= b`                                       |
+| Присваивание с умножением           | `a *= b`                                       |
+| Присваивание с делением             | `a /= b`                                       |
+| Присваивание с остатком             | `a %= b`                                       |
+| Присваивание с возведением в степень| `a **= b`                                      |
+| Присваивание с логическим И         | `a &&= b`                                      |
+| Присваивание с логическим ИЛИ       | `a \|\|= b`                                    |
+| Присваивание с нулевым слиянием     | `a ??= b`                                      |
+| Расширение в объектных литералах    | `{...obj, foo: 'bar'}`                         |
+| Расширение в литералах массивов     | `[...arr, 1, 2, 3]`                            |
+| Rest в вызовах функций              | `fn(...args)`                                  |
 
-Angular expressions additionally also support the following non-standard operators:
+Выражения Angular также поддерживают следующие нестандартные операторы:
 
-| Operator                        | Example(s)                     |
-| ------------------------------- | ------------------------------ |
-| [Pipe](/guide/templates/pipes)  | `{{ total \| currency }}`      |
-| Optional chaining\*             | `someObj.someProp?.nestedProp` |
-| Non-null assertion (TypeScript) | `someObj!.someProp`            |
+| Оператор                              | Примеры                        |
+| ------------------------------------- | ------------------------------ |
+| [Pipe (Пайп)](guide/templates/pipes)  | `{{ total \| currency }}`      |
+| Опциональная цепочка\*                | `someObj.someProp?.nestedProp` |
+| Утверждение ненулевого значения (TypeScript) | `someObj!.someProp`      |
 
-NOTE: Optional chaining behaves differently from the standard JavaScript version in that if the left side of Angular’s optional chaining operator is `null` or `undefined`, it returns `null` instead of `undefined`.
+NOTE: Опциональная цепочка ведёт себя иначе, чем в стандартном JavaScript: если левая часть оператора опциональной цепочки Angular равна `null` или `undefined`, возвращается `null` вместо `undefined`.
 
-### Unsupported operators
+### Неподдерживаемые операторы {#unsupported-operators}
 
-| Operator              | Example(s)                        |
-| --------------------- | --------------------------------- |
-| All bitwise operators | `&`, `&=`, `~`, `\|=`, `^=`, etc. |
-| Object destructuring  | `const { name } = person`         |
-| Array destructuring   | `const [firstItem] = items`       |
-| Comma operator        | `x = (x++, x)`                    |
-| new                   | `new Car()`                       |
+| Оператор                  | Примеры                            |
+| ------------------------- | ---------------------------------- |
+| Все побитовые операторы   | `&`, `&=`, `~`, `\|=`, `^=` и др. |
+| Деструктуризация объекта  | `const { name } = person`          |
+| Деструктуризация массива  | `const [firstItem] = items`        |
+| Оператор запятой          | `x = (x++, x)`                    |
+| new                       | `new Car()`                        |
 
-## Lexical context for expressions
+## Лексический контекст выражений {#lexical-context-for-expressions}
 
-Angular expressions are evaluated within the context of the component class as well as any relevant [template variables](/guide/templates/variables), locals, and globals.
+Выражения Angular вычисляются в контексте класса компонента, а также любых релевантных [переменных шаблона](guide/templates/variables), локальных переменных и глобальных объектов.
 
-When referring to component class members, `this` is always implied. However, if a template declares a [template variables](guide/templates/variables) with the same name as a member, the variable shadows that member. You can unambiguously reference such a class member by explicitly using `this.`. This can be useful when creating an `@let` declaration that shadows a class member, e.g. for signal narrowing purposes.
+При обращении к членам класса компонента `this` всегда подразумевается. Однако если в шаблоне объявлена [переменная шаблона](guide/templates/variables) с тем же именем, что и член класса, переменная затеняет этот член. На такой член класса можно однозначно ссылаться, явно используя `this.`. Это может быть полезно при создании объявления `@let`, затеняющего член класса, например для целей сужения типа сигнала.
 
-## Declarations
+## Объявления {#declarations}
 
-Generally speaking, declarations are not supported in Angular expressions. This includes, but is not limited to:
+В общем случае объявления не поддерживаются в выражениях Angular. Это включает, но не ограничивается:
 
-| Declarations    | Example(s)                                  |
-| --------------- | ------------------------------------------- |
-| Variables       | `let label = 'abc'`, `const item = 'apple'` |
-| Functions       | `function myCustomFunction() { }`           |
-| Arrow Functions | `() => { }`                                 |
-| Classes         | `class Rectangle { }`                       |
+| Объявления       | Примеры                                     |
+| ---------------- | ------------------------------------------- |
+| Переменные       | `let label = 'abc'`, `const item = 'apple'` |
+| Функции          | `function myCustomFunction() { }`           |
+| Стрелочные функции | `() => { }`                               |
+| Классы           | `class Rectangle { }`                       |
 
-# Event listener statements
+# Операторы обработчиков событий {#event-listener-statements}
 
-Event handlers are **statements** rather than expressions. While they support all of the same syntax as Angular expressions, there are two key differences:
+Обработчики событий являются **операторами**, а не выражениями. Хотя они поддерживают весь тот же синтаксис, что и выражения Angular, есть два ключевых отличия:
 
-1. Statements **do support** assignment operators (but not destructing assignments)
-1. Statements **do not support** pipes
+1. Операторы **поддерживают** операторы присваивания (но не деструктурирующее присваивание)
+1. Операторы **не поддерживают** пайпы

@@ -719,7 +719,6 @@
                             for (
                               var pNextOrParentType = 3 & pNextOrParent.flags;
                               1 !== pNextOrParentType;
-
                             ) {
                               if ((nativeNode = findFirstRNode(pNextOrParent))) return nativeNode;
                               pNextOrParent = pNextOrParent.pNextOrParent;
