@@ -1,3 +1,31 @@
+<a name="21.2.5"></a>
+# 21.2.5 (2026-03-18)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [334ae10168](https://github.com/angular/angular/commit/334ae10168fdad15cd1390180e2994b4eb65349b) | fix | ensure generated code compiles |
+| [23ea431c4e](https://github.com/angular/angular/commit/23ea431c4ec45cbb4a7db9839969e7cb23b07f58) | fix | parse named HTML entities containing digits |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [26c43d14ba](https://github.com/angular/angular/commit/26c43d14baad1a6b3629a77825e702a97a4f8482) | fix | escape template literal in TCB |
+| [67e0ba7e03](https://github.com/angular/angular/commit/67e0ba7e03bb940639f0eafb3af45015e9727eac) | fix | generic types not filled out correctly in type check block |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1890c3008b](https://github.com/angular/angular/commit/1890c3008bbb41b7143b7ede09bed1f7704744fb) | fix | clean up dehydrated views during HMR component replacement |
+| [bf948be4c2](https://github.com/angular/angular/commit/bf948be4c2c88c604e428cba35e3b9e532bfe5b0) | fix | run linked signal equality check without reactive consumer |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [076d41c3f6](https://github.com/angular/angular/commit/076d41c3f6496eb6c6f84b54e2d2ca85c1b35e64) | fix | prevent trailing comma syntax errors after removing NgStyle |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e19150d2b5](https://github.com/angular/angular/commit/e19150d2b596e87c69bee61f478c3e9c7cbc8f67) | fix | preserve redirect policy on reconstructed asset requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.20"></a>
 # 19.2.20 (2026-03-12)
 ### compiler
