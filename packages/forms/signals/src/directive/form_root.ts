@@ -44,11 +44,13 @@ export class FormRoot<T> {
   protected onSubmit(event: Event): void {
     event.preventDefault();
 
-    const fieldTree = untracked(this.fieldTree);
-    const node = untracked(fieldTree) as FieldState<unknown> as FieldNode;
+    untracked(() => {
+      const fieldTree = this.fieldTree();
+      const node = fieldTree() as FieldState<unknown> as FieldNode;
 
-    if (node.structure.fieldManager.submitOptions) {
-      submit(fieldTree);
-    }
+      if (node.structure.fieldManager.submitOptions) {
+        submit(fieldTree);
+      }
+    });
   }
 }
