@@ -1,4 +1,4 @@
-# Начало работы с NgOptimizedImage {#getting-started-with-ngoptimizedimage}
+# Начало работы с NgOptimizedImage
 
 Директива `NgOptimizedImage` упрощает применение лучших практик производительности при загрузке изображений.
 

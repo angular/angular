@@ -1,4 +1,4 @@
-# Формат пакета Angular {#angular-package-format}
+# Формат пакета Angular
 
 В этом документе описан формат пакета Angular (APF).
 APF — это специфичная для Angular спецификация структуры и формата npm-пакетов, используемая всеми первичными пакетами Angular (`@angular/core`, `@angular/material` и т.д.) и большинством сторонних Angular-библиотек.

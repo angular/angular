@@ -1,4 +1,4 @@
-# Создание компонента HousingLocation приложения {#create-the-applications-housinglocation-component}
+# Создание компонента HousingLocation приложения
 
 В этом уроке показано, как добавить компонент `HousingLocation` в ваше приложение Angular.
 

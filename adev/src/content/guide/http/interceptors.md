@@ -1,4 +1,4 @@
-# Interceptors {#interceptors}
+# Interceptors
 
 `HttpClient` поддерживает форму middleware, известную как _interceptors_.
 

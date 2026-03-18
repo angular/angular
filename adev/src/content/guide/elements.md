@@ -1,4 +1,4 @@
-# Обзор Angular Elements {#angular-elements-overview}
+# Обзор Angular Elements
 
 _Angular elements_ — это Angular-компоненты, упакованные как _пользовательские элементы_ \(также называемые Web Components\), веб-стандарт для определения новых HTML-элементов независимым от фреймворка способом.
 

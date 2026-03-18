@@ -1,4 +1,4 @@
-# Изучение Signal Forms Angular {#learn-angular-signal-forms}
+# Изучение Signal Forms Angular
 
 В этом интерактивном руководстве вы научитесь создавать реактивные формы с помощью экспериментального API Signal Forms в Angular.
 

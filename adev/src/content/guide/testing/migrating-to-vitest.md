@@ -1,4 +1,4 @@
-# Миграция с Karma на Vitest {#migrating-from-karma-to-vitest}
+# Миграция с Karma на Vitest
 
 Angular CLI использует [Vitest](https://vitest.dev/) в качестве средства запуска модульных тестов по умолчанию для новых проектов. Это руководство содержит инструкции по миграции существующего проекта с Karma и Jasmine на Vitest.
 

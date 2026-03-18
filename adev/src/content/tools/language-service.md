@@ -1,4 +1,4 @@
-# Angular Language Service {#angular-language-service}
+# Angular Language Service
 
 Angular Language Service предоставляет редакторам кода возможность получать автодополнения, ошибки, подсказки и навигацию внутри Angular-шаблонов.
 Он работает как с внешними шаблонами в отдельных HTML-файлах, так и с встроенными шаблонами.

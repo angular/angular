@@ -1,4 +1,4 @@
-# Файл конфигурации Service Worker {#service-worker-configuration-file}
+# Файл конфигурации Service Worker
 
 В этой теме описываются свойства файла конфигурации Service Worker.
 

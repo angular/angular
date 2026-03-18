@@ -1,4 +1,4 @@
-# Проверка типов в шаблонах {#template-type-checking}
+# Проверка типов в шаблонах
 
 ## Обзор проверки типов в шаблонах {#overview-of-template-type-checking}
 

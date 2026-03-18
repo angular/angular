@@ -1,4 +1,4 @@
-# Создание harnesses для ваших компонентов {#creating-harnesses-for-your-components}
+# Создание harnesses для ваших компонентов
 
 ## Прежде чем начать {#before-you-start}
 

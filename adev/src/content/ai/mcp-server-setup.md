@@ -1,4 +1,4 @@
-# Настройка Angular CLI MCP Server {#angular-cli-mcp-server-setup}
+# Настройка Angular CLI MCP Server
 
 Angular CLI включает экспериментальный [сервер Model Context Protocol (MCP)](https://modelcontextprotocol.io/), позволяющий ИИ-ассистентам в вашей среде разработки взаимодействовать с Angular CLI. Мы добавили поддержку генерации кода с помощью CLI, добавления пакетов и многого другого.
 

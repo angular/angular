@@ -1,4 +1,4 @@
-# Drag and drop (перетаскивание) {#drag-and-drop}
+# Drag and drop (перетаскивание)
 
 ## Обзор {#overview}
 

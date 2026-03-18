@@ -1,4 +1,4 @@
-# Angular без ZoneJS (Zoneless) {#angular-without-zonejs-zoneless}
+# Angular без ZoneJS (Zoneless)
 
 ## Зачем использовать Zoneless? {#why-use-zoneless}
 

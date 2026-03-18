@@ -1,4 +1,4 @@
-# Взаимодействие RxJS с outputs компонентов и директив {#rxjs-interop-with-component-and-directive-outputs}
+# Взаимодействие RxJS с outputs компонентов и директив
 
 TIP: Это руководство предполагает знакомство с [outputs компонентов и директив](guide/components/outputs).
 

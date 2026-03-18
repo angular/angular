@@ -1,4 +1,4 @@
-# Тестирование с Karma и Jasmine {#testing-with-karma-and-jasmine}
+# Тестирование с Karma и Jasmine
 
 Хотя [Vitest](https://vitest.dev) является средством запуска тестов по умолчанию для новых проектов Angular, [Karma](https://karma-runner.github.io) по-прежнему поддерживается и широко используется. Это руководство содержит инструкции по тестированию Angular-приложения с использованием Karma и фреймворка тестирования [Jasmine](https://jasmine.github.io).
 

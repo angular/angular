@@ -1,4 +1,4 @@
-# Профилирование с помощью Chrome DevTools {#profiling-with-the-chrome-devtools}
+# Профилирование с помощью Chrome DevTools
 
 Angular интегрируется с [API расширяемости Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/extension) для представления данных и аналитики, специфичных для фреймворка, непосредственно в [панели производительности Chrome DevTools](https://developer.chrome.com/docs/devtools/performance/overview).
 

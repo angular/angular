@@ -1,4 +1,4 @@
-# Миграция на signal queries {#migration-to-signal-queries}
+# Миграция на signal queries
 
 В Angular были представлены улучшенные API для запросов, которые считаются готовыми к использованию в продакшене начиная с v19.
 Подробнее о signal queries и их преимуществах читайте в [специальном руководстве](guide/components/queries).

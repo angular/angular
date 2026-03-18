@@ -1,4 +1,4 @@
-# NgModules {#ngmodules}
+# NgModules
 
 IMPORTANT: Команда Angular рекомендует использовать [standalone-компоненты](guide/components) вместо `NgModule` для всего нового кода. Используйте это руководство для понимания существующего кода, написанного с `@NgModule`.
 

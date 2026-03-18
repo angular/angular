@@ -1,4 +1,4 @@
-# Введение в анимации Angular {#introduction-to-angular-animations}
+# Введение в анимации Angular
 
 ВАЖНО: Пакет `@angular/animations` теперь устарел (deprecated). Команда Angular рекомендует использовать нативный CSS с `animate.enter` и `animate.leave` для всего нового кода. Подробнее в новом [руководстве по анимациям входа и выхода](guide/animations). Также см. [Миграция с пакета Angular Animations](guide/animations/migration), чтобы узнать, как начать переход на чистые CSS-анимации в приложениях.
 

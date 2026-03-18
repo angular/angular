@@ -1,4 +1,4 @@
-# Использование компонентных harnesses в тестах {#using-component-harnesses-in-tests}
+# Использование компонентных harnesses в тестах
 
 ## Прежде чем начать {#before-you-start}
 

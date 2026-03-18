@@ -1,4 +1,4 @@
-# Начало работы с Service Worker {#getting-started-with-service-workers}
+# Начало работы с Service Worker
 
 Этот документ объясняет, как включить поддержку Angular Service Worker в проектах, созданных с помощью [Angular CLI](tools/cli). Затем на примере демонстрируется Service Worker в действии, включая загрузку и базовое кэширование.
 

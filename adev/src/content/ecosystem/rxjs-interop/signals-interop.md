@@ -1,4 +1,4 @@
-# Взаимодействие RxJS с сигналами Angular {#rxjs-interop-with-angular-signals}
+# Взаимодействие RxJS с сигналами Angular
 
 Пакет `@angular/core/rxjs-interop` предоставляет API для интеграции RxJS и сигналов Angular.
 

@@ -1,4 +1,4 @@
-# Pipe (Пайп) {#pipes}
+# Pipe (Пайп)
 
 ## Обзор {#overview}
 

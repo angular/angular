@@ -1,4 +1,4 @@
-# Переходы и триггеры анимаций {#animation-transitions-and-triggers}
+# Переходы и триггеры анимаций
 
 ВАЖНО: Пакет `@angular/animations` теперь устарел (deprecated). Команда Angular рекомендует использовать нативный CSS с `animate.enter` и `animate.leave` для всего нового кода. Подробнее в новом [руководстве по анимациям](guide/animations). Также см. [Миграция с пакета Angular Animations](guide/animations/migration), чтобы узнать, как начать переход на чистые CSS-анимации.
 

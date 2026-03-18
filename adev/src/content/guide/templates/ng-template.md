@@ -1,4 +1,4 @@
-# Создание фрагментов шаблона с ng-template {#create-template-fragments-with-ng-template}
+# Создание фрагментов шаблона с ng-template
 
 Под вдохновением от [нативного элемента `<template>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template), элемент `<ng-template>` позволяет объявить **фрагмент шаблона** — секцию контента, которую можно динамически или программно отрендерить.
 

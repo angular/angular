@@ -1,4 +1,4 @@
-# Миграция на signal inputs {#migration-to-signal-inputs}
+# Миграция на signal inputs
 
 В Angular был представлен улучшенный API для inputs, который считается готовым к использованию в продакшене начиная с v19.
 Подробнее о signal inputs и их преимуществах читайте в [специальном руководстве](guide/components/inputs).
