@@ -34,6 +34,7 @@ When you want to run code during specific navigation lifecycle events, you can d
 // Example of subscribing to router events
 import {Component, inject, signal, effect} from '@angular/core';
 import {Event, Router, NavigationStart, NavigationEnd} from '@angular/router';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component(/* ... */)
 export class RouterEvents {
@@ -41,7 +42,7 @@ export class RouterEvents {
 
   constructor() {
     // Subscribe to router events and react to events
-    this.router.events.subscribe((event: Event) => {
+    this.router.events.pipe(takeUntilDestroyed()).subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
         // Navigation starting
         console.log('Navigation starting:', event.url);
@@ -146,6 +147,7 @@ import {
   NavigationCancel,
   NavigationCancellationCode,
 } from '@angular/router';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-error-handler',
@@ -163,7 +165,7 @@ export class ErrorHandler {
   readonly errorMessage = signal('');
 
   constructor() {
-    this.router.events.subscribe((event) => {
+    this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.errorMessage.set('');
       } else if (event instanceof NavigationError) {
