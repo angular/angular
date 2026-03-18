@@ -1,7 +1,10 @@
 export class BaseModule {
   …
   constructor(service) { this.service = service; }
-  static ɵfac = function BaseModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || BaseModule)(i0.ɵɵinject(Service)); };
+  static ɵfac = function BaseModule_Factory(__ngFactoryType__) {
+    /* @ts-ignore */
+    return new (__ngFactoryType__ || BaseModule)(i0.ɵɵinject(Service));
+  };
   static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BaseModule });
   static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [Service] });
 }
