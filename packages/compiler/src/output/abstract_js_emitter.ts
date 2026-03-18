@@ -25,6 +25,10 @@ const makeTemplateObjectPolyfill =
   '(this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
+  constructor() {
+    super(false /* printComments */);
+  }
+
   override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
