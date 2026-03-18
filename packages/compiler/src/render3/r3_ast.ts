@@ -358,6 +358,53 @@ export class ContentBlock extends BlockNode implements Node {
   }
 }
 
+export class BoundaryBlock extends BlockNode implements Node {
+  constructor(
+    public children: Node[],
+    public errorBlocks: BoundaryErrorBlock[],
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    public mainBlockSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundaryBlock(this);
+  }
+
+  visitAll(visitor: Visitor<unknown>): void {
+    visitAll(visitor, this.children);
+    visitAll(visitor, this.errorBlocks);
+  }
+}
+
+export class BoundaryErrorBlock extends BlockNode implements Node {
+  constructor(
+    public children: Node[],
+    public contextVariables: Variable[],
+    public expression: AST | null,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundaryErrorBlock(this);
+  }
+
+  get errorAlias(): Variable | null {
+    return this.contextVariables.find((v) => v.value === '$error') ?? null;
+  }
+}
+
 export interface DeferredBlockTriggers {
   when?: BoundDeferredTrigger;
   idle?: IdleDeferredTrigger;
@@ -778,6 +825,8 @@ export interface Visitor<Result = any> {
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
   visitIfBlock(block: IfBlock): Result;
   visitIfBlockBranch(block: IfBlockBranch): Result;
+  visitBoundaryBlock(block: BoundaryBlock): Result;
+  visitBoundaryErrorBlock(block: BoundaryErrorBlock): Result;
   visitUnknownBlock(block: UnknownBlock): Result;
   visitLetDeclaration(decl: LetDeclaration): Result;
   visitComponent(component: Component): Result;
@@ -838,6 +887,13 @@ export class RecursiveVisitor implements Visitor<void> {
   visitIfBlockBranch(block: IfBlockBranch): void {
     visitAll(this, block.children);
     block.expressionAlias?.visit(this);
+  }
+  visitBoundaryBlock(block: BoundaryBlock): void {
+    block.visitAll(this);
+  }
+  visitBoundaryErrorBlock(block: BoundaryErrorBlock): void {
+    const blockItems = [...block.contextVariables, ...block.children];
+    visitAll(this, blockItems);
   }
   visitContent(content: Content): void {
     visitAll(this, content.children);

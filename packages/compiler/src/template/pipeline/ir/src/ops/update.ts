@@ -57,7 +57,8 @@ export type UpdateOp =
   | DeferWhenOp
   | AnimationBindingOp
   | StoreLetOp
-  | ControlOp;
+  | ControlOp
+  | BoundaryOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -709,6 +710,64 @@ export function createConditionalOp(
     kind: OpKind.Conditional,
     target,
     test,
+    conditions,
+    processed: null,
+    sourceSpan,
+    contextValue: null,
+    ...NEW_OP,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+  };
+}
+
+/**
+ * A logical operation representing a boundary expression in the update IR.
+ */
+export interface BoundaryOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, ConsumesVarsTrait {
+  kind: OpKind.Boundary;
+
+  /**
+   * The insertion point, which is the BoundaryCreate op belonging to this condition.
+   */
+  target: XrefId;
+
+  /**
+   * The Xref of the primary branch view.
+   */
+  primaryTarget: XrefId;
+
+  /**
+   * Each possible error fallback view that could be displayed.
+   */
+  conditions: Array<ConditionalCaseExpr>;
+
+  /**
+   * After processing, this will be a single collapsed expression evaluating the error
+   * against fallback triggers to determine the branch index to render.
+   */
+  processed: o.Expression | null;
+
+  /**
+   * Variables or context passed to the error or standard branches.
+   */
+  contextValue: o.Expression | null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a Boundary updater op.
+ */
+export function createBoundaryOp(
+  target: XrefId,
+  primaryTarget: XrefId,
+  conditions: Array<ConditionalCaseExpr>,
+  sourceSpan: ParseSourceSpan,
+): BoundaryOp {
+  return {
+    kind: OpKind.Boundary,
+    target,
+    primaryTarget,
     conditions,
     processed: null,
     sourceSpan,

@@ -81,7 +81,8 @@ export type CreateOp =
   | AnimationStringOp
   | AnimationOp
   | SourceLocationOp
-  | ControlCreateOp;
+  | ControlCreateOp
+  | BoundaryCreateOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -94,7 +95,8 @@ export type ElementOrContainerOps =
   | TemplateOp
   | RepeaterCreateOp
   | ConditionalCreateOp
-  | ConditionalBranchCreateOp;
+  | ConditionalBranchCreateOp
+  | BoundaryCreateOp;
 
 /**
  * The set of OpKinds that represent the creation of an element or container
@@ -108,6 +110,7 @@ const elementContainerOpKinds = new Set([
   OpKind.RepeaterCreate,
   OpKind.ConditionalCreate,
   OpKind.ConditionalBranchCreate,
+  OpKind.BoundaryCreate,
 ]);
 
 /**
@@ -186,7 +189,8 @@ export interface ElementOpBase extends ElementOrContainerOpBase {
     | OpKind.Template
     | OpKind.RepeaterCreate
     | OpKind.ConditionalCreate
-    | OpKind.ConditionalBranchCreate;
+    | OpKind.ConditionalBranchCreate
+    | OpKind.BoundaryCreate;
 
   /**
    * The HTML tag name for this element.
@@ -512,6 +516,68 @@ export function createConditionalBranchCreateOp(
 ): ConditionalBranchCreateOp {
   return {
     kind: OpKind.ConditionalBranchCreate,
+    xref,
+    templateKind,
+    attributes: null,
+    tag,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    localRefs: [],
+    nonBindable: false,
+    namespace,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a boundary block.
+ */
+export interface BoundaryCreateOp extends ElementOpBase {
+  kind: OpKind.BoundaryCreate;
+
+  templateKind: TemplateKind;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number | null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number | null;
+
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+}
+
+export function createBoundaryCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  tag: string | null,
+  functionNameSuffix: string,
+  namespace: Namespace,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+): BoundaryCreateOp {
+  return {
+    kind: OpKind.BoundaryCreate,
     xref,
     templateKind,
     attributes: null,

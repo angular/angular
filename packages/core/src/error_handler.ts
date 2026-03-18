@@ -19,14 +19,20 @@ import {NgZone} from './zone/ng_zone';
 
 import {Type} from './interface/type';
 
+/**
+ * Error details caught be the error boundary
+ *
+ * @publicApi 22.2
+ */
 export interface ErrorDetails {
-  declarationType?: Type<any>;
-  caught: boolean;
-  boundary?: {
-    type: Type<any>;
-    reset: () => void;
+  readonly declarationType: Type<any>;
+  readonly declarationInstance: unknown;
+  readonly caught: boolean;
+  readonly boundary?: {
+    readonly type: Type<any>;
+    readonly reset: () => void;
   };
-  caughtBy?: Function;
+  readonly caughtBy?: Function;
 }
 
 /**

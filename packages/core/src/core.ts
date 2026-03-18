@@ -67,7 +67,7 @@ export {
 export {IdleService, provideIdleServiceWith} from './defer/idle_service';
 export * from './di';
 export {DOCUMENT} from './document';
-export {ErrorHandler, provideBrowserGlobalErrorListeners} from './error_handler';
+export {ErrorDetails, ErrorHandler, provideBrowserGlobalErrorListeners} from './error_handler';
 export {EventEmitter} from './event_emitter';
 export {
   DEFAULT_CURRENCY_CODE,

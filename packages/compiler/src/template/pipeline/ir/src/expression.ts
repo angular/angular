@@ -32,6 +32,7 @@ export type Expression =
   | LexicalReadExpr
   | ReferenceExpr
   | ForeignContentExpr
+  | BoundaryStateExpr
   | ContextExpr
   | NextContextExpr
   | GetCurrentViewExpr
@@ -188,6 +189,36 @@ export class ForeignContentExpr extends ExpressionBase {
       this.childrenViewHandle,
       this.foreignComponentConstIndex,
     );
+  }
+}
+
+/**
+ * Read of a boundary state.
+ */
+export class BoundaryStateExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.BoundaryState;
+  name: string | null = null;
+
+  constructor(readonly xref: XrefId) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(other: o.Expression): boolean {
+    return other instanceof BoundaryStateExpr && other.xref === this.xref;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): BoundaryStateExpr {
+    const b = new BoundaryStateExpr(this.xref);
+    b.name = this.name;
+    return b;
   }
 }
 
@@ -1246,6 +1277,20 @@ export function transformExpressionsInOp(
         op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
       }
       break;
+    case OpKind.Boundary:
+      for (const condition of op.conditions) {
+        if (condition.expr === null) {
+          continue;
+        }
+        condition.expr = transformExpressionsInExpression(condition.expr, transform, flags);
+      }
+      if (op.processed !== null) {
+        op.processed = transformExpressionsInExpression(op.processed, transform, flags);
+      }
+      if (op.contextValue !== null) {
+        op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
+      }
+      break;
     case OpKind.Animation:
     case OpKind.AnimationListener:
     case OpKind.Listener:
@@ -1345,6 +1390,7 @@ export function transformExpressionsInOp(
     case OpKind.ConditionalBranchCreate:
     case OpKind.Control:
     case OpKind.ControlCreate:
+    case OpKind.BoundaryCreate:
       // These operations contain no expressions.
       break;
     default:

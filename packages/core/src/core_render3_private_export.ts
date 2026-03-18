@@ -11,12 +11,12 @@
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
-  type DebugSignalGraph as ɵDebugSignalGraph,
-  type DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
-  type DebugSignalGraphNode as ɵDebugSignalGraphNode,
   Framework as ɵFramework,
   Profiler as ɵProfiler,
   ProfilerEvent as ɵProfilerEvent,
+  type DebugSignalGraph as ɵDebugSignalGraph,
+  type DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
+  type DebugSignalGraphNode as ɵDebugSignalGraphNode,
 } from '../primitives/devtools';
 export {compileNgModuleFactory as ɵcompileNgModuleFactory} from './application/application_ngmodule_factory_compiler';
 export {injectChangeDetectorRef as ɵinjectChangeDetectorRef} from './change_detection/change_detector_ref';
@@ -26,6 +26,7 @@ export {
   NG_INJ_DEF as ɵNG_INJ_DEF,
   NG_PROV_DEF as ɵNG_PROV_DEF,
 } from './di/interface/defs';
+export {ɵɵenableIncrementalHydrationRuntime} from './hydration/incremental_runtime';
 export {
   setAllowDuplicateNgModuleIdsForTest as ɵsetAllowDuplicateNgModuleIdsForTest,
   registerNgModuleType as ɵɵregisterNgModuleType,
@@ -36,10 +37,9 @@ export {
 } from './metadata/ng_module_def';
 export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
 export {inferTagNameFromDefinition as ɵinferTagNameFromDefinition} from './render3/component_ref';
-export {ɵɵenableIncrementalHydrationRuntime} from './hydration/incremental_runtime';
 export {getLContext as ɵgetLContext} from './render3/context_discovery';
-export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
 export {getComponentInstanceDeepLinkId as ɵgetComponentInstanceDeepLinkId} from './render3/debug/chrome_dev_tools_performance';
+export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
 export {
   NG_COMP_DEF as ɵNG_COMP_DEF,
   NG_DIR_DEF as ɵNG_DIR_DEF,
@@ -95,6 +95,8 @@ export {
   ɵɵarrowFunction,
   ɵɵattachSourceLocations,
   ɵɵattribute,
+  ɵɵboundaryCreate,
+  ɵɵboundaryUpdate,
   ɵɵclassMap,
   ɵɵclassProp,
   ɵɵComponentDeclaration,
@@ -154,12 +156,13 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
   ɵɵelementStart,
-  ɵɵforeignComponent,
-  ɵɵforeignContent,
-  ɵɵforeignContentFn,
   ɵɵenableBindings,
   ɵɵExternalStylesFeature,
   ɵɵFactoryDeclaration,
+  ɵɵforeignComponent,
+  ɵɵforeignContent,
+  ɵɵforeignContentFn,
+  ɵɵgetBoundary,
   ɵɵgetComponentDepsFactory,
   ɵɵgetCurrentView,
   ɵɵgetInheritedFactory,
@@ -280,10 +283,10 @@ export {
   ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,
   ɵɵngDeclareInjectable,
-  ɵɵngDeclareService,
   ɵɵngDeclareInjector,
   ɵɵngDeclareNgModule,
   ɵɵngDeclarePipe,
+  ɵɵngDeclareService,
 } from './render3/jit/partial';
 export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';

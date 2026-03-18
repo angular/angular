@@ -713,18 +713,18 @@ export type EnvironmentProviders = {
 // @public
 export interface ErrorDetails {
     // (undocumented)
-    boundary?: {
-        type: Type<any>;
-        reset: () => void;
+    readonly boundary?: {
+        readonly type: Type<any>;
+        readonly reset: () => void;
     };
     // (undocumented)
-    caught: boolean;
+    readonly caught: boolean;
     // (undocumented)
-    caughtBy?: Function;
+    readonly caughtBy?: Function;
     // (undocumented)
-    declarationInstance: unknown;
+    readonly declarationInstance: unknown;
     // (undocumented)
-    declarationType: Type<any>;
+    readonly declarationType: Type<any>;
 }
 
 // @public

@@ -16,8 +16,10 @@ import {
   setActiveConsumer,
 } from '../../../primitives/signals';
 
+import {ProfilerEvent} from '../../../primitives/devtools';
+import {Type} from '../../../src/interface/type';
+import {encapsulateBoundaryError, ErrorDetails} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {encapsulateBoundaryError} from '../../error_handler';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {addAfterRenderSequencesForView} from '../after_render/view';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
@@ -28,8 +30,10 @@ import {
   MOVED_VIEWS,
 } from '../interfaces/container';
 import {ComponentTemplate, HostBindingsFunction, RenderFlags} from '../interfaces/definition';
+import {isDestroyed, isLContainer} from '../interfaces/type_checks';
 import {
   CONTEXT,
+  DECLARATION_COMPONENT_VIEW,
   EFFECTS_TO_SCHEDULE,
   ENVIRONMENT,
   FLAGS,
@@ -42,6 +46,8 @@ import {
   TVIEW,
   TView,
 } from '../interfaces/view';
+import {profiler} from '../profiler';
+import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 import {
   getOrBorrowReactiveLViewConsumer,
   getOrCreateTemporaryConsumer,
@@ -49,6 +55,7 @@ import {
   ReactiveLViewConsumer,
   viewShouldHaveReactiveConsumer,
 } from '../reactive_lview_consumer';
+import {runEffectsInView} from '../reactivity/view_effect_runner';
 import {
   CheckNoChangesMode,
   enterView,
@@ -62,7 +69,6 @@ import {
   setIsRefreshingViews,
   setSelectedIndex,
 } from '../state';
-import {isLContainer} from '../interfaces/type_checks';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
 import {
   getComponentLViewByIndex,
@@ -73,12 +79,6 @@ import {
   resetPreOrderHookFlags,
   viewAttachedToChangeDetector,
 } from '../util/view_utils';
-
-import {isDestroyed} from '../interfaces/type_checks';
-import {profiler} from '../profiler';
-import {ProfilerEvent} from '../../../primitives/devtools';
-import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
-import {runEffectsInView} from '../reactivity/view_effect_runner';
 import {executeTemplate} from './shared';
 
 /**
@@ -374,7 +374,16 @@ export function refreshView<T>(
       if (onError) {
         // We found an error boundary / explicit error handler in the LView chain.
         try {
-          const details = {caught: true};
+          const declarationComponentView = lView[DECLARATION_COMPONENT_VIEW];
+          const declarationInstance = declarationComponentView[CONTEXT] as any;
+          const declarationType: Type<unknown> = declarationInstance?.constructor;
+
+          const details: ErrorDetails = {
+            caught: true,
+            declarationInstance,
+            declarationType,
+            caughtBy: onError,
+          };
           onError(encapsulateBoundaryError(errorToHandle), details);
           handled = true;
           break;
@@ -382,7 +391,6 @@ export function refreshView<T>(
           // If the error handler itself throws, capture the new error and
           // continue propagating it up the tree to the next error boundary.
           errorToHandle = boundaryError;
-          handled = false;
         }
       }
       currentLView = currentLView[PARENT];
