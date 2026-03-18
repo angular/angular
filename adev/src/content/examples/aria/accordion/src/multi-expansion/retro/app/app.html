@@ -1,41 +1,41 @@
 <div ngAccordionGroup class="retro-accordion">
   <h3>
-    <span ngAccordionTrigger panelId="q1" #trigger1="ngAccordionTrigger">
+    <span ngAccordionTrigger [panel]="panel1" #trigger1="ngAccordionTrigger">
       Unlock Treasure Box
       <span aria-hidden="true" class="material-symbols-outlined" translate="no">{{
         trigger1.expanded() ? 'lock_open_right' : 'lock'
       }}</span>
     </span>
   </h3>
-  <div ngAccordionPanel panelId="q1">
+  <div ngAccordionPanel #panel1="ngAccordionPanel">
     <ng-template ngAccordionContent>
       <div class="treasure-box">👻</div>
     </ng-template>
   </div>
 
   <h3>
-    <span ngAccordionTrigger panelId="q2" #trigger2="ngAccordionTrigger">
+    <span ngAccordionTrigger [panel]="panel2" #trigger2="ngAccordionTrigger">
       Unlock Treasure Box
       <span aria-hidden="true" class="material-symbols-outlined" translate="no">{{
         trigger2.expanded() ? 'lock_open_right' : 'lock'
       }}</span>
     </span>
   </h3>
-  <div ngAccordionPanel panelId="q2">
+  <div ngAccordionPanel #panel2="ngAccordionPanel">
     <ng-template ngAccordionContent>
       <div class="treasure-box">💎💎💎</div>
     </ng-template>
   </div>
 
   <h3>
-    <span ngAccordionTrigger panelId="q3" #trigger3="ngAccordionTrigger">
+    <span ngAccordionTrigger [panel]="panel3" #trigger3="ngAccordionTrigger">
       Unlock Treasure Box
       <span aria-hidden="true" class="material-symbols-outlined" translate="no">{{
         trigger3.expanded() ? 'lock_open_right' : 'lock'
       }}</span>
     </span>
   </h3>
-  <div ngAccordionPanel panelId="q3">
+  <div ngAccordionPanel #panel3="ngAccordionPanel">
     <ng-template ngAccordionContent>
       <div class="treasure-box">🐸 ribbit...ribbit...</div>
     </ng-template>
