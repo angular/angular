@@ -46,7 +46,7 @@ export function prepareSyntheticListenerName(name: string, phase: string) {
 }
 
 export function getSafePropertyAccessString(accessor: string, name: string): string {
-  const escapedName = escapeIdentifier(name, false, false);
+  const escapedName = escapeIdentifier(name, false);
   return escapedName !== name ? `${accessor}[${escapedName}]` : `${accessor}.${name}`;
 }
 

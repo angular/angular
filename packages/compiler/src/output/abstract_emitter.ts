@@ -214,8 +214,6 @@ export class EmitterVisitorContext {
 export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.ExpressionVisitor {
   private lastIfCondition: o.Expression | null = null;
 
-  constructor(private _escapeDollarInStrings: boolean) {}
-
   protected printLeadingComments(
     node: o.Expression | o.Statement,
     ctx: EmitterVisitorContext,
@@ -359,7 +357,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.printLeadingComments(ast, ctx);
     const value = ast.value;
     if (typeof value === 'string') {
-      ctx.print(ast, escapeIdentifier(value, this._escapeDollarInStrings));
+      ctx.print(ast, escapeIdentifier(value));
     } else {
       ctx.print(ast, `${value}`);
     }
@@ -484,10 +482,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
           ctx.print(ast, '...');
           entry.expression.visitExpression(this, ctx);
         } else {
-          ctx.print(
-            ast,
-            `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}:`,
-          );
+          ctx.print(ast, `${escapeIdentifier(entry.key, entry.quoted)}:`);
           entry.value.visitExpression(this, ctx);
         }
       },
@@ -560,18 +555,12 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 }
 
-export function escapeIdentifier(
-  input: string,
-  escapeDollar: boolean,
-  alwaysQuote: boolean = true,
-): any {
+export function escapeIdentifier(input: string, alwaysQuote: boolean = true): any {
   if (input == null) {
     return null;
   }
   const body = input.replace(_SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {
-    if (match[0] == '$') {
-      return escapeDollar ? '\\$' : '$';
-    } else if (match[0] == '\n') {
+    if (match[0] == '\n') {
       return '\\n';
     } else if (match[0] == '\r') {
       return '\\r';
