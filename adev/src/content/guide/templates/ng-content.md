@@ -4,8 +4,7 @@
 
 Here is an example of a `BaseButton` component that accepts any markup from its parent.
 
-```angular-ts
-// ./base-button/base-button.ts
+```angular-ts {header:'base-button/base-button.ts'}
 import {Component} from '@angular/core';
 
 @Component({
@@ -15,8 +14,7 @@ import {Component} from '@angular/core';
 export class BaseButton {}
 ```
 
-```angular-ts
-// ./app.ts
+```angular-ts {header:'app.ts'}
 import {Component} from '@angular/core';
 import {BaseButton} from './base-button';
 
