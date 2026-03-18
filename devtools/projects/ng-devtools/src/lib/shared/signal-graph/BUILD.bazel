@@ -1,0 +1,34 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ng_project(
+    name = "signal-graph",
+    srcs = glob(
+        ["*.ts"],
+        exclude = [
+            "*.spec.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":signal-graph",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

@@ -7,15 +7,15 @@
   font-size: 0.8rem;
 
   font-family: 'Press Start 2P';
-  --retro-button-color: color-mix(in srgb, var(--hot-pink) 80%, var(--gray-1000));
+  --retro-button-color: color-mix(in srgb, var(--hot-pink) 80%, var(--page-background));
   --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
   --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
   --retro-flat-shadow:
-    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
-    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+    4px 0px 0px 0px var(--tertiary-contrast), 0px 4px 0px 0px var(--tertiary-contrast),
+    -4px 0px 0px 0px var(--tertiary-contrast), 0px -4px 0px 0px var(--tertiary-contrast);
   --retro-flat-shadow-small:
-    2px 0px 0px 0px var(--gray-700), 0px 2px 0px 0px var(--gray-700),
-    -2px 0px 0px 0px var(--gray-700), 0px -2px 0px 0px var(--gray-700);
+    2px 0px 0px 0px var(--tertiary-contrast), 0px 2px 0px 0px var(--tertiary-contrast),
+    -2px 0px 0px 0px var(--tertiary-contrast), 0px -2px 0px 0px var(--tertiary-contrast);
 }
 
 .retro-listbox {

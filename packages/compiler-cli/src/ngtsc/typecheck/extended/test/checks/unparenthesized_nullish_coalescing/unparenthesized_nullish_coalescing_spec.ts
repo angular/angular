@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DiagnosticCategoryLabel} from '../../../../../core/api';
 import ts from 'typescript';
+import {DiagnosticCategoryLabel} from '../../../../../core/api';
 import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
@@ -102,7 +102,7 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
-    it('should produce warning when mixing nullish coalescing with logical or', () => {
+    it('should produce warning when mixing nullish coalescing with logical or (with parenthesis)', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([
         {

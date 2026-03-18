@@ -6,7 +6,6 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
-    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/assets/images:roadmap.svg",
     ],
@@ -15,6 +14,14 @@ generate_guides(
 
 js_library(
     name = "guide_files",
-    srcs = glob(["**/*.md"]),
+    srcs = glob(["**/*.md"]) + [
+        "//adev/src/content/reference/concepts:guide_files",
+        "//adev/src/content/reference/configs:guide_files",
+        "//adev/src/content/reference/errors:guide_files",
+        "//adev/src/content/reference/errors:route-nav-items",
+        "//adev/src/content/reference/extended-diagnostics:guide_files",
+        "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+        "//adev/src/content/reference/migrations:guide_files",
+    ],
     visibility = ["//adev:__subpackages__"],
 )

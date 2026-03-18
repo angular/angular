@@ -14,7 +14,7 @@
 
 <docs-workflow>
 
-<docs-step title="Создание поля ввода">
+<docs-step title="Create an input field">
 
 В файле `user.ts` обновите шаблон, добавив текстовое поле ввода с `id`, установленным в `framework`, и типом `text`.
 
@@ -27,14 +27,14 @@
 
 </docs-step>
 
-<docs-step title="Импорт FormsModule">
+<docs-step title="Import `FormsModule`">
 
 Чтобы эта форма могла использовать функции Angular, обеспечивающие привязку данных к формам, необходимо импортировать
 `FormsModule`.
 
 Импортируйте `FormsModule` из `@angular/forms` и добавьте его в массив `imports` компонента `User`.
 
-<docs-code language="ts" highlight="[2, 7]">
+```ts {highlight:[2,6]}
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
@@ -43,23 +43,23 @@ import {FormsModule} from '@angular/forms';
 imports: [FormsModule],
 })
 export class User {}
-</docs-code>
+```
 
 </docs-step>
 
-<docs-step title="Добавление привязки к значению поля ввода">
+<docs-step title="Add binding to the value of the input">
 
 В `FormsModule` есть директива `ngModel`, которая привязывает значение поля ввода к свойству вашего класса.
 
 Обновите поле ввода, чтобы использовать директиву `ngModel`, используя синтаксис `[(ngModel)]="favoriteFramework"` для
 привязки к свойству `favoriteFramework`.
 
-<docs-code language="html" highlight="[3]">
+```html {highlight:[3]}
 <label for="framework">
   Favorite Framework:
   <input id="framework" type="text" [(ngModel)]="favoriteFramework" />
 </label>
-</docs-code>
+```
 
 После внесения изменений попробуйте ввести значение в поле ввода. Обратите внимание, как оно обновляется на экране (да,
 очень круто).

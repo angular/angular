@@ -11,10 +11,10 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
         <span class="status-dot"></span>
         Status: {{ userStatus() }}
       </div>
-      
+
       <div class="status-info">
         <div class="notifications">
-          <strong>Notifications:</strong> 
+          <strong>Notifications:</strong>
           @if (notificationsEnabled()) {
             Enabled
           } @else {
@@ -22,11 +22,9 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
           }
           <!-- TODO: Add button to toggle notifications -->
         </div>
-        <div class="message">
-          <strong>Message:</strong> {{ statusMessage() }}
-        </div>
+        <div class="message"><strong>Message:</strong> {{ statusMessage() }}</div>
         <div class="working-hours">
-          <strong>Within Working Hours:</strong> 
+          <strong>Within Working Hours:</strong>
           @if (isWithinWorkingHours()) {
             Yes
           } @else {
@@ -34,20 +32,12 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
           }
         </div>
       </div>
-      
+
       <div class="status-controls">
-        <button (click)="goOnline()" [disabled]="userStatus() === 'online'">
-          Go Online
-        </button>
-        <button (click)="goAway()" [disabled]="userStatus() === 'away'">
-          Set Away
-        </button>
-        <button (click)="goOffline()" [disabled]="userStatus() === 'offline'">
-          Go Offline
-        </button>
-        <button (click)="toggleStatus()" class="toggle-btn">
-          Cycle Status
-        </button>
+        <button (click)="goOnline()" [disabled]="userStatus() === 'online'">Go Online</button>
+        <button (click)="goAway()" [disabled]="userStatus() === 'away'">Set Away</button>
+        <button (click)="goOffline()" [disabled]="userStatus() === 'offline'">Go Offline</button>
+        <button (click)="toggleStatus()" class="toggle-btn">Cycle Status</button>
       </div>
     </div>
   `,

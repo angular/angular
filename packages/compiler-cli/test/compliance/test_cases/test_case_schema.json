@@ -27,13 +27,15 @@
                 "full compile",
                 "linked compile",
                 "local compile",
-                "declaration-only emit"
+                "declaration-only emit",
+                "instruction compile"
               ]
             },
             "default": [
               "full compile",
               "linked compile",
-              "declaration-only emit"
+              "declaration-only emit",
+              "instruction compile"
             ]
           },
           "inputFiles": {

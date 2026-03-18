@@ -5,6 +5,7 @@ It also explains the basic mechanics of using `git`, `node`, and `pnpm`.
 
 - [Building and Testing Angular](#building-and-testing-angular)
   - [Prerequisite Software](#prerequisite-software)
+  - [Development in a Container](#development-in-a-container)
   - [Getting the Sources](#getting-the-sources)
   - [Installing NPM Modules](#installing-npm-modules)
   - [Building](#building)
@@ -51,6 +52,21 @@ following on your development machine:
 
 - On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow
   the [instructions](https://bazel.build/install/windows#installing-compilers-and-language-runtimes)
+
+## Development in a Container
+
+You can also use the provided [Dev Container](https://containers.dev/) configuration to set up a development environment. This approach uses Docker to create a container with all the necessary tools (Node.js, pnpm, etc.) pre-installed.
+
+**Prerequisites:**
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [VS Code](https://code.visualstudio.com/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+**Usage:**
+
+1. Open the Angular repository in VS Code.
+2. Run the **Dev Containers: Reopen in Container** command from the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
 
 ## Getting the Sources
 

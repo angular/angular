@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs';
+import {mkdirSync, readFileSync, writeFileSync} from 'fs';
 import path from 'path';
 import {CliCommand} from './cli-entities.mjs';
 import {DocEntry} from './entities.mjs';

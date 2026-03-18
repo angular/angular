@@ -198,6 +198,7 @@ export interface R3DirectiveMetadataFacade {
   inputs: (string | {name: string; alias?: string; required?: boolean})[];
   outputs: string[];
   usesInheritance: boolean;
+  controlCreate: {passThroughInput: string | null} | null;
   exportAs: string[] | null;
   providers: Provider[] | null;
   viewQueries: R3QueryMetadataFacade[];
@@ -253,6 +254,9 @@ export interface R3DeclareDirectiveFacade {
   exportAs?: string[];
   usesInheritance?: boolean;
   usesOnChanges?: boolean;
+  controlCreate?: {
+    passThroughInput: string | null;
+  };
   isStandalone?: boolean;
   hostDirectives?: R3HostDirectiveMetadataFacade[] | null;
   isSignal?: boolean;

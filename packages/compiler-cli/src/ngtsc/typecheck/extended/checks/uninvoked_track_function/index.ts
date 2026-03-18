@@ -20,7 +20,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 /**
  * Ensures that track functions in @for loops are invoked.
@@ -61,7 +66,12 @@ class UninvokedTrackFunctionCheck extends TemplateCheckWithVisitor<ErrorCode.UNI
         node.trackBy.ast,
         node.trackBy.source || '',
       );
-      const errorString = `The track function in the @for block should be invoked: ${fullExpressionText}(/* arguments */)`;
+
+      const errorString = formatExtendedError(
+        ErrorCode.UNINVOKED_TRACK_FUNCTION,
+        `The track function in the @for block should be invoked: ${fullExpressionText}(/* arguments */)`,
+      );
+
       return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
     }
 

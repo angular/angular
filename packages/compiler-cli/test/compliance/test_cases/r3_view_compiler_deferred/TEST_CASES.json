@@ -374,6 +374,21 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a defer block with an `on idle` trigger that has a timeout",
+      "inputFiles": ["deferred_on_idle_with_timeout.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_on_idle_with_timeout_template.js",
+              "generated": "deferred_on_idle_with_timeout.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

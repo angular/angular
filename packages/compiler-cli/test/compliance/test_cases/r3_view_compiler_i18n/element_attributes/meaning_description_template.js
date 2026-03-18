@@ -12,9 +12,10 @@ consts:
         /**
          * @desc [BACKUP_${MESSAGE}_ID:idH]`desc
          */
-        const $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$ = goog.getMsg("Title G");
+        const $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$ = /* @ts-ignore */ goog.getMsg("Title G");
         $i18n_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
       } else {
+        /* @ts-ignore */
         $i18n_23$ = $localize`:[BACKUP_$\{MESSAGE}_ID\:idH]\`desc@@idG:Title G`;
       }
 
@@ -26,9 +27,10 @@ consts:
         /**
          * @desc Some text \' [BACKUP_MESSAGE_ID: xxx]
          */
-        const $MSG_EXTERNAL_idG$$APP_SPEC_TS_21$ = goog.getMsg("Content H");
+        const $MSG_EXTERNAL_idG$$APP_SPEC_TS_21$ = /* @ts-ignore */ goog.getMsg("Content H");
         $i18n_7$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_21$;
       } else {
+        /* @ts-ignore */
         $i18n_7$ = $localize`:Some text \\' [BACKUP_MESSAGE_ID\: xxx]:Content H`;
       }
 

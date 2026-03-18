@@ -14,11 +14,7 @@ import {ProductCard} from './product-card';
         <p>Data flows down from parent to child via signal inputs:</p>
 
         <!-- TODO: Change from static values to dynamic signal values -->
-        <product-card
-          name="Static Product"
-          price="99"
-          available="true"
-        />
+        <product-card name="Static Product" price="99" available="true" />
 
         <!-- TODO: Add controls to test reactive updates -->
         <div class="controls">

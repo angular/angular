@@ -1,4 +1,6 @@
-export class FooModule {}
-FooModule.ɵfac = …;
-FooModule.ɵmod = …;
-FooModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+export class FooModule {
+  …
+  static ɵfac = …;
+  static ɵmod = …;
+  static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+}

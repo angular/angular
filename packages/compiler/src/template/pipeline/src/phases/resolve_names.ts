@@ -19,6 +19,9 @@ import {CompilationJob, CompilationUnit} from '../compilation';
  */
 export function resolveNames(job: CompilationJob): void {
   for (const unit of job.units) {
+    for (const expr of unit.functions) {
+      processLexicalScope(unit, expr.ops, null);
+    }
     processLexicalScope(unit, unit.create, null);
     processLexicalScope(unit, unit.update, null);
   }
@@ -95,7 +98,7 @@ function processLexicalScope(
   // variable.
   for (const op of ops) {
     if (
-      op.kind == ir.OpKind.Listener ||
+      op.kind === ir.OpKind.Listener ||
       op.kind === ir.OpKind.TwoWayListener ||
       op.kind === ir.OpKind.Animation ||
       op.kind === ir.OpKind.AnimationListener

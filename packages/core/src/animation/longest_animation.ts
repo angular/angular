@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LView} from '../render3/interfaces/view';
 import {LongestAnimation} from './interfaces';
 
 /** Parses a CSS time value to milliseconds. */
@@ -43,10 +42,12 @@ function getLongestComputedAnimation(computedStyle: CSSStyleDeclaration): Longes
   const rawNames = parseCssPropertyValue(computedStyle, 'animation-name');
   const rawDelays = parseCssPropertyValue(computedStyle, 'animation-delay');
   const rawDurations = parseCssPropertyValue(computedStyle, 'animation-duration');
+  const rawIterationCounts = parseCssPropertyValue(computedStyle, 'animation-iteration-count');
   const longest: LongestAnimation = {animationName: '', propertyName: undefined, duration: 0};
   for (let i = 0; i < rawNames.length; i++) {
     const duration = parseCssTimeUnitsToMs(rawDelays[i]) + parseCssTimeUnitsToMs(rawDurations[i]);
-    if (duration > longest.duration) {
+    const iterationCount = rawIterationCounts[i];
+    if (duration > longest.duration && iterationCount !== 'infinite') {
       longest.animationName = rawNames[i];
       longest.duration = duration;
     }
@@ -123,9 +124,18 @@ function determineLongestAnimationFromElementAnimations(
   };
   for (const animation of animations) {
     const timing = animation.effect?.getTiming();
+    if (timing?.iterations === Infinity) {
+      continue;
+    }
     // duration can be a string 'auto' or a number.
     const animDuration = typeof timing?.duration === 'number' ? timing.duration : 0;
     let duration = (timing?.delay ?? 0) + animDuration;
+
+    // Account for playback rate if it is set
+    const playbackRate = animation.playbackRate;
+    if (playbackRate !== undefined && playbackRate !== 0 && playbackRate !== 1) {
+      duration /= Math.abs(playbackRate);
+    }
 
     let propertyName: string | undefined;
     let animationName: string | undefined;
@@ -147,4 +157,5 @@ function determineLongestAnimationFromElementAnimations(
   }
 }
 
-export const allLeavingAnimations = new Set<LView>();
+/** Tracks the IDs of LViews with leaving animations. */
+export const allLeavingAnimations = new Set<number>();

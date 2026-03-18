@@ -401,7 +401,7 @@ runInEachFileSystem(() => {
           reqInp = input.required<string>();
           reqInp2 = input.required<boolean>();
           _ = effect(() => { this.reqInp(); foobar(this.reqInp2()); });
-          __ = effect(function() { this.reqInp(); foobar(this.reqInp2()); });
+          __ = effect(function(this: Test) { this.reqInp(); foobar(this.reqInp2()); });
           comp = computed(() => this.reqInp());
 
           constructor() {

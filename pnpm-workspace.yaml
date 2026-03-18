@@ -29,7 +29,6 @@ packages:
   - tools/bazel/rules_angular_store/
   - vscode-ng-language-service
   - vscode-ng-language-service/server
-  - vscode-ng-language-service/integration/pre_standalone_project
   - vscode-ng-language-service/integration/project
 
 allowedDeprecatedVersions:
@@ -49,6 +48,7 @@ minimumReleaseAgeExclude:
   - '@ngtools/webpack'
   - '@schematics/*'
   - 'ng-packagr'
+  - 'zone.js'
 
 # Allow any version of @angular/* packages to satisfy peer dependencies, as these are managed within the monorepo.
 peerDependencyRules:

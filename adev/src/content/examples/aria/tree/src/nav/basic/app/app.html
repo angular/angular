@@ -19,13 +19,17 @@
       href="#{{ node.name }}"
       (click)="$event.preventDefault()"
     >
-      <span aria-hidden="true" class="material-symbols-outlined" translate="no">{{node.icon}}</span>
-      {{ node.name }}
       <span
         aria-hidden="true"
-        class="material-symbols-outlined expand-icon"
-         translate="no">{{node.children ? 'keyboard_arrow_up' : ''}}</span
+        class="material-symbols-outlined"
+        translate="no"
+        aria-hidden="true"
+        >{{ node.icon }}</span
       >
+      {{ node.name }}
+      <span aria-hidden="true" class="material-symbols-outlined expand-icon" translate="no">{{
+        node.children ? 'keyboard_arrow_up' : ''
+      }}</span>
     </a>
 
     @if (node.children) {

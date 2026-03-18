@@ -4,7 +4,7 @@
 отвечают за получение данных, бизнес-логику или другую функциональность, к которой необходим доступ из нескольких
 компонентов.
 
-## Создание сервиса
+## Создание сервиса {#creating-a-service}
 
 Вы можете создать сервис с помощью [Angular CLI](tools/cli), используя следующую команду:
 
@@ -21,23 +21,23 @@ ng generate service CUSTOM_NAME
 
 ```ts
 // 📄 src/app/basic-data-store.ts
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class BasicDataStore {
-  private data: string[] = []
+  private data: string[] = [];
 
   addData(item: string): void {
-   this.data.push(item)
+    this.data.push(item);
   }
 
   getData(): string[] {
-    return [...this.data]
+    return [...this.data];
   }
 }
 ```
 
-## Как сервисы становятся доступными
+## Как сервисы становятся доступными {#how-services-become-available}
 
 Когда вы используете `@Injectable({ providedIn: 'root' })` в своем сервисе, Angular:
 
@@ -48,38 +48,36 @@ export class BasicDataStore {
 
 Это рекомендуемый подход для большинства сервисов.
 
-## Внедрение сервиса
+## Внедрение сервиса {#injecting-a-service}
 
 После создания сервиса с `providedIn: 'root'`, вы можете внедрить его в любом месте вашего приложения, используя функцию
 `inject()` из `@angular/core`.
 
-### Внедрение в компонент
+### Внедрение в компонент {#injecting-into-a-component}
 
 ```angular-ts
-import { Component, inject } from '@angular/core';
-import { BasicDataStore } from './basic-data-store';
+import {Component, inject} from '@angular/core';
+import {BasicDataStore} from './basic-data-store';
 
 @Component({
   selector: 'app-example',
   template: `
     <div>
       <p>{{ dataStore.getData() }}</p>
-      <button (click)="dataStore.addData('More data')">
-        Add more data
-      </button>
+      <button (click)="dataStore.addData('More data')">Add more data</button>
     </div>
-  `
+  `,
 })
-export class ExampleComponent {
+export class Example {
   dataStore = inject(BasicDataStore);
 }
 ```
 
-### Внедрение в другой сервис
+### Внедрение в другой сервис {#injecting-into-another-service}
 
 ```ts
-import { inject, Injectable } from '@angular/core';
-import { AdvancedDataStore } from './advanced-data-store';
+import {inject, Injectable} from '@angular/core';
+import {AdvancedDataStore} from './advanced-data-store';
 
 @Injectable({
   providedIn: 'root',
@@ -98,7 +96,7 @@ export class BasicDataStore {
 }
 ```
 
-## Следующие шаги
+## Следующие шаги {#next-steps}
 
 Хотя `providedIn: 'root'` покрывает большинство случаев использования, Angular предлагает дополнительные способы
 предоставления сервисов для специализированных сценариев:

@@ -192,9 +192,9 @@ export class BlankCmp {}
 
 @Component({
   template: `
-<router-outlet></router-outlet>
-<router-outlet name="aux"></router-outlet>
-`,
+    <router-outlet></router-outlet>
+    <router-outlet name="aux"></router-outlet>
+  `,
   standalone: false,
 })
 export class RootCmp {}

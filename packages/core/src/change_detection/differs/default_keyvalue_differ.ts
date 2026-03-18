@@ -17,8 +17,7 @@ import type {
   KeyValueDifferFactory,
 } from './keyvalue_differs';
 
-export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory {
-  constructor() {}
+export class DefaultKeyValueDifferFactory implements KeyValueDifferFactory {
   supports(obj: any): boolean {
     return obj instanceof Map || isJsObject(obj);
   }
@@ -39,7 +38,6 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
   private _additionsHead: KeyValueChangeRecord_<K, V> | null = null;
   private _additionsTail: KeyValueChangeRecord_<K, V> | null = null;
   private _removalsHead: KeyValueChangeRecord_<K, V> | null = null;
-  private _removalsTail: KeyValueChangeRecord_<K, V> | null = null;
 
   get isDirty(): boolean {
     return (
@@ -94,8 +92,6 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
 
     return this.check(map) ? this : null;
   }
-
-  onDestroy() {}
 
   /**
    * Check the current state of the map vs the previous.

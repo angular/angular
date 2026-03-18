@@ -246,7 +246,7 @@ function collectMessage(
   // Sort the params for consistency with TemaplateDefinitionBuilder output.
   messageOp.params = new Map([...messageOp.params.entries()].sort());
 
-  const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX));
+  const mainVar = o.variable(job.pool.uniqueName(TRANSLATION_VAR_PREFIX), o.DYNAMIC_TYPE);
   // Closure Compiler requires const names to start with `MSG_` but disallows any other
   // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
   // `goog.getMsg` call

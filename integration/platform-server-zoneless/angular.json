@@ -22,13 +22,8 @@
               "entry": "projects/standalone/server.ts"
             },
             "tsConfig": "projects/standalone/tsconfig.app.json",
-            "assets": [
-              "projects/standalone/src/favicon.ico",
-              "projects/standalone/src/assets"
-            ],
-            "styles": [
-              "projects/standalone/src/styles.css"
-            ],
+            "assets": ["projects/standalone/src/favicon.ico", "projects/standalone/src/assets"],
+            "styles": ["projects/standalone/src/styles.css"],
             "progress": false,
             "scripts": []
           },
@@ -68,15 +63,6 @@
           },
           "defaultConfiguration": "development"
         },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:private-protractor",
-          "options": {
-            "port": 0,
-            "protractorConfig": "e2e/protractor.conf.js",
-            "webdriverUpdate": false,
-            "baseUrl": "http://localhost:4209"
-          }
-        },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n",
           "options": {
@@ -88,13 +74,8 @@
           "options": {
             "progress": false,
             "tsConfig": "projects/standalone/tsconfig.spec.json",
-            "assets": [
-              "projects/standalone/src/favicon.ico",
-              "projects/standalone/src/assets"
-            ],
-            "styles": [
-              "projects/standalone/src/styles.css"
-            ],
+            "assets": ["projects/standalone/src/favicon.ico", "projects/standalone/src/assets"],
+            "styles": ["projects/standalone/src/styles.css"],
             "scripts": []
           }
         }

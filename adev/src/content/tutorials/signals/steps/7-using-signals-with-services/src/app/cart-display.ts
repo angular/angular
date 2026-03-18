@@ -6,7 +6,7 @@ import {CartStore} from './cart-store';
   template: `
     <div class="cart-display">
       <h2>Shopping Cart Demo</h2>
-      
+
       <!-- Add some products to test the cart -->
       <div class="add-products">
         <h3>Add Products</h3>
@@ -14,7 +14,7 @@ import {CartStore} from './cart-store';
         <button (click)="addMouse()">Add Mouse ($25)</button>
         <button (click)="addKeyboard()">Add Keyboard ($79)</button>
       </div>
-      
+
       <h3>Cart Contents</h3>
       @if (cartStore.cartItems().length === 0) {
         <p class="empty-message">Your cart is empty</p>
@@ -26,7 +26,7 @@ import {CartStore} from './cart-store';
                 <h4>{{ item.name }}</h4>
                 <p class="price">\${{ item.price }} each</p>
               </div>
-              
+
               <div class="quantity-controls">
                 <button (click)="decreaseQuantity(item.id)">-</button>
                 <span class="quantity">{{ item.quantity }}</span>
@@ -36,7 +36,7 @@ import {CartStore} from './cart-store';
             </div>
           }
         </div>
-        
+
         <div class="cart-summary">
           <p>Total Items: {{ cartStore.totalQuantity() }}</p>
           <p class="total-price">Total: \${{ cartStore.totalPrice() }}</p>

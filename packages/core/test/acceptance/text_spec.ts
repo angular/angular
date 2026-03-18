@@ -11,6 +11,7 @@ import {of} from 'rxjs';
 
 describe('text instructions', () => {
   it('should handle all flavors of interpolated text', () => {
+    // prettier-ignore
     @Component({
       template: `
         <div>a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j</div>
@@ -61,6 +62,7 @@ describe('text instructions', () => {
   });
 
   it('should handle piped values in interpolated text', () => {
+    // prettier-ignore
     @Component({
       template: `
         <p>{{who | async}} sells {{(item | async)?.what}} down by the {{(item | async)?.where}}.</p>

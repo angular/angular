@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "npm_sass_library", "sass_library")
+load("//devtools/tools:defaults.bzl", "npm_sass_library", "sass_binary", "sass_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -21,6 +21,7 @@ sass_library(
         ":tables",
         ":theme",
         ":typography",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/property-view/property-view-body/prop-actions-menu:prop-actions-menu-cdk-styles",
     ],
 )
 
@@ -75,4 +76,14 @@ sass_library(
         ":material_sass_deps",
         ":typography",
     ],
+)
+
+sass_binary(
+    name = "firefox",
+    src = "firefox.scss",
+)
+
+sass_binary(
+    name = "chrome",
+    src = "chrome.scss",
 )

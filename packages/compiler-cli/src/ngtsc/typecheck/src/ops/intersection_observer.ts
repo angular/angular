@@ -7,8 +7,8 @@
  */
 
 import {AST} from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
+import {TcbExpr} from './codegen';
 import {Context} from './context';
 import type {Scope} from './scope';
 import {tcbExpression} from './expression';
@@ -29,14 +29,7 @@ export class TcbIntersectionObserverOp extends TcbOp {
 
   override execute(): null {
     const options = tcbExpression(this.options, this.tcb, this.scope);
-    const callback = ts.factory.createNonNullExpression(ts.factory.createNull());
-    const expression = ts.factory.createNewExpression(
-      ts.factory.createIdentifier('IntersectionObserver'),
-      undefined,
-      [callback, options],
-    );
-
-    this.scope.addStatement(ts.factory.createExpressionStatement(expression));
+    this.scope.addStatement(new TcbExpr(`new IntersectionObserver(null!, ${options.print()})`));
     return null;
   }
 }

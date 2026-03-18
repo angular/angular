@@ -289,8 +289,8 @@ runInEachFileSystem(() => {
               <div dir [gen]="false" [other]="'text'"
                        #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
         expected: [
-          `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+          `TestComponent.html(3, 58): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 64): Type 'number' is not assignable to type 'string'.`,
         ],
       },
       {
@@ -311,8 +311,8 @@ runInEachFileSystem(() => {
               <div dir [gen]="false" [other]="'text'"
                        #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
         expected: [
-          `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+          `TestComponent.html(3, 58): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 64): Type 'number' is not assignable to type 'string'.`,
         ],
       },
       {
@@ -333,8 +333,8 @@ runInEachFileSystem(() => {
               <div dir [gen]="false" [other]="{u: null}"
                    #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
         expected: [
-          `TestComponent.html(3, 57): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 63): Type 'number' is not assignable to type 'null'.`,
+          `TestComponent.html(3, 54): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 60): Type 'number' is not assignable to type 'null'.`,
         ],
       },
       // differing Write and ReadT
@@ -400,9 +400,9 @@ runInEachFileSystem(() => {
         component: `prop: HTMLElement = null!`,
         expected: [
           // This verifies that the `ref.tester.t` is correctly inferred to be `HTMLElement`.
-          `TestComponent.html(3, 46): Type 'number' is not assignable to type 'HTMLElement'.`,
+          `TestComponent.html(3, 43): Type 'number' is not assignable to type 'HTMLElement'.`,
           // This verifies that the `bla` input value is still a `string` when accessed.
-          `TestComponent.html(3, 59): Type 'string' is not assignable to type 'never'.`,
+          `TestComponent.html(3, 49): Type 'string' is not assignable to type 'never'.`,
         ],
       },
       {
@@ -422,7 +422,7 @@ runInEachFileSystem(() => {
         component: `prop: HTMLElement = null!`,
         expected: [
           // This verifies that the `ref.tester.t` is correctly inferred to be `HTMLElement`.
-          `TestComponent.html(1, 60): Type 'number' is not assignable to type 'HTMLElement'.`,
+          `TestComponent.html(1, 57): Type 'number' is not assignable to type 'HTMLElement'.`,
         ],
       },
     ];

@@ -627,6 +627,11 @@ export function patchPromise(Zone: ZoneType): void {
 
     if (NativePromise) {
       patchThen(NativePromise);
+      // TODO(atscott): Investigate generic to propagate any unknown properties
+      const nativeTry = (NativePromise as any)['try'];
+      if (nativeTry && typeof nativeTry === 'function') {
+        (ZoneAwarePromise as any)['try'] = nativeTry;
+      }
       patchMethod(global, 'fetch', (delegate) => zoneify(delegate));
     }
 

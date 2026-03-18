@@ -7,7 +7,8 @@
  */
 
 import {Token, Tokens, RendererThis, TokenizerThis} from 'marked';
-import {anchorTarget, isExternalLink} from '../../helpers.mjs';
+import {anchorTarget} from '../../helpers.mjs';
+import {AdevDocsRenderer} from '../../renderer.mjs';
 
 interface DocsPillToken extends Tokens.Generic {
   type: 'docs-pill';
@@ -59,13 +60,17 @@ export const docsPillExtension = {
   renderer(this: RendererThis, token: DocsPillToken) {
     const downloadAttr = token.download ? ` download="${token.download}"` : '';
     const targetAttr = token.target ? ` target="${token.target}"` : anchorTarget(token.href);
+    const renderer = this.parser.renderer as AdevDocsRenderer;
+
+    if (!renderer.isKnownRoute(token.href)) {
+      throw new Error(
+        `Link target "${token.href}" is invalid in <docs-pill> in ${renderer.context.markdownFilePath} does not exist in the defined guide routes.`,
+      );
+    }
+
     return `
     <a class="docs-pill" href="${token.href}"${targetAttr}${downloadAttr}>
-      ${this.parser.parseInline(token.tokens)}${
-        isExternalLink(token.href)
-          ? '<docs-icon class="docs-icon-small">open_in_new</docs-icon>'
-          : ''
-      }
+      ${this.parser.parseInline(token.tokens)}
     </a>
     `;
   },

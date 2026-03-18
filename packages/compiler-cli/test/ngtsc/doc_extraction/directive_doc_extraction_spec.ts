@@ -282,5 +282,161 @@ runInEachFileSystem(() => {
       expect(isAdminSetter.name).toBe('isAdmin');
       expect(isAdminSetter.memberTags).toContain(MemberTags.Input);
     });
+
+    describe('selector alias extraction', () => {
+      it('should extract alias from simple attribute selector', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Directive} from '@angular/core';
+          @Directive({
+            selector: '[ngTabs]',
+          })
+          export class NgTabs { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const directiveEntry = docs[0];
+        expect(directiveEntry.aliases).toEqual(['ngTabs']);
+      });
+
+      it('should extract alias from element with attribute selector', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Directive} from '@angular/core';
+          @Directive({
+            selector: 'input[ngComboboxInput]',
+          })
+          export class NgComboboxInput { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const directiveEntry = docs[0];
+        expect(directiveEntry.aliases).toEqual(['ngComboboxInput']);
+      });
+
+      it('should extract alias from ng-template with attribute selector', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Directive} from '@angular/core';
+          @Directive({
+            selector: 'ng-template[ngComboboxPopupContainer]',
+          })
+          export class NgComboboxPopupContainer { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const directiveEntry = docs[0];
+        expect(directiveEntry.aliases).toEqual(['ngComboboxPopupContainer']);
+      });
+
+      it('should extract multiple aliases from multiple attribute selectors', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Directive} from '@angular/core';
+          @Directive({
+            selector: '[attr1],[attr2]',
+          })
+          export class MultiAttr { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const directiveEntry = docs[0];
+        expect(directiveEntry.aliases).toEqual(['attr1', 'attr2']);
+      });
+
+      it('should extract aliases from complex selector with element and multiple attributes', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Directive} from '@angular/core';
+          @Directive({
+            selector: 'button[cdkButton]',
+          })
+          export class CdkButton { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const directiveEntry = docs[0];
+        expect(directiveEntry.aliases).toEqual(['cdkButton']);
+      });
+
+      it('should not extract aliases from element-only selector', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'app-root',
+            template: '',
+          })
+          export class AppRoot { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const componentEntry = docs[0];
+        expect(componentEntry.aliases).toBeUndefined();
+      });
+
+      it('should not extract aliases from class selector', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: '.my-class',
+            template: '',
+          })
+          export class MyClass { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const componentEntry = docs[0];
+        expect(componentEntry.aliases).toBeUndefined();
+      });
+
+      it('should handle empty selector', () => {
+        env.write(
+          'index.ts',
+          `
+          import {Directive} from '@angular/core';
+          @Directive({
+            selector: '',
+          })
+          export class EmptySelector { }
+        `,
+        );
+
+        const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+        expect(docs.length).toBe(1);
+
+        const directiveEntry = docs[0];
+        expect(directiveEntry.aliases).toBeUndefined();
+      });
+    });
   });
 });

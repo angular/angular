@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
   AST,
   BindingPipe,
   ImplicitReceiver,
   PropertyRead,
   SafePropertyRead,
-  ThisReceiver,
 } from '../../expression_parser/ast';
-import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
   BoundAttribute,
   BoundEvent,
@@ -42,6 +41,8 @@ import {
   Reference,
   SwitchBlock,
   SwitchBlockCase,
+  SwitchBlockCaseGroup,
+  SwitchExhaustiveCheck,
   Template,
   Text,
   TextAttribute,
@@ -51,6 +52,7 @@ import {
   Visitor,
 } from '../r3_ast';
 
+import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
 import {
   BoundTarget,
   DirectiveMeta,
@@ -63,7 +65,6 @@ import {
 } from './t2_api';
 import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
-import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
 
 /**
  * Computes a difference between full list (first argument) and
@@ -328,7 +329,7 @@ class Scope implements Visitor {
       nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
       nodeOrNodes.children.forEach((node) => node.visit(this));
     } else if (
-      nodeOrNodes instanceof SwitchBlockCase ||
+      nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
       nodeOrNodes instanceof DeferredBlock ||
       nodeOrNodes instanceof DeferredBlockError ||
@@ -388,12 +389,16 @@ class Scope implements Visitor {
   }
 
   visitSwitchBlock(block: SwitchBlock) {
-    block.cases.forEach((node) => node.visit(this));
+    block.groups.forEach((node) => node.visit(this));
   }
 
-  visitSwitchBlockCase(block: SwitchBlockCase) {
+  visitSwitchBlockCase(block: SwitchBlockCase) {}
+
+  visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
     this.ingestScopedNode(block);
   }
+
+  visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck) {}
 
   visitForLoopBlock(block: ForLoopBlock) {
     this.ingestScopedNode(block);
@@ -576,12 +581,18 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitSwitchBlock(block: SwitchBlock) {
-    block.cases.forEach((node) => node.visit(this));
+    block.groups.forEach((node) => node.visit(this));
   }
 
   visitSwitchBlockCase(block: SwitchBlockCase) {
+    // DirectiveBinder does not visit expressions
+  }
+
+  visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
     block.children.forEach((node) => node.visit(this));
   }
+
+  visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck) {}
 
   visitForLoopBlock(block: ForLoopBlock) {
     block.item.visit(this);
@@ -865,7 +876,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       nodeOrNodes.children.forEach((node) => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
-      nodeOrNodes instanceof SwitchBlockCase ||
+      nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
       nodeOrNodes instanceof DeferredBlockError ||
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
@@ -934,7 +945,15 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
 
   override visitSwitchBlockCase(block: SwitchBlockCase) {
     block.expression?.visit(this);
+  }
+
+  override visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
+    block.cases.forEach((caseNode) => caseNode.visit(this));
     this.ingestScopedNode(block);
+  }
+
+  override visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck) {
+    // There are no bindings/references in the exhaustive check block.
   }
 
   override visitForLoopBlock(block: ForLoopBlock) {
@@ -1004,7 +1023,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
   private maybeMap(ast: PropertyRead | SafePropertyRead, name: string): void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
-    if (!(ast.receiver instanceof ImplicitReceiver) || ast.receiver instanceof ThisReceiver) {
+    if (!(ast.receiver instanceof ImplicitReceiver)) {
       return;
     }
 

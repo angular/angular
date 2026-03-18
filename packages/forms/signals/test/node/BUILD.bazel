@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "ts_project", "zoneless_jasmine_test")
+load("//tools:defaults.bzl", "ng_project", "zoneless_jasmine_test")
 
-ts_project(
+ng_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.spec.ts"]),
     deps = [
+        "//:node_modules/@standard-schema/spec",
         "//:node_modules/zod",
         "//packages/common/http",
         "//packages/common/http/testing",

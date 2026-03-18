@@ -22,16 +22,13 @@ import {ProductCard} from './product-card';
           [description]="'High-performance laptop'"
           [available]="true"
           [productId]="'LAP001'"
-          [category]="'Electronics'" 
+          [category]="'Electronics'"
         />
       </div>
 
       <div class="cart-section">
-        <cart-summary
-          [itemCount]="cartQuantity()"
-          [total]="totalPrice()" 
-        />
-        
+        <cart-summary [itemCount]="cartQuantity()" [total]="totalPrice()" />
+
         <div class="cart-controls">
           <label>Quantity:</label>
           <button (click)="updateQuantity(-1)" [disabled]="cartQuantity() <= 0">-</button>

@@ -46,7 +46,7 @@ const NUMBER_VALUE_ACCESSOR: Provider = {
  */
 @Directive({
   selector:
-    'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
+    'input[type=number]:not([ngNoCva])[formControlName],input[type=number]:not([ngNoCva])[formControl],input[type=number]:not([ngNoCva])[ngModel]',
   host: {'(input)': 'onChange($any($event.target).value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR],
   standalone: false,

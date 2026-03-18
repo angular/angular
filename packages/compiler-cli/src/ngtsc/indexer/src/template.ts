@@ -13,6 +13,7 @@ import {
   ImplicitReceiver,
   ParseSourceSpan,
   PropertyRead,
+  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstComponent,
   TmplAstDirective,
@@ -352,7 +353,7 @@ class TemplateVisitor extends CombinedRecursiveAstVisitor {
     // impossible to determine by an indexer and unsupported by the indexing module.
     // The indexing module also does not currently support references to identifiers declared in the
     // template itself, which have a non-null expression target.
-    if (!(ast.receiver instanceof ImplicitReceiver)) {
+    if (!(ast.receiver instanceof ImplicitReceiver) && !(ast.receiver instanceof ThisReceiver)) {
       return;
     }
 

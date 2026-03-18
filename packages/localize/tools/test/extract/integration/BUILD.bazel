@@ -26,7 +26,6 @@ jasmine_test(
         "//:node_modules/tinyglobby",
         "//:node_modules/yargs",
         "//packages/localize/tools/test/extract/integration/test_files",
-        "//packages/localize/tools/test/extract/integration/test_files:compile_es2015",
-        "//packages/localize/tools/test/extract/integration/test_files:compile_es5",
+        "//packages/localize/tools/test/extract/integration/test_files:bundle",
     ],
 )

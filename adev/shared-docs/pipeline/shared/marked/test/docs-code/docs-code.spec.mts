@@ -47,4 +47,14 @@ describe('markdown to html', () => {
     const codeBlock = markdownDocument.querySelectorAll('code')[3];
     expect(codeBlock).toBeTruthy();
   });
+
+  it('should not link property names in object literals', () => {
+    const codeBlock = markdownDocument.querySelectorAll('code')[4];
+    expect(codeBlock?.innerHTML).not.toContain('<a href="/api/animations/state">state</a>');
+  });
+
+  it('should parse the hideDollar attribute', () => {
+    const codeBlock = markdownDocument.querySelectorAll('.docs-code')[5];
+    expect(codeBlock.getAttribute('hideDollar')).toBe('true');
+  });
 });

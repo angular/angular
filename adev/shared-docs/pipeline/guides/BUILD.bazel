@@ -14,6 +14,7 @@ esbuild(
     external = [
         "jsdom",
         "playwright-core",
+        "typescript",
     ],
     format = "esm",
     output = "guides.mjs",
@@ -38,6 +39,7 @@ esbuild(
     entry_point = ":index.mts",
     external = [
         "jsdom",
+        "typescript",
     ],
     output = "guides-no-mermaid.mjs",
     platform = "node",

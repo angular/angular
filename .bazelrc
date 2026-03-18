@@ -1,3 +1,6 @@
+# Disable NG CLI TTY mode
+build --action_env=NG_FORCE_TTY=false
+
 # Enable debugging tests with --config=debug
 test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --strategy=TestRunner=standalone
 
@@ -143,7 +146,7 @@ build:trusted-build --remote_upload_local_results=true
 # Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
 # even if the rule implementation does not explicitly pass them to the execution requirements.
 # https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
-common --experimental_allow_tags_propagation
+common --incompatible_allow_tags_propagation
 
 # Disable network access in the sandbox by default. To enable network access
 # for a particular target, use:

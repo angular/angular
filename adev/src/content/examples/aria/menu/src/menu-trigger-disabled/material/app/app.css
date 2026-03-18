@@ -92,7 +92,7 @@
 }
 
 [ngMenu] .separator {
-  border-top: 1px solid var(--gray-500);
+  border-top: 1px solid var(--quaternary-contrast);
   margin: 0.25rem 0;
   opacity: 0.25;
 }

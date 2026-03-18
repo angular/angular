@@ -6,7 +6,7 @@
 .leave-container {
   border: 1px solid #dddddd;
   margin-top: 1em;
-  padding: 20px 20px 0px 20px;
+  padding: 20px;
   font-weight: bold;
   font-size: 20px;
   opacity: 1;
@@ -17,8 +17,23 @@
   }
 }
 
+.leave-container p {
+  margin: 0;
+}
+
 .leaving {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 500ms ease-out, transform 500ms ease-out;
+  transition:
+    opacity 500ms ease-out,
+    transform 500ms ease-out;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--primary-contrast, black);
+  color: var(--primary-contrast, black);
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
 }

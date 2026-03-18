@@ -1,61 +1,56 @@
 # Паттерн App shell
 
-[Паттерн App shell](https://developer.chrome.com/blog/app-shell) — это способ рендеринга части вашего приложения с
-использованием маршрута во время сборки.
-Это может улучшить пользовательский опыт за счет быстрого запуска статически отрендеренной страницы (каркаса, общего для
-всех страниц), пока браузер загружает полную клиентскую версию и автоматически переключается на нее после загрузки кода.
+[Паттерн App shell](https://developer.chrome.com/blog/app-shell) — это способ рендеринга части приложения с использованием маршрута во время сборки.
+Он может улучшить пользовательский опыт, быстро отображая статически отрендеренную страницу (скелет, общий для всех страниц), пока браузер загружает полную клиентскую версию и автоматически переключается на неё после загрузки кода.
 
-Это обеспечивает пользователям значимую первую отрисовку приложения, которая появляется быстро, так как браузер может
-отобразить HTML и CSS без необходимости инициализации JavaScript.
+Это даёт пользователям значимую первую отрисовку приложения, которая появляется быстро, поскольку браузер может рендерить HTML и CSS без необходимости инициализировать JavaScript.
 
 <docs-workflow>
-<docs-step title="Подготовка приложения">
-Выполните это с помощью следующей команды Angular CLI:
+<docs-step title="Prepare the application">
+Выполните следующую команду Angular CLI:
 
 ```shell
 ng new my-app
 ```
 
-Для существующего приложения вам необходимо вручную добавить `Router` и определить `<router-outlet>` внутри вашего
-приложения.
+Для существующего приложения необходимо вручную добавить `Router` и определить `<router-outlet>` внутри приложения.
 </docs-step>
-<docs-step title="Создание оболочки приложения (App shell)">
-Используйте Angular CLI для автоматического создания оболочки приложения.
+<docs-step title="Create the application shell">
+Используйте Angular CLI для автоматического создания App shell.
 
 ```shell
 ng generate app-shell
 ```
 
-Для получения дополнительной информации об этой команде см. [Команда App shell](cli/generate/app-shell).
+Дополнительную информацию об этой команде см. в [App shell command](cli/generate/app-shell).
 
 Команда обновляет код приложения и добавляет дополнительные файлы в структуру проекта.
 
-<docs-code language="text">
+```text
 src
 ├── app
-│ ├── app.config.server.ts # конфигурация серверного приложения
-│ └── app-shell # компонент app-shell
+│ ├── app.config.server.ts # server application configuration
+│ └── app-shell # app-shell component
 │   ├── app-shell.component.html
 │   ├── app-shell.component.scss
 │   ├── app-shell.component.spec.ts
 │   └── app-shell.component.ts
-└── main.server.ts # начальная загрузка основного серверного приложения
-</docs-code>
+└── main.server.ts # main server application bootstrapping
+```
 
-<docs-step title="Проверка сборки приложения с контентом оболочки">
+<docs-step title="Verify the application is built with the shell content">
 
 ```shell
 ng build --configuration=development
 ```
 
-Или для использования конфигурации production:
+Или для использования производственной конфигурации:
 
 ```shell
 ng build
 ```
 
-Чтобы проверить результат сборки, откройте <code class="no-auto-link">dist/my-app/browser/index.html</code>.
-Найдите текст по умолчанию `app-shell works!`, чтобы убедиться, что маршрут оболочки приложения был отрендерен как часть
-выходных данных.
+Чтобы проверить вывод сборки, откройте <code class="no-auto-link">dist/my-app/browser/index.html</code>.
+Найдите текст по умолчанию `app-shell works!`, чтобы убедиться, что маршрут App shell был отрендерен как часть вывода.
 </docs-step>
 </docs-workflow>

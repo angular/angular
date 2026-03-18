@@ -31,7 +31,7 @@ Service Worker-ы работают как сетевой прокси.
 загрузке приложения.
 Использование Service Worker-а для снижения зависимости от сети может значительно улучшить пользовательский опыт.
 
-## Service Worker-ы в Angular
+## Service Worker-ы в Angular {#service-workers-in-angular}
 
 Angular-приложения, как SPA (одностраничные приложения), находятся в идеальном положении, чтобы воспользоваться
 преимуществами Service Worker-ов. Angular поставляется с реализацией Service Worker. Разработчики Angular могут
@@ -72,7 +72,7 @@ Angular Service Worker разработан для оптимизации опы
 Например, приложение может попросить уведомить его о появлении нового обновления, или приложение может попросить Service
 Worker проверить сервер на наличие доступных обновлений.
 
-## Перед началом работы
+## Перед началом работы {#before-you-start}
 
 Чтобы использовать все возможности Angular Service Worker, используйте последние версии Angular
 и [Angular CLI](tools/cli).
@@ -85,7 +85,7 @@ Worker проверить сервер на наличие доступных о
 Существует одно исключение из этого правила: чтобы упростить локальную разработку, браузеры _не_ требуют безопасного
 соединения при доступе к приложению на `localhost`.
 
-### Поддержка браузерами
+### Поддержка браузерами {#browser-support}
 
 Чтобы воспользоваться преимуществами Angular Service Worker, ваше приложение должно работать в веб-браузере, который
 поддерживает Service Worker-ы в целом.
@@ -112,7 +112,7 @@ Worker проверить сервер на наличие доступных о
 страницу [Can I Use](https://caniuse.com/#feat=serviceworkers)
 и [документацию MDN](https://developer.mozilla.org/docs/Web/API/Service_Worker_API).
 
-## Связанные ресурсы
+## Связанные ресурсы {#related-resources}
 
 Остальные статьи в этом разделе посвящены конкретно реализации Service Worker в Angular.
 
@@ -140,7 +140,7 @@ Worker проверить сервер на наличие доступных о
   <docs-pill href="https://web.dev/creating-pwa-with-angular-cli" title="Создание PWA с помощью Angular CLI"/>
 </docs-pill-row>
 
-## Следующий шаг
+## Следующий шаг {#next-step}
 
 Чтобы начать использовать Angular Service Worker,
 см. [Начало работы с Service Worker](ecosystem/service-workers/getting-started).

@@ -15,13 +15,13 @@
 
 <docs-workflow>
 
-<docs-step title="Добавление отображения ошибок для поля email">
+<docs-step title="Add error display for email field">
 Под полем ввода email добавьте условное отображение ошибок. Ошибки будут показываться только в том случае, если поле невалидно и было затронуто (touched):
 
-```html
+```angular-html
 <label>
   Email
-  <input type="email" [field]="loginForm.email" />
+  <input type="email" [formField]="loginForm.email" />
 </label>
 @if (loginForm.email().invalid() && loginForm.email().touched()) {
   <div class="error">
@@ -37,13 +37,13 @@
 ошибок валидации с соответствующими сообщениями.
 </docs-step>
 
-<docs-step title="Добавление отображения ошибок для поля пароля">
+<docs-step title="Add error display for password field">
 Под полем ввода пароля добавьте аналогичный код для отображения ошибок пароля:
 
-```html
+```angular-html
 <label>
   Password
-  <input type="password" [field]="loginForm.password" />
+  <input type="password" [formField]="loginForm.password" />
 </label>
 @if (loginForm.password().invalid() && loginForm.password().touched()) {
   <div class="error">

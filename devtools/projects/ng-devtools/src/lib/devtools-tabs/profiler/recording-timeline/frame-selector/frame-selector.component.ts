@@ -59,7 +59,9 @@ function framesBoundSignal<T>(source: Signal<ProfilerFrame[]>, defaultValue: T) 
   templateUrl: './frame-selector.component.html',
   styleUrls: ['./frame-selector.component.scss'],
   styles: `
-    :host { --max-bar-height: ${MAX_HEIGHT}px }
+    :host {
+      --max-bar-height: ${MAX_HEIGHT}px;
+    }
   `,
   imports: [
     MatTooltip,

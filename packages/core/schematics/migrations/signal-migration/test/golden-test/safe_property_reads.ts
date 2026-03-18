@@ -11,9 +11,7 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  template: `
-    {{bla?.myInput}}
-  `,
+  template: ` {{ bla?.myInput }} `,
 })
 class WithSafePropertyReads {
   @Input() myInput = 0;

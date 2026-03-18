@@ -27,14 +27,15 @@ import {
   SimpleChanges,
   ViewContainerRef,
 } from '@angular/core';
-import {combineLatest, of, Subscription} from 'rxjs';
+import {combineLatest, Observable, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
-import {PRIMARY_OUTLET} from '../shared';
+import {Params, PRIMARY_OUTLET} from '../shared';
+import {ComponentInputBindingOptions} from '../router_config';
 
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
@@ -58,7 +59,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * @see [Page routerOutletData](guide/routing/show-routes-with-outlets#passing-contextual-data-to-routed-components)
  */
 export const ROUTER_OUTLET_DATA = new InjectionToken<Signal<unknown | undefined>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'RouterOutlet data' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'RouterOutlet data' : '',
 );
 
 /**
@@ -457,6 +458,10 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>(
 export class RoutedComponentInputBinder {
   private outletDataSubscriptions = new Map<RouterOutlet, Subscription>();
 
+  constructor(private options: ComponentInputBindingOptions) {
+    this.options.queryParams ??= true;
+  }
+
   bindActivatedRouteToOutletComponent(outlet: RouterOutlet): void {
     this.unsubscribeFromRouteData(outlet);
     this.subscribeToRouteData(outlet);
@@ -470,7 +475,7 @@ export class RoutedComponentInputBinder {
   private subscribeToRouteData(outlet: RouterOutlet) {
     const {activatedRoute} = outlet;
     const dataSubscription = combineLatest([
-      activatedRoute.queryParams,
+      this.options.queryParams ? activatedRoute.queryParams : of({}),
       activatedRoute.params,
       activatedRoute.data,
     ])

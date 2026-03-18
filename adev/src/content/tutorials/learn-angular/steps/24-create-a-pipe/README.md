@@ -33,7 +33,7 @@ export class StarPipe implements PipeTransform {
 
 <docs-workflow>
 
-<docs-step title="Создайте ReversePipe">
+<docs-step title="Create the `ReversePipe`">
 
 В файле `reverse.pipe.ts` добавьте декоратор `@Pipe` к классу `ReversePipe` и укажите следующую конфигурацию:
 
@@ -45,11 +45,11 @@ export class StarPipe implements PipeTransform {
 
 </docs-step>
 
-<docs-step title="Реализуйте функцию transform">
+<docs-step title="Implement the `transform` function">
 
 Теперь класс `ReversePipe` является пайпом. Обновите функцию `transform`, добавив логику переворота строки:
 
-<docs-code language="ts" highlight="[3,4,5,6,7,8,9]">
+```ts {highlight:[3,4,5,6,7,8,9]}
 export class ReversePipe implements PipeTransform {
   transform(value: string): string {
     let reverse = '';
@@ -59,24 +59,23 @@ export class ReversePipe implements PipeTransform {
     }
 
     return reverse;
-
+  }
 }
-}
-</docs-code>
+```
 
 </docs-step>
 
-<docs-step title="Используйте ReversePipe в шаблоне"></docs-step>
+<docs-step title="Use the `ReversePipe` in the template"></docs-step>
 Логика пайпа реализована, последний шаг — использовать его в шаблоне. В `app.ts` включите pipe в шаблон и добавьте его в
 импорты компонента:
 
-<docs-code language="angular-ts" highlight="[3,4]">
+```angular-ts {highlight:[3,4]}
 @Component({
   ...
   template: `Reverse Machine: {{ word | reverse }}`
   imports: [ReversePipe]
 })
-</docs-code>
+```
 
 </docs-workflow>
 

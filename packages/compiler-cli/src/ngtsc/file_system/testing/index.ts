@@ -10,4 +10,9 @@ export {Folder, MockFileSystem} from './src/mock_file_system';
 export {MockFileSystemNative} from './src/mock_file_system_native';
 export {MockFileSystemPosix} from './src/mock_file_system_posix';
 export {MockFileSystemWindows} from './src/mock_file_system_windows';
-export {initMockFileSystem, runInEachFileSystem, TestFile} from './src/test_helper';
+export {
+  initMockFileSystem,
+  lockMockFileSystem,
+  runInEachFileSystem,
+  TestFile,
+} from './src/test_helper';

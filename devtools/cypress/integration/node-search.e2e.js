@@ -103,9 +103,9 @@ describe('Search items in component tree', () => {
   it('should be able to search and select @defers in different Angular applications', () => {
     inputSearchText('@defer');
     checkSearchedNodesLength('.matched-text', 2);
-    cy.get('.defer-details').should('contain.text', '@placeholder(minimum 5000 ms)');
+    cy.get('ng-defer-view').should('contain.text', '@placeholder(minimum 5000 ms)');
     inputSearchText('{enter}');
-    cy.get('.defer-details').should('contain.text', '@placeholder(minimum 2000 ms)');
+    cy.get('ng-defer-view').should('contain.text', '@placeholder(minimum 2000 ms)');
   });
 
   it('should not duplicate application roots if multiple applications are present', () => {

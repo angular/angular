@@ -1464,6 +1464,37 @@ describe('navigation', () => {
       expect(secondTraverseFinishedEntry).toBe(secondPageEntry);
       expect(locals.navigation.currentEntry).toBe(secondPageEntry);
     });
+
+    it('subsequent traversal works after cancelled traversal', async () => {
+      const [firstPageEntry, secondPageEntry, thirdPageEntry] = await setUpEntries();
+      // Go back to the first page so we have room to traverse forward
+      await locals.navigation.traverseTo(firstPageEntry.key).finished;
+      locals.navigateEvents.length = 0;
+      locals.navigationCurrentEntryChangeEvents.length = 0;
+      locals.popStateEvents.length = 0;
+
+      // Try to traverse to the second page but cancel it
+      locals.pendingInterceptOptions.push({
+        precommitHandler: () => Promise.reject(new Error('cancelled')),
+      });
+      const {committed, finished} = locals.navigation.traverseTo(secondPageEntry.key);
+      await expectAsync(committed).toBeRejectedWithError(Error, /cancelled/);
+      await expectAsync(finished).toBeRejectedWithError(Error, /cancelled/);
+      expect(locals.navigation.currentEntry).toBe(firstPageEntry);
+
+      // Verify that we can still traverse to the third page correctly
+      // Using go(2) ensures that the prospective index was reset correctly
+      // (index 0 -> index 2 relative to current)
+      locals.navigation.go(2);
+      // We need to wait for the traversal to happen. go() is void, but we can check the next event.
+      const navigateEvent = await locals.nextNavigateEvent();
+      expect(navigateEvent.destination.key).toBe(thirdPageEntry.key);
+      // Determine if we need to await committed/finished for go() or if nextNavigateEvent is enough.
+      // go() uses internal mechanism, but eventually updates currentEntry.
+      // We can wait for the loop to settle.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(locals.navigation.currentEntry.key).toBe(thirdPageEntry.key);
+    });
   });
 
   describe('history API', () => {

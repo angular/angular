@@ -91,6 +91,7 @@ describe('reactivity', () => {
       expect(isStable).toEqual([true, false]);
 
       appRef.tick();
+      await appRef.whenStable();
 
       expect(isStable).toEqual([true, false, true]);
     });
@@ -437,7 +438,7 @@ describe('reactivity', () => {
 
       @Component({
         imports: [Dir],
-        template: `<ng-template dir let-data>{{data}}</ng-template>`,
+        template: `<ng-template dir let-data>{{ data }}</ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestCmp {}
@@ -634,7 +635,7 @@ describe('reactivity', () => {
         imports: [WithInputSetter],
         template: `
           <with-input-setter [testInput]="'binding'" />|<with-input-setter testInput="static" />
-      `,
+        `,
       })
       class Cmp {}
 
@@ -830,10 +831,10 @@ describe('reactivity', () => {
           selector: 'driver-cmp',
           imports: [TestCmp],
           template: `
-          @if (cond) {
-            <test-cmp />
-          }
-        `,
+            @if (cond) {
+              <test-cmp />
+            }
+          `,
         })
         class DriverCmp {
           cond = false;

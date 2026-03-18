@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
@@ -15,36 +15,37 @@ const NOOP_FILE_WATCHER: ts.FileWatcher = {
 };
 
 export class MockServerHost implements ts.server.ServerHost {
-  constructor(private fs: MockFileSystem) {}
-
   get newLine(): string {
     return '\n';
   }
 
   get useCaseSensitiveFileNames(): boolean {
-    return this.fs.isCaseSensitive();
+    const fs = getFileSystem();
+    return (fs as any).isCaseSensitive ? (fs as any).isCaseSensitive() : false;
   }
 
   readFile(path: string, encoding?: string): string | undefined {
-    return this.fs.readFile(absoluteFrom(path));
+    return getFileSystem().readFile(absoluteFrom(path));
   }
 
   resolvePath(path: string): string {
-    return this.fs.resolve(path);
+    return getFileSystem().resolve(path);
   }
 
   fileExists(path: string): boolean {
     const absPath = absoluteFrom(path);
-    return this.fs.exists(absPath) && this.fs.lstat(absPath).isFile();
+    const fs = getFileSystem();
+    return fs.exists(absPath) && fs.lstat(absPath).isFile();
   }
 
   directoryExists(path: string): boolean {
     const absPath = absoluteFrom(path);
-    return this.fs.exists(absPath) && this.fs.lstat(absPath).isDirectory();
+    const fs = getFileSystem();
+    return fs.exists(absPath) && fs.lstat(absPath).isDirectory();
   }
 
   createDirectory(path: string): void {
-    this.fs.ensureDir(absoluteFrom(path));
+    getFileSystem().ensureDir(absoluteFrom(path));
   }
 
   getExecutingFilePath(): string {

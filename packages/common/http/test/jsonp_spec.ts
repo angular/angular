@@ -6,16 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '../..';
 import {HttpHeaders} from '../src/headers';
 import {
   JSONP_ERR_HEADERS_NOT_SUPPORTED,
   JSONP_ERR_NO_CALLBACK,
   JSONP_ERR_WRONG_METHOD,
   JSONP_ERR_WRONG_RESPONSE_TYPE,
+  JsonpCallbackContext,
   JsonpClientBackend,
 } from '../src/jsonp';
 import {HttpRequest} from '../src/request';
 import {HttpErrorResponse, HttpEventType} from '../src/response';
+import {TestBed} from '@angular/core/testing';
 import {toArray} from 'rxjs/operators';
 
 import {MockDocument} from './jsonp_mock';
@@ -34,9 +37,17 @@ describe('JsonpClientBackend', () => {
   }
 
   beforeEach(() => {
-    home = {};
-    document = new MockDocument();
-    backend = new JsonpClientBackend(home, document);
+    const mockDoc = new MockDocument();
+    TestBed.configureTestingModule({
+      providers: [
+        JsonpClientBackend,
+        {provide: JsonpCallbackContext, useValue: {}},
+        {provide: DOCUMENT, useValue: mockDoc},
+      ],
+    });
+    backend = TestBed.inject(JsonpClientBackend);
+    home = TestBed.inject(JsonpCallbackContext);
+    document = mockDoc;
   });
 
   it('handles a basic request', (done) => {

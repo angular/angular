@@ -78,7 +78,7 @@ class TestEventListener {
   removeEventListener(eventName: string, listener: any, options: any) {}
 }
 
-describe('Zone', function () {
+describe('Zone Browser', function () {
   const rootZone = Zone.current;
   (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
 
@@ -1105,27 +1105,6 @@ describe('Zone', function () {
             logs = [];
             hookSpy = jasmine.createSpy('hook');
             cancelSpy = jasmine.createSpy('cancel');
-          });
-
-          it('should handle child event when addEventListener with capture true', () => {
-            // test capture true
-            zone.run(function () {
-              (document as any).addEventListener('click', docListener, {capture: true});
-              button.addEventListener('click', btnListener);
-            });
-
-            button.dispatchEvent(clickEvent);
-            expect(hookSpy).toHaveBeenCalled();
-
-            expect(logs).toEqual(['document', 'button']);
-            logs = [];
-
-            (document as any).removeEventListener('click', docListener, {capture: true});
-            button.removeEventListener('click', btnListener);
-            expect(cancelSpy).toHaveBeenCalled();
-
-            button.dispatchEvent(clickEvent);
-            expect(logs).toEqual([]);
           });
 
           it('should handle child event when addEventListener with capture true', () => {

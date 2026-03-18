@@ -2,7 +2,11 @@
   <h1>Welcome to Angular's Signal Tutorial!</h1>
   <h2>{{ count() }}</h2>
   <div class="even-odd-indicator {{ isEven() ? 'even' : 'odd' }}">
-    @if (isEven()) { Even } @else { Odd }
+    @if (isEven()) {
+      Even
+    } @else {
+      Odd
+    }
   </div>
   <div class="buttons">
     <button (click)="decrement()">-</button>

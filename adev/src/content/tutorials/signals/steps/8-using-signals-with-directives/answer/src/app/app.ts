@@ -8,17 +8,11 @@ import {HighlightDirective} from './highlight-directive';
     <div>
       <h1>Directive with Signals</h1>
 
-      <div highlight color="blue" [intensity]="0.2">
-        Hover me - Blue highlight
-      </div>
+      <div highlight color="blue" [intensity]="0.2">Hover me - Blue highlight</div>
 
-      <div highlight color="green" [intensity]="0.4">
-        Hover me - Green highlight
-      </div>
+      <div highlight color="green" [intensity]="0.4">Hover me - Green highlight</div>
 
-      <div highlight color="yellow" [intensity]="0.6">
-        Hover me - Yellow highlight
-      </div>
+      <div highlight color="yellow" [intensity]="0.6">Hover me - Yellow highlight</div>
     </div>
   `,
   styleUrl: './app.css',

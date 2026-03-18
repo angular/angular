@@ -11,13 +11,24 @@ ts_project(
 )
 
 ts_project(
+    name = "heading",
+    srcs = ["heading.mts"],
+    visibility = [
+        "//adev/scripts/routes:__subpackages__",
+        "//adev/shared-docs/pipeline:__subpackages__",
+    ],
+)
+
+ts_project(
     name = "shiki",
     srcs = ["shiki.mts"],
     visibility = [
         "//adev/shared-docs/pipeline:__subpackages__",
     ],
     deps = [
+        ":linking",
         "//adev:node_modules/shiki",
+        "//adev:node_modules/typescript",
     ],
 )
 
@@ -33,4 +44,18 @@ ts_project(
 zoneless_jasmine_test(
     name = "linking_test",
     data = [":linking_test_lib"],
+)
+
+ts_project(
+    name = "heading_test_lib",
+    testonly = True,
+    srcs = ["test/heading.spec.mts"],
+    deps = [
+        ":heading",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "heading_test",
+    data = [":heading_test_lib"],
 )

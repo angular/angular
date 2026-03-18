@@ -8,13 +8,11 @@
 import * as i18n from '../../../i18n/i18n_ast';
 import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
+import {tsIgnoreComment} from '../../util';
 
 import {serializeIcuNode} from './icu_serializer';
 import {i18nMetaToJSDoc} from './meta';
 import {formatI18nPlaceholderName, formatI18nPlaceholderNamesInMap} from './util';
-
-/** Closure uses `goog.getMsg(message)` to lookup translations */
-const GOOG_GET_MSG = 'goog.getMsg';
 
 /**
  * Generates a `goog.getMsg()` statement and reassignment. The template:
@@ -100,7 +98,9 @@ export function createGoogleGetMsgStatements(
   // I18N_X = MSG_...;
   const googGetMsgStmt = new o.DeclareVarStmt(
     closureVar.name,
-    o.variable(GOOG_GET_MSG).callFn(args),
+    o.variable('goog').prop('getMsg').callFn(args, null, undefined, [
+      tsIgnoreComment(), // `goog` might not be available externally.
+    ]),
     o.INFERRED_TYPE,
     o.StmtModifier.Final,
   );

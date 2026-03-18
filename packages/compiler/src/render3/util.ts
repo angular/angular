@@ -89,6 +89,10 @@ export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean):
   return shouldForwardDeclare ? o.arrowFn([], values) : values;
 }
 
+export function tsIgnoreComment(): o.LeadingComment {
+  return o.leadingComment('@ts-ignore', true, true);
+}
+
 /**
  * Describes an expression that may have been wrapped in a `forwardRef()` guard.
  *

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
 import {findAngularDecorator, ReflectionHost} from '@angular/compiler-cli/private/migrations';
+import ts from 'typescript';
 import {findLiteralProperty} from '../../utils/typescript/property_name';
 
 /**
@@ -104,25 +104,10 @@ export function isRouterCallExpression(node: ts.CallExpression, typeChecker: ts.
 }
 
 /**
- * Checks whether a node is a call expression to router provide function.
- * Example: provideRoutes(routes)
- */
-export function isRouterProviderCallExpression(
-  node: ts.CallExpression,
-  typeChecker: ts.TypeChecker,
-) {
-  if (ts.isIdentifier(node.expression)) {
-    const moduleSymbol = typeChecker.getSymbolAtLocation(node.expression);
-    return moduleSymbol && moduleSymbol.name === 'provideRoutes';
-  }
-  return false;
-}
-
-/**
  * Checks whether a node is a call expression to provideRouter function.
  * Example: provideRouter(routes)
  */
-export function isProvideRoutesCallExpression(
+export function isProvideRouterCallExpression(
   node: ts.CallExpression,
   typeChecker: ts.TypeChecker,
 ) {

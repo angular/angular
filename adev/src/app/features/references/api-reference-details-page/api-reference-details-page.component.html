@@ -1,5 +1,6 @@
 @if (docContent(); as docContent) {
-  <main docsViewer
+  <main
+    docsViewer
     [docContent]="docContent.contents"
     [hasToc]="true"
     (contentLoaded)="onContentLoaded()"

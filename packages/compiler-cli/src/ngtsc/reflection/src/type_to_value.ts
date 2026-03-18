@@ -78,7 +78,7 @@ export function typeToValue(
       // This is a default import.
       //   import Foo from 'foo';
 
-      if (firstDecl.isTypeOnly) {
+      if (firstDecl.phaseModifier === ts.SyntaxKind.TypeKeyword) {
         // Type-only imports cannot be represented as value.
         return typeOnlyImport(typeNode, firstDecl);
       }
@@ -103,7 +103,7 @@ export function typeToValue(
         return typeOnlyImport(typeNode, firstDecl);
       }
 
-      if (firstDecl.parent.parent.isTypeOnly) {
+      if (firstDecl.parent.parent.phaseModifier === ts.SyntaxKind.TypeKeyword) {
         // The import specifier can't be inside a type-only import clause
         // (e.g. `import type {Foo} from '...')`.
         return typeOnlyImport(typeNode, firstDecl.parent.parent);
@@ -134,7 +134,7 @@ export function typeToValue(
       // The import is a namespace import
       //   import * as Foo from 'foo';
 
-      if (firstDecl.parent.isTypeOnly) {
+      if (firstDecl.parent.phaseModifier === ts.SyntaxKind.TypeKeyword) {
         // Type-only imports cannot be represented as value.
         return typeOnlyImport(typeNode, firstDecl.parent);
       }

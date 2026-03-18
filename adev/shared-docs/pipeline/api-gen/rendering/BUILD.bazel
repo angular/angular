@@ -8,6 +8,7 @@ esbuild(
     external = [
         "jsdom",
         "playwright-core",
+        "typescript",
     ],
     format = "esm",
     output = "bin.mjs",

@@ -53,47 +53,7 @@ export class Search {
     loader: async ({params: query, abortSignal}) => {
       // Until we have a better alternative we debounce by awaiting for a short delay.
       await wait(SEARCH_DELAY, abortSignal);
-
-      return this.client
-        .search([
-          {
-            indexName: this.config.algolia.indexName,
-            params: {
-              query: query,
-              maxValuesPerFacet: MAX_VALUE_PER_FACET,
-              attributesToRetrieve: [
-                'hierarchy.lvl0',
-                'hierarchy.lvl1',
-                'hierarchy.lvl2',
-                'hierarchy.lvl3',
-                'hierarchy.lvl4',
-                'hierarchy.lvl5',
-                'hierarchy.lvl6',
-                'content',
-                'type',
-                'url',
-              ],
-              hitsPerPage: 20,
-              snippetEllipsisText: '…',
-              highlightPreTag: '<ɵ>',
-              highlightPostTag: '</ɵ>',
-              attributesToHighlight: [],
-              attributesToSnippet: [
-                'hierarchy.lvl1:10',
-                'hierarchy.lvl2:10',
-                'hierarchy.lvl3:10',
-                'hierarchy.lvl4:10',
-                'hierarchy.lvl5:10',
-                'hierarchy.lvl6:10',
-                'content:10',
-              ],
-            },
-            type: 'default',
-          },
-        ])
-        .then((response: SearchResponses<unknown>) => {
-          return this.parseResult(response);
-        });
+      return this.searchWithQuery(query);
     },
   });
 
@@ -145,17 +105,23 @@ export class Search {
       const content = hitItem._snippetResult.content;
       const hierarchy = hitItem._snippetResult.hierarchy;
       const category = hitItem.hierarchy?.lvl0 ?? null;
-      const hasSubLabel = hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
+
+      const lvl1Value = hierarchy?.lvl1?.value || hitItem.hierarchy?.lvl1;
+
+      const sublabelSnippet = this.getBestSnippetForMatch(hitItem);
+
+      // If no lvl1, promote sublabel to label to avoid empty titles
+      const label = lvl1Value || sublabelSnippet || '';
+
+      const hasSubLabel = lvl1Value && (hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4);
 
       return {
         id: hitItem.objectID,
         type: hitItem.hierarchy.lvl0 === 'Tutorials' ? 'code' : 'doc',
         url: hitItem.url,
 
-        labelHtml: this.parseLabelToHtml(hitItem._snippetResult.hierarchy?.lvl1?.value ?? ''),
-        subLabelHtml: this.parseLabelToHtml(
-          hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null,
-        ),
+        labelHtml: this.parseLabelToHtml(label),
+        subLabelHtml: this.parseLabelToHtml(hasSubLabel ? sublabelSnippet : null),
         contentHtml: content ? this.parseLabelToHtml(content.value) : null,
         package: category === 'Reference' ? extractPackageNameFromUrl(hitItem.url) : null,
 
@@ -208,6 +174,49 @@ export class Search {
       })
       .join('');
   }
+
+  public searchWithQuery(query: string): Promise<SearchResultItem[] | undefined> {
+    return this.client
+      .search([
+        {
+          indexName: this.config.algolia.indexName,
+          params: {
+            query: query,
+            maxValuesPerFacet: MAX_VALUE_PER_FACET,
+            attributesToRetrieve: [
+              'hierarchy.lvl0',
+              'hierarchy.lvl1',
+              'hierarchy.lvl2',
+              'hierarchy.lvl3',
+              'hierarchy.lvl4',
+              'hierarchy.lvl5',
+              'hierarchy.lvl6',
+              'content',
+              'type',
+              'url',
+            ],
+            hitsPerPage: 20,
+            snippetEllipsisText: '…',
+            highlightPreTag: '<ɵ>',
+            highlightPostTag: '</ɵ>',
+            attributesToHighlight: [],
+            attributesToSnippet: [
+              'hierarchy.lvl1:10',
+              'hierarchy.lvl2:10',
+              'hierarchy.lvl3:10',
+              'hierarchy.lvl4:10',
+              'hierarchy.lvl5:10',
+              'hierarchy.lvl6:10',
+              'content:10',
+            ],
+          },
+          type: 'default',
+        },
+      ])
+      .then((response: SearchResponses<unknown>) => {
+        return this.parseResult(response);
+      });
+  }
 }
 
 function matched(snippet: SnippetResult | undefined): boolean {
@@ -219,16 +228,19 @@ function matched(snippet: SnippetResult | undefined): boolean {
  */
 function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(() => resolve(), ms);
+    let timeout: ReturnType<typeof setTimeout> | undefined;
 
-    signal.addEventListener(
-      'abort',
-      () => {
-        clearTimeout(timeout);
-        reject(new Error('Operation aborted'));
-      },
-      {once: true},
-    );
+    const onAbort = () => {
+      clearTimeout(timeout);
+      reject(new Error('Operation aborted'));
+    };
+
+    timeout = setTimeout(() => {
+      signal.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+
+    signal.addEventListener('abort', onAbort, {once: true});
   });
 }
 

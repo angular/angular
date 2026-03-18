@@ -14,7 +14,7 @@ The layout is as such:
 | Section   | `LView`                                                      | `TView.data`                                               |
 | --------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
 | `HEADER`  | contextual data                                              | mostly `null`                                              |
-| `DECLS`   | DOM, pipe, and local ref instances                           |
+| `DECLS`   | DOM, pipe, and local ref instances                           |                                                            |
 | `VARS`    | binding values                                               | property names                                             |
 | `EXPANDO` | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null` |
 
@@ -55,17 +55,16 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LView` | `TView.data` |
-| ----: | ------- | ------------ |
-
-| `HEADER`
-| `DECLS`
-| 10 | `<div>` | `{type: Element, index: 10, parent: null}`
-| 11 | `#text(Hello )` | `{type: Element, index: 11, parent: tView.data[10]}`
-| 12 | `<b>` | `{type: Element, index: 12, parent: tView.data[10]}`
-| 13 | `#text(World)` | `{type: Element, index: 13, parent: tView.data[12]}`
-| 14 | `#text(!)` | `{type: Element, index: 14, parent: tView.data[10]}`
-| ... | ... | ...
+|    Index | `LView`         | `TView.data`                                         |
+| -------: | --------------- | ---------------------------------------------------- |
+| `HEADER` |                 |                                                      |
+|  `DECLS` |                 |                                                      |
+|       10 | `<div>`         | `{type: Element, index: 10, parent: null}`           |
+|       11 | `#text(Hello )` | `{type: Element, index: 11, parent: tView.data[10]}` |
+|       12 | `<b>`           | `{type: Element, index: 12, parent: tView.data[10]}` |
+|       13 | `#text(World)`  | `{type: Element, index: 13, parent: tView.data[12]}` |
+|       14 | `#text(!)`      | `{type: Element, index: 14, parent: tView.data[10]}` |
+|      ... | ...             | ...                                                  |
 
 NOTE:
 
@@ -109,17 +108,16 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LView` | `TView.data` |
-| ----: | ------- | ------------ |
-
-| `HEADER`
-| `DECLS`
-| 10 | `<div>` | `{type: Element, index: 10, parent: null}`
-| 11 | `#text()` | `{type: Element, index: 11, parent: tView.data[10]}`
-| `VARS`
-| 12 | `'World'` | `'title'`
-| 13 | `'World'` | `null`
-| ... | ... | ...
+|    Index | `LView`   | `TView.data`                                         |
+| -------: | --------- | ---------------------------------------------------- |
+| `HEADER` |           |                                                      |
+|  `DECLS` |           |                                                      |
+|       10 | `<div>`   | `{type: Element, index: 10, parent: null}`           |
+|       11 | `#text()` | `{type: Element, index: 11, parent: tView.data[10]}` |
+|   `VARS` |           |                                                      |
+|       12 | `'World'` | `'title'`                                            |
+|       13 | `'World'` | `null`                                               |
+|      ... | ...       | ...                                                  |
 
 NOTE:
 
@@ -182,20 +180,19 @@ class Tooltip {
 
 The above will create the following layout:
 
-| Index | `LView` | `TView.data` |
-| ----: | ------- | ------------ |
-
-| `HEADER`
-| `DECLS`
-| 10 | `[<child>, ...]` | `{type: Element, index: 10, parent: null}`
-| `VARS`
-| `EXPANDO`
-| 11..18| cumulativeBloom | templateBloom
-| 19 | `new Child()` | `Child`
-| 20 | `new Tooltip()` | `Tooltip`
-| 21 | `'Hello World!'` | `'tooltip'`
-| 22 | `'greeting'` | `'title'`
-| ... | ... | ...
+|     Index | `LView`          | `TView.data`                               |
+| --------: | ---------------- | ------------------------------------------ |
+|  `HEADER` |                  |                                            |
+|   `DECLS` |                  |                                            |
+|        10 | `[<child>, ...]` | `{type: Element, index: 10, parent: null}` |
+|    `VARS` |                  |                                            |
+| `EXPANDO` |                  |                                            |
+|    11..18 | cumulativeBloom  | templateBloom                              |
+|        19 | `new Child()`    | `Child`                                    |
+|        20 | `new Tooltip()`  | `Tooltip`                                  |
+|        21 | `'Hello World!'` | `'tooltip'`                                |
+|        22 | `'greeting'`     | `'title'`                                  |
+|       ... | ...              | ...                                        |
 
 ## `EXPANDO` and Injection
 
@@ -272,24 +269,23 @@ class Child {
 
 The above will create the following layout:
 
-| Index | `LView` | `TView.data` |
-| ----: | ------- | ------------ |
-
-| `HEADER`
-| `DECLS`
-| 10 | `[<child>, ...]` | `{type: Element, index: 10, parent: null, expandoIndex: 11, directivesIndex: 19, providersIndex: 20, viewProvidersIndex: 22, expandoEnd: 23}`
-| `VARS`
-| `EXPANDO`
-| 11..18| cumulativeBloom | templateBloom
-| | _sub-section: `component` and `directives`_
-| 19 | `factory(Child.ɵcmp.factory)`* | `Child`
-| | *sub-section: `providers`_
-| 20 | `factory(ServiceA.ɵprov.factory)`_ | `ServiceA`
-| 22 | `'someServiceBValue'`* | `ServiceB`
-| | *sub-section: `viewProviders`_
-| 22 | `factory(()=> new Service())`_ | `ServiceC`
-| 22 | `factory(()=> directiveInject(ServiceE))`\* | `ServiceD`
-| ... | ... | ...
+|     Index | `LView`                                      | `TView.data`                                                                                                                                  |
+| --------: | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `HEADER` |                                              |                                                                                                                                               |
+|   `DECLS` |                                              |                                                                                                                                               |
+|        10 | `[<child>, ...]`                             | `{type: Element, index: 10, parent: null, expandoIndex: 11, directivesIndex: 19, providersIndex: 20, viewProvidersIndex: 22, expandoEnd: 23}` |
+|    `VARS` |                                              |                                                                                                                                               |
+| `EXPANDO` |                                              |                                                                                                                                               |
+|    11..18 | cumulativeBloom                              | templateBloom                                                                                                                                 |
+|           | _sub-section: `component` and `directives`_  |                                                                                                                                               |
+|        19 | `factory(Child.ɵcmp.factory)`\*              | `Child`                                                                                                                                       |
+|           | _sub-section: `providers`_                   |                                                                                                                                               |
+|        20 | `factory(ServiceA.ɵprov.factory)`\*          | `ServiceA`                                                                                                                                    |
+|        22 | `'someServiceBValue'`\*                      | `ServiceB`                                                                                                                                    |
+|           | _sub-section: `viewProviders`_               |                                                                                                                                               |
+|        22 | `factory(() => new Service())`\*             | `ServiceC`                                                                                                                                    |
+|        22 | `factory(() => directiveInject(ServiceE))`\* | `ServiceD`                                                                                                                                    |
+|       ... | ...                                          | ...                                                                                                                                           |
 
 NOTICE:
 

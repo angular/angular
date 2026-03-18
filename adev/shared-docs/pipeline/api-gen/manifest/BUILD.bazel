@@ -7,6 +7,7 @@ esbuild(
     entry_point = ":index.mts",
     external = [
         "@angular/compiler-cli",
+        "typescript",
     ],
     format = "esm",
     output = "bin.mjs",

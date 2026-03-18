@@ -89,7 +89,7 @@ describe('NodeJSReadonlyFileSystem', () => {
 
   describe('readFileBuffer()', () => {
     it('should delegate to fs.readFileSync()', () => {
-      const buffer = new Buffer('Some contents');
+      const buffer = Buffer.from('Some contents');
       const spy = spyOn(realFs, 'readFileSync').and.returnValue(buffer);
       const result = fs.readFileBuffer(abcPath);
       expect(result).toBe(buffer);

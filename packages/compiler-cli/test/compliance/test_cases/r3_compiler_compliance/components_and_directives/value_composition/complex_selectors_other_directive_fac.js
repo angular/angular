@@ -1,1 +1,5 @@
-OtherDirective.ɵfac = function OtherDirective_Factory(__ngFactoryType__) {return new (__ngFactoryType__ || OtherDirective)(); };
+export class OtherDirective {
+  …
+  static ɵfac = function OtherDirective_Factory(__ngFactoryType__) {return new (__ngFactoryType__ || OtherDirective)(); };
+  …
+}

@@ -1,0 +1,55 @@
+@use '../../../shared/object-tree-explorer/prop-action-btn';
+
+.tag-active,
+.tag-inactive {
+  border-radius: 1rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid;
+}
+
+.tag-active {
+  border-color: var(--green-03);
+}
+
+.tag-inactive {
+  border-color: var(--red-06);
+}
+
+button {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  color: var(--quaternary-contrast);
+
+  &:not([disabled]):hover {
+    color: var(--primary-contrast);
+  }
+
+  &[disabled] {
+    cursor: default;
+    color: var(--quinary-contrast);
+  }
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+
+    &.view-source {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+td {
+  width: 100%;
+}
+
+ng-object-tree-explorer {
+  --ote-padding: 0rem;
+}

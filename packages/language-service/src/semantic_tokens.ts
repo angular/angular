@@ -7,35 +7,37 @@
  */
 
 import {
-  TmplAstElement,
-  TmplAstNode,
-  TmplAstTemplate,
-  TmplAstVisitor,
+  ParseSourceSpan,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
+  TmplAstComponent,
   TmplAstContent,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
+  TmplAstDirective,
+  TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
   TmplAstIcu,
   TmplAstIfBlock,
   TmplAstIfBlockBranch,
   TmplAstLetDeclaration,
+  TmplAstNode,
   TmplAstReference,
   TmplAstSwitchBlock,
   TmplAstSwitchBlockCase,
+  TmplAstSwitchBlockCaseGroup,
+  TmplAstSwitchExhaustiveCheck,
+  TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
   TmplAstUnknownBlock,
   TmplAstVariable,
-  TmplAstComponent,
-  TmplAstDirective,
-  ParseSourceSpan,
+  TmplAstVisitor,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {PotentialDirective} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -170,12 +172,16 @@ class ClassificationVisitor implements TmplAstVisitor {
   visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {}
 
   visitSwitchBlock(block: TmplAstSwitchBlock) {
-    this.visitAll(block.cases);
+    this.visitAll(block.groups);
   }
 
-  visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
+  visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {}
+
+  visitSwitchBlockCaseGroup(block: TmplAstSwitchBlockCaseGroup) {
     this.visitAll(block.children);
   }
+
+  visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck) {}
 
   visitForLoopBlock(block: TmplAstForLoopBlock) {
     this.visitAll(block.children);

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {discardPeriodicTasks, fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, tick} from '@angular/core/testing';
 
 // #docregion basic
 describe('this test', () => {
@@ -26,18 +26,3 @@ describe('this test', () => {
   );
 });
 // #enddocregion
-
-describe('this test', () => {
-  it(
-    'aborts a periodic timer',
-    <any>fakeAsync((): void => {
-      // This timer is scheduled but doesn't need to complete for the
-      // test to pass (maybe it's a timeout for some operation).
-      // Leaving it will cause the test to fail...
-      setInterval(() => {}, 100);
-
-      // Unless we clean it up first.
-      discardPeriodicTasks();
-    }),
-  );
-});

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -496,7 +496,7 @@ function getInheritedUndecoratedCtorDiagnostic(
  * from external files. This is a common scenario for errors in local compilation mode,
  * and so this helper can be used to quickly generate the relevant errors.
  *
- * @param nodeToHighlight Node to be highlighted in teh error message.
+ * @param nodeToHighlight Node to be highlighted in the error message.
  * Will default to value.node if not provided.
  */
 export function assertLocalCompilationUnresolvedConst(

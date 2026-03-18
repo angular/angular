@@ -29,16 +29,31 @@ function expectImportsToContain(content: string, ...importNames: string[]): void
 
 // Helper function to check import declarations with flexible formatting
 function expectImportDeclarationToContain(content: string, ...importNames: string[]): void {
-  // Create individual patterns for each import name with flexible spacing
-  const sortedImports = importNames
-    .sort()
-    .map((name) => `\\s*${name}\\s*`)
-    .join(',');
-  // Create regex pattern that matches import with flexible spacing: import { NgIf } or import {NgIf}
-  const importPattern = new RegExp(
-    `import\\s*\\{${sortedImports}\\}\\s*from\\s*['"]@angular\\/common['"]`,
-  );
-  expect(content).toMatch(importPattern);
+  // Sort the import names to match the sorted order in the actual imports
+  const sortedImports = [...importNames].sort();
+
+  // Match both single-line and multi-line import formats
+  // Pattern matches: import { A, B, C } from '@angular/common'
+  // or: import {\n  A,\n  B,\n  C\n} from '@angular/common'
+  const importRegex = /import\s*\{([^}]+)\}\s*from\s*['"]@angular\/common['"]/;
+  const match = content.match(importRegex);
+
+  expect(match).toBeTruthy('Should have an import from @angular/common');
+
+  // Extract and normalize the imported names
+  const importedNames = match![1]
+    .split(',')
+    .map((name) => name.trim())
+    .filter((name) => name.length > 0)
+    .sort();
+
+  // Check that all expected imports are present
+  for (const expectedImport of sortedImports) {
+    expect(importedNames).toContain(expectedImport);
+  }
+
+  // Check that we have the exact same imports (no extras)
+  expect(importedNames).toEqual(sortedImports);
 }
 
 describe('Common → standalone imports migration', () => {
@@ -1492,6 +1507,41 @@ describe('Common → standalone imports migration', () => {
       expectImportsToContain(content, 'NgFor', 'TitleCasePipe');
       expect(content).not.toContain('CommonModule');
     });
+  });
+  it('should not create duplicate imports when imports already exist', async () => {
+    writeFile(
+      '/comp.ts',
+      dedent`
+        import {Component} from '@angular/core';
+        import {CommonModule, AsyncPipe} from '@angular/common';
+        import {SomeOtherModule} from './some-other-module';
+
+        @Component({
+          selector: 'app-duplicate-test',
+          imports: [CommonModule, AsyncPipe, SomeOtherModule],
+          template: \`<div>{{ data$ | async }}</div>\`
+        })
+        export class DuplicateTestComponent {
+          data$ = Promise.resolve('test');
+        }
+      `,
+    );
+
+    await runMigration();
+    const content = tree.readContent('/comp.ts');
+
+    // Should remove CommonModule and keep AsyncPipe without duplicating it
+    expect(content).not.toContain('CommonModule');
+    expectImportsToContain(content, 'AsyncPipe', 'SomeOtherModule');
+
+    // Verify AsyncPipe appears only once in the imports array
+    const importsMatch = content.match(/imports:\s*\[([\s\S]*?)\]/);
+    expect(importsMatch).toBeTruthy();
+    const importsArray = importsMatch![1];
+    const asyncPipeMatches = importsArray.match(/AsyncPipe/g);
+    expect(asyncPipeMatches?.length).toBe(1);
+
+    expectImportDeclarationToContain(content, 'AsyncPipe');
   });
 
   describe('Robustness and edge cases', () => {

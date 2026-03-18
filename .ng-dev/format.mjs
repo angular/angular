@@ -4,35 +4,6 @@
  * @type { import("@angular/ng-dev").FormatConfig }
  */
 export const format = {
-  'prettier': {
-    'matchers': [
-      '**/*.md',
-      '**/*.{yaml,yml}',
-      '**/*.{js,ts,mjs,mts,cjs,cts,tsx}',
-      'devtools/**/*.{js,ts,mjs,mts,cjs,cts,html,scss}',
-      'integration/**/size.json',
-      // Do not format d.ts files as they are generated
-      '!**/*.d.ts',
-      // Both third_party and .yarn are directories containing copied code which should
-      // not be modified.
-      '!third_party/**',
-      // Do not format the locale files which are checked-in for Google3, but generated using
-      // the `generate-locales-tool` from `packages/common/locales`.
-      '!packages/core/src/i18n/locale_en.ts',
-      '!packages/common/locales/closure-locale.ts',
-      '!packages/common/src/i18n/currencies.ts',
-      // Test cases contain non valid code.
-      '!packages/compiler-cli/test/compliance/test_cases/**/*.{js,ts,mjs,mts,cjs,cts}',
-
-      // Ignore generated javascript file(s)
-      '!.github/actions/deploy-docs-site/main.js',
-
-      // Ignore testing data files for language service
-      '!vscode-ng-language-service/syntaxes/test/data/*.ts',
-
-      // Ignore goldens MD files
-      '!/goldens/**/*.api.md',
-    ],
-  },
+  'prettier': true,
   'buildifier': true,
 };

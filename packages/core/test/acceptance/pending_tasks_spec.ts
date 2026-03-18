@@ -78,6 +78,9 @@ describe('public PendingTasks', () => {
     // stability is delayed until a tick happens
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
     TestBed.inject(ApplicationRef).tick();
+    // Stability is not synchronous after a tick. We wait for a microtask
+    // in case there is a Promise inside tick that requires tick again
+    await Promise.resolve();
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
   });
 

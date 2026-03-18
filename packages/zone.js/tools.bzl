@@ -1,9 +1,9 @@
 """Provides the rollup and dist file generation macro."""
 
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
+load("@bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@devinfra//bazel/jasmine:jasmine.bzl", _jasmine_test = "jasmine_test")
 load("@devinfra//bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@devinfra//bazel/ts_project:index.bzl", "strict_deps_test")

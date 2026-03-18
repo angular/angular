@@ -18,7 +18,7 @@ export interface RowData {
   template: `
     <table class="table table-hover table-striped test-data">
       <tbody>
-        @for(item of data; track item.id) {
+        @for (item of data; track item.id) {
           <tr [class.danger]="item.id === selected">
             <td class="col-md-1">{{ item.id }}</td>
             <td class="col-md-4">

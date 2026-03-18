@@ -16,7 +16,7 @@ export class MatHint {
   template: ``,
 })
 export class MatFormFieldTest {
-  private declare _hintChildren: MatHint[];
+  declare private _hintChildren: MatHint[];
   private _control = true;
   private _somethingElse = false;
 

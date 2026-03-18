@@ -316,7 +316,7 @@ describe('ComponentFactory', () => {
     it('should allow setting inputs on the ComponentRef', () => {
       const inputChangesLog: string[] = [];
 
-      @Component({template: `{{input}}`, standalone: false})
+      @Component({template: `{{ input }}`, standalone: false})
       class DynamicCmp implements OnChanges {
         ngOnChanges(changes: SimpleChanges): void {
           const inChange = changes['input'];
@@ -346,7 +346,7 @@ describe('ComponentFactory', () => {
     });
 
     it('should allow setting mapped inputs on the ComponentRef', () => {
-      @Component({template: `{{input}}`, standalone: false})
+      @Component({template: `{{ input }}`, standalone: false})
       class DynamicCmp {
         @Input('publicName') input: string | undefined;
       }
@@ -383,7 +383,7 @@ describe('ComponentFactory', () => {
 
     it('should mark components for check when setting an input on a ComponentRef', () => {
       @Component({
-        template: `{{input}}`,
+        template: `{{ input }}`,
         changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
@@ -403,7 +403,7 @@ describe('ComponentFactory', () => {
 
     it('should not set input if value is the same as the previous', () => {
       let log: string[] = [];
-      @Component({template: `{{input}}`})
+      @Component({template: `{{ input }}`})
       class DynamicCmp {
         @Input()
         set input(v: string) {
@@ -423,7 +423,7 @@ describe('ComponentFactory', () => {
 
     it('marks parents dirty so component is not "shielded" by a non-dirty OnPush parent', () => {
       @Component({
-        template: `{{input}}`,
+        template: `{{ input }}`,
         selector: 'dynamic',
       })
       class DynamicCmp {

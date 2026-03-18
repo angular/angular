@@ -91,6 +91,10 @@ function createNetlifyUrl(config: ImageLoaderConfig, path?: string) {
     url.searchParams.set('w', config.width.toString());
   }
 
+  if (config.height) {
+    url.searchParams.set('h', config.height.toString());
+  }
+
   // When requesting a placeholder image we ask for a low quality image to reduce the load time.
   // If the quality is specified in the loader config - always use provided value.
   const configQuality = config.loaderParams?.['quality'] ?? config.loaderParams?.['q'];

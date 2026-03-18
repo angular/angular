@@ -45,7 +45,7 @@ class PureFunctionConstant extends GenericKeyFn implements SharedConstantDefinit
   toSharedConstantDeclaration(declName: string, keyExpr: o.Expression): o.Statement {
     const fnParams: o.FnParam[] = [];
     for (let idx = 0; idx < this.numArgs; idx++) {
-      fnParams.push(new o.FnParam('a' + idx));
+      fnParams.push(new o.FnParam('a' + idx, o.DYNAMIC_TYPE));
     }
 
     // We will never visit `ir.PureFunctionParameterExpr`s that don't belong to us, because this

@@ -19,16 +19,15 @@ const imageLoader = {
   imports: [NgOptimizedImage],
   providers: [imageLoader],
   template: `
-      <!-- Image is rendered within threshold range-->
-      <div style="width: 500px; height: 500px">
-        <img ngSrc="/e2e/logo-500w.jpg" width="200" height="200" priority>
-      </div>
-      <!-- Image is rendered too small but ngSrcset set-->
-      <div style="width: 300px; height: 300px">
-        <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority
-            ngSrcset="100w, 200w">
-      </div>
-     `,
+    <!-- Image is rendered within threshold range-->
+    <div style="width: 500px; height: 500px">
+      <img ngSrc="/e2e/logo-500w.jpg" width="200" height="200" priority />
+    </div>
+    <!-- Image is rendered too small but ngSrcset set-->
+    <div style="width: 300px; height: 300px">
+      <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority ngSrcset="100w, 200w" />
+    </div>
+  `,
 })
 export class OversizedImageComponentPassing {}
 
@@ -37,10 +36,10 @@ export class OversizedImageComponentPassing {}
   imports: [NgOptimizedImage],
   providers: [imageLoader],
   template: `
-      <!-- Image is rendered too small  -->
-      <div style="width: 300px; height: 300px">
-         <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority disableOptimizedSrcset>
-       </div>
-      `,
+    <!-- Image is rendered too small  -->
+    <div style="width: 300px; height: 300px">
+      <img ngSrc="/e2e/logo-1500w.jpg" width="100" height="100" priority disableOptimizedSrcset />
+    </div>
+  `,
 })
 export class OversizedImageComponentFailing {}

@@ -8,7 +8,13 @@
 
 export {HashLocationStrategy} from './hash_location_strategy';
 export {Location, PopStateEvent} from './location';
-export {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from './location_strategy';
+export {
+  APP_BASE_HREF,
+  LocationStrategy,
+  NoTrailingSlashPathLocationStrategy,
+  PathLocationStrategy,
+  TrailingSlashPathLocationStrategy,
+} from './location_strategy';
 export {
   BrowserPlatformLocation,
   LOCATION_INITIALIZED,

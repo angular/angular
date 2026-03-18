@@ -102,7 +102,10 @@ export function routeReuseIntegrationSuite() {
     it('should emit an event when an outlet gets attached/detached', async () => {
       @Component({
         selector: 'container',
-        template: `<router-outlet (attach)="recordAttached($event)" (detach)="recordDetached($event)"></router-outlet>`,
+        template: `<router-outlet
+          (attach)="recordAttached($event)"
+          (detach)="recordDetached($event)"
+        ></router-outlet>`,
         standalone: false,
       })
       class Container {

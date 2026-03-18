@@ -11,8 +11,8 @@ describe('bla', () => {
     @Component({
       template: `
         <app-component #ref />
-        {{ref.input.ok}}
-        `,
+        {{ ref.input.ok }}
+      `,
     })
     class TestCmp {}
     TestBed.configureTestingModule({

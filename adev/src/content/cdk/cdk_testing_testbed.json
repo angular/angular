@@ -118,12 +118,12 @@
             {
               "name": "waitForTasksOutsideAngular",
               "entryType": "function",
-              "description": "Waits for all scheduled or running async tasks to complete. This allows harness\nauthors to wait for async tasks outside of the Angular zone.",
+              "description": "Waits for all scheduled or running async tasks to complete. This allows harness\nauthors to wait for async tasks outside of the Angular zone.\n\nThis only works when Zone.js is present _and_ patches are applied to the test framework\nby `zone.js/testing` (Jasmine and Jest only) or another script.",
               "generics": [],
               "isNewType": false,
               "jsdocTags": [],
               "params": [],
-              "rawComment": "/**\n   * Waits for all scheduled or running async tasks to complete. This allows harness\n   * authors to wait for async tasks outside of the Angular zone.\n   */",
+              "rawComment": "/**\n   * Waits for all scheduled or running async tasks to complete. This allows harness\n   * authors to wait for async tasks outside of the Angular zone.\n   *\n   * This only works when Zone.js is present _and_ patches are applied to the test framework\n   * by `zone.js/testing` (Jasmine and Jest only) or another script.\n   */",
               "returnType": "Promise<void>"
             }
           ],
@@ -133,15 +133,15 @@
             "returnType": "Promise<void>",
             "generics": [],
             "name": "waitForTasksOutsideAngular",
-            "description": "Waits for all scheduled or running async tasks to complete. This allows harness\nauthors to wait for async tasks outside of the Angular zone.",
+            "description": "Waits for all scheduled or running async tasks to complete. This allows harness\nauthors to wait for async tasks outside of the Angular zone.\n\nThis only works when Zone.js is present _and_ patches are applied to the test framework\nby `zone.js/testing` (Jasmine and Jest only) or another script.",
             "entryType": "function",
             "jsdocTags": [],
-            "rawComment": "/**\n   * Waits for all scheduled or running async tasks to complete. This allows harness\n   * authors to wait for async tasks outside of the Angular zone.\n   */"
+            "rawComment": "/**\n   * Waits for all scheduled or running async tasks to complete. This allows harness\n   * authors to wait for async tasks outside of the Angular zone.\n   *\n   * This only works when Zone.js is present _and_ patches are applied to the test framework\n   * by `zone.js/testing` (Jasmine and Jest only) or another script.\n   */"
           },
           "entryType": "function",
-          "description": "Waits for all scheduled or running async tasks to complete. This allows harness\nauthors to wait for async tasks outside of the Angular zone.",
+          "description": "Waits for all scheduled or running async tasks to complete. This allows harness\nauthors to wait for async tasks outside of the Angular zone.\n\nThis only works when Zone.js is present _and_ patches are applied to the test framework\nby `zone.js/testing` (Jasmine and Jest only) or another script.",
           "jsdocTags": [],
-          "rawComment": "/**\n   * Waits for all scheduled or running async tasks to complete. This allows harness\n   * authors to wait for async tasks outside of the Angular zone.\n   */",
+          "rawComment": "/**\n   * Waits for all scheduled or running async tasks to complete. This allows harness\n   * authors to wait for async tasks outside of the Angular zone.\n   *\n   * This only works when Zone.js is present _and_ patches are applied to the test framework\n   * by `zone.js/testing` (Jasmine and Jest only) or another script.\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -613,7 +613,7 @@
       "source": {
         "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",
         "startLine": 89,
-        "endLine": 222
+        "endLine": 225
       }
     },
     {

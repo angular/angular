@@ -12,49 +12,49 @@ Pipes — это функции, которые используются для 
 
 Чтобы использовать pipe в шаблоне, включите его в выражение интерполяции. Взгляните на этот пример:
 
-<docs-code language="angular-ts" highlight="[1,5,6]">
+```angular-ts {highlight:[1,5,6]}
 import {UpperCasePipe} from '@angular/common';
 
 @Component({
-...
-template: `{{ loudMessage | uppercase }}`,
-imports: [UpperCasePipe],
+  ...
+  template: `{{ loudMessage | uppercase }}`,
+  imports: [UpperCasePipe],
 })
 export class App {
-loudMessage = 'we think you are doing great!'
+  loudMessage = 'we think you are doing great!'
 }
-</docs-code>
+```
 
 Теперь ваша очередь попробовать:
 
 <docs-workflow>
 
-<docs-step title="Импортируйте pipe LowerCase">
+<docs-step title="Import the `LowerCase` pipe">
 Сначала обновите `app.ts`, добавив импорт `LowerCasePipe` из `@angular/common` на уровне файла.
 
 ```ts
-import { LowerCasePipe } from '@angular/common';
+import {LowerCasePipe} from '@angular/common';
 ```
 
 </docs-step>
 
-<docs-step title="Добавьте pipe в imports">
+<docs-step title="Add the pipe to the template imports">
 Далее обновите массив `imports` в декораторе `@Component()`, добавив туда ссылку на `LowerCasePipe`.
 
-<docs-code language="ts" highlight="[3]">
+```ts {highlight:[3]}
 @Component({
   ...
   imports: [LowerCasePipe]
 })
-</docs-code>
+```
 
 </docs-step>
 
-<docs-step title="Добавьте pipe в шаблон">
+<docs-step title="Add the pipe to the template">
 И наконец, в `app.ts` обновите шаблон, чтобы включить pipe `lowercase`:
 
-```ts
-template: `{{username | lowercase }}`
+```angular-html
+template: `{{ username | lowercase }}`
 ```
 
 </docs-step>

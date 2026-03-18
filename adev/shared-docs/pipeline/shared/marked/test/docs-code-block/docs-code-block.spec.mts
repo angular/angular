@@ -27,10 +27,10 @@ describe('markdown to html', () => {
     expect(codeBlock?.textContent?.trim()).toBe('this is a code block');
   });
 
-  it('should parse all 3 code blocks', () => {
+  it('should parse all 4 code blocks', () => {
     const codeBlocks = markdownDocument.querySelectorAll('.docs-code');
 
-    expect(codeBlocks.length).toBe(3);
+    expect(codeBlocks.length).toBe(4);
   });
 
   it('should deindent code blocks correctly', () => {
@@ -41,5 +41,10 @@ describe('markdown to html', () => {
   it('should handle code blocks without language', () => {
     const codeBlock = markdownDocument.querySelectorAll('.docs-code')[2];
     expect(codeBlock).toBeDefined();
+  });
+
+  it('should parse the hideDollar attribute', () => {
+    const codeBlock = markdownDocument.querySelectorAll('.docs-code')[3];
+    expect(codeBlock.getAttribute('hideDollar')).toBe('true');
   });
 });

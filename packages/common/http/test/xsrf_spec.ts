@@ -55,12 +55,13 @@ describe('HttpXsrfInterceptor', () => {
               startUrl: 'http://sub.example.com/',
             }),
         },
+        HttpClientTestingBackend,
         HttpXsrfInterceptor,
       ],
     });
 
     interceptor = TestBed.inject(HttpXsrfInterceptor);
-    backend = new HttpClientTestingBackend();
+    backend = TestBed.inject(HttpClientTestingBackend);
   });
 
   it('applies XSRF protection to outgoing requests', () => {

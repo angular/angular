@@ -26,7 +26,9 @@ describe('field proxy', () => {
   it('@for over array field should be reactive', () => {
     @Component({
       selector: 'iterate-field',
-      template: `@for (i of f(); track i) { <p>hi</p> }`,
+      template: `@for (i of f(); track i) {
+        <p>hi</p>
+      }`,
       changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class IterateFieldCmp {

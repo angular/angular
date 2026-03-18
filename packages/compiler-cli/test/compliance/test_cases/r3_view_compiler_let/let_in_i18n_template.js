@@ -8,13 +8,14 @@ $r3$.ɵɵdefineComponent({
     /**
      * @suppress {msgDescriptions}
      */
-      const $MSG_ID_WITH_SUFFIX$ = goog.getMsg(" The result is {$interpolation} ", {
+      const $MSG_ID_WITH_SUFFIX$ = /* @ts-ignore */ goog.getMsg(" The result is {$interpolation} ", {
         "interpolation": "\uFFFD0\uFFFD"
       }, {
         original_code: { "interpolation": "{{result}}" }
       });
       $i18n_0$ = $MSG_ID_WITH_SUFFIX$;
     } else {
+      /* @ts-ignore */
       $i18n_0$ = $localize ` The result is ${"\uFFFD0\uFFFD"}:INTERPOLATION: `;
     }
     return [$i18n_0$];

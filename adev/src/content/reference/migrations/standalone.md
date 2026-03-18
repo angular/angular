@@ -16,7 +16,7 @@
 ng generate @angular/core:standalone
 ```
 
-## Перед обновлением
+## Перед обновлением {#before-updating}
 
 Перед использованием схематика убедитесь, что проект:
 
@@ -24,14 +24,14 @@ ng generate @angular/core:standalone
 2. Собирается без ошибок компиляции.
 3. Находится на чистой ветке Git, и вся работа сохранена.
 
-## Опции схематика
+## Опции схематика {#schematic-options}
 
 | Опция  | Подробности                                                                                                                      |
 | :----- | :------------------------------------------------------------------------------------------------------------------------------- |
 | `mode` | Выполняемое преобразование. См. [Режимы миграции](#migration-modes) ниже для подробностей о доступных опциях.                    |
 | `path` | Путь для миграции относительно корня проекта. Вы можете использовать эту опцию для постепенной миграции разделов вашего проекта. |
 
-## Шаги миграции
+## Шаги миграции {#migrations-steps}
 
 Процесс миграции состоит из трех этапов. Вам придется запускать его несколько раз и вручную проверять, что проект
 собирается и работает так, как ожидается.
@@ -51,7 +51,7 @@ ng generate @angular/core:standalone
    используя standalone API).
 4. Запустите любые проверки линтинга и форматирования, исправьте ошибки и зафиксируйте (commit) результат.
 
-## После миграции
+## После миграции {#after-the-migration}
 
 Поздравляем, ваше приложение было переведено на standalone 🎉. Вот несколько дополнительных шагов, которые вы можете
 предпринять сейчас:
@@ -73,7 +73,7 @@ ng generate @angular/core:standalone
 3. Переход на API начальной загрузки (bootstrapping) standalone.
    Вам следует запускать эти миграции в указанном порядке.
 
-### Преобразование объявлений в standalone
+### Преобразование объявлений в standalone {#convert-declarations-to-standalone}
 
 В этом режиме миграция преобразует все компоненты, директивы и пайпы в standalone, удаляя `standalone: false` и добавляя
 зависимости в их массив `imports`.
@@ -89,20 +89,20 @@ ng generate @angular/core:standalone
 // shared.module.ts
 @NgModule({
   imports: [CommonModule],
-  declarations: [GreeterComponent],
-  exports: [GreeterComponent]
+  declarations: [Greeter],
+  exports: [Greeter],
 })
 export class SharedModule {}
 ```
 
 ```angular-ts
-// greeter.component.ts
+// greeter.ts
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
   standalone: false,
 })
-export class GreeterComponent {
+export class Greeter {
   showGreeting = true;
 }
 ```
@@ -112,20 +112,20 @@ export class GreeterComponent {
 ```typescript
 // shared.module.ts
 @NgModule({
-  imports: [CommonModule, GreeterComponent],
-  exports: [GreeterComponent]
+  imports: [CommonModule, Greeter],
+  exports: [Greeter],
 })
 export class SharedModule {}
 ```
 
 ```angular-ts
-// greeter.component.ts
+// greeter.ts
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
-  imports: [NgIf]
+  imports: [NgIf],
 })
-export class GreeterComponent {
+export class Greeter {
   showGreeting = true;
 }
 ```
@@ -154,7 +154,7 @@ export class GreeterComponent {
 // importer.module.ts
 @NgModule({
   imports: [FooComponent, BarPipe],
-  exports: [FooComponent, BarPipe]
+  exports: [FooComponent, BarPipe],
 })
 export class ImporterModule {}
 ```
@@ -176,32 +176,34 @@ export class ImporterModule {}
 
 ```typescript
 // ./app/app.module.ts
-import { NgModule } from '@angular/core';
-import { AppComponent } from './app.component';
+import {NgModule} from '@angular/core';
+import {App} from './app';
 
 @NgModule({
-  declarations: [AppComponent],
-  bootstrap: [AppComponent]
+  declarations: [App],
+  bootstrap: [App],
 })
 export class AppModule {}
 ```
 
 ```typescript
-// ./app/app.component.ts
+// ./app/app.ts
 @Component({
   selector: 'app',
   template: 'hello',
   standalone: false,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 ```typescript
 // ./main.ts
-import { platformBrowser } from '@angular/platform-browser';
-import { AppModule } from './app/app.module';
+import {platformBrowser} from '@angular/platform-browser';
+import {AppModule} from './app/app.module';
 
-platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+platformBrowser()
+  .bootstrapModule(AppModule)
+  .catch((e) => console.error(e));
 ```
 
 **После:**
@@ -212,23 +214,23 @@ platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
 ```
 
 ```typescript
-// ./app/app.component.ts
+// ./app/app.ts
 @Component({
   selector: 'app',
-  template: 'hello'
+  template: 'hello',
 })
-export class AppComponent {}
+export class App {}
 ```
 
 ```typescript
 // ./main.ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {App} from './app';
 
-bootstrapApplication(AppComponent).catch(e => console.error(e));
+bootstrapApplication(App).catch((e) => console.error(e));
 ```
 
-## Распространенные проблемы
+## Распространенные проблемы {#common-problems}
 
 Некоторые распространенные проблемы, которые могут помешать правильной работе схематика, включают:
 
@@ -240,7 +242,7 @@ bootstrapApplication(AppComponent).catch(e => console.error(e));
   определить, где внести изменения. Миграция может пропустить любые классы с метаданными, которые невозможно
   проанализировать статически во время сборки.
 
-## Ограничения
+## Ограничения {#limitations}
 
 Из-за размера и сложности миграции существуют некоторые случаи, которые схематик не может обработать:
 

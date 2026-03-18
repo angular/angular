@@ -1,36 +1,34 @@
 # Определение маршрутов
 
-Маршруты служат фундаментальными строительными блоками для навигации в приложении Angular.
+Маршруты являются фундаментальными строительными блоками навигации в приложении Angular.
 
-## Что такое маршруты?
+## Что такое маршруты? {#what-are-routes}
 
-В Angular **маршрут** (route) — это объект, который определяет, какой компонент должен отображаться для конкретного пути
-URL или шаблона, а также дополнительные параметры конфигурации, описывающие, что происходит, когда пользователь
-переходит по этому URL.
+В Angular **маршрут** — это объект, который определяет, какой компонент должен отображаться для определённого URL-пути или шаблона, а также дополнительные параметры конфигурации того, что происходит при переходе пользователя на этот URL.
 
 Вот базовый пример маршрута:
 
 ```ts
-import { AdminPage } from './app-admin/app-admin.component';
+import {AdminPage} from './app-admin';
 
 const adminPage = {
   path: 'admin',
-  component: AdminPage
-}
+  component: AdminPage,
+};
 ```
 
 Для этого маршрута, когда пользователь посещает путь `/admin`, приложение отобразит компонент `AdminPage`.
 
-### Управление маршрутами в вашем приложении
+### Управление маршрутами в приложении {#managing-routes-in-your-application}
 
-В большинстве проектов маршруты определяются в отдельном файле, имя которого содержит `routes`.
+В большинстве проектов маршруты определяются в отдельном файле, в имени которого содержится слово `routes`.
 
 Коллекция маршрутов выглядит следующим образом:
 
 ```ts
-import { Routes } from '@angular/router';
-import { HomePage } from './home-page/home-page.component';
-import { AdminPage } from './about-page/admin-page.component';
+import {Routes} from '@angular/router';
+import {HomePage} from './home-page';
+import {AdminPage} from './about-page';
 
 export const routes: Routes = [
   {
@@ -44,262 +42,136 @@ export const routes: Routes = [
 ];
 ```
 
-Совет: Если вы создали проект с помощью Angular CLI, ваши маршруты определены в `src/app/app.routes.ts`.
+Совет: если вы создали проект с помощью Angular CLI, маршруты определены в файле `src/app/app.routes.ts`.
 
-### Добавление роутера в приложение
+### Добавление маршрутизатора в приложение {#adding-the-router-to-your-application}
 
-При инициализации (bootstrapping) приложения Angular без Angular CLI вы можете передать объект конфигурации, включающий
-массив `providers`.
+При начальной загрузке приложения Angular без Angular CLI можно передать объект конфигурации, содержащий массив `providers`.
 
-Внутри массива `providers` вы можете добавить роутер Angular в ваше приложение, вызвав функцию `provideRouter` с вашими
-маршрутами.
+В массив `providers` можно добавить Angular-маршрутизатор, вызвав функцию `provideRouter` с вашими маршрутами.
 
 ```ts
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {ApplicationConfig} from '@angular/core';
+import {provideRouter} from '@angular/router';
 
-import { routes } from './app.routes';
+import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     // ...
-  ]
+  ],
 };
 ```
 
-## URL-пути маршрутов
+## URL-пути маршрутов {#route-url-paths}
 
-### Статические URL-пути
+### Статические URL-пути {#static-url-paths}
 
-Статические URL-пути относятся к маршрутам с предопределенными путями, которые не меняются в зависимости от динамических
-параметров. Это маршруты, которые точно соответствуют строке `path` и имеют фиксированный результат.
+Статические URL-пути — это маршруты с заранее определёнными путями, которые не меняются в зависимости от динамических параметров. Это маршруты, которые точно совпадают со строкой `path` и имеют фиксированный результат.
 
-Примеры включают:
+Примеры:
 
 - "/admin"
 - "/blog"
 - "/settings/account"
 
-### Определение URL-путей с параметрами маршрута
+### Определение URL-путей с параметрами маршрута {#define-url-paths-with-route-parameters}
 
-Параметризованные URL позволяют определять динамические пути, которые обеспечивают множество URL-адресов для одного и
-того же компонента, динамически отображая данные на основе параметров в URL.
+Параметризованные URL позволяют определять динамические пути, предоставляющие доступ к одному компоненту через несколько URL при динамическом отображении данных на основе параметров в URL.
 
-Вы можете определить этот тип шаблона, добавив параметры в строку `path` маршрута и предваряя каждый параметр символом
-двоеточия (`:`).
+Можно определить такой тип шаблона, добавив параметры в строку `path` маршрута и предварив каждый параметр символом двоеточия (`:`).
 
-ВАЖНО: Параметры отличаются от информации в [строке запроса](https://en.wikipedia.org/wiki/Query_string) URL.
-Узнайте больше о [параметрах запроса в Angular в этом руководстве](/guide/routing/read-route-state#query-parameters).
+IMPORTANT: Параметры отличаются от информации в [строке запроса](https://en.wikipedia.org/wiki/Query_string) URL.
+Подробнее о [параметрах запроса в Angular читайте в этом руководстве](guide/routing/read-route-state#query-parameters).
 
-Следующий пример отображает компонент профиля пользователя на основе `id` пользователя, переданного через URL.
+В следующем примере компонент профиля пользователя отображается на основе идентификатора пользователя, переданного через URL.
 
 ```ts
-import { Routes } from '@angular/router';
-import { UserProfile } from './user-profile/user-profile';
+import {Routes} from '@angular/router';
+import {UserProfile} from './user-profile/user-profile';
 
-const routes: Routes = [
-  { path: 'user/:id', component: UserProfile }
-];
+const routes: Routes = [{path: 'user/:id', component: UserProfile}];
 ```
 
-В этом примере такие URL, как `/user/leeroy` и `/user/jenkins`, отображают компонент `UserProfile`. Этот компонент затем
-может прочитать параметр `id` и использовать его для выполнения дополнительной работы, например, для получения данных.
-См. руководство по [чтению состояния маршрута](/guide/routing/read-route-state) для получения подробной информации о
-чтении параметров маршрута.
+В этом примере URL вида `/user/leeroy` и `/user/jenkins` отображают компонент `UserProfile`. Этот компонент может затем считать параметр `id` и использовать его для выполнения дополнительной работы, например для получения данных. Подробности о чтении параметров маршрута см. в [руководстве по чтению состояния маршрута](guide/routing/read-route-state).
 
 Допустимые имена параметров маршрута должны начинаться с буквы (a-z, A-Z) и могут содержать только:
 
 - Буквы (a-z, A-Z)
 - Цифры (0-9)
-- Подчеркивание (\_)
+- Знак подчёркивания (\_)
 - Дефис (-)
 
-Вы также можете определять пути с несколькими параметрами:
+Также можно определять пути с несколькими параметрами:
 
 ```ts
-import { Routes } from '@angular/router';
-import { UserProfile } from './user-profile/user-profile.component';
-import { SocialMediaFeed } from './user-profile/social–media-feed.component';
+import {Routes} from '@angular/router';
+import {UserProfile} from './user-profile';
+import {SocialMediaFeed} from './social-media-feed';
 
 const routes: Routes = [
-  { path: 'user/:id/:social-media', component: SocialMediaFeed },
-  { path: 'user/:id/', component: UserProfile },
+  {path: 'user/:id/:social-media', component: SocialMediaFeed},
+  {path: 'user/:id/', component: UserProfile},
 ];
 ```
 
-С этим новым путем пользователи могут посетить `/user/leeroy/youtube` и `/user/leeroy/bluesky` и увидеть соответствующие
-ленты социальных сетей на основе параметра для пользователя leeroy.
+С новым путём пользователи могут посещать `/user/leeroy/youtube` и `/user/leeroy/bluesky` и видеть соответствующие ленты социальных сетей на основе параметра для пользователя leeroy.
 
-См. [Чтение состояния маршрута](/guide/routing/read-route-state) для получения подробной информации о чтении параметров
-маршрута.
+Подробности о чтении параметров маршрута см. в [руководстве по чтению состояния маршрута](guide/routing/read-route-state).
 
-### Wildcard-маршруты
+### Символы подстановки (wildcards) {#wildcards}
 
-Когда нужно перехватить все маршруты для определенного пути, решением является wildcard-маршрут (маршрут-шаблон),
-который определяется двойной звездочкой (`**`).
+Когда нужно перехватить все маршруты для определённого пути, решением является маршрут с подстановочным знаком, определяемый двойной звёздочкой (`**`).
 
-Распространенным примером является определение компонента "Страница не найдена".
+Распространённый пример — определение компонента «Страница не найдена».
 
 ```ts
-import { Home } from './home/home.component';
-import { UserProfile } from './user-profile/user-profile.component';
-import { NotFound } from './not-found/not-found.component';
+import {Home} from './home/home';
+import {UserProfile} from './user-profile';
+import {NotFound} from './not-found';
 
 const routes: Routes = [
-  { path: 'home', component: Home },
-  { path: 'user/:id', component: UserProfile },
-  { path: '**', component: NotFound }
+  {path: 'home', component: Home},
+  {path: 'user/:id', component: UserProfile},
+  {path: '**', component: NotFound},
 ];
 ```
 
-В этом массиве маршрутов приложение отображает компонент `NotFound`, когда пользователь посещает любой путь за пределами
-`home` и `user/:id`.
+В этом массиве маршрутов приложение отображает компонент `NotFound`, когда пользователь посещает любой путь за пределами `home` и `user/:id`.
 
-Совет: Wildcard-маршруты обычно помещаются в конец массива маршрутов.
+Совет: маршруты с подстановочными знаками обычно размещаются в конце массива маршрутов.
 
-## Как Angular сопоставляет URL
+## Как Angular сопоставляет URL {#how-angular-matches-urls}
 
-При определении маршрутов важен порядок, так как Angular использует стратегию "побеждает первое совпадение". Это
-означает, что как только Angular находит соответствие URL с `path` маршрута, он прекращает проверку дальнейших
-маршрутов. В результате всегда помещайте более конкретные маршруты перед менее конкретными.
+При определении маршрутов порядок важен, поскольку Angular использует стратегию «первого совпадения». Это означает, что как только Angular сопоставит URL с `path` маршрута, он прекращает проверку остальных маршрутов. В результате всегда размещайте более конкретные маршруты перед менее конкретными.
 
-Следующий пример показывает маршруты, определенные от наиболее конкретных к наименее конкретным:
+В следующем примере маршруты определены от наиболее конкретного к наименее конкретному:
 
 ```ts
 const routes: Routes = [
-  { path: '', component: HomeComponent },              // Пустой путь
-  { path: 'users/new', component: NewUserComponent },  // Статический, наиболее конкретный
-  { path: 'users/:id', component: UserDetailComponent }, // Динамический
-  { path: 'users', component: UsersComponent },        // Статический, менее конкретный
-  { path: '**', component: NotFoundComponent }         // Wildcard - всегда последний
+  {path: '', component: Home}, // Empty path
+  {path: 'users/new', component: NewUser}, // Static, most specific
+  {path: 'users/:id', component: UserDetail}, // Dynamic
+  {path: 'users', component: Users}, // Static, less specific
+  {path: '**', component: NotFound}, // Wildcard - always last
 ];
 ```
 
-Если пользователь посещает `/users/new`, роутер Angular выполнит следующие шаги:
+Если пользователь посещает `/users/new`, Angular-маршрутизатор выполнит следующие шаги:
 
-1. Проверяет `''` — не совпадает.
-1. Проверяет `users/new` — совпадает! Останавливается здесь.
-1. Никогда не достигает `users/:id`, хотя он мог бы совпасть.
-1. Никогда не достигает `users`.
-1. Никогда не достигает `**`.
+1. Проверяет `''` — не совпадает
+1. Проверяет `users/new` — совпадает! Останавливается здесь
+1. Никогда не достигает `users/:id`, хотя мог бы совпасть
+1. Никогда не достигает `users`
+1. Никогда не достигает `**`
 
-## Стратегии загрузки компонентов маршрута
+## Перенаправления {#redirects}
 
-Понимание того, как и когда загружаются компоненты в маршрутизации Angular, имеет решающее значение для создания
-отзывчивых веб-приложений. Angular предлагает две основные стратегии для управления поведением загрузки компонентов:
-
-1. **Загружаемые сразу (Eagerly loaded)**: Компоненты, которые загружаются немедленно.
-2. **Ленивая загрузка (Lazily loaded)**: Компоненты загружаются только тогда, когда они необходимы.
-
-Каждый подход предлагает определенные преимущества для разных сценариев.
-
-### Компоненты с загрузкой сразу (Eagerly loaded)
-
-Когда вы определяете маршрут со свойством `component`, указанный компонент загружается сразу (eagerly) как часть того же
-JavaScript-бандла, что и конфигурация маршрута.
+Можно определить маршрут, который перенаправляет на другой маршрут вместо отображения компонента:
 
 ```ts
-import { Routes } from "@angular/router";
-import { HomePage } from "./components/home/home-page"
-import { LoginPage } from "./components/auth/login-page"
-
-export const routes: Routes = [
-  // HomePage и LoginPage напрямую указаны в этой конфигурации,
-  // поэтому их код сразу включается в тот же JavaScript-бандл, что и этот файл.
-  {
-    path: "",
-    component: HomePage
-  },
-  {
-    path: "login",
-    component: LoginPage
-  }
-]
-```
-
-Загрузка компонентов маршрута сразу означает, что браузер должен загрузить и разобрать весь JavaScript для этих
-компонентов как часть начальной загрузки страницы, но компоненты становятся доступны Angular немедленно.
-
-Хотя включение большего количества JavaScript в начальную загрузку страницы приводит к увеличению времени начальной
-загрузки, это может обеспечить более плавные переходы по мере навигации пользователя по приложению.
-
-### Компоненты с ленивой загрузкой (Lazily loaded)
-
-Вы можете использовать свойство `loadComponent` для ленивой загрузки JavaScript для маршрута только в тот момент, когда
-этот маршрут становится активным.
-
-```ts
-import { Routes } from "@angular/router";
-
-export const routes: Routes = [
-  // Компоненты HomePage и LoginPage загружаются лениво в тот момент,
-  // когда соответствующие им маршруты становятся активными.
-  {
-    path: 'login',
-    loadComponent: () => import('./components/auth/login-page').then(m => m.LoginPage)
-  },
-  {
-    path: '',
-    loadComponent: () => import('./components/home/home-page').then(m => m.HomePage)
-  }
-]
-```
-
-Свойство `loadComponent` принимает функцию-загрузчик, которая возвращает Promise, разрешающийся в компонент Angular. В
-большинстве случаев эта функция использует
-стандартный [JavaScript dynamic import API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import).
-Однако вы можете использовать любую произвольную асинхронную функцию-загрузчик.
-
-Ленивая загрузка маршрутов может значительно улучшить скорость загрузки вашего приложения Angular за счет удаления
-больших частей JavaScript из начального бандла. Эти части вашего кода компилируются в отдельные "чанки" (фрагменты)
-JavaScript, которые роутер запрашивает только тогда, когда пользователь посещает соответствующий маршрут.
-
-### Ленивая загрузка в контексте внедрения (Injection context)
-
-Роутер выполняет `loadComponent` и `loadChildren` внутри **контекста внедрения текущего маршрута**, что позволяет
-вызывать `inject` внутри этих функций-загрузчиков для доступа к провайдерам, объявленным в этом маршруте, унаследованным
-от родительских маршрутов через иерархическое внедрение зависимостей, или доступным глобально. Это обеспечивает ленивую
-загрузку с учетом контекста.
-
-```ts
-import { Routes } from '@angular/router';
-import { inject } from '@angular/core';
-import { FeatureFlags } from './feature-flags';
-
-export const routes: Routes = [
-  {
-    path: 'dashboard',
-    // Запускается внутри контекста внедрения маршрута
-    loadComponent: () => {
-      const flags = inject(FeatureFlags);
-      return flags.isPremium
-        ? import('./dashboard/premium-dashboard').then(m => m.PremiumDashboard)
-        : import('./dashboard/basic-dashboard').then(m => m.BasicDashboard);
-    },
-  },
-];
-```
-
-### Использовать обычную (eager) или ленивую (lazy) загрузку маршрута?
-
-Существует множество факторов, которые следует учитывать при принятии решения о том, должен ли маршрут быть eager или
-lazy.
-
-В целом, загрузка сразу (eager loading) рекомендуется для основных целевых страниц, в то время как другие страницы лучше
-загружать лениво.
-
-Примечание: Хотя ленивые маршруты имеют преимущество в производительности при начальной загрузке за счет уменьшения
-объема данных, запрашиваемых пользователем, это добавляет будущие запросы данных, которые могут быть нежелательными. Это
-особенно актуально при работе с вложенной ленивой загрузкой на нескольких уровнях, что может существенно повлиять на
-производительность.
-
-## Перенаправления (Redirects)
-
-Вы можете определить маршрут, который перенаправляет на другой маршрут вместо отображения компонента:
-
-```ts
-import { BlogComponent } from './home/blog.component';
+import {Blog} from './home/blog';
 
 const routes: Routes = [
   {
@@ -308,228 +180,196 @@ const routes: Routes = [
   },
   {
     path: 'blog',
-    component: BlogComponent
+    component: Blog,
   },
 ];
 ```
 
-Если вы измените или удалите маршрут, некоторые пользователи все еще могут переходить по устаревшим ссылкам или
-закладкам на этот маршрут. Вы можете добавить перенаправление, чтобы направить этих пользователей на соответствующий
-альтернативный маршрут вместо страницы "не найдено".
+Если вы изменили или удалили маршрут, некоторые пользователи могут по-прежнему переходить по устаревшим ссылкам или закладкам на этот маршрут. Можно добавить перенаправление, чтобы направить этих пользователей на подходящий альтернативный маршрут вместо страницы «не найдено».
 
-## Заголовки страниц
+## Заголовки страниц {#page-titles}
 
-Вы можете связать **заголовок** (title) с каждым маршрутом. Angular автоматически
-обновляет [заголовок страницы](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title) при активации маршрута.
-Всегда определяйте соответствующие заголовки страниц для вашего приложения, так как они необходимы для обеспечения
-доступности.
+Каждому маршруту можно сопоставить **заголовок**. Angular автоматически обновляет [заголовок страницы](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title) при активации маршрута. Всегда определяйте подходящие заголовки страниц для своего приложения, так как они необходимы для обеспечения доступности.
 
 ```ts
-import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
-import { ProductsComponent } from './products/products.component';
+import {Routes} from '@angular/router';
+import {Home} from './home';
+import {About} from './about';
+import {Products} from './products';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
-    title: 'Home Page'
+    component: Home,
+    title: 'Home Page',
   },
   {
     path: 'about',
-    component: AboutComponent,
-    title: 'About Us'
+    component: About,
+    title: 'About Us',
   },
 ];
 ```
 
-Свойство `title` страницы может быть установлено динамически с помощью функции-resolver'а, используя [
-`ResolveFn`](/api/router/ResolveFn).
+Свойство `title` страницы может быть динамически задано через функцию resolver с использованием [`ResolveFn`](/api/router/ResolveFn).
 
 ```ts
 const titleResolver: ResolveFn<string> = (route) => route.queryParams['id'];
 const routes: Routes = [
-   ...
-  {
+  ...{
     path: 'products',
-    component: ProductsComponent,
+    component: Products,
     title: titleResolver,
-  }
+  },
 ];
-
 ```
 
-Заголовки маршрутов также могут быть установлены через сервис, расширяющий абстрактный класс [
-`TitleStrategy`](/api/router/TitleStrategy). По умолчанию Angular использует [
-`DefaultTitleStrategy`](/api/router/DefaultTitleStrategy).
+Заголовки маршрутов также можно задавать через сервис, расширяющий абстрактный класс [`TitleStrategy`](/api/router/TitleStrategy). По умолчанию Angular использует [`DefaultTitleStrategy`](/api/router/DefaultTitleStrategy).
 
-### Использование TitleStrategy для заголовков страниц
+### Использование TitleStrategy для заголовков страниц {#using-titlestrategy-for-page-titles}
 
-Для продвинутых сценариев, где нужен централизованный контроль над тем, как формируется заголовок документа, реализуйте
-`TitleStrategy`.
+Для сценариев, где требуется централизованное управление тем, как формируется заголовок документа, реализуйте `TitleStrategy`.
 
-`TitleStrategy` — это токен, который вы можете предоставить для переопределения стратегии заголовков по умолчанию,
-используемой Angular. Вы можете предоставить пользовательский `TitleStrategy` для реализации таких соглашений, как
-добавление суффикса приложения, форматирование заголовков из навигационных цепочек (breadcrumbs) или динамическая
-генерация заголовков из данных маршрута.
+`TitleStrategy` — это токен, который можно предоставить для переопределения стратегии заголовков по умолчанию, используемой Angular. Можно предоставить собственный `TitleStrategy` для реализации соглашений, таких как добавление суффикса приложения, форматирование заголовков из хлебных крошек или динамическая генерация заголовков из данных маршрута.
 
 ```ts
-import { Injectable } from '@angular/core';
-import { Title } from '@angular/platform-browser';
-import { TitleStrategy, RouterStateSnapshot } from '@angular/router';
+import {inject, Injectable} from '@angular/core';
+import {Title} from '@angular/platform-browser';
+import {TitleStrategy, RouterStateSnapshot} from '@angular/router';
 
 @Injectable()
 export class AppTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
 
   updateTitle(snapshot: RouterStateSnapshot): void {
-    // PageTitle равен "Title" маршрута, если он установлен
-    // Если он не установлен, будет использоваться "title", указанный в index.html
+    // PageTitle is equal to the "Title" of a route if it's set
+    // If its not set it will use the "title" given in index.html
     const pageTitle = this.buildTitle(snapshot) || this.title.getTitle();
     this.title.setTitle(`MyAwesomeApp - ${pageTitle}`);
   }
 }
 ```
 
-Чтобы использовать пользовательскую стратегию, предоставьте ее с токеном `TitleStrategy` на уровне приложения:
+Чтобы использовать пользовательскую стратегию, предоставьте её через токен `TitleStrategy` на уровне приложения:
 
 ```ts
-import { provideRouter, TitleStrategy } from '@angular/router';
-import { AppTitleStrategy } from './app-title.strategy';
+import {provideRouter, TitleStrategy} from '@angular/router';
+import {AppTitleStrategy} from './app-title.strategy';
 
 export const appConfig = {
-  providers: [
-    provideRouter(routes),
-    { provide: TitleStrategy, useClass: AppTitleStrategy },
-  ],
+  providers: [provideRouter(routes), {provide: TitleStrategy, useClass: AppTitleStrategy}],
 };
 ```
 
-## Провайдеры уровня маршрута для внедрения зависимостей
+## Провайдеры на уровне маршрута для внедрения зависимостей {#route-level-providers-for-dependency-injection}
 
-У каждого маршрута есть свойство `providers`, которое позволяет предоставлять зависимости для контента этого маршрута
-через [внедрение зависимостей](/guide/di).
+Каждый маршрут имеет свойство `providers`, которое позволяет предоставлять зависимости содержимому этого маршрута через [внедрение зависимостей](/guide/di).
 
-Распространенные сценарии, где это может быть полезно, включают приложения, которые имеют разные сервисы в зависимости
-от того, является ли пользователь администратором или нет.
+Распространённые сценарии, где это полезно, включают приложения с различными сервисами в зависимости от того, является ли пользователь администратором или нет.
 
 ```ts
 export const ROUTES: Route[] = [
   {
     path: 'admin',
-    providers: [
-      AdminService,
-      {provide: ADMIN_API_KEY, useValue: '12345'},
-    ],
+    providers: [AdminService, {provide: ADMIN_API_KEY, useValue: '12345'}],
     children: [
-      {path: 'users', component: AdminUsersComponent},
-      {path: 'teams', component: AdminTeamsComponent},
+      {path: 'users', component: AdminUsers},
+      {path: 'teams', component: AdminTeams},
     ],
   },
-  // ... другие маршруты приложения, которые не имеют
-  //     доступа к ADMIN_API_KEY или AdminService.
+  // ... other application routes that don't
+  //     have access to ADMIN_API_KEY or AdminService.
 ];
 ```
 
-В этом примере кода путь `admin` содержит защищенное свойство данных `ADMIN_API_KEY`, которое доступно только дочерним
-элементам в его секции. В результате никакие другие пути не смогут получить доступ к данным, предоставленным через
-`ADMIN_API_KEY`.
+В этом примере кода путь `admin` содержит защищённое свойство данных `ADMIN_API_KEY`, доступное только дочерним элементам в его разделе. В результате никакие другие пути не смогут получить доступ к данным, предоставленным через `ADMIN_API_KEY`.
 
-См. [Руководство по внедрению зависимостей](/guide/di) для получения дополнительной информации о провайдерах и внедрении
-в Angular.
+Дополнительные сведения о провайдерах и внедрении в Angular см. в [руководстве по внедрению зависимостей](/guide/di).
 
-## Связывание данных с маршрутами
+## Связывание данных с маршрутами {#associating-data-with-routes}
 
-Данные маршрута позволяют прикреплять дополнительную информацию к маршрутам. Вы можете настраивать поведение компонентов
-на основе этих данных.
+Данные маршрута позволяют прикреплять дополнительную информацию к маршрутам. Можно настраивать поведение компонентов на основе этих данных.
 
-Существует два способа работы с данными маршрута: статические данные, которые остаются постоянными, и динамические
-данные, которые могут меняться в зависимости от условий выполнения.
+Существуют два способа работы с данными маршрута: статические данные, которые остаются неизменными, и динамические данные, которые могут изменяться в зависимости от условий выполнения.
 
-### Статические данные
+### Статические данные {#static-data}
 
-Вы можете связать произвольные статические данные с маршрутом через свойство `data`, чтобы централизовать такие вещи,
-как метаданные, специфичные для маршрута (например, отслеживание аналитики, разрешения и т. д.):
+Произвольные статические данные можно связать с маршрутом через свойство `data`, чтобы централизовать такие вещи, как метаданные конкретного маршрута (например, отслеживание аналитики, права доступа и т.д.):
 
 ```ts
-import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
-import { ProductsComponent } from './products/products.component';
+import {Routes} from '@angular/router';
+import {Home} from './home';
+import {About} from './about';
+import {Products} from './products';
 
 const routes: Routes = [
   {
     path: 'about',
-    component: AboutComponent,
-    data: { analyticsId: '456' }
+    component: About,
+    data: {analyticsId: '456'},
   },
   {
     path: '',
-    component: HomeComponent,
-    data: { analyticsId: '123' }
-  }
+    component: Home,
+    data: {analyticsId: '123'},
+  },
 ];
 ```
 
-В этом примере кода главная страница и страница "О нас" настроены с конкретным `analyticsId`, который затем будет
-использоваться в их соответствующих компонентах для аналитики отслеживания страниц.
+В этом примере кода главная страница и страница «О нас» настроены с конкретным `analyticsId`, который затем используется в соответствующих компонентах для аналитики просмотров страниц.
 
-Вы можете прочитать эти статические данные, внедрив `ActivatedRoute`.
-См. [Чтение состояния маршрута](/guide/routing/read-route-state) для подробностей.
+Прочитать эти статические данные можно путём внедрения `ActivatedRoute`. Подробности см. в [руководстве по чтению состояния маршрута](guide/routing/read-route-state).
 
-### Динамические данные с помощью resolver'ов данных
+### Динамические данные с помощью Resolver-ов данных {#dynamic-data-with-data-resolvers}
 
-Когда вам нужно предоставить динамические данные маршруту, ознакомьтесь
-с [руководством по resolver'ам данных маршрута](/guide/routing/data-resolvers).
+Когда нужно предоставить динамические данные маршруту, ознакомьтесь с [руководством по Resolver-ам данных маршрута](guide/routing/data-resolvers).
 
-## Вложенные маршруты
+## Вложенные маршруты {#nested-routes}
 
-Вложенные маршруты, также известные как дочерние маршруты, являются распространенным методом управления более сложными
-маршрутами навигации, где компонент имеет под-представление (sub-view), которое меняется в зависимости от URL.
+Вложенные маршруты, также известные как дочерние маршруты, — это распространённый способ управления более сложными маршрутами навигации, когда компонент имеет подпредставление, изменяющееся в зависимости от URL.
 
-<img alt="Диаграмма, иллюстрирующая вложенные маршруты" src="assets/images/guide/router/nested-routing-diagram.svg">
+<img alt="Diagram to illustrate nested routes" src="assets/images/guide/router/nested-routing-diagram.svg">
 
-Вы можете добавить дочерние маршруты к любому определению маршрута с помощью свойства `children`:
+Можно добавить дочерние маршруты к любому определению маршрута с помощью свойства `children`:
 
 ```ts
 const routes: Routes = [
   {
     path: 'product/:id',
-    component: ProductComponent,
+    component: Product,
     children: [
       {
         path: 'info',
-        component: ProductInfoComponent
+        component: ProductInfo,
       },
       {
         path: 'reviews',
-        component: ProductReviewsComponent
-      }
-    ]
-  }
-]
+        component: ProductReviews,
+      },
+    ],
+  },
+];
 ```
 
-Приведенный выше пример определяет маршрут для страницы продукта, который позволяет пользователю менять отображение
-информации о продукте или отзывов в зависимости от URL.
+Приведённый пример определяет маршрут для страницы продукта, который позволяет пользователю переключаться между отображением информации о продукте или отзывов в зависимости от URL.
 
 Свойство `children` принимает массив объектов `Route`.
 
-Чтобы отобразить дочерние маршруты, родительский компонент (`ProductComponent` в примере выше) включает свой собственный
-`<router-outlet>`.
+Для отображения дочерних маршрутов родительский компонент (`Product` в примере выше) включает собственный `<router-outlet>`.
 
 ```angular-html
-<!-- ProductComponent -->
+<!-- Product -->
 <article>
   <h1>Product {{ id }}</h1>
   <router-outlet />
 </article>
 ```
 
-После добавления дочерних маршрутов в конфигурацию и добавления `<router-outlet>` в компонент, навигация между
-URL-адресами, соответствующими дочерним маршрутам, обновляет только вложенный outlet.
+После добавления дочерних маршрутов в конфигурацию и добавления `<router-outlet>` в компонент навигация между URL-адресами, соответствующими дочерним маршрутам, обновляет только вложенный outlet.
 
-## Следующие шаги
+## Следующие шаги {#next-steps}
 
-Узнайте, как [отображать содержимое ваших маршрутов с помощью Outlets](/guide/routing/show-routes-with-outlets).
+<docs-pill-row>
+  <docs-pill href="guide/routing/loading-strategies" title="Стратегии загрузки маршрутов"/>
+  <docs-pill href="guide/routing/show-routes-with-outlets" title="Отображение содержимого маршрутов с помощью Outlet-ов"/>
+</docs-pill-row>

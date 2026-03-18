@@ -133,7 +133,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
 
   function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
     const r = o.variable('__ngConditionalFactory__');
-    body.push(new o.DeclareVarStmt(r.name, o.NULL_EXPR, o.INFERRED_TYPE));
+    body.push(new o.DeclareVarStmt(r.name, o.NULL_EXPR, o.DYNAMIC_TYPE));
     const ctorStmt =
       ctorExpr !== null
         ? r.set(ctorExpr).toStmt()
@@ -188,7 +188,13 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     // There is a base factory variable so wrap its declaration along with the factory function into
     // an IIFE.
     factoryFn = o
-      .arrowFn([], [new o.DeclareVarStmt(baseFactoryVar.name!), new o.ReturnStatement(factoryFn)])
+      .arrowFn(
+        [],
+        [
+          new o.DeclareVarStmt(baseFactoryVar.name!, undefined, o.DYNAMIC_TYPE),
+          new o.ReturnStatement(factoryFn),
+        ],
+      )
       .callFn([], /* sourceSpan */ undefined, /* pure */ true);
   }
 

@@ -15,7 +15,7 @@ const ngImport = ts.factory.createIdentifier('ngImport');
 describe('LinkerImportGenerator<TExpression>', () => {
   describe('generateNamespaceImport()', () => {
     it('should error if the import is not `@angular/core`', () => {
-      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
+      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression, ts.TypeNode>(
         new TypeScriptAstFactory(false),
         ngImport,
       );
@@ -30,7 +30,7 @@ describe('LinkerImportGenerator<TExpression>', () => {
     });
 
     it('should return the ngImport expression for `@angular/core`', () => {
-      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
+      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression, ts.TypeNode>(
         new TypeScriptAstFactory(false),
         ngImport,
       );
@@ -47,7 +47,7 @@ describe('LinkerImportGenerator<TExpression>', () => {
 
   describe('generateNamedImport()', () => {
     it('should error if the import is not `@angular/core`', () => {
-      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
+      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression, ts.TypeNode>(
         new TypeScriptAstFactory(false),
         ngImport,
       );
@@ -62,7 +62,7 @@ describe('LinkerImportGenerator<TExpression>', () => {
     });
 
     it('should return a `NamedImport` object containing the ngImport expression', () => {
-      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
+      const generator = new LinkerImportGenerator<ts.Statement, ts.Expression, ts.TypeNode>(
         new TypeScriptAstFactory(false),
         ngImport,
       );

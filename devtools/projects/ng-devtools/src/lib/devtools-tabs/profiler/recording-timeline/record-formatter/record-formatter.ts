@@ -29,8 +29,8 @@ export abstract class RecordFormatter<T> {
   abstract addFrame(nodes: T | T[], elements: ElementProfile[]): number | void;
 
   getLabel(element: ElementProfile): string {
-    if (element.type === 'defer') {
-      return '@defer';
+    if (element.type !== 'element') {
+      return '@' + element.type;
     }
 
     const name = element.directives

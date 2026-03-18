@@ -26,6 +26,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 
 import {FlatNode} from '../component-data-source';
 import {getDirectivesArrayString, getFullNodeNameString} from '../directive-forest-utils';
+import {BlockType} from '../../../../shared/utils/control-flow';
 
 const PADDING_LEFT_STEP = 15; // px
 
@@ -54,6 +55,8 @@ export type NodeTextMatch = {
 export class TreeNodeComponent {
   private readonly renderer = inject(Renderer2);
   private readonly doc = inject(DOCUMENT);
+
+  protected readonly BlockType = BlockType;
 
   protected readonly nodeName = viewChild.required<ElementRef>('nodeName');
 

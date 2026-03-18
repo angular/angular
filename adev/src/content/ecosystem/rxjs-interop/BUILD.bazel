@@ -4,7 +4,6 @@ load("//adev/shared-docs:index.bzl", "generate_guides")
 generate_guides(
     name = "rxjs-interop",
     srcs = glob(["*.md"]),
-    api_manifest = "//adev/src/assets:docs_api_manifest",
     visibility = ["//adev:__subpackages__"],
 )
 

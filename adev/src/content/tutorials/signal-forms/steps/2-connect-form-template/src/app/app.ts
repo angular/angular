@@ -1,5 +1,5 @@
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
-// TODO: Import Field directive from @angular/forms/signals
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+// TODO: Import FormField directive from @angular/forms/signals
 import {form} from '@angular/forms/signals';
 
 interface LoginData {
@@ -12,7 +12,7 @@ interface LoginData {
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
-  // TODO: Add Field to imports array
+  // TODO: Add FormField to imports array
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {

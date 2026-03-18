@@ -39,7 +39,7 @@ describe('internal utilities', () => {
       class Comp {}
 
       @Component({
-        template: `<comp/>`,
+        template: `<comp />`,
         imports: [Comp],
       })
       class App {}
@@ -60,7 +60,7 @@ describe('internal utilities', () => {
       @Component({
         template: `
           @for (current of [1]; track $index) {
-            <comp/>
+            <comp />
           }
         `,
         imports: [Comp],
@@ -110,7 +110,7 @@ describe('internal utilities', () => {
       class Comp {}
 
       @Component({
-        template: `<ng-container #insertionPoint/>`,
+        template: `<ng-container #insertionPoint />`,
       })
       class App {
         @ViewChild('insertionPoint', {read: ViewContainerRef}) vcr!: ViewContainerRef;

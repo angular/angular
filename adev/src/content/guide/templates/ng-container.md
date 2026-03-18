@@ -1,7 +1,6 @@
-# Группировка элементов с помощью ng-container
+# Группировка элементов с ng-container
 
-`<ng-container>` — это специальный элемент в Angular, который группирует несколько элементов вместе или помечает место в
-шаблоне без рендеринга реального элемента в DOM.
+`<ng-container>` — это специальный элемент в Angular, который группирует несколько элементов или отмечает место в шаблоне без отображения реального элемента в DOM.
 
 ```angular-html
 <!-- Component template -->
@@ -21,40 +20,36 @@
 </section>
 ```
 
-Вы можете применять директивы к `<ng-container>` для добавления поведения или конфигурации к части вашего шаблона.
+К `<ng-container>` можно применять директивы для добавления поведения или конфигурации к части шаблона.
 
-Angular игнорирует все привязки атрибутов и слушатели событий, примененные к `<ng-container>`, включая те, что
-применяются через директиву.
+Angular игнорирует все привязки атрибутов и обработчики событий, применённые к `<ng-container>`, включая применённые через директиву.
 
-## Использование `<ng-container>` для отображения динамического контента
+## Использование `<ng-container>` для отображения динамического контента {#using-ng-container-to-display-dynamic-contents}
 
-`<ng-container>` может выступать в качестве заполнителя (placeholder) для рендеринга динамического контента.
+`<ng-container>` может выступать заполнителем для рендеринга динамического контента.
 
-### Рендеринг компонентов
+### Рендеринг компонентов {#rendering-components}
 
-Вы можете использовать встроенную директиву Angular `NgComponentOutlet` для динамического рендеринга компонента в месте
-расположения `<ng-container>`.
+Можно использовать встроенную директиву Angular `NgComponentOutlet` для динамического рендеринга компонента в место расположения `<ng-container>`.
 
 ```angular-ts
 @Component({
   template: `
     <h2>Your profile</h2>
     <ng-container [ngComponentOutlet]="profileComponent()" />
-  `
+  `,
 })
 export class UserProfile {
   isAdmin = input(false);
-  profileComponent = computed(() => this.isAdmin() ? AdminProfile : BasicUserProfile);
+  profileComponent = computed(() => (this.isAdmin() ? AdminProfile : BasicUserProfile));
 }
 ```
 
-В приведенном выше примере директива `NgComponentOutlet` динамически рендерит `AdminProfile` или `BasicUserProfile` в
-месте расположения элемента `<ng-container>`.
+В примере выше директива `NgComponentOutlet` динамически рендерит либо `AdminProfile`, либо `BasicUserProfile` в место расположения элемента `<ng-container>`.
 
-### Рендеринг фрагментов шаблона
+### Рендеринг фрагментов шаблона {#rendering-template-fragments}
 
-Вы можете использовать встроенную директиву Angular `NgTemplateOutlet` для динамического рендеринга фрагмента шаблона в
-месте расположения `<ng-container>`.
+Можно использовать встроенную директиву Angular `NgTemplateOutlet` для динамического рендеринга фрагмента шаблона в место расположения `<ng-container>`.
 
 ```angular-ts
 @Component({
@@ -64,26 +59,23 @@ export class UserProfile {
 
     <ng-template #admin>This is the admin profile</ng-template>
     <ng-template #basic>This is the basic profile</ng-template>
-  `
+  `,
 })
 export class UserProfile {
   isAdmin = input(false);
   adminTemplate = viewChild('admin', {read: TemplateRef});
   basicTemplate = viewChild('basic', {read: TemplateRef});
-  profileTemplate = computed(() => this.isAdmin() ? this.adminTemplate() : this.basicTemplate());
+  profileTemplate = computed(() => (this.isAdmin() ? this.adminTemplate() : this.basicTemplate()));
 }
 ```
 
-В приведенном выше примере директива `ngTemplateOutlet` динамически рендерит один из двух фрагментов шаблона в месте
-расположения элемента `<ng-container>`.
+В примере выше директива `ngTemplateOutlet` динамически рендерит один из двух фрагментов шаблона в место расположения элемента `<ng-container>`.
 
-Для получения дополнительной информации о NgTemplateOutlet
-см. [страницу документации API NgTemplateOutlet](/api/common/NgTemplateOutlet).
+Подробнее о `NgTemplateOutlet` см. на [странице документации NgTemplateOutlet API](api/common/NgTemplateOutlet).
 
-## Использование `<ng-container>` со структурными директивами
+## Использование `<ng-container>` со структурными директивами {#using-ng-container-with-structural-directives}
 
-Вы также можете применять структурные директивы к элементам `<ng-container>`. Распространенными примерами являются
-`ngIf` и `ngFor`.
+Структурные директивы также можно применять к элементам `<ng-container>`. Распространённые примеры включают `ngIf` и `ngFor`.
 
 ```angular-html
 <ng-container *ngIf="permissions == 'admin'">
@@ -97,20 +89,18 @@ export class UserProfile {
 </ng-container>
 ```
 
-## Использование `<ng-container>` для внедрения зависимостей
+## Использование `<ng-container>` для внедрения зависимостей {#using-ng-container-for-injection}
 
-См. руководство по Внедрению зависимостей (Dependency Injection) для получения дополнительной информации о системе DI в
-Angular.
+Подробнее о системе внедрения зависимостей Angular см. в [руководстве по внедрению зависимостей](guide/di).
 
-Когда вы применяете директиву к `<ng-container>`, дочерние элементы могут внедрять эту директиву или все, что она
-предоставляет. Используйте это, когда хотите декларативно предоставить значение определенной части вашего шаблона.
+При применении директивы к `<ng-container>` дочерние элементы могут внедрять директиву или то, что она предоставляет. Используйте это, когда нужно декларативно предоставить значение определённой части шаблона.
 
 ```angular-ts
 @Directive({
   selector: '[theme]',
 })
 export class Theme {
-  // Создаем input, который принимает 'light' или 'dark', по умолчанию 'light'.
+  // Create an input that accepts 'light' or 'dark`, defaulting to 'light'.
   mode = input<'light' | 'dark'>('light');
 }
 ```
@@ -122,5 +112,4 @@ export class Theme {
 </ng-container>
 ```
 
-В приведенном выше примере компоненты `ProfilePic` и `UserBio` могут внедрить директиву `Theme` и применить стили на
-основе ее свойства `mode`.
+В примере выше компоненты `ProfilePic` и `UserBio` могут внедрять директиву `Theme` и применять стили на основе её `mode`.

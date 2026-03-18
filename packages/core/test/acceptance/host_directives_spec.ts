@@ -394,10 +394,9 @@ describe('host directives', () => {
 
     @Component({
       template: `
-        <div
-          dir
-          #firstHost="firstHost"
-          #secondHost="secondHost">{{firstHost.name}} | {{secondHost.name}}</div>
+        <div dir #firstHost="firstHost" #secondHost="secondHost">
+          {{ firstHost.name }} | {{ secondHost.name }}
+        </div>
       `,
       standalone: false,
     })
@@ -1365,8 +1364,11 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: `
-          <button dir (wasClicked)="validSpy($event)" (hasBeenClicked)="invalidSpy($event)"></button>`,
+        template: ` <button
+          dir
+          (wasClicked)="validSpy($event)"
+          (hasBeenClicked)="invalidSpy($event)"
+        ></button>`,
         standalone: false,
       })
       class App {
@@ -1399,11 +1401,11 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: `
-          <button
-            dir
-            (clickOccurred)="validSpy($event)"
-            (hasBeenClicked)="invalidSpy($event)"></button>`,
+        template: ` <button
+          dir
+          (clickOccurred)="validSpy($event)"
+          (hasBeenClicked)="invalidSpy($event)"
+        ></button>`,
         standalone: false,
       })
       class App {
@@ -2301,9 +2303,9 @@ describe('host directives', () => {
         // Note that `[dir]` doesn't match on the `button` on purpose.
         // The wrong behavior would be if the `buttonColor` binding worked on `host-dir`.
         template: `
-              <span dir [buttonColor]="spanValue"></span>
-              <button host-dir [buttonColor]="buttonValue"></button>
-            `,
+          <span dir [buttonColor]="spanValue"></span>
+          <button host-dir [buttonColor]="buttonValue"></button>
+        `,
       })
       class App {
         spanValue = 'spanValue';

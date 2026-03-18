@@ -1,9 +1,9 @@
-/**
+/*!
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
@@ -260,4 +260,39 @@ function getMappedContextSpan(
   return contextSpanStart && contextSpanEnd
     ? {start: contextSpanStart.pos, length: contextSpanEnd.pos - contextSpanStart.pos}
     : undefined;
+}
+
+export function getTokenAtPosition(sourceFile: ts.SourceFile, position: number): ts.Node {
+  let current: ts.Node = sourceFile;
+  while (true) {
+    const child = current
+      .getChildren(sourceFile)
+      .find((c) => c.getStart(sourceFile) <= position && c.getEnd() > position);
+    if (!child || child.kind === ts.SyntaxKind.EndOfFileToken) {
+      return current;
+    }
+    current = child;
+  }
+}
+
+export enum LanguageId {
+  TS = 'typescript',
+  HTML = 'html',
+}
+
+export function isAngularCore(path: string): boolean {
+  return isExternalAngularCore(path) || isInternalAngularCore(path);
+}
+
+export function isExternalAngularCore(path: string): boolean {
+  return /@angular\/core\/.+\.d\.ts$/.test(path);
+}
+
+export function isInternalAngularCore(path: string): boolean {
+  // path in g3
+  return (
+    path.endsWith('angular2/rc/packages/core/index.d.ts') ||
+    // angular/angular repository direct sources
+    path.includes('angular/packages/core/src')
+  );
 }

@@ -8,7 +8,7 @@
 
 import {$} from 'protractor';
 
-import {openTreeBenchmark} from './test_utils';
+import {openTreeBenchmark} from './test_utils.js';
 
 describe('tree benchmark', () => {
   it('should work for createDestroy', async () => {

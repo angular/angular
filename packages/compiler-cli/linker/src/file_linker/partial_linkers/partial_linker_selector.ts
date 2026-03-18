@@ -74,8 +74,8 @@ export interface LinkerRange<TExpression> {
  * `minVersion` of the partial-declaration should be updated, the new linker implementation should
  * be added to the end of the collection, and the version of the previous linker should be updated.
  */
-export function createLinkerMap<TStatement, TExpression>(
-  environment: LinkerEnvironment<TStatement, TExpression>,
+export function createLinkerMap<TStatement, TExpression, TType>(
+  environment: LinkerEnvironment<TStatement, TExpression, TType>,
   sourceUrl: AbsoluteFsPath,
   code: string,
 ): Map<string, LinkerRange<TExpression>[]> {

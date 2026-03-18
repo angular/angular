@@ -1041,7 +1041,7 @@ describe('providers', () => {
     let hostComponent: HostComponent | null = null;
 
     @Component({
-      template: `{{s}}`,
+      template: `{{ s }}`,
       selector: 'embedded-cmp',
     })
     class EmbeddedComponent {

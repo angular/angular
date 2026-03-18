@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {NgtscProgram} from '../../src/ngtsc/program';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
-import {NgtscTestEnvironment} from './env';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
-import {NgtscProgram} from '../../src/ngtsc/program';
-import ts from 'typescript';
+import {NgtscTestEnvironment} from './env';
 
 runInEachFileSystem(() => {
   describe('HMR code generation', () => {
@@ -994,7 +994,7 @@ runInEachFileSystem(() => {
       expect(hmrContents).toContain('export default function Cmp_UpdateMetadata');
     });
 
-    it('should generate an HMR initializer and update function for a class that depends on multiple namespaces', () => {
+    it('should generate an HMR initializer and update function for a class with NodeNext', () => {
       enableHmr(undefined, {
         compilerOptions: {
           module: 'NodeNext',

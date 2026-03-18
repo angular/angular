@@ -1,5 +1,7 @@
 // ...
-MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyComponent {
+  // ...
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     type: MyComponent,
     selectors:[["my-component"]],
     standalone: false,
@@ -16,3 +18,4 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     },
     encapsulation: 2
   });
+}

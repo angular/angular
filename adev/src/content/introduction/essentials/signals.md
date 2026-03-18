@@ -21,14 +21,14 @@ firstName.set('Jaime');
 
 // You can also use the `update` method to change the value
 // based on the previous value.
-firstName.update(name => name.toUpperCase());
+firstName.update((name) => name.toUpperCase());
 ```
 
 Angular отслеживает, где читаются сигналы и когда они обновляются. Фреймворк использует эту информацию для выполнения
 дополнительной работы, такой как обновление DOM новым состоянием. Эта способность реагировать на изменение значений
 сигналов с течением времени известна как _реактивность_.
 
-## Вычисляемые выражения (Computed expressions)
+## Вычисляемые выражения (Computed expressions) {#computed-expressions}
 
 `computed` — это сигнал, который производит свое значение на основе других сигналов.
 
@@ -55,12 +55,14 @@ firstName.set('Jaime');
 console.log(firstNameCapitalized()); // JAIME
 ```
 
-## Использование сигналов в компонентах
+## Использование сигналов в компонентах {#using-signals-in-components}
 
 Используйте `signal` и `computed` внутри ваших компонентов для создания и управления состоянием:
 
-```typescript
-@Component({/* ... */})
+```ts
+@Component({
+  /* ... */
+})
 export class UserProfile {
   isTrial = signal(false);
   isTrialExpired = signal(false);
@@ -75,7 +77,7 @@ export class UserProfile {
 TIP: Хотите узнать больше о сигналах Angular? Смотрите [Углубленное руководство по сигналам](guide/signals) для
 получения полной информации.
 
-## Следующий шаг
+## Следующий шаг {#next-step}
 
 Теперь, когда вы узнали, как объявлять и управлять динамическими данными, пришло время узнать, как использовать эти
 данные внутри шаблонов.

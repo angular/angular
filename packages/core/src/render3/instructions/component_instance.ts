@@ -17,7 +17,7 @@ import {getLView} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵcomponentInstance(): unknown {
+export function ɵɵcomponentInstance(): any {
   const instance = getLView()[DECLARATION_COMPONENT_VIEW][CONTEXT];
   ngDevMode && assertDefined(instance, 'Expected component instance to be defined');
   return instance;

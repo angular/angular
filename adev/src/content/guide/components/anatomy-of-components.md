@@ -1,50 +1,46 @@
 <docs-decorative-header title="Анатомия компонента" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-TIP: Это руководство предполагает, что вы уже прочитали [Руководство по основам](essentials). Прочитайте его первым,
-если вы новичок в Angular.
+СОВЕТ: Это руководство предполагает, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его в первую очередь, если вы новичок в Angular.
 
-Каждый компонент должен иметь:
+Каждый компонент должен содержать:
 
-- Класс TypeScript с _поведением (behaviors)_, таким как обработка пользовательского ввода и получение данных с сервера.
-- HTML-шаблон, который управляет тем, что рендерится в DOM.
-- [CSS-селектор](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors), который определяет, как
-  компонент используется в HTML.
+- Класс TypeScript с _поведением_, например обработку пользовательского ввода и получение данных с сервера
+- HTML-шаблон, управляющий тем, что рендерится в DOM
+- [CSS-селектор](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors), определяющий, как компонент используется в HTML
 
-Вы предоставляете специфичную для Angular информацию для компонента,
-добавляя [декоратор](https://www.typescriptlang.org/docs/handbook/decorators.html) `@Component` поверх класса
-TypeScript:
+Специфичная для Angular информация о компоненте задаётся добавлением декоратора `@Component` на класс TypeScript:
 
 ```angular-ts {highlight: [1, 2, 3, 4]}
 @Component({
   selector: 'profile-photo',
-  template: `<img src="profile-photo.jpg" alt="Your profile photo">`,
+  template: `<img src="profile-photo.jpg" alt="Your profile photo" />`,
 })
-export class ProfilePhoto { }
+export class ProfilePhoto {}
 ```
 
-Для получения полной информации о написании шаблонов Angular, включая привязку данных, обработку событий и управление
-потоком, см. [Руководство по шаблонам](guide/templates).
+Подробное описание синтаксиса Angular-шаблонов, включая привязки данных, обработку событий и управление потоком, см. в [Руководстве по шаблонам](guide/templates).
 
-Объект, переданный в декоратор `@Component`, называется **метаданными** компонента. Сюда входят `selector`, `template` и
-другие свойства, описанные в этом руководстве.
+Объект, передаваемый декоратору `@Component`, называется **метаданными** компонента. В него входят `selector`, `template` и другие свойства, описанные в этом руководстве.
 
-Компоненты могут опционально включать список стилей CSS, которые применяются к DOM этого компонента:
+Компоненты могут опционально включать список CSS-стилей, применяемых к DOM этого компонента:
 
 ```angular-ts {highlight: [4]}
 @Component({
   selector: 'profile-photo',
-  template: `<img src="profile-photo.jpg" alt="Your profile photo">`,
-  styles: `img { border-radius: 50%; }`,
+  template: `<img src="profile-photo.jpg" alt="Your profile photo" />`,
+  styles: `
+    img {
+      border-radius: 50%;
+    }
+  `,
 })
-export class ProfilePhoto { }
+export class ProfilePhoto {}
 ```
 
-По умолчанию стили компонента влияют только на элементы, определенные в шаблоне этого компонента.
-См. [Стилизация компонентов](guide/components/styling) для получения подробной информации о подходе Angular к
-стилизации.
+По умолчанию стили компонента применяются только к элементам, определённым в его шаблоне. Подробнее см. в разделе [Стилизация компонентов](guide/components/styling).
 
-В качестве альтернативы вы можете написать свой шаблон и стили в отдельных файлах:
+Также можно вынести шаблон и стили в отдельные файлы:
 
 ```ts {highlight: [3,4]}
 @Component({
@@ -52,41 +48,37 @@ export class ProfilePhoto { }
   templateUrl: 'profile-photo.html',
   styleUrl: 'profile-photo.css',
 })
-export class ProfilePhoto { }
+export class ProfilePhoto {}
 ```
 
-Это может помочь отделить вопросы _представления (presentation)_ от _поведения (behavior)_ в вашем проекте. Вы можете
-выбрать один подход для всего проекта или решать, какой использовать для каждого компонента.
+Это помогает разделить _представление_ и _поведение_ в вашем проекте. Можно выбрать один подход для всего проекта или решать это для каждого компонента отдельно.
 
-И `templateUrl`, и `styleUrl` являются относительными к каталогу, в котором находится компонент.
+Пути в `templateUrl` и `styleUrl` указываются относительно директории, в которой находится компонент.
 
-## Использование компонентов
+## Использование компонентов {#using-components}
 
-### Импорты в декораторе `@Component`
+### Импорты в декораторе `@Component` {#imports-in-the-component-decorator}
 
-Чтобы использовать компонент, [директиву](guide/directives) или [пайп](guide/templates/pipes), вы должны добавить их в
-массив `imports` в декораторе `@Component`:
+Чтобы использовать компонент, [директиву](guide/directives) или [Pipe](guide/templates/pipes), необходимо добавить
+его в массив `imports` декоратора `@Component`:
 
 ```ts
 import {ProfilePhoto} from './profile-photo';
 
 @Component({
-  // Импортируем компонент `ProfilePhoto`, чтобы
-  // использовать его в шаблоне этого компонента.
+  // Import the `ProfilePhoto` component in
+  // order to use it in this component's template.
   imports: [ProfilePhoto],
   /* ... */
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
-По умолчанию компоненты Angular являются _автономными (standalone)_, что означает, что вы можете напрямую добавлять их в
-массив `imports` других компонентов. Компоненты, созданные с более ранней версией Angular, могут вместо этого указывать
-`standalone: false` в своем декораторе `@Component`. Для этих компонентов вы вместо этого импортируете `NgModule`, в
-котором определен компонент. См. полное [руководство по `NgModule`](guide/ngmodules) для получения подробной информации.
+По умолчанию Angular-компоненты являются _standalone_, то есть их можно напрямую добавить в массив `imports` других компонентов. Компоненты, созданные в более ранних версиях Angular, могут иметь `standalone: false` в своём декораторе `@Component`. Для таких компонентов вместо этого импортируется `NgModule`, в котором определён компонент. Подробнее см. в [Руководстве по NgModule](guide/ngmodules/overview).
 
-Важно: В версиях Angular до 19.0.0 опция `standalone` по умолчанию была `false`.
+Важно: в версиях Angular до 19.0.0 опция `standalone` по умолчанию имеет значение `false`.
 
-### Отображение компонентов в шаблоне
+### Отображение компонентов в шаблоне {#showing-components-in-a-template}
 
 Каждый компонент определяет [CSS-селектор](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors):
 
@@ -98,32 +90,28 @@ export class UserProfile { }
 export class ProfilePhoto { }
 ```
 
-См. [Селекторы компонентов](guide/components/selectors) для получения подробной информации о типах селекторов,
-поддерживаемых Angular, и рекомендаций по выбору селектора.
+Подробнее о поддерживаемых типах селекторов и рекомендациях по их выбору см. в разделе [Селекторы компонентов](guide/components/selectors).
 
-Вы показываете компонент, создавая соответствующий HTML-элемент в шаблоне _других_ компонентов:
+Компонент отображается путём создания соответствующего HTML-элемента в шаблоне _другого_ компонента:
 
 ```angular-ts {highlight: [8]}
 @Component({
   selector: 'profile-photo',
 })
-export class ProfilePhoto { }
+export class ProfilePhoto {}
 
 @Component({
-imports: [ProfilePhoto],
-template: `<profile-photo />`
+  imports: [ProfilePhoto],
+  template: `<profile-photo />`,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
-Angular создает экземпляр компонента для каждого встреченного соответствующего HTML-элемента. DOM-элемент, который
-соответствует селектору компонента, называется **хост-элементом (host element)** этого компонента. Содержимое шаблона
-компонента рендерится внутри его хост-элемента.
+Angular создаёт экземпляр компонента для каждого совпадающего HTML-элемента. DOM-элемент, соответствующий селектору компонента, называется **host-элементом** этого компонента. Содержимое шаблона компонента рендерится внутри его host-элемента.
 
-DOM, отрисованный компонентом, соответствующий шаблону этого компонента, называется **представлением (view)** этого
-компонента.
+DOM, отрисованный компонентом согласно его шаблону, называется **представлением (view)** компонента.
 
-При компоновке компонентов таким образом, **вы можете думать о своем приложении Angular как о дереве компонентов**.
+При такой компоновке компонентов **можно представить Angular-приложение как дерево компонентов**.
 
 ```mermaid
 flowchart TD
@@ -136,5 +124,4 @@ flowchart TD
     E[UserBio]
 ```
 
-Эта древовидная структура важна для понимания нескольких других концепций Angular,
-включая [внедрение зависимостей](guide/di) и [дочерние запросы (child queries)](guide/components/queries).
+Эта древовидная структура важна для понимания ряда других концепций Angular, включая [внедрение зависимостей](guide/di) и [дочерние запросы](guide/components/queries).

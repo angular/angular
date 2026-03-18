@@ -1,22 +1,16 @@
-import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {createNewEvent} from '../../shared/utils';
-import {FavoriteColorTemplateComponent} from './favorite-color.component';
+import {FavoriteColorTemplate} from './favorite-color.component';
 
 describe('FavoriteColorComponent', () => {
-  let component: FavoriteColorTemplateComponent;
-  let fixture: ComponentFixture<FavoriteColorTemplateComponent>;
+  let component: FavoriteColorTemplate;
+  let fixture: ComponentFixture<FavoriteColorTemplate>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [FavoriteColorTemplateComponent],
-    });
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FavoriteColorTemplateComponent);
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(FavoriteColorTemplate);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -24,30 +18,27 @@ describe('FavoriteColorComponent', () => {
   });
 
   // #docregion model-to-view
-  it('should update the favorite color on the input field', fakeAsync(() => {
-    component.favoriteColor = 'Blue';
+  it('should update the favorite color on the input field', async () => {
+    component.favoriteColor.set('Blue');
 
-    fixture.detectChanges();
-
-    tick();
+    await fixture.whenStable();
 
     const input = fixture.nativeElement.querySelector('input');
-
     expect(input.value).toBe('Blue');
-  }));
+  });
   // #enddocregion model-to-view
 
   // #docregion view-to-model
-  it('should update the favorite color in the component', fakeAsync(() => {
+  it('should update the favorite color in the component', async () => {
     const input = fixture.nativeElement.querySelector('input');
     const event = createNewEvent('input');
 
     input.value = 'Red';
     input.dispatchEvent(event);
 
-    fixture.detectChanges();
+    await fixture.whenStable();
 
-    expect(component.favoriteColor).toEqual('Red');
-  }));
+    expect(component.favoriteColor()).toEqual('Red');
+  });
   // #enddocregion view-to-model
 });

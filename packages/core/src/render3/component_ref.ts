@@ -82,6 +82,8 @@ import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
+import {TracingService} from '../application/tracing';
+import {getComponentName} from '../internal/get_closest_component_name';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -169,6 +171,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
 
   const sanitizer = rootLViewInjector.get(Sanitizer, null);
   const changeDetectionScheduler = rootLViewInjector.get(ChangeDetectionScheduler, null);
+  const tracingService = rootLViewInjector.get(TracingService, null, {optional: true});
 
   let ngReflect = false;
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -180,6 +183,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     sanitizer,
     changeDetectionScheduler,
     ngReflect,
+    tracingService,
   };
 }
 
@@ -265,100 +269,128 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     try {
       const cmpDef = this.componentDef;
       ngDevMode && verifyNotAnOrphanComponent(cmpDef);
-
-      const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
       const rootViewInjector = createRootViewInjector(
         cmpDef,
         environmentInjector || this.ngModule,
         injector,
       );
-
       const environment = createRootLViewEnvironment(rootViewInjector);
-      const hostRenderer = environment.rendererFactory.createRenderer(null, cmpDef);
-      const hostElement = rootSelectorOrNode
-        ? locateHostElement(
-            hostRenderer,
-            rootSelectorOrNode,
-            cmpDef.encapsulation,
+      const tracingService = environment.tracingService;
+
+      if (tracingService && tracingService.componentCreate) {
+        return tracingService.componentCreate(getComponentName(cmpDef), () =>
+          this.createComponentRef(
+            environment,
             rootViewInjector,
-          )
-        : createHostElement(cmpDef, hostRenderer);
-      const hasInputBindings =
-        componentBindings?.some(isInputBinding) ||
-        directives?.some((d) => typeof d !== 'function' && d.bindings.some(isInputBinding));
-
-      const rootLView = createLView<T>(
-        null,
-        rootTView,
-        null,
-        LViewFlags.IsRoot | getInitialLViewFlagsFromDef(cmpDef),
-        null,
-        null,
-        environment,
-        hostRenderer,
-        rootViewInjector,
-        null,
-        retrieveHydrationInfo(hostElement, rootViewInjector, true /* isRootView */),
-      );
-
-      rootLView[HEADER_OFFSET] = hostElement;
-
-      // rootView is the parent when bootstrapping
-      // TODO(misko): it looks like we are entering view here but we don't really need to as
-      // `renderView` does that. However as the code is written it is needed because
-      // `createRootComponentView` and `createRootComponent` both read global state. Fixing those
-      // issues would allow us to drop this.
-      enterView(rootLView);
-
-      let componentView: LView | null = null;
-
-      try {
-        const hostTNode = directiveHostFirstCreatePass(
-          HEADER_OFFSET,
-          rootLView,
-          TNodeType.Element,
-          '#host',
-          () => rootTView.directiveRegistry,
-          true,
-          0,
+            projectableNodes,
+            rootSelectorOrNode,
+            directives,
+            componentBindings,
+          ),
         );
-
-        // ---- element instruction
-        setupStaticAttributes(hostRenderer, hostElement, hostTNode);
-        attachPatchData(hostElement, rootLView);
-
-        // TODO(pk): this logic is similar to the instruction code where a node can have directives
-        createDirectivesInstances(rootTView, rootLView, hostTNode);
-        executeContentQueries(rootTView, hostTNode, rootLView);
-        directiveHostEndFirstCreatePass(rootTView, hostTNode);
-
-        if (projectableNodes !== undefined) {
-          projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
-        }
-
-        componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
-
-        // TODO(pk): why do we need this logic?
-        rootLView[CONTEXT] = componentView[CONTEXT] as T;
-
-        renderView(rootTView, rootLView, null);
-      } catch (e) {
-        // Stop tracking the views if creation failed since
-        // the consumer won't have a way to dereference them.
-        if (componentView !== null) {
-          unregisterLView(componentView);
-        }
-        unregisterLView(rootLView);
-        throw e;
-      } finally {
-        profiler(ProfilerEvent.DynamicComponentEnd);
-        leaveView();
+      } else {
+        return this.createComponentRef(
+          environment,
+          rootViewInjector,
+          projectableNodes,
+          rootSelectorOrNode,
+          directives,
+          componentBindings,
+        );
       }
-
-      return new ComponentRef(this.componentType, rootLView, !!hasInputBindings);
     } finally {
       setActiveConsumer(prevConsumer);
     }
+  }
+
+  private createComponentRef(
+    environment: LViewEnvironment,
+    rootViewInjector: Injector,
+    projectableNodes?: any[][] | undefined,
+    rootSelectorOrNode?: any,
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+    componentBindings?: Binding[],
+  ) {
+    const cmpDef = this.componentDef;
+    const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
+
+    const hostRenderer = environment.rendererFactory.createRenderer(null, cmpDef);
+    const hostElement = rootSelectorOrNode
+      ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
+      : createHostElement(cmpDef, hostRenderer);
+    const hasInputBindings =
+      componentBindings?.some(isInputBinding) ||
+      directives?.some((d) => typeof d !== 'function' && d.bindings.some(isInputBinding));
+
+    const rootLView = createLView<T>(
+      null,
+      rootTView,
+      null,
+      LViewFlags.IsRoot | getInitialLViewFlagsFromDef(cmpDef),
+      null,
+      null,
+      environment,
+      hostRenderer,
+      rootViewInjector,
+      null,
+      retrieveHydrationInfo(hostElement, rootViewInjector, true /* isRootView */),
+    );
+
+    rootLView[HEADER_OFFSET] = hostElement;
+
+    // rootView is the parent when bootstrapping
+    // TODO(misko): it looks like we are entering view here but we don't really need to as
+    // `renderView` does that. However as the code is written it is needed because
+    // `createRootComponentView` and `createRootComponent` both read global state. Fixing those
+    // issues would allow us to drop this.
+    enterView(rootLView);
+
+    let componentView: LView | null = null;
+
+    try {
+      const hostTNode = directiveHostFirstCreatePass(
+        HEADER_OFFSET,
+        rootLView,
+        TNodeType.Element,
+        '#host',
+        () => rootTView.directiveRegistry,
+        true,
+        0,
+      );
+
+      // ---- element instruction
+      setupStaticAttributes(hostRenderer, hostElement, hostTNode);
+      attachPatchData(hostElement, rootLView);
+
+      // TODO(pk): this logic is similar to the instruction code where a node can have directives
+      createDirectivesInstances(rootTView, rootLView, hostTNode);
+      executeContentQueries(rootTView, hostTNode, rootLView);
+      directiveHostEndFirstCreatePass(rootTView, hostTNode);
+
+      if (projectableNodes !== undefined) {
+        projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
+      }
+
+      componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
+
+      // TODO(pk): why do we need this logic?
+      rootLView[CONTEXT] = componentView[CONTEXT] as T;
+
+      renderView(rootTView, rootLView, null);
+    } catch (e) {
+      // Stop tracking the views if creation failed since
+      // the consumer won't have a way to dereference them.
+      if (componentView !== null) {
+        unregisterLView(componentView);
+      }
+      unregisterLView(rootLView);
+      throw e;
+    } finally {
+      profiler(ProfilerEvent.DynamicComponentEnd);
+      leaveView();
+    }
+
+    return new ComponentRef(this.componentType, rootLView, !!hasInputBindings);
   }
 }
 

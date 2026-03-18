@@ -13,7 +13,7 @@ props) компонентов из других фреймворков, то inp
 
 <docs-workflow>
 
-<docs-step title="Добавление input-сигналов в ProductCard">
+<docs-step title="Add signal inputs to ProductCard">
 Добавьте функции сигналов `input()` для получения данных в компоненте `product-card`.
 
 ```ts
@@ -30,14 +30,15 @@ available = input<boolean>(true);
 `input()` со значением по умолчанию является необязательным.
 </docs-step>
 
-<docs-step title="Подключение input'ов к шаблону">
+<docs-step title="Connect inputs to the template">
 Обновите шаблон в `product-card`, чтобы отобразить значения input-сигналов.
 
 ```angular-html
 <div class="product-card">
   <h3>{{ name() }}</h3>
   <p class="price">\${{ price() }}</p>
-  <p class="status">Status:
+  <p class="status">
+    Status:
     @if (available()) {
       Available
     } @else {
@@ -50,29 +51,21 @@ available = input<boolean>(true);
 Input-сигналы работают в шаблонах так же, как и обычные сигналы — вызывайте их как функции для доступа к их значениям.
 </docs-step>
 
-<docs-step title="Подключение родительских сигналов к дочерним input'ам">
+<docs-step title="Connect parent signals to child inputs">
 Обновите использование `product-card` в `app.ts`, чтобы передавать динамические значения сигналов вместо статических.
 
 ```html
 <!-- Change from static values: -->
-<product-card
-  name="Static Product"
-  price="99"
-  available="true"
-/>
+<product-card name="Static Product" price="99" available="true" />
 
 <!-- To dynamic signals: -->
-<product-card
-  [name]="productName()"
-  [price]="productPrice()"
-  [available]="productAvailable()"
-/>
+<product-card [name]="productName()" [price]="productPrice()" [available]="productAvailable()" />
 ```
 
 Квадратные скобки `[]` создают привязку свойств, которая передает текущие значения сигналов дочернему компоненту.
 </docs-step>
 
-<docs-step title="Тестирование реактивных обновлений">
+<docs-step title="Test reactive updates">
 Добавьте методы в `app.ts` для обновления родительских сигналов и посмотрите, как дочерний компонент автоматически реагирует на это.
 
 ```ts

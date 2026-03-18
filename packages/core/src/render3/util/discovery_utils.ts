@@ -24,9 +24,9 @@ import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isRootView} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, TVIEW, TViewType} from '../interfaces/view';
 
+import {Framework} from '../../../primitives/devtools';
 import {getRootContext} from './view_traversal_utils';
 import {getLViewParent, unwrapRNode} from './view_utils';
-import {Framework} from '../../../primitives/devtools';
 
 /**
  * Retrieves the component instance associated with a given DOM element.
@@ -319,7 +319,7 @@ export function getDirectiveMetadata(
       encapsulation: componentDef.encapsulation,
       changeDetection: componentDef.onPush
         ? ChangeDetectionStrategy.OnPush
-        : ChangeDetectionStrategy.Default,
+        : ChangeDetectionStrategy.Eager,
     };
   }
   const directiveDef = getDirectiveDef(constructor);

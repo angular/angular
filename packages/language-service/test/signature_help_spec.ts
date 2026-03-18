@@ -6,16 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {getText} from '../testing/src/util';
 
 import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
 
 describe('signature help', () => {
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
-
   it('should handle an empty argument list', () => {
     const main = setup(`
       import {Component} from '@angular/core';

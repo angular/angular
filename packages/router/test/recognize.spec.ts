@@ -15,7 +15,7 @@ import {RouterConfigLoader} from '../src/router_config_loader';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
-import {useAutoTick} from './helpers';
+import {useAutoTick} from '@angular/private/testing';
 
 describe('recognize', () => {
   useAutoTick();

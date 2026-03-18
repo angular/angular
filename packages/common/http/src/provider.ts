@@ -16,7 +16,7 @@ import {
 
 import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
 import {HttpClient} from './client';
-import {FETCH_BACKEND, FetchBackend} from './fetch';
+import {FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
 import {
   jsonpCallbackContext,
@@ -40,6 +40,7 @@ export enum HttpFeatureKind {
   JsonpSupport,
   RequestsMadeViaParent,
   Fetch,
+  Xhr,
 }
 
 /**
@@ -89,7 +90,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * @see {@link withNoXsrfProtection}
  * @see {@link withJsonpSupport}
  * @see {@link withRequestsMadeViaParent}
- * @see {@link withFetch}
+ * @see {@link withXhr}
  */
 export function provideHttpClient(
   ...features: HttpFeature<HttpFeatureKind>[]
@@ -110,12 +111,13 @@ export function provideHttpClient(
 
   const providers: Provider[] = [
     HttpClient,
+    FetchBackend,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
     {
       provide: HttpBackend,
       useFactory: () => {
-        return inject(FETCH_BACKEND, {optional: true}) ?? inject(HttpXhrBackend);
+        return inject(FetchBackend);
       },
     },
     {
@@ -156,7 +158,7 @@ export function withInterceptors(
 }
 
 const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'LEGACY_INTERCEPTOR_FN' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'LEGACY_INTERCEPTOR_FN' : '',
 );
 
 /**
@@ -289,11 +291,26 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
  * @see [Advanced fetch Options](guide/http/making-requests#advanced-fetch-options)
  *
  * @publicApi
+ * @deprecated `withFetch` is not required anymore. `FetchBackend` is the default `HttpBackend`.
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
-    {provide: FETCH_BACKEND, useExisting: FetchBackend},
     {provide: HttpBackend, useExisting: FetchBackend},
+  ]);
+}
+
+/**
+ * Configures the current `HttpClient` instance to make requests using the Xhr API.
+ *
+ * Use this feature if you want to report progress on uploads as the Xhr API supports it.
+ *
+ * @see {@link provideHttpClient}
+ * @publicApi
+ */
+export function withXhr(): HttpFeature<HttpFeatureKind.Xhr> {
+  return makeHttpFeature(HttpFeatureKind.Xhr, [
+    HttpXhrBackend,
+    {provide: HttpBackend, useExisting: HttpXhrBackend},
   ]);
 }

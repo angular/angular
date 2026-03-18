@@ -31,10 +31,11 @@ const ng1Versions = [
   },
 ];
 
+let counter = 0;
 export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
   return (specSuite: () => void) =>
     ng1Versions.forEach(({label, files}) => {
-      describe(`[AngularJS v${label}]`, () => {
+      describe(`[AngularJS v${label}] ${counter++}`, () => {
         // Problem:
         // As soon as `angular-mocks.js` is loaded, it runs `beforeEach` and `afterEach` to register
         // setup/tear down callbacks. Jasmine 2.9+ does not allow `beforeEach`/`afterEach` to be

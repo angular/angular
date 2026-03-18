@@ -4,9 +4,10 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
   /**
    * @suppress {msgDescriptions}
    */
-  const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$ = goog.getMsg("Element title");
+  const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$ = /* @ts-ignore */ goog.getMsg("Element title");
   $I18N_0$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$;
 } else {
+  /* @ts-ignore */
   $I18N_0$ = $localize`:@@ID.WITH.INVALID.CHARS:Element title`;
 }
 
@@ -17,8 +18,9 @@ if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
   /**
    * @suppress {msgDescriptions}
    */
-  const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$ = goog.getMsg(" Some content ");
+  const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$ = /* @ts-ignore */ goog.getMsg(" Some content ");
   $I18N_2$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$;
 } else {
+  /* @ts-ignore */
   $I18N_2$ = $localize`:@@ID.WITH.INVALID.CHARS.2: Some content `;
 }

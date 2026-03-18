@@ -26,7 +26,12 @@ export function createEs2015LinkerPlugin({
   logger,
   ...options
 }: LinkerPluginOptions): PluginObj {
-  let fileLinker: FileLinker<ConstantScopePath, t.Statement, t.Expression> | null = null;
+  let fileLinker: FileLinker<
+    ConstantScopePath,
+    t.Statement,
+    t.Expression | t.SpreadElement,
+    t.TSType
+  > | null = null;
 
   return {
     visitor: {
@@ -47,13 +52,11 @@ export function createEs2015LinkerPlugin({
           }
           const sourceUrl = fileSystem.resolve(file.opts.cwd ?? '.', filename);
 
-          const linkerEnvironment = LinkerEnvironment.create<t.Statement, t.Expression>(
-            fileSystem,
-            logger,
-            new BabelAstHost(),
-            new BabelAstFactory(sourceUrl),
-            options,
-          );
+          const linkerEnvironment = LinkerEnvironment.create<
+            t.Statement,
+            t.Expression | t.SpreadElement,
+            t.TSType
+          >(fileSystem, logger, new BabelAstHost(), new BabelAstFactory(sourceUrl), options);
           fileLinker = new FileLinker(linkerEnvironment, sourceUrl, file.code);
         },
 

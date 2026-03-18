@@ -10,6 +10,8 @@ import {
   ɵDirectiveDebugMetadata as DirectiveDebugMetadata,
   ɵFramework as Framework,
   ɵFrameworkAgnosticGlobalUtils as FrameworkAgnosticGlobalUtils,
+  ɵControlFlowBlock as ControlFlowBlock,
+  ɵControlFlowBlockType as ControlFlowBlockType,
 } from '@angular/core';
 import {RTreeStrategy} from './render-tree';
 
@@ -18,12 +20,14 @@ describe('render tree extraction', () => {
   let directiveMap: Map<Node, any[]>;
   let componentMap: Map<Element, any>;
   let directiveMetadataMap: Map<any, DirectiveDebugMetadata>;
+  let controlFlowBlocksMap: Map<Node, Partial<ControlFlowBlock>[]>;
 
   beforeEach(() => {
     treeStrategy = new RTreeStrategy();
     directiveMap = new Map();
     componentMap = new Map();
     directiveMetadataMap = new Map();
+    controlFlowBlocksMap = new Map();
 
     (window as any).ng = {
       getDirectiveMetadata(dir: any): DirectiveDebugMetadata | null {
@@ -34,6 +38,9 @@ describe('render tree extraction', () => {
       },
       getDirectives(node: Node): any {
         return directiveMap.get(node) || [];
+      },
+      ɵgetControlFlowBlocks(node: Node): ControlFlowBlock[] {
+        return (controlFlowBlocksMap.get(node) as ControlFlowBlock[]) || [];
       },
     } satisfies Partial<FrameworkAgnosticGlobalUtils>;
   });
@@ -106,5 +113,82 @@ describe('render tree extraction', () => {
 
     const rtree = treeStrategy.build(appNode);
     expect(rtree[0].component!.name).toBe('AppComponent');
+  });
+
+  it('should extract a control flow block', () => {
+    // Represent:
+    //
+    // <app>
+    //   @defer {
+    //     <defer-child />
+    //     @defer {
+    //       <nested-defer-child />
+    //     }
+    //   }
+    //   <child />
+    // </app>
+
+    // Create the DOM
+    const appNode = document.createElement('app');
+    const deferHostNode = document.createElement('comment');
+    const deferChildNode = document.createElement('defer-child');
+    const nestedDeferHostNode = document.createElement('comment');
+    const nestedDeferChildNode = document.createElement('nested-defer-child');
+    const childNode = document.createElement('child');
+
+    appNode.appendChild(deferHostNode);
+    appNode.appendChild(deferChildNode);
+    appNode.appendChild(childNode);
+    appNode.appendChild(nestedDeferHostNode);
+    appNode.appendChild(nestedDeferChildNode);
+
+    // Create and set the component instances
+    componentMap.set(appNode, {});
+    componentMap.set(deferChildNode, {});
+    componentMap.set(nestedDeferChildNode, {});
+    componentMap.set(childNode, {});
+
+    // Create a the outer and the inner @defer blocks.
+    controlFlowBlocksMap.set(appNode, [
+      {
+        type: ControlFlowBlockType.Defer,
+        hostNode: deferHostNode,
+        rootNodes: [deferChildNode, nestedDeferHostNode, nestedDeferChildNode],
+        triggers: [],
+      },
+      {
+        type: ControlFlowBlockType.Defer,
+        hostNode: nestedDeferHostNode,
+        rootNodes: [nestedDeferChildNode],
+        triggers: [],
+      },
+    ]);
+
+    const rtree = treeStrategy.build(appNode);
+
+    expect(rtree.length).toBe(1);
+
+    const appRTreeNode = rtree[0];
+    expect(appRTreeNode.children.map((c) => c.element)).toEqual(['@defer', 'child']);
+
+    const outerDefer = appRTreeNode.children[0];
+    expect(outerDefer.children.length).toBe(2);
+
+    const [deferChild, innerDefer] = outerDefer.children;
+    expect(deferChild).toEqual(
+      jasmine.objectContaining({
+        element: 'defer-child',
+        nativeElement: deferChildNode,
+      }),
+    );
+    expect(innerDefer.element).toEqual('@defer');
+
+    expect(innerDefer.children.length).toBe(1);
+    expect(innerDefer.children[0]).toEqual(
+      jasmine.objectContaining({
+        element: 'nested-defer-child',
+        nativeElement: nestedDeferChildNode,
+      }),
+    );
   });
 });

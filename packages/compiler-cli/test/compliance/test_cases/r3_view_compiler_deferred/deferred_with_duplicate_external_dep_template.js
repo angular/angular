@@ -1,7 +1,13 @@
-const MyApp_Defer_1_DepsFn = () => [import("./deferred_with_duplicate_external_dep_lazy").then(m => m.DuplicateLazyDep)];
+const MyApp_Defer_1_DepsFn = () => [
+  /* @ts-ignore */
+  import("./deferred_with_duplicate_external_dep_lazy").then(m => m.DuplicateLazyDep)
+];
 // NOTE: in linked tests there is one more loader here, because linked compilation doesn't have the ability to de-dupe identical functions.
 …
-const MyApp_Defer_7_DepsFn = () => [import("./deferred_with_duplicate_external_dep_other").then(m => m.OtherLazyDep)];
+const MyApp_Defer_7_DepsFn = () => [
+  /* @ts-ignore */
+  import("./deferred_with_duplicate_external_dep_other").then(m => m.OtherLazyDep)
+];
 
 …
 
@@ -28,7 +34,9 @@ $r3$.ɵɵdefineComponent({
 
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(MyApp, () => [
+    /* @ts-ignore */
     import("./deferred_with_duplicate_external_dep_lazy").then(m => m.DuplicateLazyDep),
+    /* @ts-ignore */
     import("./deferred_with_duplicate_external_dep_other").then(m => m.OtherLazyDep)
   ], (DuplicateLazyDep, OtherLazyDep) => {
       $r3$.ɵsetClassMetadata(MyApp, [{

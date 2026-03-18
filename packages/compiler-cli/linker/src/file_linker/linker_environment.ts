@@ -14,30 +14,30 @@ import {AstHost} from '../ast/ast_host';
 import {DEFAULT_LINKER_OPTIONS, LinkerOptions} from './linker_options';
 import {Translator} from './translator';
 
-export class LinkerEnvironment<TStatement, TExpression> {
-  readonly translator: Translator<TStatement, TExpression>;
+export class LinkerEnvironment<TStatement, TExpression, TType> {
+  readonly translator: Translator<TStatement, TExpression, TType>;
   readonly sourceFileLoader: SourceFileLoader | null;
 
   private constructor(
     readonly fileSystem: ReadonlyFileSystem,
     readonly logger: Logger,
     readonly host: AstHost<TExpression>,
-    readonly factory: AstFactory<TStatement, TExpression>,
+    readonly factory: AstFactory<TStatement, TExpression, TType>,
     readonly options: LinkerOptions,
   ) {
-    this.translator = new Translator<TStatement, TExpression>(this.factory);
+    this.translator = new Translator<TStatement, TExpression, TType>(this.factory);
     this.sourceFileLoader = this.options.sourceMapping
       ? new SourceFileLoader(this.fileSystem, this.logger, {})
       : null;
   }
 
-  static create<TStatement, TExpression>(
+  static create<TStatement, TExpression, TType>(
     fileSystem: ReadonlyFileSystem,
     logger: Logger,
     host: AstHost<TExpression>,
-    factory: AstFactory<TStatement, TExpression>,
+    factory: AstFactory<TStatement, TExpression, TType>,
     options: Partial<LinkerOptions>,
-  ): LinkerEnvironment<TStatement, TExpression> {
+  ): LinkerEnvironment<TStatement, TExpression, TType> {
     return new LinkerEnvironment(fileSystem, logger, host, factory, {
       sourceMapping: options.sourceMapping ?? DEFAULT_LINKER_OPTIONS.sourceMapping,
       linkerJitMode: options.linkerJitMode ?? DEFAULT_LINKER_OPTIONS.linkerJitMode,

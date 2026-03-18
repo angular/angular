@@ -1,0 +1,18 @@
+$default-size: 16px;
+
+:host {
+  position: relative;
+  display: block;
+  width: var(--icon-size, $default-size);
+  height: var(--icon-size, $default-size);
+
+  svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    fill: var(--icon-color, currentColor);
+    stroke: var(--icon-color, currentColor);
+    width: inherit;
+    height: inherit;
+  }
+}

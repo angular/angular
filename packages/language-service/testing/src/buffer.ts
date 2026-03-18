@@ -33,8 +33,14 @@ export class OpenBuffer {
   }
 
   set contents(newContents: string) {
-    const snapshot = this.scriptInfo.getSnapshot();
-    this.scriptInfo.editContent(0, snapshot.getLength(), newContents);
+    if (this.scriptInfo.isScriptOpen()) {
+      const snapshot = this.scriptInfo.getSnapshot();
+      this.scriptInfo.editContent(0, snapshot.getLength(), newContents);
+    } else {
+      // If the script is not open, editing the content might misbehave or lose sync with the snapshot.
+      // Since we just wrote to the MockFileSystem, we can reload from file!
+      this.scriptInfo.reloadFromFile();
+    }
 
     // As of TypeScript 5.2 we need to trigger graph update manually in order to satisfy the
     // following assertion:
@@ -46,14 +52,18 @@ export class OpenBuffer {
     }
   }
 
+  close(): void {
+    this.project.projectService.closeClientFile(this.scriptInfo.fileName);
+  }
+
   /**
    * Find a snippet of text within the given buffer and position the cursor within it.
    *
    * @param snippetWithCursor a snippet of text which contains the '¦' symbol, representing where
    *     the cursor should be placed within the snippet when located in the larger buffer.
    */
-  moveCursorToText(snippetWithCursor: string): void {
-    const {text: snippet, cursor} = extractCursorInfo(snippetWithCursor);
+  moveCursorToText(textWithCursor: string) {
+    const {text: snippet, cursor} = extractCursorInfo(textWithCursor);
     const snippetIndex = this.contents.indexOf(snippet);
     if (snippetIndex === -1) {
       throw new Error(`Snippet '${snippet}' not found in ${this.projectFileName}`);
@@ -139,6 +149,24 @@ export class OpenBuffer {
 
   getSignatureHelpItems() {
     return this.ngLS.getSignatureHelpItems(this.scriptInfo.fileName, this._cursor);
+  }
+
+  getInlayHints(
+    spanOrConfig?: ts.TextSpan | Record<string, unknown>,
+    config?: Record<string, unknown>,
+  ) {
+    let span: ts.TextSpan;
+    let inlayConfig: Record<string, unknown> | undefined;
+
+    if (spanOrConfig && typeof spanOrConfig === 'object' && 'start' in spanOrConfig) {
+      span = spanOrConfig as ts.TextSpan;
+      inlayConfig = config;
+    } else {
+      span = {start: 0, length: this.scriptInfo.getSnapshot().getLength()};
+      inlayConfig = spanOrConfig as Record<string, unknown> | undefined;
+    }
+
+    return this.ngLS.provideInlayHints(this.scriptInfo.fileName, span, inlayConfig);
   }
 }
 

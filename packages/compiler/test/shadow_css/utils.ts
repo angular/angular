@@ -45,7 +45,7 @@ beforeEach(function () {
 });
 
 declare global {
-  module jasmine {
+  namespace jasmine {
     interface Matchers<T> {
       /**
        * Expect the actual css value to be equal to the expected css,

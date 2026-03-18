@@ -57,7 +57,7 @@ async function generatePlaygroundFiles(
     );
     writeFileSync(
       join(outputDir, path, 'source-code.json'),
-      JSON.stringify(await generateSourceCode(config, itemFiles)),
+      JSON.stringify(await generateSourceCode(itemFiles)),
     );
   }
 

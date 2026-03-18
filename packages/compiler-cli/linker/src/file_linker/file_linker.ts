@@ -21,17 +21,17 @@ export const NO_STATEMENTS: Readonly<any[]> = [] as const;
 /**
  * This class is responsible for linking all the partial declarations found in a single file.
  */
-export class FileLinker<TConstantScope, TStatement, TExpression> {
+export class FileLinker<TConstantScope, TStatement, TExpression, TType> {
   private linkerSelector: PartialLinkerSelector<TExpression>;
-  private emitScopes = new Map<TConstantScope, EmitScope<TStatement, TExpression>>();
+  private emitScopes = new Map<TConstantScope, EmitScope<TStatement, TExpression, TType>>();
 
   constructor(
-    private linkerEnvironment: LinkerEnvironment<TStatement, TExpression>,
+    private linkerEnvironment: LinkerEnvironment<TStatement, TExpression, TType>,
     sourceUrl: AbsoluteFsPath,
     code: string,
   ) {
     this.linkerSelector = new PartialLinkerSelector<TExpression>(
-      createLinkerMap(this.linkerEnvironment, sourceUrl, code),
+      createLinkerMap<TStatement, TExpression, TType>(this.linkerEnvironment, sourceUrl, code),
       this.linkerEnvironment.logger,
       this.linkerEnvironment.options.unknownDeclarationVersionHandling,
     );
@@ -98,11 +98,11 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
   private getEmitScope(
     ngImport: TExpression,
     declarationScope: DeclarationScope<TConstantScope, TExpression>,
-  ): EmitScope<TStatement, TExpression> {
+  ): EmitScope<TStatement, TExpression, TType> {
     const constantScope = declarationScope.getConstantScopeRef(ngImport);
     if (constantScope === null) {
       // There is no constant scope so we will emit extra statements into the definition IIFE.
-      return new LocalEmitScope(
+      return new LocalEmitScope<TStatement, TExpression, TType>(
         ngImport,
         this.linkerEnvironment.translator,
         this.linkerEnvironment.factory,

@@ -87,7 +87,7 @@ describe('ProxySpec', () => {
           zoneSpec: ZoneSpec,
         ) => {
           expect(currentZone).toBe(proxyZone);
-          expect(targetZone).toBe(proxyZone), expect(zoneSpec.name).toBe('fork2');
+          (expect(targetZone).toBe(proxyZone), expect(zoneSpec.name).toBe('fork2'));
           called = true;
         },
       });

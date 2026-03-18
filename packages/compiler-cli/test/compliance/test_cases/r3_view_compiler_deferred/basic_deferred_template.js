@@ -3,7 +3,9 @@ function MyApp_Defer_2_Template(rf, ctx) {
     $r3$.ɵɵtext(0, "Deferred content");
   }
 }…
-MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyApp {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
@@ -25,3 +27,4 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
 });
 …
 $r3$.ɵsetClassMetadata(MyApp, …);
+}

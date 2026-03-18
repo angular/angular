@@ -1,0 +1,15 @@
+@use '../../../../../styles/typography';
+
+h3 {
+  @extend %heading-400;
+  margin: 0;
+
+  &:not(:first-child) {
+    margin-top: 1rem;
+  }
+}
+
+.trigger {
+  font-family: monospace;
+  padding-inline-start: 1rem;
+}

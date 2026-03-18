@@ -1,0 +1,58 @@
+<mat-tree
+  #tree
+  class="property-list"
+  [dataSource]="dataSource()"
+  [treeControl]="treeControl()"
+  [childrenAccessor]="childrenAccessor()"
+>
+  <mat-tree-node
+    [matTreeNodePaddingIndent]="childrenIndent()"
+    *matTreeNodeDef="let node"
+    matTreeNodePadding
+  >
+    <div class="prop-row non-expandable-node">
+      @if (!omitRootNodesNames() || node.level > 0) {
+        <span class="name">{{ node.prop.name }}</span
+        >:
+      }
+      @if (!node.prop.descriptor.editable || !editingEnabled()) {
+        <ng-property-preview class="value" (inspect)="propInspect.emit(node)" [node]="node" />
+      } @else {
+        <ng-property-editor
+          class="value"
+          [property]="node.prop"
+          (updateValue)="propValueUpdate.emit({node, newValue: $event})"
+        />
+      }
+      @if (contentTemplateRef(); as contentTemplateRef) {
+        <ng-container
+          [ngTemplateOutlet]="contentTemplateRef"
+          [ngTemplateOutletContext]="{$implicit: node}"
+        />
+      }
+    </div>
+  </mat-tree-node>
+  <mat-tree-node
+    [matTreeNodePaddingIndent]="childrenIndent()"
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+    [isExpandable]="node.isExpandable"
+  >
+    <button matTreeNodeToggle class="prop-row expandable-node">
+      <mat-icon class="expand-icon">
+        {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+      </mat-icon>
+      @if (!omitRootNodesNames() || node.level > 0) {
+        <span class="name">{{ node.prop.name }}</span
+        >:
+      }
+      <span class="value">{{ node.prop.descriptor.preview }}</span>
+      @if (contentTemplateRef(); as contentTemplateRef) {
+        <ng-container
+          [ngTemplateOutlet]="contentTemplateRef"
+          [ngTemplateOutletContext]="{$implicit: node}"
+        />
+      }
+    </button>
+  </mat-tree-node>
+</mat-tree>

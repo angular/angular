@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, PathLocationStrategy} from '../../index';
 import {inject, TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
+import {CommonModule} from '../../index';
 
 import {$locationShim} from '../src/location_shim';
 
@@ -471,7 +471,7 @@ describe('NewUrl', function () {
   });
 });
 
-describe('New URL Parsing', () => {
+describe('New URL Parsing with appBaseHref', () => {
   let $location: $locationShim;
   let upgradeModule: UpgradeModule;
 
