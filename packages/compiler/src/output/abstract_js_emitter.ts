@@ -29,23 +29,23 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     super(false /* printComments */);
   }
 
-  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
+  override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): void {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
 
-  override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+  override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): void {
     ctx.print(stmt, `var ${stmt.name}`);
     if (stmt.value) {
       ctx.print(stmt, ' = ');
       stmt.value.visitExpression(this, ctx);
     }
     ctx.println(stmt, `;`);
-    return null;
   }
+
   override visitTaggedTemplateLiteralExpr(
     ast: o.TaggedTemplateLiteralExpr,
     ctx: EmitterVisitorContext,
-  ): any {
+  ): void {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
     // tag`...`
@@ -64,9 +64,9 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
       expression.visitExpression(this, ctx);
     });
     ctx.print(ast, ')');
-    return null;
   }
-  override visitTemplateLiteralExpr(expr: o.TemplateLiteralExpr, ctx: EmitterVisitorContext): any {
+
+  override visitTemplateLiteralExpr(expr: o.TemplateLiteralExpr, ctx: EmitterVisitorContext): void {
     ctx.print(expr, '`');
     for (let i = 0; i < expr.elements.length; i++) {
       expr.elements[i].visitExpression(this, ctx);
@@ -79,61 +79,15 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     }
     ctx.print(expr, '`');
   }
+
   override visitTemplateLiteralElementExpr(
     expr: o.TemplateLiteralElementExpr,
     ctx: EmitterVisitorContext,
-  ): any {
+  ): void {
     ctx.print(expr, expr.rawText);
-    return null;
   }
-  override visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(ast, `function${ast.name ? ' ' + ast.name : ''}(`);
-    this._visitParams(ast.params, ctx);
-    ctx.println(ast, `) {`);
-    ctx.incIndent();
-    this.visitAllStatements(ast.statements, ctx);
-    ctx.decIndent();
-    ctx.print(ast, `}`);
-    return null;
-  }
-  override visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(ast, '(');
-    this._visitParams(ast.params, ctx);
-    ctx.print(ast, ') =>');
 
-    if (Array.isArray(ast.body)) {
-      ctx.println(ast, `{`);
-      ctx.incIndent();
-      this.visitAllStatements(ast.body, ctx);
-      ctx.decIndent();
-      ctx.print(ast, `}`);
-    } else {
-      const isObjectLiteral = ast.body instanceof o.LiteralMapExpr;
-
-      if (isObjectLiteral) {
-        ctx.print(ast, '(');
-      }
-
-      ast.body.visitExpression(this, ctx);
-
-      if (isObjectLiteral) {
-        ctx.print(ast, ')');
-      }
-    }
-
-    return null;
-  }
-  override visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
-    ctx.print(stmt, `function ${stmt.name}(`);
-    this._visitParams(stmt.params, ctx);
-    ctx.println(stmt, `) {`);
-    ctx.incIndent();
-    this.visitAllStatements(stmt.statements, ctx);
-    ctx.decIndent();
-    ctx.println(stmt, `}`);
-    return null;
-  }
-  override visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
+  override visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): void {
     // The following convoluted piece of code is effectively the downlevelled equivalent of
     // ```
     // $localize `...`
@@ -154,10 +108,5 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
       expression.visitExpression(this, ctx);
     });
     ctx.print(ast, ')');
-    return null;
-  }
-
-  private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects((param) => ctx.print(null, param.name), params, ctx, ',');
   }
 }
