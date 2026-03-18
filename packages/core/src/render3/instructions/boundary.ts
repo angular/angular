@@ -9,7 +9,7 @@
 import {setActiveConsumer} from '../../../primitives/signals';
 import {ErrorDetails, ErrorHandler, encapsulateBoundaryError} from '../../error_handler';
 import {findAndReconcileMatchingDehydratedViews} from '../../hydration/views';
-import {Type} from '../../interface/type';
+import {Type, Writable} from '../../interface/type';
 import {performanceMarkFeature} from '../../util/performance';
 import {bindingUpdated} from '../bindings';
 import {
@@ -21,15 +21,19 @@ import {
   ON_ERROR,
   TVIEW,
 } from '../interfaces/view';
+import {ComponentTemplate} from '../interfaces/definition';
+import {LocalRefExtractor} from '../interfaces/node';
 import {getLView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {markViewForRefresh} from '../util/view_utils';
 import {addLViewToLContainer, removeLViewFromLContainer} from '../view/container';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
-import {getExistingTNode, getLContainer} from './control_flow';
+import {createControlFlowBranch, getExistingTNode, getLContainer} from './control_flow';
 
 /**
  * Error thrown when an error falls through an @boundary without matching any @error block.
+ *
+ * @publicApi 22.2
  */
 export class BoundaryError extends Error {
   constructor(message: string, options?: {cause?: unknown}) {
@@ -116,13 +120,13 @@ export function ɵɵboundaryUpdate(
           const context =
             matchingTemplateIndex === primaryTemplateIndex
               ? undefined
-              : {$error: boundary.error, $retry: () => boundary.reset()};
+              : {$error: boundary.error, $reset: () => boundary.reset()};
           embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, context, {
             dehydratedView,
           });
 
           if (matchingTemplateIndex === primaryTemplateIndex) {
-            embeddedLView[ON_ERROR] = (error: Error, details: any) => {
+            embeddedLView[ON_ERROR] = (error: Error, details: ErrorDetails) => {
               const boundary = hostLView[HEADER_OFFSET + slotIndex] as LBoundary;
               boundary.error = error;
 
@@ -130,7 +134,7 @@ export function ɵɵboundaryUpdate(
               if (errorHandler) {
                 const boundaryComponentView = hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT] as any;
                 const boundaryType: Type<unknown> = boundaryComponentView.constructor;
-                details.boundary = {
+                (details as Writable<ErrorDetails>).boundary = {
                   type: boundaryType,
                   reset: () => boundary.reset(),
                 };
@@ -193,11 +197,9 @@ export function ɵɵboundaryUpdate(
         );
       } else {
         const boundary = hostLView[HEADER_OFFSET + slotIndex] as LBoundary;
-        if (boundary.error !== null) {
-          throw new BoundaryError('Unhandled error in @boundary fell through.', {
-            cause: boundary.error,
-          });
-        }
+        throw new BoundaryError('Unhandled error in @boundary fell through.', {
+          cause: boundary.error,
+        });
       }
     } finally {
       setActiveConsumer(prevConsumer);

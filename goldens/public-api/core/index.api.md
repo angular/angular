@@ -713,7 +713,7 @@ export type EnvironmentProviders = {
 // @public
 export interface ErrorDetails {
     readonly boundary?: {
-        readonly type: Type<any>;
+        readonly type: Type<unknown>;
         readonly reset: () => void;
     };
     readonly caughtBy?: Function;

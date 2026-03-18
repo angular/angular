@@ -13,6 +13,7 @@ import {
   BoundText,
   Component,
   Content,
+  BoundaryErrorBlock,
   DeferredBlock,
   DeferredBlockTriggers,
   Directive,
@@ -223,6 +224,22 @@ export class Scope {
             tcbExpression(expression, tcb, scope),
             expressionAlias,
           ),
+        );
+      }
+    } else if (scopedNode instanceof BoundaryErrorBlock) {
+      for (const variable of scopedNode.contextVariables) {
+        let typeExpr: TcbExpr;
+        if (variable.value === '$error') {
+          typeExpr = new TcbExpr(`(err as Error)`);
+        } else if (variable.value === '$retry') {
+          typeExpr = new TcbExpr(`(() => {})`);
+        } else {
+          throw new Error(`Unrecognized context variable ${variable.value}`);
+        }
+        Scope.registerVariable(
+          scope,
+          variable,
+          new TcbBlockVariableOp(tcb, scope, typeExpr, variable),
         );
       }
     } else if (scopedNode instanceof ForLoopBlock) {

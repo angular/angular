@@ -29,6 +29,7 @@ import {
 import {assertInInjectionContext} from '../di/contextual';
 import {Injector} from '../di/injector';
 import {inject} from '../di/injector_compatibility';
+import {isErrorLike} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {CACHE_ACTIVE} from '../hydration/cache';
 import {DestroyRef} from '../linker/destroy_ref';
@@ -604,15 +605,6 @@ export function encapsulateResourceError(error: unknown): Error {
   }
 
   return new ResourceWrappedError(error);
-}
-
-export function isErrorLike(error: unknown): error is Error {
-  return (
-    error instanceof Error ||
-    (typeof error === 'object' &&
-      typeof (error as Error).name === 'string' &&
-      typeof (error as Error).message === 'string')
-  );
 }
 
 export class ResourceValueError extends Error {
