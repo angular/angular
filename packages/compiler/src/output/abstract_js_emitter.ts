@@ -26,7 +26,7 @@ const makeTemplateObjectPolyfill =
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   constructor() {
-    super(false /* printComments */);
+    super(false /* printComments */, false /* emitTypes */);
   }
 
   override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): void {
