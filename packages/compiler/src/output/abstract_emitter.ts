@@ -214,11 +214,13 @@ export class EmitterVisitorContext {
 export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.ExpressionVisitor {
   private lastIfCondition: o.Expression | null = null;
 
+  constructor(private readonly printComments: boolean) {}
+
   protected printLeadingComments(
     node: o.Expression | o.Statement,
     ctx: EmitterVisitorContext,
   ): void {
-    if (node.leadingComments === undefined) {
+    if (!this.printComments || node.leadingComments === undefined) {
       return;
     }
     for (const comment of node.leadingComments) {
@@ -228,9 +230,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
         if (comment.multiline) {
           ctx.print(node, `/* ${comment.text} */`, comment.trailingNewline);
         } else {
-          comment.text.split('\n').forEach((line) => {
-            ctx.println(node, `// ${line}`);
-          });
+          comment.text.split('\n').forEach((line) => ctx.println(node, `// ${line}`));
         }
       }
     }
