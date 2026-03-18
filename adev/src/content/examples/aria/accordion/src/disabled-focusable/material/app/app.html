@@ -1,6 +1,6 @@
 <div ngAccordionGroup class="material-accordion">
   <h3>
-    <span ngAccordionTrigger panelId="q1" #trigger1="ngAccordionTrigger" [expanded]="true">
+    <span ngAccordionTrigger [panel]="panel1" #trigger1="ngAccordionTrigger" [expanded]="true">
       Which attribute tells assistive tech whether the panel is open or closed?
       <span
         aria-hidden="true"
@@ -11,7 +11,7 @@
       >
     </span>
   </h3>
-  <div ngAccordionPanel panelId="q1">
+  <div ngAccordionPanel #panel1="ngAccordionPanel">
     <ng-template ngAccordionContent>
       <p>
         Use <code>aria-expanded</code> on the button element. Set it to "true" when the content
@@ -22,7 +22,7 @@
   </div>
 
   <h3>
-    <span ngAccordionTrigger panelId="q2" #trigger2="ngAccordionTrigger" disabled>
+    <span ngAccordionTrigger [panel]="panel2" #trigger2="ngAccordionTrigger" disabled>
       How do you link the button to the content it controls?
       <span
         aria-hidden="true"
@@ -33,7 +33,7 @@
       >
     </span>
   </h3>
-  <div ngAccordionPanel panelId="q2">
+  <div ngAccordionPanel #panel2="ngAccordionPanel">
     <ng-template ngAccordionContent>
       <p>
         Use the <code>aria-controls</code> attribute on the button, and set its value to match the
@@ -44,7 +44,7 @@
   </div>
 
   <h3>
-    <span ngAccordionTrigger panelId="q3" #trigger3="ngAccordionTrigger">
+    <span ngAccordionTrigger [panel]="panel3" #trigger3="ngAccordionTrigger">
       What role should the heading element containing the accordion button have?
       <span
         aria-hidden="true"
@@ -55,7 +55,7 @@
       >
     </span>
   </h3>
-  <div ngAccordionPanel panelId="q3">
+  <div ngAccordionPanel #panel3="ngAccordionPanel">
     <ng-template ngAccordionContent>
       <p>
         The element containing the button should typically have <code>role="heading"</code> with an
