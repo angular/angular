@@ -20,14 +20,14 @@ const allUpdateTargets = execSync(queryCommand, {encoding: 'utf-8', stdio: 'pipe
   .filter((target) => target.length > 0);
 
 if (allUpdateTargets.length === 0) {
-  process.stdout.clearLine();
-  process.stdout.cursorTo(0);
+  if (process.stdout.clearLine) process.stdout.clearLine();
+  if (process.stdout.cursorTo) process.stdout.cursorTo(0);
   console.error(`Could not find any symbol test targets using: ${queryCommand}`);
   process.exit(1);
 }
 
-process.stdout.clearLine();
-process.stdout.cursorTo(0);
+if (process.stdout.clearLine) process.stdout.clearLine();
+if (process.stdout.cursorTo) process.stdout.cursorTo(0);
 
 for (const [index, target] of allUpdateTargets.entries()) {
   const progress = `${index + 1} / ${allUpdateTargets.length}`;
@@ -36,8 +36,8 @@ for (const [index, target] of allUpdateTargets.entries()) {
     stdio: 'pipe',
     encoding: 'utf-8',
   });
-  process.stdout.clearLine();
-  process.stdout.cursorTo(0);
+  if (process.stdout.clearLine) process.stdout.clearLine();
+  if (process.stdout.cursorTo) process.stdout.cursorTo(0);
   if (commandResult.status) {
     console.error(`[${progress}] Failed run: ${target}`);
     console.group();

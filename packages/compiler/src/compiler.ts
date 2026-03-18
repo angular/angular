@@ -152,6 +152,8 @@ export {
   BoundDeferredTrigger as TmplAstBoundDeferredTrigger,
   BoundEvent as TmplAstBoundEvent,
   BoundText as TmplAstBoundText,
+  BoundaryBlock as TmplAstBoundaryBlock,
+  BoundaryErrorBlock as TmplAstBoundaryErrorBlock,
   Content as TmplAstContent,
   DeferredBlock as TmplAstDeferredBlock,
   DeferredBlockError as TmplAstDeferredBlockError,

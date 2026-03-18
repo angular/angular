@@ -191,6 +191,9 @@ function getVariableName(variable: ir.SemanticVariable, state: {index: number}):
         const compatPrefix = variable.identifier === CONTEXT_NAME ? 'i' : '';
         variable.name = `${variable.identifier}_${compatPrefix}r${++state.index}`;
         break;
+      case ir.SemanticVariableKind.BoundaryState:
+        variable.name = `bnd_r${++state.index}`;
+        break;
       default:
         // TODO: Prefix increment for compatibility only.
         variable.name = `_r${++state.index}`;

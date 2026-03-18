@@ -34,6 +34,7 @@ export * from './change_detection';
 export * from './component_instance';
 export * from './control';
 export * from './control_flow';
+export * from './boundary';
 export * from './di';
 export * from './di_attr';
 export * from './element';

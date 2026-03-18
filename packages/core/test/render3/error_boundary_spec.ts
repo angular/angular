@@ -1,13 +1,24 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {
   Component,
   EnvironmentInjector,
-  signal,
+  ErrorHandler,
+  Input,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
+  effect,
+  signal,
 } from '@angular/core';
-import {DeferBlockBehavior, TestBed} from '@angular/core/testing';
-import {ErrorBoundaryWrappedError, ErrorDetails, ErrorHandler} from '../../src/error_handler';
+import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
+import {ErrorBoundaryWrappedError, ErrorDetails} from '../../src/error_handler';
 
 describe('Error Boundary Runtime Interception', () => {
   it('should intercept errors using createComponent onError', () => {
@@ -15,7 +26,6 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '{{ throwError() }}',
-      standalone: true,
     })
     class ThrowingComponent {
       throwError() {
@@ -25,13 +35,12 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '<ng-container #vc></ng-container>',
-      standalone: true,
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const envInjector = TestBed.inject(EnvironmentInjector);
@@ -43,11 +52,9 @@ describe('Error Boundary Runtime Interception', () => {
       },
     });
 
-    // The inner component is created and attached, but it hasn't run CD yet?
-    // Actually `createComponent` doesn't run CD by default, we need to call `detectChanges` on the HostComponent.
+    // `createComponent` doesn't run CD by default, we need to call `detectChanges` on the Host.
     expect(() => fixture.detectChanges()).not.toThrow();
 
-    expect(interceptedError).toBeDefined();
     expect(interceptedError).toBeInstanceOf(Error);
     expect(interceptedError!.message).toBe('Component Error');
   });
@@ -60,9 +67,8 @@ describe('Error Boundary Runtime Interception', () => {
         <ng-template #tpl>{{ throwError() }}</ng-template>
         <ng-container #vc></ng-container>
       `,
-      standalone: true,
     })
-    class HostComponent {
+    class Host {
       @ViewChild('tpl', {static: true}) tpl!: TemplateRef<any>;
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
 
@@ -71,7 +77,7 @@ describe('Error Boundary Runtime Interception', () => {
       }
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     fixture.componentInstance.vc.createEmbeddedView(
@@ -95,7 +101,6 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '...',
-      standalone: true,
     })
     class ThrowingInitComponent {
       ngOnInit() {
@@ -105,13 +110,12 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '<ng-container #vc></ng-container>',
-      standalone: true,
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const envInjector = TestBed.inject(EnvironmentInjector);
@@ -130,12 +134,11 @@ describe('Error Boundary Runtime Interception', () => {
     expect(interceptedError!.message).toBe('Init Error');
   });
 
-  it('should intercept errors thrown during component constructor via createComponent', () => {
+  it('should NOT intercept errors thrown during component constructor via createComponent', () => {
     let interceptedError: Error | null = null;
 
     @Component({
       template: '...',
-      standalone: true,
     })
     class ThrowingConstructorComponent {
       constructor() {
@@ -145,13 +148,12 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '<ng-container #vc></ng-container>',
-      standalone: true,
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const envInjector = TestBed.inject(EnvironmentInjector);
@@ -173,7 +175,6 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '<ng-container #vc></ng-container>',
-      standalone: true,
     })
     class MiddleComponent {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
@@ -181,7 +182,6 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '...',
-      standalone: true,
     })
     class ThrowChild {
       ngOnInit() {
@@ -191,13 +191,12 @@ describe('Error Boundary Runtime Interception', () => {
 
     @Component({
       template: '<ng-container #vc></ng-container>',
-      standalone: true,
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const middleRef = fixture.componentInstance.vc.createComponent(MiddleComponent, {
@@ -1002,7 +1001,7 @@ describe('@boundary runtime instructions (JIT)', () => {
     @Component({
       template: `
         @boundary {
-          <throwing-effect></throwing-effect>
+          <throwing-effect/>
           Main Content
         } @error (let err) {
           Error: {{err.message}}
@@ -1064,6 +1063,6 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(capturedDetails.declarationType).toBe(Throwing);
     expect(capturedDetails.boundary).toBeDefined();
     expect(capturedDetails.boundary!.type).toBe(Host);
-    expect(typeof capturedDetails.boundary!.reset).toBe('function');
+    expect(typeof capturedDetails.boundary!.retry).toBe('function');
   });
 });
