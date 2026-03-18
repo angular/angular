@@ -77,3 +77,11 @@
 <div *matHeaderCellDef></div>
 <!-- #613 -->
 <div *ngIf="x$ | async as a"></div>
+
+<!-- CSS style binding tests -->
+<div style="border: 1px solid black; cursor: pointer"></div>
+<div style='color: red; font-size: 14px'></div>
+<div [style]="'border: 1px solid black; --padding: 1em'"></div>
+<div [style.border.px]="'1px solid calc(1px + 2px)'"></div>
+<div [style.width.em]="'10'"></div>
+<div [style]="{ color: 'red', 'background-color': 'blue' }"></div>
