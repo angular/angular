@@ -186,7 +186,7 @@ export class ShadowCss {
         // Replace non hash comments with empty lines.
         // This is done so that we do not leak any sensitive data in comments.
         const newLinesMatches = m.match(_newLinesRe);
-        comments.push((newLinesMatches?.join('') ?? '') + '\n');
+        comments.push(newLinesMatches?.join('') ?? '');
       }
 
       return COMMENT_PLACEHOLDER;
