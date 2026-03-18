@@ -11,32 +11,26 @@ import {escapeIdentifier} from '../../src/output/abstract_emitter';
 describe('AbstractEmitter', () => {
   describe('escapeIdentifier', () => {
     it('should escape single quotes', () => {
-      expect(escapeIdentifier(`'`, false)).toEqual(`'\\''`);
+      expect(escapeIdentifier(`'`)).toEqual(`'\\''`);
     });
 
     it('should escape backslash', () => {
-      expect(escapeIdentifier('\\', false)).toEqual(`'\\\\'`);
+      expect(escapeIdentifier('\\')).toEqual(`'\\\\'`);
     });
 
     it('should escape newlines', () => {
-      expect(escapeIdentifier('\n', false)).toEqual(`'\\n'`);
+      expect(escapeIdentifier('\n')).toEqual(`'\\n'`);
     });
 
     it('should escape carriage returns', () => {
-      expect(escapeIdentifier('\r', false)).toEqual(`'\\r'`);
+      expect(escapeIdentifier('\r')).toEqual(`'\\r'`);
     });
 
-    it('should escape $', () => {
-      expect(escapeIdentifier('$', true)).toEqual(`'\\$'`);
-    });
-    it('should not escape $', () => {
-      expect(escapeIdentifier('$', false)).toEqual(`'$'`);
-    });
     it('should add quotes for non-identifiers', () => {
-      expect(escapeIdentifier('==', false, false)).toEqual(`'=='`);
+      expect(escapeIdentifier('==', false)).toEqual(`'=='`);
     });
     it('does not escape class (but it probably should)', () => {
-      expect(escapeIdentifier('class', false, false)).toEqual('class');
+      expect(escapeIdentifier('class', false)).toEqual('class');
     });
   });
 });

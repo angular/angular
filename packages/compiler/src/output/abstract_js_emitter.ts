@@ -25,10 +25,6 @@ const makeTemplateObjectPolyfill =
   '(this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
-  constructor() {
-    super(false);
-  }
-
   override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
@@ -57,11 +53,8 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     const elements = ast.template.elements;
     ast.tag.visitExpression(this, ctx);
     ctx.print(ast, `(${makeTemplateObjectPolyfill}(`);
-    ctx.print(ast, `[${elements.map((part) => escapeIdentifier(part.text, false)).join(', ')}], `);
-    ctx.print(
-      ast,
-      `[${elements.map((part) => escapeIdentifier(part.rawText, false)).join(', ')}])`,
-    );
+    ctx.print(ast, `[${elements.map((part) => escapeIdentifier(part.text)).join(', ')}], `);
+    ctx.print(ast, `[${elements.map((part) => escapeIdentifier(part.rawText)).join(', ')}])`);
     ast.template.expressions.forEach((expression) => {
       ctx.print(ast, ', ');
       expression.visitExpression(this, ctx);
@@ -150,8 +143,8 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     for (let i = 1; i < ast.messageParts.length; i++) {
       parts.push(ast.serializeI18nTemplatePart(i));
     }
-    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.cooked, false)).join(', ')}], `);
-    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.raw, false)).join(', ')}])`);
+    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.cooked)).join(', ')}], `);
+    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.raw)).join(', ')}])`);
     ast.expressions.forEach((expression) => {
       ctx.print(ast, ', ');
       expression.visitExpression(this, ctx);
