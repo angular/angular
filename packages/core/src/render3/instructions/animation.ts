@@ -136,11 +136,6 @@ export function runEnterAnimation(
 
   // We only need to add these event listeners if there are actual classes to apply
   if (activeClasses && activeClasses.length > 0) {
-    let isCleanedUp = false;
-    cleanupFns.push(() => {
-      isCleanedUp = true;
-    });
-
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(renderer.listen(nativeElement, 'animationstart', handleEnterAnimationStart));
       cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleEnterAnimationStart));
@@ -157,16 +152,14 @@ export function runEnterAnimation(
     // preventing an animation via selector specificity.
     ngZone.runOutsideAngular(() => {
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (hasCompleted || isCleanedUp) return;
-          determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
-          if (!longestAnimations.has(nativeElement)) {
-            for (const klass of activeClasses) {
-              renderer.removeClass(nativeElement, klass);
-            }
-            cleanupEnterClassData(nativeElement);
+        if (hasCompleted) return;
+        determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
+        if (!longestAnimations.has(nativeElement)) {
+          for (const klass of activeClasses) {
+            renderer.removeClass(nativeElement, klass);
           }
-        });
+          cleanupEnterClassData(nativeElement);
+        }
       });
     });
   }
@@ -333,14 +326,6 @@ function animateLeaveClassRunner(
   const componentResolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
   let fallbackTimeoutId: number | undefined;
   let hasCompleted = false;
-  let isCleanedUp = false;
-
-  cleanupFns.push(() => {
-    isCleanedUp = true;
-    if (fallbackTimeoutId !== undefined) {
-      clearTimeout(fallbackTimeoutId);
-    }
-  });
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
     const target = getEventTarget(event as Event);
@@ -393,22 +378,21 @@ function animateLeaveClassRunner(
   // preventing an animation via selector specificity.
   ngZone.runOutsideAngular(() => {
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        if (hasCompleted || isCleanedUp) return;
-        determineLongestAnimation(el, longestAnimations, areAnimationSupported);
-        const longest = longestAnimations.get(el);
-        if (!longest) {
-          clearLeavingNodes(tNode, el);
-          cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
-          clearLViewNodeAnimationResolvers(lView, tNode);
-        } else {
-          // Fallback cleanup if the browser drops the transitionend/animationend event
-          // entirely due to off-screen optimizations or rapid DOM teardown.
-          fallbackTimeoutId = setTimeout(() => {
-            handleOutAnimationEnd(new CustomEvent('animation-fallback'));
-          }, longest.duration + 50) as unknown as number;
-        }
-      });
+      if (hasCompleted) return;
+      determineLongestAnimation(el, longestAnimations, areAnimationSupported);
+      const longest = longestAnimations.get(el);
+      if (!longest) {
+        clearLeavingNodes(tNode, el);
+        cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
+        clearLViewNodeAnimationResolvers(lView, tNode);
+      } else {
+        // Fallback cleanup if the browser drops the transitionend/animationend event
+        // entirely due to off-screen optimizations or rapid DOM teardown.
+        fallbackTimeoutId = setTimeout(() => {
+          handleOutAnimationEnd(new CustomEvent('animation-fallback'));
+        }, longest.duration + 50) as unknown as number;
+        cleanupFns.push(() => clearTimeout(fallbackTimeoutId));
+      }
     });
   });
 }

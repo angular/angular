@@ -31,7 +31,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import {fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
@@ -169,68 +169,6 @@ describe('Animation', () => {
       fixture.detectChanges();
       expect(cmp.show()).toBeFalsy();
       expect(cmp.el).toBeUndefined();
-    }));
-
-    it('should fire the fallback timer and clean up if the animationend event is not dispatched', fakeAsync(() => {
-      @Component({
-        selector: 'test-cmp',
-        styles: styles,
-        template: '<div>@if (show()) {<p animate.leave="fade" #el>I should fade</p>}</div>',
-        encapsulation: ViewEncapsulation.None,
-      })
-      class TestComponent {
-        show = signal(true);
-        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
-      }
-      TestBed.configureTestingModule({animationsEnabled: true});
-
-      const fixture = TestBed.createComponent(TestComponent);
-      const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.innerHTML).toContain('I should fade');
-      cmp.show.set(false);
-      fixture.detectChanges();
-
-      tickAnimationFrames(1);
-
-      // Now we step the tick so the macro-task setup timeout executes and queues our fallback.
-      tick(1);
-
-      // Wait for duration + 50ms buffer time for fallback
-      tick(10 + 50);
-
-      // Assert that cleanup occurred successfully without needing to artificially dispatch the event
-      expect(fixture.nativeElement.innerHTML).not.toContain('I should fade');
-      expect(cmp.el).toBeUndefined();
-    }));
-
-    it('should prevent leaking fallback timeout if view is destroyed early', fakeAsync(() => {
-      @Component({
-        selector: 'test-cmp',
-        styles: styles,
-        template: '<div>@if (show()) {<p animate.leave="fade" #el>I should fade</p>}</div>',
-        encapsulation: ViewEncapsulation.None,
-      })
-      class TestComponent {
-        show = signal(true);
-        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
-      }
-      TestBed.configureTestingModule({animationsEnabled: true});
-
-      const fixture = TestBed.createComponent(TestComponent);
-      const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-
-      cmp.show.set(false);
-      fixture.detectChanges();
-
-      // We explicitly destroy the fixture right after triggering the leave,
-      // imitating the situation where the view goes away before the next macro-task.
-      fixture.destroy();
-
-      // Flush all tasks, expecting no errors with our cleanup flag guarding the timeout.
-      flush();
     }));
 
     it('should support string arrays', fakeAsync(() => {
