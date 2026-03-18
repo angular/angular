@@ -160,6 +160,7 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
       return op.interpolation.expressions.length;
     case ir.OpKind.I18nExpression:
     case ir.OpKind.Conditional:
+    case ir.OpKind.Boundary:
     case ir.OpKind.DeferWhen:
     case ir.OpKind.StoreLet:
       return 1;

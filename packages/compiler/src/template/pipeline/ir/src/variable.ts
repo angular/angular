@@ -17,7 +17,8 @@ export type SemanticVariable =
   | ContextVariable
   | IdentifierVariable
   | SavedViewVariable
-  | AliasVariable;
+  | AliasVariable
+  | BoundaryStateVariable;
 
 export interface SemanticVariableBase {
   kind: SemanticVariableKind;
@@ -83,4 +84,12 @@ export interface AliasVariable extends SemanticVariableBase {
   kind: SemanticVariableKind.Alias;
   identifier: string;
   expression: o.Expression;
+}
+
+/**
+ * A variable that holds the state of a boundary.
+ */
+export interface BoundaryStateVariable extends SemanticVariableBase {
+  kind: SemanticVariableKind.BoundaryState;
+  boundaryXref: XrefId;
 }

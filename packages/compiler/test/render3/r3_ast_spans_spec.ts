@@ -219,6 +219,25 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitBoundaryBlock(block: t.BoundaryBlock): void {
+    this.result.push([
+      'BoundaryBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
+    ]);
+    this.visitAll([block.children, block.errorBlocks]);
+  }
+
+  visitBoundaryErrorBlock(block: t.BoundaryErrorBlock): void {
+    this.result.push([
+      'BoundaryErrorBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+    ]);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     let name: string;
 

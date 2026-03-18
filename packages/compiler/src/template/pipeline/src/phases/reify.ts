@@ -52,8 +52,14 @@ const DOM_PROPERTY_REMAPPING = new Map([
  */
 export function reify(job: CompilationJob): void {
   for (const unit of job.units) {
-    reifyCreateOperations(unit, unit.create);
-    reifyUpdateOperations(unit, unit.update);
+    const slotMap = new Map<ir.XrefId, number>();
+    for (const op of unit.create) {
+      if (ir.isElementOrContainerOp(op) && op.handle.slot !== null) {
+        slotMap.set(op.xref, op.handle.slot);
+      }
+    }
+    reifyCreateOperations(unit, unit.create, slotMap);
+    reifyUpdateOperations(unit, unit.update, slotMap);
   }
 }
 
@@ -91,11 +97,19 @@ function ensureNoIrForDebug(job: CompilationJob) {
   }
 }
 
-function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>): void {
+function reifyCreateOperations(
+  unit: CompilationUnit,
+  ops: ir.OpList<ir.CreateOp>,
+  slotMap: Map<ir.XrefId, number>,
+): void {
   for (const op of ops) {
+    if (ir.isElementOrContainerOp(op) && op.handle.slot !== null) {
+      slotMap.set(op.xref, op.handle.slot);
+    }
+
     ir.transformExpressionsInOp(
       op,
-      (expr) => reifyIrExpression(unit, expr),
+      (expr) => reifyIrExpression(unit, expr, slotMap),
       ir.VisitorContextFlag.None,
     );
 
@@ -254,7 +268,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 childView.vars!,
                 op.tag,
                 op.attributes,
-                op.localRefs,
+                typeof op.localRefs === 'number' ? op.localRefs : null,
                 op.startSourceSpan,
               )
             : ng.template(
@@ -264,7 +278,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 childView.vars!,
                 op.tag,
                 op.attributes,
-                op.localRefs,
+                typeof op.localRefs === 'number' ? op.localRefs : null,
                 op.startSourceSpan,
               ),
         );
@@ -293,6 +307,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           op.handlerFnName!,
           op.handlerOps,
           /* consumesDollarEvent */ false,
+          slotMap,
         );
         ir.OpList.replace(
           op,
@@ -305,6 +320,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           op.handlerFnName!,
           op.handlerOps,
           op.consumesDollarEvent,
+          slotMap,
         );
 
         ir.OpList.replace(
@@ -318,6 +334,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           op.handlerFnName!,
           op.handlerOps,
           op.consumesDollarEvent,
+          slotMap,
         );
         const eventTargetResolver = op.eventTarget
           ? GLOBAL_TARGET_RESOLVERS.get(op.eventTarget)
@@ -347,7 +364,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           op,
           ng.twoWayListener(
             op.name,
-            reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, true),
+            reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, true, slotMap),
             op.sourceSpan,
           ),
         );
@@ -556,6 +573,17 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           ),
         );
         break;
+      case ir.OpKind.BoundaryCreate:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        if (Array.isArray(op.localRefs) && op.localRefs.length > 0) {
+          throw new Error(
+            `AssertionError: local refs array should have been extracted into a constant`,
+          );
+        }
+        ir.OpList.replace(op, ng.boundaryCreate(op.handle.slot!, op.startSourceSpan));
+        break;
       case ir.OpKind.RepeaterCreate:
         if (op.handle.slot === null) {
           throw new Error('No slot was assigned for repeater instruction');
@@ -597,7 +625,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.vars!,
             op.tag,
             op.attributes,
-            reifyTrackBy(unit, op),
+            reifyTrackBy(unit, op, slotMap),
             op.usesComponentInstance,
             emptyViewFnName,
             emptyDecls,
@@ -639,11 +667,15 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
   }
 }
 
-function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
+function reifyUpdateOperations(
+  unit: CompilationUnit,
+  ops: ir.OpList<ir.UpdateOp>,
+  slotMap: Map<ir.XrefId, number>,
+): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(
       op,
-      (expr) => reifyIrExpression(unit, expr),
+      (expr) => reifyIrExpression(unit, expr, slotMap),
       ir.VisitorContextFlag.None,
     );
 
@@ -736,6 +768,29 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         }
         ir.OpList.replace(op, ng.conditional(op.processed, op.contextValue, op.sourceSpan));
         break;
+      case ir.OpKind.Boundary:
+        if (op.processed === null) {
+          throw new Error(`Boundary test was not set.`);
+        }
+        const boundarySlot = slotMap.get(op.target);
+        if (boundarySlot === undefined) {
+          throw new Error(`AssertionError: Boundary target slot not found`);
+        }
+        const primarySlot = slotMap.get(op.primaryTarget);
+        if (primarySlot === undefined) {
+          throw new Error(`AssertionError: Primary slot not found for boundary`);
+        }
+        ir.OpList.replace(
+          op,
+          ng.boundary(
+            o.literal(boundarySlot),
+            op.processed,
+            o.literal(primarySlot),
+            op.contextValue,
+            op.sourceSpan,
+          ),
+        );
+        break;
       case ir.OpKind.Repeater:
         ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));
         break;
@@ -792,7 +847,11 @@ function reifyControl(op: ir.ControlOp): ir.UpdateOp {
   return ng.control(op.sourceSpan);
 }
 
-function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Expression {
+function reifyIrExpression(
+  unit: CompilationUnit,
+  expr: o.Expression,
+  slotMap: Map<ir.XrefId, number>,
+): o.Expression {
   if (!ir.isIrExpression(expr)) {
     return expr;
   }
@@ -865,7 +924,10 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
       }
       return ng.arrowFunction(
         expr.varOffset,
-        unit.job.pool.getSharedFunctionReference(getArrowFunctionFactory(unit, expr), 'arrowFn'),
+        unit.job.pool.getSharedFunctionReference(
+          getArrowFunctionFactory(unit, expr, slotMap),
+          'arrowFn',
+        ),
         o.variable(CONTEXT_NAME),
       );
     default:
@@ -886,9 +948,10 @@ function reifyListenerHandler(
   name: string,
   handlerOps: ir.OpList<ir.UpdateOp>,
   consumesDollarEvent: boolean,
+  slotMap: Map<ir.XrefId, number>,
 ): o.FunctionExpr {
   // First, reify all instruction calls within `handlerOps`.
-  reifyUpdateOperations(unit, handlerOps);
+  reifyUpdateOperations(unit, handlerOps, slotMap);
 
   // Next, extract all the `o.Statement`s from the reified operations. We can expect that at this
   // point, all operations have been converted to statements.
@@ -913,7 +976,11 @@ function reifyListenerHandler(
 }
 
 /** Reifies the tracking expression of a `RepeaterCreateOp`. */
-function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Expression {
+function reifyTrackBy(
+  unit: CompilationUnit,
+  op: ir.RepeaterCreateOp,
+  slotMap: Map<ir.XrefId, number>,
+): o.Expression {
   // If the tracking function was created already, there's nothing left to do.
   if (op.trackByFn !== null) {
     return op.trackByFn;
@@ -933,7 +1000,7 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
       : o.arrowFn(params, op.track);
   } else {
     // Otherwise first we need to reify the track-related ops.
-    reifyUpdateOperations(unit, op.trackByOps);
+    reifyUpdateOperations(unit, op.trackByOps, slotMap);
 
     const statements: o.Statement[] = [];
     for (const trackOp of op.trackByOps) {
@@ -962,8 +1029,9 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
 function getArrowFunctionFactory(
   unit: CompilationUnit,
   expr: ir.ArrowFunctionExpr,
+  slotMap: Map<ir.XrefId, number>,
 ): o.ArrowFunctionExpr {
-  reifyUpdateOperations(unit, expr.ops);
+  reifyUpdateOperations(unit, expr.ops, slotMap);
 
   const statements: o.Statement[] = [];
   for (const op of expr.ops) {

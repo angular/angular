@@ -511,6 +511,27 @@ export function conditionalBranchCreate(
   return call(Identifiers.conditionalBranchCreate, args, sourceSpan);
 }
 
+export function boundaryCreate(slot: number, sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return call(Identifiers.boundaryCreate, [o.literal(slot)], sourceSpan);
+}
+
+export function getBoundary(slot: o.Expression): o.Expression {
+  return o.importExpr(Identifiers.getBoundary).callFn([slot]);
+}
+
+export function boundary(
+  slot: o.Expression,
+  processedExpr: o.Expression,
+  primarySlot: o.Expression,
+  contextValue: o.Expression | null,
+  sourceSpan: ParseSourceSpan | null,
+): ir.UpdateOp {
+  const args = [slot, processedExpr, primarySlot];
+  if (contextValue !== null) {
+    args.push(contextValue);
+  }
+  return call(Identifiers.boundaryUpdate, args, sourceSpan);
+}
 export function repeaterCreate(
   slot: number,
   viewFnName: string,

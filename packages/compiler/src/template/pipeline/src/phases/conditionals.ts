@@ -16,7 +16,7 @@ import {ComponentCompilationJob} from '../compilation';
 export function generateConditionalExpressions(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind !== ir.OpKind.Conditional) {
+      if (op.kind !== ir.OpKind.Conditional && op.kind !== ir.OpKind.Boundary) {
         continue;
       }
 
@@ -33,7 +33,10 @@ export function generateConditionalExpressions(job: ComponentCompilationJob): vo
       }
 
       // Switch expressions assign their main test to a temporary, to avoid re-executing it.
-      let tmp = op.test == null ? null : new ir.AssignTemporaryExpr(op.test, job.allocateXrefId());
+      let tmp =
+        op.kind === ir.OpKind.Conditional && op.test != null
+          ? new ir.AssignTemporaryExpr(op.test, job.allocateXrefId())
+          : null;
       let caseExpressionTemporaryXref: ir.XrefId | null = null;
 
       // For each remaining condition, test whether the temporary satifies the check. (If no temp is
@@ -50,7 +53,7 @@ export function generateConditionalExpressions(job: ComponentCompilationJob): vo
             useTmp,
             conditionalCase.expr,
           );
-        } else if (conditionalCase.alias !== null) {
+        } else if (op.kind === ir.OpKind.Conditional && conditionalCase.alias !== null) {
           // Since we can only pass one variable into the conditional instruction,
           // reuse the same variable to store the result of the expressions.
           caseExpressionTemporaryXref ??= job.allocateXrefId();

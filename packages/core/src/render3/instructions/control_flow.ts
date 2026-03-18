@@ -31,6 +31,7 @@ import {
   ID,
   INJECTOR,
   LView,
+  ON_ERROR,
   TVIEW,
   TView,
 } from '../interfaces/view';
@@ -38,7 +39,7 @@ import {LiveCollection, reconcile} from '../list_reconciliation';
 import {destroyLView} from '../node_manipulation';
 import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
-import {getConstant, getTNode} from '../util/view_utils';
+import {getConstant, getTNode, markViewForRefresh} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {AnimationLViewData} from '../../animation/interfaces';
@@ -568,7 +569,7 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
   }
 }
 
-function getLContainer(lView: LView, index: number): LContainer {
+export function getLContainer(lView: LView, index: number): LContainer {
   const lContainer = lView[index];
   ngDevMode && assertLContainer(lContainer);
 
@@ -625,7 +626,7 @@ function getExistingLViewFromLContainer<T>(lContainer: LContainer, index: number
   return existingLView!;
 }
 
-function getExistingTNode(tView: TView, index: number): TNode {
+export function getExistingTNode(tView: TView, index: number): TNode {
   const tNode = getTNode(tView, index);
   ngDevMode && assertTNode(tNode);
 
