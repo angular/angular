@@ -29,7 +29,7 @@
 
 <docs-workflow>
 
-<docs-step title="Создайте `Home`">
+<docs-step title="Create the `Home`">
 На этом шаге вы создадите новый компонент для вашего приложения.
 
 В панели **Terminal** вашей IDE:
@@ -58,7 +58,7 @@
 1. Оставьте `ng serve` работающим пока выполняете следующие шаги.
    </docs-step>
 
-<docs-step title="Добавьте новый компонент в макет приложения">
+<docs-step title="Add the new component to your app's layout">
 На этом шаге вы добавите новый компонент `Home` в корневой компонент приложения `App`, чтобы он отображался в макете приложения.
 
 В панели **Edit** вашей IDE:
@@ -86,7 +86,7 @@
 
 </docs-step>
 
-<docs-step title="Добавьте функциональность в `Home`">
+<docs-step title="Add features to `Home`">
 
 На этом шаге вы добавите функциональность в `Home`.
 

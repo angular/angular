@@ -21,7 +21,7 @@
 
 <docs-workflow>
 
-<docs-step title="Добавьте свойство `isEditable`" header="app.ts" language="ts">
+<docs-step title="Add a property called `isEditable`" header="app.ts" language="ts">
 Обновите код в `app.ts`, добавив в класс `App` свойство `isEditable` с начальным значением `true`.
 
 ```ts {highlight:[2]}
@@ -32,7 +32,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Выполните привязку к `contentEditable`" header="app.ts" language="ts">
+<docs-step title="Bind to `contentEditable`" header="app.ts" language="ts">
 Далее привяжите атрибут `contentEditable` элемента `div` к свойству `isEditable`, используя синтаксис <code aria-label="square brackets">[]</code>.
 
 ```angular-ts {highlight:[3]}

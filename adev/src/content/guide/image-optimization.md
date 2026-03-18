@@ -24,7 +24,7 @@
 ## Начало работы {#getting-started}
 
 <docs-workflow>
-<docs-step title="Импорт директивы `NgOptimizedImage`">
+<docs-step title="Import `NgOptimizedImage` directive">
 Импортируйте директиву `NgOptimizedImage` из `@angular/common`:
 
 ```ts
@@ -41,12 +41,12 @@ imports: [
 ```
 
 </docs-step>
-<docs-step title="(Необязательно) Настройка загрузчика">
+<docs-step title="(Optional) Set up a Loader">
 Загрузчик изображений **не обязателен** для использования NgOptimizedImage, но использование его с CDN изображений открывает мощные функции производительности, включая автоматические `srcset` для ваших изображений.
 
 Краткое руководство по настройке загрузчика можно найти в разделе [Настройка загрузчика изображений](#configuring-an-image-loader-for-ngoptimizedimage) в конце этой страницы.
 </docs-step>
-<docs-step title="Включение директивы">
+<docs-step title="Enable the directive">
 Чтобы активировать директиву `NgOptimizedImage`, замените атрибут `src` изображения на `ngSrc`.
 
 ```html
@@ -55,7 +55,7 @@ imports: [
 
 Если вы используете [встроенный сторонний загрузчик](#built-in-loaders), убедитесь, что путь базового URL не включён в `src`, так как он будет добавлен загрузчиком автоматически.
 </docs-step>
-<docs-step title="Пометьте изображения как `priority`">
+<docs-step title="Mark images as `priority`">
 Всегда помечайте [LCP-изображение](https://web.dev/lcp/#what-elements-are-considered) на вашей странице как `priority` для приоритизации его загрузки.
 
 ```html
@@ -70,7 +70,7 @@ imports: [
 
 Angular отображает предупреждение в режиме разработки, если LCP-элемент является изображением без атрибута `priority`. LCP-элемент страницы может варьироваться в зависимости от ряда факторов — например, от размеров экрана пользователя, поэтому страница может содержать несколько изображений, которые следует пометить как `priority`. Подробнее см. в [CSS for Web Vitals](https://web.dev/css-web-vitals/#images-and-largest-contentful-paint-lcp).
 </docs-step>
-<docs-step title="Укажите ширину и высоту">
+<docs-step title="Include Width and Height">
 Чтобы предотвратить [сдвиги макета, связанные с изображениями](https://web.dev/css-web-vitals/#images-and-layout-shifts), NgOptimizedImage требует указания высоты и ширины изображения следующим образом:
 
 ```html

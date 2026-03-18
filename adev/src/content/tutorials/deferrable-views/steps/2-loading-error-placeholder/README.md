@@ -39,7 +39,7 @@
 
 <docs-workflow>
 
-<docs-step title="Добавление блока `@placeholder`">
+<docs-step title="Add `@placeholder` block">
 В вашем `app.ts` добавьте блок `@placeholder` к блоку `@defer`.
 
 ```angular-html {highlight:[3,4,5]}
@@ -52,7 +52,7 @@
 
 </docs-step>
 
-<docs-step title="Настройка блока `@placeholder`">
+<docs-step title="Configure the `@placeholder` block">
 Блок `@placeholder` принимает необязательный параметр для указания минимального (`minimum`) времени отображения этого заполнителя. Параметр `minimum` указывается в миллисекундах (ms) или секундах (s). Этот параметр существует для предотвращения быстрого мерцания контента заполнителя в случае, если отложенные зависимости загружаются быстро.
 
 ```angular-html {highlight:[3,4,5]}
@@ -65,7 +65,7 @@
 
 </docs-step>
 
-<docs-step title="Добавление блока `@loading`">
+<docs-step title="Add `@loading` block">
 Далее добавьте блок `@loading` в шаблон компонента.
 
 Блок `@loading` принимает два необязательных параметра:
@@ -92,7 +92,7 @@
 
 </docs-step>
 
-<docs-step title="Добавление блока `@error`">
+<docs-step title="Add `@error` block">
 И наконец, добавьте блок `@error` к блоку `@defer`.
 
 ```angular-html {highlight:[7,8,9]}

@@ -17,7 +17,7 @@
 
 <docs-workflow>
 
-<docs-step title="Добавьте `withComponentInputBinding`">
+<docs-step title="Add `withComponentInputBinding`">
 
 Добавьте функцию `withComponentInputBinding` в метод `provideRouter`.
 
@@ -27,7 +27,7 @@ providers: [provideRouter(appRoutes, withComponentInputBinding())];
 
 </docs-step>
 
-<docs-step title="Добавьте `input` в компонент">
+<docs-step title="Add an `input` to the component">
 
 Обновите компонент, добавив свойство `input()`, совпадающее с именем параметра.
 
@@ -37,7 +37,7 @@ hero = computed(() => this.service.getHero(id()));
 ```
 
 </docs-step>
-<docs-step title="Необязательно: используйте значение по умолчанию">
+<docs-step title="Optional: Use a default value">
 Маршрутизатор присваивает значения всем входным параметрам на основе текущего маршрута, когда включён `withComponentInputBinding`.
 Маршрутизатор присваивает `undefined`, если данные маршрута не совпадают с ключом входного параметра, например когда необязательный параметр запроса отсутствует.
 Следует включать `undefined` в тип `input`, когда есть вероятность, что входной параметр не будет сопоставлен маршрутом.

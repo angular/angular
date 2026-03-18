@@ -49,7 +49,7 @@ Angular.
 
 <docs-workflow>
 
-<docs-step title="Определите версию `node.js`, необходимую для Angular">
+<docs-step title="Identify the version of `node.js` that Angular requires">
 Angular требует активную LTS или поддерживаемую LTS версию Node. Давайте проверим вашу версию `node.js`. Информацию о требованиях к конкретным версиям см. в свойстве engines в [файле package.json](https://unpkg.com/browse/@angular/core@15.1.5/package.json).
 
 В окне **Терминала**:
@@ -58,17 +58,17 @@ Angular требует активную LTS или поддерживаемую 
 1. Убедитесь, что отображаемый номер версии соответствует требованиям.
    </docs-step>
 
-<docs-step title="Установите правильную версию `node.js` для Angular">
+<docs-step title="Install the correct version of `node.js` for Angular">
 Если у вас не установлена версия `node.js`, следуйте [инструкциям по установке на nodejs.org](https://nodejs.org/en/download/)
 </docs-step>
 
-<docs-step title="Установите последнюю версию Angular">
+<docs-step title="Install the latest version of Angular">
 После установки `node.js` и `npm` следующим шагом будет установка [Angular CLI](tools/cli), который предоставляет инструменты для эффективной разработки на Angular.
 
 В окне **Терминала** выполните следующую команду: `npm install -g @angular/cli`.
 </docs-step>
 
-<docs-step title="Установите интегрированную среду разработки (IDE)">
+<docs-step title="Install integrated development environment (IDE)">
 Вы можете использовать любой инструмент для создания приложений на Angular. Мы рекомендуем следующее:
 
 1. [Visual Studio Code](https://code.visualstudio.com/)
@@ -77,7 +77,7 @@ Angular требует активную LTS или поддерживаемую 
 3. [WebStorm](https://www.jetbrains.com/webstorm/)
    </docs-step>
 
-<docs-step title="Необязательно: настройте IDE с поддержкой ИИ">
+<docs-step title="Optional: set-up your AI powered IDE">
 
 Если вы проходите это руководство в предпочитаемой IDE с поддержкой
 ИИ, [ознакомьтесь с правилами подсказок и лучшими практиками Angular](/ai/develop-with-ai).

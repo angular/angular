@@ -10,7 +10,7 @@
 
 <docs-workflow>
 
-<docs-step title="Создайте `HousingLocation`">
+<docs-step title="Create the `HousingLocation`">
 На этом шаге вы создадите новый компонент для вашего приложения.
 
 В панели **Terminal** вашей IDE:
@@ -39,7 +39,7 @@
 1. Оставьте `ng serve` работающим пока выполняете следующие шаги.
    </docs-step>
 
-<docs-step title="Добавьте новый компонент в макет приложения">
+<docs-step title="Add the new component to your app's layout">
 На этом шаге вы добавите новый компонент `HousingLocation` в компонент `Home` приложения, чтобы он отображался в макете.
 
 В панели **Edit** вашей IDE:
@@ -59,7 +59,7 @@
 
 </docs-step>
 
-<docs-step title="Добавьте стили для компонента">
+<docs-step title="Add the styles for the component">
 На этом шаге вы скопируете заранее подготовленные стили для `HousingLocation` в ваше приложение, чтобы оно отображалось корректно.
 
 1. Откройте `src/app/housing-location/housing-location.css` и вставьте в файл следующие стили:

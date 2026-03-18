@@ -10,7 +10,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импортируйте функцию computed">
+<docs-step title="Import computed function">
 Добавьте `computed` к существующим импортам.
 
 ```ts
@@ -20,7 +20,7 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
 
 </docs-step>
 
-<docs-step title="Создайте вычисляемый сигнал для уведомлений">
+<docs-step title="Create a computed signal for notifications">
 Добавьте вычисляемый сигнал, который определяет, должны ли быть включены уведомления на основе статуса пользователя.
 
 ```ts
@@ -30,7 +30,7 @@ notificationsEnabled = computed(() => this.userStatus() === 'online');
 Этот вычисляемый сигнал будет автоматически пересчитываться при изменении сигнала `userStatus`. Обратите внимание, как мы вызываем `this.userStatus()` внутри функции вычисления для чтения значения сигнала.
 </docs-step>
 
-<docs-step title="Создайте вычисляемый сигнал с описательным сообщением">
+<docs-step title="Create a computed signal for a descriptive message">
 Добавьте вычисляемый сигнал, который создаёт описательное сообщение на основе статуса пользователя.
 
 ```ts
@@ -52,7 +52,7 @@ statusMessage = computed(() => {
 Это показывает, как вычисляемые сигналы могут обрабатывать более сложную логику с операторами switch и преобразованиями строк.
 </docs-step>
 
-<docs-step title="Создайте вычисляемый сигнал для расчёта доступности в рабочие часы">
+<docs-step title="Create a computed signal that calculates working hours availability">
 Добавьте вычисляемый сигнал, который вычисляет, находится ли пользователь в рабочее время.
 
 ```ts
@@ -67,7 +67,7 @@ isWithinWorkingHours = computed(() => {
 Это демонстрирует, как вычисляемые сигналы могут выполнять вычисления и объединять несколько источников данных. Значение обновляется автоматически при изменении `userStatus`.
 </docs-step>
 
-<docs-step title="Отобразите вычисляемые значения в шаблоне">
+<docs-step title="Display the computed values in the template">
 В шаблоне уже есть заполнители с надписью «Loading...». Замените их вашими вычисляемыми сигналами:
 
 1. Для уведомлений замените `Loading...` блоком `@if`:

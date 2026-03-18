@@ -22,7 +22,7 @@ class PetCareDashboard {
 
 <docs-workflow>
 
-<docs-step title="Внедрите `CarService`">
+<docs-step title="Inject the `CarService`">
 
 В файле `app.ts`, используя функцию `inject()`, внедрите `CarService` и присвойте его свойству с именем `carService`.
 
@@ -30,7 +30,7 @@ class PetCareDashboard {
 
 </docs-step>
 
-<docs-step title="Используйте экземпляр `carService`">
+<docs-step title="Use the `carService` instance">
 
 Вызов `inject(CarService)` предоставил вам экземпляр `CarService`, который вы можете использовать в своем приложении,
 сохраненный в свойстве `carService`.
@@ -43,7 +43,7 @@ display = this.carService.getCars().join(' ⭐️ ');
 
 </docs-step>
 
-<docs-step title="Обновите шаблон `App`">
+<docs-step title="Update the `App` template">
 
 Обновите шаблон компонента в `app.ts` следующим кодом:
 

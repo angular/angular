@@ -25,7 +25,7 @@
 
 <docs-workflow>
 
-<docs-step title="Добавление данных о жилье в `Home`">
+<docs-step title="Add housing data to the `Home`">
 
 В `Home` сейчас есть только один объект жилья. В этом шаге вы добавите массив записей `HousingLocation`.
 
@@ -37,7 +37,7 @@
 
 </docs-step>
 
-<docs-step title="Обновление шаблона `Home` для использования `@for`">
+<docs-step title="Update the `Home` template to use `@for`">
 Теперь в приложении есть набор данных, который можно использовать для отображения записей в браузере с помощью блока `@for`.
 
 1. Обновите тег `<app-housing-location>` в коде шаблона следующим образом:

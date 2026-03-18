@@ -21,7 +21,7 @@ template: `{{ date | date: 'medium' }}`;
 
 <docs-workflow>
 
-<docs-step title="Отформатируйте число с помощью `DecimalPipe`">
+<docs-step title="Format a number with `DecimalPipe`">
 
 В `app.ts` обновите шаблон, добавив параметр для pipe `decimal`.
 
@@ -35,7 +35,7 @@ template: ` ...
 
 </docs-step>
 
-<docs-step title="Отформатируйте дату с помощью `DatePipe`">
+<docs-step title="Format a date with `DatePipe`">
 
 Теперь обновите шаблон, чтобы использовать pipe `date`.
 
@@ -49,7 +49,7 @@ template: ` ...
 
 </docs-step>
 
-<docs-step title="Отформатируйте валюту с помощью `CurrencyPipe`">
+<docs-step title="Format a currency with `CurrencyPipe`">
 
 Для последнего задания обновите шаблон, чтобы использовать pipe `currency`.
 

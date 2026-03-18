@@ -15,7 +15,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импортируйте директиву FormField">
+<docs-step title="Import the FormField directive">
 Импортируйте директиву `FormField` из `@angular/forms/signals` и добавьте её в массив imports вашего компонента:
 
 ```ts
@@ -32,7 +32,7 @@ import { form, FormField } from '@angular/forms/signals';
 
 </docs-step>
 
-<docs-step title="Привяжите поле email">
+<docs-step title="Bind the email field">
 В вашем шаблоне добавьте директиву `[formField]` к полю ввода email:
 
 ```html
@@ -42,7 +42,7 @@ import { form, FormField } from '@angular/forms/signals';
 Выражение `loginForm.email` обращается к полю email вашей формы.
 </docs-step>
 
-<docs-step title="Привяжите поле password">
+<docs-step title="Bind the password field">
 Добавьте директиву `[formField]` к полю ввода пароля:
 
 ```html
@@ -51,7 +51,7 @@ import { form, FormField } from '@angular/forms/signals';
 
 </docs-step>
 
-<docs-step title="Привяжите поле чекбокса">
+<docs-step title="Bind the checkbox field">
 Добавьте директиву `[formField]` к полю чекбокса:
 
 ```html
@@ -60,7 +60,7 @@ import { form, FormField } from '@angular/forms/signals';
 
 </docs-step>
 
-<docs-step title="Отобразите значения формы">
+<docs-step title="Display the form values">
 Ниже формы есть раздел отладки для отображения текущих значений формы. Отобразите значение каждого поля с помощью `.value()`:
 
 ```angular-html

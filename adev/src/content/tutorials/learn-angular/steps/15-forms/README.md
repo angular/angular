@@ -14,7 +14,7 @@
 
 <docs-workflow>
 
-<docs-step title="Создание поля ввода">
+<docs-step title="Create an input field">
 
 В файле `user.ts` обновите шаблон, добавив текстовое поле ввода с `id`, установленным в `framework`, и типом `text`.
 
@@ -27,7 +27,7 @@
 
 </docs-step>
 
-<docs-step title="Импорт FormsModule">
+<docs-step title="Import `FormsModule`">
 
 Чтобы эта форма могла использовать функции Angular, обеспечивающие привязку данных к формам, необходимо импортировать
 `FormsModule`.
@@ -47,7 +47,7 @@ export class User {}
 
 </docs-step>
 
-<docs-step title="Добавление привязки к значению поля ввода">
+<docs-step title="Add binding to the value of the input">
 
 В `FormsModule` есть директива `ngModel`, которая привязывает значение поля ввода к свойству вашего класса.
 

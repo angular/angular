@@ -11,7 +11,7 @@
 
 <docs-workflow>
 
-<docs-step title="Определите маршрут в `app.routes.ts`">
+<docs-step title="Define a route in `app.routes.ts`">
 
 В вашем приложении есть две страницы: (1) главная страница (Home) и (2) страница пользователя (User).
 
@@ -38,7 +38,7 @@ export const routes: Routes = [
 
 </docs-step>
 
-<docs-step title="Добавьте заголовок в определение маршрута">
+<docs-step title="Add title to route definition">
 
 Помимо корректного определения маршрутов, Angular Router также позволяет задавать заголовок страницы при навигации, добавив свойство `title` к каждому маршруту.
 

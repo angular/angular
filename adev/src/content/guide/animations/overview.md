@@ -29,7 +29,7 @@ W3C поддерживает список анимируемых свойств 
 Для начала работы с анимациями Angular в проекте импортируйте специфические для анимаций модули вместе со стандартной функциональностью Angular.
 
 <docs-workflow>
-<docs-step title="Включение модуля анимаций">
+<docs-step title="Enabling the animations module">
 Импортируйте `provideAnimationsAsync` из `@angular/platform-browser/animations/async` и добавьте его в список провайдеров в вызове функции `bootstrapApplication`.
 
 ```ts {header: "Enabling Animations", linenums}
@@ -49,7 +49,7 @@ bootstrapApplication(AppComponent, {
 
 <docs-code header="app.module.ts" path="adev/src/content/examples/animations/src/app/app.module.1.ts"/>
 </docs-step>
-<docs-step title="Импорт функций анимации в файлы компонентов">
+<docs-step title="Importing animation functions into component files">
 Если планируется использовать специфические функции анимации в файлах компонентов, импортируйте эти функции из `@angular/animations`.
 
 <docs-code header="app.ts" path="adev/src/content/examples/animations/src/app/app.ts" region="imports"/>
@@ -57,7 +57,7 @@ bootstrapApplication(AppComponent, {
 Все [доступные функции анимации](guide/legacy-animations#animations-api-summary) перечислены в конце этого руководства.
 
 </docs-step>
-<docs-step title="Добавление свойства метаданных анимации">
+<docs-step title="Adding the animation metadata property">
 В файле компонента добавьте свойство метаданных `animations:` в декоратор `@Component()`.
 Поместите триггер, определяющий анимацию, в свойство метаданных `animations`.
 

@@ -14,7 +14,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт функции signal">
+<docs-step title="Import the signal function">
 Импортируйте функцию `signal` из `@angular/core` в верхней части файла вашего компонента.
 
 ```ts
@@ -23,7 +23,7 @@ import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
 
 </docs-step>
 
-<docs-step title="Создание сигнала в вашем компоненте">
+<docs-step title="Create a signal in your component">
 Добавьте сигнал `userStatus` в класс вашего компонента, инициализировав его значением `'offline'`.
 
 ```ts
@@ -37,7 +37,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Отображение значения сигнала в шаблоне">
+<docs-step title="Display the signal value in the template">
 Обновите индикатор статуса, чтобы отображать текущий статус пользователя:
 1. Привязав сигнал к атрибуту class с помощью `[class]="userStatus()"`
 2. Отобразив текст статуса, заменив `???` на `{{ userStatus() }}`
@@ -59,7 +59,7 @@ export class App {
 Обратите внимание, как мы вызываем сигнал `userStatus()` с круглыми скобками, чтобы прочитать его значение.
 </docs-step>
 
-<docs-step title="Добавление методов для обновления сигнала">
+<docs-step title="Add methods to update the signal">
 Добавьте методы в ваш компонент, которые изменяют статус пользователя, используя метод `set()`.
 
 ```ts
@@ -76,7 +76,7 @@ goOffline() {
 
 </docs-step>
 
-<docs-step title="Подключение кнопок управления">
+<docs-step title="Wire up the control buttons">
 Кнопки уже есть в шаблоне. Теперь подключите их к вашим методам, добавив:
 1. Обработчики клика с помощью `(click)`
 2. Состояния disabled с помощью `[disabled]`, когда статус уже установлен
@@ -89,7 +89,7 @@ goOffline() {
 
 </docs-step>
 
-<docs-step title="Добавление метода переключения с использованием update()">
+<docs-step title="Add a toggle method using update()">
 Добавьте метод `toggleStatus()`, который переключает между online и offline, используя метод `update()`.
 
 ```ts
@@ -102,7 +102,7 @@ toggleStatus() {
 
 </docs-step>
 
-<docs-step title="Добавление обработчика кнопки переключения">
+<docs-step title="Add the toggle button handler">
 Кнопка переключения уже есть в шаблоне. Подключите её к вашему методу `toggleStatus()`:
 
 ```html

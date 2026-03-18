@@ -32,11 +32,11 @@ class UserService {
 
 <docs-workflow>
 
-<docs-step title="Добавьте декоратор @Injectable">
+<docs-step title="Add the `@Injectable` decorator">
 Обновите код в `car.service.ts`, добавив декоратор `@Injectable`.
 </docs-step>
 
-<docs-step title="Настройте декоратор">
+<docs-step title="Configure the decorator">
 Значения в объекте, переданном декоратору, считаются его конфигурацией.
 <br>
 Обновите декоратор `@Injectable` в `car.service.ts`, добавив конфигурацию `providedIn: 'root'`.

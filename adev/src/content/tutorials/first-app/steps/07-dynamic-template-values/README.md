@@ -21,7 +21,7 @@
 
 <docs-workflow>
 
-<docs-step title="Обновление шаблона HousingLocation для включения интерполированных значений">
+<docs-step title="Update `HousingLocation` template to include interpolated values">
 Этот шаг добавляет новую HTML-структуру и интерполированные значения в шаблон `HousingLocation`.
 
 В редакторе кода:
@@ -38,7 +38,7 @@
 
 </docs-step>
 
-<docs-step title="Проверка отображения изменений в браузере">
+<docs-step title="Confirm the changes render in the browser">
 1.  Сохраните все изменения.
 1.  Откройте браузер и убедитесь, что приложение отображает фото, город и штат из примера данных.
     <img alt="окно браузера с приложением homes-app, отображающим логотип, текстовое поле фильтра, кнопку поиска и карточку интерфейса с местоположением жилья" src="assets/images/tutorials/first-app/homes-app-lesson-07-step-2.png">

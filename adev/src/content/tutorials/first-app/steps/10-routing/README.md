@@ -20,7 +20,7 @@
 
 <docs-workflow>
 
-<docs-step title="Создайте компонент details по умолчанию">
+<docs-step title="Create a default details component ">
 1. В терминале выполните следующую команду для создания компонента `Details`:
 
     ```shell
@@ -31,7 +31,7 @@
 
 </docs-step>
 
-<docs-step title="Добавьте маршрутизацию в приложение">
+<docs-step title="Add routing to the application">
 1.  В директории `src/app` создайте файл `routes.ts`. В этом файле будут определены маршруты приложения.
 
 2.  В `main.ts` внесите следующие изменения для включения маршрутизации:
@@ -58,7 +58,7 @@
 
 </docs-step>
 
-<docs-step title="Добавьте маршрут к новому компоненту">
+<docs-step title="Add route to new component">
 На предыдущем шаге вы удалили ссылку на компонент `<app-home>` из шаблона. На этом шаге вы добавите новый маршрут к этому компоненту.
 
 1. В `routes.ts` внесите следующие изменения для создания маршрута.

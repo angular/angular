@@ -6,7 +6,7 @@
 Это даёт пользователям значимую первую отрисовку приложения, которая появляется быстро, поскольку браузер может рендерить HTML и CSS без необходимости инициализировать JavaScript.
 
 <docs-workflow>
-<docs-step title="Подготовка приложения">
+<docs-step title="Prepare the application">
 Выполните следующую команду Angular CLI:
 
 ```shell
@@ -15,7 +15,7 @@ ng new my-app
 
 Для существующего приложения необходимо вручную добавить `Router` и определить `<router-outlet>` внутри приложения.
 </docs-step>
-<docs-step title="Создание App shell приложения">
+<docs-step title="Create the application shell">
 Используйте Angular CLI для автоматического создания App shell.
 
 ```shell
@@ -38,7 +38,7 @@ src
 └── main.server.ts # main server application bootstrapping
 ```
 
-<docs-step title="Проверка сборки приложения с содержимым shell">
+<docs-step title="Verify the application is built with the shell content">
 
 ```shell
 ng build --configuration=development

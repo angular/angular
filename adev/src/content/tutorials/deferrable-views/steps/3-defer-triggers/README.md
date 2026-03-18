@@ -38,7 +38,7 @@
 
 <docs-workflow>
 
-<docs-step title="Добавьте триггер `on hover`">
+<docs-step title="Add `on hover` trigger">
 В вашем `app.ts` добавьте триггер `on hover` в блок `@defer`.
 
 ```angular-html {highlight:[1]}
@@ -56,7 +56,7 @@
 Теперь страница не будет отображать раздел комментариев до тех пор, пока вы не наведёте курсор на его заполнитель.
 </docs-step>
 
-<docs-step title="Добавьте кнопку 'Show all comments'">
+<docs-step title="Add a 'Show all comments' button">
 Далее обновите шаблон, добавив кнопку с надписью «Show all comments». Включите переменную шаблона `#showComments` вместе с кнопкой.
 
 ```angular-html {highlight:[1]}
@@ -77,7 +77,7 @@
 
 </docs-step>
 
-<docs-step title="Добавьте триггер `on interaction`">
+<docs-step title="Add `on interaction` trigger">
 Обновите блок `@defer` в шаблоне, чтобы использовать триггер `on interaction`. Передайте переменную шаблона `showComments` в качестве параметра `interaction`.
 
 ```angular-html {highlight:[3]}
