@@ -1,10 +1,10 @@
-<div class="header">Hydration</div>
+<div class="header">Гидратация</div>
 <div class="description">
-  Hydration is the process that restores the server-side rendered application on the client
+  Гидратация — это процесс восстановления серверно-отрендеренного приложения на клиенте
 
   <p>
-    This demo showcases Angular's hydration strategies, allowing you to simulate network latency and
-    observe how different components hydrate based on their configured triggers.
+    Эта демонстрация показывает стратегии гидратации Angular, позволяя имитировать сетевую задержку и
+    наблюдать, как различные компоненты гидратируются в зависимости от настроенных триггеров.
   </p>
 </div>
 
@@ -16,13 +16,13 @@
         <div class="card config-card">
           <h3 class="sidebar-title font-mono">
             <docs-icon>schedule</docs-icon>
-            Simulation Config
+            Настройки симуляции
           </h3>
 
           <div class="config-controls">
             <div class="control-group">
               <div class="label-row">
-                <label>Network Latency</label>
+                <label>Сетевая задержка</label>
                 <span class="latency-value font-mono">{{ latency() }}ms</span>
               </div>
               <input
@@ -42,14 +42,14 @@
               class="btn-reset"
             >
               <docs-icon>refresh</docs-icon>
-              Reset Lifecycle
+              Сбросить
             </button>
           </div>
         </div>
 
         <!-- Terminal Log -->
         <div class="terminal">
-          <h3 class="terminal-title font-mono">Hydration Engine Log</h3>
+          <h3 class="terminal-title font-mono">Лог гидратации</h3>
           <div class="terminal-body font-mono custom-scrollbar">
             @for (evt of eventQueue(); track $index) {
               <div class="log-entry animate-in">
@@ -59,7 +59,7 @@
               </div>
             }
             @if (eventQueue().length === 0) {
-              <div class="log-placeholder">Awaiting app bootstrap...</div>
+              <div class="log-placeholder">Ожидание загрузки приложения...</div>
             }
           </div>
         </div>
@@ -89,15 +89,15 @@
                   <div class="spinner-outer"></div>
                   <div class="spinner-inner"></div>
                 </div>
-                <p class="ssr-title">Generating SSR Markup...</p>
+                <p class="ssr-title">Генерация SSR-разметки...</p>
               </div>
             }
 
             <div class="viewport-flex">
               <div class="viewport-header">
                 <div class="header-text">
-                  <h4 class="viewport-title">Component Strategies</h4>
-                  <p class="viewport-subtitle">Mixing eager and deferred hydration triggers.</p>
+                  <h4 class="viewport-title">Стратегии компонентов</h4>
+                  <p class="viewport-subtitle">Сочетание немедленных и отложенных триггеров гидратации.</p>
                 </div>
                 <div class="viewport-stats">
                   <div class="stats-label">Main App</div>
@@ -184,33 +184,33 @@
     <!-- Explanatory Feature Cards -->
     <div class="explainer-grid">
       <div class="explainer-item">
-        <h5 class="explainer-title"><span class="dot-red"></span> Eager Hydration</h5>
+        <h5 class="explainer-title"><span class="dot-red"></span> Немедленная гидратация</h5>
         <p class="explainer-text">
-          Essential components (like navigation or top-fold content) hydrate as soon as the main
-          application bundle is ready.
+          Ключевые компоненты (например, навигация или контент первого экрана) гидратируются сразу,
+          как только основной бандл приложения готов.
         </p>
       </div>
       <div class="explainer-item">
-        <h5 class="explainer-title"><span class="dot-violet"></span> Incremental Hydration</h5>
+        <h5 class="explainer-title"><span class="dot-violet"></span> Инкрементальная гидратация</h5>
         <p class="explainer-text">
-          Use hydration triggers like <code>on interaction</code> or <code>on timer</code> to delay
-          JS execution for non-critical elements.
+          Используйте триггеры гидратации, такие как <code>on interaction</code> или <code>on timer</code>,
+          чтобы отложить выполнение JS для некритичных элементов.
         </p>
       </div>
       <div class="explainer-item">
-        <h5 class="explainer-title"><span class="dot-green"></span> Event Replay</h5>
+        <h5 class="explainer-title"><span class="dot-green"></span> Воспроизведение событий</h5>
         <p class="explainer-text">
-          User clicks are never lost. Angular records events during the "Static" phase and
-          re-dispatches them once hydrated.
+          Клики пользователя не теряются. Angular записывает события в фазе «Static» и
+          воспроизводит их после гидратации.
         </p>
       </div>
     </div>
   </div>
   <button
     class="docs-primary-btn"
-    [attr.text]="'Learn more about hydration'"
+    [attr.text]="'Подробнее о гидратации'"
     routerLink="/guide/hydration"
   >
-    Learn more about hydration
+    Подробнее о гидратации
   </button>
 </div>
