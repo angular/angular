@@ -91,4 +91,23 @@ describe('Animations Integration', () => {
     fallbackEls = await page.$$('.fallback-el');
     expect(fallbackEls.length).toBe(0);
   });
+
+  it('should remove elements from DOM after reordering and removal with (animate.leave)', async () => {
+    // Wait for the test elements to be rendered
+    await page.waitForSelector('.test-item');
+
+    let items = await page.$$('.test-item');
+    expect(items.length).toBe(2);
+
+    // Shuffle
+    await page.click('#shuffle-test');
+    await new Promise((res) => setTimeout(res, 500));
+
+    // Remove
+    await page.click('#remove-test');
+    await new Promise((res) => setTimeout(res, 500));
+
+    items = await page.$$('.test-item');
+    expect(items.length).toBe(1);
+  });
 });

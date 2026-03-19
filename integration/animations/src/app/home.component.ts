@@ -7,16 +7,13 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 
-// We want to verify that dragging an item does not result in any items disappearing
-// when they have an enter/leave animation.
-
 @Component({
-  selector: 'app-root',
+  selector: 'app-home',
   imports: [CdkDropList, CdkDrag, CdkDragPlaceholder],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent {
+export class HomeComponent {
   movies = [
     'Episode I - The Phantom Menace',
     'Episode II - Attack of the Clones',
