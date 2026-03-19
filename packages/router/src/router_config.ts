@@ -200,6 +200,7 @@ export interface InMemoryScrollingOptions {
  * @publicApi
  * @see withComponentInputBinding
  * @see RouterModule#forRoot
+ * @see [Disable query parameter binding](guide/routing/common-router-tasks#disable-query-parameter-binding)
  */
 export interface ComponentInputBindingOptions {
   /**
