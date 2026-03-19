@@ -7,4 +7,5 @@ code_review:
     help: false
     summary: false
     code_review: false
-ignore_patterns: []
+ignore_patterns:
+  - pnpm-lock.yaml
