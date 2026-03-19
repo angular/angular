@@ -404,6 +404,9 @@ export interface ComponentDecorator {
    * life-cycle hooks. For more information, see the
    * [Lifecycle Hooks](guide/components/lifecycle) guide.
    *
+   * HELPFUL: You may not use this interface to describe a class that is a component. Decorators do not affect the typing of the decorated classes.
+   * Use `Type<unknown>` instead of `Type<Component>`.
+   *
    * @usageNotes
    *
    * ### Setting component inputs
