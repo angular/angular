@@ -113,6 +113,7 @@ export {
   InMemoryScrollingOptions,
   ROUTER_CONFIGURATION,
   RouterConfigOptions,
+  ComponentInputBindingOptions,
 } from './router_config';
 export {ROUTES} from './router_config_loader';
 export {ROUTER_INITIALIZER, RouterModule} from './router_module';
