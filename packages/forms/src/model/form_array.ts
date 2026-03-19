@@ -54,7 +54,8 @@ export type ɵFormArrayRawValue<T extends AbstractControl<any>> = ɵTypedOrUntyp
  *
  * A `FormArray` aggregates the values of each child `FormControl` into an array.
  * It calculates its status by reducing the status values of its children. For example, if one of
- * the controls in a `FormArray` is invalid, the entire array becomes invalid.
+ * the controls in a `FormArray` is invalid, the entire array becomes invalid. Similarly, if all
+ * controls in a `FormArray` are disabled, the entire array becomes disabled.
  *
  * `FormArray` accepts one generic argument, which is the type of the controls inside.
  * If you need a heterogenous array, use {@link UntypedFormArray}.
