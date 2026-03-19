@@ -38,6 +38,7 @@ import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ComponentRef} from '@angular/core/src/render3';
+import {reusedNodes} from '../../src/animation/utils';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],
@@ -510,6 +511,60 @@ describe('Animation', () => {
       fixture.detectChanges();
       expect(fadeCalled).toHaveBeenCalled();
     }));
+
+    it('should remove element from DOM with (animate.leave) after list reordering', async () => {
+      @Component({
+        selector: 'leak-cmp',
+        template: 'item',
+      })
+      class LeakComponent {}
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [LeakComponent],
+        template: `
+          @for (item of items(); track item.id) {
+            <leak-cmp (animate.leave)="onLeave($event)" />
+          }
+        `,
+      })
+      class TestComponent {
+        items = signal([{id: '1'}, {id: '2'}]);
+
+        onLeave(event: AnimationCallbackEvent) {
+          event.animationComplete();
+        }
+
+        shuffle() {
+          const arr = this.items();
+          this.items.set([arr[1], arr[0]]);
+        }
+
+        remove() {
+          const arr = this.items();
+          this.items.set([arr[1]]);
+        }
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toContain('item');
+
+      fixture.componentInstance.shuffle();
+      await fixture.whenStable();
+
+      const elementsBeforeRemove = fixture.debugElement.queryAll(By.css('leak-cmp'));
+      // Element is in reused nodes before remove
+      expect(reusedNodes.has(elementsBeforeRemove[0].nativeElement)).toBe(true);
+
+      fixture.componentInstance.remove();
+      await fixture.whenStable();
+
+      const elements = fixture.nativeElement.querySelectorAll('leak-cmp');
+      expect(elements.length).toBe(1);
+    });
 
     it('should compose class list when host binding and regular binding', fakeAsync(() => {
       const multiple = `
