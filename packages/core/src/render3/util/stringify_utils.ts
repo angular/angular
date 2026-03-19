@@ -16,7 +16,7 @@ import type {ClassDebugInfo} from '../interfaces/definition';
  * be extra careful not to introduce megamorphic reads in it.
  * Check `core/test/render3/perf/render_stringify` for benchmarks and alternate implementations.
  */
-export function renderStringify(value: any): string {
+export function renderStringify(value: unknown): string {
   if (typeof value === 'string') return value;
   if (value == null) return '';
   // Use `String` so that it invokes the `toString` method of the value. Note that this
