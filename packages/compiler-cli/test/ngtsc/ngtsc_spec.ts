@@ -1450,7 +1450,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveA {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-a',
           template: '...',
           standalone: false,
         })
@@ -1471,7 +1471,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveB {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-b',
           template: '...',
           standalone: false,
         })
@@ -1481,7 +1481,8 @@ runInEachFileSystem((os: string) => {
           selector: 'app',
           template: \`
             <div dir></div>
-            <comp></comp>
+            <comp-a></comp-a>
+            <comp-b></comp-b>
           \`,
           standalone: false,
         })
@@ -1556,7 +1557,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveA {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-a',
           template: '...',
           standalone: false,
         })
@@ -1577,7 +1578,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveB {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-b',
           template: '...',
           standalone: false,
         })
@@ -1595,7 +1596,8 @@ runInEachFileSystem((os: string) => {
           selector: 'app',
           template: \`
             <div dir></div>
-            <comp></comp>
+            <comp-a></comp-a>
+            <comp-b></comp-b>
           \`,
           standalone: false,
         })
