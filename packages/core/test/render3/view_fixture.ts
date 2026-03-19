@@ -120,6 +120,7 @@ export class ViewFixture {
         ngReflect: false,
         tracingService: null,
         sharedStylesHost: new MockSharedStylesHost(),
+        fallbackDocument: document,
       },
       hostRenderer,
       null,

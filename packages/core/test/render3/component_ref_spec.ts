@@ -390,7 +390,31 @@ describe('ComponentFactory', () => {
       expect(sharedStylesHost.getActiveHosts()).toEqual([shadowRoot]);
 
       componentRef.destroy();
+      expect(sharedStylesHost.getActiveHosts()).toEqual([]);
+    });
 
+    it('should use the head of the provided DOCUMENT as the style host (Document context parity)', () => {
+      const mockHead = document.createElement('head');
+      const mockDocument = {
+        head: mockHead,
+        createElement: (tag: string) => document.createElement(tag),
+      };
+      const sharedStylesHost = new MockSharedStylesHost();
+      const injector = Injector.create({
+        providers: [
+          {provide: RendererFactory2, useValue: rendererFactorySpy},
+          {provide: SHARED_STYLES_HOST, useValue: sharedStylesHost},
+          {provide: DOCUMENT, useValue: mockDocument},
+        ],
+      });
+
+      const hostNode = document.createElement('div');
+      const componentRef = cf.create(injector, /* projectableNodes */ undefined, hostNode);
+
+      // Verify it used the mock head, not the global document.head
+      expect(sharedStylesHost.getActiveHosts()).toEqual([mockHead]);
+
+      componentRef.destroy();
       expect(sharedStylesHost.getActiveHosts()).toEqual([]);
     });
   });

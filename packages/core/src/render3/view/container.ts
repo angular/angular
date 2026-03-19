@@ -126,7 +126,7 @@ export function addLViewToLContainer(
     const rootNode = host.getRootNode?.();
     const isShadowRoot =
       rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
-    sharedStylesHost.addHost(isShadowRoot ? rootNode : getDocument().head);
+    sharedStylesHost.addHost(isShadowRoot ? rootNode : lView[ENVIRONMENT].fallbackDocument.head);
   }
 
   // When in hydration mode, reset the pointer to the first child in
@@ -166,14 +166,18 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView |
   const viewToDetach = lContainer[indexInContainer];
 
   if (viewToDetach) {
-    // Undo the `SharedStylesHost` registration.
-    const sharedStylesHost = viewToDetach[ENVIRONMENT].sharedStylesHost;
-    if (sharedStylesHost) {
-      const host = viewToDetach[HOST] ?? lContainer[NATIVE];
-      const rootNode = host?.getRootNode?.();
-      const isShadowRoot =
-        rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
-      sharedStylesHost.removeHost(isShadowRoot ? rootNode : getDocument().head);
+    const host = viewToDetach[HOST] ?? lContainer[NATIVE];
+    if (host.isConnected) {
+      const sharedStylesHost = viewToDetach[ENVIRONMENT].sharedStylesHost;
+      if (sharedStylesHost) {
+        // Undo the `SharedStylesHost` registration.
+        const rootNode = host.getRootNode?.();
+        const isShadowRoot =
+          rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+        sharedStylesHost.removeHost(
+          isShadowRoot ? rootNode : viewToDetach[ENVIRONMENT].fallbackDocument.head,
+        );
+      }
     }
 
     const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];

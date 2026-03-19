@@ -73,6 +73,7 @@ export function enterViewWithOneDiv() {
       ngReflect: false,
       tracingService: null,
       sharedStylesHost: new MockSharedStylesHost(),
+      fallbackDocument: document,
     },
     renderer,
     null,

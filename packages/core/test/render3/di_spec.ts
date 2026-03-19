@@ -158,6 +158,7 @@ describe('di', () => {
           ngReflect: false,
           tracingService: null,
           sharedStylesHost: new MockSharedStylesHost(),
+          fallbackDocument: document,
         },
         {} as any,
         null,

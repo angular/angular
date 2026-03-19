@@ -406,6 +406,16 @@ export interface LViewEnvironment {
    * HTML stylesheets may choose not to provide a `SharedStylesHost`.
    */
   sharedStylesHost: SharedStylesHost | null;
+
+  /**
+   * The fallback document used as the style host when a specific host (like a `ShadowRoot`)
+   * is not applicable.
+   *
+   * This node is captured at bootstrap to ensure document context parity. This is particularly
+   * important in environments with mocked documents (like unit tests), which provide the
+   * `DOCUMENT` token but don't call `setDocument`.
+   */
+  fallbackDocument: Document;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
