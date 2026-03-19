@@ -160,3 +160,20 @@ export class AppComponent {
   state: 'loggedOut' | 'loading' | 'loggedIn' = 'loggedOut';
 }
 ```
+
+When the switched expression is nested within a union, you must explicitly specify the expression to check for exhaustiveness.
+
+```angular-ts
+@Component({
+  template: `
+    @switch (state.mode) {
+      @case ('show') { {{ state.menu }}; }
+      @case ('hide') {}
+      @default never(state);
+    }
+  `,
+})
+export class App {
+  state!: {mode: 'hide'} | {mode: 'show'; menu: number};
+}
+```

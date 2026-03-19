@@ -677,7 +677,9 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitAll(block.children);
   }
 
-  visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck) {}
+  visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck) {
+    block.expression && this.visitBinding(block.expression);
+  }
 
   visitForLoopBlock(block: TmplAstForLoopBlock) {
     this.visit(block.item);

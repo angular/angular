@@ -2202,6 +2202,27 @@ describe('type check blocks', () => {
       );
     });
 
+    it('should generate a switch block with exhaustiveness checking with param', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+          @default never(expr.prop);
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: "" + ((this).two()); break; ' +
+          'default: const tcbExhaustive_t1: never = ((((this).expr)).prop);',
+      );
+    });
+
     it('should not report unused locals for exhaustiveness check variable', () => {
       const TEMPLATE = `
         @switch (expr) {

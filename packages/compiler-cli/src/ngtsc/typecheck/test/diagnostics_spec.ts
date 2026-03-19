@@ -1453,6 +1453,25 @@ class TestComponent {
 
       expect(messages).toEqual([]);
     });
+
+    it('should narrow union when switching on a nested prop', () => {
+      const messages = diagnose(
+        `
+        @switch (state.mode) {
+          @case ('show') { {{ state.menu }}; }
+          @case ('hide') {}
+          @default never(state);
+        }
+        `,
+        `
+          export class TestComponent {
+            state: { mode: 'hide' } | { mode: 'show'; menu: number };
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
   });
 
   // https://github.com/angular/angular/issues/43970

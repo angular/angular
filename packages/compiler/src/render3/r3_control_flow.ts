@@ -264,6 +264,10 @@ export function createSwitchBlock(
     if (isCase) {
       expression = parseBlockParameterToBinding(node.parameters[0], bindingParser);
     } else if (node.name === 'default never') {
+      if (node.parameters.length > 0) {
+        expression = parseBlockParameterToBinding(node.parameters[0], bindingParser);
+      }
+
       if (
         node.children.length > 0 ||
         (node.endSourceSpan !== null &&
@@ -287,6 +291,7 @@ export function createSwitchBlock(
       }
 
       exhaustiveCheck = new t.SwitchExhaustiveCheck(
+        expression,
         node.sourceSpan,
         node.startSourceSpan,
         node.endSourceSpan,
