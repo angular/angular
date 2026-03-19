@@ -70,6 +70,11 @@ export function ɵɵHostDirectivesFeature(
  */
 function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveResolution {
   const allDirectiveDefs: DirectiveDef<unknown>[] = [];
+  // Tracks directives already added to `allDirectiveDefs` so that a directive that is both
+  // a host directive of another matched directive AND directly selector-matched (or referenced
+  // multiple times in host directive chains) is only included once. The first occurrence wins,
+  // which mirrors how providers handle duplicates.
+  const seenDirectiveDefs = new Set<DirectiveDef<unknown>>();
   let hasComponent = false;
   let hostDirectiveDefs: HostDirectiveDefs | null = null;
   let hostDirectiveRanges: HostDirectiveRanges | null = null;
@@ -94,7 +99,7 @@ function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveR
       hostDirectiveRanges ??= new Map();
 
       // TODO(pk): probably could return matches instead of taking in an array to fill in?
-      findHostDirectiveDefs(def, allDirectiveDefs, hostDirectiveDefs);
+      findHostDirectiveDefs(def, allDirectiveDefs, hostDirectiveDefs, seenDirectiveDefs);
 
       // Note that these indexes are within the offset by `directiveStart`. We can't do the
       // offsetting here, because `directiveStart` hasn't been initialized on the TNode yet.
@@ -106,11 +111,16 @@ function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveR
     if (i === 0 && isComponentDef(def)) {
       hasComponent = true;
       allDirectiveDefs.push(def);
+      seenDirectiveDefs.add(def);
     }
   }
 
   for (let i = hasComponent ? 1 : 0; i < matches.length; i++) {
-    allDirectiveDefs.push(matches[i]);
+    const def = matches[i];
+    if (!seenDirectiveDefs.has(def)) {
+      allDirectiveDefs.push(def);
+      seenDirectiveDefs.add(def);
+    }
   }
 
   return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
@@ -120,16 +130,22 @@ function findHostDirectiveDefs(
   currentDef: DirectiveDef<unknown>,
   matchedDefs: DirectiveDef<unknown>[],
   hostDirectiveDefs: HostDirectiveDefs,
+  seenDirectiveDefs: Set<DirectiveDef<unknown>>,
 ): void {
   if (currentDef.hostDirectives !== null) {
     for (const configOrFn of currentDef.hostDirectives) {
       if (typeof configOrFn === 'function') {
         const resolved = configOrFn();
         for (const config of resolved) {
-          trackHostDirectiveDef(createHostDirectiveDef(config), matchedDefs, hostDirectiveDefs);
+          trackHostDirectiveDef(
+            createHostDirectiveDef(config),
+            matchedDefs,
+            hostDirectiveDefs,
+            seenDirectiveDefs,
+          );
         }
       } else {
-        trackHostDirectiveDef(configOrFn, matchedDefs, hostDirectiveDefs);
+        trackHostDirectiveDef(configOrFn, matchedDefs, hostDirectiveDefs, seenDirectiveDefs);
       }
     }
   }
@@ -140,6 +156,7 @@ function trackHostDirectiveDef(
   def: HostDirectiveDef,
   matchedDefs: DirectiveDef<unknown>[],
   hostDirectiveDefs: HostDirectiveDefs,
+  seenDirectiveDefs: Set<DirectiveDef<unknown>>,
 ) {
   const hostDirectiveDef = getDirectiveDef(def.directive)!;
 
@@ -147,14 +164,22 @@ function trackHostDirectiveDef(
     validateHostDirective(def, hostDirectiveDef);
   }
 
+  // If this directive was already added (e.g. it appears in multiple host directive chains
+  // or is also matched directly by a selector), skip it. The first occurrence wins, which
+  // mirrors how providers handle duplicates.
+  if (seenDirectiveDefs.has(hostDirectiveDef)) {
+    return;
+  }
+
   // We need to patch the `declaredInputs` so that
   // `ngOnChanges` can map the properties correctly.
   patchDeclaredInputs(hostDirectiveDef.declaredInputs, def.inputs);
 
   // Host directives execute before the host so that its host bindings can be overwritten.
-  findHostDirectiveDefs(hostDirectiveDef, matchedDefs, hostDirectiveDefs);
+  findHostDirectiveDefs(hostDirectiveDef, matchedDefs, hostDirectiveDefs, seenDirectiveDefs);
   hostDirectiveDefs.set(hostDirectiveDef, def);
   matchedDefs.push(hostDirectiveDef);
+  seenDirectiveDefs.add(hostDirectiveDef);
 }
 
 /** Creates a `HostDirectiveDef` from a used-defined host directive configuration. */

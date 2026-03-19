@@ -3459,9 +3459,15 @@ describe('host directives', () => {
       );
     });
 
-    it('should throw an error if a host directive matches multiple times in a template', () => {
+    it('should auto-resolve a host directive that also matches directly in a template', () => {
+      let instanceCount = 0;
+
       @Directive({selector: '[dir]'})
-      class HostDir {}
+      class HostDir {
+        constructor() {
+          instanceCount++;
+        }
+      }
 
       @Directive({
         selector: '[dir]',
@@ -3472,14 +3478,19 @@ describe('host directives', () => {
       @Component({template: '<div dir></div>', imports: [HostDir, Dir]})
       class App {}
 
-      expect(() => TestBed.createComponent(App)).toThrowError(
-        'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.',
-      );
+      expect(() => TestBed.createComponent(App)).not.toThrow();
+      expect(instanceCount).toBe(1);
     });
 
-    it('should throw an error if a host directive matches multiple times on a component', () => {
+    it('should auto-resolve a host directive that also matches directly on a component', () => {
+      let instanceCount = 0;
+
       @Directive({selector: '[dir]'})
-      class HostDir {}
+      class HostDir {
+        constructor() {
+          instanceCount++;
+        }
+      }
 
       @Component({
         selector: 'comp',
@@ -3492,33 +3503,36 @@ describe('host directives', () => {
         template: '<comp dir></comp>',
       };
 
-      const expectedError =
-        'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.';
+      // Note: the definition order in `imports` affects the directive matching order
+      // so we verify that both orderings deduplicate correctly.
+      instanceCount = 0;
+      @Component({
+        ...baseAppMetadata,
+        imports: [Comp, HostDir],
+      })
+      class App1 {}
+      expect(() => TestBed.createComponent(App1)).not.toThrow();
+      expect(instanceCount).toBe(1);
 
-      // Note: the definition order in `imports` seems to affect the
-      // directive matching order so we test both scenarios.
-      expect(() => {
-        @Component({
-          ...baseAppMetadata,
-          imports: [Comp, HostDir],
-        })
-        class App {}
-        TestBed.createComponent(App);
-      }).toThrowError(expectedError);
-
-      expect(() => {
-        @Component({
-          ...baseAppMetadata,
-          imports: [HostDir, Comp],
-        })
-        class App {}
-        TestBed.createComponent(App);
-      }).toThrowError(expectedError);
+      instanceCount = 0;
+      @Component({
+        ...baseAppMetadata,
+        imports: [HostDir, Comp],
+      })
+      class App2 {}
+      expect(() => TestBed.createComponent(App2)).not.toThrow();
+      expect(instanceCount).toBe(1);
     });
 
-    it('should throw an error if a host directive appears multiple times in a chain', () => {
+    it('should auto-resolve a host directive that appears multiple times in a chain', () => {
+      let instanceCount = 0;
+
       @Directive()
-      class DuplicateHostDir {}
+      class DuplicateHostDir {
+        constructor() {
+          instanceCount++;
+        }
+      }
 
       @Directive({hostDirectives: [DuplicateHostDir]})
       class HostDir {}
@@ -3538,9 +3552,8 @@ describe('host directives', () => {
 
       TestBed.configureTestingModule({declarations: [App, Dir]});
 
-      expect(() => TestBed.createComponent(App)).toThrowError(
-        'NG0309: Directive DuplicateHostDir matches multiple times on the same element. Directives can only match an element once.',
-      );
+      expect(() => TestBed.createComponent(App)).not.toThrow();
+      expect(instanceCount).toBe(1);
     });
 
     it('should throw an error if a host directive is a component', () => {
