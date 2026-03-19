@@ -60,7 +60,12 @@ export class TcbSwitchOp extends TcbOp {
     });
 
     if (this.block.exhaustiveCheck) {
-      const switchValue = tcbExpression(this.block.expression, this.tcb, this.scope);
+      let translateExpression = this.block.expression;
+      if (this.block.exhaustiveCheck.expression) {
+        translateExpression = this.block.exhaustiveCheck.expression;
+      }
+
+      const switchValue = tcbExpression(translateExpression, this.tcb, this.scope);
       const exhaustiveId = this.tcb.allocateId();
 
       clauses.push(

@@ -953,7 +953,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
   }
 
   override visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck) {
-    // There are no bindings/references in the exhaustive check block.
+    block.expression?.visit(this);
   }
 
   override visitForLoopBlock(block: ForLoopBlock) {

@@ -3396,6 +3396,16 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should parse @default never(expr);', () => {
+      expect(tokenizeAndHumanizeParts('@default never(expr);')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'default never'],
+        [TokenType.BLOCK_PARAMETER, 'expr'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse @default never ;', () => {
       expect(tokenizeAndHumanizeParts('@default never ;')).toEqual([
         [TokenType.BLOCK_OPEN_START, 'default never'],

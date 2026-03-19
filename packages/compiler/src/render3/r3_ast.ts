@@ -471,6 +471,7 @@ export class SwitchBlockCaseGroup extends BlockNode implements Node {
 
 export class SwitchExhaustiveCheck extends BlockNode implements Node {
   constructor(
+    public expression: AST | null,
     sourceSpan: ParseSourceSpan,
     startSourceSpan: ParseSourceSpan,
     endSourceSpan: ParseSourceSpan | null,
