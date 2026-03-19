@@ -87,8 +87,11 @@ function* walkLViewChildren(tNode: TNode, lView: LView): IterableIterator<[TNode
     const componentLView = getComponentLViewByIndex(tNode.index, lView);
     if (isLView(componentLView)) {
       const componentTView = componentLView[TVIEW];
-      const firstChild = componentTView.firstChild;
-      if (firstChild) yield [firstChild, componentLView];
+      let componentChild = componentTView.firstChild;
+      while (componentChild) {
+        yield [componentChild, componentLView];
+        componentChild = componentChild.next;
+      }
     }
   }
 
@@ -98,8 +101,11 @@ function* walkLViewChildren(tNode: TNode, lView: LView): IterableIterator<[TNode
     for (let i = CONTAINER_HEADER_OFFSET; i < slot.length; i++) {
       const embeddedLView = slot[i] as LView;
       const embeddedTView = embeddedLView[TVIEW];
-      const firstChild = embeddedTView.firstChild;
-      if (firstChild) yield [firstChild, embeddedLView];
+      let embeddedChild = embeddedTView.firstChild;
+      while (embeddedChild) {
+        yield [embeddedChild, embeddedLView];
+        embeddedChild = embeddedChild.next;
+      }
     }
   }
 }
