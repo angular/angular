@@ -98,18 +98,20 @@ import {StandaloneService} from './standalone_service';
  *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
  *    inconsistent behavior in that it uses declared names rather than minified or public.
  */
-type DirectiveInputs<T> = {
-  [P in keyof T]?:  // Basic case. Mapping minified name to public name.
-    | string
-    // Complex input when there are flags, or differing public name and declared name, or there
-    // is a transform. Such inputs are not as common, so the array form is only generated then.
-    | [
-        flags: InputFlags,
-        publicName: string,
-        declaredName?: string,
-        transform?: InputTransformFunction,
-      ];
-};
+type DirectiveInputs = Record<
+  string,
+  // Basic case. Mapping minified name to public name.
+  | string
+  // Complex input when there are flags, or differing public name and declared name, or there
+  // is a transform. Such inputs are not as common, so the array form is only generated then.
+  | [
+      flags: InputFlags,
+      publicName: string,
+      declaredName?: string,
+      transform?: InputTransformFunction,
+    ]
+  | undefined
+>;
 
 interface DirectiveDefinition<T> {
   /**
@@ -123,7 +125,7 @@ interface DirectiveDefinition<T> {
   /**
    * A map of input names.
    */
-  inputs?: DirectiveInputs<T>;
+  inputs?: DirectiveInputs;
 
   /**
    * A map of output names.
@@ -135,7 +137,7 @@ interface DirectiveDefinition<T> {
    * This allows the render to re-construct the minified and non-minified names
    * of properties.
    */
-  outputs?: {[P in keyof T]?: string};
+  outputs?: Record<string, string | undefined>;
 
   /**
    * A list of optional features to apply.
