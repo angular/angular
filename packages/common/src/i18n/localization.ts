@@ -19,7 +19,7 @@ import {RuntimeErrorCode} from '../errors';
   useFactory: () => new NgLocaleLocalization(inject(LOCALE_ID)),
 })
 export abstract class NgLocalization {
-  abstract getPluralCategory(value: any, locale?: string): string;
+  abstract getPluralCategory(value: number, locale?: string): string;
 }
 
 /**
@@ -66,7 +66,7 @@ export class NgLocaleLocalization extends NgLocalization {
     super();
   }
 
-  override getPluralCategory(value: any, locale?: string): string {
+  override getPluralCategory(value: number, locale?: string): string {
     const plural = getLocalePluralCase(locale || this.locale)(value);
 
     switch (plural) {
