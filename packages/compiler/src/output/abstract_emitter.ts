@@ -396,7 +396,15 @@ export abstract class AbstractEmitterVisitor
 
   visitDynamicImportExpr(ast: o.DynamicImportExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
-    ctx.print(ast, `import(${ast.url})`);
+    ctx.print(ast, `import(`);
+
+    if (typeof ast.url === 'string') {
+      ctx.print(ast, escapeIdentifier(ast.url, true)!);
+    } else {
+      ast.url.visitExpression(this, ctx);
+    }
+
+    ctx.print(ast, `)`);
   }
 
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): void {
@@ -409,13 +417,14 @@ export abstract class AbstractEmitterVisitor
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, `function${ast.name ? ' ' + ast.name : ''}(`);
     this.visitParams(ast.params, ctx);
-    ctx.println(ast, `)`);
+    ctx.print(ast, `)`);
     ast.type?.visitType(this, ctx);
-    ctx.println(ast, ` {`);
+    ctx.print(ast, ` {`);
+    ctx.println(ast);
     ctx.incIndent();
     this.visitAllStatements(ast.statements, ctx);
     ctx.decIndent();
-    ctx.print(ast, `}`);
+    ctx.println(ast, `}`);
   }
 
   visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, ctx: EmitterVisitorContext): void {
@@ -424,14 +433,15 @@ export abstract class AbstractEmitterVisitor
     this.visitParams(ast.params, ctx);
     ctx.print(ast, ')');
     ast.type?.visitType(this, ctx);
-    ctx.print(ast, ' =>');
+    ctx.print(ast, ' => ');
 
     if (Array.isArray(ast.body)) {
-      ctx.println(ast, `{`);
+      ctx.print(ast, `{`);
+      ctx.println(ast);
       ctx.incIndent();
       this.visitAllStatements(ast.body, ctx);
       ctx.decIndent();
-      ctx.print(ast, `}`);
+      ctx.println(ast, `}`);
     } else {
       const shouldParenthesize = this.shouldParenthesize(ast.body, ast);
 
@@ -451,9 +461,10 @@ export abstract class AbstractEmitterVisitor
     this.printLeadingComments(stmt, ctx);
     ctx.print(stmt, `function ${stmt.name}(`);
     this.visitParams(stmt.params, ctx);
-    ctx.println(stmt, `)`);
+    ctx.print(stmt, `)`);
     stmt.type?.visitType(this, ctx);
-    ctx.println(stmt, ` {`);
+    ctx.print(stmt, ` {`);
+    ctx.println(stmt);
     ctx.incIndent();
     this.visitAllStatements(stmt.statements, ctx);
     ctx.decIndent();
