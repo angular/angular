@@ -554,7 +554,8 @@ export abstract class AbstractControl<
    * with a key-value pair for each member of the group.
    * * For a disabled `FormGroup`, the values of all controls as an object
    * with a key-value pair for each member of the group.
-   * * For a `FormArray`, the values of enabled controls as an array.
+   * * For an enabled `FormArray`, the values of enabled controls as an array.
+   * * For a disabled `FormArray`, the values of all controls as an array.
    *
    */
   public readonly value!: TValue;
