@@ -202,6 +202,22 @@ export interface HttpResourceRef<T> extends WritableResource<T>, ResourceRef<T> 
    */
   readonly progress: Signal<HttpProgressEvent | undefined>;
 
+  /**
+   * Signal indicating whether the HTTP response was redirected during the request.
+   *
+   * This property is only available when using the Fetch API.
+   * When using the default XHR backend this value will be `undefined`.
+   */
+  readonly redirected: Signal<boolean | undefined>;
+
+  /**
+   * Signal indicating the type of the HTTP response, based on the Fetch API's `Response.type`.
+   *
+   * This property is only available when using the Fetch API.
+   * When using the default XHR backend this value will be `undefined`.
+   */
+  readonly responseType: Signal<ResponseType | undefined>;
+
   hasValue(
     this: T extends undefined ? this : never,
   ): this is HttpResourceRef<Exclude<T, undefined>>;
