@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {diGraphTool} from './di_graph';
 import {signalGraphTool} from './signal_graph';
 import {DevtoolsToolDiscoveryEvent} from './tool_definitions';
 
@@ -26,7 +27,7 @@ export function registerAiTools(): () => void {
     const event = inputEvent as DevtoolsToolDiscoveryEvent;
     event.respondWith({
       name: 'Angular',
-      tools: [signalGraphTool],
+      tools: [diGraphTool, signalGraphTool],
     });
   }
 
