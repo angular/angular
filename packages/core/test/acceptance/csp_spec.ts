@@ -30,7 +30,7 @@ describe('CSP integration', () => {
     for (let i = 0; i < styles.length; i++) {
       const style = styles[i];
       const nonce = style.getAttribute('nonce');
-      if (nonce && style.textContent?.includes('--csp-test-var')) {
+      if (nonce && style.textContent?.includes('csp-test-var')) {
         nonces.push(nonce);
       }
     }

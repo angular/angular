@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {namespaceCssVariables} from '../../src/shadow_css';
 import {shim} from './utils';
 
 describe('ShadowCss', () => {
@@ -395,6 +396,93 @@ describe('ShadowCss', () => {
       expect(shim('/* comment 1 */ /* comment 2 */ b {c}', 'contenta')).toBe(
         '\n \n b[contenta] {c}',
       );
+    });
+  });
+
+  describe('CSS variable namespacing', () => {
+    it('should inject `%NS%` placeholder into CSS variable declarations and usages', () => {
+      const input = `
+.foo {
+  --my-color: red;
+  color: var(--my-color, blue);
+}
+      `.trim();
+
+      const expected = `
+.foo {
+  --%NS%my-color: red;
+  color: var(--%NS%my-color, blue);
+}
+      `.trim();
+
+      expect(namespaceCssVariables(input)).toEqualCss(expected);
+    });
+
+    it('should not inject `%NS%` when `/* DISABLE_NAMESPACING */` comment is present', () => {
+      const input = `
+.foo {
+  /* DISABLE_NAMESPACING */
+  --my-color: green;
+  background: var(
+    /* DISABLE_NAMESPACING */
+    --my-color
+  );
+}
+      `.trim();
+
+      const expected = `
+.foo {
+  /* DISABLE_NAMESPACING */
+  --my-color: green;
+  background: var(
+    /* DISABLE_NAMESPACING */
+    --my-color
+  );
+}
+      `.trim();
+
+      expect(namespaceCssVariables(input)).toEqualCss(expected);
+    });
+    it('should not inject `%NS%` when `/* DISABLE_NAMESPACING */` comment is present on the property declaration', () => {
+      const input = `
+.foo {
+  /* DISABLE_NAMESPACING */
+  color: var(--my-color, blue);
+}
+      `.trim();
+
+      const expected = `
+.foo {
+  /* DISABLE_NAMESPACING */
+  color: var(--my-color, blue);
+}
+      `.trim();
+
+      expect(namespaceCssVariables(input)).toEqualCss(expected);
+    });
+
+    it('should correctly handle multiple `var()` functions with isolated `/* DISABLE_NAMESPACING */` comments', () => {
+      const input = `
+.foo {
+  border: var(/* DISABLE_NAMESPACING */ --border-size) solid var(--border-color);
+  box-shadow: 
+    var(--shadow-1),
+    var(/* DISABLE_NAMESPACING */ --shadow-2),
+    var(--shadow-3);
+}
+      `.trim();
+
+      const expected = `
+.foo {
+  border: var(/* DISABLE_NAMESPACING */ --border-size) solid var(--%NS%border-color);
+  box-shadow: 
+    var(--%NS%shadow-1),
+    var(/* DISABLE_NAMESPACING */ --shadow-2),
+    var(--%NS%shadow-3);
+}
+      `.trim();
+
+      expect(namespaceCssVariables(input)).toEqualCss(expected);
     });
   });
 });
