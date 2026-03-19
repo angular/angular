@@ -8766,5 +8766,115 @@ suppress
         expect(diags.length).toBe(0);
       });
     });
+
+    describe('multiple matching components', () => {
+      it('should report an error when multiple components match the same element', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            standalone: false,
+          })
+          export class CompA {}
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            standalone: false,
+          })
+          export class CompB {}
+
+          @Component({
+            selector: 'test',
+            template: '<my-comp />',
+            standalone: false,
+          })
+          export class TestCmp {}
+
+          @NgModule({
+            declarations: [TestCmp, CompA, CompB],
+          })
+          export class Module {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS));
+        expect(diags[0].messageText).toContain(
+          'Multiple components match node with tagname my-comp',
+        );
+      });
+
+      it('should report an error when multiple components with attribute selectors match the same element', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+
+          @Component({
+            selector: '[stroked-button]',
+            template: '',
+          })
+          export class StrokedBtn {}
+
+          @Component({
+            selector: '[raised-button]',
+            template: '',
+          })
+          export class RaisedBtn {}
+
+          @Component({
+            selector: 'app-root',
+            template: '<button stroked-button raised-button></button>',
+            imports: [StrokedBtn, RaisedBtn],
+          })
+          export class App {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS));
+        expect(diags[0].messageText).toContain(
+          'Multiple components match node with tagname button',
+        );
+      });
+
+      it('should not report an error when a single component and directives match', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive} from '@angular/core';
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+          })
+          export class CompA {}
+
+          @Directive({
+            selector: 'my-comp',
+          })
+          export class DirB {}
+
+          @Component({
+            selector: 'test',
+            template: '<my-comp />',
+            imports: [CompA, DirB],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+    });
   });
 });
