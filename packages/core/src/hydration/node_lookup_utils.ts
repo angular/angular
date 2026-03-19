@@ -247,7 +247,7 @@ function locateRNodeByPath(path: string, lView: LView): RNode {
   } else if (referenceNode === REFERENCE_NODE_BODY) {
     ref = ɵɵresolveBody(
       lView[DECLARATION_COMPONENT_VIEW][HOST] as RElement & {ownerDocument: Document},
-    );
+    ) as Element;
   } else {
     const parentElementId = Number(referenceNode);
     ref = unwrapRNode((lView as any)[parentElementId + HEADER_OFFSET]) as Element;
