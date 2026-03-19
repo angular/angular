@@ -184,4 +184,21 @@ describe('SharedStylesHost', () => {
       expect(doc.head.innerHTML).not.toContain('ng-app-id');
     });
   });
+
+  describe('destroy', () => {
+    it('should ignore `addHost` and `removeHost` calls after destruction', () => {
+      ssh.addStyles(['a {};']);
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+
+      ssh.ngOnDestroy();
+      expect(someHost.innerHTML).toEqual('');
+
+      // These should be no-ops instead of crashing or modifying things.
+      expect(() => void ssh.addHost(someHost)).not.toThrow();
+      expect(someHost.innerHTML).toEqual('');
+      expect(() => void ssh.removeHost(someHost)).not.toThrow();
+      expect(someHost.innerHTML).toEqual('');
+    });
+  });
 });
