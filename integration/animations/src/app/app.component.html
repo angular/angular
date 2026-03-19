@@ -17,3 +17,11 @@
 }
 
 <button id="hide-and-intercept" (click)="hideAndIntercept()">Hide and Intercept</button>
+
+<div class="test-reorder-container">
+  @for (item of testItems; track item) {
+    <div class="test-item" (animate.leave)="onTestLeave($event)">Item {{ item }}</div>
+  }
+</div>
+<button id="shuffle-test" (click)="shuffleTest()">Shuffle Test</button>
+<button id="remove-test" (click)="removeTest()">Remove Test</button>

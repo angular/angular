@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, AnimationCallbackEvent} from '@angular/core';
 import {
   CdkDragDrop,
   CdkDropList,
@@ -20,6 +20,8 @@ export class HomeComponent {
     'Episode III - Revenge of the Sith',
   ];
 
+  testItems = ['A', 'B'];
+
   showFallback = true;
 
   drop(event: CdkDragDrop<string[]>) {
@@ -38,5 +40,17 @@ export class HomeComponent {
       );
     }
     this.showFallback = false;
+  }
+
+  shuffleTest() {
+    this.testItems = ['B', 'A'];
+  }
+
+  removeTest() {
+    this.testItems = ['A'];
+  }
+
+  onTestLeave(event: AnimationCallbackEvent) {
+    event.animationComplete();
   }
 }
