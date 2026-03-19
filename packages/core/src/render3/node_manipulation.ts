@@ -164,6 +164,7 @@ function applyToElementOrContainer(
       if (parentLView?.[ANIMATIONS]?.leave?.has(tNode.index)) {
         trackLeavingNodes(tNode, rNode as HTMLElement);
       }
+      reusedNodes.delete(rNode as HTMLElement);
       runLeaveAnimationsWithCallback(
         parentLView,
         tNode,
@@ -180,6 +181,7 @@ function applyToElementOrContainer(
         },
       );
     } else if (action === WalkTNodeTreeAction.Destroy) {
+      reusedNodes.delete(rNode as HTMLElement);
       runLeaveAnimationsWithCallback(parentLView, tNode, injector, () => {
         renderer.destroyNode!(rNode);
       });
