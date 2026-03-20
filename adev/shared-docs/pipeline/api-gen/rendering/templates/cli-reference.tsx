@@ -27,14 +27,14 @@ export function CliCommandReference(entry: CliCommandRenderable) {
                 <div className={'shiki line cli'}>
                   ng {commandName(entry, command)}
                   {entry.argumentsLabel && (
-                    <button member-id={'Arguments'} className="shiki-ln-line-argument">
+                    <span member-id={'Arguments'} className="shiki-ln-line-argument">
                       {entry.argumentsLabel}
-                    </button>
+                    </span>
                   )}
                   {entry.optionsLabel && (
-                    <button member-id={'Options'} className="shiki-ln-line-option">
+                    <span member-id={'Options'} className="shiki-ln-line-option">
                       {entry.optionsLabel}
-                    </button>
+                    </span>
                   )}
                 </div>
               </code>
