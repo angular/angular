@@ -209,8 +209,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.3
       domino:
-        specifier: https://github.com/angular/domino.git#24d1e0d46df98a07576fa7aaceeae3f7b47fe530
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/24d1e0d46df98a07576fa7aaceeae3f7b47fe530'
+        specifier: https://github.com/angular/domino.git#1362bcd7402a41da9b1d6fbffed1ac0d72944106
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106'
       esbuild:
         specifier: 0.27.4
         version: 0.27.4
@@ -1307,8 +1307,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       domino:
-        specifier: https://github.com/angular/domino.git#24d1e0d46df98a07576fa7aaceeae3f7b47fe530
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/24d1e0d46df98a07576fa7aaceeae3f7b47fe530'
+        specifier: https://github.com/angular/domino.git#1362bcd7402a41da9b1d6fbffed1ac0d72944106
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106'
       esbuild-plugin-umd-wrapper:
         specifier: 3.0.0
         version: 3.0.0
@@ -1355,8 +1355,8 @@ importers:
   packages/zone.js/test/typings:
     dependencies:
       domino:
-        specifier: https://github.com/angular/domino.git#24d1e0d46df98a07576fa7aaceeae3f7b47fe530
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/24d1e0d46df98a07576fa7aaceeae3f7b47fe530'
+        specifier: https://github.com/angular/domino.git#1362bcd7402a41da9b1d6fbffed1ac0d72944106
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106'
       zone.js:
         specifier: workspace:*
         version: link:../..
@@ -1709,8 +1709,8 @@ packages:
       '@angular/compiler':
         optional: true
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/24d1e0d46df98a07576fa7aaceeae3f7b47fe530':
-    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/24d1e0d46df98a07576fa7aaceeae3f7b47fe530}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106':
+    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106}
     version: 2.1.6
     engines: {npm: Please use pnpm instead of NPM to install dependencies, pnpm: 10.31.0, yarn: Please use pnpm instead of Yarn to install dependencies}
 
@@ -5870,6 +5870,11 @@ packages:
 
   ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
+    peerDependencies:
+      ajv: ^8.0.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
@@ -13722,7 +13727,7 @@ snapshots:
     optionalDependencies:
       '@angular/compiler': link:packages/compiler
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/24d1e0d46df98a07576fa7aaceeae3f7b47fe530': {}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106': {}
 
   '@angular/material@22.0.0-next.1(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
@@ -18562,8 +18567,8 @@ snapshots:
     optionalDependencies:
       ajv: 8.18.0
 
-  ajv-formats@2.1.1:
-    dependencies:
+  ajv-formats@2.1.1(ajv@8.18.0):
+    optionalDependencies:
       ajv: 8.18.0
 
   ajv-formats@3.0.1:
@@ -20823,7 +20828,7 @@ snapshots:
     dependencies:
       '@apidevtools/json-schema-ref-parser': 9.1.2
       ajv: 8.18.0
-      ajv-formats: 2.1.1
+      ajv-formats: 2.1.1(ajv@8.18.0)
       body-parser: 1.20.4
       content-type: 1.0.5
       deep-freeze: 0.0.1
@@ -25367,7 +25372,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.18.0
-      ajv-formats: 2.1.1
+      ajv-formats: 2.1.1(ajv@8.18.0)
       ajv-keywords: 5.1.0(ajv@8.18.0)
 
   secretlint@10.2.2:
