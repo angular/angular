@@ -77,6 +77,84 @@ export class TranslationBundle {
   }
 }
 
+function incrementPlaceholderCount(placeholderCounts: Map<string, number>, name: string): void {
+  placeholderCounts.set(name, (placeholderCounts.get(name) ?? 0) + 1);
+}
+
+function collectRequiredStructuralPlaceholderCounts(
+  nodes: i18n.Node[],
+  placeholderCounts: Map<string, number>,
+): void {
+  nodes.forEach((node) => {
+    if (node instanceof i18n.Container) {
+      collectRequiredStructuralPlaceholderCounts(node.children, placeholderCounts);
+      return;
+    }
+
+    if (node instanceof i18n.Icu) {
+      Object.keys(node.cases).forEach((value) =>
+        collectRequiredStructuralPlaceholderCounts([node.cases[value]], placeholderCounts),
+      );
+      return;
+    }
+
+    if (node instanceof i18n.TagPlaceholder) {
+      incrementPlaceholderCount(placeholderCounts, node.startName);
+      if (node.closeName) {
+        incrementPlaceholderCount(placeholderCounts, node.closeName);
+      }
+      collectRequiredStructuralPlaceholderCounts(node.children, placeholderCounts);
+      return;
+    }
+
+    if (node instanceof i18n.BlockPlaceholder) {
+      incrementPlaceholderCount(placeholderCounts, node.startName);
+      incrementPlaceholderCount(placeholderCounts, node.closeName);
+      collectRequiredStructuralPlaceholderCounts(node.children, placeholderCounts);
+    }
+  });
+}
+
+function collectTranslatedPlaceholderCounts(
+  nodes: i18n.Node[],
+  placeholderCounts: Map<string, number>,
+  mapName: (name: string) => string,
+): void {
+  nodes.forEach((node) => {
+    if (node instanceof i18n.Container) {
+      collectTranslatedPlaceholderCounts(node.children, placeholderCounts, mapName);
+      return;
+    }
+
+    if (node instanceof i18n.Icu) {
+      Object.keys(node.cases).forEach((value) =>
+        collectTranslatedPlaceholderCounts([node.cases[value]], placeholderCounts, mapName),
+      );
+      return;
+    }
+
+    if (node instanceof i18n.Placeholder) {
+      incrementPlaceholderCount(placeholderCounts, mapName(node.name) || node.name);
+      return;
+    }
+
+    if (node instanceof i18n.TagPlaceholder) {
+      incrementPlaceholderCount(placeholderCounts, mapName(node.startName) || node.startName);
+      if (node.closeName) {
+        incrementPlaceholderCount(placeholderCounts, mapName(node.closeName) || node.closeName);
+      }
+      collectTranslatedPlaceholderCounts(node.children, placeholderCounts, mapName);
+      return;
+    }
+
+    if (node instanceof i18n.BlockPlaceholder) {
+      incrementPlaceholderCount(placeholderCounts, mapName(node.startName) || node.startName);
+      incrementPlaceholderCount(placeholderCounts, mapName(node.closeName) || node.closeName);
+      collectTranslatedPlaceholderCounts(node.children, placeholderCounts, mapName);
+    }
+  });
+}
+
 class I18nToHtmlVisitor implements i18n.Visitor {
   // using non-null assertions because they're (re)set by convert()
   private _srcMsg!: i18n.Message;
@@ -175,6 +253,39 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     return `@${ph.name}${params} {${children}}`;
   }
 
+  private _validateTranslationStructure(nodes: i18n.Node[]): void {
+    const requiredPlaceholderCounts = new Map<string, number>();
+    collectRequiredStructuralPlaceholderCounts(this._srcMsg.nodes, requiredPlaceholderCounts);
+
+    if (requiredPlaceholderCounts.size === 0) {
+      return;
+    }
+
+    const translatedPlaceholderCounts = new Map<string, number>();
+    collectTranslatedPlaceholderCounts(nodes, translatedPlaceholderCounts, this._mapper);
+
+    const missingPlaceholderNames = Array.from(requiredPlaceholderCounts.entries())
+      .filter(
+        ([name, requiredCount]) => (translatedPlaceholderCounts.get(name) ?? 0) < requiredCount,
+      )
+      .map(([name, requiredCount]) => {
+        const translatedCount = translatedPlaceholderCounts.get(name) ?? 0;
+        return requiredCount === 1 && translatedCount === 0
+          ? `"${name}"`
+          : `"${name}" (expected ${requiredCount}, found ${translatedCount})`;
+      });
+
+    if (missingPlaceholderNames.length > 0) {
+      const placeholderText = missingPlaceholderNames.join(', ');
+      const placeholderLabel =
+        missingPlaceholderNames.length === 1 ? 'placeholder' : 'placeholders';
+      this._addError(
+        this._srcMsg.nodes[0],
+        `Translation is missing required structural ${placeholderLabel}: ${placeholderText}`,
+      );
+    }
+  }
+
   /**
    * Convert a source message to a translated text string:
    * - text nodes are replaced with their translation,
@@ -194,6 +305,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
       // And create a mapper to convert serialized placeholder names to internal names
       nodes = this._i18nNodesByMsgId[id];
       this._mapper = (name: string) => (mapper ? mapper.toInternalName(name)! : name);
+      this._validateTranslationStructure(nodes);
     } else {
       // When no translation has been found
       // - report an error / a warning / nothing,

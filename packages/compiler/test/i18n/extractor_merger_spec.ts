@@ -555,19 +555,13 @@ describe('Merger', () => {
 
     it('should merge blocks', () => {
       const HTML = `before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after`;
-      expect(fakeTranslate(HTML)).toEqual(
-        'before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph tag' +
-          ' name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
-          ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after',
-      );
+      expect(fakeTranslate(HTML)).toEqual('before**<p>foo</p><span><i>bar</i></span>**after');
     });
 
     it('should merge nested blocks', () => {
       const HTML = `<div>before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after</div>`;
       expect(fakeTranslate(HTML)).toEqual(
-        '<div>before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph' +
-          ' tag name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
-          ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after</div>',
+        '<div>before**<p>foo</p><span><i>bar</i></span>**after</div>',
       );
     });
   });
@@ -670,8 +664,7 @@ function fakeTranslate(
 
   messages.forEach((message) => {
     const id = digest(message);
-    const text = serializeI18nNodes(message.nodes).join('').replace(/</g, '[');
-    i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null!)];
+    i18nMsgMap[id] = [new i18n.Text('**', null!), ...message.nodes, new i18n.Text('**', null!)];
   });
 
   const translationBundle = new TranslationBundle(i18nMsgMap, null, digest);

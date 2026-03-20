@@ -163,6 +163,41 @@ describe('TranslationBundle', () => {
       expect(() => tb.get(msg)).toThrowError(/Missing translation for message "ref"/);
     });
 
+    it('should report missing structural placeholders in translations', () => {
+      const msg = _extractMessages(
+        '<div i18n="@@some-key">Text A @if (bool) {<ng-container>Text B</ng-container>}</div>',
+      )[0];
+      const msgMap = {
+        foo: [
+          new i18n.Text('Text A ', span),
+          new i18n.Placeholder('', 'START_TAG_NG-CONTAINER', span),
+          new i18n.Text('Text B', span),
+          new i18n.Placeholder('', 'CLOSE_TAG_NG-CONTAINER', span),
+        ],
+      };
+      const tb = new TranslationBundle(msgMap, null, (_) => 'foo');
+
+      expect(() => tb.get(msg)).toThrowError(
+        /Translation is missing required structural placeholders: "START_BLOCK_IF", "CLOSE_BLOCK_IF"/,
+      );
+    });
+
+    it('should report missing repeated structural placeholders in translations', () => {
+      const msg = _extractMessages('<div i18n><span>one</span><span>two</span></div>')[0];
+      const msgMap = {
+        foo: [
+          new i18n.Placeholder('', 'START_TAG_SPAN', span),
+          new i18n.Text('one', span),
+          new i18n.Placeholder('', 'CLOSE_TAG_SPAN', span),
+        ],
+      };
+      const tb = new TranslationBundle(msgMap, null, (_) => 'foo');
+
+      expect(() => tb.get(msg)).toThrowError(
+        /Translation is missing required structural placeholders: "START_TAG_SPAN" \(expected 2, found 1\), "CLOSE_TAG_SPAN" \(expected 2, found 1\)/,
+      );
+    });
+
     it('should report invalid translated html', () => {
       const msgMap = {
         foo: [new i18n.Text('text', null!), new i18n.Placeholder('', 'ph1', null!)],
