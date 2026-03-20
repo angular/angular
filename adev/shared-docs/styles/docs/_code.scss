@@ -36,6 +36,15 @@ $code-font-size: 0.875rem;
     }
   }
 
+  .shiki.line.cli {
+    span {
+      color: var(--quaternary-contrast);
+      font-family: var(--inter-font);
+      font-weight: 600;
+      font-size: 13px;
+    }
+  }
+
   .docs-light-mode .shiki {
     color: var(--shiki-light);
     background-color: var(--shiki-light-bg);
