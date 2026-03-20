@@ -15,8 +15,11 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
  * This regular expression matches a subset of URLs that will not cause script
  * execution if used in URL context within a HTML document. Specifically, this
  * regular expression matches if:
- * (1) Either a protocol that is not javascript:, and that has valid characters
- *     (alphanumeric or [+-.]).
+ * (1) Either a protocol that is not javascript: or vbscript:, and that has
+ *     valid characters (alphanumeric or [+-.]).
+ *     For data: URIs, only safe media subtypes (image/*, video/*, audio/*)
+ *     are allowed. Other data: subtypes (e.g. data:text/html) are blocked
+ *     as they can lead to script execution in some environments.
  * (2) or no protocol.  A protocol must be followed by a colon. The below
  *     allows that by allowing colons only after one of the characters [/?#].
  *     A colon after a hash (#) must be in the fragment.
@@ -33,9 +36,16 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
  * that. More importantly, it disallows masking of a colon,
  * e.g. "javascript&#58;...".
  *
- * This regular expression was taken from the Closure sanitization library.
+ * This regular expression was originally taken from the Closure sanitization
+ * library and extended to also block vbscript: and dangerous data: subtypes.
+ *
+ * Note: data:image/svg+xml is allowed because SVG loaded via <img src> is
+ * sandboxed by browsers (scripts do not execute). For <a href> contexts,
+ * modern browsers (Chrome 60+, Firefox 59+) block top-level navigation to
+ * data: URLs entirely, providing an additional layer of defense.
  */
-const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:\/?#]*(?:[\/?#]|$))/i;
+const SAFE_URL_PATTERN =
+  /^(?!javascript:)(?!vbscript:)(?!data:(?!image\/|video\/|audio\/))(?:[a-z0-9+.-]+:|[^&:\/?#]*(?:[\/?#]|$))/i;
 export function _sanitizeUrl(url: string): string {
   url = String(url);
   if (url.match(SAFE_URL_PATTERN)) return url;
