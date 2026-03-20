@@ -214,7 +214,14 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
 }
 
 // Define sets outside the function for O(1) lookups and memory efficiency
-const SRC_RESOURCE_TAGS = new Set(['embed', 'frame', 'iframe', 'media', 'script']);
+const SRC_RESOURCE_TAGS = new Set([
+  'embed',
+  'frame',
+  'iframe',
+  'media',
+  'object', //data attribute
+  'script',
+]);
 const HREF_RESOURCE_TAGS = new Set(['base', 'link', 'script']);
 
 /**
