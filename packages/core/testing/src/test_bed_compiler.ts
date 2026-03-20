@@ -8,66 +8,70 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {
+  ɵANIMATIONS_DISABLED as ANIMATIONS_DISABLED,
   ApplicationInitStatus,
-  ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
-  Compiler,
-  COMPILER_OPTIONS,
-  Component,
-  Directive,
-  Injector,
-  inject,
-  InjectorType,
-  LOCALE_ID,
-  ModuleWithComponentFactories,
-  ModuleWithProviders,
-  NgModule,
-  NgModuleFactory,
-  Pipe,
-  PlatformRef,
-  Provider,
-  resolveForwardRef,
-  StaticProvider,
-  Type,
-  ɵclearResolutionOfComponentResourcesQueue,
   ɵcompileComponent as compileComponent,
   ɵcompileDirective as compileDirective,
   ɵcompileNgModuleDefs as compileNgModuleDefs,
   ɵcompilePipe as compilePipe,
+  Compiler,
+  COMPILER_OPTIONS,
+  Component,
+  ɵRender3ComponentFactory as ComponentFactory,
   ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
   ɵDEFER_BLOCK_CONFIG as DEFER_BLOCK_CONFIG,
   ɵdepsTracker as depsTracker,
+  Directive,
   ɵDirectiveDef as DirectiveDef,
-  ɵgenerateStandaloneInDeclarationsError,
+  ENVIRONMENT_INITIALIZER,
+  ErrorHandler,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetInjectableDef as getInjectableDef,
+  inject,
+  ɵɵInjectableDeclaration as InjectableDeclaration,
+  Injector,
+  InjectorType,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
-  ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
-  ɵisComponentDefPendingResolution,
   ɵisEnvironmentProviders as isEnvironmentProviders,
+  LOCALE_ID,
+  ModuleWithComponentFactories,
+  ModuleWithProviders,
   ɵNG_COMP_DEF as NG_COMP_DEF,
   ɵNG_DIR_DEF as NG_DIR_DEF,
   ɵNG_INJ_DEF as NG_INJ_DEF,
   ɵNG_MOD_DEF as NG_MOD_DEF,
   ɵNG_PIPE_DEF as NG_PIPE_DEF,
-  ɵNgModuleFactory as R3NgModuleFactory,
+  NgModule,
+  NgModuleFactory,
+  ɵRender3NgModuleRef as NgModuleRef,
   ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes,
   ɵNgModuleType as NgModuleType,
+  NgZone,
   ɵpatchComponentDefWithScope as patchComponentDefWithScope,
-  ɵRender3ComponentFactory as ComponentFactory,
-  ɵRender3NgModuleRef as NgModuleRef,
+  Pipe,
+  PlatformRef,
+  Provider,
+  ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
+  ɵNgModuleFactory as R3NgModuleFactory,
+  resolveForwardRef,
+  ɵsetLocaleId as setLocaleId,
+  StaticProvider,
+  ɵtransitiveScopesFor as transitiveScopesFor,
+  Type,
+  ɵclearResolutionOfComponentResourcesQueue,
+  ɵgenerateStandaloneInDeclarationsError,
+  ɵisComponentDefPendingResolution,
   ɵresolveComponentResources,
   ɵrestoreComponentResolutionQueue,
-  ɵsetLocaleId as setLocaleId,
-  ɵtransitiveScopesFor as transitiveScopesFor,
-  ɵɵInjectableDeclaration as InjectableDeclaration,
-  NgZone,
-  ErrorHandler,
-  ENVIRONMENT_INITIALIZER,
-  ɵANIMATIONS_DISABLED as ANIMATIONS_DISABLED,
 } from '../../src/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
 
+import {
+  RETHROW_APPLICATION_ERRORS_DEFAULT,
+  TestBedApplicationErrorHandler,
+} from './application_error_handler';
 import {MetadataOverride} from './metadata_override';
 import {
   ComponentResolver,
@@ -81,10 +85,6 @@ import {
   DEFER_BLOCK_DEFAULT_BEHAVIOR,
   TestModuleMetadata,
 } from './test_bed_common';
-import {
-  RETHROW_APPLICATION_ERRORS_DEFAULT,
-  TestBedApplicationErrorHandler,
-} from './application_error_handler';
 
 enum TestingModuleOverride {
   DECLARATION,
@@ -115,8 +115,8 @@ function assertNoStandaloneComponents(
 // Resolvers for Angular decorators
 type Resolvers = {
   module: Resolver<NgModule>;
-  component: Resolver<Directive>;
-  directive: Resolver<Component>;
+  component: Resolver<Component>;
+  directive: Resolver<Directive>;
   pipe: Resolver<Pipe>;
 };
 
