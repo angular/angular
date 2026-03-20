@@ -15,7 +15,7 @@ import {NgForm} from '@angular/forms';
   selector: 'example-app',
   template: `
     <form #f="ngForm" (ngSubmit)="onSubmit(f)">
-      @if(nameCtrl.invalid) {
+      @if (nameCtrl.invalid) {
         <p>Name is invalid.</p>
       }
       <div ngModelGroup="name" #nameCtrl="ngModelGroup">

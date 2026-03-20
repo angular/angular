@@ -19,7 +19,7 @@ export const LANGUAGES: Record<string, LanguageSupport | LRLanguage> = {
   'main.ts': angularComponent(),
   html: angular({base: html()}),
   svg: html(),
-  ts: javascript({typescript: true}),
+  ts: angularComponent(), // Use Angular component parser for all .ts files to support inline templates
   css: css(),
   sass: sass(),
   scss: sass(),

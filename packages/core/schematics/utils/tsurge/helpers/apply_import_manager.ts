@@ -7,8 +7,8 @@
  */
 
 import ts from 'typescript';
-import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom} from '@angular/compiler-cli';
+import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {Replacement, TextUpdate} from '../replacement';
 import {projectFile} from '../project_paths';
 import {ProgramInfo} from '../program_info';

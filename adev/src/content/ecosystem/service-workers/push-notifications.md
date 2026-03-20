@@ -23,8 +23,7 @@ The default behavior for the `notificationclick` event is to close the notificat
 You can specify an additional operation to be executed on `notificationclick` by adding an `onActionClick` property to the `data` object, and providing a `default` entry.
 This is especially useful for when there are no open clients when a notification is clicked.
 
-<docs-code language="json">
-
+```json
 {
   "notification": {
     "title": "New Notification!",
@@ -35,19 +34,18 @@ This is especially useful for when there are no open clients when a notification
     }
   }
 }
-
-</docs-code>
+```
 
 ### Operations
 
 The Angular service worker supports the following operations:
 
-| Operations                  | Details |
-|:---                         |:---     |
+| Operations                  | Details                                                                                                                                          |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `openWindow`                | Opens a new tab at the specified URL.                                                                                                            |
 | `focusLastFocusedOrOpen`    | Focuses the last focused client. If there is no client open, then it opens a new tab at the specified URL.                                       |
 | `navigateLastFocusedOrOpen` | Focuses the last focused client and navigates it to the specified URL. If there is no client open, then it opens a new tab at the specified URL. |
-| `sendRequest`               | Send a simple GET request to the specified URL.                                                                                                                                                          |
+| `sendRequest`               | Send a simple GET request to the specified URL.                                                                                                  |
 
 IMPORTANT: URLs are resolved relative to the service worker's registration scope.<br />If an `onActionClick` item does not define a `url`, then the service worker's registration scope is used.
 
@@ -60,8 +58,7 @@ Each action is represented as an action button that the user can click to intera
 
 In addition, using the `onActionClick` property on the `data` object, you can tie each action to an operation to be performed when the corresponding action button is clicked:
 
-<docs-code language="typescript">
-
+```json
 {
   "notification": {
     "title": "New Notification!",
@@ -83,8 +80,7 @@ In addition, using the `onActionClick` property on the `data` object, you can ti
     }
   }
 }
-
-</docs-code>
+```
 
 IMPORTANT: If an action does not have a corresponding `onActionClick` entry, then the notification is closed and `SwPush.notificationClicks` is notified on existing clients.
 
@@ -93,7 +89,6 @@ IMPORTANT: If an action does not have a corresponding `onActionClick` entry, the
 You might also be interested in the following:
 
 <docs-pill-row>
-
   <docs-pill href="ecosystem/service-workers/communications" title="Communicating with the Service Worker"/>
   <docs-pill href="ecosystem/service-workers/devops" title="Service Worker devops"/>
 </docs-pill-row>

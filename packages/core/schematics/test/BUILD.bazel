@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -7,8 +7,6 @@ ts_project(
     deps = [
         "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
-        "//:node_modules/@types/shelljs",
-        "//:node_modules/tslint",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
     ],
@@ -19,14 +17,19 @@ jasmine_test(
     timeout = "moderate",
     data = [
         ":test_lib",
-        "//:node_modules/shelljs",
+        "//:node_modules/@angular/compiler",
+        "//:node_modules/@angular/compiler-cli",
         "//packages/core/schematics:bundles",
         "//packages/core/schematics:schematics_jsons",
-        "//packages/core/schematics/migrations/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
+        "//packages/core/schematics/ng-generate/common-to-standalone-migration:static_files",
+        "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
+        "//packages/core/schematics/ng-generate/ngclass-to-class-migration:static_files",
+        "//packages/core/schematics/ng-generate/ngstyle-to-style-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
         "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
+        "//packages/core/schematics/ng-generate/router-testing-module-migration:static_files",
         "//packages/core/schematics/ng-generate/self-closing-tags-migration:static_files",
         "//packages/core/schematics/ng-generate/signal-input-migration:static_files",
         "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",

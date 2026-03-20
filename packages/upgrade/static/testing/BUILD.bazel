@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "generate_api_docs", "ng_project")
+load("//tools:defaults.bzl", "generate_api_docs", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,6 +14,7 @@ ng_project(
     ),
     deps = [
         "//packages/core/testing",
+        "//packages/upgrade/src/common",
         "//packages/upgrade/static",
     ],
 )

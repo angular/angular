@@ -17,12 +17,12 @@ export function Parameter(props: {param: ParameterEntryRenderable}) {
   const param = props.param;
 
   return (
-      <div className={PARAM_GROUP_CLASS_NAME}>
-        {/*TODO: isOptional, isRestParam*/}
-        <span class="docs-param-keyword">@param</span>
-        <span class="docs-param-name">{param.name}</span>
-        <CodeSymbol code={param.type} />
-        <RawHtml value={param.htmlDescription} className="docs-parameter-description" />
-      </div>
+    <div className={PARAM_GROUP_CLASS_NAME}>
+      {/*TODO: isOptional, isRestParam*/}
+      <span class="docs-param-keyword">@param</span>
+      <span class="docs-param-name">{param.name}</span>
+      <CodeSymbol code={param.type} />
+      <RawHtml value={param.htmlDescription} className="docs-parameter-description" />
+    </div>
   );
 }

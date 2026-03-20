@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {NgCompilerOptions, FileSystem} from '@angular/compiler-cli/private/migrations';
 import {createBaseProgramInfo, getProgramInfoFromBaseInfo} from './helpers/create_program';
 import {Serializable} from './helpers/serializable';
 import {ProgramInfo} from './program_info';

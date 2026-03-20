@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -40,13 +40,11 @@ ts_test_library(
     ],
     deps = [
         ":record-formatter",
-        ":record_formatter_spec_constants",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter",
         "//devtools/projects/protocol",
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
     deps = [
         ":test_lib",

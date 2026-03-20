@@ -28,11 +28,11 @@ import {
   shouldReduceMotion,
 } from '@angular/docs';
 import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators';
-import {SUB_NAVIGATION_DATA} from '../../../sub-navigation-data';
-import {PagePrefix} from '../../enums/pages';
+import {SUB_NAVIGATION_DATA} from '../../../routing/sub-navigation-data';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {isPlatformBrowser} from '@angular/common';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
+import {PAGE_PREFIX} from '../../constants/pages';
 
 export const ANIMATION_DURATION = 500;
 
@@ -49,29 +49,29 @@ export class SecondaryNavigation {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
 
-  readonly isSecondaryNavVisible = this.navigationState.isMobileNavVisible;
+  protected readonly isSecondaryNavVisible = this.navigationState.isMobileNavVisible;
   readonly primaryActiveRouteItem = this.navigationState.primaryActiveRouteItem;
-  readonly maxVisibleLevelsOnSecondaryNav = computed(() =>
-    this.primaryActiveRouteItem() === PagePrefix.REFERENCE ? 1 : 2,
+  protected readonly maxVisibleLevelsOnSecondaryNav = computed(() =>
+    this.primaryActiveRouteItem() === PAGE_PREFIX.REFERENCE ? 1 : 2,
   );
-  readonly navigationItemsSlides = this.navigationState.expandedItems;
+  protected readonly navigationItemsSlides = this.navigationState.expandedItems;
 
-  navigationItems: NavigationItem[] | undefined;
+  protected navigationItems: NavigationItem[] | undefined;
 
-  translateX = computed(() => {
+  protected readonly translateX = computed(() => {
     const level = this.navigationState.level();
     return `translateX(${-level * 100}%)`;
   });
-  transition = signal('0ms');
+  protected readonly transition = signal('0ms');
 
-  readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
-  readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+  protected readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
+  protected readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
 
   private readonly routeMap: Record<string, NavigationItem[]> = {
-    [PagePrefix.REFERENCE]: getNavigationItemsTree(SUB_NAVIGATION_DATA.reference, (tree) =>
+    [PAGE_PREFIX.REFERENCE]: getNavigationItemsTree(SUB_NAVIGATION_DATA.reference, (tree) =>
       markExternalLinks(tree),
     ),
-    [PagePrefix.DOCS]: getNavigationItemsTree(SUB_NAVIGATION_DATA.docs, (tree) =>
+    [PAGE_PREFIX.DOCS]: getNavigationItemsTree(SUB_NAVIGATION_DATA.docs, (tree) =>
       markExternalLinks(tree),
     ),
   };
@@ -99,7 +99,7 @@ export class SecondaryNavigation {
     }
   }
 
-  close(): void {
+  protected close(): void {
     this.navigationState.setMobileNavigationListVisibility(false);
   }
 
@@ -127,7 +127,7 @@ export class SecondaryNavigation {
          */
         const shouldExpandItem = (node: NavigationItem): boolean =>
           !!node.level &&
-          (this.primaryActiveRouteItem() === PagePrefix.REFERENCE
+          (this.primaryActiveRouteItem() === PAGE_PREFIX.REFERENCE
             ? node.level > 0
             : node.level > 1);
 
@@ -135,7 +135,7 @@ export class SecondaryNavigation {
         // It protect us from displaying second level of the navigation when user clicks on `Reference`,
         // Because in this situation we want to display the first level, which contains, in addition to the API Reference, also the CLI Reference, Error Encyclopedia etc.
         const skipExpandPredicateFn = (node: NavigationItem): boolean =>
-          node.path === PagePrefix.API;
+          node.path === PAGE_PREFIX.API;
 
         this.navigationState.expandItemHierarchy(
           activeNavigationItem,
@@ -176,7 +176,7 @@ export class SecondaryNavigation {
     const routeMap = this.routeMap[this.primaryActiveRouteItem()!];
     this.navigationItems = routeMap
       ? getNavigationItemsTree(routeMap, (item) => {
-          item.isExpanded = this.primaryActiveRouteItem() === PagePrefix.DOCS && item.level === 1;
+          item.isExpanded = this.primaryActiveRouteItem() === PAGE_PREFIX.DOCS && item.level === 1;
         })
       : [];
   }

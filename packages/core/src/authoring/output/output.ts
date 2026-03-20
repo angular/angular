@@ -13,6 +13,8 @@ import {OutputEmitterRef} from './output_emitter_ref';
 /**
  * Options for declaring an output.
  *
+ * @see [Customizing output names](guide/components/outputs#customizing-output-names)
+ *
  * @publicApi 19.0
  */
 export interface OutputOptions {
@@ -58,6 +60,9 @@ export interface OutputOptions {
  *   this.nameChange.emit(newName);
  * }
  * ```
+ *
+ * @see [Custom events with outputs](guide/components/outputs#customizing-output-names)
+ *
  * @initializerApiFunction {"showTypesInSignaturePreview": true}
  * @publicApi 19.0
  */

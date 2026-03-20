@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {openBrowser, runBenchmark, verifyNoBrowserErrors} from '../../../utilities/index';
+import {openBrowser, runBenchmark, verifyNoBrowserErrors} from '../../../utilities/index.js';
 import {$, by, element} from 'protractor';
 
 /** List of possible scenarios that should be tested.  */

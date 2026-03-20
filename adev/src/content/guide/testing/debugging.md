@@ -1,17 +1,20 @@
 # Debugging tests
 
-If your tests aren't working as you expect them to, you can inspect and debug them in the browser.
+If your tests aren't working as you expect, you can debug them in both the default Node.js environment and in a real browser.
 
-Debug specs in the browser in the same way that you debug an application.
+## Debugging in Node.js
 
-1. Reveal the Karma browser window.
-    See [Set up testing](guide/testing#set-up-testing) if you need help with this step.
+Debugging in the default Node.js environment is often the quickest way to diagnose issues that are not related to browser-specific APIs or rendering.
 
-1. Click the **DEBUG** button to open a new browser tab and re-run the tests.
-1. Open the browser's **Developer Tools**. On Windows, press `Ctrl-Shift-I`. On macOS, press `Command-Option-I`.
-1. Pick the **Sources** section.
-1. Press `Control/Command-P`, and then start typing the name of your test file to open it.
-1. Set a breakpoint in the test.
-1. Refresh the browser, and notice how it stops at the breakpoint.
+1.  Run the `ng test` command with the `--debug` flag:
+    ```shell
+    ng test --debug
+    ```
+2.  The test runner will start in debug mode and wait for a debugger to attach.
+3.  You can now attach your preferred debugger. For example, you can use the built-in Node.js debugger in VS Code or the Chrome DevTools for Node.js.
 
-<img alt="Karma debugging" src="assets/images/guide/testing/karma-1st-spec-debug.png">
+## Debugging in a browser
+
+The same way you start a debugging session with in Node, you can use `ng test` with the `--debug` flag with Vitest and [browser mode](/guide/testing/migrating-to-vitest#5-configure-browser-mode-optional).
+
+The test runner will start in debug mode and wait for you to open the browser devtools to debug the tests.

@@ -1,6 +1,6 @@
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
-load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "ts_config", "tsec_test")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "ts_config", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -36,6 +36,7 @@ ng_project(
         "//:node_modules/zone.js",
         "//packages:goog_types",
         "//packages/core/primitives/defer:triggers",
+        "//packages/core/primitives/devtools",
         "//packages/core/primitives/di",
         "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/event-dispatch",
@@ -58,6 +59,7 @@ ng_package(
     srcs = [
         "package.json",
         ":event_dispatch_contract_binary",
+        "//packages/core/resources",
     ],
     nested_packages = [
         "//packages/core/schematics:npm_package",
@@ -74,9 +76,6 @@ ng_package(
         "//integration:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
-        "//packages/compiler-cli/src/ngtsc/metadata/test:__subpackages__",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/test:__subpackages__",
-        "//packages/compiler-cli/src/ngtsc/typecheck/test:__subpackages__",
         "//packages/compiler-cli/test:__subpackages__",
         "//packages/compiler/test:__pkg__",
         "//packages/language-service/test:__pkg__",

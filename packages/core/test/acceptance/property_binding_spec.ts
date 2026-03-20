@@ -7,12 +7,25 @@
  */
 import {state, style, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Input, Output, ViewContainerRef} from '../../src/core';
-import {TestBed} from '../../testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {
+  Component,
+  Directive,
+  EventEmitter,
+  Input,
+  Output,
+  provideZoneChangeDetection,
+  ViewContainerRef,
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('property bindings', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should support bindings to properties', () => {
     @Component({
       template: `<span [id]="id"></span>`,
@@ -129,7 +142,7 @@ describe('property bindings', () => {
     },
   );
 
-  it('should bind ARIA properties to their corresponding attributes', () => {
+  it('should bind ARIA properties', () => {
     @Component({
       template: '<button [ariaLabel]="label" [ariaHasPopup]="hasPopup"></button>',
     })
@@ -139,19 +152,19 @@ describe('property bindings', () => {
     }
 
     const fixture = TestBed.createComponent(MyComp);
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
 
     fixture.componentInstance.label = 'Open';
     fixture.componentInstance.hasPopup = 'menu';
     fixture.detectChanges();
 
-    expect(button.getAttribute('aria-label')).toBe('Open');
-    expect(button.getAttribute('aria-haspopup')).toBe('menu');
+    expect(button.ariaLabel).toBe('Open');
+    expect(button.ariaHasPopup).toBe('menu');
 
     fixture.componentInstance.label = 'Close';
     fixture.detectChanges();
 
-    expect(button.getAttribute('aria-label')).toBe('Close');
+    expect(button.ariaLabel).toBe('Close');
   });
 
   it('should bind interpolated ARIA attributes', () => {
@@ -300,9 +313,7 @@ describe('property bindings', () => {
 
   it('should use the sanitizer in bound properties', () => {
     @Component({
-      template: `
-        <a [href]="url">
-      `,
+      template: ` <a [href]="url"> </a> `,
       standalone: false,
     })
     class App {
@@ -327,7 +338,7 @@ describe('property bindings', () => {
 
   it('should not stringify non-string values', () => {
     @Component({
-      template: `<input [required]="isRequired"/>`,
+      template: `<input [required]="isRequired" />`,
       standalone: false,
     })
     class Comp {
@@ -343,7 +354,7 @@ describe('property bindings', () => {
 
   it('should support interpolation for properties', () => {
     @Component({
-      template: `<span id="{{'_' + id + '_'}}"></span>`,
+      template: `<span id="{{ '_' + id + '_' }}"></span>`,
       standalone: false,
     })
     class Comp {
@@ -597,6 +608,34 @@ describe('property bindings', () => {
       expect(idDir.idNumber).toBe('four');
       expect(otherDir.id).toBe(3);
     });
+
+    it('should support input bindings named "field"', () => {
+      // Angular has specialized support for binding to form controls (e.g. `[field]="field"`).
+      // This test ensures that `[field]` property bindings can still target other inputs bearing
+      // the same name.
+
+      @Directive({selector: '[field]'})
+      class Field {
+        @Input() field = 'Default control value';
+      }
+
+      @Component({
+        template: ` <div [field]="value"></div> `,
+        imports: [Field],
+      })
+      class App {
+        value?: string;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const control = fixture.debugElement.query(By.directive(Field)).injector.get(Field);
+      expect(control.field).toBe('Default control value');
+
+      fixture.componentInstance.value = 'Bound control value';
+      fixture.detectChanges();
+
+      expect(control.field).toBe('Bound control value');
+    });
   });
 
   describe('attributes and input properties', () => {
@@ -791,6 +830,7 @@ describe('property bindings', () => {
     });
 
     it('should process attributes properly inside a for loop', () => {
+      // prettier-ignore
       @Component({
         selector: 'comp',
         template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`,
@@ -798,6 +838,7 @@ describe('property bindings', () => {
       })
       class Comp {}
 
+      // prettier-ignore
       @Component({
         template: `
           <comp *ngFor="let i of [0, 1]"></comp>

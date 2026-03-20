@@ -1,20 +1,15 @@
 {
-	"$schema": "../test_case_schema.json",
-	"cases": [
-	  {
-		"description": "should emit bindings in the correct order",
-		"inputFiles": [
-		  "order_bindings.ts"
-		],
-		"expectations": [
-			{
-			  "failureMessage": "Invalid binding code",
-			  "files": [
-				"order_bindings.js"
-			  ]
-			}
-		]
-	  }
-	]
-  }
-  
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should emit bindings in the correct order",
+      "inputFiles": ["order_bindings.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid binding code",
+          "files": ["order_bindings.js"]
+        }
+      ]
+    }
+  ]
+}

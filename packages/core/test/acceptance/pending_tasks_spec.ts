@@ -11,7 +11,7 @@ import {TestBed} from '../../testing';
 import {EMPTY, firstValueFrom, of} from 'rxjs';
 import {map, withLatestFrom} from 'rxjs/operators';
 
-import {PendingTasksInternal} from '../../src/pending_tasks';
+import {PendingTasksInternal} from '../../src/pending_tasks_internal';
 
 describe('PendingTasks', () => {
   it('should wait until all tasks are completed', async () => {
@@ -78,6 +78,9 @@ describe('public PendingTasks', () => {
     // stability is delayed until a tick happens
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
     TestBed.inject(ApplicationRef).tick();
+    // Stability is not synchronous after a tick. We wait for a microtask
+    // in case there is a Promise inside tick that requires tick again
+    await Promise.resolve();
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
   });
 

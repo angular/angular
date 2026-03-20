@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {
   USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
   UseExhaustiveCheckNoChanges,
 } from '../change_detection/use_exhaustive_check_no_changes';
-import type {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import type {ApplicationRef} from '../core';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import type {EmbeddedViewRef} from '../linker/view_ref';
@@ -34,21 +34,15 @@ import {
   TVIEW,
 } from './interfaces/view';
 import {destroyLView, detachMovedView, detachViewFromDOM} from './node_manipulation';
-import {CheckNoChangesMode} from './state';
 import {
   markViewForRefresh,
+  requiresRefreshOrTraversal,
   storeLViewOnDestroy,
   updateAncestorTraversalFlagsOnAttach,
-  requiresRefreshOrTraversal,
 } from './util/view_utils';
 import {detachView, trackMovedView} from './view/container';
 
-// Needed due to tsickle downleveling where multiple `implements` with classes creates
-// multiple @extends in Closure annotations, which is illegal. This workaround fixes
-// the multiple @extends by making the annotation @implements instead
-interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
-
-export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterface {
+export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRef {
   private _appRef: ApplicationRef | null = null;
   private _attachedToViewContainer = false;
   private exhaustive?: boolean;
@@ -328,17 +322,22 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * introduce other changes.
    */
   checkNoChanges(): void {
-    if (!ngDevMode) return;
-
-    try {
-      this.exhaustive ??= this._lView[INJECTOR].get(
-        UseExhaustiveCheckNoChanges,
-        USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
-      );
-    } catch {
-      this.exhaustive = USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT;
+    // Note: we use `if (ngDevMode) { ... }` instead of an early return.
+    // ESBuild is conservative about removing dead code that follows `return;`
+    // inside a function body, so the block may remain in the bundle.
+    // Using a conditional ensures the dev-only logic is reliably tree-shaken
+    // in production builds.
+    if (ngDevMode) {
+      try {
+        this.exhaustive ??= this._lView[INJECTOR].get(
+          UseExhaustiveCheckNoChanges,
+          USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
+        );
+      } catch {
+        this.exhaustive = USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT;
+      }
+      checkNoChangesInternal(this._lView, this.exhaustive);
     }
-    checkNoChangesInternal(this._lView, this.exhaustive);
   }
 
   attachToViewContainerRef() {

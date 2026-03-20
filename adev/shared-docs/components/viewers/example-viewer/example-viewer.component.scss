@@ -2,11 +2,11 @@
   .docs-example-viewer-preview {
     .docs-dark-mode & {
       color: var(--primary-contrast);
-      background: var(--gray-900);
+      background: var(--primary-constrast);
     }
     @media screen and (prefers-color-scheme: dark) {
       color: var(--primary-contrast);
-      background: var(--gray-900);
+      background: var(--primary-constrast);
     }
     .docs-light-mode & {
       background: var(--page-background);
@@ -28,9 +28,12 @@
   align-items: center;
   gap: 0.5rem;
   border-bottom: 1px solid var(--senary-contrast);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
   padding-inline-end: 0.65rem;
   font-family: var(--inter-tight-font);
+  height: 3rem;
 
   mat-tab-group {
     max-width: calc(100% - 140px);
@@ -56,26 +59,41 @@
   .docs-example-viewer-icons {
     display: flex;
     gap: 0.75rem;
+    width: 100%;
+    justify-content: flex-end;
+    padding-inline-start: 1rem;
 
-    svg {
-      fill: var(--gray-400);
-    }
-  }
+    a,
+    button {
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      height: 24px;
+      width: 24px;
+      color: var(--quaternary-contrast);
 
-  a,
-  button {
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    height: 24px;
-    width: 24px;
-    path {
-      transition: fill 0.3s ease;
-    }
+      path {
+        transition: fill 0.3s ease;
+      }
 
-    &:hover {
       svg {
-        fill: var(--tertiary-contrast);
+        fill: currentColor;
+      }
+
+      &:hover {
+        color: var(--tertiary-contrast);
+      }
+    }
+
+    .docs-example-code-toggle {
+      display: flex;
+      align-items: center;
+      width: auto;
+
+      .docs-example-show-code {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
       }
     }
   }
@@ -94,38 +112,10 @@
   button[docs-copy-source-code] {
     top: 0.31rem;
   }
-}
 
-// stylelint-disable-next-line
-::ng-deep {
-  .docs-example-viewer-preview {
-    // stylelint-disable-next-line
-    all: initial;
-    display: block;
-    padding: 1rem;
-    border-block-start: 1px solid var(--senary-contrast);
-
-    *,
-    code::before,
-    code,
-    pre,
-    a,
-    i,
-    p,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    ol,
-    ul,
-    li,
-    hr,
-    input,
-    select,
-    table {
-      all: revert;
-    }
+  .docs-example-code-block {
+    overflow: auto;
+    // Roughly 20 lines of code.
+    max-height: 35rem;
   }
 }

@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+}
+
+[ngAccordionGroup] {
+  width: 500px;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 0;
+  color: var(--secondary-contrast);
+  box-sizing: border-box;
+  border-block-start: 1px solid var(--quinary-contrast);
+  border-inline: 1px solid var(--quinary-contrast);
+}
+
+h3:focus-within,
+h3:hover {
+  background-color: var(--septenary-contrast);
+}
+
+h3:first-of-type {
+  border-radius: 1rem 1rem 0 0;
+}
+
+h3:last-of-type {
+  border-block-end: 1px solid var(--quinary-contrast);
+  border-radius: 0 0 1rem 1rem;
+}
+
+h3:last-of-type:has([aria-expanded='true']) {
+  border-block-end: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+p {
+  margin: 0;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  color: var(--tertiary-contrast);
+  font-size: 0.875rem;
+  border-inline: 1px solid var(--quinary-contrast);
+  border-radius: 0 0 1rem 1rem;
+  border-block-end: 1px solid var(--quinary-contrast);
+  margin-block-end: 1rem;
+}
+
+[ngAccordionTrigger] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  outline: none;
+  cursor: pointer;
+  padding: 1.5rem;
+}
+
+[ngAccordionTrigger][aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.expand-icon {
+  font-size: 1.5rem;
+  color: var(--quaternary-contrast);
+  transition: transform .3s ease-out;
+}
+
+.expand-icon__expanded {
+  transform: rotate(180deg);
+}

@@ -1,6 +1,6 @@
 load("@devinfra//bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@rules_browsers//protractor_test:index.bzl", "protractor_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 def example_test(
         name,

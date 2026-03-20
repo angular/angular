@@ -9,7 +9,8 @@
 import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, CompilationJobKind} from '../compilation';
+import {CompilationJob, CompilationJobKind, TemplateCompilationMode} from '../compilation';
+import {isAriaAttribute} from '../util/attributes';
 
 /**
  * Looks up an element in the given map by xref ID.
@@ -95,7 +96,26 @@ export function specializeBindings(job: CompilationJob): void {
           break;
         case ir.BindingKind.Property:
         case ir.BindingKind.LegacyAnimation:
-          if (job.kind === CompilationJobKind.Host) {
+          // Convert a property binding targeting an ARIA attribute (e.g. [aria-label]) into an
+          // attribute binding when we know it can't also target an input. Note that a `Host` job is
+          // always `DomOnly`, so this condition must be checked first.
+          if (job.mode === TemplateCompilationMode.DomOnly && isAriaAttribute(op.name)) {
+            ir.OpList.replace<ir.UpdateOp>(
+              op,
+              ir.createAttributeOp(
+                op.target,
+                /* namespace= */ null,
+                op.name,
+                op.expression,
+                op.securityContext,
+                /* isTextAttribute= */ false,
+                op.isStructuralTemplateAttribute,
+                op.templateKind,
+                op.i18nMessage,
+                op.sourceSpan,
+              ),
+            );
+          } else if (job.kind === CompilationJobKind.Host) {
             ir.OpList.replace<ir.UpdateOp>(
               op,
               ir.createDomPropertyOp(
@@ -124,7 +144,6 @@ export function specializeBindings(job: CompilationJob): void {
               ),
             );
           }
-
           break;
         case ir.BindingKind.TwoWayProperty:
           if (!(op.expression instanceof o.Expression)) {

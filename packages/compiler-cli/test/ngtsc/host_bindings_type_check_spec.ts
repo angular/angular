@@ -24,9 +24,6 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       env.tsconfig({
-        // Necessary for testing host bindings.
-        typeCheckHostBindings: true,
-
         // Not required for host bindings, but they allow us to
         // exercise more parts of the type checker.
         strictTemplates: true,

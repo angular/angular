@@ -3,7 +3,7 @@
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.dev/license
 
-load("//tools:defaults2.bzl", "js_binary", "js_test")
+load("//tools:defaults.bzl", "js_binary", "js_test")
 
 """
   This test verifies that a set of top level symbols from a javascript file match a gold file.

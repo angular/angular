@@ -2,7 +2,7 @@
 
 Event handling enables interactive features on web apps. It gives you the ability as a developer to respond to user actions like button presses, form submissions and more.
 
-Note: Learn more about [handling user interaction in the essentials guide](/essentials/templates#handling-user-interaction).
+NOTE: Learn more about [handling user interaction in the essentials guide](/essentials/templates#handling-user-interaction).
 
 In this activity, you'll learn how to add an event handler.
 
@@ -15,7 +15,7 @@ In Angular you bind to events with the parentheses syntax `()`. On a given eleme
   ...
   template: `<button (click)="greet()">`
 })
-class App {
+export class App {
   greet() {
     console.log('Hello, there 👋');
   }
@@ -42,6 +42,7 @@ showSecretMessage() {
 <docs-step title="Bind to the template event">
 Update the template code in `app.ts` to bind to the `mouseover` event of the `section` element.
 
+<!-- prettier-ignore -->
 ```angular-html
 <section (mouseover)="showSecretMessage()">
 ```

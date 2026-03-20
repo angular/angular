@@ -3,13 +3,13 @@
 Angular directives offer a great way to encapsulate reusable behaviors— directives can apply
 attributes, CSS classes, and event listeners to an element.
 
-The *directive composition API* lets you apply directives to a component's host element from
-*within* the component TypeScript class.
+The _directive composition API_ lets you apply directives to a component's host element from
+_within_ the component TypeScript class.
 
 ## Adding directives to a component
 
 You apply directives to a component by adding a `hostDirectives` property to a component's
-decorator. We call such directives *host directives*.
+decorator. We call such directives _host directives_.
 
 In this example, we apply the directive `MenuBehavior` to the host element of `AdminMenu`. This
 works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in a template.
@@ -20,7 +20,7 @@ works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in 
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 When the framework renders a component, Angular also creates an instance of each host directive. The
@@ -45,21 +45,22 @@ in your component's API by expanding the entry in `hostDirectives`:
 @Component({
   selector: 'admin-menu',
   template: 'admin-menu.html',
-  hostDirectives: [{
-    directive: MenuBehavior,
-    inputs: ['menuId'],
-    outputs: ['menuClosed'],
-  }],
+  hostDirectives: [
+    {
+      directive: MenuBehavior,
+      inputs: ['menuId'],
+      outputs: ['menuClosed'],
+    },
+  ],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 By explicitly specifying the inputs and outputs, consumers of the component with `hostDirective` can
 bind them in a template:
 
 ```angular-html
-
-<admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()">
+<admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()"></admin-menu>
 ```
 
 Furthermore, you can alias inputs and outputs from `hostDirective` to customize the API of your
@@ -69,18 +70,19 @@ component:
 @Component({
   selector: 'admin-menu',
   template: 'admin-menu.html',
-  hostDirectives: [{
-    directive: MenuBehavior,
-    inputs: ['menuId: id'],
-    outputs: ['menuClosed: closed'],
-  }],
+  hostDirectives: [
+    {
+      directive: MenuBehavior,
+      inputs: ['menuId: id'],
+      outputs: ['menuClosed: closed'],
+    },
+  ],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 ```angular-html
-
-<admin-menu id="top-menu" (closed)="logMenuClosed()">
+<admin-menu id="top-menu" (closed)="logMenuClosed()"></admin-menu>
 ```
 
 ## Adding directives to another directive
@@ -131,7 +133,7 @@ The following example shows minimal use of a host directive:
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 The order of execution here is:

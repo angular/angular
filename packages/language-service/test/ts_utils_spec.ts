@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {
@@ -15,10 +14,8 @@ import {
   ensureArrayWithIdentifier,
   findTightestNode,
   generateImport,
-  hasImport,
   nonCollidingImportName,
   objectPropertyAssignmentForKey,
-  printNode,
   updateImport,
   updateObjectValueForKey,
 } from '../src/utils/ts_utils';
@@ -26,10 +23,6 @@ import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
 
 describe('TS util', () => {
   describe('collectMemberMethods', () => {
-    beforeEach(() => {
-      initMockFileSystem('Native');
-    });
-
     it('gets only methods in class, not getters, setters, or properties', () => {
       const files = {
         'app.ts': `
@@ -131,6 +124,12 @@ describe('TS util', () => {
         const newArr = addElementToArrayLiteral(oldArr, ts.factory.createStringLiteral('b'));
         expect(print(newArr)).toEqual('["a", "b"]');
       });
+
+      it('addElementToArrayLiteral', () => {
+        let arr = ensureArrayWithIdentifier('foo', ts.factory.createIdentifier('foo'));
+        arr = addElementToArrayLiteral(arr!, ts.factory.createIdentifier('bar'));
+        expect(print(arr)).toEqual('[foo, bar]');
+      });
     });
 
     describe('objectPropertyAssignmentForKey', () => {
@@ -189,12 +188,6 @@ describe('TS util', () => {
         const obj = updateObjectValueForKey(oldObj, 'foo', valueAppenderFn);
         expect(print(obj)).toBe('foo: "barbaz"');
       });
-    });
-
-    it('addElementToArrayLiteral', () => {
-      let arr = ensureArrayWithIdentifier('foo', ts.factory.createIdentifier('foo'));
-      arr = addElementToArrayLiteral(arr!, ts.factory.createIdentifier('bar'));
-      expect(print(arr)).toEqual('[foo, bar]');
     });
 
     it('ensureArrayWithIdentifier', () => {

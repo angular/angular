@@ -36,7 +36,7 @@ export function provideSettings(): (Provider | EnvironmentProviders)[] {
 }
 
 /**
- * Migrrates the provided data to the latest data format, if needed.
+ * Migrates the provided data to the latest data format, if needed.
  * Returns a new object with the migrated data.
  *
  * @param data Non-migrated data

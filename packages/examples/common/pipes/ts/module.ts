@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {Component} from '@angular/core';
 
 import {AsyncObservablePipeComponent, AsyncPromisePipeComponent} from './async_pipe';
 import {CurrencyPipeComponent} from './currency_pipe';
@@ -23,6 +22,23 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
 
 @Component({
   selector: 'example-app',
+  imports: [
+    AsyncPromisePipeComponent,
+    AsyncObservablePipeComponent,
+    JsonPipeComponent,
+    DatePipeComponent,
+    DeprecatedDatePipeComponent,
+    LowerUpperPipeComponent,
+    TitleCasePipeComponent,
+    NumberPipeComponent,
+    PercentPipeComponent,
+    CurrencyPipeComponent,
+    SlicePipeStringComponent,
+    SlicePipeListComponent,
+    I18nPluralPipeComponent,
+    I18nSelectPipeComponent,
+    KeyValuePipeComponent,
+  ],
   template: `
     <h1>Pipe Example</h1>
 
@@ -32,6 +48,7 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
 
     <h2><code>date</code></h2>
     <date-pipe></date-pipe>
+    <deprecated-date-pipe></deprecated-date-pipe>
 
     <h2><code>json</code></h2>
     <json-pipe></json-pipe>
@@ -58,29 +75,5 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
     <h2><code>keyvalue</code></h2>
     <keyvalue-pipe></keyvalue-pipe>
   `,
-  standalone: false,
 })
 export class AppComponent {}
-
-@NgModule({
-  declarations: [
-    AsyncPromisePipeComponent,
-    AsyncObservablePipeComponent,
-    AppComponent,
-    JsonPipeComponent,
-    DatePipeComponent,
-    DeprecatedDatePipeComponent,
-    LowerUpperPipeComponent,
-    TitleCasePipeComponent,
-    NumberPipeComponent,
-    PercentPipeComponent,
-    CurrencyPipeComponent,
-    SlicePipeStringComponent,
-    SlicePipeListComponent,
-    I18nPluralPipeComponent,
-    I18nSelectPipeComponent,
-    KeyValuePipeComponent,
-  ],
-  imports: [BrowserModule],
-})
-export class AppModule {}

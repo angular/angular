@@ -3,15 +3,27 @@
 This document describes how to set up your development environment to build and test Angular.
 It also explains the basic mechanics of using `git`, `node`, and `pnpm`.
 
-* [Prerequisite Software](#prerequisite-software)
-* [Getting the Sources](#getting-the-sources)
-* [Installing NPM Modules](#installing-npm-modules)
-* [Building](#building)
-* [Running Tests Locally](#running-tests-locally)
-* [Formatting your Source Code](#formatting-your-source-code)
-* [Linting/verifying your Source Code](#lintingverifying-your-source-code)
-* [Publishing Snapshot Builds](#publishing-snapshot-builds)
-* [Bazel Support](#bazel-support)
+- [Building and Testing Angular](#building-and-testing-angular)
+  - [Prerequisite Software](#prerequisite-software)
+  - [Development in a Container](#development-in-a-container)
+  - [Getting the Sources](#getting-the-sources)
+  - [Installing NPM Modules](#installing-npm-modules)
+  - [Building](#building)
+  - [Running Tests Locally](#running-tests-locally)
+    - [Testing changes against a local library/project](#testing-changes-against-a-local-libraryproject)
+    - [Building and serving a project](#building-and-serving-a-project)
+      - [Cache](#cache)
+      - [Invoking the Angular CLI](#invoking-the-angular-cli)
+  - [Formatting your source code](#formatting-your-source-code)
+  - [Linting/verifying your Source Code](#lintingverifying-your-source-code)
+  - [Publishing Snapshot Builds](#publishing-snapshot-builds)
+    - [Publishing to GitHub Repos](#publishing-to-github-repos)
+  - [Bazel Support](#bazel-support)
+    - [IDEs](#ides)
+      - [VS Code](#vs-code)
+      - [WebStorm / IntelliJ](#webstorm--intellij)
+    - [Remote Build Execution and Remote Caching](#remote-build-execution-and-remote-caching)
+      - [--config=remote flag](#--configremote-flag)
 
 See the [contribution guidelines](https://github.com/angular/angular/blob/main/CONTRIBUTING.md)
 if you'd like to contribute to Angular.
@@ -21,25 +33,40 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following on your development machine:
 
-* [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and
+- [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and
   Windows);
   [GitHub's Guide to Installing Git](https://help.github.com/articles/set-up-git) is a good source
   of information.\
   **Windows Users**: Git Bash or an equivalent shell is required\
-  *Windows Powershell and cmd shells are not
-  supported [#46780](https://github.com/angular/angular/issues/46780) so some commands might fail*
+  _Windows Powershell and cmd shells are not
+  supported [#46780](https://github.com/angular/angular/issues/46780) so some commands might fail_
 
-* [Node.js](https://nodejs.org), (version specified in [`.nvmrc`](../.nvmrc)) which is used to run a
+- [Node.js](https://nodejs.org), (version specified in [`.nvmrc`](../.nvmrc)) which is used to run a
   development web server,
-  run tests, and generate distributable files.  
+  run tests, and generate distributable files.
   `.nvmrc` is read by [nvm](https://github.com/nvm-sh/nvm) commands like `nvm install`
   and `nvm use`.
 
-* [pnpm](https://pnpm.io/) (version specified in the engines field
+- [pnpm](https://pnpm.io/) (version specified in the engines field
   of [`package.json`](../package.json)) which is used to install dependencies.
 
-* On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow
+- On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow
   the [instructions](https://bazel.build/install/windows#installing-compilers-and-language-runtimes)
+
+## Development in a Container
+
+You can also use the provided [Dev Container](https://containers.dev/) configuration to set up a development environment. This approach uses Docker to create a container with all the necessary tools (Node.js, pnpm, etc.) pre-installed.
+
+**Prerequisites:**
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [VS Code](https://code.visualstudio.com/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+**Usage:**
+
+1. Open the Angular repository in VS Code.
+2. Run the **Dev Containers: Reopen in Container** command from the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
 
 ## Getting the Sources
 
@@ -80,7 +107,7 @@ To build Angular run:
 pnpm build
 ```
 
-* Results are put in the `dist/packages-dist` folder.
+- Results are put in the `dist/packages-dist` folder.
 
 ## Running Tests Locally
 
@@ -149,8 +176,8 @@ You can automatically format your code by running:
 
 You can check that your code is properly formatted and adheres to coding style by running:
 
-``` shell
-$ pnpm lint
+```shell
+pnpm lint
 ```
 
 ## Publishing Snapshot Builds
@@ -171,15 +198,15 @@ builds. Before being able to publish the packages, you need to build them locall
 
 First time, you need to create the GitHub repositories:
 
-``` shell
+```shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 ./scripts/ci/publish-build-artifacts.sh [GitHub username]
+$ CREATE_REPOS=1 ./scripts/ci/publish-snapshot-build-artifacts.sh [GitHub username]
 ```
 
 For subsequent snapshots, just run:
 
-``` shell
-$ ./scripts/ci/publish-build-artifacts.sh [GitHub username]
+```shell
+$ ./scripts/ci/publish-snapshot-build-artifacts.sh [GitHub username]
 ```
 
 The script will publish the build snapshot to a branch with the same name as your current branch,

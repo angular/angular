@@ -20,7 +20,6 @@ import {
   CssSelector,
   DeclarationListEmitMode,
   DeclareComponentTemplateInfo,
-  DEFAULT_INTERPOLATION_CONFIG,
   DeferBlockDepsEmitMode,
   DomElementSchemaRegistry,
   ExternalExpr,
@@ -155,12 +154,14 @@ import {
   ResourceLoader,
   toFactoryMetadata,
   tryUnwrapForwardRef,
+  UndecoratedMetadataExtractor,
   validateHostDirectives,
   wrapFunctionExpressionsInParens,
 } from '../../common';
 import {
   extractDirectiveMetadata,
   extractHostBindingResources,
+  getDirectiveUndecoratedMetadataExtractor,
   parseDirectiveStyles,
 } from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
@@ -197,6 +198,7 @@ import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 import {getProjectRelativePath} from '../../../util/src/path';
 import {ComponentScope} from '../../../scope/src/api';
 import {analyzeTemplateForSelectorless} from './selectorless';
+import {analyzeTemplateForAnimations} from './animations';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -291,6 +293,11 @@ export class ComponentDecoratorHandler
       preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
     };
 
+    this.undecoratedMetadataExtractor = getDirectiveUndecoratedMetadataExtractor(
+      reflector,
+      importTracker,
+    );
+
     // Dependencies can't be deferred during HMR, because the HMR update module can't have
     // dynamic imports and its dependencies need to be passed in directly. If dependencies
     // are deferred, their imports will be deleted so we may lose the reference to them.
@@ -299,6 +306,7 @@ export class ComponentDecoratorHandler
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
+  private readonly undecoratedMetadataExtractor: UndecoratedMetadataExtractor;
 
   /**
    * During the asynchronous preanalyze phase, it's necessary to parse the template to extract
@@ -760,6 +768,24 @@ export class ComponentDecoratorHandler
         }
       }
     }
+
+    if (component.has('animations')) {
+      const {hasAnimations} = analyzeTemplateForAnimations(template.nodes);
+      if (hasAnimations) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.COMPONENT_ANIMATIONS_CONFLICT,
+            component.get('animations')!,
+            `A component cannot have both the '@Component.animations' property (legacy animations) and use 'animate.enter' or 'animate.leave' in the template.`,
+          ),
+        );
+        isPoisoned = true;
+      }
+    }
+
     const templateResource: Resource = template.declaration.isInline
       ? {path: null, node: component.get('template')!}
       : {
@@ -864,7 +890,7 @@ export class ComponentDecoratorHandler
 
     if (
       (encapsulation === ViewEncapsulation.ShadowDom ||
-        encapsulation === ViewEncapsulation.IsolatedShadowDom) &&
+        encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) &&
       metadata.selector !== null
     ) {
       const selectorError = checkCustomElementSelectorForErrors(metadata.selector);
@@ -955,7 +981,6 @@ export class ComponentDecoratorHandler
           template,
           encapsulation,
           changeDetection,
-          interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
           styles,
           externalStyles,
           // These will be replaced during the compilation step, after all `NgModule`s have been
@@ -975,6 +1000,7 @@ export class ComponentDecoratorHandler
               this.isCore,
               this.annotateForClosureCompiler,
               (dec) => transformDecoratorResources(dec, component, styles, template),
+              this.undecoratedMetadataExtractor,
             )
           : null,
         classDebugInfo: extractClassDebugInfo(
@@ -1349,7 +1375,6 @@ export class ComponentDecoratorHandler
     ctx.updateFromTemplate(
       analysis.template.content,
       analysis.template.declaration.resolvedTemplateUrl,
-      analysis.template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
     );
   }
 
@@ -2158,11 +2183,12 @@ export class ComponentDecoratorHandler
     for (const [_, deps] of resolution.deferPerBlockDependencies) {
       for (const deferBlockDep of deps) {
         const node = deferBlockDep.declaration.node;
-        const importDecl = resolution.deferrableDeclToImportDecl.get(node) ?? null;
-        if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
+        const importInfo = resolution.deferrableDeclToImportDecl.get(node) ?? null;
+        if (importInfo !== null && this.deferredSymbolTracker.canDefer(importInfo.node)) {
           deferBlockDep.isDeferrable = true;
-          deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
-          deferBlockDep.isDefaultImport = isDefaultImport(importDecl);
+          deferBlockDep.symbolName = importInfo.name;
+          deferBlockDep.importPath = importInfo.from;
+          deferBlockDep.isDefaultImport = isDefaultImport(importInfo.node);
 
           // The same dependency may be used across multiple deferred blocks. De-duplicate it
           // because it can throw off other logic further down the compilation pipeline.
@@ -2412,9 +2438,10 @@ export class ComponentDecoratorHandler
       return;
     }
 
-    // Keep track of how this class made it into the current source file
-    // (which ts.ImportDeclaration was used for this symbol).
-    resolutionData.deferrableDeclToImportDecl.set(decl.node, imp.node);
+    // Keep track of how this class made it into the current source file.
+    // Store the full `Import` info so that callers can correctly determine the
+    // exported name (handling aliasing) and the module specifier.
+    resolutionData.deferrableDeclToImportDecl.set(decl.node, imp);
 
     this.deferredSymbolTracker.markAsDeferrableCandidate(
       node,
@@ -2471,7 +2498,7 @@ export class ComponentDecoratorHandler
 
   /** Creates a new binding parser. */
   private getNewBindingParser() {
-    return makeBindingParser(undefined, this.enableSelectorless);
+    return makeBindingParser(this.enableSelectorless);
   }
 }
 

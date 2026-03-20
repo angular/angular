@@ -20,8 +20,12 @@
   transition: background-color 0.3s ease;
 
   // this accounts for absolutely positioned TOC on the right
-  @include mq.for-large-desktop-up{   
-   width: calc(100% - 195px - var(--layout-padding) * 3);
+  @include mq.for-large-desktop-up {
+    width: calc(100% - 16rem - var(--layout-padding) * 3);
+  }
+
+  @include mq.for-extra-large-desktop-up {
+    width: calc(100% - 25rem - var(--layout-padding) * 3);
   }
 
   h2 {

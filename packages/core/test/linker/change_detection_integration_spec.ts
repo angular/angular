@@ -30,6 +30,7 @@ import {
   Pipe,
   PipeTransform,
   Provider,
+  provideZoneChangeDetection,
   RendererFactory2,
   RendererType2,
   SimpleChange,
@@ -137,7 +138,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           PipeWithOnDestroy,
           IdentityPipe,
         ],
-        providers: [RenderLog, DirectiveLog],
+        providers: [RenderLog, DirectiveLog, provideZoneChangeDetection()],
       });
     });
 
@@ -1389,7 +1390,10 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
         @Component({
           selector: 'main-cmp',
-          template: `<span [i]="log('start')"></span><outer-cmp><ng-template><span [i]="log('tpl')"></span></ng-template></outer-cmp>`,
+          template: `<span [i]="log('start')"></span
+            ><outer-cmp
+              ><ng-template><span [i]="log('tpl')"></span></ng-template
+            ></outer-cmp>`,
           standalone: false,
         })
         class MainComp {
@@ -1401,7 +1405,10 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
         @Component({
           selector: 'outer-cmp',
-          template: `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`,
+          template: `<span [i]="log('start')"></span
+            ><inner-cmp [outerTpl]="tpl"
+              ><ng-template><span [i]="log('tpl')"></span></ng-template
+            ></inner-cmp>`,
           standalone: false,
         })
         class OuterComp {
@@ -1415,7 +1422,10 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
         @Component({
           selector: 'inner-cmp',
-          template: `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`,
+          template: `<span [i]="log('start')"></span>><ng-container
+              [ngTemplateOutlet]="outerTpl"
+            ></ng-container
+            ><ng-container [ngTemplateOutlet]="tpl"></ng-container>`,
           standalone: false,
         })
         class InnerComp {
@@ -1506,7 +1516,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     describe('class binding', () => {
       it('should coordinate class attribute and class host binding', () => {
         @Component({
-          template: `<div class="{{initClasses}}" someDir></div>`,
+          template: `<div class="{{ initClasses }}" someDir></div>`,
           standalone: false,
         })
         class Comp {
@@ -1634,7 +1644,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
           @Component({
             selector: 'my-component',
-            template: `<my-child [inp]='true' (outp)='onOutp()'></my-child>`,
+            template: `<my-child [inp]="true" (outp)="onOutp()"></my-child>`,
             standalone: false,
           })
           class MyComponent {

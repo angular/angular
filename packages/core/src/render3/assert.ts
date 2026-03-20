@@ -25,10 +25,8 @@ import {TNode} from './interfaces/node';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {
   DECLARATION_COMPONENT_VIEW,
-  FLAGS,
   HEADER_OFFSET,
   LView,
-  LViewFlags,
   T_HOST,
   TVIEW,
   TView,

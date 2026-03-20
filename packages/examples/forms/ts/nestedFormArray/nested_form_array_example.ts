@@ -16,7 +16,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div formArrayName="cities">
-        @for(city of cities.controls; track city;) {
+        @for (city of cities.controls; track city) {
           <input [formControlName]="$index" placeholder="City" />
         }
       </div>

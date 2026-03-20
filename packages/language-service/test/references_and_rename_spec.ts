@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {
@@ -21,10 +20,6 @@ import {
 
 describe('find references and rename locations', () => {
   let env: LanguageServiceTestEnv;
-
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
 
   afterEach(() => {
     // Clear env so it's not accidentally carried over to the next test.
@@ -822,7 +817,7 @@ describe('find references and rename locations', () => {
       });
     });
 
-    describe('when cursor is on property read of variable', () => {
+    describe('when cursor is on property read of variable (inside listener callback)', () => {
       let file: OpenBuffer;
       beforeEach(() => {
         const files = {
@@ -905,7 +900,7 @@ describe('find references and rename locations', () => {
 
         it('should find references', () => {
           const refs = getReferencesAtPosition(file)!;
-          assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
+          assertFileNames(refs, ['core.d.ts', 'prefix-pipe.ts', 'app.ts']);
           assertTextSpans(refs, ['transform', 'prefixPipe']);
         });
 
@@ -1540,9 +1535,7 @@ describe('find references and rename locations', () => {
         `,
       };
       env = LanguageServiceTestEnv.setup();
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-        typeCheckHostBindings: true,
-      });
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
       appFile = project.openFile('app.ts');
     });
 
@@ -1832,7 +1825,7 @@ describe('find references and rename locations', () => {
         const refs = getReferencesAtPosition(file)!;
         expect(refs.length).toBe(7);
         assertTextSpans(refs, ['<div *ngFor="let item of items"></div>', 'NgForOf']);
-        assertFileNames(refs, ['index.d.ts', 'app.ts']);
+        assertFileNames(refs, ['fake_common.d.ts', 'app.ts']);
       });
 
       it('should not support rename if directive is in a dts file', () => {
@@ -1960,8 +1953,7 @@ describe('find references and rename locations', () => {
         import {Component} from '@angular/core';
 
         @Component({
-          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }',
-          standalone: true
+          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }'
         })
         export class AppCmp {
           x?: string;
@@ -2114,7 +2106,6 @@ describe('find references and rename locations', () => {
     let project: Project;
 
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',
@@ -2308,7 +2299,6 @@ describe('find references and rename locations', () => {
     let project: Project;
 
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',
@@ -2500,7 +2490,6 @@ describe('find references and rename locations', () => {
     let project: Project;
 
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',

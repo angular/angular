@@ -21,9 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
-        with:
-          cache-node-modules: true
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Check code lint
@@ -34,6 +32,8 @@ jobs:
         run: pnpm ng-dev pullapprove verify
       - name: Validate angular robot configuration
         run: pnpm ng-dev ngbot verify
+      - name: Validate agent skills
+        run: pnpm ng-dev ai skills validate
       - name: Confirm code builds with typescript as expected
         run: pnpm check-tooling-setup
 
@@ -41,13 +41,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
-          cache-node-modules: true
+          disable-package-manager-cache: true
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
@@ -57,24 +57,23 @@ jobs:
       - name: Test build
         run: pnpm devtools:build:chrome
       - name: Cypress run
-        uses: cypress-io/github-action@b8ba51a856ba5f4c15cf39007636d4ab04f23e3c # v6.10.2
+        uses: cypress-io/github-action@ed2d88ccbbf936c5aac087dd43e10425abc3534f # v7.1.7
         with:
           command: pnpm devtools:test:e2e
           start: pnpm bazel run //devtools/src:devserver
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 300
+          install: false
 
   test:
-    runs-on: ubuntu-latest-4core
+    runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
-        with:
-          cache-node-modules: true
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
@@ -83,16 +82,14 @@ jobs:
         run: pnpm test:ci
 
   integration-tests:
-    runs-on: ubuntu-latest-4core
+    runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
-        with:
-          cache-node-modules: true
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
@@ -102,14 +99,14 @@ jobs:
 
   adev:
     runs-on:
-      labels: ubuntu-latest-4core
+      labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
@@ -117,42 +114,51 @@ jobs:
       - name: Run tests
         run: pnpm bazel test //adev/...
       - name: Build adev in fast mode to ensure it continues to work
-        run: pnpm bazel build //adev:build --config=release
+        run: pnpm bazel build //adev:build
+
+  vscode-ng-language-service:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+        with:
+          google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
+      - name: Install node modules
+        run: pnpm install --frozen-lockfile
+      - name: Run tests
+        run: pnpm bazel test //vscode-ng-language-service/...
 
   publish-snapshots:
     runs-on:
       labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
-        with:
-          cache-node-modules: true
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - run: echo "https://${{secrets.SNAPSHOT_BUILDS_GITHUB_TOKEN}}:@github.com" > ${HOME}/.git_credentials
       - run: pnpm build
-      - run: ./scripts/ci/publish-build-artifacts.sh
+      - run: ./scripts/ci/publish-snapshot-build-artifacts.sh
 
   zone-js:
     runs-on:
-      labels: ubuntu-latest-4core
+      labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
-        with:
-          cache-node-modules: true
-          node-module-directories: |
-            ./node_modules
-            ./packages/zone.js/node_modules
-            ./packages/zone.js/test/typings/node_modules
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
@@ -186,14 +192,12 @@ jobs:
       - run: pnpm -C packages/zone.js/test/typings test
 
   # saucelabs:
-  #   runs-on: ubuntu-latest-4core
+  #   runs-on: ubuntu-latest
   #   env:
   #     SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
   #   steps:
   #     - name: Initialize environment
   #       uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b5a3609f89c06eb4037dce22a93641213a5d1508
-  #       with:
-  #         cache-node-modules: true
   #     - name: Install node modules
   #       run: pnpm install --frozen-lockfile
   #     - uses: ./.github/actions/saucelabs-legacy
@@ -201,22 +205,27 @@ jobs:
   adev-deploy:
     needs: [adev]
     if: needs.adev.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8core
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/setup@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
       - name: Install node modules
         run: pnpm install --frozen-lockfile
-      - name: Build adev to ensure it continues to work
-        run: pnpm bazel build //adev:build --full_build_adev --config=release
+      - name: Build adev
+        # `snapshot-build` config is used to stamp the exact version with sha in the footer.
+        run: pnpm bazel build //adev:build.production --config=snapshot-build
       - name: Deploy to firebase
         uses: ./.github/actions/deploy-docs-site
         with:
           serviceKey: ${{ secrets.ANGULAR_DEV_SITE_DEPLOY }}
           githubReleaseTrainReadToken: ${{ secrets.DOCS_DEPLOY_GITHUB_RELEASE_TRAIN_TOKEN }}
           configPath: 'adev/firebase.json'
-          distDir: 'dist/bin/adev/dist/browser'
+          distDir: 'dist/bin/adev/dist'
+      - name: Update Algolia synonym record
+        run: node adev/scripts/synonyms/update-synonyms.mts
+        env:
+          ALGOLIA_KEY: ${{ secrets.ALGOLIA_SYNONYM_MANAGER }}

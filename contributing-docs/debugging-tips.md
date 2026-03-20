@@ -4,7 +4,7 @@
 
 The Angular project has comprehensive unit tests for the core packages and the tools.
 Packages are tested both in the browser (via Karma) and on the server (via node.js).
-Angular uses the Jasmine test framework. 
+Angular uses the Jasmine test framework.
 
 You can focus your debugging on one test at a time by changing that test to be
 defined using the `fit(...)` function, rather than `it(...)`. Moreover, it can be helpful
@@ -28,12 +28,13 @@ By default, the debug tools are disabled. You can enable debug tools as follows:
 import {ApplicationRef} from '@angular/core';
 import {platformBrowser, enableDebugTools} from '@angular/platform-browser';
 
-platformBrowser().bootstrapModule(AppModule)
-  .then(moduleRef => {
+platformBrowser()
+  .bootstrapModule(AppModule)
+  .then((moduleRef) => {
     const applicationRef = moduleRef.injector.get(ApplicationRef);
     const appComponent = applicationRef.components[0];
     enableDebugTools(appComponent);
-  })
+  });
 ```
 
 ### Using debug tools
@@ -133,7 +134,7 @@ kinds of computation. Example:
 
 ```typescript
 @Component({
-  template: '<button [enabled]="isEnabled">{{title}}</button>'
+  template: '<button [enabled]="isEnabled">{{title}}</button>',
 })
 class FancyButton {
   // GOOD: no computation, just return the value
@@ -141,7 +142,9 @@ class FancyButton {
 
   // BAD: computes the final value upon request
   _title: String;
-  get title(): String { return this._title.trim().toUpperCase(); }
+  get title(): String {
+    return this._title.trim().toUpperCase();
+  }
 }
 ```
 

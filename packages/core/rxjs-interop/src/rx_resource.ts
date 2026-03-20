@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Observable, Subscription} from 'rxjs';
 import {
   assertInInjectionContext,
+  BaseResourceOptions,
   resource,
   ResourceLoaderParams,
   ResourceRef,
+  ResourceStreamItem,
   Signal,
   signal,
-  BaseResourceOptions,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
-  ResourceStreamItem,
 } from '../../src/core';
-import {Observable, Subscription} from 'rxjs';
 import {encapsulateResourceError} from '../../src/resource/resource';
 
 /**
@@ -33,6 +33,8 @@ export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
 /**
  * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
  * resource's value.
+ *
+ * @see [Using rxResource for async data](ecosystem/rxjs-interop#using-rxresource-for-async-data)
  *
  * @experimental
  */
@@ -55,11 +57,11 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
     ...opts,
     loader: undefined,
     stream: (params) => {
-      let sub: Subscription;
+      let sub: Subscription | undefined;
 
       // Track the abort listener so it can be removed if the Observable completes (as a memory
       // optimization).
-      const onAbort = () => sub.unsubscribe();
+      const onAbort = () => sub?.unsubscribe();
       params.abortSignal.addEventListener('abort', onAbort);
 
       // Start off stream as undefined.
@@ -73,8 +75,7 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
         resolve = undefined;
       }
 
-      // TODO(alxhub): remove after g3 updated to rename loader -> stream
-      const streamFn = opts.stream ?? (opts as {loader?: RxResourceOptions<T, R>['stream']}).loader;
+      const streamFn = opts.stream;
       if (streamFn === undefined) {
         throw new ɵRuntimeError(
           ɵRuntimeErrorCode.MUST_PROVIDE_STREAM_OPTION,

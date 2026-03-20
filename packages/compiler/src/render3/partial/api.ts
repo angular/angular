@@ -131,6 +131,10 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    */
   usesOnChanges?: boolean;
 
+  controlCreate?: {
+    passThroughInput: string | null;
+  };
+
   /**
    * Whether the directive is standalone. Defaults to false.
    */
@@ -227,11 +231,6 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
    * Defaults to `ViewEncapsulation.Emulated`.
    */
   encapsulation?: ViewEncapsulation;
-
-  /**
-   * Overrides the default interpolation start and end delimiters. Defaults to {{ and }}.
-   */
-  interpolation?: [string, string];
 
   /**
    * Whether whitespace in the template should be preserved. Defaults to false.

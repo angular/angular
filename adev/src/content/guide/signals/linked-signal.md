@@ -3,7 +3,9 @@
 You can use the `signal` function to hold some state in your Angular code. Sometimes, this state depends on some _other_ state. For example, imagine a component that lets the user select a shipping method for an order:
 
 ```typescript
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
 
@@ -20,8 +22,10 @@ In this example, the `selectedOption` defaults to the first option, but changes 
 
 **The `linkedSignal` function lets you create a signal to hold some state that is intrinsically _linked_ to some other state.** Revisiting the example above, `linkedSignal` can replace `signal`:
 
-```typescript
-@Component({/* ... */})
+```ts
+@Component({
+  /* ... */
+})
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
 
@@ -38,7 +42,7 @@ export class ShippingMethodPicker {
 
 The following example shows how the value of a `linkedSignal` can change based on its linked state:
 
-```typescript
+```ts
 const shippingOptions = signal(['Ground', 'Air', 'Sea']);
 const selectedOption = linkedSignal(() => shippingOptions()[0]);
 console.log(selectedOption()); // 'Ground'
@@ -56,13 +60,15 @@ In some cases, the computation for a `linkedSignal` needs to account for the pre
 
 In the example above, `selectedOption` always updates back to the first option when `shippingOptions` changes. You may, however, want to preserve the user's selection if their selected option is still somewhere in the list. To accomplish this, you can create a `linkedSignal` with a separate _source_ and _computation_:
 
-```typescript
+```ts
 interface ShippingMethod {
   id: number;
   name: string;
 }
 
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class ShippingMethodPicker {
   constructor() {
     this.changeShipping(2);
@@ -71,9 +77,9 @@ export class ShippingMethodPicker {
   }
 
   shippingOptions = signal<ShippingMethod[]>([
-    { id: 0, name: 'Ground' },
-    { id: 1, name: 'Air' },
-    { id: 2, name: 'Sea' },
+    {id: 0, name: 'Ground'},
+    {id: 1, name: 'Air'},
+    {id: 2, name: 'Sea'},
   ]);
 
   selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
@@ -82,9 +88,7 @@ export class ShippingMethodPicker {
     computation: (newOptions, previous) => {
       // If the newOptions contain the previously selected option, preserve that selection.
       // Otherwise, default to the first option.
-      return (
-        newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0]
-      );
+      return newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0];
     },
   });
 
@@ -94,9 +98,9 @@ export class ShippingMethodPicker {
 
   changeShippingOptions() {
     this.shippingOptions.set([
-      { id: 0, name: 'Email' },
-      { id: 1, name: 'Sea' },
-      { id: 2, name: 'Postal Service' },
+      {id: 0, name: 'Email'},
+      {id: 1, name: 'Sea'},
+      {id: 2, name: 'Postal Service'},
     ]);
   }
 }
@@ -104,11 +108,11 @@ export class ShippingMethodPicker {
 
 When you create a `linkedSignal`, you can pass an object with separate `source` and `computation` properties instead of providing just a computation.
 
-The `source` can be any signal, such as a `computed` or component `input`. When the value of `source` changes, `linkedSignal` updates its value to the result of the provided `computation`.
+The `source` can be any signal, such as a `computed` or component `input`. The `linkedSignal` updates its value when the `source` changes or when any signal referenced in the `computation` changes, updating its value with the result of the provided `computation`.
 
-The `computation` is a function that receives the new value of `source` and a `previous` object. The `previous` object has two properties— `previous.source` is the previous value of `source`, and `previous.value` is the previous result of the `computation`. You can use these previous values to decide the new result of the computation.
+The `computation` is a function that receives the new value of `source` and a `previous` object. The `previous` object has two properties— `previous.source` is the previous value of `source`, and `previous.value` is the previous value of the `linkedSignal`. You can use these previous values to decide the new result of the computation.
 
-HELPFUL: When using the `previous` parameter, it is necessary to provide the generic type arguments of `linkedSignal` explicitly. The first generic type corresponds with the type of `source` and the second generic type determines the output type of `computation`.  
+HELPFUL: When using the `previous` parameter, it is necessary to provide the generic type arguments of `linkedSignal` explicitly. The first generic type corresponds with the type of `source` and the second generic type determines the output type of `computation`.
 
 ## Custom equality comparison
 
@@ -125,7 +129,7 @@ const activeUserEditCopy = linkedSignal(() => activeUser(), {
 // Or, if separating `source` and `computation`
 const activeUserEditCopy = linkedSignal({
   source: activeUser,
-  computation: user => user,
+  computation: (user) => user,
   equal: (a, b) => a.id === b.id,
 });
 ```

@@ -16,4 +16,6 @@ export interface NavigationItem {
   parent?: NavigationItem;
   contentPath?: string;
   status?: 'new' | 'updated';
+  category?: string;
+  preserveOtherCategoryOrder?: boolean; // true by default
 }

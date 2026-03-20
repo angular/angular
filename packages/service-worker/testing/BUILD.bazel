@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,6 +8,5 @@ ng_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/core",
     ],
 )

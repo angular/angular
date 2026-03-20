@@ -23,10 +23,10 @@ A compiler which integrates Angular compilation into this process follows a very
 2. That `ts.CompilerHost` is wrapped in an `NgCompilerHost`, which adds Angular specific files to the compilation.
 3. A `ts.Program` is created from the `NgCompilerHost` and its augmented set of root files.
 4. A `CompilationTicket` is created, optionally incorporating any state from a previous compilation run.
-4. An `NgCompiler` is created using the `CompilationTicket`.
-5. Diagnostics can be gathered from the `ts.Program` as normal, as well as from the `NgCompiler`.
-6. Prior to `emit`, `NgCompiler.prepareEmit` is called to retrieve the Angular transformers which need to be fed to `ts.Program.emit`.
-7. `emit` is called on the `ts.Program` with the Angular transformers from above, which produces JavaScript code with Angular extensions.
+5. An `NgCompiler` is created using the `CompilationTicket`.
+6. Diagnostics can be gathered from the `ts.Program` as normal, as well as from the `NgCompiler`.
+7. Prior to `emit`, `NgCompiler.prepareEmit` is called to retrieve the Angular transformers which need to be fed to `ts.Program.emit`.
+8. `emit` is called on the `ts.Program` with the Angular transformers from above, which produces JavaScript code with Angular extensions.
 
 # `NgCompiler` and incremental compilation
 
@@ -48,8 +48,8 @@ If this interface is used, an additional asynchronous step after `NgCompiler` cr
 
 Angular compilation generates a number of synthetic files (files which did not exist originally as inputs), depending on configuration. Such files can include:
 
-* A flat module index file, if requested.
-* The `__ng_typecheck__.ts` file, which supports template type-checking code.
+- A flat module index file, if requested.
+- The `__ng_typecheck__.ts` file, which supports template type-checking code.
 
 These files don't exist on disk, but need to appear as such to the `ts.Program`. This is accomplished by wrapping the `ts.CompilerHost` (which abstracts the outside world to the `ts.Program`) in an implementation which provides these synthetic files. This is the primary function of `NgCompilerHost`.
 

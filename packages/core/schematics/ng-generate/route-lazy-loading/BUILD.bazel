@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "copy_to_bin", "ts_project")
+load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
 
 package(
     default_visibility = [
@@ -18,10 +18,7 @@ ts_project(
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
-        "//packages/compiler-cli",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/core/schematics/utils",
     ],
 )

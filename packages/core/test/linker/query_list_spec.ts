@@ -113,10 +113,6 @@ describe('QueryList', () => {
   it('should support toArray', () => {
     queryList.reset(['one', 'two']);
     expect(queryList.reduce((a: string, x: string) => a + x, 'start:')).toEqual('start:onetwo');
-  });
-
-  it('should support toArray', () => {
-    queryList.reset(['one', 'two']);
     expect(queryList.toArray()).toEqual(['one', 'two']);
   });
 

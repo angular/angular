@@ -60,6 +60,8 @@ export interface SearchResultItem {
   type: 'doc' | 'code';
   labelHtml: string | null;
   subLabelHtml: string | null;
+  contentHtml: string | null;
+  package: string | null;
   url: string;
 
   id: string;

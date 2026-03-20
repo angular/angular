@@ -1,10 +1,10 @@
-# Component input properties 
+# Component input properties
 
 Sometimes app development requires you to send data into a component. This data can be used to customize a component or perhaps send information from a parent component to a child component.
 
 Angular uses a concept called `input`. This is similar to `props` in other frameworks. To create an `input` property, use the `input()` function.
 
-Note: Learn more about [accepting data with input properties in the inputs guide](/guide/components/inputs).
+NOTE: Learn more about [accepting data with input properties in the inputs guide](/guide/components/inputs).
 
 In this activity, you'll learn how to use the `input()` function to send information to components.
 
@@ -12,30 +12,30 @@ In this activity, you'll learn how to use the `input()` function to send informa
 
 To create an `input` property, add the `input()` function to initialize a property of a component class:
 
-<docs-code header="user.ts" language="ts">
+```ts {header:"user.ts"}
 class User {
   occupation = input<string>();
 }
-</docs-code>
+```
 
 When you are ready to pass in a value through an `input`, values can be set in templates using the attribute syntax. Here's an example:
 
-<docs-code header="app.ts" language="angular-ts" highlight="[3]">
+```angular-ts {header:"app.ts", highlight:[3]}
 @Component({
   ...
   template: `<app-user occupation="Angular Developer"></app-user>`
 })
-class App {}
-</docs-code>
+export class App {}
+```
 
-The `input` function returns an `InputSignal`. You can read the value by calling the signal. 
+The `input` function returns an `InputSignal`. You can read the value by calling the signal.
 
-<docs-code header="user.ts" language="angular-ts">
+```angular-ts {header:"user.ts"}
 @Component({
   ...
   template: `<p>The user's occupation is {{occupation()}}</p>`
 })
-</docs-code>
+```
 
 <docs-workflow>
 

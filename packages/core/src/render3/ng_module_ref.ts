@@ -8,7 +8,7 @@
 
 import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
 import {Injector} from '../di/injector';
-import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
+import {EnvironmentProviders, Provider} from '../di/interface/provider';
 import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -67,7 +67,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   constructor(
     private readonly ngModuleType: Type<T>,
     public _parent: Injector | null,
-    additionalProviders: StaticProvider[],
+    additionalProviders: Array<Provider | EnvironmentProviders>,
     runInjectorInitializers = true,
   ) {
     super();
@@ -137,7 +137,7 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
 export function createNgModuleRefWithProviders<T>(
   moduleType: Type<T>,
   parentInjector: Injector | null,
-  additionalProviders: StaticProvider[],
+  additionalProviders: Array<Provider | EnvironmentProviders>,
 ): InternalNgModuleRef<T> {
   return new NgModuleRef(moduleType, parentInjector, additionalProviders, false);
 }

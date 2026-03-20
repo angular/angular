@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,7 +11,7 @@ ts_project(
         "//:node_modules/@angular/material",
         "//:node_modules/@types",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/diffing",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/protocol",
     ],
@@ -27,7 +27,7 @@ ts_test_library(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
     deps = [
         ":component_data_source_test",

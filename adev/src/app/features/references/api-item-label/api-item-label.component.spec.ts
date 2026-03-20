@@ -12,30 +12,24 @@ import ApiItemLabel from './api-item-label.component';
 import {ApiItemType} from '../interfaces/api-item-type';
 
 describe('ApiItemLabel', () => {
-  let component: ApiItemLabel;
   let fixture: ComponentFixture<ApiItemLabel>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [ApiItemLabel],
-    });
     fixture = TestBed.createComponent(ApiItemLabel);
-    component = fixture.componentInstance;
   });
 
-  it('should by default display short label for Class', () => {
+  it('should by default display short label for Class', async () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
-    fixture.componentRef.setInput('mode', 'short');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const label = fixture.nativeElement.innerText;
 
     expect(label).toBe('C');
   });
 
-  it('should display short label for Class', () => {
+  it('should display short label for Class', async () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const label = fixture.nativeElement.innerText;
 

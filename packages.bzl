@@ -50,7 +50,7 @@ UNPUBLISHED_PACKAGES = [
 ALL_PACKAGES = PUBLISHED_PACKAGES + UNPUBLISHED_PACKAGES
 
 # Packages used by integration tests
-INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "zone.js", "angular-in-memory-web-api")
+INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "@angular/language-service", "zone.js", "angular-in-memory-web-api")
 
 # Package names under //packages that have `files_for_docgen` targets
 DOCS_ENTRYPOINTS = [
@@ -72,23 +72,6 @@ DOCS_ENTRYPOINTS = [
     "core/src/util",
     "core/testing",
     "elements",
-    "examples/common",
-    "examples/core",
-    "examples/core/di/ts/forward_ref",
-    "examples/core/testing/ts",
-    "examples/forms",
-    "examples/platform-browser",
-    "examples/router/activated-route",
-    "examples/router/testing",
-    "examples/router",
-    "examples/service-worker/push",
-    "examples/service-worker/registration-options",
-    "examples/test-utils",
-    "examples/testing",
-    "examples/upgrade/static/ts/full",
-    "examples/upgrade/static/ts/lite",
-    "examples/upgrade/static/ts/lite-multi",
-    "examples/upgrade/static/ts/lite-multi-shared",
     "forms",
     "localize",
     "localize/init",
@@ -107,8 +90,4 @@ DOCS_ENTRYPOINTS = [
     "router/testing",
     "router/upgrade",
     "service-worker",
-    "upgrade",
-    "upgrade/src/common",
-    "upgrade/static",
-    "upgrade/static/testing",
 ]

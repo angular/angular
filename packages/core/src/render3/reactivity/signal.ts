@@ -6,16 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  createSignal,
-  SIGNAL,
-  SignalGetter,
-  SignalNode,
-  signalSetFn,
-  signalUpdateFn,
-} from '../../../primitives/signals';
+import {createSignal, SIGNAL, SignalGetter, SignalNode} from '../../../primitives/signals';
 
-import {isSignal, Signal, ValueEqualityFn} from './api';
+import {Signal, ValueEqualityFn} from './api';
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
 export const ɵWRITABLE_SIGNAL: unique symbol = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
@@ -74,6 +67,7 @@ export interface CreateSignalOptions<T> {
 
 /**
  * Create a `Signal` that can be set or updated directly.
+ * @see [Angular Signals](guide/signals)
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
   const [get, set, update] = createSignal(initialValue, options?.equal);
@@ -85,9 +79,10 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
   signalFn.update = update;
   signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
 
-  if (ngDevMode) {
-    signalFn.toString = () => `[Signal: ${signalFn()}]`;
-    node.debugName = options?.debugName;
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    const debugName = options?.debugName;
+    node.debugName = debugName;
+    signalFn.toString = () => `[Signal${debugName ? ' (' + debugName + ')' : ''}: ${signalFn()}]`;
   }
 
   return signalFn as WritableSignal<T>;
@@ -101,11 +96,4 @@ export function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
     node.readonlyFn = readonlyFn as Signal<T>;
   }
   return node.readonlyFn;
-}
-
-/**
- * Checks if the given `value` is a writeable signal.
- */
-export function isWritableSignal(value: unknown): value is WritableSignal<unknown> {
-  return isSignal(value) && typeof (value as any).set === 'function';
 }

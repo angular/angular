@@ -8,6 +8,8 @@
 
 import {state, style, transition, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   AfterContentInit,
   Component,
@@ -19,9 +21,9 @@ import {
   HostListener,
   Injectable,
   Input,
-  NgModule,
   OnChanges,
   OnInit,
+  provideZoneChangeDetection,
   QueryList,
   ViewChild,
   ViewChildren,
@@ -33,10 +35,13 @@ import {
   bypassSanitizationTrustUrl,
 } from '../../src/sanitization/bypass';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('host bindings', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should render host bindings on the root component', () => {
     @Component({
       template: '...',
@@ -140,12 +145,12 @@ describe('host bindings', () => {
       @Component({
         selector: 'parent',
         template: `
-        <div>
-          <div #template></div>
-          <p>{{prop}}</p>
-          <p>{{prop2}}</p>
-        </div>
-      `,
+          <div>
+            <div #template></div>
+            <p>{{ prop }}</p>
+            <p>{{ prop2 }}</p>
+          </div>
+        `,
         host: {
           '[style.color]': 'color',
         },
@@ -503,9 +508,7 @@ describe('host bindings', () => {
   describe('via @HostBinding', () => {
     it('should render styling for parent and sub-classed components in order', () => {
       @Component({
-        template: `
-        <child-and-parent-cmp></child-and-parent-cmp>
-      `,
+        template: ` <child-and-parent-cmp></child-and-parent-cmp> `,
         standalone: false,
       })
       class MyApp {}
@@ -635,8 +638,8 @@ describe('host bindings', () => {
     it('should allow class-bindings to be placed on ng-container elements', () => {
       @Component({
         template: `
-        <ng-container [class.foo]="true" dir-that-adds-other-classes>...</ng-container>
-      `,
+          <ng-container [class.foo]="true" dir-that-adds-other-classes>...</ng-container>
+        `,
         standalone: false,
       })
       class MyApp {}
@@ -774,10 +777,10 @@ describe('host bindings', () => {
 
     @Component({
       template: `
-          <div hostBindingDir></div>
-          <div someDir></div>
-          <host-title-comp></host-title-comp>
-        `,
+        <div hostBindingDir></div>
+        <div someDir></div>
+        <host-title-comp></host-title-comp>
+      `,
       standalone: false,
     })
     class App {
@@ -811,9 +814,9 @@ describe('host bindings', () => {
 
     @Component({
       template: `
-          <host-binding-comp></host-binding-comp>
-          <host-binding-comp></host-binding-comp>
-        `,
+        <host-binding-comp></host-binding-comp>
+        <host-binding-comp></host-binding-comp>
+      `,
       standalone: false,
     })
     class App {
@@ -973,9 +976,9 @@ describe('host bindings', () => {
 
     @Component({
       template: `
-          <parent></parent>
-          <parent></parent>
-        `,
+        <parent></parent>
+        <parent></parent>
+      `,
       standalone: false,
     })
     class App {}
@@ -992,10 +995,10 @@ describe('host bindings', () => {
   it('should support host bindings in for loop', () => {
     @Component({
       template: `
-          <div *ngFor="let row of rows">
-            <p hostBindingDir></p>
-          </div>
-        `,
+        <div *ngFor="let row of rows">
+          <p hostBindingDir></p>
+        </div>
+      `,
       standalone: false,
     })
     class App {
@@ -1034,9 +1037,9 @@ describe('host bindings', () => {
 
     @Component({
       template: `
-          <name-comp [names]="['Nancy', name, 'Ned']"></name-comp>
-          <host-binding-comp></host-binding-comp>
-        `,
+        <name-comp [names]="['Nancy', name, 'Ned']"></name-comp>
+        <host-binding-comp></host-binding-comp>
+      `,
       standalone: false,
     })
     class App {
@@ -1094,9 +1097,9 @@ describe('host bindings', () => {
 
     @Component({
       template: `
-          <name-comp [names]="[name, 'Nancy', otherName]"></name-comp>
-          <host-binding-comp></host-binding-comp>
-        `,
+        <name-comp [names]="[name, 'Nancy', otherName]"></name-comp>
+        <host-binding-comp></host-binding-comp>
+      `,
       standalone: false,
     })
     class App {
@@ -1389,11 +1392,11 @@ describe('host bindings', () => {
 
     @Component({
       template: `
-          <host-binding-comp>
-            <div #foo></div>
-            <div #foo></div>
-          </host-binding-comp>
-        `,
+        <host-binding-comp>
+          <div #foo></div>
+          <div #foo></div>
+        </host-binding-comp>
+      `,
       standalone: false,
     })
     class App {}
@@ -1544,7 +1547,7 @@ describe('host bindings', () => {
       isAttribute: boolean = true,
       throws: boolean = false,
     ) {
-      it(`should sanitize <${tag} ${prop}> ${isAttribute ? 'properties' : 'attributes'}`, () => {
+      it(`should sanitize <${tag} ${prop}> ${isAttribute ? 'properties' : 'attributes'} (value=${value})`, () => {
         @Directive({
           selector: '[unsafeUrlHostBindingDir]',
           host: {
@@ -1598,23 +1601,6 @@ describe('host bindings', () => {
       'javascript:alert(1.2)',
       'unsafe:javascript:alert(1.2)',
       bypassSanitizationTrustStyle,
-      true,
-      true,
-    );
-    verify(
-      'blockquote',
-      'cite',
-      'javascript:alert(2)',
-      'unsafe:javascript:alert(2)',
-      bypassSanitizationTrustUrl,
-    );
-    verify('blockquote', 'cite', 'javascript:alert(2.1)', 'unsafe:javascript:alert(2.1)', identity);
-    verify(
-      'blockquote',
-      'cite',
-      'javascript:alert(2.2)',
-      'unsafe:javascript:alert(2.2)',
-      bypassSanitizationTrustHtml,
       true,
       true,
     );

@@ -46,7 +46,7 @@ export function prepareSyntheticListenerName(name: string, phase: string) {
 }
 
 export function getSafePropertyAccessString(accessor: string, name: string): string {
-  const escapedName = escapeIdentifier(name, false, false);
+  const escapedName = escapeIdentifier(name, false);
   return escapedName !== name ? `${accessor}[${escapedName}]` : `${accessor}.${name}`;
 }
 
@@ -87,6 +87,10 @@ export function wrapReference(value: any): R3Reference {
 export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
   const values = o.literalArr(refs.map((ref) => ref.value));
   return shouldForwardDeclare ? o.arrowFn([], values) : values;
+}
+
+export function tsIgnoreComment(): o.LeadingComment {
+  return o.leadingComment('@ts-ignore', true, true);
 }
 
 /**

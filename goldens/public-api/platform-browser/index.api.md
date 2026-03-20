@@ -4,7 +4,7 @@
 
 ```ts
 
-import { ApplicationConfig as ApplicationConfig_2 } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { ApplicationRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
@@ -25,11 +25,13 @@ import { StaticProvider } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
-// @public @deprecated
-export type ApplicationConfig = ApplicationConfig_2;
+// @public
+export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig, context?: BootstrapContext): Promise<ApplicationRef>;
 
 // @public
-export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef>;
+export interface BootstrapContext {
+    platformRef: PlatformRef;
+}
 
 // @public
 export class BrowserModule {
@@ -50,7 +52,7 @@ export class By {
 }
 
 // @public
-export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef>;
+export function createApplication(options?: ApplicationConfig, context?: BootstrapContext): Promise<ApplicationRef>;
 
 // @public
 export function disableDebugTools(): void;
@@ -93,48 +95,6 @@ export abstract class EventManagerPlugin {
     // (undocumented)
     manager: EventManager;
     abstract supports(eventName: string): boolean;
-}
-
-// @public @deprecated
-export const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
-
-// @public @deprecated
-export const HAMMER_LOADER: InjectionToken<HammerLoader>;
-
-// @public @deprecated
-export class HammerGestureConfig {
-    buildHammer(element: HTMLElement): HammerInstance;
-    events: string[];
-    options?: {
-        cssProps?: any;
-        domEvents?: boolean;
-        enable?: boolean | ((manager: any) => boolean);
-        preset?: any[];
-        touchAction?: string;
-        recognizers?: any[];
-        inputClass?: any;
-        inputTarget?: EventTarget;
-    };
-    overrides: {
-        [key: string]: Object;
-    };
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<HammerGestureConfig, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HammerGestureConfig>;
-}
-
-// @public @deprecated
-export type HammerLoader = () => Promise<void>;
-
-// @public @deprecated
-export class HammerModule {
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<HammerModule, never>;
-    // (undocumented)
-    static ɵinj: i0.ɵɵInjectorDeclaration<HammerModule>;
-    // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<HammerModule, never, never, never>;
 }
 
 // @public

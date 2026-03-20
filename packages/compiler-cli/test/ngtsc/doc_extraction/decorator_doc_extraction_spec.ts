@@ -177,5 +177,51 @@ runInEachFileSystem(() => {
       expect(param1.type).toBe('string');
       expect(param1.description).toBe('');
     });
+
+    it('should extract the decorator with some deprecated signatures', () => {
+      env.write(
+        'index.ts',
+        `
+        export interface InjectableDecorator {
+          /**
+           * Decorator that marks a class as available to be
+           * provided and injected as a dependency.
+           *
+           * @usageNotes
+           *
+           * Some usage.... 
+           */
+          (): TypeDecorator;
+          /**
+           * @deprecated deprecated.
+           */
+          (options?: {providedIn: Type<any> | 'any'} & InjectableProvider): TypeDecorator;
+          (
+            options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
+          ): TypeDecorator;
+          new (): Injectable;
+          new (
+            options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
+          ): Injectable;
+        }
+
+        export interface Injectable {
+          providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+        }
+
+        function makePropDecorator(): InjectDecorator { return () => {}; }
+        export const Injectable: InjectableDecorator = makeDecorator('Injectable', undefined, undefined, undefined,(type: Type<any>, meta: Injectable) => ({} as any),
+        );
+        `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      expect(docs[0].name).toBe('Injectable');
+      expect(docs[0].description).toContain('Decorator that marks a class');
+      expect(docs[0].entryType).toBe(EntryType.Decorator);
+      expect(docs[0].jsdocTags[0]).toBeDefined();
+    });
   });
 });

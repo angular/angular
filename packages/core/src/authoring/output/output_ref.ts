@@ -15,6 +15,8 @@ import {DestroyRef} from '../../linker/destroy_ref';
  * Note: Angular will automatically clean up subscriptions
  * when the directive/component of the output is destroyed.
  *
+ * @see [Subscribing to outputs programmatically](guide/components/outputs#subscribing-to-outputs-programmatically)
+ *
  * @publicAPI
  */
 export interface OutputRefSubscription {
@@ -25,6 +27,7 @@ export interface OutputRefSubscription {
  * A reference to an Angular output.
  *
  * @publicAPI
+ * @see [Subscribing to outputs programmatically](guide/components/outputs#subscribing-to-outputs-programmatically)
  */
 export interface OutputRef<T> {
   /**

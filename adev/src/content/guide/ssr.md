@@ -1,10 +1,10 @@
 # Server and hybrid rendering
 
-Angular ships all applications as client-side rendered (CSR) by default. While this approach delivers a initial payload that's lightweight, it introduces trade-offs including slower load times, degraded performance metrics, and higher resource demands since the user's device performs most of the computations. As a result, many applications achieve significant performance improvements by integrating server-side rendering (SSR) into a hybrid rendering strategy.
+Angular ships all applications as client-side rendered (CSR) by default. While this approach delivers an initial payload that's lightweight, it introduces trade-offs including slower load times, degraded performance metrics, and higher resource demands since the user's device performs most of the computations. As a result, many applications achieve significant performance improvements by integrating server-side rendering (SSR) into a hybrid rendering strategy.
 
 ## What is hybrid rendering?
 
-Hybrid rendering allows developers to leverage the benefits of server-side rendering (SSR), pre-rendering (also known as "static site generation" or SSG) and client-side rendering (CSR) to optimize your Angular application. It gives you fine-grained control over how your different parts of your app is rendered to give your users the best experience possible.
+Hybrid rendering allows developers to leverage the benefits of server-side rendering (SSR), pre-rendering (also known as "static site generation" or SSG) and client-side rendering (CSR) to optimize your Angular application. It gives you fine-grained control over how the different parts of your app are rendered to give your users the best experience possible.
 
 ## Setting up hybrid rendering
 
@@ -30,7 +30,7 @@ You can create a server route config by declaring an array of [`ServerRoute`](ap
 
 ```typescript
 // app.routes.server.ts
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -55,32 +55,29 @@ export const serverRoutes: ServerRoute[] = [
 You can add this config to your application with [`provideServerRendering`](api/ssr/provideServerRendering 'API reference') using the [`withRoutes`](api/ssr/withRoutes 'API reference') function:
 
 ```typescript
-import { provideServerRendering, withRoutes } from '@angular/ssr';
-import { serverRoutes } from './app.routes.server';
+import {provideServerRendering, withRoutes} from '@angular/ssr';
+import {serverRoutes} from './app.routes.server';
 
 // app.config.server.ts
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(withRoutes(serverRoutes)),
     // ... other providers ...
-  ]
+  ],
 };
 ```
 
 When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the component to be used as the app shell for client-side rendered routes. To do this, use the [`withAppShell`](api/ssr/withAppShell 'API reference') feature:
 
 ```typescript
-import { provideServerRendering, withRoutes, withAppShell } from '@angular/ssr';
-import { AppShellComponent } from './app-shell/app-shell.component';
+import {provideServerRendering, withRoutes, withAppShell} from '@angular/ssr';
+import {AppShell} from './app-shell';
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(
-      withRoutes(serverRoutes),
-      withAppShell(AppShellComponent),
-    ),
+    provideServerRendering(withRoutes(serverRoutes), withAppShell(AppShell)),
     // ... other providers ...
-  ]
+  ],
 };
 ```
 
@@ -98,7 +95,7 @@ The server routing configuration lets you specify how each route in your applica
 
 Each rendering mode has different benefits and drawbacks. You can choose rendering modes based on the specific needs of your application.
 
-##### Client-side rendering
+##### Client-side rendering (CSR)
 
 Client-side rendering has the simplest development model, as you can write code that assumes it always runs in a web browser. This lets you use a wide range of client-side libraries that also assume they run in a browser.
 
@@ -110,7 +107,7 @@ When client-side rendering, the server does not need to do any work to render a 
 
 Applications that support installable, offline experiences with [service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) can rely on client-side rendering without needing to communicate with a server.
 
-##### Server-side rendering
+##### Server-side rendering (SSR)
 
 Server-side rendering offers faster page loads than client-side rendering. Instead of waiting for JavaScript to download and run, the server directly renders an HTML document upon receiving a request from the browser. The user experiences only the latency necessary for the server to fetch data and render the requested page. This mode also eliminates the need for additional network requests from the browser, as your code can fetch data during rendering on the server.
 
@@ -142,7 +139,7 @@ You can set custom headers and status codes for individual server routes using t
 
 ```typescript
 // app.routes.server.ts
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -183,7 +180,7 @@ You can also use this function with catch-all routes (e.g., `/**`), where the pa
 
 ```ts
 // app.routes.server.ts
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -193,7 +190,7 @@ export const serverRoutes: ServerRoute[] = [
       const dataService = inject(PostService);
       const ids = await dataService.getIds(); // Assuming this returns ['1', '2', '3']
 
-      return ids.map(id => ({ id })); // Generates paths like: /post/1, /post/2, /post/3
+      return ids.map((id) => ({id})); // Generates paths like: /post/1, /post/2, /post/3
     },
   },
   {
@@ -201,8 +198,8 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
       return [
-        { id: '1', '**': 'foo/3' },
-        { id: '2', '**': 'bar/4' },
+        {id: '1', '**': 'foo/3'},
+        {id: '2', '**': 'bar/4'},
       ]; // Generates paths like: /post/1/foo/3, /post/2/bar/4
     },
   },
@@ -211,7 +208,7 @@ export const serverRoutes: ServerRoute[] = [
 
 Because [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') exclusively applies to [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), this function always runs at _build-time_. `getPrerenderParams` must not rely on any browser-specific or server-specific APIs for data.
 
-IMPORTANT: When using [`inject`](api/core/inject 'API reference') inside `getPrerenderParams`, please remember that `inject` must be used synchronously. It cannot be invoked within asynchronous callbacks or following any `await` statements. For more information, refer to [`runInInjectionContext`](api/core/runInInjectionContext).
+IMPORTANT: When using [`inject`](api/core/inject 'API reference') inside `getPrerenderParams`, please remember that `inject` must be used synchronously. It cannot be invoked within asynchronous callbacks or following any `await` statements. For more information, refer to `runInInjectionContext`.
 
 #### Fallback strategies
 
@@ -223,9 +220,9 @@ The available fallback strategies are:
 - **Client:** Falls back to client-side rendering.
 - **None:** No fallback. Angular will not handle requests for paths that are not prerendered.
 
-```typescript
+```ts
 // app.routes.server.ts
-import { RenderMode, PrerenderFallback, ServerRoute } from '@angular/ssr';
+import {RenderMode, PrerenderFallback, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -236,7 +233,7 @@ export const serverRoutes: ServerRoute[] = [
       // This function returns an array of objects representing prerendered posts at the paths:
       // `/post/1`, `/post/2`, and `/post/3`.
       // The path `/post/4` will utilize the fallback behavior if it's requested.
-      return [{ id: 1 }, { id: 2 }, { id: 3 }];
+      return [{id: 1}, {id: 2}, {id: 3}];
     },
   },
 ];
@@ -246,26 +243,126 @@ export const serverRoutes: ServerRoute[] = [
 
 Some common browser APIs and capabilities might not be available on the server. Applications cannot make use of browser-specific global objects like `window`, `document`, `navigator`, or `location` as well as certain properties of `HTMLElement`.
 
-In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the [`afterEveryRender`](api/core/afterEveryRender) and [`afterNextRender`](api/core/afterNextRender) lifecycle hooks. These are only executed on the browser and skipped on the server.
+In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the `afterEveryRender` and `afterNextRender` lifecycle hooks. These are only executed on the browser and skipped on the server.
 
 ```angular-ts
-import { Component, ViewChild, afterNextRender } from '@angular/core';
+import {Component, viewChild, afterNextRender} from '@angular/core';
 
 @Component({
   selector: 'my-cmp',
   template: `<span #content>{{ ... }}</span>`,
 })
 export class MyComponent {
-  @ViewChild('content') contentRef: ElementRef;
+  contentRef = viewChild.required<ElementRef>('content');
 
   constructor() {
     afterNextRender(() => {
       // Safe to check `scrollHeight` because this will only run in the browser, not the server.
-      console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
+      console.log('content height: ' + this.contentRef().nativeElement.scrollHeight);
     });
   }
 }
 ```
+
+NOTE: Prefer [platform-specific providers](guide/ssr#providing-platform-specific-implementations) over runtime checks with `isPlatformBrowser` or `isPlatformServer`.
+
+IMPORTANT: Avoid using `isPlatformBrowser` in templates with `@if` or other conditionals to render different content on server and client. This causes hydration mismatches and layout shifts, negatively impacting user experience and [Core Web Vitals](https://web.dev/learn-core-web-vitals/). Instead, use `afterNextRender` for browser-specific initialization and keep rendered content consistent across platforms.
+
+## Setting providers on the server
+
+On the server side, top level provider values are set once when the application code is initially parsed and evaluated.
+This means that providers configured with `useValue` will keep their value across multiple requests, until the server application is restarted.
+
+If you want to generate a new value for each request, use a factory provider with `useFactory`. The factory function will run for every incoming request, ensuring that a new value is created and assigned to the token each time.
+
+## Providing platform-specific implementations
+
+When your application needs different behavior on the browser and server, provide separate service implementations for each platform. This approach centralizes platform logic in dedicated services.
+
+```ts
+export abstract class AnalyticsService {
+  abstract trackEvent(name: string): void;
+}
+```
+
+Create the browser implementation:
+
+```ts
+@Injectable()
+export class BrowserAnalyticsService implements AnalyticsService {
+  trackEvent(name: string): void {
+    // Sends the event to the browser-based third-party analytics provider
+  }
+}
+```
+
+Create the server implementation:
+
+```ts
+@Injectable()
+export class ServerAnalyticsService implements AnalyticsService {
+  trackEvent(name: string): void {
+    // Records the event on the server
+  }
+}
+```
+
+Register the browser implementation in your main application configuration:
+
+```ts
+// app.config.ts
+export const appConfig: ApplicationConfig = {
+  providers: [{provide: AnalyticsService, useClass: BrowserAnalyticsService}],
+};
+```
+
+Override with the server implementation in your server configuration:
+
+```ts
+// app.config.server.ts
+const serverConfig: ApplicationConfig = {
+  providers: [{provide: AnalyticsService, useClass: ServerAnalyticsService}],
+};
+```
+
+Inject and use the service in your components:
+
+```ts
+@Component({
+  /*...*/
+})
+export class Checkout {
+  private analytics = inject(AnalyticsService);
+
+  onAction() {
+    this.analytics.trackEvent('action');
+  }
+}
+```
+
+## Accessing Document via DI
+
+When working with server-side rendering, you should avoid directly referencing browser-specific globals like `document`. Instead, use the [`DOCUMENT`](api/core/DOCUMENT) token to access the document object in a platform-agnostic way.
+
+```ts
+import {Injectable, inject, DOCUMENT} from '@angular/core';
+
+@Injectable({providedIn: 'root'})
+export class CanonicalLinkService {
+  private readonly document = inject(DOCUMENT);
+
+  // During server rendering, inject a <link rel="canonical"> tag
+  // so the generated HTML includes the correct canonical URL
+  setCanonical(href: string): void {
+    const link = this.document.createElement('link');
+    link.rel = 'canonical';
+    link.href = href;
+    this.document.head.appendChild(link);
+  }
+}
+```
+
+HELPFUL: For managing meta tags, Angular provides the `Meta` service.
 
 ## Accessing Request and Response via DI
 
@@ -276,7 +373,7 @@ The `@angular/core` package provides several tokens for interacting with the ser
 - **[`REQUEST_CONTEXT`](api/core/REQUEST_CONTEXT 'API reference'):** Provides access to additional context related to the current request. This context can be passed as the second parameter of the [`handle`](api/ssr/AngularAppEngine#handle 'API reference') function. Typically, this is used to provide additional request-related information that is not part of the standard Web API.
 
 ```angular-ts
-import { inject, REQUEST } from '@angular/core';
+import {inject, REQUEST} from '@angular/core';
 
 @Component({
   selector: 'app-my-component',
@@ -290,12 +387,17 @@ export class MyComponent {
 }
 ```
 
-IMPORTANT: The above tokens will be `null` in the following scenarios:
+<!-- UL is used below as otherwise the list will not be include as part of the note. -->
+<!-- prettier-ignore-start -->
 
-- During the build processes.
-- When the application is rendered in the browser (CSR).
-- When performing static site generation (SSG).
-- During route extraction in development (at the time of the request).
+IMPORTANT: The above tokens will be `null` in the following scenarios:<ul class="docs-list">
+  <li>During the build processes.</li>
+  <li>When the application is rendered in the browser (CSR).</li>
+  <li>When performing static site generation (SSG).</li>
+  <li>During route extraction in development (at the time of the request).</li>
+</ul>
+
+<!-- prettier-ignore-end -->
 
 ## Generate a fully static application
 
@@ -323,19 +425,140 @@ To configure this, update your `angular.json` file as follows:
 
 ## Caching data when using HttpClient
 
-[`HttpClient`](api/common/http/HttpClient) cached outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
+`HttpClient` caches outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
 
-By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using [`withHttpTransferCacheOptions`](api/platform-browser/withHttpTransferCacheOptions) when providing hydration.
+### Configuring the caching options
 
-```typescript
-bootstrapApplication(AppComponent, {
+You can customize how Angular caches HTTP responses during server‑side rendering (SSR) and reuses them during hydration by configuring `HttpTransferCacheOptions`.  
+This configuration is provided globally using `withHttpTransferCacheOptions` inside `provideClientHydration()`.
+
+By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using `withHttpTransferCacheOptions` to the hydration configuration.
+
+```ts
+import {bootstrapApplication} from '@angular/platform-browser';
+import {provideClientHydration, withHttpTransferCacheOptions} from '@angular/platform-browser';
+
+bootstrapApplication(App, {
   providers: [
-    provideClientHydration(withHttpTransferCacheOptions({
-      includePostRequests: true
-    }))
-  ]
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        includeHeaders: ['ETag', 'Cache-Control'],
+        filter: (req) => !req.url.includes('/api/profile'),
+        includePostRequests: true,
+        includeRequestsWithAuthHeaders: false,
+      }),
+    ),
+  ],
 });
 ```
+
+---
+
+### `includeHeaders`
+
+Specifies which headers from the server response should be included in cached entries.  
+No headers are included by default.
+
+```ts
+withHttpTransferCacheOptions({
+  includeHeaders: ['ETag', 'Cache-Control'],
+});
+```
+
+IMPORTANT: Avoid including sensitive headers like authentication tokens. These can leak user‑specific data between requests.
+
+---
+
+### `includePostRequests`
+
+By default, only `GET` and `HEAD` requests are cached.  
+You can enable caching for `POST` requests when they are used as read operations such as GraphQL queries.
+
+```ts
+withHttpTransferCacheOptions({
+  includePostRequests: true,
+});
+```
+
+Use this only when `POST` requests are **idempotent** and safe to reuse between server and client renders.
+
+---
+
+### `includeRequestsWithAuthHeaders`
+
+Determines whether requests containing `Authorization` or `Proxy‑Authorization` headers are eligible for caching.  
+By default, these are excluded to prevent caching user‑specific responses.
+
+```ts
+withHttpTransferCacheOptions({
+  includeRequestsWithAuthHeaders: true,
+});
+```
+
+Enable only when authentication headers do **not** affect the response content (for example, public tokens for analytics APIs).
+
+### Per‑request overrides
+
+You can override caching behavior for a specific request using the `transferCache` request option.
+
+```ts
+// Include specific headers for this request
+http.get('/api/profile', {transferCache: {includeHeaders: ['CustomHeader']}});
+```
+
+### Disabling caching
+
+You can disable HTTP caching of requests sent from the server either globally or individually.
+
+#### Globally
+
+To disable caching for all requests in your application, use the `withNoHttpTransferCache` feature:
+
+```ts
+import {
+  bootstrapApplication,
+  provideClientHydration,
+  withNoHttpTransferCache,
+} from '@angular/platform-browser';
+
+bootstrapApplication(App, {
+  providers: [provideClientHydration(withNoHttpTransferCache())],
+});
+```
+
+#### Filtering
+
+You can also selectively disable caching for certain requests using the [`filter`](api/common/http/HttpTransferCacheOptions) option in `withHttpTransferCacheOptions`. For example, you can disable caching for a specific API endpoint:
+
+```ts
+import {
+  bootstrapApplication,
+  provideClientHydration,
+  withHttpTransferCacheOptions,
+} from '@angular/platform-browser';
+
+bootstrapApplication(App, {
+  providers: [
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        filter: (req) => !req.url.includes('/api/sensitive-data'),
+      }),
+    ),
+  ],
+});
+```
+
+Use this option to exclude endpoints with user‑specific or dynamic data (for example `/api/profile`).
+
+#### Per-request
+
+To disable caching for an individual request, you can specify the [`transferCache`](api/common/http/HttpRequest#transferCache) option in an `HttpRequest`.
+
+```ts
+httpClient.get('/api/sensitive-data', {transferCache: false});
+```
+
+NOTE: If your application uses different HTTP origins to make API calls on the server and on the client, the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token allows you to establish a mapping between those origins, so that `HttpTransferCache` feature can recognize those requests as the same ones and reuse the data cached on the server during hydration on the client.
 
 ## Configuring a server
 
@@ -343,9 +566,13 @@ bootstrapApplication(AppComponent, {
 
 The `@angular/ssr/node` extends `@angular/ssr` specifically for Node.js environments. It provides APIs that make it easier to implement server-side rendering within your Node.js application. For a complete list of functions and usage examples, refer to the [`@angular/ssr/node` API reference](api/ssr/node/AngularNodeAppEngine) API reference.
 
-```typescript
+```ts
 // server.ts
-import { AngularNodeAppEngine, createNodeRequestHandler, writeResponseToNodeResponse } from '@angular/ssr/node';
+import {
+  AngularNodeAppEngine,
+  createNodeRequestHandler,
+  writeResponseToNodeResponse,
+} from '@angular/ssr/node';
 import express from 'express';
 
 const app = express();
@@ -354,7 +581,7 @@ const angularApp = new AngularNodeAppEngine();
 app.use('*', (req, res, next) => {
   angularApp
     .handle(req)
-    .then(response => {
+    .then((response) => {
       if (response) {
         writeResponseToNodeResponse(response, res);
       } else {
@@ -374,9 +601,9 @@ export const reqHandler = createNodeRequestHandler(app);
 
 The `@angular/ssr` provides essential APIs for server-side rendering your Angular application on platforms other than Node.js. It leverages the standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) objects from the Web API, enabling you to integrate Angular SSR into various server environments. For detailed information and examples, refer to the [`@angular/ssr` API reference](api/ssr/AngularAppEngine).
 
-```typescript
+```ts
 // server.ts
-import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
+import {AngularAppEngine, createRequestHandler} from '@angular/ssr';
 
 const angularApp = new AngularAppEngine();
 
@@ -384,8 +611,12 @@ const angularApp = new AngularAppEngine();
  * This is a request handler used by the Angular CLI (dev-server and during build).
  */
 export const reqHandler = createRequestHandler(async (req: Request) => {
-  const res: Response|null = await angularApp.render(req);
+  const res: Response | null = await angularApp.render(req);
 
   // ...
 });
 ```
+
+## Security
+
+For detailed information on preventing Server-Side Request Forgery (SSRF) and configuring allowed hosts, see the [Server-side security](best-practices/security#preventing-server-side-request-forgery-ssrf) guide.

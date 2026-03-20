@@ -175,13 +175,11 @@ describe('component declaration jit compilation', () => {
       contentQueries: functionContaining([
         // "byRef" should use `contentQuery` with `0` (`QueryFlags.none`) for query flag
         // without a read token, and bind to the full query result.
-        /contentQuery[^(]*\(dirIndex,_c0,4\)/,
-        '(ctx.byRef = _t)',
-
         // "byToken" should use `staticContentQuery` with `3`
         // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
         // read token, and bind to the first result in the query result.
-        /contentQuery[^(]*\(dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        /contentQuery[^(]*\(dirIndex,_c0,4\)[^(]*\(dirIndex,[^,]*String[^,]*,\s*3,[^)]*ElementRef[^)]*\)/,
+        '(ctx.byRef = _t)',
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -213,13 +211,11 @@ describe('component declaration jit compilation', () => {
       viewQuery: functionContaining([
         // "byRef" should use `viewQuery` with `0` (`QueryFlags.none`) for query flag without a read
         // token, and bind to the full query result.
-        /viewQuery[^(]*\(_c0,4\)/,
-        '(ctx.byRef = _t)',
-
         // "byToken" should use `viewQuery` with `3`
         // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
         // read token, and bind to the first result in the query result.
-        /viewQuery[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        /viewQuery[^(]*\(_c0,4\)[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        '(ctx.byRef = _t)',
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -371,19 +367,6 @@ describe('component declaration jit compilation', () => {
     });
     expectComponentDef(whenOmitted, {
       template: functionContaining([/elementStart[^(]*\(0,'div'\)/, /text[^(]*\(1,' Foo '\)/]),
-    });
-  });
-
-  it('should honor custom interpolation config', () => {
-    const def = ɵɵngDeclareComponent({
-      version: '18.0.0',
-      type: TestClass,
-      template: '{% foo %}',
-      interpolation: ['{%', '%}'],
-    }) as ComponentDef<TestClass>;
-
-    expectComponentDef(def, {
-      template: functionContaining([/textInterpolate[^(]*\(ctx.foo\)/]),
     });
   });
 

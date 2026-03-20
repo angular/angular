@@ -39,7 +39,7 @@ You have to invoke the `required` method on `input` to indicate that the parent 
 <docs-step title="Pass data to the input">
 Send the `housingLocation` value from the `Home` component to the `housingLocation` property of the HousingLocation component.
 
-<docs-code header="Declare the input property for HousingLocation in home.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/home/home.ts" visibleLines="[16]"/>
+<docs-code language="angular-ts" header="Declare the input property for HousingLocation in home.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/home/home.ts" visibleLines="[16]"/>
 
 </docs-step>
 

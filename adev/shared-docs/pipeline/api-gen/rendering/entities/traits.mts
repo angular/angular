@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {JsDocTagEntry, MemberEntry, ParameterEntry} from '../entities.mjs';
+import {JsDocTagEntry, MemberEntry, ParameterEntry, PropertyEntry} from '../entities.mjs';
 
 import {
   CodeLineRenderable,
@@ -14,11 +14,16 @@ import {
   LinkEntryRenderable,
   MemberEntryRenderable,
   ParameterEntryRenderable,
+  PropertyEntryRenderable,
 } from './renderables.mjs';
 
 /** A doc entry that has jsdoc tags. */
 export interface HasJsDocTags {
   jsdocTags: JsDocTagEntry[];
+}
+
+export interface MaybeJsDocTags {
+  jsdocTags?: JsDocTagEntry[];
 }
 
 export interface HasAdditionalLinks {
@@ -56,6 +61,10 @@ export interface HasMembers {
   members: MemberEntry[];
 }
 
+export interface HasPropertyMembers {
+  members: PropertyEntry[];
+}
+
 /** A doc entry that has members groups transformed for rendering. */
 export interface HasRenderableMembersGroups {
   membersGroups: Map<string, MemberEntryRenderable[]>;
@@ -64,6 +73,10 @@ export interface HasRenderableMembersGroups {
 /** A doc entry that has members transformed for rendering. */
 export interface HasRenderableMembers {
   members: MemberEntryRenderable[];
+}
+
+export interface HasRenderablePropertyMembers {
+  members: PropertyEntryRenderable[];
 }
 
 /** A doc entry that has an associated JS module name. */

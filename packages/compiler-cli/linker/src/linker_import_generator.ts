@@ -17,11 +17,12 @@ import {FatalLinkerError} from './fatal_linker_error';
  * must be achieved by property access on an `ng` namespace identifier, which is passed in via the
  * constructor.
  */
-export class LinkerImportGenerator<TStatement, TExpression>
-  implements ImportGenerator<null, TExpression>
-{
+export class LinkerImportGenerator<TStatement, TExpression, TType> implements ImportGenerator<
+  null,
+  TExpression
+> {
   constructor(
-    private factory: AstFactory<TStatement, TExpression>,
+    private factory: AstFactory<TStatement, TExpression, TType>,
     private ngImport: TExpression,
   ) {}
 

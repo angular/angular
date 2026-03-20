@@ -7,9 +7,25 @@
  */
 
 import {Injector, ɵGlobalDevModeUtils} from '@angular/core';
-import {getInjectorFromElementNode} from './component-tree';
+import {
+  getInjectorFromElementNode,
+  getRootElements,
+  serializeProviderRecord,
+} from './component-tree';
 
 type Ng = ɵGlobalDevModeUtils['ng'];
+const NG_VERSION = 'ng-version';
+const VERSION = '0.0.0-PLACEHOLDER';
+
+function setNgVersion(element: Element) {
+  element.setAttribute(NG_VERSION, VERSION);
+}
+
+function createRoot() {
+  const root = document.createElement('div');
+  setNgVersion(root);
+  return root;
+}
 
 describe('component-tree', () => {
   afterEach(() => {
@@ -37,6 +53,117 @@ describe('component-tree', () => {
 
       const el = document.createElement('div');
       expect(getInjectorFromElementNode(el)).toBeNull();
+    });
+  });
+
+  describe('getRootElements', () => {
+    beforeEach(() => {
+      const ng: Partial<Ng> = {
+        getComponent: jasmine.createSpy('getComponent').and.callFake((element: HTMLElement) => {
+          // Will treat only `ng-*` elements as Angular components.
+          if (element.tagName.toLowerCase().startsWith('ng-')) {
+            return element;
+          }
+          return null;
+        }),
+      };
+      (window as any).ng = ng;
+    });
+
+    afterEach(() => {
+      document.body.replaceChildren();
+      document.body.removeAttribute(NG_VERSION);
+      delete (window as any).ng;
+    });
+
+    it('should return root element', () => {
+      const rootElement = createRoot();
+      const childElement = createRoot();
+
+      rootElement.appendChild(childElement);
+      document.body.appendChild(rootElement);
+
+      const roots = getRootElements();
+
+      expect(roots.length).toEqual(1);
+      expect(roots.pop()).toEqual(rootElement);
+    });
+
+    it('should return multiple sibling roots', () => {
+      const firstRoot = createRoot();
+      const secondRoot = createRoot();
+
+      document.body.appendChild(firstRoot);
+      document.body.appendChild(secondRoot);
+
+      const roots = getRootElements();
+
+      expect(roots.length).toEqual(2);
+      expect(roots).toContain(firstRoot);
+      expect(roots).toContain(secondRoot);
+    });
+
+    it('should only return document.body when document.body is the root', () => {
+      setNgVersion(document.body);
+      const child1 = createRoot();
+      document.body.appendChild(child1);
+      const roots = getRootElements();
+      expect(roots.length).toEqual(1);
+      expect(roots).toContain(document.body);
+    });
+
+    it('should return all root elements with all non-application root components', () => {
+      const rootElement = createRoot();
+      const childElement = createRoot();
+      const nonAppRootCmp = document.createElement('ng-cmp');
+
+      rootElement.appendChild(childElement);
+      document.body.appendChild(rootElement);
+      document.body.appendChild(nonAppRootCmp);
+
+      const roots = getRootElements();
+
+      expect(roots.length).toEqual(2);
+      expect(roots).toEqual([rootElement, nonAppRootCmp]);
+    });
+  });
+
+  describe('serializeProviderRecord', () => {
+    it('should return "internal" type for internal tokens', () => {
+      const internalTokenNames = [
+        'ElementRef',
+        'Renderer2',
+        'ViewContainerRef',
+        'DestroyRef',
+        'ChangeDetectorRef',
+        'Injector',
+      ];
+
+      internalTokenNames.forEach((tokenName, index) => {
+        const token = () => {};
+        Object.defineProperty(token, 'name', {value: tokenName});
+        const providerRecord: any = {
+          provider: () => {},
+          token,
+          isViewProvider: false,
+        };
+        const result = serializeProviderRecord(providerRecord, index);
+        expect(result.type).toBe('internal');
+        expect(result.token).toBe(tokenName);
+      });
+    });
+
+    it('should return "type" for non-internal function providers', () => {
+      const token = () => {};
+      Object.defineProperty(token, 'name', {value: 'MyCustomService'});
+      const providerRecord: any = {
+        provider: () => {},
+        token,
+        isViewProvider: false,
+      };
+      const result = serializeProviderRecord(providerRecord, 0);
+      expect(result.type).toBe('type');
+      expect(result.token).toBe('MyCustomService');
     });
   });
 });

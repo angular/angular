@@ -10,8 +10,8 @@ import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {rmSync} from 'node:fs';
 import {resolve} from 'path';
-import shx from 'shelljs';
 
 describe('route lazy loading migration', () => {
   let runner: SchematicTestRunner;
@@ -69,17 +69,17 @@ describe('route lazy loading migration', () => {
     `,
     );
 
-    previousWorkingDir = shx.pwd();
+    previousWorkingDir = process.cwd();
     tmpDirPath = getSystemPath(host.root);
 
     // Switch into the temporary directory path. This allows us to run
     // the schematic against our custom unit test tree.
-    shx.cd(tmpDirPath);
+    process.chdir(tmpDirPath);
   });
 
   afterEach(() => {
-    shx.cd(previousWorkingDir);
-    shx.rm('-r', tmpDirPath);
+    process.chdir(previousWorkingDir);
+    rmSync(tmpDirPath, {recursive: true});
   });
 
   it('should throw an error if no files match the passed-in path', async () => {
@@ -285,55 +285,12 @@ describe('route lazy loading migration', () => {
     );
   });
 
-  it('should support provideRoutes', async () => {
-    writeFile(
-      'app.module.ts',
-      `
-      import {NgModule} from '@angular/core';
-      import {provideRoutes} from '@angular/router';
-      import {TestComponent} from './test';
-
-      const routes = [{path: 'test', component: TestComponent}];
-
-      @NgModule({
-        providers: [provideRoutes(routes)],
-      })
-      export class AppModule {}
-    `,
-    );
-
-    writeFile(
-      'test.ts',
-      `
-      import {Component} from '@angular/core';
-      @Component({template: 'hello', standalone: true})
-      export class TestComponent {}
-    `,
-    );
-
-    await runMigration('route-lazy-loading');
-
-    expect(stripWhitespace(tree.readContent('app.module.ts'))).toContain(
-      stripWhitespace(`
-        import {NgModule} from '@angular/core';
-        import {provideRoutes} from '@angular/router';
-
-        const routes = [{path: 'test', loadComponent: () => import('./test').then(m => m.TestComponent)}];
-
-        @NgModule({
-          providers: [provideRoutes(routes)],
-        })
-        export class AppModule {}
-      `),
-    );
-  });
-
   it('should skip not standalone components', async () => {
     writeFile(
       'app.module.ts',
       `
       import {NgModule} from '@angular/core';
-      import {provideRoutes} from '@angular/router';
+      import {provideRouter} from '@angular/router';
       import {TestComponent} from './test';
       import {StandaloneByDefaultComponent} from './standalone-by-default';
       import {NotStandaloneComponent} from './not-standalone';
@@ -345,7 +302,7 @@ describe('route lazy loading migration', () => {
       ];
 
       @NgModule({
-        providers: [provideRoutes(routes)],
+        providers: [provideRouter(routes)],
       })
       export class AppModule {}
     `,
@@ -386,7 +343,7 @@ describe('route lazy loading migration', () => {
     expect(stripWhitespace(tree.readContent('app.module.ts'))).toContain(
       stripWhitespace(`
         import {NgModule} from '@angular/core';
-        import {provideRoutes} from '@angular/router';
+        import {provideRouter} from '@angular/router';
         import {NotStandaloneComponent} from './not-standalone';
 
         const routes = [
@@ -396,7 +353,7 @@ describe('route lazy loading migration', () => {
         ];
 
         @NgModule({
-          providers: [provideRoutes(routes)],
+          providers: [provideRouter(routes)],
         })
         export class AppModule {}
       `),
@@ -802,6 +759,54 @@ describe('route lazy loading migration', () => {
     }
 
     expect(error).toMatch(/Could not find any files to migrate under the path/);
+  });
+
+  it('should migrate if routes are exported as default', async () => {
+    writeFile(
+      'app.module.ts',
+      `
+      import {NgModule} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+      import {routes} from './routes';
+
+      @NgModule({
+        imports: [RouterModule.forRoot(routes],
+      })
+      export class AppModule {}
+    `,
+    );
+
+    writeFile(
+      'routes.ts',
+      `
+      import {Routes, Route} from '@angular/router';
+      import {TestComponent} from './test';
+      export default [
+        {path: 'test', component: TestComponent}
+      ] as Routes;
+    `,
+    );
+
+    writeFile(
+      'test.ts',
+      `
+      import {Component} from '@angular/core';
+      @Component({template: 'hello', standalone: true})
+      export class TestComponent {}
+    `,
+    );
+
+    await runMigration('route-lazy-loading');
+
+    expect(stripWhitespace(tree.readContent('routes.ts'))).toContain(
+      stripWhitespace(`
+         import {Routes, Route} from '@angular/router';
+
+         export default [
+          {path: 'test', loadComponent: () => import('./test').then(m => m.TestComponent)}
+         ] as Routes;
+      `),
+    );
   });
 
   xit('should migrate routes if the routes file in is another file without type', async () => {

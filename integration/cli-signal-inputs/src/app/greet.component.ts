@@ -5,11 +5,11 @@ import {Subject} from 'rxjs';
 @Component({
   selector: 'greet',
   template: `
-    <span class="greet-text">{{firstName()}} - {{lastName() ?? 'initial-unset'}}</span>
+    <span class="greet-text">{{ firstName() }} - {{ lastName() ?? 'initial-unset' }}</span>
 
-    <button (click)="dispatchOutputEvent()"><button>
+    <button (click)="dispatchOutputEvent()"><button></button></button>
   `,
-  standalone: true,
+
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GreetComponent {

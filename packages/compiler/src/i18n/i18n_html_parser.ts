@@ -7,7 +7,6 @@
  */
 
 import {MissingTranslationStrategy} from '../core';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/defaults';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {TokenizeOptions} from '../ml_parser/lexer';
 import {ParseTreeResult} from '../ml_parser/parser';
@@ -57,20 +56,13 @@ export class I18NHtmlParser implements HtmlParser {
   }
 
   parse(source: string, url: string, options: TokenizeOptions = {}): ParseTreeResult {
-    const interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
-    const parseResult = this._htmlParser.parse(source, url, {interpolationConfig, ...options});
+    const parseResult = this._htmlParser.parse(source, url, {...options});
 
     if (parseResult.errors.length) {
       return new ParseTreeResult(parseResult.rootNodes, parseResult.errors);
     }
 
-    return mergeTranslations(
-      parseResult.rootNodes,
-      this._translationBundle,
-      interpolationConfig,
-      [],
-      {},
-    );
+    return mergeTranslations(parseResult.rootNodes, this._translationBundle, [], {});
   }
 }
 

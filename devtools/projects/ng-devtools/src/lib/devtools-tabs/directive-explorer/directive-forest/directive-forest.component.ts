@@ -17,9 +17,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
-  HostListener,
   inject,
   input,
   output,
@@ -36,8 +36,10 @@ import {IndexedNode} from './index-forest';
 import {FilterComponent, FilterFn} from './filter/filter.component';
 import {TreeNodeComponent, NodeTextMatch} from './tree-node/tree-node.component';
 import {directiveForestFilterFnGenerator} from './filter/directive-forest-filter-fn-generator';
+import {Debouncer} from '../../../shared/utils/debouncer';
 
 const NODE_ITEM_HEIGHT = 18; // px; Required for CDK Virtual Scroll
+const RESIZE_OBSERVER_DEBOUNCE = 250; // ms
 
 @Component({
   selector: 'ng-directive-forest',
@@ -51,6 +53,12 @@ const NODE_ITEM_HEIGHT = 18; // px; Required for CDK Virtual Scroll
     CdkVirtualForOf,
     TreeNodeComponent,
   ],
+  host: {
+    '(document:keydown.ArrowUp)': 'navigateUp($event)',
+    '(document:keydown.ArrowDown)': 'navigateDown($event)',
+    '(document:keydown.ArrowLeft)': 'collapseCurrent($event)',
+    '(document:keydown.ArrowRight)': 'expandCurrent($event)',
+  },
 })
 export class DirectiveForestComponent {
   private readonly tabUpdate = inject(TabUpdate);
@@ -75,6 +83,13 @@ export class DirectiveForestComponent {
   readonly matchedNodes = signal<Map<number, NodeTextMatch[]>>(new Map()); // Node index, NodeTextMatch
   readonly matchesCount = computed(() => this.matchedNodes().size);
   readonly currentlyMatchedIndex = signal<number>(-1);
+  protected readonly selectedNodeIdx = computed(() => {
+    const node = this.selectedNode();
+    if (node) {
+      return this.dataSource.data.indexOf(node);
+    }
+    return -1;
+  });
 
   readonly treeControl = new FlatTreeControl<FlatNode>(
     (node) => node!.level,
@@ -87,7 +102,6 @@ export class DirectiveForestComponent {
   private parents!: FlatNode[];
   private initialized = false;
   private forestRoot: FlatNode | null = null;
-  private resizeObserver: ResizeObserver;
 
   constructor() {
     this.subscribeToInspectorEvents();
@@ -103,13 +117,6 @@ export class DirectiveForestComponent {
       },
     });
 
-    // In some cases there a height changes, we need to recalculate the viewport size.
-    this.resizeObserver = new ResizeObserver(() => {
-      this.viewport().scrollToIndex(0);
-      this.viewport().checkViewportSize();
-    });
-    this.resizeObserver.observe(this.elementRef.nativeElement);
-
     effect(() => {
       const result = this.updateForest(this.forest());
 
@@ -120,10 +127,8 @@ export class DirectiveForestComponent {
         this.reselectNodeOnUpdate();
       }
     });
-  }
 
-  ngOnDestroy(): void {
-    this.resizeObserver.disconnect();
+    this.handleViewportResize();
   }
 
   handleSelectDomElement(node: FlatNode): void {
@@ -174,7 +179,6 @@ export class DirectiveForestComponent {
     this.setParents.emit(null);
   }
 
-  @HostListener('document:keydown.ArrowUp', ['$event'])
   navigateUp(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
@@ -199,7 +203,6 @@ export class DirectiveForestComponent {
     this.selectAndEnsureVisible(data[prevIdx]);
   }
 
-  @HostListener('document:keydown.ArrowDown', ['$event'])
   navigateDown(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
@@ -227,7 +230,6 @@ export class DirectiveForestComponent {
     this.selectAndEnsureVisible(data[idx]);
   }
 
-  @HostListener('document:keydown.ArrowLeft', ['$event'])
   collapseCurrent(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
@@ -240,7 +242,6 @@ export class DirectiveForestComponent {
     event.preventDefault();
   }
 
-  @HostListener('document:keydown.ArrowRight', ['$event'])
   expandCurrent(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
@@ -377,5 +378,34 @@ export class DirectiveForestComponent {
 
   private expandParents(): void {
     this.parents.forEach((parent) => this.treeControl.expand(parent));
+  }
+
+  private handleViewportResize() {
+    // In some cases there a height changes, we need to recalculate the viewport size.
+    let lastHeight = this.elementRef.nativeElement.clientHeight;
+    const debouncer = new Debouncer();
+
+    const resizeObserver = new ResizeObserver(
+      debouncer.debounce(([entry]) => {
+        const currHeight = entry.contentRect.height;
+
+        // Perform check and scroll only if the height changes.
+        if (currHeight !== lastHeight) {
+          this.viewport().checkViewportSize();
+
+          // Scroll a few elements above the selected one for better UX.
+          const scrollItemIdx = Math.max(0, this.selectedNodeIdx() - 2);
+          this.viewport().scrollToIndex(scrollItemIdx);
+
+          lastHeight = currHeight;
+        }
+      }, RESIZE_OBSERVER_DEBOUNCE),
+    );
+    resizeObserver.observe(this.elementRef.nativeElement);
+
+    inject(DestroyRef).onDestroy(() => {
+      debouncer.cancel();
+      resizeObserver.disconnect();
+    });
   }
 }

@@ -29,18 +29,32 @@
   </div>
 
   @if (node().onPush) {
-    <span class="on-push">OnPush</span>
+    <span class="trait">OnPush</span>
   }
 
-  @let defer = node().defer;
+  @let block = node().controlFlowBlock;
 
-  @if (!defer && (!hydration || hydration.status !== 'dehydrated')) {
+  @if (BlockType.isDeferBlock(block)) {
+    @let defer = block;
+
+    @if (defer) {
+      @if (defer.renderedBlock && defer.renderedBlock !== 'defer') {
+        <span class="trait">(@{{ defer.renderedBlock }})</span>
+      } @else if (!defer.renderedBlock) {
+        <span class="trait">(non-rendered)</span>
+      }
+    }
+  } @else if (BlockType.isForLoopBlock(block)) {
+    @let forLoop = block;
+
+    @if (forLoop) {
+      <span class="trait">
+        ({{ forLoop.items.length }} {{ forLoop.items.length === 1 ? 'item' : 'items' }})
+      </span>
+    }
+  } @else if (!hydration || hydration.status !== 'dehydrated') {
     <!-- Shown/hidden via CSS -->
-    <span class="console-reference"> == $ng0 </span>
-  }
-
-  @if (defer && defer.currentBlock) {
-    <span class="on-push">(&#64;{{defer.currentBlock}})</span>
+    <span class="console-reference trait"> == $ng0 </span>
   }
 
   @switch (hydration?.status) {
@@ -48,7 +62,7 @@
       <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
     }
     @case ('dehydrated') {
-      <mat-icon matTooltip="Dehydrated" class="hydration skipped">pending</mat-icon>
+      <mat-icon matTooltip="Dehydrated" class="hydration skipped">water_do</mat-icon>
     }
 
     @case ('skipped') {
@@ -73,11 +87,11 @@
   <div class="hydration-error">
     @if (hydration.expectedNodeDetails) {
       <div>Expected DOM:</div>
-      <pre>{{hydration.expectedNodeDetails}}</pre>
+      <pre>{{ hydration.expectedNodeDetails }}</pre>
     }
     @if (hydration.actualNodeDetails) {
       <div>Actual DOM:</div>
-      <pre>{{hydration.actualNodeDetails}}</pre>
+      <pre>{{ hydration.actualNodeDetails }}</pre>
     }
   </div>
 }

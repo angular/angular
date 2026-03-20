@@ -21,6 +21,7 @@ import {
   OnChanges,
   OnInit,
   Output,
+  provideZoneChangeDetection,
   SimpleChanges,
   Type,
   ViewChild,
@@ -34,6 +35,12 @@ import {By} from '@angular/platform-browser';
 import {getComponent, getDirectives} from '../../src/render3/util/discovery_utils';
 
 describe('host directives', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
+
   it('should apply a basic host directive', () => {
     const logs: string[] = [];
 
@@ -387,10 +394,9 @@ describe('host directives', () => {
 
     @Component({
       template: `
-        <div
-          dir
-          #firstHost="firstHost"
-          #secondHost="secondHost">{{firstHost.name}} | {{secondHost.name}}</div>
+        <div dir #firstHost="firstHost" #secondHost="secondHost">
+          {{ firstHost.name }} | {{ secondHost.name }}
+        </div>
       `,
       standalone: false,
     })
@@ -1223,6 +1229,50 @@ describe('host directives', () => {
         hostDirectiveCdr.detectChanges();
       }).not.toThrow();
     });
+
+    // See #65724.
+    it('should be able to inject host tokens defined through `viewProviders` in a component using host directives', () => {
+      const token = new InjectionToken<ProvidesExisting>('token');
+      let value: ProvidesExisting | undefined | null;
+
+      @Directive({
+        // These providers aren't injected, but they help hit the relevant code path.
+        providers: [{provide: new InjectionToken('unusedToken'), useValue: true}],
+      })
+      class HostDirective {}
+
+      @Directive({selector: '[injectsExisting]'})
+      class InjectsExisting {
+        constructor() {
+          value = inject(token, {host: true, optional: true});
+        }
+      }
+
+      @Directive({selector: '[providesExisting]'})
+      class ProvidesExisting {}
+
+      @Component({
+        selector: 'comp-with-host-directive',
+        template: '<div injectsExisting></div>',
+        imports: [InjectsExisting],
+        hostDirectives: [HostDirective],
+        viewProviders: [{provide: token, useExisting: ProvidesExisting}],
+      })
+      class CompWithHostDirective {}
+
+      @Component({
+        selector: 'app-root',
+        template: '<comp-with-host-directive providesExisting/>',
+        imports: [ProvidesExisting, CompWithHostDirective],
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(value).toBeTruthy();
+      expect(value instanceof ProvidesExisting).toBe(true);
+    });
   });
 
   describe('outputs', () => {
@@ -1314,8 +1364,11 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: `
-          <button dir (wasClicked)="validSpy($event)" (hasBeenClicked)="invalidSpy($event)"></button>`,
+        template: ` <button
+          dir
+          (wasClicked)="validSpy($event)"
+          (hasBeenClicked)="invalidSpy($event)"
+        ></button>`,
         standalone: false,
       })
       class App {
@@ -1348,11 +1401,11 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: `
-          <button
-            dir
-            (clickOccurred)="validSpy($event)"
-            (hasBeenClicked)="invalidSpy($event)"></button>`,
+        template: ` <button
+          dir
+          (clickOccurred)="validSpy($event)"
+          (hasBeenClicked)="invalidSpy($event)"
+        ></button>`,
         standalone: false,
       })
       class App {
@@ -2250,9 +2303,9 @@ describe('host directives', () => {
         // Note that `[dir]` doesn't match on the `button` on purpose.
         // The wrong behavior would be if the `buttonColor` binding worked on `host-dir`.
         template: `
-              <span dir [buttonColor]="spanValue"></span>
-              <button host-dir [buttonColor]="buttonValue"></button>
-            `,
+          <span dir [buttonColor]="spanValue"></span>
+          <button host-dir [buttonColor]="buttonValue"></button>
+        `,
       })
       class App {
         spanValue = 'spanValue';

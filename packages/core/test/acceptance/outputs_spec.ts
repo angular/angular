@@ -334,11 +334,13 @@ describe('outputs', () => {
     expect(otherDir.change).toBe(true);
 
     fixture.componentInstance.change = false;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(otherDir.change).toBe(false);
 
     buttonToggle.change.next();
+    fixture.changeDetectorRef.markForCheck();
     expect(counter).toBe(1);
   });
 });

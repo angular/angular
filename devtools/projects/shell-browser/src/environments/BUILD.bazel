@@ -8,6 +8,5 @@ ts_project(
         "environment.ts",
     ],
     deps = [
-        "//devtools/projects/ng-devtools",
     ],
 )

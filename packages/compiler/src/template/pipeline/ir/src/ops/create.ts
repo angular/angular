@@ -77,7 +77,8 @@ export type CreateOp =
   | AnimationListenerOp
   | AnimationStringOp
   | AnimationOp
-  | SourceLocationOp;
+  | SourceLocationOp
+  | ControlCreateOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -1381,6 +1382,8 @@ interface DeferTriggerWithTargetBase extends DeferTriggerBase {
 
 interface DeferIdleTrigger extends DeferTriggerBase {
   kind: DeferTriggerKind.Idle;
+
+  timeout: number | null;
 }
 
 interface DeferImmediateTrigger extends DeferTriggerBase {
@@ -1407,6 +1410,7 @@ interface DeferInteractionTrigger extends DeferTriggerWithTargetBase {
 
 interface DeferViewportTrigger extends DeferTriggerWithTargetBase {
   kind: DeferTriggerKind.Viewport;
+  options: o.Expression | null;
 }
 
 /**
@@ -1946,6 +1950,25 @@ export function createSourceLocationOp(
     kind: OpKind.SourceLocation,
     templatePath,
     locations,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An operation that determines whether a `[control]` binding targets a specialized control
+ * directive on a native or custom form control, and if so, adds event listeners to synchronize the
+ * bound form field to the form control.
+ */
+export interface ControlCreateOp extends Op<CreateOp> {
+  kind: OpKind.ControlCreate;
+  sourceSpan: ParseSourceSpan;
+}
+
+/** Creates a {@link ControlCreateOp}. */
+export function createControlCreateOp(sourceSpan: ParseSourceSpan): ControlCreateOp {
+  return {
+    kind: OpKind.ControlCreate,
+    sourceSpan,
     ...NEW_OP,
   };
 }

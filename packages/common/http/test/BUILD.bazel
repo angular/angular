@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
 
 ts_project(
     name = "test_lib",
@@ -14,23 +14,22 @@ ts_project(
         "//packages/common",
         "//packages/common/http",
         "//packages/common/http/testing",
+        "//packages/common/testing",
         "//packages/core",
         "//packages/core/testing",
         "//packages/private/testing",
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "test",
     data = [
         ":test_lib",
     ],
-    flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "test_web",
-    flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
     deps = [
         ":test_lib",
     ],

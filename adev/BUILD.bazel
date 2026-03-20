@@ -1,4 +1,3 @@
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
 load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
@@ -15,8 +14,8 @@ exports_files([
 ])
 
 APPLICATION_FILES = [
-    "//adev/src/context:llms_full",
     "//adev/src/assets/images",
+    "//adev/src/assets/images/v21-event:v21-event-images",
     "//adev/src/assets/others",
     "//adev/src/assets/previews",
     "//adev/src/assets:tutorials",
@@ -25,122 +24,166 @@ APPLICATION_FILES = [
     "//adev/src/assets:content",
     "//adev/src/assets:context",
     "//adev/src/content/examples:embeddable",
+    "tailwind.config.js",
+
+    # For the routes that are generated at build time
+    "//adev/src/assets:docs_api_manifest",
+    "//adev/scripts/routes:generate_route",
+    "//adev/src/app/routing/navigation-entries",
+    "//adev/src/app/routing/navigation-entries:navigation_types",
+    "//adev/src/content/reference/errors:route-nav-items",
+    "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+    "//adev/src/content/tutorials/deferrable-views",
+    "//adev/src/content/tutorials/first-app",
+    "//adev/src/content/tutorials/learn-angular",
+    "//adev/src/content/tutorials/signal-forms",
+    "//adev/src/content/tutorials/signals",
 ] + glob(
     ["src/**/*"],
     exclude = ["src/**/*.spec.ts"],
 )
 
 APPLICATION_DEPS = [
-    "//adev:node_modules/@angular-devkit/build-angular",
-    "//adev:node_modules/@codemirror/autocomplete",
-    "//adev:node_modules/@codemirror/commands",
-    "//adev:node_modules/@codemirror/lang-angular",
-    "//adev:node_modules/@codemirror/lang-css",
-    "//adev:node_modules/@codemirror/lang-html",
-    "//adev:node_modules/@codemirror/lang-javascript",
-    "//adev:node_modules/@codemirror/lang-sass",
-    "//adev:node_modules/@codemirror/language",
-    "//adev:node_modules/@codemirror/lint",
-    "//adev:node_modules/@codemirror/search",
-    "//adev:node_modules/@codemirror/state",
-    "//adev:node_modules/@codemirror/view",
-    "//adev:node_modules/@lezer/common",
-    "//adev:node_modules/@lezer/highlight",
-    "//adev:node_modules/@lezer/javascript",
-    "//adev:node_modules/@stackblitz/sdk",
-    "//adev:node_modules/@typescript/vfs",
-    "//adev:node_modules/@webcontainer/api",
-    "//adev:node_modules/@xterm/addon-fit",
-    "//adev:node_modules/@xterm/xterm",
-    "//adev:node_modules/algoliasearch",
-    "//adev:node_modules/angular-split",
-    "//adev:node_modules/fflate",
-    "//adev:node_modules/marked",
-    "//adev:node_modules/ngx-progressbar",
-    "//adev:node_modules/open-in-idx",
-    "//adev:node_modules/typescript",
-    "//adev:node_modules/xhr2",
-    "//adev:node_modules/@types/node",
-    "//adev:node_modules/@types/dom-navigation",
+    ":node_modules/@codemirror/autocomplete",
+    ":node_modules/@codemirror/commands",
+    ":node_modules/@codemirror/lang-angular",
+    ":node_modules/@codemirror/lang-css",
+    ":node_modules/@codemirror/lang-html",
+    ":node_modules/@codemirror/lang-javascript",
+    ":node_modules/@codemirror/lang-sass",
+    ":node_modules/@codemirror/language",
+    ":node_modules/@codemirror/lint",
+    ":node_modules/@codemirror/search",
+    ":node_modules/@codemirror/state",
+    ":node_modules/@codemirror/view",
+    ":node_modules/@lezer/common",
+    ":node_modules/@lezer/highlight",
+    ":node_modules/@lezer/javascript",
+    ":node_modules/@stackblitz/sdk",
+    ":node_modules/shiki",
+    ":node_modules/@typescript/vfs",
+    ":node_modules/@webcontainer/api",
+    ":node_modules/@xterm/addon-fit",
+    ":node_modules/@xterm/xterm",
+    ":node_modules/algoliasearch",
+    ":node_modules/angular-split",
+    ":node_modules/fflate",
+    ":node_modules/marked",
+    ":node_modules/ngx-progressbar",
+    ":node_modules/open-in-idx",
+    ":node_modules/tailwindcss",
+    ":node_modules/typescript",
+    ":node_modules/@types/dom-navigation",
 
-    # Deep imports
-    "//adev:node_modules/@algolia/client-common",
-    "//adev:node_modules/@algolia/requester-browser-xhr",
-    "//adev:node_modules/@algolia/requester-node-http",
-    "//adev:node_modules/@lezer/css",
-    "//adev:node_modules/@lezer/html",
-    "//adev:node_modules/@lezer/lr",
-    "//adev:node_modules/@lezer/sass",
-    "//adev:node_modules/@marijn/find-cluster-break",
-    "//adev:node_modules/crelt",
-    "//adev:node_modules/style-mod",
-    "//adev:node_modules/w3c-keyname",
+    # The imports below are packages that our code does not directly import, but our upstream deps import from
+    # these locations directly. By design, rather than hoisting these packages into the "root" node_modules the
+    # dependency is found in (i.e. ./adev/node_modules), rules_js places all of each package's dependencies in
+    # a "hoisted" location within the `.aspect_rules_js/` directories in the node_modules directory. This prevents
+    # the bundler from being able to find it as expected. We instead specifically provide it as a dep within bazel
+    # as a mechanism of "hoisting" the package for our usage by this target.
+    ":node_modules/@algolia/client-common",
+    ":node_modules/@algolia/requester-browser-xhr",
+    ":node_modules/@algolia/requester-node-http",
+    ":node_modules/@lezer/css",
+    ":node_modules/@lezer/html",
+    ":node_modules/@lezer/lr",
+    ":node_modules/@lezer/sass",
+    ":node_modules/@marijn/find-cluster-break",
+    ":node_modules/crelt",
+    ":node_modules/style-mod",
+    ":node_modules/w3c-keyname",
+    #
+    ":node_modules/@shikijs/themes",
+    ":node_modules/@shikijs/langs",
+    ":node_modules/@shikijs/engine-oniguruma",
+    ":node_modules/@shikijs/core",
+    ":node_modules/@shikijs/primitive",
+    ":node_modules/@shikijs/engine-javascript",
+    ":node_modules/@shikijs/types",
+    ":node_modules/@shikijs/vscode-textmate",
+    ":node_modules/hast-util-to-html",
+    # ":node_modules/oniguruma-to-es",
+    ":node_modules/ccount",
+    ":node_modules/comma-separated-tokens",
+    ":node_modules/hast-util-whitespace",
+    ":node_modules/html-void-elements",
+    # ":node_modules/oniguruma-parser",
+    ":node_modules/property-information",
+    # ":node_modules/regex-recursion",
+    # ":node_modules/regex",
+    ":node_modules/space-separated-tokens",
+    ":node_modules/stringify-entities",
+    ":node_modules/zwitch",
+    ":node_modules/character-entities-html4",
+    ":node_modules/character-entities-legacy",
+    # ":node_modules/regex-utilities",
 ]
 
-TEST_FILES = APPLICATION_FILES + [
-    "karma.conf.js",
-    "test-main.ts",
-] + glob(["src/**/*.spec.ts"])
+TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
 
-TEST_DEPS = [
-    dep
-    for dep in APPLICATION_DEPS
-    if dep != "//adev:node_modules/@types/node"
-] + [
+TEST_DEPS = APPLICATION_DEPS + [
+    ":node_modules/@types/jasmine",
+    ":node_modules/karma",
+    ":node_modules/karma-chrome-launcher",
+    ":node_modules/karma-jasmine",
+    ":node_modules/karma-coverage",
+    ":node_modules/karma-jasmine-html-reporter",
+    ":node_modules/jasmine-core",
     "@rules_browsers//browsers/chromium",
-    "@rules_browsers//browsers/firefox",
-    "//adev/tools:windows-chromium-path",
 ]
 
 ng_config(name = "ng_config")
 
-bool_flag(
-    name = "full_build_adev",
-    build_setting_default = False,
-)
-
-config_setting(
-    name = "prod_build",
-    flag_values = {
-        ":full_build_adev": "true",
-    },
-)
-
-config_setting(
-    name = "dev_build",
-    flag_values = {
-        ":full_build_adev": "false",
-    },
-)
-
-config_based_architect_env = select({
-    ":dev_build": {
-        "NG_BUILD_PARTIAL_SSR": "1",
-    },
-    ":prod_build": {
-        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
-    },
-})
-
-config_based_architect_flags = select({
-    ":dev_build": [
-        "--configuration",
-        "development",
-    ],
-    ":prod_build": [
-        "--configuration",
-        "production",
-    ],
-})
-
 ng_application(
     name = "build",
     srcs = APPLICATION_FILES + APPLICATION_DEPS,
-    args = config_based_architect_flags,
-    env = config_based_architect_env,
+    args = [
+        "--configuration",
+        "development",
+    ],
+    env = {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
     ng_config = ":ng_config",
-    node_modules = "//adev:node_modules",
+    node_modules = ":node_modules",
     project_name = "angular-dev",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
+)
+
+ng_application(
+    name = "build.production",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "production",
+    ],
+    env = {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "angular-dev",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
 )
 
 ng_test(
@@ -152,10 +195,9 @@ ng_test(
         "CHROMEDRIVER_BIN": "../" + "$(CHROMEDRIVER)",
     },
     ng_config = ":ng_config",
-    node_modules = "//adev:node_modules",
+    node_modules = ":node_modules",
     project_name = "angular-dev",
     toolchains = [
         "@rules_browsers//browsers/chromium:toolchain_alias",
-        "@rules_browsers//browsers/firefox:toolchain_alias",
     ],
 )

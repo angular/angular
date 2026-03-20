@@ -4,11 +4,11 @@ This is a visual list of all custom components and styles for Angular.dev.
 
 As a design system, this page contains visual and Markdown authoring guidance for:
 
-* Custom Angular docs elements: [`docs-card`](#cards), [`docs-callout`](#callouts), [`docs-pill`](#pills), and [`docs-steps`](#workflow)
-* Custom text elements: [alerts](#alerts)
-* Code examples: [`docs-code`](#code)
-* Built-in Markdown styled elements: links, lists, [headers](#headers), [horizontal lines](#horizontal-line-divider), [tables](#tables)
-* and more!
+- Custom Angular docs elements: [`docs-card`](#cards), [`docs-callout`](#callouts), [`docs-pill`](#pills), and [`docs-steps`](#workflow)
+- Custom text elements: [alerts](#alerts)
+- Code examples: [`docs-code`](#code)
+- Built-in Markdown styled elements: links, lists, [headers](#headers-h2), [horizontal lines](#horizontal-line-divider)
+- and more!
 
 Get ready to:
 
@@ -42,13 +42,13 @@ Get ready to:
 
 ### `<docs-card>` Attributes
 
-| Attributes               | Details                                           |
-|:---                      |:---                                               |
-| `<docs-card-container>`  | All cards must be nested inside a container       |
-| `title`                  | Card title                                        |
-| card body contents       | Anything between `<docs-card>` and `</docs-card>` |
-| `link`                   | (Optional) Call to Action link text               |
-| `href`                   | (Optional) Call to Action link href               |
+| Attributes              | Details                                           |
+| :---------------------- | :------------------------------------------------ |
+| `<docs-card-container>` | All cards must be nested inside a container       |
+| `title`                 | Card title                                        |
+| card body contents      | Anything between `<docs-card>` and `</docs-card>` |
+| `link`                  | (Optional) Call to Action link text               |
+| `href`                  | (Optional) Call to Action link href               |
 
 ## Callouts
 
@@ -67,7 +67,7 @@ Get ready to:
 ### `<docs-callout>` Attributes
 
 | Attributes                                       | Details                                                   |
-|:---                                              |:---                                                       |
+| :----------------------------------------------- | :-------------------------------------------------------- |
 | `title`                                          | Callout title                                             |
 | card body contents                               | Anything between `<docs-callout>` and `</docs-callout>`   |
 | `helpful` (default) \| `critical` \| `important` | (Optional) Adds styling and icons based on severity level |
@@ -76,7 +76,7 @@ Get ready to:
 
 Pill rows are helpful as a sort of navigation with links to helpful resources.
 
-<docs-pill-row>
+<docs-pill-row id=pill-row>
   <docs-pill href="#pill-row" title="Link"/>
   <docs-pill href="#pill-row" title="Link"/>
   <docs-pill href="#pill-row" title="Link"/>
@@ -87,11 +87,11 @@ Pill rows are helpful as a sort of navigation with links to helpful resources.
 
 ### `<docs-pill>` Attributes
 
-| Attributes               | Details                                      |
-|:---                      |:---                                          |
-| `<docs-pill-row`         | All pills must be nested inside a pill row   |
-| `title`                  | Pill text                                    |
-| `href`                   | Pill href                                    |
+| Attributes       | Details                                    |
+| :--------------- | :----------------------------------------- |
+| `<docs-pill-row` | All pills must be nested inside a pill row |
+| `title`          | Pill text                                  |
+| `href`           | Pill href                                  |
 
 Pills may also be used inline by themselves, but we haven't built that out yet.
 
@@ -135,8 +135,8 @@ Or using the `<docs-code>` element.
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'example-code',
-  template: '<h1>Hello World!</h1>',
+selector: 'example-code',
+template: '<h1>Hello World!</h1>',
 })
 export class ComponentOverviewComponent {}
 </docs-code>
@@ -157,24 +157,33 @@ Here's a code example fully styled:
 
 We also have styling for the terminal, just set the language as `shell`:
 
-<docs-code language="shell">
-  npm install @angular/material --save
-</docs-code>
+```shell
+npm install @angular/material --save
+```
+
+You can style standard Markdown triple backticks with attributes for enhanced presentation:
+
+```ts {header:"Awesome Title", linenums, highlight="[2]", hideCopy}
+console.log('Hello, World!');
+console.log('Awesome Angular Docs!');
+```
 
 #### `<docs-code>` Attributes
 
-| Attributes               | Type        | Details                                              |
-|:---                      |:---         |:---                                                  |
-| code                     | `string`    | Anything between tags is treated as code             |
-| `path`                   | `string`    | Path to code example (root: `content/examples/`)     |
-| `header`                 | `string`    | Title of the example (default: `file-name`)          |
-| `language`               | `string`    | code language                                        |
-| `linenums`               | `boolean`   | (False) displays line numbers                        |
-| `highlight`              | `string of number[]` | lines highlighted                           |
-| `diff`                   | `string`    | path to changed code                                 |
-| `visibleLines`           | `string of number[]` | range of lines for collapse mode            |
-| `visibleRegion`          | `string`    | **DEPRECATED** FOR `visibleLines`                    |
-| `preview`                | `boolean`   | (False) display preview                              |
+| Attributes     | Type                 | Details                                                         |
+| :------------- | :------------------- | :-------------------------------------------------------------- |
+| code           | `string`             | Anything between tags is treated as code                        |
+| `path`         | `string`             | Path to code example (root: `content/examples/`)                |
+| `header`       | `string`             | Title of the example (default: `file-name`)                     |
+| `language`     | `string`             | code language                                                   |
+| `linenums`     | `boolean`            | (False) displays line numbers                                   |
+| `highlight`    | `string of number[]` | lines highlighted                                               |
+| `diff`         | `string`             | path to changed code                                            |
+| `visibleLines` | `string of number[]` | range of lines for collapse mode                                |
+| `region`       | `string`             | only show the provided region.                                  |
+| `preview`      | `boolean`            | (False) display preview                                         |
+| `hideCode`     | `boolean`            | (False) Whether to collapse code example by default.            |
+| `hideDollar`   | `boolean`            | (False) Whether to hide the dollar sign in shell code examples. |
 
 ### Multifile examples
 
@@ -183,26 +192,23 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
 <docs-code-multifile
   path="adev/src/content/examples/hello-world/src/app/app.component.ts"
   preview>
-  <docs-code
-    path="adev/src/content/examples/hello-world/src/app/app.component.ts"
-    diff="adev/src/content/examples/hello-world/src/app/app.component-old.ts"
-    linenums
-    visibleLines="[3, 11]"/>
-  <docs-code
+<docs-code
     path="adev/src/content/examples/hello-world/src/app/app.component.html"
     highlight="[1]"
     linenums/>
-  <docs-code
+<docs-code
     path="adev/src/content/examples/hello-world/src/app/app.component.css" />
 </docs-code-multifile>
 
 #### `<docs-code-multifile>` Attributes
 
-| Attributes               | Type        | Details                                          |
-|:---                      |:---         |:---                                              |
-| body contents            | `string`    | nested tabs of `docs-code` examples              |
-| `path`                   | `string`    | Path to code example for preview and external link |
-| `preview`                | `boolean`   | (False) display preview                          |
+| Attributes    | Type      | Details                                                         |
+| :------------ | :-------- | :-------------------------------------------------------------- |
+| body contents | `string`  | nested tabs of `docs-code` examples                             |
+| `path`        | `string`  | Path to code example for preview and external link              |
+| `preview`     | `boolean` | (False) display preview                                         |
+| `hideCode`    | `boolean` | (False) Whether to collapse code example by default.            |
+| `hideDollar`  | `boolean` | (False) Whether to hide the dollar sign in shell code examples. |
 
 ### Adding `preview` to your code example
 
@@ -210,17 +216,45 @@ Adding the `preview` flag builds a running example of the code below the code sn
 
 NOTE: `preview` only works with standalone.
 
+### Styling example previews with Tailwind CSS
+
+Tailwind utility classes can be used within code examples.
+
+<docs-code-multifile
+  path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts"
+  preview>
+<docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.html" />
+<docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts" />
+</docs-code-multifile>
+
+## Tabs
+
+<docs-tab-group>
+  <docs-tab label="Code Example">
+    <docs-code-multifile
+      path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts"
+      hideCode="true"
+      preview>
+    <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.html" />
+    <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts" />
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Some Text">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla luctus metus blandit semper faucibus. Sed blandit diam quis tellus maximus, ac scelerisque ex egestas. Ut euismod lobortis mauris pretium iaculis. Quisque ullamcorper, elit ut lacinia blandit, magna sem finibus urna, vel suscipit tortor dolor id risus.
+  </docs-tab>
+</docs-tab-group>
+
 ## Workflow
 
 Style numbered steps using `<docs-step>`. Numbering is created using CSS (handy!).
 
 ### `<docs-workflow>` and `<docs-step>` Attributes
 
-| Attributes               | Details                                           |
-|:---                      |:---                                               |
-| `<docs-workflow>`        | All steps must be nested inside a workflow        |
-| `title`                  | Step title                                        |
-| step body contents       | Anything between `<docs-step>` and `</docs-step>` |
+| Attributes         | Details                                           |
+| :----------------- | :------------------------------------------------ |
+| `<docs-workflow>`  | All steps must be nested inside a workflow        |
+| `title`            | Step title                                        |
+| step body contents | Anything between `<docs-step>` and `</docs-step>` |
 
 Steps must start on a new line, and can contain `docs-code`s and other nested elements and styles.
 
@@ -229,44 +263,47 @@ Steps must start on a new line, and can contain `docs-code`s and other nested el
 <docs-step title="Install the Angular CLI">
   You use the Angular CLI to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
-  To install the Angular CLI, open a terminal window and run the following command:
+To install the Angular CLI, open a terminal window and run the following command:
 
-  <docs-code language="shell">
-    npm install -g @angular/cli
-  </docs-code>
+```shell
+npm install -g @angular/cli
+```
+
 </docs-step>
 
 <docs-step title="Create a workspace and initial application">
   You develop apps in the context of an Angular workspace.
 
-  To create a new workspace and initial starter app:
+To create a new workspace and initial starter app:
 
-* Run the CLI command `ng new` and provide the name `my-app`, as shown here:
-    <docs-code language="shell">
-      ng new my-app
-    </docs-code>
+- Run the CLI command `ng new` and provide the name `my-app`, as shown here:
 
-* The ng new command prompts you for information about features to include in the initial app. Accept the defaults by pressing the Enter or Return key.
+  ```shell
+  ng new my-app
+  ```
+
+- The ng new command prompts you for information about features to include in the initial app. Accept the defaults by pressing the Enter or Return key.
 
   The Angular CLI installs the necessary Angular npm packages and other dependencies. This can take a few minutes.
 
   The CLI creates a new workspace and a simple Welcome app, ready to run.
-</docs-step>
+  </docs-step>
 
 <docs-step title="Run the application">
   The Angular CLI includes a server, for you to build and serve your app locally.
 
-  1. Navigate to the workspace folder, such as `my-app`.
-  2. Run the following command:
-    <docs-code language="shell">
-      cd my-app
-      ng serve --open
-    </docs-code>
+1. Navigate to the workspace folder, such as `my-app`.
+2. Run the following command:
 
-  The `ng serve` command launches the server, watches your files, and rebuilds the app as you make changes to those files.
+   ```shell
+   cd my-app
+   ng serve --open
+   ```
 
-  The `--open` (or just `-o`) option automatically opens your browser to <http://localhost:4200/>.
-  If your installation and setup was successful, you should see a page similar to the following.
+The `ng serve` command launches the server, watches your files, and rebuilds the app as you make changes to those files.
+
+The `--open` (or just `-o`) option automatically opens your browser to <http://localhost:4200/>.
+If your installation and setup was successful, you should see a page similar to the following.
 </docs-step>
 
 <docs-step title="Final step">
@@ -286,12 +323,17 @@ Steps must start on a new line, and can contain `docs-code`s and other nested el
 
 You can add images using the semantic Markdown image:
 
-![Rhubarb the cat](assets/images/kitchen-sink/rhubarb.jpg "Optional title")
+![Rhubarb the cat](assets/images/kitchen-sink/rhubarb.jpg 'Optional title')
 
 ### Add `#small` and `#medium` to change the image size
 
 ![Rhubarb the small cat](assets/images/kitchen-sink/rhubarb.jpg#small)
 ![Rhubarb the medium cat](assets/images/kitchen-sink/rhubarb.jpg#medium)
+
+## Add attributes using curly braces syntax
+
+![Lazy loaded image](assets/images/kitchen-sink/rhubarb.jpg {loading: 'lazy'})
+![Combined attributes](assets/images/kitchen-sink/rhubarb.jpg#small {loading: 'lazy', decoding: 'async', fetchpriority: 'low'})
 
 Embedded videos are created with `docs-video` and just need a `src` and `alt`:
 
@@ -326,8 +368,31 @@ Write diagrams and charts using [Mermaid](http://mermaid.js.org/) by setting the
 
 ## Horizontal Line Divider
 
-This can be used to separate page sections, like we're about to do below.  These styles will be added by default, nothing custom needed.
+This can be used to separate page sections, like we're about to do below. These styles will be added by default, nothing custom needed.
 
 <hr/>
 
 The end!
+
+## Prefer / Avoid
+
+```ts {prefer}
+const foo = 'bar';
+```
+
+```ts {avoid}
+const bar = 'foo';
+```
+
+```ts {avoid, header: 'with a header'}
+const baz = 42;
+```
+
+<docs-code
+  path="adev/src/content/examples/hello-world/src/app/app.component-old.ts"
+  header="A styled code example"
+  language='ts'
+  linenums
+  highlight="[[3,7], 9]"
+  prefer>
+</docs-code>

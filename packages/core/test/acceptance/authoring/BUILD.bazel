@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "angular_jasmine_test", "js_binary", "js_run_binary", "ng_project", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "angular_jasmine_test", "js_binary", "js_run_binary", "ng_project", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -14,6 +14,8 @@ TEST_DEPS = [
     "//packages/platform-browser:platform-browser",
     "//packages/core/primitives/signals:signals",
     "//:node_modules/rxjs",
+    "//packages/core/test/animation_utils",
+    "//packages/private/testing",
 ]
 
 ts_project(
@@ -22,11 +24,7 @@ ts_project(
     srcs = ["authoring_test_compiler.ts"],
     deps = [
         "//:node_modules/typescript",
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/transform/jit",
+        "//packages/compiler-cli/private",
     ],
 )
 

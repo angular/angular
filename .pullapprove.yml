@@ -15,9 +15,6 @@
 #  - We trust that people do the right thing and won't approve changes they don't feel confident reviewing
 #  - We enforce that only approved PRs are merged ensuring that unreviewed code isn't accidentally merged
 #  - We distribute approval rights as much as possible to help us scale better
-#  - Groups have one or two global approvers groups as fallbacks:
-#    - @angular/fw-global-approvers: for approving minor changes, large-scale refactorings, and emergency situations.
-#    - @angular/fw-global-approvers-for-docs-only-changes: for approving minor documentation-only changes that don't require engineering review
 #  - A small number of file groups have very limited number of reviewers because incorrect changes to the files they guard would have serious consequences (e.g. security, public api)
 #
 #  Configuration nuances:
@@ -37,27 +34,10 @@
 # See reviewer list under `required-minimum-review` group.  Team member names and
 # usernames are managed there.
 
-####################################################################################
-#  Approval Groups
-####################################################################################
-# =========================================================
-# @angular/framework-global-approvers
-# =========================================================
-#  Used for approving minor changes, large-scale refactorings, and in emergency situations.
-#
-# alxhub
-# jelbourn
-# josephperrott
-#
-# =========================================================
-# @angular/framework-global-approvers-for-docs-only-changes
-# =========================================================
-#  Used for approving minor documentation-only changes that don't require engineering review.
-
 version: 3
 
-availability:
-  users_unavailable: ['devversion']
+#availability:
+#  users_unavailable: []
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -97,14 +77,6 @@ overrides:
   - if: len(groups.active.exclude("required-minimum-review").exclude("global-*")) == 0 and len(groups.approved.include("global-*")) == 0
     status: failure
     explanation: 'At least one group must match this PR. Please update an existing review group, or create a new group.'
-  # If any global dev-infra approval is given the status should be passing.
-  - if: len(groups.approved.include("global-dev-infra-approvers")) == 1
-    status: success
-    explanation: 'Passing as globally approved by dev-infra'
-  # If any global docs approval is given the status should be passing.
-  - if: len(groups.approved.include("global-docs-approvers")) == 1
-    status: success
-    explanation: 'Passing as globally approved by docs'
   # If any global approval is given the status should be passing.
   - if: len(groups.approved.include("global-approvers")) == 1
     status: success
@@ -134,7 +106,10 @@ groups:
         - thePunderWoman
         - kirjs
         - JoostK
-        - mmalerba
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
+        - ~JeanMeche
 
   # =========================================================
   #  Framework: General (most code in our packages)
@@ -145,6 +120,7 @@ groups:
       - >
         contains_any_globs(files.exclude('packages/core/primitives/*'), [
           'contributing-docs/public-api-surface.md',
+          'dev-app/**/{*,.*}',
           'integration/**/{*,.*}',
           'modules/**/{*,.*}',
           'packages/animations/**/{*,.*}',
@@ -164,6 +140,7 @@ groups:
           'packages/router/**/{*,.*}',
           'packages/service-worker/**/{*,.*}',
           'packages/upgrade/**/{*,.*}',
+          'vscode-ng-language-service/**/{*,.*}',
         ])
     reviewers:
       users:
@@ -173,10 +150,12 @@ groups:
         - crisbeto
         - devversion
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
+        - JeanMeche
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
 
   # =========================================================
   #  Framework: Security-sensitive files which require extra review
@@ -199,9 +178,9 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - jelbourn
         - josephperrott
         - ~pkozlowski-opensource
+        - alan-agius4
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -220,7 +199,6 @@ groups:
     reviewers:
       users:
         - ~JiaLiPassion
-        - ~jelbourn
         - ~alxhub
         - AndrewKushnir
         - atscott
@@ -229,7 +207,9 @@ groups:
         - kirjs
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
@@ -263,6 +243,8 @@ groups:
       - >
         contains_any_globs(files, [
           'adev/**/{*,.*}',
+          'tools/manual_api_docs/blocks/*.md',
+          'tools/manual_api_docs/elements/*.md',
         ])
     reviewers:
       users:
@@ -273,16 +255,19 @@ groups:
         - bencodezen
         - crisbeto
         - kirjs
-        - ~JeanMeche
-        - jelbourn
+        - JeanMeche
         - thePunderWoman
         - devversion
         - josephperrott
         - ~pkozlowski-opensource
-        - mgechev
+        - ~mgechev
         - MarkTechson
-        - mmalerba
         - ~hawkgs
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
+        - ~clydin
+        - ~dgp1130
 
   # =========================================================
   #  Angular DevTools
@@ -300,7 +285,7 @@ groups:
         - ~devversion
         - dgp1130
         - hawkgs
-        - jkrems
+        - hybrist
         - ~josephperrott
         - JeanMeche
         - milomg
@@ -312,15 +297,19 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude('.pullapprove.yml'), [
+        contains_any_globs(files
+            .exclude('.pullapprove.yml') 
+            .exclude('tools/manual_api_docs/blocks/*.md')
+            .exclude('tools/manual_api_docs/elements/*.md'),
+        [
           '{*,.*}',
+          '.agent/**/{*,.*}',
           '.devcontainer/**/{*,.*}',
           '.github/**/{*,.*}',
           '.husky/**/{*,.*}',
           '.gemini/**/{*,.*}',
           '.ng-dev/**/{*,.*}',
           '.vscode/**/{*,.*}',
-          '.yarn/**/{*,.*}',
           'contributing-docs/*.md',
           'contributing-docs/images/**/{*,.*}',
           'goldens/{*,.*}',
@@ -351,6 +340,7 @@ groups:
       - author not in ["angular-robot"]
     reviewers:
       users:
+        - alan-agius4
         - devversion
         - josephperrott
 
@@ -385,21 +375,22 @@ groups:
         - AndrewKushnir
         - ~alxhub
         - atscott
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
-        - mmalerba
         - crisbeto
         - devversion
         - JeanMeche
-        - ~jkrems
+        - ~hybrist
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
     reviews:
-      request: 3 # Request reviews from 3 people
-      required: 2 # Require that 2 people approve
+      request: 2
+      required: 1
       reviewed_for: required
 
   # ================================================
@@ -420,14 +411,33 @@ groups:
         - AndrewKushnir
         - atscott
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
     reviews:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
       reviewed_for: required
+
+  # =========================================================
+  #  Agent Skills
+  # =========================================================
+  agent-skills:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'skills/{*,.*}',
+          'skills/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - marktechson
+        - kirjs
+        - ~JeanMeche
+        - ~dgp1130
 
   ####################################################################################
   #  Special Cases
@@ -449,7 +459,6 @@ groups:
         - AndrewKushnir
         - andrewseguin
         - dgp1130
-        - ~jelbourn
         - thePunderWoman
         - josephperrott
 
@@ -472,10 +481,6 @@ groups:
         - thePunderWoman # Jessica Janiuk
         - AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   # External team required reviews
   primitives-shared:
@@ -493,10 +498,6 @@ groups:
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
         - ENAML # Ethan Cline
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   ####################################################################################
   # Override managed result groups
@@ -517,44 +518,9 @@ groups:
   global-approvers:
     type: optional
     reviewers:
-      teams:
-        - framework-global-approvers
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
-
-  # =========================================================
-  # Global Approvers For Docs
-  #
-  # All reviews performed for global docs approvals require
-  # using the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-docs-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - framework-global-approvers-for-docs-only-changes
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
-
-  # =========================================================
-  # Global Approvers For Dev-Infra changes
-  #
-  # All reviews performed for global dev-infra approvals
-  # require using the `Reviewed-for:` specifier to set the
-  # approval specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-dev-infra-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - dev-infra-framework
+      users:
+        - alxhub
+        - josephperrott
     reviews:
       request: 0
       required: 1

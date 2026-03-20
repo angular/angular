@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 ts_project(
     name = "utils",
@@ -9,7 +9,7 @@ ts_project(
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
         "//packages/compiler",
+        "//packages/compiler-cli",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/file_system",
     ],
 )

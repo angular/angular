@@ -10,7 +10,7 @@ import {InjectFlags} from '../core';
 import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 
-import {R3CompiledExpression, R3Reference, typeWithParameters} from './util';
+import {R3CompiledExpression, R3Reference, tsIgnoreComment, typeWithParameters} from './util';
 
 /**
  * Metadata required by the factory generator to generate a `factory` function for a type.
@@ -117,6 +117,19 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     : t;
 
   let ctorExpr: o.Expression | null = null;
+
+  // If the factory has invalid dependencies (e.g. trying to inject an interface), we normally mark
+  // the `deps` as invalid so we can emit an invalid factory. In some environments we may not
+  // be able to determine if the dependency is invalid, because that depends on information in
+  // other files. To ensure that cases like that still compile, we need to add a `@ts-ignore`
+  // comment which allows the code to compile and then error at runtime. Note that it's important
+  // to put the comment on a statement, because it includes a new line which may break `return`
+  // statements if the comment is set on the expression.
+  const factoryComments =
+    meta.deps !== null && meta.deps !== 'invalid' && meta.deps.length > 0
+      ? [tsIgnoreComment()]
+      : undefined;
+
   if (meta.deps !== null) {
     // There is a constructor (either explicitly or implicitly defined).
     if (meta.deps !== 'invalid') {
@@ -133,12 +146,13 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
 
   function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
     const r = o.variable('__ngConditionalFactory__');
-    body.push(new o.DeclareVarStmt(r.name, o.NULL_EXPR, o.INFERRED_TYPE));
+    body.push(new o.DeclareVarStmt(r.name, o.NULL_EXPR, o.DYNAMIC_TYPE));
     const ctorStmt =
       ctorExpr !== null
-        ? r.set(ctorExpr).toStmt()
+        ? r.set(ctorExpr).toStmt(factoryComments)
         : o.importExpr(R3.invalidFactory).callFn([]).toStmt();
-    body.push(o.ifStmt(t, [ctorStmt], [r.set(nonCtorExpr).toStmt()]));
+    // Always add a `ts-ignore` on the alternate factory.
+    body.push(o.ifStmt(t, [ctorStmt], [r.set(nonCtorExpr).toStmt([tsIgnoreComment()])]));
     return r;
   }
 
@@ -173,7 +187,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     body.push(new o.ReturnStatement(baseFactory.callFn([typeForCtor])));
   } else {
     // This is straightforward factory, just return it.
-    body.push(new o.ReturnStatement(retExpr));
+    body.push(new o.ReturnStatement(retExpr, null, factoryComments));
   }
 
   let factoryFn: o.Expression = o.fn(
@@ -188,7 +202,13 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     // There is a base factory variable so wrap its declaration along with the factory function into
     // an IIFE.
     factoryFn = o
-      .arrowFn([], [new o.DeclareVarStmt(baseFactoryVar.name!), new o.ReturnStatement(factoryFn)])
+      .arrowFn(
+        [],
+        [
+          new o.DeclareVarStmt(baseFactoryVar.name!, undefined, o.DYNAMIC_TYPE),
+          new o.ReturnStatement(factoryFn),
+        ],
+      )
       .callFn([], /* sourceSpan */ undefined, /* pure */ true);
   }
 

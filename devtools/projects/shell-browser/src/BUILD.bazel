@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "esbuild", "extension_package", "ng_project", "sass_binary", "string_flag", "ts_project")
+load("//devtools/tools:defaults.bzl", "copy_to_directory", "esbuild", "extension_package", "ng_project", "sass_binary", "string_flag", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,6 +8,18 @@ sass_binary(
     include_paths = ["external/_main/node_modules"],
     sourcemap = False,
     deps = ["//devtools/projects/ng-devtools/src/styles:global"],
+)
+
+copy_to_directory(
+    name = "browser_specific_styles",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/styles:chrome",
+        "//devtools/projects/ng-devtools/src/styles:firefox",
+    ],
+    out = "styles",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/styles": "",
+    },
 )
 
 ts_project(
@@ -42,7 +54,6 @@ esbuild(
     ],
     config = "//devtools/tools/esbuild:esbuild-esm-prod.config.mjs",
     entry_points = [":main.ts"],
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "es2022",
@@ -62,7 +73,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_point = "devtools.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "es2022",
@@ -71,9 +81,22 @@ esbuild(
 
 exports_files(["index.html"])
 
+copy_to_directory(
+    name = "devtools_assets",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/assets",
+    ],
+    out = "assets",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/assets": "",
+    },
+)
+
 filegroup(
     name = "prod_app_static_files",
     srcs = [
+        ":browser_specific_styles",
+        ":devtools_assets",
         ":index.html",
         ":shell_common_styles",
     ],
@@ -119,7 +142,7 @@ extension_package(
         "//devtools/projects/shell-browser/src/app:backend_bundle",
         "//devtools/projects/shell-browser/src/app:background_bundle",
         "//devtools/projects/shell-browser/src/app:content_script_bundle",
-        "//devtools/projects/shell-browser/src/app:detect_angular_for_extension_icon_bundle",
+        "//devtools/projects/shell-browser/src/app:detect_angular_bundle",
         "//devtools/projects/shell-browser/src/app:ng_validate_bundle",
         "//devtools/projects/shell-browser/src/assets",
         "//devtools/projects/shell-browser/src/popups",

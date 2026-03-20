@@ -11,7 +11,7 @@ To edit an item, users click an Edit button, which opens an `EditGroceryItem` co
 You want that component to retrieve the `id` for the grocery item so it can display the right information to the user.
 
 Use a route to pass this type of information to your application components.
-To do so, you use the [`withComponentInputBinding`](api/router/withComponentInputBinding) feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
+To do so, you use the `withComponentInputBinding` feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
 
 To get information from a route:
 
@@ -22,9 +22,7 @@ To get information from a route:
 Add the `withComponentInputBinding` feature to the `provideRouter` method.
 
 ```ts
-providers: [
-  provideRouter(appRoutes, withComponentInputBinding()),
-]
+providers: [provideRouter(appRoutes, withComponentInputBinding())];
 ```
 
 </docs-step>
@@ -34,8 +32,8 @@ providers: [
 Update the component to have an `input()` property matching the name of the parameter.
 
 ```ts
-id = input.required<string>()
-hero = computed(() => this.service.getHero(id));
+id = input.required<string>();
+hero = computed(() => this.service.getHero(id()));
 ```
 
 </docs-step>
@@ -51,7 +49,7 @@ id = input.required({
   transform: (maybeUndefined: string | undefined) => maybeUndefined ?? '0',
 });
 // or
-id = input<string|undefined>();
+id = input<string | undefined>();
 internalId = linkedSignal(() => this.id() ?? getDefaultId());
 ```
 
@@ -60,22 +58,22 @@ internalId = linkedSignal(() => this.id() ?? getDefaultId());
 
 NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
 If you want to use the parent components route info you will need to set the router `paramsInheritanceStrategy` option:
-`withRouterConfig({paramsInheritanceStrategy: 'always'})`
+`withRouterConfig({paramsInheritanceStrategy: 'always'})` . See [router configuration options](guide/routing/customizing-route-behavior#router-configuration-options) for details on other available settings.
 
 ## Displaying a 404 page
 
-To display a 404 page, set up a [wildcard route](guide/routing/common-router-tasks#setting-up-wildcard-routes) with the `component` property set to the component you'd like to use for your 404 page as follows:
+To display a 404 page, set up a [wildcard route](guide/routing/define-routes#wildcards) with the `component` property set to the component you'd like to use for your 404 page as follows:
 
 ```ts
 const routes: Routes = [
-  { path: 'first-component', component: FirstComponent },
-  { path: 'second-component', component: SecondComponent },
-  { path: '**', component: PageNotFoundComponent },  // Wildcard route for a 404 page
+  {path: 'first-component', component: First},
+  {path: 'second-component', component: Second},
+  {path: '**', component: PageNotFound}, // Wildcard route for a 404 page
 ];
 ```
 
 The last route with the `path` of `**` is a wildcard route.
-The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
+The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFound`.
 
 ## Link parameters array
 
@@ -94,15 +92,18 @@ The following is a two-element array when specifying a route parameter:
 
 ```angular-html
 <a [routerLink]="['/hero', hero.id]">
-  <span class="badge">{{ hero.id }}</span>{{ hero.name }}
+  <span class="badge">{{ hero.id }}</span
+  >{{ hero.name }}
 </a>
 ```
 
 Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
 ```angular-html
-<a [routerLink]="['/crisis-center', { foo: 'foo' }]">Crisis Center</a>
+<a [routerLink]="['/crisis-center', {foo: 'foo'}]">Crisis Center</a>
 ```
+
+This syntax passes matrix parameters, which are optional parameters associated with a specific URL segment. Learn more about [matrix parameters](/guide/routing/read-route-state#matrix-parameters).
 
 These three examples cover the needs of an application with one level of routing.
 However, with a child router, such as in the crisis center, you create new link array possibilities.
@@ -118,7 +119,7 @@ Review the following:
 - The first item in the array identifies the parent route \(`/crisis-center`\)
 - There are no parameters for this parent route
 - There is no default for the child route so you need to pick one
-- You're navigating to the `CrisisListComponent`, whose route path is `/`, but you don't need to explicitly add the slash
+- You're navigating to the `CrisisList`, whose route path is `/`, but you don't need to explicitly add the slash
 
 Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
 
@@ -133,7 +134,7 @@ Consider the following router link that navigates from the root of the applicati
 - You added the `id` of the Dragon Crisis as the second item in the array \(`1`\)
 - The resulting path is `/crisis-center/1`
 
-You could also redefine the `AppComponent` template with Crisis Center routes exclusively:
+You could also redefine the `App` template with Crisis Center routes exclusively:
 
 ```angular-ts
 @Component({
@@ -141,13 +142,13 @@ You could also redefine the `AppComponent` template with Crisis Center routes ex
     <h1 class="title">Angular Router</h1>
     <nav>
       <a [routerLink]="['/crisis-center']">Crisis Center</a>
-      <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
+      <a [routerLink]="['/crisis-center/1', {foo: 'foo'}]">Dragon Crisis</a>
       <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
     </nav>
     <router-outlet />
-  `
+  `,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 In summary, you can write applications with one, two or more levels of routing.
@@ -184,4 +185,4 @@ The router supports both styles with two `LocationStrategy` providers:
 The `RouterModule.forRoot()` function sets the `LocationStrategy` to the `PathLocationStrategy`, which makes it the default strategy.
 You also have the option of switching to the `HashLocationStrategy` with an override during the bootstrapping process.
 
-HELPFUL: For more information on providers and the bootstrap process, see [Dependency Injection](guide/di/dependency-injection-providers).
+HELPFUL: For more information on providers and the bootstrap process, see [Dependency Injection](guide/di/defining-dependency-providers).

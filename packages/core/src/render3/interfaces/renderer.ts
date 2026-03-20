@@ -44,7 +44,13 @@ export interface Renderer {
   destroyNode?: ((node: RNode) => void) | null;
   appendChild(parent: RElement, newChild: RNode): void;
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode | null, isMove?: boolean): void;
-  removeChild(parent: RElement | null, oldChild: RNode, isHostElement?: boolean): void;
+  // TODO(thePunderWoman): remove the requireSynchronousElementRemoval flag once the animations package has been deleted after v23.
+  removeChild(
+    parent: RElement | null,
+    oldChild: RNode,
+    isHostElement?: boolean,
+    requireSynchronousElementRemoval?: boolean,
+  ): void;
   selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): RElement;
 
   parentNode(node: RNode): RElement | null;

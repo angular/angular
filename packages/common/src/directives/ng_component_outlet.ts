@@ -16,7 +16,6 @@ import {
   EnvironmentInjector,
   Injector,
   Input,
-  NgModuleFactory,
   NgModuleRef,
   OnChanges,
   OnDestroy,
@@ -55,9 +54,6 @@ import {RuntimeErrorCode} from '../errors';
  * * `ngComponentOutletNgModule`: Optional NgModule class reference to allow loading another
  * module dynamically, then loading a component from that module.
  *
- * * `ngComponentOutletNgModuleFactory`: Deprecated config option that allows providing optional
- * NgModule factory to allow loading another module dynamically, then loading a component from that
- * module. Use `ngComponentOutletNgModule` instead.
  *
  * ### Syntax
  *
@@ -104,10 +100,8 @@ import {RuntimeErrorCode} from '../errors';
   exportAs: 'ngComponentOutlet',
 })
 export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy {
-  // TODO(crisbeto): this should be `Type<T>`, but doing so broke a few
-  // targets in a TGP so we need to do it in a major version.
   /** Component that should be rendered in the outlet. */
-  @Input() ngComponentOutlet: Type<any> | null = null;
+  @Input() ngComponentOutlet: Type<T> | null = null;
 
   /**
    * Note: Incompatible with `ngComponentOutletBindings`.
@@ -120,7 +114,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
   @Input() ngComponentOutletDirectives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
-  @Input() ngComponentOutletContent?: any[][];
+  @Input() ngComponentOutletContent?: Node[][];
 
   @Input() ngComponentOutletNgModule?: Type<any>;
 
@@ -148,10 +142,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     // Note: square brackets property accessor is safe for Closure compiler optimizations (the
     // `changes` argument of the `ngOnChanges` lifecycle hook retains the names of the fields that
     // were changed).
-    return (
-      changes['ngComponentOutletNgModule'] !== undefined ||
-      changes['ngComponentOutletNgModuleFactory'] !== undefined
-    );
+    return changes['ngComponentOutletNgModule'] !== undefined;
   }
 
   private _needToReCreateComponentInstance(changes: SimpleChanges): boolean {

@@ -13,6 +13,7 @@ import {
   ɵDomRendererFactory2 as DomRendererFactory2,
 } from '@angular/platform-browser';
 import type {ServerModule} from '@angular/platform-server';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../src/error_details_base_url';
 import {createTemplate, dispatchEvent, getContent, isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {
@@ -21,6 +22,7 @@ import {
   ChangeDetectionStrategy,
   Compiler,
   Component,
+  DestroyRef,
   EnvironmentInjector,
   InjectionToken,
   Injector,
@@ -28,12 +30,12 @@ import {
   NgModule,
   NgZone,
   PlatformRef,
-  provideZoneChangeDetection,
   RendererFactory2,
   TemplateRef,
   Type,
   ViewChild,
   ViewContainerRef,
+  provideZoneChangeDetection,
 } from '../src/core';
 import {ErrorHandler} from '../src/error_handler';
 import {ComponentRef} from '../src/linker/component_factory';
@@ -172,7 +174,10 @@ describe('bootstrap', () => {
 
   describe('ApplicationRef', () => {
     beforeEach(async () => {
-      TestBed.configureTestingModule({imports: [await createModule()]});
+      TestBed.configureTestingModule({
+        imports: [await createModule()],
+        providers: [provideZoneChangeDetection()],
+      });
     });
 
     it('should throw when reentering tick', () => {
@@ -256,9 +261,7 @@ describe('bootstrap', () => {
       it('runs in `NgZone`', inject([ApplicationRef], async (ref: ApplicationRef) => {
         @Component({
           selector: 'zone-comp',
-          template: `
-            <div>{{ name }}</div>
-          `,
+          template: ` <div>{{ name }}</div> `,
         })
         class ZoneComp {
           readonly inNgZone = NgZone.isInAngularZone();
@@ -584,7 +587,7 @@ describe('bootstrap', () => {
             `NG0403: The module MyModule was bootstrapped, ` +
             `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
             `Please define one of these. ` +
-            `Find more at https://angular.dev/errors/NG0403`;
+            `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0403`;
           expect(e.message).toEqual(expectedErrMsg);
           expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
         },
@@ -743,7 +746,10 @@ describe('bootstrap', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [MyComp, ContainerComp, EmbeddedViewComp],
-        providers: [{provide: ComponentFixtureNoNgZone, useValue: true}],
+        providers: [
+          {provide: ComponentFixtureNoNgZone, useValue: true},
+          provideZoneChangeDetection(),
+        ],
       });
     });
 
@@ -849,7 +855,7 @@ describe('AppRef', () => {
   describe('stability', () => {
     @Component({
       selector: 'sync-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class SyncComp {
@@ -858,7 +864,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'click-comp',
-      template: `<span (click)="onClick()">{{text}}</span>`,
+      template: `<span (click)="onClick()">{{ text }}</span>`,
       standalone: false,
     })
     class ClickComp {
@@ -871,7 +877,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'micro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MicroTaskComp {
@@ -886,7 +892,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'macro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MacroTaskComp {
@@ -901,7 +907,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'micro-macro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MicroMacroTaskComp {
@@ -919,7 +925,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'macro-micro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MacroMicroTaskComp {
@@ -940,7 +946,7 @@ describe('AppRef', () => {
     beforeEach(() => {
       stableCalled = false;
       TestBed.configureTestingModule({
-        providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})],
+        providers: [provideZoneChangeDetection()],
         declarations: [
           SyncComp,
           MicroTaskComp,
@@ -964,7 +970,7 @@ describe('AppRef', () => {
       zone.run(() => appRef.tick());
 
       let i = 0;
-      appRef.isStable.subscribe({
+      const sub = appRef.isStable.subscribe({
         next: (stable: boolean) => {
           if (stable) {
             expect(i).toBeLessThan(expected.length);
@@ -973,6 +979,7 @@ describe('AppRef', () => {
           }
         },
       });
+      fixture.debugElement.injector.get(DestroyRef).onDestroy(() => sub.unsubscribe());
     }
 
     it('isStable should fire on synchronous component loading', waitForAsync(() => {

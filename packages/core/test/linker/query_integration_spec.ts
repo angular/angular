@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {expect} from '@angular/private/testing/matchers';
+import {Subject} from 'rxjs';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -16,23 +18,23 @@ import {
   ContentChild,
   ContentChildren,
   Directive,
+  ElementRef,
+  provideZoneChangeDetection,
   QueryList,
   TemplateRef,
   Type,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-  ElementRef,
 } from '../../src/core';
 import {ComponentFixture, TestBed, waitForAsync} from '../../testing';
-import {expect} from '@angular/private/testing/matchers';
-import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util/stringify';
 
 describe('Query API', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
       declarations: [
         MyComp0,
         NeedsQuery,
@@ -189,6 +191,7 @@ describe('Query API', () => {
       q.shouldShow = false;
       q.shouldShow2 = true;
       q.logs = [];
+      view.changeDetectorRef.markForCheck();
       view.detectChanges();
       expect(q.logs).toEqual([
         ['setter', 'bar'],
@@ -198,6 +201,7 @@ describe('Query API', () => {
       q.shouldShow = false;
       q.shouldShow2 = false;
       q.logs = [];
+      view.changeDetectorRef.markForCheck();
       view.detectChanges();
       expect(q.logs).toEqual([
         ['setter', null],
@@ -621,7 +625,7 @@ describe('Query API', () => {
       expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '-3', '2', '4']);
     });
 
-    it('should maintain directives in pre-order depth-first DOM order after dynamic insertion', () => {
+    it('should maintain directives in pre-order depth-first DOM order after dynamic insertion inside a parent element', () => {
       const template = '<needs-view-query-order-with-p #q></needs-view-query-order-with-p>';
       const view = createTestCmpAndDetectChanges(MyComp0, template);
       const q: NeedsViewQueryOrderWithParent = view.debugElement.children[0].references!['q'];

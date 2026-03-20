@@ -91,6 +91,7 @@ describe('reactivity', () => {
       expect(isStable).toEqual([true, false]);
 
       appRef.tick();
+      await appRef.whenStable();
 
       expect(isStable).toEqual([true, false, true]);
     });
@@ -266,7 +267,6 @@ describe('reactivity', () => {
     });
 
     it('should create root effects when outside of a component, using injection context', () => {
-      TestBed.configureTestingModule({});
       const counter = signal(0);
       const log: number[] = [];
       TestBed.runInInjectionContext(() => effect(() => log.push(counter())));
@@ -280,7 +280,6 @@ describe('reactivity', () => {
     });
 
     it('should create root effects when outside of a component, using an injector', () => {
-      TestBed.configureTestingModule({});
       const counter = signal(0);
       const log: number[] = [];
       effect(() => log.push(counter()), {injector: TestBed.inject(Injector)});
@@ -294,7 +293,6 @@ describe('reactivity', () => {
     });
 
     it('should cleanup effect when manualCleanup is enabled and an injector is provided', () => {
-      TestBed.configureTestingModule({});
       const counter = signal(0);
       const log: number[] = [];
       // It needs the injector to be able to inject the other deps (and not just the DestroyRef).
@@ -440,7 +438,7 @@ describe('reactivity', () => {
 
       @Component({
         imports: [Dir],
-        template: `<ng-template dir let-data>{{data}}</ng-template>`,
+        template: `<ng-template dir let-data>{{ data }}</ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestCmp {}
@@ -637,7 +635,7 @@ describe('reactivity', () => {
         imports: [WithInputSetter],
         template: `
           <with-input-setter [testInput]="'binding'" />|<with-input-setter testInput="static" />
-      `,
+        `,
       })
       class Cmp {}
 
@@ -833,10 +831,10 @@ describe('reactivity', () => {
           selector: 'driver-cmp',
           imports: [TestCmp],
           template: `
-          @if (cond) {
-            <test-cmp />
-          }
-        `,
+            @if (cond) {
+              <test-cmp />
+            }
+          `,
         })
         class DriverCmp {
           cond = false;
@@ -848,6 +846,7 @@ describe('reactivity', () => {
 
         // Toggle the @if, which should create and run the effect.
         fixture.componentInstance.cond = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });

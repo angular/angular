@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
-import {InterpolationConfig} from '../../ml_parser/defaults';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -93,9 +92,9 @@ export interface R3DirectiveMetadata {
   usesInheritance: boolean;
 
   /**
-   * Whether or not the component or directive inherits its entire decorator from its base class.
+   * Whether or not the component or directive uses the private `ɵngControlCreate` hook.
    */
-  fullInheritance: boolean;
+  controlCreate: {passThroughInput: string | null} | null;
 
   /**
    * Reference name under which to export the directive's type in a template,
@@ -198,8 +197,9 @@ export const enum DeclarationListEmitMode {
 /**
  * Information needed to compile a component for the render3 runtime.
  */
-export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
-  extends R3DirectiveMetadata {
+export interface R3ComponentMetadata<
+  DeclarationT extends R3TemplateDependency,
+> extends R3DirectiveMetadata {
   /**
    * Information about the component's template.
    */
@@ -273,11 +273,6 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
    * (used by Closure Compiler's output of `goog.getMsg` for transition period).
    */
   i18nUseExternalIds: boolean;
-
-  /**
-   * Overrides the default interpolation start and end delimiters ({{ and }}).
-   */
-  interpolation: InterpolationConfig;
 
   /**
    * Strategy used for detecting changes in the component.

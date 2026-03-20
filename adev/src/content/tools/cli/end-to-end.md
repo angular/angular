@@ -6,15 +6,15 @@ End-to-end or (E2E) testing is a form of testing used to assert your entire appl
 
 The Angular CLI downloads and installs everything you need to run end-to-end tests for your Angular application.
 
-<docs-code language="shell">
+```shell
 
 ng e2e
 
-</docs-code>
+```
 
 The `ng e2e` command will first check your project for the "e2e" target. If it can't locate it, the CLI will then prompt you which e2e package you would like to use and walk you through the setup.
 
-<docs-code language="shell">
+```text
 
 Cannot find "e2e" target for the specified project.
 You can add a package that implements these capabilities.
@@ -34,7 +34,7 @@ WebdriverIO
 Playwright
 Puppeteer
 
-</docs-code>
+```
 
 If you don't find the test runner you would like to use from the list above, you can manually add a package using `ng add`.
 
@@ -42,11 +42,11 @@ If you don't find the test runner you would like to use from the list above, you
 
 Now that your application is configured for end-to-end testing we can now run the same command to execute your tests.
 
-<docs-code language="shell">
+```shell
 
 ng e2e
 
-</docs-code>
+```
 
 Note, their isn't anything "special" about running your tests with any of the integrated e2e packages. The `ng e2e` command is really just running the `e2e` builder under the hood. You can always [create your own custom builder](tools/cli/cli-builder#creating-a-builder) named `e2e` and run it using `ng e2e`.
 

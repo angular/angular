@@ -29,7 +29,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements OnInit {
         ngOnInit() {
@@ -46,7 +45,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements DoCheck {
         ngDoCheck() {
@@ -63,7 +61,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements AfterContentChecked {
         ngAfterContentChecked() {
@@ -80,7 +77,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements AfterContentInit {
         ngAfterContentInit() {
@@ -97,7 +93,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements AfterViewChecked {
         ngAfterViewChecked() {
@@ -114,7 +109,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements AfterViewInit {
         ngAfterViewInit() {
@@ -131,7 +125,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements OnDestroy {
         ngOnDestroy() {
@@ -148,7 +141,6 @@ import {TestBed} from '@angular/core/testing';
       @Component({
         selector: 'my-cmp',
         template: `...`,
-        standalone: false,
       })
       class MyComponent implements OnChanges {
         @Input() prop: number = 0;
@@ -175,12 +167,12 @@ import {TestBed} from '@angular/core/testing';
 
     @Component({
       template: `<my-cmp ${inputBindings}></my-cmp>`,
-      standalone: false,
+      imports: [clazz],
     })
     class ParentComponent {}
 
     const fixture = TestBed.configureTestingModule({
-      declarations: [ParentComponent, clazz],
+      imports: [ParentComponent],
     }).createComponent(ParentComponent);
     fixture.detectChanges();
     fixture.destroy();

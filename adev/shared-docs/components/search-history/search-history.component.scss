@@ -41,9 +41,23 @@
         flex: 1;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
         color: var(--secondary-contrast);
         transition: color 0.3s ease;
+        white-space: nowrap;
+        overflow: hidden;
+
+        .type-icon {
+          margin-inline-end: 0.75rem;
+        }
+
+        span {
+          text-overflow: ellipsis;
+          overflow: hidden;
+
+          &.sub-label {
+            flex: 1;
+          }
+        }
 
         &:hover {
           color: var(--primary-contrast);

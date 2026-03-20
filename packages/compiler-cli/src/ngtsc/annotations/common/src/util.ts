@@ -405,7 +405,7 @@ export function resolveProvidersRequiringFactory(
  * The `value` is the exported declaration of the class from its source file.
  * The `type` is an expression that would be used in the typings (.d.ts) files.
  */
-export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclaration): R3Reference {
+export function wrapTypeReference(clazz: ClassDeclaration): R3Reference {
   const value = new WrappedNodeExpr(clazz.name);
   const type = value;
   return {value, type};

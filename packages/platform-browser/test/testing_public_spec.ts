@@ -41,7 +41,7 @@ import {isBrowser} from '@angular/private/testing';
 
 @Component({
   selector: 'child-comp',
-  template: `<span>Original {{childBinding}}</span>`,
+  template: `<span>Original {{ childBinding }}</span>`,
   standalone: false,
 })
 @Injectable()
@@ -103,7 +103,7 @@ class MockFancyService extends FancyService {
 @Component({
   selector: 'my-service-comp',
   providers: [FancyService],
-  template: `injected value: {{fancyService.value}}`,
+  template: `injected value: {{ fancyService.value }}`,
   standalone: false,
 })
 class TestProvidersComp {
@@ -113,7 +113,7 @@ class TestProvidersComp {
 @Component({
   selector: 'my-service-comp',
   viewProviders: [FancyService],
-  template: `injected value: {{fancyService.value}}`,
+  template: `injected value: {{ fancyService.value }}`,
   standalone: false,
 })
 class TestViewProvidersComp {
@@ -141,7 +141,7 @@ class SomePipe {
 
 @Component({
   selector: 'comp',
-  template: `<div  [someDir]="'someValue' | somePipe"></div>`,
+  template: `<div [someDir]="'someValue' | somePipe"></div>`,
   standalone: false,
 })
 class CompUsingModuleDirectiveAndPipe {}
@@ -1073,6 +1073,7 @@ Did you run and wait for 'resolveComponentResources()'?`);
       expect(componentFixture.nativeElement).toHaveText('MyIf()');
 
       componentFixture.componentInstance.showMore = true;
+      componentFixture.changeDetectorRef.markForCheck();
       componentFixture.detectChanges();
       expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
     }));
@@ -1102,6 +1103,29 @@ Did you run and wait for 'resolveComponentResources()'?`);
       componentFixture.detectChanges();
       expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
     }));
+
+    describe('getLastFixture', () => {
+      it('should return the last created fixture', () => {
+        const fixture = TestBed.createComponent(ChildComp);
+        expect(TestBed.getLastFixture()).toBe(fixture);
+      });
+
+      it('should throw if no fixture has been created', () => {
+        expect(() => TestBed.getLastFixture()).toThrowError('No fixture has been created yet.');
+      });
+
+      it('should return the last fixture when multiple fixtures are present', () => {
+        TestBed.createComponent(ChildComp);
+        const parentFixture = TestBed.createComponent(ParentComp);
+        expect(TestBed.getLastFixture()).toBe(parentFixture);
+      });
+
+      it('should clear the fixture after reset', () => {
+        TestBed.createComponent(ChildComp);
+        TestBed.resetTestingModule();
+        expect(() => TestBed.getLastFixture()).toThrowError('No fixture has been created yet.');
+      });
+    });
   });
   describe('using alternate components', () => {
     beforeEach(() => {

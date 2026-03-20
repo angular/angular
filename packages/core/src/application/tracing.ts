@@ -26,7 +26,7 @@ export interface TracingSnapshot {
  * Injection token for a `TracingService`, optionally provided.
  */
 export const TracingService = new InjectionToken<TracingService<TracingSnapshot>>(
-  ngDevMode ? 'TracingService' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'TracingService' : '',
 );
 
 /**
@@ -50,6 +50,13 @@ export interface TracingService<T extends TracingSnapshot> {
   snapshot(linkedSnapshot: T | null): T;
 
   /**
+   * Propagate the current tracing context to the provided function.
+   * @param fn A function.
+   * @return A function that will propagate the current tracing context.
+   */
+  propagate?<T extends Function>(fn: T): T;
+
+  /**
    * Wrap an event listener bound by the framework for tracing.
    * @param element Element on which the event is bound.
    * @param eventName Name of the event.
@@ -57,4 +64,11 @@ export interface TracingService<T extends TracingSnapshot> {
    * @return A new event handler to be bound instead of the original one.
    */
   wrapEventListener?<T extends Function>(element: HTMLElement, eventName: string, handler: T): T;
+
+  /**
+   * Trace the creation of a component instance.
+   * @param className Name of the component. May be null if the class is anonymous.
+   * @param fn Function that creates the component instance.
+   */
+  componentCreate?<T>(className: string | null, fn: () => T): T;
 }

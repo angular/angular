@@ -13,6 +13,7 @@ import {
   InjectionToken,
   Input,
   Output,
+  provideZoneChangeDetection,
   ViewChild,
   ViewEncapsulation,
 } from '../../src/core';
@@ -39,6 +40,11 @@ import {
 } from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let fixture: ComponentFixture<MyApp>;
   let myApp: MyApp;
   let dirA: DirectiveA[];
@@ -94,7 +100,7 @@ describe('discovery utils', () => {
   @Component({
     selector: 'my-app',
     template: `
-      <span (click)="log($event)" *ngIf="spanVisible">{{text}}</span>
+      <span (click)="log($event)" *ngIf="spanVisible">{{ text }}</span>
       <div dirA #div #foo="dirA"></div>
       <child></child>
       <child dirA #child></child>
@@ -386,7 +392,7 @@ describe('discovery utils', () => {
       const metadata = getDirectiveMetadata(myApp)! as AngularComponentDebugMetadata;
       expect(metadata.inputs).toEqual({a: 'b'});
       expect(metadata.outputs).toEqual({c: 'd'});
-      expect(metadata.changeDetection).toBe(ChangeDetectionStrategy.Default);
+      expect(metadata.changeDetection).toBe(ChangeDetectionStrategy.Eager);
       expect(metadata.encapsulation).toBe(ViewEncapsulation.None);
     });
 

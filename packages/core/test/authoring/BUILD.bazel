@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "angular_jasmine_test", "js_test", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "angular_jasmine_test", "js_test", "ng_web_test_suite", "ts_project")
 
 ts_project(
     name = "signal_authoring_signature_test_lib",
@@ -8,6 +8,7 @@ ts_project(
         "signal_input_signature_test.ts",
         "signal_model_signature_test.ts",
         "signal_queries_signature_test.ts",
+        "simple_changes_signature_test.ts",
         "unwrap_writable_signal_signature_test.ts",
     ],
     deps = [

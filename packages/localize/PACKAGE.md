@@ -26,7 +26,7 @@ warning = $localize`${this.process} is not right`;
 could be replaced with:
 
 ```ts
-warning = "" + this.process + ", n'est pas bon.";
+warning = '' + this.process + ", n'est pas bon.";
 ```
 
 The result is that all references to `$localize` are removed, and there is **zero runtime cost** to rendering
@@ -44,7 +44,7 @@ For example, the following template:
 would be compiled to something like:
 
 ```ts
-ɵɵelementStart(0, "h1"); //  <h1>
+ɵɵelementStart(0, 'h1'); //  <h1>
 ɵɵi18n(1, $localize`Hello, World!`); //  Hello, World!
 ɵɵelementEnd(); //  </h1>
 ```

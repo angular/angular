@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import path from 'path';
-import {UniqueID} from '../helpers/unique_id';
 import ts from 'typescript';
+import {
+  DtsMetadataReader,
+  ClassDeclaration,
+  ReflectionHost,
+  getAngularDecorators,
+  Reference,
+} from '@angular/compiler-cli/private/migrations';
 import {ProgramInfo} from '../program_info';
-import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {UniqueID} from '../helpers/unique_id';
 import {projectFile} from '../project_paths';
 
 export type OutputID = UniqueID<'output-node'>;

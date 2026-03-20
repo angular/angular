@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵWritable as Writable} from '@angular/core';
+import {untracked, ɵWritable as Writable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 import {removeListItem} from '../util';
@@ -14,6 +14,7 @@ import {removeListItem} from '../util';
 import {
   AbstractControl,
   AbstractControlOptions,
+  FormResetEvent,
   isOptionsObj,
   pickAsyncValidators,
   pickValidators,
@@ -189,6 +190,9 @@ export interface FormControlOptions extends AbstractControlOptions {
  * console.log(control.value); // 'Drew'
  * console.log(control.status); // 'DISABLED'
  * ```
+ *
+ * @see [FormControl: Getting Started](guide/forms/typed-forms#formcontrol-getting-started)
+ *
  */
 export interface FormControl<TValue = any> extends AbstractControl<TValue> {
   /**
@@ -196,7 +200,7 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    * value. See {@link FormControlOptions#nonNullable} for more information on configuring
    * a default value.
    */
-  readonly defaultValue: TValue;
+  defaultValue: TValue;
 
   /** @internal */
   _onChange: Function[];
@@ -293,6 +297,7 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    * `valueChanges`
    * observables emit events with the latest status and value when the control is reset.
    * When false, no events are emitted.
+   * * `overwriteDefaultValue`: When true, the value used to reset the control becomes the new default value of the control.
    *
    */
   reset(
@@ -300,6 +305,7 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
     options?: {
       onlySelf?: boolean;
       emitEvent?: boolean;
+      overwriteDefaultValue?: boolean;
     },
   ): void;
 
@@ -449,7 +455,7 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
   implements FormControlInterface<TValue>
 {
   /** @publicApi */
-  public readonly defaultValue: TValue = null as unknown as TValue;
+  public defaultValue: TValue = null as unknown as TValue;
 
   /** @internal */
   _onChange: Array<Function> = [];
@@ -499,13 +505,15 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
       emitViewToModelChange?: boolean;
     } = {},
   ): void {
-    (this as Writable<this>).value = this._pendingValue = value;
-    if (this._onChange.length && options.emitModelToViewChange !== false) {
-      this._onChange.forEach((changeFn) =>
-        changeFn(this.value, options.emitViewToModelChange !== false),
-      );
-    }
-    this.updateValueAndValidity(options);
+    untracked(() => {
+      (this as Writable<this>).value = this._pendingValue = value;
+      if (this._onChange.length && options.emitModelToViewChange !== false) {
+        this._onChange.forEach((changeFn) =>
+          changeFn(this.value, options.emitViewToModelChange !== false),
+        );
+      }
+      this.updateValueAndValidity(options);
+    });
   }
 
   override patchValue(
@@ -522,13 +530,19 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
 
   override reset(
     formState: TValue | FormControlState<TValue> = this.defaultValue,
-    options: {onlySelf?: boolean; emitEvent?: boolean} = {},
+    options: {onlySelf?: boolean; emitEvent?: boolean; overwriteDefaultValue?: boolean} = {},
   ): void {
     this._applyFormState(formState);
     this.markAsPristine(options);
     this.markAsUntouched(options);
     this.setValue(this.value, options);
+    if (options.overwriteDefaultValue) {
+      this.defaultValue = this.value;
+    }
     this._pendingChange = false;
+    if (options?.emitEvent !== false) {
+      this._events.next(new FormResetEvent(this));
+    }
   }
 
   /**  @internal */
@@ -616,6 +630,8 @@ export const UntypedFormControl: UntypedFormControlCtor = FormControl;
 /**
  * @description
  * Asserts that the given control is an instance of `FormControl`
+ *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
  *
  * @publicApi
  */

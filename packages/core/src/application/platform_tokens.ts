@@ -24,6 +24,8 @@ import {InjectionToken} from '../di/injection_token';
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Request `Request` on MDN}
  *
+ * @see [Accessing Request and Response via DI](guide/ssr#accessing-request-and-response-via-di)
+ *
  * @publicApi
  */
 export const REQUEST = new InjectionToken<Request | null>(
@@ -33,6 +35,16 @@ export const REQUEST = new InjectionToken<Request | null>(
     factory: () => null,
   },
 );
+
+/**
+ * Type that represents the initialization options for a response.
+ *
+ * @publicApi
+ */
+export type ResponseInit = {
+  // This is needed as `@types/node` and Undici marks all these properties as readonly. This is not the case in lib.dom.d.ts
+  -readonly [P in keyof globalThis.ResponseInit]: globalThis.ResponseInit[P];
+};
 
 /**
  * Injection token for response initialization options.
@@ -51,6 +63,7 @@ export const REQUEST = new InjectionToken<Request | null>(
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Response/Response `ResponseInit` on MDN}
  *
  * @publicApi
+ * @see [Accessing Request and Response via DI](guide/ssr#accessing-request-and-response-via-di)
  */
 export const RESPONSE_INIT = new InjectionToken<ResponseInit | null>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'RESPONSE_INIT' : '',
@@ -69,6 +82,7 @@ export const RESPONSE_INIT = new InjectionToken<ResponseInit | null>(
  * This token is only available during server-side rendering and will be `null` in other contexts.
  *
  * @publicApi
+ * @see [Accessing Request and Response via DI](guide/ssr#accessing-request-and-response-via-di)
  */
 export const REQUEST_CONTEXT = new InjectionToken<unknown>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'REQUEST_CONTEXT' : '',

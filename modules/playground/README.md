@@ -6,7 +6,4 @@ demonstrates how a specific example can be built and served with Bazel:
 ```bash
 # e.g. src/zippy_component
 pnpm bazel run modules/playground/src/zippy_component:devserver
-
-# e.g. src/upgrade
-pnpm bazel run modules/playground/src/upgrade:devserver
 ```

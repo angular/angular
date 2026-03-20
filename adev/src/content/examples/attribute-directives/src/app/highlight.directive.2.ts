@@ -1,21 +1,27 @@
 // #docplaster
 // #docregion imports
-import {Directive, ElementRef, HostListener, inject} from '@angular/core';
+import {Directive, ElementRef, inject} from '@angular/core';
 // #enddocregion imports
 // #docregion
 
+// #docregion decorator
 @Directive({
   selector: '[appHighlight]',
+  host: {
+    '(mouseenter)': 'onMouseEnter()',
+    '(mouseleave)': 'onMouseLeave()',
+  },
 })
+// #enddocregion decorator
 export class HighlightDirective {
   private el = inject(ElementRef);
 
   // #docregion mouse-methods
-  @HostListener('mouseenter') onMouseEnter() {
+  onMouseEnter() {
     this.highlight('yellow');
   }
 
-  @HostListener('mouseleave') onMouseLeave() {
+  onMouseLeave() {
     this.highlight('');
   }
 

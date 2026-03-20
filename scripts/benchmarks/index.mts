@@ -10,9 +10,14 @@ import {setOutput} from '@actions/core';
 import {GitClient, Log, bold, green, yellow} from '@angular/ng-dev';
 import {select} from '@inquirer/prompts';
 import yargs from 'yargs';
-import {collectBenchmarkResults} from './results.mjs';
-import {ResolvedTarget, findBenchmarkTargets, getTestlogPath, resolveTarget} from './targets.mjs';
-import {exec} from './utils.mjs';
+import {collectBenchmarkResults} from './results.mts';
+import {
+  type ResolvedTarget,
+  findBenchmarkTargets,
+  getTestlogPath,
+  resolveTarget,
+} from './targets.mts';
+import {exec} from './utils.mts';
 
 const benchmarkTestFlags = [
   '--cache_test_results=no',
@@ -147,7 +152,7 @@ async function runCompare(bazelTargetRaw: string | undefined, compareRef: string
   const bazelTarget = await resolveTarget(bazelTargetRaw);
   const testlogPath = await getTestlogPath(bazelTarget);
 
-  Log.log(green('Test log path:', testlogPath));
+  Log.log(green(`Test log path: ${testlogPath}`));
 
   // Run benchmark with the current working stage.
   await runBenchmarkTarget(bazelTarget);

@@ -56,7 +56,8 @@ export type UpdateOp =
   | RepeaterOp
   | DeferWhenOp
   | AnimationBindingOp
-  | StoreLetOp;
+  | StoreLetOp
+  | ControlOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -153,9 +154,6 @@ export interface BindingOp extends Op<UpdateOp> {
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
-   *
-   * This needs to be tracked for compatibility with `TemplateDefinitionBuilder` which treats
-   * `style` and `class` TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
   isTextAttribute: boolean;
 
@@ -294,9 +292,7 @@ export function createPropertyOp(
  * A logical operation representing the property binding side of a two-way binding in the update IR.
  */
 export interface TwoWayPropertyOp
-  extends Op<UpdateOp>,
-    ConsumesVarsTrait,
-    DependsOnSlotContextOpTrait {
+  extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
   kind: OpKind.TwoWayProperty;
 
   /**
@@ -577,9 +573,6 @@ export interface AttributeOp extends Op<UpdateOp> {
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
-   *
-   * This needs to be tracked for compatibility with `TemplateDefinitionBuilder` which treats
-   * `style` and `class` TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
   isTextAttribute: boolean;
 
@@ -667,9 +660,7 @@ export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): Adv
  * Logical operation representing a conditional expression in the update IR.
  */
 export interface ConditionalOp
-  extends Op<ConditionalOp>,
-    DependsOnSlotContextOpTrait,
-    ConsumesVarsTrait {
+  extends Op<ConditionalOp>, DependsOnSlotContextOpTrait, ConsumesVarsTrait {
   kind: OpKind.Conditional;
 
   /**
@@ -879,9 +870,7 @@ export function createDeferWhenOp(
  * may want to split these into two different op types, deriving from the same base class.
  */
 export interface I18nExpressionOp
-  extends Op<UpdateOp>,
-    ConsumesVarsTrait,
-    DependsOnSlotContextOpTrait {
+  extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
   kind: OpKind.I18nExpression;
 
   /**
@@ -1059,6 +1048,25 @@ export function createStoreLetOp(
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * A specialized {@link PropertyOp} that may bind a form field to a control.
+ */
+export interface ControlOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
+  kind: OpKind.Control;
+  sourceSpan: ParseSourceSpan;
+}
+
+/** Creates a {@link ControlOp}. */
+export function createControlOp(target: XrefId, sourceSpan: ParseSourceSpan): ControlOp {
+  return {
+    kind: OpKind.Control,
+    sourceSpan,
+    target,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...NEW_OP,
   };
 }

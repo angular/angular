@@ -54,7 +54,7 @@ async function generateTutorialFiles(tutorialDir: string, commonDir: string, out
   );
   writeFileSync(
     join(outputDir, 'source-code.json'),
-    JSON.stringify(await generateSourceCode(introConfig, introFiles)),
+    JSON.stringify(await generateSourceCode(introFiles)),
   );
 
   // For each tutorial step, generate the metadata and source-code files.
@@ -75,7 +75,7 @@ async function generateTutorialFiles(tutorialDir: string, commonDir: string, out
     );
     writeFileSync(
       join(outputDir, path, 'source-code.json'),
-      JSON.stringify(await generateSourceCode(config, itemFiles)),
+      JSON.stringify(await generateSourceCode(itemFiles)),
     );
   }
 

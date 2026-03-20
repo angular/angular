@@ -18,8 +18,8 @@ This API is used both by the shim generators in this package as well as for othe
 
 The shim package exposes two specific pieces of functionality related to the integration of shims into the creation of a `ts.Program`:
 
-* A `ShimReferenceTagger` which "tags" `ts.SourceFile`s prior to program creation, and creates links from each original file to all of the per-file shims which need to be created for those file.
-* A `ShimAdapter` which is used by an implementation of `ts.CompilerHost` to include shims in any program created via the host.
+- A `ShimReferenceTagger` which "tags" `ts.SourceFile`s prior to program creation, and creates links from each original file to all of the per-file shims which need to be created for those file.
+- A `ShimAdapter` which is used by an implementation of `ts.CompilerHost` to include shims in any program created via the host.
 
 ### `ShimAdapter`
 
@@ -33,8 +33,8 @@ Once a filename has been recognized, the `ShimAdapter` caches the generated shim
 
 As TS starts from the root files and walks imports and references, it discovers new files which are part of the program. It will discover shim files in two different ways:
 
-* As references on their source files (those added by `ShimReferenceTagger`).
-* As imports written by users.
+- As references on their source files (those added by `ShimReferenceTagger`).
+- As imports written by users.
 
 This means that it's not guaranteed for a source file to be loaded before its shim.
 
@@ -54,11 +54,10 @@ Once the program has been created, the `referencedFiles` properties can be resto
 
 The shim system needs to keep track of various pieces of metadata for `ts.SourceFile`s:
 
-* Whether or not they're shims, and if so which generator created them.
-* If the file is not a shim, then the original `referenceFiles` for that file (so it can be restored later).
+- Whether or not they're shims, and if so which generator created them.
+- If the file is not a shim, then the original `referenceFiles` for that file (so it can be restored later).
 
 Instead of `Map`s keyed with `ts.SourceFile`s which could lead to memory leaks, this information is instead patched directly onto the `ts.SourceFile` instances using an expando symbol property `NgExtension`.
-
 
 ## Usage
 
@@ -80,5 +79,5 @@ Summary shim generation is simpler than factory generation, and can be generated
 
 A few other systems in the compiler make use of shim generation as well.
 
-* `entry_point` generates a flat module index (in the way View Engine used to) using a shim.
-* `typecheck` includes template type-checking code in the program using a shim generator.
+- `entry_point` generates a flat module index (in the way View Engine used to) using a shim.
+- `typecheck` includes template type-checking code in the program using a shim generator.

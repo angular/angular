@@ -15,5 +15,5 @@
     "strict": true,
     "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise"]
   },
-  "files": ["./type.test.ts", "./node_modules/zone.js/zone.d.ts"]
+  "files": ["./type.test.ts", "./node_modules/zone.js/zone.ts"]
 }

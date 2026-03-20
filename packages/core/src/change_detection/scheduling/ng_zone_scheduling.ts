@@ -11,7 +11,6 @@ import {Subscription} from 'rxjs';
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {
   ENVIRONMENT_INITIALIZER,
-  EnvironmentInjector,
   EnvironmentProviders,
   inject,
   Injectable,
@@ -20,22 +19,22 @@ import {
   StaticProvider,
 } from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {PendingTasksInternal} from '../../pending_tasks';
+import {PendingTasksInternal} from '../../pending_tasks_internal';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {OnDestroy} from '../lifecycle_hooks';
+import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
 import {
   ChangeDetectionScheduler,
-  ZONELESS_SCHEDULER_DISABLED,
-  ZONELESS_ENABLED,
   SCHEDULE_IN_ROOT_ZONE,
+  ZONELESS_ENABLED,
 } from './zoneless_scheduling';
-import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
-import {INTERNAL_APPLICATION_ERROR_HANDLER, ErrorHandler} from '../../error_handler';
 
 @Injectable({providedIn: 'root'})
-export class NgZoneChangeDetectionScheduler {
+export class NgZoneChangeDetectionScheduler implements OnDestroy {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
@@ -84,16 +83,15 @@ export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
 
 export function internalProvideZoneChangeDetection({
   ngZoneFactory,
-  ignoreChangesOutsideZone,
   scheduleInRootZone,
 }: {
   ngZoneFactory?: () => NgZone;
-  ignoreChangesOutsideZone?: boolean;
   scheduleInRootZone?: boolean;
 }): StaticProvider[] {
   ngZoneFactory ??= () =>
     new NgZone({...getNgZoneOptions(), scheduleInRootZone} as InternalNgZoneOptions);
   return [
+    {provide: ZONELESS_ENABLED, useValue: false},
     {provide: NgZone, useFactory: ngZoneFactory},
     {
       provide: ENVIRONMENT_INITIALIZER,
@@ -125,32 +123,9 @@ export function internalProvideZoneChangeDetection({
         };
       },
     },
-    // Always disable scheduler whenever explicitly disabled, even if another place called
-    // `provideZoneChangeDetection` without the 'ignore' option.
-    ignoreChangesOutsideZone === true ? {provide: ZONELESS_SCHEDULER_DISABLED, useValue: true} : [],
     {
       provide: SCHEDULE_IN_ROOT_ZONE,
       useValue: scheduleInRootZone ?? SCHEDULE_IN_ROOT_ZONE_DEFAULT,
-    },
-    {
-      provide: INTERNAL_APPLICATION_ERROR_HANDLER,
-      useFactory: () => {
-        const zone = inject(NgZone);
-        const injector = inject(EnvironmentInjector);
-        let userErrorHandler: ErrorHandler;
-        return (e: unknown) => {
-          zone.runOutsideAngular(() => {
-            if (injector.destroyed && !userErrorHandler) {
-              setTimeout(() => {
-                throw e;
-              });
-            } else {
-              userErrorHandler ??= injector.get(ErrorHandler);
-              userErrorHandler.handleError(e);
-            }
-          });
-        };
-      },
     },
   ];
 }
@@ -159,10 +134,10 @@ export function internalProvideZoneChangeDetection({
  * Provides `NgZone`-based change detection for the application bootstrapped using
  * `bootstrapApplication`.
  *
- * `NgZone` is already provided in applications by default. This provider allows you to configure
- * options like `eventCoalescing` in the `NgZone`.
- * This provider is not available for `platformBrowser().bootstrapModule`, which uses
- * `BootstrapOptions` instead.
+ * Add this provider to use `NgZone`/ZoneJS-based change detection and configure options like
+ * `eventCoalescing` in the `NgZone`.
+ *
+ * If you need this provider function in an NgModule-based application, pass it as `applicationProviders` to `bootstrapModule()`.
  *
  * @usageNotes
  * ```ts
@@ -176,7 +151,6 @@ export function internalProvideZoneChangeDetection({
  * @see {@link NgZoneOptions}
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
-  const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
   const scheduleInRootZone = (options as any)?.scheduleInRootZone;
   const zoneProviders = internalProvideZoneChangeDetection({
     ngZoneFactory: () => {
@@ -187,14 +161,9 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
       }
       return new NgZone(ngZoneOptions);
     },
-    ignoreChangesOutsideZone,
     scheduleInRootZone,
   });
-  return makeEnvironmentProviders([
-    {provide: PROVIDED_NG_ZONE, useValue: true},
-    {provide: ZONELESS_ENABLED, useValue: false},
-    zoneProviders,
-  ]);
+  return makeEnvironmentProviders([{provide: PROVIDED_NG_ZONE, useValue: true}, zoneProviders]);
 }
 
 /**
@@ -246,25 +215,6 @@ export interface NgZoneOptions {
    *
    */
   runCoalescing?: boolean;
-
-  /**
-   * When false, change detection is scheduled when Angular receives
-   * a clear indication that templates need to be refreshed. This includes:
-   *
-   * - calling `ChangeDetectorRef.markForCheck`
-   * - calling `ComponentRef.setInput`
-   * - updating a signal that is read in a template
-   * - attaching a view that is marked dirty
-   * - removing a view
-   * - registering a render hook (templates are only refreshed if render hooks do one of the above)
-   *
-   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
-   *    new behavior in v18 which schedule change detection for the above events when they occur
-   *    outside the Zone. After monitoring the results post-release, we have determined that this
-   *    feature is working as desired and do not believe it should ever be disabled by setting
-   *    this option to `true`.
-   */
-  ignoreChangesOutsideZone?: boolean;
 }
 
 // Transforms a set of `BootstrapOptions` (supported by the NgModule-based bootstrap APIs) ->

@@ -21,7 +21,8 @@ import {
   getParentBlockHydrationQueue,
   isIncrementalHydrationEnabled,
 } from '../hydration/utils';
-import {PendingTasks, PendingTasksInternal} from '../pending_tasks';
+import {PendingTasks} from '../pending_tasks';
+import {PendingTasksInternal} from '../pending_tasks_internal';
 import {assertLContainer} from '../render3/assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/def_getters';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
@@ -70,7 +71,7 @@ import {
   getTDeferBlockDetails,
 } from './utils';
 import {ApplicationRef} from '../application/application_ref';
-import type {PromiseConstructor} from '../util/promise_with_resolvers';
+import {promiseWithResolvers} from '../util/promise_with_resolvers';
 
 /**
  * Schedules triggering of a defer block for `on idle` and `on timer` conditions.
@@ -105,7 +106,6 @@ export function scheduleDelayedTrigger(
  */
 export function scheduleDelayedPrefetching(
   scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
-  trigger: DeferBlockTrigger,
 ) {
   if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
@@ -549,7 +549,7 @@ function cleanupRemainingHydrationQueue(
  */
 function populateHydratingStateForQueue(registry: DehydratedBlockRegistry, queue: string[]) {
   for (let blockId of queue) {
-    registry.hydrating.set(blockId, (Promise as unknown as PromiseConstructor).withResolvers());
+    registry.hydrating.set(blockId, promiseWithResolvers<void>());
   }
 }
 
@@ -681,6 +681,9 @@ export function processAndInitTriggers(
           timerElements.push(elementTrigger);
         }
         if (blockSummary.hydrate.viewport) {
+          if (typeof blockSummary.hydrate.viewport !== 'boolean') {
+            elementTrigger.intersectionObserverOptions = blockSummary.hydrate.viewport;
+          }
           viewportElements.push(elementTrigger);
         }
       }
@@ -710,6 +713,7 @@ function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger
         elementTrigger.el,
         () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
         injector,
+        elementTrigger.intersectionObserverOptions,
       );
       registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
     }

@@ -3,23 +3,34 @@ name: DevInfra
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
+  issues:
+    types: [opened, reopened]
 
 # Declare default permissions as read only.
 permissions:
   contents: read
 
 jobs:
-  labels:
+  pull_request_labels:
+    if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - uses: angular/dev-infra/github-actions/pull-request-labeling@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+      - uses: angular/dev-infra/github-actions/labeling/pull-request@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
+          labels: '{"requires: TGP": ["packages/core/primitives/**/{*,.*}"]}'
   post_approval_changes:
+    if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - uses: angular/dev-infra/github-actions/post-approval-changes@72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
+      - uses: angular/dev-infra/github-actions/post-approval-changes@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
+  issue_labels:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: angular/dev-infra/github-actions/labeling/issue@0962db2141fc6fa1c6a285c1d1310c1fc0756cb9
+        with:
+          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
+          google-generative-ai-key: ${{ secrets.GOOGLE_GENERATIVE_AI_KEY }}

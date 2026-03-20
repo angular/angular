@@ -15,9 +15,9 @@ for an issue. Each `area: ` label on GitHub should have a description of what it
 
 ### Community engagement
 
-* `help wanted` - Indicates an issue whose complexity/scope makes it suitable for a community
+- `help wanted` - Indicates an issue whose complexity/scope makes it suitable for a community
   contributor to pick up.
-* `good first issue` - Indicates an issue that is suitable for first-time contributors.
+- `good first issue` - Indicates an issue that is suitable for first-time contributors.
   (This label should be applied _in addition_ to `help wanted` for better discoverability.)
 
 <sub>`help wanted` and `good first issue` are [default GitHub labels] familiar to many
@@ -67,7 +67,7 @@ appropriate channel unless they're capturing a legitimate bug.
 For bug reports, set a priority label.
 
 | Label | Description                                                                                                                                                                                                                                          |
-|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P0    | An issue that causes a full outage, breakage, or major function unavailability for everyone, without any known workaround. The issue must be fixed immediately, taking precedence over all other work. Should receive updates at least once per day. |
 | P1    | An issue that significantly impacts a large percentage of users; if there is a workaround it is partial or overly painful. The issue should be resolved before the next release.                                                                     |
 | P2    | The issue is important to a large percentage of users, with a workaround. Issues that are significantly ugly or painful (especially first-use or install-time issues). Issues with workarounds that would otherwise be P0 or P1.                     |
@@ -82,10 +82,10 @@ Issues marked with "feature" or "discussion" don't require a priority.
 Many optional labels provide additional context for issues. Consider adding any of the following if
 they apply to the issue:
 
-* Browser or operating system labels (`windows`, `browser: ie 11`, etc.)
-* Labels that inform the severity (`regression`, `has workaround`, `no workaround`)
-* Labels that categorize the bug (`performance`, `refactoring`, `memory leak`)
-* Community engagement labels (`help wanted`, `good first issue`)
+- Browser or operating system labels (`windows`, `browser: ie 11`, etc.)
+- Labels that inform the severity (`regression`, `has workaround`, `no workaround`)
+- Labels that categorize the bug (`performance`, `refactoring`, `memory leak`)
+- Community engagement labels (`help wanted`, `good first issue`)
 
 Once this triage is done, the ng-bot automatically changes the milestone from `needs triage` to
 `Backlog`.
@@ -94,32 +94,32 @@ Once this triage is done, the ng-bot automatically changes the milestone from `n
 
 PRs labels signal their state. Every triaged PR must have a `action: *` label assigned to it:
 
-* `action: discuss`: Discussion is needed, to be led by the author.
-    * _**Who adds it:** Typically the PR author._
-    * _**Who removes it:** Whoever added it._
-* `action: review` (optional): One or more reviews are pending. The label is optional, since the
+- `action: discuss`: Discussion is needed, to be led by the author.
+  - _**Who adds it:** Typically the PR author._
+  - _**Who removes it:** Whoever added it._
+- `action: review` (optional): One or more reviews are pending. The label is optional, since the
   review status can be derived from GitHub's Reviewers interface.
-    * _**Who adds it:** Any team member. The caretaker can use it to differentiate PRs pending
-      review from merge-ready PRs._
-    * _**Who removes it:** Whoever added it or the reviewer adding the last missing review._
-* `action: cleanup`: More work is needed from the author.
-    * _**Who adds it:** The reviewer requesting changes to the PR._
-    * _**Who removes it:** Either the author (after implementing the requested changes) or the
-      reviewer (after confirming the requested changes have been implemented)._
-* `action: merge`: The PR author is ready for the changes to be merged by the caretaker as soon as
+  - _**Who adds it:** Any team member. The caretaker can use it to differentiate PRs pending
+    review from merge-ready PRs._
+  - _**Who removes it:** Whoever added it or the reviewer adding the last missing review._
+- `action: cleanup`: More work is needed from the author.
+  - _**Who adds it:** The reviewer requesting changes to the PR._
+  - _**Who removes it:** Either the author (after implementing the requested changes) or the
+    reviewer (after confirming the requested changes have been implemented)._
+- `action: merge`: The PR author is ready for the changes to be merged by the caretaker as soon as
   the PR is green (or merge-assistance label is applied and caretaker has deemed it acceptable
   manually). In other words, this label indicates to "auto submit when ready".
-    * _**Who adds it:** Typically the PR author._
-    * _**Who removes it:** Whoever added it._
+  - _**Who adds it:** Typically the PR author._
+  - _**Who removes it:** Whoever added it._
 
 In addition, PRs can have the following states:
 
-* `state: WIP`: PR is experimental or rapidly changing. Not ready for review or triage.
-    * _**Who adds it:** The PR author._
-    * _**Who removes it:** Whoever added it._
-* `state: blocked`: PR is blocked on an issue or other PR. Not ready for merge.
-    * _**Who adds it:** Any team member._
-    * _**Who removes it:** Any team member._
+- `state: WIP`: PR is experimental or rapidly changing. Not ready for review or triage.
+  - _**Who adds it:** The PR author._
+  - _**Who removes it:** Whoever added it._
+- `state: blocked`: PR is blocked on an issue or other PR. Not ready for merge.
+  - _**Who adds it:** Any team member._
+  - _**Who removes it:** Any team member._
 
 When a PR is ready for review, a review should be requested using the Reviewers interface in GitHub.
 
@@ -138,17 +138,17 @@ To communicate the target we use GitHub labels and only one target label may be 
 
 Targeting an active release train:
 
-* `target: major`: Any breaking change
-* `target: minor`: Any new feature
-* `target: patch`: Bug fixes, refactorings, documentation changes, etc. that pose no or very low
+- `target: major`: Any breaking change
+- `target: minor`: Any new feature
+- `target: patch`: Bug fixes, refactorings, documentation changes, etc. that pose no or very low
   risk of adversely
   affecting existing applications.
 
 Special Cases:
 
-* `target: rc`: A critical fix for an active release-train while it is in a feature freeze or RC
+- `target: rc`: A critical fix for an active release-train while it is in a feature freeze or RC
   phase
-* `target: lts`: A critical fix for a specific release-train that is still within the long term
+- `target: lts`: A critical fix for a specific release-train that is still within the long term
   support phase
 
 Notes:
@@ -186,9 +186,9 @@ Only the `action: merge` label means that the PR is ready for merging.
 
 ### `cla: yes`, `cla: no`
 
-* _**Who adds it:** @googlebot, or a Googler manually overriding the status in case the bot got it
+- _**Who adds it:** @googlebot, or a Googler manually overriding the status in case the bot got it
   wrong._
-* _**Who removes it:** @googlebot._
+- _**Who removes it:** @googlebot._
 
 Managed by googlebot.
 Indicates whether a PR has a CLA on file for its author(s).
@@ -196,16 +196,16 @@ Only issues with `cla:yes` should be merged into main.
 
 ### `adev: preview`
 
-* _**Who adds it:** Any team member. (Typically the author or a reviewer.)_
-* _**Who removes it:** Any team member. (Typically, whoever added it.)_
+- _**Who adds it:** Any team member. (Typically the author or a reviewer.)_
+- _**Who removes it:** Any team member. (Typically, whoever added it.)_
 
 Applying this label to a PR makes the angular.dev preview available regardless of the
 author.
 
 ### `action: merge-assistance`
 
-* _**Who adds it:** Any team member._
-* _**Who removes it:** Any team member._
+- _**Who adds it:** Any team member._
+- _**Who removes it:** Any team member._
 
 This label can be added to let the caretaker know that the PR needs special attention.
 There should always be a comment added to the PR to explain why the caretaker's assistance is
@@ -218,8 +218,8 @@ is failing due to external causes and the PR should still be merged.
 
 ### `action: rerun CI at HEAD`
 
-* _**Who adds it:** Any team member._
-* _**Who removes it:** The Angular Bot, once it triggers the CI rerun._
+- _**Who adds it:** Any team member._
+- _**Who removes it:** The Angular Bot, once it triggers the CI rerun._
 
 This label can be added to instruct the Angular Bot to rerun the CI jobs for the PR at latest HEAD
 of the branch it targets.

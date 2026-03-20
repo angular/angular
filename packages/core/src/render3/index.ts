@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe} from './definition';
-import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
+import {ɵɵControlFeature} from './features/control_feature';
 import {ɵɵHostDirectivesFeature} from './features/host_directives_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ɵɵExternalStylesFeature} from './features/external_styles_feature';
-import {ɵɵAnimationsFeature} from './features/animations_feature';
+import {ControlDirectiveHost} from './interfaces/control';
 import {
   ComponentDef,
   ComponentTemplate,
@@ -31,7 +31,6 @@ import {
 } from './interfaces/public_definitions';
 import {ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './scope';
 import {
-  Framework,
   BaseDirectiveDebugMetadata,
   AngularDirectiveDebugMetadata,
   AngularComponentDebugMetadata,
@@ -96,6 +95,8 @@ export {
   ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
+  ɵɵcontrol,
+  ɵɵcontrolCreate,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵloadQuery,
@@ -165,6 +166,7 @@ export {
   ɵɵanimateEnterListener,
   ɵɵanimateLeave,
   ɵɵanimateLeaveListener,
+  ɵɵarrowFunction,
 } from './instructions/all';
 export {
   ɵɵdeferEnableTimerScheduling,
@@ -213,7 +215,6 @@ export {
   ComponentDef,
   ComponentTemplate,
   ComponentType,
-  Framework,
   BaseDirectiveDebugMetadata,
   AngularDirectiveDebugMetadata,
   AngularComponentDebugMetadata,
@@ -222,6 +223,7 @@ export {
   AcxDirectiveDebugMetadata,
   AcxComponentDebugMetadata,
   WizComponentDebugMetadata,
+  ControlDirectiveHost,
   DirectiveDebugMetadata,
   DirectiveDef,
   DirectiveType,
@@ -232,13 +234,13 @@ export {
   getRenderedText,
   PipeDef,
   ɵɵComponentDeclaration,
-  ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefineNgModule,
   ɵɵdefinePipe,
   ɵɵDirectiveDeclaration,
   ɵɵFactoryDeclaration,
+  ɵɵControlFeature,
   ɵɵHostDirectivesFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵInjectorDeclaration,
@@ -249,5 +251,4 @@ export {
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵExternalStylesFeature,
-  ɵɵAnimationsFeature,
 };

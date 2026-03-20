@@ -17,8 +17,7 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 import {ErrorCode, FileSystem, ngErrorCode} from '@angular/compiler-cli';
-import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {ImportManager} from '@angular/compiler-cli/private/migrations';
+import {DiagnosticCategoryLabel, ImportManager} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 
 /** Data produced by the migration for each compilation unit. */

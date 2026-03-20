@@ -20,6 +20,7 @@ ts_project(
         "//adev/shared-docs/components/search-dialog",
         "//adev/shared-docs/components/select",
         "//adev/shared-docs/components/slide-toggle",
+        "//adev/shared-docs/components/tab-group",
         "//adev/shared-docs/components/table-of-contents",
         "//adev/shared-docs/components/text-field",
         "//adev/shared-docs/components/top-level-banner",

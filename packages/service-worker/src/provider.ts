@@ -25,7 +25,9 @@ import {SwPush} from './push';
 import {SwUpdate} from './update';
 import {RuntimeErrorCode} from './errors';
 
-export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
+export const SCRIPT = new InjectionToken<string>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '',
+);
 
 export function ngswAppInitializer(): void {
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
@@ -123,10 +125,9 @@ function delayWithTimeout(timeout: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
-export function ngswCommChannelFactory(
-  opts: SwRegistrationOptions,
-  injector: Injector,
-): NgswCommChannel {
+export function ngswCommChannelFactory(): NgswCommChannel {
+  const opts = inject(SwRegistrationOptions);
+  const injector = inject(Injector);
   const isBrowser = !(typeof ngServerMode !== 'undefined' && ngServerMode);
 
   return new NgswCommChannel(
@@ -144,6 +145,8 @@ export function ngswCommChannelFactory(
  *
  * {@example service-worker/registration-options/module.ts region="registration-options"
  *     header="app.module.ts"}
+ *
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
  *
  * @publicApi
  */
@@ -228,6 +231,11 @@ export abstract class SwRegistrationOptions {
  *   ],
  * });
  * ```
+ *
+ * @see [Custom service worker script](ecosystem/service-workers/custom-service-worker-scripts)
+ *
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
+ *
  */
 export function provideServiceWorker(
   script: string,
@@ -241,7 +249,6 @@ export function provideServiceWorker(
     {
       provide: NgswCommChannel,
       useFactory: ngswCommChannelFactory,
-      deps: [SwRegistrationOptions, Injector],
     },
     provideAppInitializer(ngswAppInitializer),
   ]);

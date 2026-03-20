@@ -3,8 +3,8 @@ load("//integration:index.bzl", "ng_integration_test")
 ng_integration_test(
     name = "run",
     commands = [
-        "yarn install --cache-folder ./.yarn_local_cache",
-        "yarn ng build",
+        "pnpm install --store-dir ./.pnpm-local-store",
+        "pnpm ng build",
         "node ./dist/ssr-benchmarks/server/server.mjs",
     ],
     tags = ["manual"],
@@ -16,11 +16,11 @@ ng_integration_test(
 ng_integration_test(
     name = "run_browser",
     commands = [
-        "yarn install --cache-folder ./.yarn_local_cache",
+        "pnpm install --store-dir ./.pnpm-local-store",
 
         #
-        "NG_BUILD_MANGLE=0 yarn ng build --configuration production,browser",
-        "yarn http-server ./dist",
+        "NG_BUILD_MANGLE=0 pnpm ng build --configuration production,browser",
+        "pnpm exec http-server ./dist",
     ],
     tags = ["manual"],
 )
@@ -29,11 +29,11 @@ ng_integration_test(
 ng_integration_test(
     name = "run_browser_emulated_dom",
     commands = [
-        "yarn install --cache-folder ./.yarn_local_cache",
+        "pnpm install --store-dir ./.pnpm-local-store",
 
         # We keep the symbols with the NG_BUILD_MANGLE flag
-        "NG_BUILD_MANGLE=0 yarn ng build",
-        "yarn http-server ./dist",
+        "NG_BUILD_MANGLE=0 pnpm ng build",
+        "pnpm exec http-server ./dist",
     ],
     tags = ["manual"],
 )
@@ -43,9 +43,9 @@ ng_integration_test(
 ng_integration_test(
     name = "run_deopt",
     commands = [
-        "yarn install --cache-folder ./.yarn_local_cache",
-        "NG_BUILD_MANGLE=0 yarn ng build",
-        "yarn node  --prof \
+        "pnpm install --store-dir ./.pnpm-local-store",
+        "NG_BUILD_MANGLE=0 pnpm ng build",
+        "pnpm node --prof \
             --log-deopt \
             --log-ic \
             --log-maps \

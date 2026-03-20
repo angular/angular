@@ -7,15 +7,13 @@
  */
 
 import {
-  REACTIVE_NODE,
-  ReactiveNode,
   SIGNAL,
-  consumerAfterComputation,
-  consumerBeforeComputation,
   consumerDestroy,
-  consumerPollProducersForChange,
   isInNotificationPhase,
   setActiveConsumer,
+  BaseEffectNode,
+  BASE_EFFECT_NODE,
+  runEffect,
 } from '../../../primitives/signals';
 import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
 import {markAncestorsForTraversal} from '../util/view_utils';
@@ -25,7 +23,6 @@ import {assertNotInReactiveContext} from './asserts';
 import {assertInInjectionContext} from '../../di/contextual';
 import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
 import {ViewContext} from '../view_context';
-import {noop} from '../../util/noop';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
@@ -39,6 +36,8 @@ import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injec
  * A global reactive effect, which can be manually destroyed.
  *
  * @publicApi 20.0
+ *
+ * @see [Destroying effects](guide/signals/effect#destroying-effects)
  */
 export interface EffectRef {
   /**
@@ -100,12 +99,16 @@ export interface CreateEffectOptions {
  * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
  * previous effect run might have started.
  *
+ * @see [Effect cleanup functions](guide/signals#effect-cleanup-functions)
+ *
  * @publicApi 20.0
  */
 export type EffectCleanupFn = () => void;
 
 /**
  * A callback passed to the effect function that makes it possible to register cleanup logic.
+ *
+ * @see [Effect cleanup functions](guide/signals#effect-cleanup-functions)
  *
  * @publicApi 20.0
  */
@@ -126,6 +129,8 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  * and have no connection to the component tree or change detection.
  *
  * `effect()` must be run in injection context, unless the `injector` option is manually specified.
+ *
+ * @see [Effects](guide/signals#effects)
  *
  * @publicApi 20.0
  */
@@ -173,7 +178,7 @@ export function effect(
 
   if (destroyRef !== null) {
     // If we need to register for cleanup, do that here.
-    node.onDestroyFn = destroyRef.onDestroy(() => node.destroy());
+    node.onDestroyFns = [destroyRef.onDestroy(() => node.destroy())];
   }
 
   const effectRef = new EffectRefImpl(node);
@@ -191,17 +196,12 @@ export function effect(
   return effectRef;
 }
 
-export interface EffectNode extends ReactiveNode, SchedulableEffect {
-  hasRun: boolean;
+export interface EffectNode extends BaseEffectNode, SchedulableEffect {
   cleanupFns: EffectCleanupFn[] | undefined;
   injector: Injector;
   notifier: ChangeDetectionScheduler;
 
-  onDestroyFn: () => void;
-  fn: (cleanupFn: EffectCleanupRegisterFn) => void;
-  run(): void;
-  destroy(): void;
-  maybeCleanup(): void;
+  onDestroyFns: (() => void)[] | null;
 }
 
 export interface ViewEffectNode extends EffectNode {
@@ -212,47 +212,27 @@ export interface RootEffectNode extends EffectNode {
   scheduler: EffectScheduler;
 }
 
-export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'notifier'> =
+export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'notifier'> =
   /* @__PURE__ */ (() => ({
-    ...REACTIVE_NODE,
-    consumerIsAlwaysLive: true,
-    consumerAllowSignalWrites: true,
-    dirty: true,
-    hasRun: false,
+    ...BASE_EFFECT_NODE,
     cleanupFns: undefined,
     zone: null,
-    kind: 'effect',
-    onDestroyFn: noop,
+    onDestroyFns: null,
     run(this: EffectNode): void {
-      this.dirty = false;
-
       if (ngDevMode && isInNotificationPhase()) {
         throw new Error(`Schedulers cannot synchronously execute watches while scheduling.`);
       }
-
-      if (this.hasRun && !consumerPollProducersForChange(this)) {
-        return;
-      }
-      this.hasRun = true;
-
-      const registerCleanupFn: EffectCleanupRegisterFn = (cleanupFn) =>
-        (this.cleanupFns ??= []).push(cleanupFn);
-
-      const prevNode = consumerBeforeComputation(this);
-
       // We clear `setIsRefreshingViews` so that `markForCheck()` within the body of an effect will
       // cause CD to reach the component in question.
       const prevRefreshingViews = setIsRefreshingViews(false);
       try {
-        this.maybeCleanup();
-        this.fn(registerCleanupFn);
+        runEffect(this);
       } finally {
         setIsRefreshingViews(prevRefreshingViews);
-        consumerAfterComputation(this, prevNode);
       }
     },
 
-    maybeCleanup(this: EffectNode): void {
+    cleanup(this: EffectNode): void {
       if (!this.cleanupFns?.length) {
         return;
       }
@@ -273,22 +253,28 @@ export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 
 
 export const ROOT_EFFECT_NODE: Omit<RootEffectNode, 'fn' | 'scheduler' | 'notifier' | 'injector'> =
   /* @__PURE__ */ (() => ({
-    ...BASE_EFFECT_NODE,
+    ...EFFECT_NODE,
     consumerMarkedDirty(this: RootEffectNode) {
       this.scheduler.schedule(this);
       this.notifier.notify(NotificationSource.RootEffect);
     },
     destroy(this: RootEffectNode) {
       consumerDestroy(this);
-      this.onDestroyFn();
-      this.maybeCleanup();
+
+      if (this.onDestroyFns !== null) {
+        for (const fn of this.onDestroyFns) {
+          fn();
+        }
+      }
+
+      this.cleanup();
       this.scheduler.remove(this);
     },
   }))();
 
 export const VIEW_EFFECT_NODE: Omit<ViewEffectNode, 'fn' | 'view' | 'injector' | 'notifier'> =
   /* @__PURE__ */ (() => ({
-    ...BASE_EFFECT_NODE,
+    ...EFFECT_NODE,
     consumerMarkedDirty(this: ViewEffectNode): void {
       this.view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
       markAncestorsForTraversal(this.view);
@@ -296,8 +282,14 @@ export const VIEW_EFFECT_NODE: Omit<ViewEffectNode, 'fn' | 'view' | 'injector' |
     },
     destroy(this: ViewEffectNode): void {
       consumerDestroy(this);
-      this.onDestroyFn();
-      this.maybeCleanup();
+
+      if (this.onDestroyFns !== null) {
+        for (const fn of this.onDestroyFns) {
+          fn();
+        }
+      }
+
+      this.cleanup();
       this.view[EFFECTS]?.delete(this);
     },
   }))();
@@ -311,7 +303,7 @@ export function createViewEffect(
   node.view = view;
   node.zone = typeof Zone !== 'undefined' ? Zone.current : null;
   node.notifier = notifier;
-  node.fn = fn;
+  node.fn = createEffectFn(node, fn);
 
   view[EFFECTS] ??= new Set();
   view[EFFECTS].add(node);
@@ -326,11 +318,17 @@ export function createRootEffect(
   notifier: ChangeDetectionScheduler,
 ): RootEffectNode {
   const node = Object.create(ROOT_EFFECT_NODE) as RootEffectNode;
-  node.fn = fn;
+  node.fn = createEffectFn(node, fn);
   node.scheduler = scheduler;
   node.notifier = notifier;
   node.zone = typeof Zone !== 'undefined' ? Zone.current : null;
   node.scheduler.add(node);
   node.notifier.notify(NotificationSource.RootEffect);
   return node;
+}
+
+function createEffectFn(node: EffectNode, fn: (onCleanup: EffectCleanupRegisterFn) => void) {
+  return () => {
+    fn((cleanupFn) => (node.cleanupFns ??= []).push(cleanupFn));
+  };
 }

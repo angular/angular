@@ -61,7 +61,7 @@ export class FakeNavigation implements Navigation {
    * A prospective current active entry index, which includes unresolved
    * traversals. Used by `go` to determine where navigations are intended to go.
    */
-  private prospectiveEntryIndex = 0;
+  private propsectiveTraversalDestinations: number[] = [];
 
   /**
    * A test-only option to make traversals synchronous, rather than emulate
@@ -125,7 +125,7 @@ export class FakeNavigation implements Navigation {
         return new EventTarget();
       }
     };
-    this._window = document.defaultView ?? this.createEventTarget();
+    this._window = doc.defaultView ?? this.createEventTarget();
     this.eventTarget = this.createEventTarget();
     // First entry.
     this.setInitialEntryForTesting(startURL);
@@ -300,7 +300,7 @@ export class FakeNavigation implements Navigation {
       index: entry.index,
       sameDocument: entry.sameDocument,
     });
-    this.prospectiveEntryIndex = entry.index;
+    this.propsectiveTraversalDestinations.push(entry.index);
     const result = new InternalNavigationResult(this);
     this.traversalQueue.set(entry.key, result);
     this.runTraversal(() => {
@@ -366,11 +366,13 @@ export class FakeNavigation implements Navigation {
    * `back(); forward()` chains it collapses certain traversals.
    */
   go(direction: number): void {
-    const targetIndex = this.prospectiveEntryIndex + direction;
+    const targetIndex =
+      (this.propsectiveTraversalDestinations[this.propsectiveTraversalDestinations.length - 1] ??
+        this.currentEntryIndex) + direction;
     if (targetIndex >= this.entriesArr.length || targetIndex < 0) {
       return;
     }
-    this.prospectiveEntryIndex = targetIndex;
+    this.propsectiveTraversalDestinations.push(targetIndex);
     this.runTraversal(() => {
       // Check again that destination is in the entries array.
       if (targetIndex >= this.entriesArr.length || targetIndex < 0) {
@@ -407,6 +409,7 @@ export class FakeNavigation implements Navigation {
   private runTraversal(traversal: () => void) {
     if (this.synchronousTraversals) {
       traversal();
+      this.propsectiveTraversalDestinations.shift();
       return;
     }
 
@@ -418,6 +421,7 @@ export class FakeNavigation implements Navigation {
         setTimeout(() => {
           resolve();
           traversal();
+          this.propsectiveTraversalDestinations.shift();
         });
       });
     });
@@ -466,7 +470,7 @@ export class FakeNavigation implements Navigation {
       return;
     }
     const abortReason = reason ?? new DOMException('Navigation aborted', 'AbortError');
-    this.navigateEvent.cancel(abortReason);
+    this.navigateEvent.abort(abortReason);
   }
 
   /**
@@ -558,7 +562,7 @@ export class FakeNavigation implements Navigation {
       }
     } else if (navigationType === 'push') {
       this.currentEntryIndex++;
-      this.prospectiveEntryIndex = this.currentEntryIndex; // prospectiveEntryIndex isn't in the spec but is an implementation detail
+      this.propsectiveTraversalDestinations = []; // prospectiveEntryIndex isn't in the spec but is an implementation detail
       disposedNHEs.push(...this.entriesArr.splice(this.currentEntryIndex));
     } else if (navigationType === 'replace') {
       disposedNHEs.push(oldCurrentNHE);
@@ -786,7 +790,7 @@ interface InternalFakeNavigateEvent extends FakeNavigateEvent {
   focusResetBehavior: 'after-transition' | 'manual' | null;
 
   abortController: AbortController;
-  cancel(reason: Error): void;
+  abort(reason: Error): void;
 }
 
 /**
@@ -917,14 +921,27 @@ function dispatchNavigateEvent({
     }
   }
 
-  // https://whatpr.org/html/10919/nav-history-apis.html#inner-navigate-event-firing-algorithm
-  // "Let commit be the following steps:"
+  // https://html.spec.whatwg.org/multipage/nav-history-apis.html#process-navigate-event-handler-failure
+  function processNavigateEventHandlerFailure(reason: any) {
+    if (event.abortController.signal.aborted) {
+      return;
+    }
+    if (event !== navigation.navigateEvent) {
+      throw new Error('Event is no longer the current navigation event');
+    }
+    if (event.interceptionState !== 'intercepted') {
+      finishNavigationEvent(event, false);
+    }
+    event.abort(reason);
+  }
+
+  // https://html.spec.whatwg.org/multipage/nav-history-apis.html#commit-a-navigate-event
+  // "To commit a navigate event given a NavigateEvent..."
   function commit() {
     if (result.signal.aborted) {
       return;
     }
-    (navigation.transition as InternalNavigationTransition)?.committedResolve();
-    if (event.interceptionState === 'intercepted') {
+    if (event.interceptionState !== 'none') {
       event.interceptionState = 'committed';
       switch (event.navigationType) {
         case 'push':
@@ -942,10 +959,9 @@ function dispatchNavigateEvent({
         }
       }
     }
-    const promisesList = handlers.map((handler) => handler());
-    if (promisesList.length === 0) {
-      promisesList.push(Promise.resolve());
-    }
+    (navigation.transition as InternalNavigationTransition)?.committedResolve();
+    const promisesList: Array<Promise<unknown>> = handlers.map((handler) => handler());
+    promisesList.push(result.committed);
     Promise.all(promisesList)
       .then(() => {
         // Follows steps outlined under "Wait for all of promisesList, with the following success steps:"
@@ -963,49 +979,31 @@ function dispatchNavigateEvent({
         }
         navigation.navigateEvent = null;
         finishNavigationEvent(event, true);
+        result.finishedResolve();
         const navigatesuccessEvent = new Event('navigatesuccess', {
           bubbles: false,
           cancelable: false,
         });
         navigation.eventTarget.dispatchEvent(navigatesuccessEvent);
-        result.finishedResolve();
         (navigation.transition as InternalNavigationTransition)?.finishedResolve();
         navigation.transition = null;
       })
-      .catch((reason) => {
-        if (!event.abortController.signal.aborted) {
-          event.cancel(reason);
-        }
-      });
+      .catch(processNavigateEventHandlerFailure);
   }
 
   // Internal only.
-  // https://whatpr.org/html/10919/nav-history-apis.html#inner-navigate-event-firing-algorithm
-  // "Let cancel be the following steps given reason"
-  event.cancel = function (this: InternalFakeNavigateEvent, reason: Error) {
-    if (result.signal.aborted) {
-      return;
-    }
+  // https://html.spec.whatwg.org/multipage/nav-history-apis.html#abort-a-navigateevent
+  // "To abort a NavigateEvent event given reason:"
+  event.abort = function (this: InternalFakeNavigateEvent, reason: Error) {
     this.abortController.abort(reason);
-    const isCurrentGlobalNavigationEvent = this === navigation.navigateEvent;
-    if (isCurrentGlobalNavigationEvent) {
-      navigation.navigateEvent = null;
-    }
-    if (this.interceptionState !== 'intercepted' && this.interceptionState !== 'finished') {
-      finishNavigationEvent(this, false);
-    } else if (this.interceptionState === 'intercepted') {
-      this.interceptionState = 'finished';
-    }
+    navigation.navigateEvent = null;
+    result.finishedReject(reason);
     const navigateerrorEvent = new Event('navigateerror', {
       bubbles: false,
       cancelable,
     }) as ErrorEvent;
     (navigateerrorEvent as unknown as {error: Error}).error = reason;
     navigation.eventTarget.dispatchEvent(navigateerrorEvent);
-    if (result.committedTo === null && !result.signal.aborted) {
-      result.committedReject(reason);
-    }
-    result.finishedReject(reason);
     const transition = navigation.transition as InternalNavigationTransition | undefined;
     transition?.committedReject(reason);
     transition?.finishedReject(reason);
@@ -1018,7 +1016,7 @@ function dispatchNavigateEvent({
 
     if (event.interceptionState === 'intercepted') {
       if (!navigation.currentEntry) {
-        event.cancel(
+        event.abort(
           new DOMException(
             'Cannot create transition without a currentEntry for intercepted navigation.',
             'InvalidStateError',
@@ -1026,7 +1024,11 @@ function dispatchNavigateEvent({
         );
         return;
       }
-      const transition = new InternalNavigationTransition(navigation.currentEntry, navigationType);
+      const transition = new InternalNavigationTransition(
+        navigation.currentEntry,
+        event.destination,
+        navigationType,
+      );
       navigation.transition = transition;
       // Mark transition.finished as handled (Spec Step 33.4)
       transition.finished.catch(() => {});
@@ -1034,7 +1036,7 @@ function dispatchNavigateEvent({
     }
     if (!dispatchResult && event.cancelable) {
       if (!event.abortController.signal.aborted) {
-        event.cancel(
+        event.abort(
           new DOMException('Navigation prevented by event.preventDefault()', 'AbortError'),
         );
       }
@@ -1055,15 +1057,7 @@ function dispatchNavigateEvent({
         });
         Promise.all(precommitPromisesList)
           .then(() => commit())
-          .catch((reason: Error) => {
-            if (event.abortController.signal.aborted) {
-              return;
-            }
-            if (navigation.transition) {
-              (navigation.transition as InternalNavigationTransition).committedReject(reason);
-            }
-            event.cancel(reason);
-          });
+          .catch(processNavigateEventHandlerFailure);
       }
     }
   }
@@ -1241,6 +1235,7 @@ class InternalNavigationTransition implements NavigationTransition {
   committedReject!: (reason: Error) => void;
   constructor(
     readonly from: NavigationHistoryEntry,
+    readonly to: NavigationDestination,
     readonly navigationType: NavigationTypeString,
   ) {
     this.finished = new Promise<void>((resolve, reject) => {
@@ -1292,9 +1287,10 @@ class InternalNavigationResult {
         }
         resolve(this.committedTo);
       };
+      // https://html.spec.whatwg.org/multipage/nav-history-apis.html#reject-the-finished-promise
       this.finishedReject = (reason: Error) => {
+        this.committedReject(reason);
         reject(reason);
-        this.abortController.abort(reason);
       };
     });
     // All rejections are handled.

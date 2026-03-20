@@ -1276,14 +1276,14 @@
     }
   ],
   "symbols": [
-    ["AfterRenderPhase", "core"],
-    ["afterRender", "core"],
-    ["EmbeddedViewRef", "core"],
-    ["ChangeDetectionStrategy", "core"],
-    ["ChangeDetectorRef", "core"],
-    ["withNoHttpTransferCache", "platform-browser"],
-    ["withHttpTransferCacheOptions", "platform-browser"],
-    ["withI18nSupport", "platform-browser"],
-    ["withEventReplay", "platform-browser"]
+    ["AfterRenderPhase", "@angular/core"],
+    ["afterRender", "@angular/core"],
+    ["EmbeddedViewRef", "@angular/core"],
+    ["ChangeDetectionStrategy", "@angular/core"],
+    ["ChangeDetectorRef", "@angular/core"],
+    ["withNoHttpTransferCache", "@angular/platform-browser"],
+    ["withHttpTransferCacheOptions", "@angular/platform-browser"],
+    ["withI18nSupport", "@angular/platform-browser"],
+    ["withEventReplay", "@angular/platform-browser"]
   ]
 }

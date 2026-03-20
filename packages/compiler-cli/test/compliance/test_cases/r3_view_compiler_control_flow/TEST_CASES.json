@@ -632,6 +632,21 @@
       ]
     },
     {
+      "description": "should generate a switch block with multiple/consecutive case expressions",
+      "inputFiles": ["switch_multiple_cases.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_multiple_cases_template.js",
+              "generated": "switch_multiple_cases.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate computed for loop variables that depend on shadowed $index and $count",
       "inputFiles": ["nested_for_computed_template_variables.ts"],
       "expectations": [

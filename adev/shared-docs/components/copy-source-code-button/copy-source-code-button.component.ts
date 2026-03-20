@@ -15,7 +15,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {IconComponent} from '../icon/icon.component';
 
@@ -24,7 +23,7 @@ export const CONFIRMATION_DISPLAY_TIME_MS = 2000;
 
 @Component({
   selector: 'button[docs-copy-source-code]',
-  imports: [CommonModule, IconComponent],
+  imports: [IconComponent],
   templateUrl: './copy-source-code-button.component.html',
   host: {
     'type': 'button',

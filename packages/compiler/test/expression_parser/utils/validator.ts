@@ -7,6 +7,7 @@
  */
 
 import {
+  ArrowFunction,
   AST,
   Binary,
   BindingPipe,
@@ -24,9 +25,11 @@ import {
   PrefixNot,
   PropertyRead,
   RecursiveAstVisitor,
+  RegularExpressionLiteral,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  SpreadElement,
   TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
@@ -154,6 +157,18 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitParenthesizedExpression(ast: ParenthesizedExpression, context: any): void {
     this.validate(ast, () => super.visitParenthesizedExpression(ast, context));
+  }
+
+  override visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): void {
+    this.validate(ast, () => super.visitRegularExpressionLiteral(ast, context));
+  }
+
+  override visitSpreadElement(ast: SpreadElement, context: any): void {
+    this.validate(ast, () => super.visitSpreadElement(ast, context));
+  }
+
+  override visitArrowFunction(ast: ArrowFunction, context: any) {
+    this.validate(ast, () => super.visitArrowFunction(ast, context));
   }
 }
 

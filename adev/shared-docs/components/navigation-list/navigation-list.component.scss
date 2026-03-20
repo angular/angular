@@ -49,6 +49,7 @@
     max-width: calc(100% - 1rem);
     overflow: hidden;
     text-overflow: ellipsis;
+    text-wrap: balance;
   }
 
   .docs-nav-item-has-icon {
@@ -184,4 +185,16 @@ a,
     word-break: keep-all;
     white-space: pre;
   }
+}
+
+.docs-navigation-group {
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  background: var(--septenary-contrast);
+  &:not(:first-child) {
+    margin-top: 2rem;
+  }
+}
+
+.single-entry:not(:first-child) {
+  margin-top: 2rem;
 }

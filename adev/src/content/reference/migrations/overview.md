@@ -10,7 +10,7 @@ Learn about how you can migrate your existing angular project to the latest feat
     Built-in Control Flow Syntax allows you to use more ergonomic syntax which is close to JavaScript and has better type checking. It replaces the need to import `CommonModule` to use functionality like `*ngFor`, `*ngIf` and `*ngSwitch`.
   </docs-card>
   <docs-card title="inject() Function" link="Migrate now" href="reference/migrations/inject-function">
-    Angular's `inject` function offers more accurate types and better compatibility with standard decorators, compared to constructor-based injection.
+    Angular's [`inject`](/api/core/inject) function offers more accurate types and better compatibility with standard decorators, compared to constructor-based injection.
   </docs-card>
   <docs-card title="Lazy-loaded routes" link="Migrate now" href="reference/migrations/route-lazy-loading">
     Convert eagerly loaded component routes to lazy loaded ones. This allows the build process to split production bundles into smaller chunks, to load less JavaScript at initial page load.
@@ -29,5 +29,17 @@ Learn about how you can migrate your existing angular project to the latest feat
   </docs-card>
   <docs-card title="Self-closing tags" link="Migrate now" href="reference/migrations/self-closing-tags">
     Convert component templates to use self-closing tags where possible.
+  </docs-card>
+  <docs-card title="NgClass to Class Bindings" link="Migrate now" href="reference/migrations/ngclass-to-class">
+      Convert component templates to prefer class bindings over the `NgClass` directives when possible.
+  </docs-card>
+  <docs-card title="NgStyle to Style Bindings" link="Migrate now" href="reference/migrations/ngstyle-to-style">
+      Convert component templates to prefer style bindings over the `NgStyle` directives when possible.
+  </docs-card>
+  <docs-card title="RouterTestingModule migration" link="Migrate now" href="reference/migrations/router-testing-module-migration">
+    Convert `RouterTestingModule` usages to `RouterModule` in TestBed configurations and add `provideLocationMocks()` when appropriate.
+  </docs-card>
+  <docs-card title="CommonModule to standalone imports" link="Migrate now" href="reference/migrations/common-to-standalone">
+    Replace imports of the `CommonModule` with imports of the individual directives and pipes used in the templates when possible.
   </docs-card>
 </docs-card-container>

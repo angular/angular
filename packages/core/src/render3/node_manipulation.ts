@@ -62,6 +62,7 @@ import {
   HookData,
   HookFn,
   HOST,
+  ANIMATIONS,
   LView,
   LViewFlags,
   NEXT,
@@ -74,11 +75,16 @@ import {
   TVIEW,
   TView,
   TViewType,
+  INJECTOR,
+  ID,
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
-import {ProfilerEvent} from './profiler_types';
+import {ProfilerEvent} from '../../primitives/devtools';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
+import {cancelLeavingNodes, reusedNodes, trackLeavingNodes} from '../animation/utils';
+import {Injector} from '../di';
+import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -104,9 +110,12 @@ const enum WalkTNodeTreeAction {
 function applyToElementOrContainer(
   action: WalkTNodeTreeAction,
   renderer: Renderer,
+  injector: Injector,
   parent: RElement | null,
   lNodeToHandle: RNode | LContainer | LView,
+  tNode: TNode,
   beforeNode?: RNode | null,
+  parentLView?: LView,
 ) {
   // If this slot was allocated for a text node dynamically created by i18n, the text node itself
   // won't be created until i18nApply() in the update block, so this node should be skipped.
@@ -126,22 +135,45 @@ function applyToElementOrContainer(
       lNodeToHandle = lNodeToHandle[HOST]!;
     }
     const rNode: RNode = unwrapRNode(lNodeToHandle);
-
     if (action === WalkTNodeTreeAction.Create && parent !== null) {
+      maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
       if (beforeNode == null) {
         nativeAppendChild(renderer, parent, rNode);
       } else {
         nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
       }
     } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
+      maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
+      cancelLeavingNodes(tNode, rNode as HTMLElement);
     } else if (action === WalkTNodeTreeAction.Detach) {
-      nativeRemoveNode(renderer, rNode, isComponent);
+      if (parentLView?.[ANIMATIONS]?.leave?.has(tNode.index)) {
+        trackLeavingNodes(tNode, rNode as HTMLElement);
+      }
+      reusedNodes.delete(rNode as HTMLElement);
+      runLeaveAnimationsWithCallback(
+        parentLView,
+        tNode,
+        injector,
+        (nodeHasLeaveAnimations: boolean) => {
+          if (reusedNodes.has(rNode as HTMLElement)) {
+            reusedNodes.delete(rNode as HTMLElement);
+            return;
+          }
+          // the nodeHasLeaveAnimations indicates to the renderer that the element needs to
+          // be removed synchronously and sets the requireSynchronousElementRemoval flag in
+          // the renderer.
+          nativeRemoveNode(renderer, rNode, isComponent, nodeHasLeaveAnimations);
+        },
+      );
     } else if (action === WalkTNodeTreeAction.Destroy) {
-      renderer.destroyNode!(rNode);
+      reusedNodes.delete(rNode as HTMLElement);
+      runLeaveAnimationsWithCallback(parentLView, tNode, injector, () => {
+        renderer.destroyNode!(rNode);
+      });
     }
     if (lContainer != null) {
-      applyContainer(renderer, action, lContainer, parent, beforeNode);
+      applyContainer(renderer, action, injector, lContainer, tNode, parent, beforeNode);
     }
   }
 }
@@ -278,13 +310,11 @@ export function destroyLView(tView: TView, lView: LView) {
   if (isDestroyed(lView)) {
     return;
   }
-
   const renderer = lView[RENDERER];
 
   if (renderer.destroyNode) {
     applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
   }
-
   destroyViewTree(lView);
 }
 
@@ -732,6 +762,7 @@ function applyNodes(
 ) {
   while (tNode != null) {
     ngDevMode && assertTNodeForLView(tNode, lView);
+    const injector = lView[INJECTOR];
 
     // Let declarations don't have corresponding DOM nodes so we skip over them.
     if (tNode.type === TNodeType.LetDeclaration) {
@@ -755,14 +786,41 @@ function applyNodes(
     if (!isDetachedByI18n(tNode)) {
       if (tNodeType & TNodeType.ElementContainer) {
         applyNodes(renderer, action, tNode.child, lView, parentRElement, beforeNode, false);
-        applyToElementOrContainer(action, renderer, parentRElement, rawSlotValue, beforeNode);
+        applyToElementOrContainer(
+          action,
+          renderer,
+          injector,
+          parentRElement,
+          rawSlotValue,
+          tNode,
+          beforeNode,
+          lView,
+        );
       } else if (tNodeType & TNodeType.Icu) {
         const nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
         let rNode: RNode | null;
         while ((rNode = nextRNode())) {
-          applyToElementOrContainer(action, renderer, parentRElement, rNode, beforeNode);
+          applyToElementOrContainer(
+            action,
+            renderer,
+            injector,
+            parentRElement,
+            rNode,
+            tNode,
+            beforeNode,
+            lView,
+          );
         }
-        applyToElementOrContainer(action, renderer, parentRElement, rawSlotValue, beforeNode);
+        applyToElementOrContainer(
+          action,
+          renderer,
+          injector,
+          parentRElement,
+          rawSlotValue,
+          tNode,
+          beforeNode,
+          lView,
+        );
       } else if (tNodeType & TNodeType.Projection) {
         applyProjectionRecursive(
           renderer,
@@ -774,7 +832,16 @@ function applyNodes(
         );
       } else {
         ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.Container);
-        applyToElementOrContainer(action, renderer, parentRElement, rawSlotValue, beforeNode);
+        applyToElementOrContainer(
+          action,
+          renderer,
+          injector,
+          parentRElement,
+          rawSlotValue,
+          tNode,
+          beforeNode,
+          lView,
+        );
       }
     }
     tNode = isProjection ? tNode.projectionNext : tNode.next;
@@ -891,7 +958,16 @@ function applyProjectionRecursive(
     // This should be refactored and cleaned up.
     for (let i = 0; i < nodeToProjectOrRNodes.length; i++) {
       const rNode = nodeToProjectOrRNodes[i];
-      applyToElementOrContainer(action, renderer, parentRElement, rNode, beforeNode);
+      applyToElementOrContainer(
+        action,
+        renderer,
+        lView[INJECTOR],
+        parentRElement,
+        rNode,
+        tProjectionNode,
+        beforeNode,
+        lView,
+      );
     }
   } else {
     let nodeToProject: TNode | null = nodeToProjectOrRNodes;
@@ -929,7 +1005,9 @@ function applyProjectionRecursive(
 function applyContainer(
   renderer: Renderer,
   action: WalkTNodeTreeAction,
+  injector: Injector,
   lContainer: LContainer,
+  tNode: TNode,
   parentRElement: RElement | null,
   beforeNode: RNode | null | undefined,
 ) {
@@ -947,7 +1025,15 @@ function applyContainer(
     // don't see a reason why they should be different, but they are.
     //
     // If they are we need to process the second anchor as well.
-    applyToElementOrContainer(action, renderer, parentRElement, anchor, beforeNode);
+    applyToElementOrContainer(
+      action,
+      renderer,
+      injector,
+      parentRElement,
+      anchor,
+      tNode,
+      beforeNode,
+    );
   }
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const lView = lContainer[i] as LView;

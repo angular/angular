@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -36,6 +36,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/transfer-state",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/protocol",
     ],
 )
@@ -61,7 +62,7 @@ ts_test_library(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
     deps = [
         ":devtools_tabs_test",

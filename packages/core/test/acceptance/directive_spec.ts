@@ -7,6 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
 import {
   Component,
   Directive,
@@ -16,6 +17,7 @@ import {
   NgModule,
   OnChanges,
   Output,
+  provideZoneChangeDetection,
   SimpleChange,
   SimpleChanges,
   TemplateRef,
@@ -23,9 +25,13 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('directives', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('matching', () => {
     @Directive({
       selector: 'ng-template[test]',
@@ -159,10 +165,9 @@ describe('directives', () => {
 
       @Component({
         selector: 'my-component',
-        template: `
-          <ng-container *ngIf="visible" directiveA>
-            <span>Some content</span>
-          </ng-container>`,
+        template: ` <ng-container *ngIf="visible" directiveA>
+          <span>Some content</span>
+        </ng-container>`,
         standalone: false,
       })
       class MyComponent {
@@ -364,7 +369,8 @@ describe('directives', () => {
 
       @Component({
         selector: `my-comp`,
-        template: `<p [attr.dir]="direction"></p><p dir="rtl"></p>`,
+        template: `<p [attr.dir]="direction"></p>
+          <p dir="rtl"></p>`,
         standalone: false,
       })
       class MyComp {
@@ -1001,6 +1007,60 @@ describe('directives', () => {
       ref.setInput('value', 'hello');
       expect(ref.instance.value).toBe(1);
     });
+
+    it('should map attribute to input when specific in the selecotr', () => {
+      @Component({
+        selector: 'app-test[value]',
+        template: ``,
+      })
+      class TestComponent {
+        @Input() value = 'unset';
+      }
+
+      @Component({
+        selector: 'app-root',
+        template: ``,
+      })
+      class App {
+        constructor(vcr: ViewContainerRef) {
+          vcr.createComponent(TestComponent);
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const testComponent = fixture.debugElement.query(
+        By.directive(TestComponent),
+      ).componentInstance;
+      fixture.detectChanges();
+
+      expect(testComponent.value).toBe('');
+    });
+
+    it('should not map attribute to input when not specified in the selector', () => {
+      @Component({
+        selector: 'app-test',
+        template: ``,
+      })
+      class TestComponent {
+        @Input() value = 'unset';
+      }
+
+      @Component({
+        selector: 'app-root',
+        template: ``,
+      })
+      class App {
+        constructor(vcr: ViewContainerRef) {
+          vcr.createComponent(TestComponent);
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const testComponent = fixture.debugElement.query(
+        By.directive(TestComponent),
+      ).componentInstance;
+      expect(testComponent.value).toBe('unset');
+    });
   });
 
   describe('outputs', () => {
@@ -1036,10 +1096,9 @@ describe('directives', () => {
 
     it('should allow outputs of directive on ng-container', () => {
       @Component({
-        template: `
-          <ng-container (out)="value = true">
-            <span>Hello</span>
-          </ng-container>`,
+        template: ` <ng-container (out)="value = true">
+          <span>Hello</span>
+        </ng-container>`,
         standalone: false,
       })
       class TestComp {
@@ -1168,7 +1227,7 @@ describe('directives', () => {
 
     it('should allow setting directive `title` input with `[title]="value1"` and attribute with `attr.title="{{value2}}"`', () => {
       @Component({
-        template: `<div dir-with-title [title]="value1" attr.title="{{value2}}"></div>`,
+        template: `<div dir-with-title [title]="value1" attr.title="{{ value2 }}"></div>`,
         standalone: false,
       })
       class App {
@@ -1192,7 +1251,7 @@ describe('directives', () => {
 
     it('should allow setting directive `title` input with `title="{{value}}"` and a "attr.title" attribute with `attr.title="test"`', () => {
       @Component({
-        template: `<div dir-with-title title="{{value}}" attr.title="test"></div>`,
+        template: `<div dir-with-title title="{{ value }}" attr.title="test"></div>`,
         standalone: false,
       })
       class App {
@@ -1216,7 +1275,7 @@ describe('directives', () => {
 
     it('should allow setting directive `title` input with `title="{{value1}}"` and attribute with `[attr.title]="value2"`', () => {
       @Component({
-        template: `<div dir-with-title title="{{value1}}" [attr.title]="value2"></div>`,
+        template: `<div dir-with-title title="{{ value1 }}" [attr.title]="value2"></div>`,
         standalone: false,
       })
       class App {
@@ -1240,7 +1299,7 @@ describe('directives', () => {
 
     it('should allow setting directive `title` input with `title="{{value1}}"` and attribute with `attr.title="{{value2}}"`', () => {
       @Component({
-        template: `<div dir-with-title title="{{value1}}" attr.title="{{value2}}"></div>`,
+        template: `<div dir-with-title title="{{ value1 }}" attr.title="{{ value2 }}"></div>`,
         standalone: false,
       })
       class App {
@@ -1264,7 +1323,7 @@ describe('directives', () => {
 
     it('should set the directive input only, shadowing the title property on the div, for `title="{{value}}"`', () => {
       @Component({
-        template: `<div dir-with-title title="{{value}}"></div>`,
+        template: `<div dir-with-title title="{{ value }}"></div>`,
         standalone: false,
       })
       class App {
@@ -1287,7 +1346,7 @@ describe('directives', () => {
 
     it('should set the title attribute only, not directive input, for `attr.title="{{value}}"`', () => {
       @Component({
-        template: `<div dir-with-title attr.title="{{value}}"></div>`,
+        template: `<div dir-with-title attr.title="{{ value }}"></div>`,
         standalone: false,
       })
       class App {

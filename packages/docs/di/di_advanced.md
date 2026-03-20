@@ -232,4 +232,3 @@ Injector2 [                                                 Injector3 [
 ```
 
 As you can see the component and its providers can be seen by its children and its view. The view providers can be seen only by the view. And the providers of other directives can be seen only their children.
-

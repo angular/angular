@@ -23,7 +23,7 @@
   [class.drag-scrolling]="dragScrolling()"
 >
   <div
-    *cdkVirtualFor="let d of graphData(); let i = index"
+    *cdkVirtualFor="let d of graphData(); let i = index; trackBy: trackByIndex"
     [ngStyle]="d.style"
     class="frame-bar"
     [class.selected]="selectedFrameIndexes().has(i)"

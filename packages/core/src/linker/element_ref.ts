@@ -42,6 +42,8 @@ export function createElementRef(tNode: TNode, lView: LView): ElementRef {
  * XSS attacks. Carefully review any use of `ElementRef` in your code. For more detail, see the
  * [Security Guide](https://g.co/ng/security).
  *
+ * @see [Using DOM APIs](guide/components/dom-apis)
+ *
  * @publicApi
  */
 // Note: We don't expose things like `Injector`, `ViewContainer`, ... here,

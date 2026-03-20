@@ -1214,6 +1214,9 @@ import {envIsSupported} from '../testing/utils';
 
         const debuggerLogSpy = spyOn(driver.debugger, 'log');
 
+        // To drain the microtask queue (and process all rejections)
+        await new Promise((r) => setTimeout(r));
+
         scope.handleUnhandledRejection('Test rejection reason');
 
         expect(debuggerLogSpy).toHaveBeenCalledWith(
@@ -1685,6 +1688,12 @@ import {envIsSupported} from '../testing/utils';
           expect(redirectReq.credentials).toBe('same-origin'); // The default value.
           expect(redirectReq.mode).toBe('cors'); // The default value.
           expect((redirectReq as any).unknownOption).toBeUndefined();
+        });
+
+        it('does not follow redirects when redirect policy is error', async () => {
+          await expectAsync(
+            makeRequest(scope, '/lazy/redirected.txt', undefined, {redirect: 'error'}),
+          ).toBeRejected();
         });
       });
     });
@@ -2594,7 +2603,6 @@ import {envIsSupported} from '../testing/utils';
           expect(await makeRequest(scope, '/foo.hash.js', 'client-2')).toBeNull();
           expect(mockClient2.messages).toEqual([
             jasmine.objectContaining({type: 'UNRECOVERABLE_STATE'}),
-            jasmine.objectContaining({type: 'VERSION_FAILED'}),
           ]);
 
           // This should also enter the `SW` into degraded mode, because the broken version was the

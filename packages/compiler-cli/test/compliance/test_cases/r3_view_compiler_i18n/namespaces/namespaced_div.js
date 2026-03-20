@@ -4,7 +4,7 @@ consts: () => {
     /**
      * @suppress {msgDescriptions}
      */
-    const $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$ = goog.getMsg(" Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}", {
+    const $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$ = /* @ts-ignore */ goog.getMsg(" Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}", {
       "closeTagXhtmlSpan": "\uFFFD/#4\uFFFD",
       "startTagXhtmlSpan": "\uFFFD#4\uFFFD"
     }, {
@@ -16,6 +16,7 @@ consts: () => {
     $I18N_0$ = $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$;
   }
   else {
+    /* @ts-ignore */
     $I18N_0$ = $localize ` Count: ${"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5${"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:`;
   }
   return [

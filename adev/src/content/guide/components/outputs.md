@@ -4,12 +4,14 @@ TIP: This guide assumes you've already read the [Essentials Guide](essentials). 
 
 Angular components can define custom events by assigning a property to the `output` function:
 
-<docs-code language="ts" highlight="3">
-@Component({/*...*/})
+```ts {highlight:[3]}
+@Component({
+  /*...*/
+})
 export class ExpandablePanel {
   panelClosed = output<void>();
 }
-</docs-code>
+```
 
 ```angular-html
 <expandable-panel (panelClosed)="savePanelState()" />
@@ -17,9 +19,9 @@ export class ExpandablePanel {
 
 The `output` function returns an `OutputEmitterRef`. You can emit an event by calling the `emit` method on the `OutputEmitterRef`:
 
-<docs-code language="ts" highlight="">
-  this.panelClosed.emit();
-</docs-code>
+```ts
+this.panelClosed.emit();
+```
 
 Angular refers to properties initialized with the `output` function as **outputs**. You can use outputs to raise custom events, similar to native browser events like `click`.
 
@@ -35,7 +37,7 @@ The `output` function has special meaning to the Angular compiler. **You can exc
 
 You can pass event data when calling `emit`:
 
-<docs-code language="ts" highlight="">
+```ts
 // You can emit primitive values.
 this.valueChanged.emit(7);
 
@@ -43,8 +45,8 @@ this.valueChanged.emit(7);
 this.thumbDropped.emit({
   pointerX: 123,
   pointerY: 456,
-})
-</docs-code>
+});
+```
 
 When defining an event listener in a template, you can access the event data from the `$event` variable:
 
@@ -52,16 +54,32 @@ When defining an event listener in a template, you can access the event data fro
 <custom-slider (valueChanged)="logValue($event)" />
 ```
 
+Receive the event data in the parent component:
+
+```ts
+@Component({
+ /*...*/
+})
+export class App {
+  logValue(value: number) {
+    ...
+  }
+}
+
+```
+
 ## Customizing output names
 
 The `output` function accepts a parameter that lets you specify a different name for the event in a template:
 
-<docs-code language="ts" highlight="">
-@Component({/*...*/})
+```ts
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   changed = output({alias: 'valueChanged'});
 }
-</docs-code>
+```
 
 ```angular-html
 <custom-slider (valueChanged)="saveVolume()" />
@@ -79,15 +97,15 @@ from the component instance. The `OutputRef` type includes a `subscribe` method:
 ```ts
 const someComponentRef: ComponentRef<SomeComponent> = viewContainerRef.createComponent(/*...*/);
 
-someComponentRef.instance.someEventProperty.subscribe(eventData => {
+someComponentRef.instance.someEventProperty.subscribe((eventData) => {
   console.log(eventData);
 });
 ```
 
 Angular automatically cleans up event subscriptions when it destroys components with subscribers. Alternatively, you can manually unsubscribe from an event. The `subscribe` function returns an `OutputRefSubscription` with an `unsubscribe` method:
 
-```typescript
-const eventSubscription = someComponent.someEventProperty.subscribe(eventData => {
+```ts
+const eventSubscription = someComponent.someEventProperty.subscribe((eventData) => {
   console.log(eventData);
 });
 
@@ -115,12 +133,14 @@ original decorator-based `@Output` API remains fully supported.
 
 You can alternatively define custom events by assigning a property to a new `EventEmitter` and adding the `@Output` decorator:
 
-<docs-code language="ts" highlight="">
-@Component({/*...*/})
+```ts
+@Component({
+  /*...*/
+})
 export class ExpandablePanel {
   @Output() panelClosed = new EventEmitter<void>();
 }
-</docs-code>
+```
 
 You can emit an event by calling the `emit` method on the `EventEmitter`.
 
@@ -128,12 +148,14 @@ You can emit an event by calling the `emit` method on the `EventEmitter`.
 
 The `@Output` decorator accepts a parameter that lets you specify a different name for the event in a template:
 
-<docs-code language="ts" highlight="">
-@Component({/*...*/})
+```ts
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Output('valueChanged') changed = new EventEmitter<number>();
 }
-</docs-code>
+```
 
 ```angular-html
 <custom-slider (valueChanged)="saveVolume()" />
@@ -145,22 +167,22 @@ This alias does not affect usage of the property in TypeScript code.
 
 In addition to the `@Output` decorator, you can also specify a component's outputs with the `outputs` property in the `@Component` decorator. This can be useful when a component inherits a property from a base class:
 
-<docs-code language="ts" highlight="">
+```ts
 // `CustomSlider` inherits the `valueChanged` property from `BaseSlider`.
 @Component({
   /*...*/
   outputs: ['valueChanged'],
 })
 export class CustomSlider extends BaseSlider {}
-</docs-code>
+```
 
 You can additionally specify an output alias in the `outputs` list by putting the alias after a colon in the string:
 
-<docs-code language="ts" highlight="">
+```ts
 // `CustomSlider` inherits the `valueChanged` property from `BaseSlider`.
 @Component({
   /*...*/
   outputs: ['valueChanged: volumeChanged'],
 })
 export class CustomSlider extends BaseSlider {}
-</docs-code>
+```

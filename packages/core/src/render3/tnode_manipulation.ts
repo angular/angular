@@ -298,6 +298,8 @@ export function createTNode(
     directiveEnd: -1,
     directiveStylingLast: -1,
     componentOffset: -1,
+    controlDirectiveIndex: -1,
+    customControlIndex: -1,
     propertyBindings: null,
     flags,
     providerIndexes: 0,

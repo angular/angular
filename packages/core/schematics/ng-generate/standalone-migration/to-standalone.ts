@@ -194,9 +194,17 @@ function getComponentImportExpressions(
       typeChecker,
     );
 
-    if (importLocation && !seenImports.has(importLocation.symbolName)) {
-      seenImports.add(importLocation.symbolName);
-      resolvedDependencies.push(importLocation);
+    if (importLocation) {
+      // Create a unique key that includes both the symbol name and module specifier
+      // to handle cases where the same symbol name is imported from different modules
+      const importKey = importLocation.moduleSpecifier
+        ? `${importLocation.symbolName}::${importLocation.moduleSpecifier}`
+        : importLocation.symbolName;
+
+      if (!seenImports.has(importKey)) {
+        seenImports.add(importKey);
+        resolvedDependencies.push(importLocation);
+      }
     }
   }
 
@@ -306,33 +314,43 @@ function moveDeclarationsToImports(
   );
 
   // Separate the declarations that we want to keep and ones we need to copy into the `imports`.
-  if (ts.isPropertyAssignment(declarationsProp)) {
-    // If the declarations are an array, we can analyze it to
-    // find any classes from the current migration.
-    if (ts.isArrayLiteralExpression(declarationsProp.initializer)) {
-      for (const el of declarationsProp.initializer.elements) {
-        if (ts.isIdentifier(el)) {
-          const correspondingClass = findClassDeclaration(el, typeChecker);
+  if (
+    ts.isPropertyAssignment(declarationsProp) ||
+    ts.isShorthandPropertyAssignment(declarationsProp)
+  ) {
+    // Handle both regular and shorthand property assignments
+    if (ts.isPropertyAssignment(declarationsProp)) {
+      // If the declarations are an array, we can analyze it to
+      // find any classes from the current migration.
+      if (ts.isArrayLiteralExpression(declarationsProp.initializer)) {
+        for (const el of declarationsProp.initializer.elements) {
+          if (ts.isIdentifier(el)) {
+            const correspondingClass = findClassDeclaration(el, typeChecker);
 
-          if (
-            !correspondingClass ||
-            // Check whether the declaration is either standalone already or is being converted
-            // in this migration. We need to check if it's standalone already, in order to correct
-            // some cases where the main app and the test files are being migrated in separate
-            // programs.
-            isStandaloneDeclaration(correspondingClass, allDeclarations, templateTypeChecker)
-          ) {
-            declarationsToCopy.push(el);
+            if (
+              !correspondingClass ||
+              // Check whether the declaration is either standalone already or is being converted
+              // in this migration. We need to check if it's standalone already, in order to correct
+              // some cases where the main app and the test files are being migrated in separate
+              // programs.
+              isStandaloneDeclaration(correspondingClass, allDeclarations, templateTypeChecker)
+            ) {
+              declarationsToCopy.push(el);
+            } else {
+              declarationsToPreserve.push(el);
+            }
           } else {
-            declarationsToPreserve.push(el);
+            declarationsToCopy.push(el);
           }
-        } else {
-          declarationsToCopy.push(el);
         }
+      } else {
+        // Otherwise create a spread that will be copied into the `imports`.
+        declarationsToCopy.push(ts.factory.createSpreadElement(declarationsProp.initializer));
       }
     } else {
-      // Otherwise create a spread that will be copied into the `imports`.
-      declarationsToCopy.push(ts.factory.createSpreadElement(declarationsProp.initializer));
+      // For shorthand properties, treat them as unanalyzable and use spread syntax
+      // shorthand properties were being ignored, now they're detected and treated as spreads
+      declarationsToCopy.push(ts.factory.createSpreadElement(declarationsProp.name));
     }
   }
 
@@ -352,7 +370,7 @@ function moveDeclarationsToImports(
   }
 
   for (const prop of literal.properties) {
-    if (!isNamedPropertyAssignment(prop)) {
+    if (!isNamedPropertyAssignment(prop) && !ts.isShorthandPropertyAssignment(prop)) {
       properties.push(prop);
       continue;
     }
@@ -360,12 +378,13 @@ function moveDeclarationsToImports(
     // If we have declarations to preserve, update the existing property, otherwise drop it.
     if (prop === declarationsProp) {
       if (declarationsToPreserve.length > 0) {
-        const hasTrailingComma = ts.isArrayLiteralExpression(prop.initializer)
-          ? prop.initializer.elements.hasTrailingComma
-          : hasAnyArrayTrailingComma;
+        const hasTrailingComma =
+          ts.isPropertyAssignment(prop) && ts.isArrayLiteralExpression(prop.initializer)
+            ? prop.initializer.elements.hasTrailingComma
+            : hasAnyArrayTrailingComma;
+
         properties.push(
-          ts.factory.updatePropertyAssignment(
-            prop,
+          ts.factory.createPropertyAssignment(
             prop.name,
             ts.factory.createArrayLiteralExpression(
               ts.factory.createNodeArray(
@@ -382,29 +401,32 @@ function moveDeclarationsToImports(
     // If we have an `imports` array and declarations
     // that should be copied, we merge the two arrays.
     if (prop === importsProp && declarationsToCopy.length > 0) {
-      let initializer: ts.Expression;
+      // Only regular property assignments have initializers that we can merge
+      if (ts.isPropertyAssignment(prop)) {
+        let initializer: ts.Expression;
 
-      if (ts.isArrayLiteralExpression(prop.initializer)) {
-        initializer = ts.factory.updateArrayLiteralExpression(
-          prop.initializer,
-          ts.factory.createNodeArray(
-            [...prop.initializer.elements, ...declarationsToCopy],
-            prop.initializer.elements.hasTrailingComma,
-          ),
-        );
-      } else {
-        initializer = ts.factory.createArrayLiteralExpression(
-          ts.factory.createNodeArray(
-            [ts.factory.createSpreadElement(prop.initializer), ...declarationsToCopy],
-            // Expect the declarations to be greater than 1 since
-            // we have the pre-existing initializer already.
-            hasAnyArrayTrailingComma && declarationsToCopy.length > 1,
-          ),
-        );
+        if (ts.isArrayLiteralExpression(prop.initializer)) {
+          initializer = ts.factory.updateArrayLiteralExpression(
+            prop.initializer,
+            ts.factory.createNodeArray(
+              [...prop.initializer.elements, ...declarationsToCopy],
+              prop.initializer.elements.hasTrailingComma,
+            ),
+          );
+        } else {
+          initializer = ts.factory.createArrayLiteralExpression(
+            ts.factory.createNodeArray(
+              [ts.factory.createSpreadElement(prop.initializer), ...declarationsToCopy],
+              // Expect the declarations to be greater than 1 since
+              // we have the pre-existing initializer already.
+              hasAnyArrayTrailingComma && declarationsToCopy.length > 1,
+            ),
+          );
+        }
+
+        properties.push(ts.factory.updatePropertyAssignment(prop, prop.name, initializer));
+        continue;
       }
-
-      properties.push(ts.factory.updatePropertyAssignment(prop, prop.name, initializer));
-      continue;
     }
 
     // Retain any remaining properties.
@@ -558,11 +580,17 @@ export function findImportLocation(
  * E.g. `declarations: [Foo]` or `declarations: SOME_VAR` would match this description,
  * but not `declarations: []`.
  */
-function hasNgModuleMetadataElements(node: ts.Node): node is ts.PropertyAssignment {
-  return (
-    ts.isPropertyAssignment(node) &&
-    (!ts.isArrayLiteralExpression(node.initializer) || node.initializer.elements.length > 0)
-  );
+function hasNgModuleMetadataElements(
+  node: ts.Node,
+): node is ts.PropertyAssignment | ts.ShorthandPropertyAssignment {
+  if (ts.isPropertyAssignment(node)) {
+    return !ts.isArrayLiteralExpression(node.initializer) || node.initializer.elements.length > 0;
+  }
+  if (ts.isShorthandPropertyAssignment(node)) {
+    // For shorthand properties, we assume they have elements since they reference a variable
+    return true;
+  }
+  return false;
 }
 
 /** Finds all modules whose declarations can be migrated. */
@@ -809,6 +837,7 @@ function analyzeTestingModules(
     const importElements =
       importsProp &&
       hasNgModuleMetadataElements(importsProp) &&
+      ts.isPropertyAssignment(importsProp) &&
       ts.isArrayLiteralExpression(importsProp.initializer)
         ? importsProp.initializer.elements.filter((el) => {
             // Filter out calls since they may be a `ModuleWithProviders`.
@@ -871,6 +900,7 @@ function extractDeclarationsFromTestObject(
   if (
     declarations &&
     hasNgModuleMetadataElements(declarations) &&
+    ts.isPropertyAssignment(declarations) &&
     ts.isArrayLiteralExpression(declarations.initializer)
   ) {
     for (const element of declarations.initializer.elements) {

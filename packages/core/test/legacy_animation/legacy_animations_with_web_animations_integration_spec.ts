@@ -21,7 +21,7 @@ import {
   ɵWebAnimationsPlayer,
   ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
 } from '@angular/animations/browser';
-import {Component, ViewChild} from '../../src/core';
+import {Component, ViewChild, provideZoneChangeDetection} from '../../src/core';
 import {TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {isNode} from '@angular/private/testing';
@@ -34,7 +34,10 @@ import {isNode} from '@angular/private/testing';
   describe('legacy animation integration tests using web animations', function () {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [{provide: AnimationDriver, useClass: ɵWebAnimationsDriver}],
+        providers: [
+          {provide: AnimationDriver, useClass: ɵWebAnimationsDriver},
+          provideZoneChangeDetection(),
+        ],
         imports: [BrowserAnimationsModule],
       });
     });
@@ -166,12 +169,12 @@ import {isNode} from '@angular/private/testing';
       @Component({
         selector: 'ani-cmp',
         template: `
-            <div [@myAnimation]="exp" #parent>
-              <div *ngFor="let item of items" class="child" style="line-height:20px">
-                - {{ item }}
-              </div>
+          <div [@myAnimation]="exp" #parent>
+            <div *ngFor="let item of items" class="child" style="line-height:20px">
+              - {{ item }}
             </div>
-          `,
+          </div>
+        `,
         animations: [
           trigger('myAnimation', [
             transition('* => *', [style({height: '!'}), animate(1000, style({height: '*'}))]),
@@ -242,21 +245,19 @@ import {isNode} from '@angular/private/testing';
           `
             .box {
               width: 500px;
-              overflow:hidden;
-              background:orange;
-              line-height:300px;
-              font-size:100px;
-              text-align:center;
+              overflow: hidden;
+              background: orange;
+              line-height: 300px;
+              font-size: 100px;
+              text-align: center;
             }
           `,
         ],
         template: `
-            <button (click)="toggle()">Open / Close</button>
-            <hr />
-            <div *ngIf="exp" @slide class="box">
-            ...
-            </div>
-          `,
+          <button (click)="toggle()">Open / Close</button>
+          <hr />
+          <div *ngIf="exp" @slide class="box">...</div>
+        `,
         animations: [
           trigger('slide', [
             state('void', style({height: '0px'})),
@@ -319,28 +320,28 @@ import {isNode} from '@angular/private/testing';
         selector: 'my-app',
         styles: [
           `
-              .list .outer {
-                overflow:hidden;
-              }
-              .list .inner {
-                box-sizing: border-box;
-                height: 50px;
-              }
-            `,
+            .list .outer {
+              overflow: hidden;
+            }
+            .list .inner {
+              box-sizing: border-box;
+              height: 50px;
+            }
+          `,
         ],
         template: `
-              <button (click)="empty()">Empty</button>
-              <button (click)="middle()">Middle</button>
-              <button (click)="full()">Full</button>
-              <hr />
-              <div [@list]="exp" class="list">
-                <div *ngFor="let item of items" class="outer">
-                  <div class="inner">
-                    {{ item }}
-                  </div>
-                </div>
+          <button (click)="empty()">Empty</button>
+          <button (click)="middle()">Middle</button>
+          <button (click)="full()">Full</button>
+          <hr />
+          <div [@list]="exp" class="list">
+            <div *ngFor="let item of items" class="outer">
+              <div class="inner">
+                {{ item }}
               </div>
-            `,
+            </div>
+          </div>
+        `,
         animations: [
           trigger('list', [
             transition(':enter', []),
@@ -431,9 +432,7 @@ import {isNode} from '@angular/private/testing';
     it('should compute intermediate styles properly when an animation is cancelled', () => {
       @Component({
         selector: 'ani-cmp',
-        template: `
-          <div [@myAnimation]="exp" style="background-color: blue;">...</div>
-        `,
+        template: ` <div [@myAnimation]="exp" style="background-color: blue;">...</div> `,
         animations: [
           trigger('myAnimation', [
             transition('* => a', [

@@ -6,17 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isNode} from '@angular/private/testing';
-import {ApplicationRef, Injector, signal} from '@angular/core';
+import {ApplicationRef, Injector, resourceFromSnapshots, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {isNode} from '@angular/private/testing';
 import {
-  HttpEventType,
-  provideHttpClient,
-  httpResource,
   HttpContext,
   HttpContextToken,
+  HttpEventType,
+  httpResource,
+  HttpResourceRef,
+  provideHttpClient,
 } from '../index';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
+import {withHttpTransferCache} from '../src/transfer_cache';
+import {HttpClient} from '../src/client';
 
 describe('httpResource', () => {
   beforeEach(() => {
@@ -113,6 +116,7 @@ describe('httpResource', () => {
         credentials: 'include',
         integrity: 'sha256-abc123',
         referrer: 'https://example.com',
+        referrerPolicy: 'strict-origin-when-cross-origin',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -130,6 +134,7 @@ describe('httpResource', () => {
     expect(req.request.credentials).toBe('include');
     expect(req.request.integrity).toBe('sha256-abc123');
     expect(req.request.referrer).toBe('https://example.com');
+    expect(req.request.referrerPolicy).toBe('strict-origin-when-cross-origin');
 
     req.flush([]);
 
@@ -219,7 +224,14 @@ describe('httpResource', () => {
         withCredentials: true,
         keepalive: true,
         transferCache: {includeHeaders: ['Y-Tag']},
+        referrerPolicy: 'no-referrer',
         timeout: 1234,
+        priority: 'high',
+        integrity: 'sha256-abc123',
+        mode: 'cors',
+        redirect: 'follow',
+        credentials: 'include',
+        cache: 'no-store',
       }),
       {
         injector: TestBed.inject(Injector),
@@ -236,6 +248,13 @@ describe('httpResource', () => {
     expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
     expect(req.request.timeout).toBe(1234);
+    expect(req.request.referrerPolicy).toBe('no-referrer');
+    expect(req.request.priority).toBe('high');
+    expect(req.request.integrity).toBe('sha256-abc123');
+    expect(req.request.mode).toBe('cors');
+    expect(req.request.redirect).toBe('follow');
+    expect(req.request.credentials).toBe('include');
+    expect(req.request.cache).toBe('no-store');
   });
 
   it('should allow mapping data to an arbitrary type', async () => {
@@ -337,5 +356,116 @@ describe('httpResource', () => {
     expect(res.headers()).toBe(undefined);
     expect(res.progress()).toBe(undefined);
     expect(res.statusCode()).toBe(undefined);
+  });
+
+  it('should support chain', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const endpoint = resourceFromSnapshots(signal({status: 'resolved', value: '/data'}));
+    const res = httpResource(({chain}) => chain(endpoint), {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    const req = backend.expectOne('/data');
+    req.flush([]);
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).toEqual([]);
+  });
+
+  describe('types', () => {
+    it('should narrow hasValue() when the value can be undefined', () => {
+      const result: HttpResourceRef<number | undefined> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+        parse: () => 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        // @ts-expect-error
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when a default value is provided', () => {
+      const result: HttpResourceRef<number> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+        parse: () => 0,
+        defaultValue: 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when the resource type is unknown', () => {
+      const result: HttpResourceRef<unknown> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+      });
+
+      if (result.hasValue()) {
+        const _value: unknown = result.value();
+      } else if (result.isLoading()) {
+        const _value: unknown = result.value();
+      } else if (result.error()) {
+      }
+    });
+  });
+
+  describe('TransferCache integration', () => {
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient(), provideHttpClientTesting(), withHttpTransferCache({})],
+      });
+    });
+
+    it('should synchronously resolve with a cached value from TransferState', async () => {
+      globalThis['ngServerMode'] = true;
+      let requestResolved = false;
+      TestBed.inject(HttpClient)
+        .get('/data')
+        .subscribe(() => (requestResolved = true));
+      const req = TestBed.inject(HttpTestingController).expectOne('/data');
+      req.flush([1, 2, 3]);
+
+      expect(requestResolved).toBe(true);
+
+      // Now switch to client mode
+      globalThis['ngServerMode'] = false;
+
+      // Create httpResource. It should immediately read from TransferState.
+      const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+
+      // It should immediately have the value synchronously and status should be resolved
+      expect(res.status()).toBe('resolved');
+      expect(res.hasValue()).toBe(true);
+      expect(res.value()).toEqual([1, 2, 3]);
+
+      // Also no new request should be made
+      TestBed.inject(HttpTestingController).expectNone('/data');
+    });
+
+    it('should not evaluate the request payload during resource initialization', () => {
+      let requestEvaluated = false;
+      const res = httpResource(
+        () => {
+          requestEvaluated = true;
+          return '/data';
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Request function should NOT be evaluated during initialization
+      expect(requestEvaluated).toBe(false);
+
+      // Read to trigger it
+      res.status();
+
+      // The request should now have been evaluated
+      expect(requestEvaluated).toBe(true);
+    });
   });
 });

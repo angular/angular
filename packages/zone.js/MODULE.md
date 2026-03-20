@@ -40,7 +40,6 @@ Below is the full list of currently supported modules.
 | IntersectionObserver  | Intersection will be patched as Zone aware operation                                                                                  | \_\_Zone_disable_IntersectionObserver = true  |
 | FileReader            | FileReader will be patched as Zone aware operation                                                                                    | \_\_Zone_disable_FileReader = true            |
 | canvas                | HTMLCanvasElement.toBlob will be patched as Zone aware operation                                                                      | \_\_Zone_disable_canvas = true                |
-| IE BrowserTools check | in IE, browser tool will not use zone patched eventListener                                                                           | \_\_Zone_disable_IE_check = true              |
 | CrossContext check    | in webdriver, enable check event listener is cross context                                                                            | \_\_Zone_enable_cross_context_check = true    |
 | `beforeunload`        | enable the default `beforeunload` handling behavior, where event handlers return strings to prompt the user                           | **zone_symbol**enable_beforeunload = true     |
 | XHR                   | XMLHttpRequest will be patched as Zone aware MacroTask                                                                                | \_\_Zone_disable_XHR = true                   |
@@ -91,7 +90,7 @@ You can also disable specific `on` properties by setting `__Zone_ignore_on_prope
 Excluding `on` properties from being patched means that callbacks will always be invoked within the root context, regardless of where the `on` callback has been set. Even if `onclick` is set within a child zone, the callback will be called inside the root zone:
 
 ```ts
-Zone.current.fork({ name: 'child' }).run(() => {
+Zone.current.fork({name: 'child'}).run(() => {
   document.body.onclick = () => {
     console.log(Zone.current); // <root>
   };
@@ -108,9 +107,9 @@ This package provides the following functionality:
 1. **Error Inheritance:** Handle the `extend Error` issue:
 
    ```ts
-     class MyError extends Error {}
-     const myError = new MyError();
-     console.log('is MyError instanceof Error', (myError instanceof Error));
+   class MyError extends Error {}
+   const myError = new MyError();
+   console.log('is MyError instanceof Error', myError instanceof Error);
    ```
 
    Without the `zone-error` patch, the example above will output `false`. With the patch, the result will be `true`.

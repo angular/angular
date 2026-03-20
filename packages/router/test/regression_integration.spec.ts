@@ -12,7 +12,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ErrorHandler,
   Injectable,
   NgModule,
   TemplateRef,
@@ -20,7 +19,6 @@ import {
   ViewChild,
   ViewContainerRef,
   inject,
-  provideZonelessChangeDetection,
   signal,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -28,7 +26,6 @@ import {
   ChildrenOutletContexts,
   DefaultUrlSerializer,
   NavigationCancel,
-  NavigationEnd,
   NavigationError,
   Router,
   RouterModule,
@@ -36,7 +33,7 @@ import {
   UrlSerializer,
   UrlTree,
 } from '../index';
-import {firstValueFrom, of} from 'rxjs';
+import {of} from 'rxjs';
 import {switchMap, filter, mapTo, take} from 'rxjs/operators';
 
 import {
@@ -46,8 +43,7 @@ import {
   withViewTransitions,
 } from '../src/provide_router';
 import {afterNextNavigation} from '../src/utils/navigations';
-import {timeout} from './helpers';
-import {isBrowser, withBody} from '@angular/private/testing';
+import {isBrowser, withBody, timeout} from '@angular/private/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 describe('Integration', () => {
@@ -55,11 +51,13 @@ describe('Integration', () => {
     it('should update when the associated routerLinks change - #18469', async () => {
       @Component({
         template: `
-          <a id="first-link" [routerLink]="[firstLink]" routerLinkActive="active">{{firstLink}}</a>
+          <a id="first-link" [routerLink]="[firstLink]" routerLinkActive="active">{{
+            firstLink
+          }}</a>
           <div id="second-link" routerLinkActive="active">
-            <a [routerLink]="[secondLink]">{{secondLink}}</a>
+            <a [routerLink]="[secondLink]">{{ secondLink }}</a>
           </div>
-           `,
+        `,
         standalone: false,
       })
       class LinkComponent {
@@ -119,14 +117,13 @@ describe('Integration', () => {
 
       @Component({
         selector: 'some-root',
-        template: `
-        <div *ngIf="show">
-          <ng-container *ngTemplateOutlet="tpl"></ng-container>
-        </div>
-        <router-outlet></router-outlet>
-        <ng-template #tpl>
-          <a routerLink="/simple" routerLinkActive="active"></a>
-        </ng-template>`,
+        template: ` <div *ngIf="show">
+            <ng-container *ngTemplateOutlet="tpl"></ng-container>
+          </div>
+          <router-outlet></router-outlet>
+          <ng-template #tpl>
+            <a routerLink="/simple" routerLinkActive="active"></a>
+          </ng-template>`,
         standalone: false,
       })
       class MyCmp {
@@ -157,7 +154,7 @@ describe('Integration', () => {
       @Component({
         template: `
           <div #rla="routerLinkActive" routerLinkActive>
-            isActive: {{rla.isActive}}
+            isActive: {{ rla.isActive }}
 
             <ng-template let-data>
               <a [routerLink]="data">link</a>
@@ -213,10 +210,10 @@ describe('Integration', () => {
     it('should set isActive with OnPush change detection - #19934', async () => {
       @Component({
         template: `
-             <div routerLink="/simple" #rla="routerLinkActive" routerLinkActive>
-               isActive: {{rla.isActive}}
-             </div>
-           `,
+          <div routerLink="/simple" #rla="routerLinkActive" routerLinkActive>
+            isActive: {{ rla.isActive }}
+          </div>
+        `,
         changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
@@ -411,8 +408,8 @@ describe('Integration', () => {
   it('should not unregister outlet if a different one already exists #36711, 32453', async () => {
     @Component({
       template: `
-      <router-outlet *ngIf="outlet1()"></router-outlet>
-      <router-outlet *ngIf="outlet2()"></router-outlet>
+        <router-outlet *ngIf="outlet1()"></router-outlet>
+        <router-outlet *ngIf="outlet2()"></router-outlet>
       `,
       standalone: false,
     })
@@ -532,7 +529,7 @@ describe('Integration', () => {
 
         @Component({
           selector: 'test-app',
-          template: `<router-outlet /> {{sideEffectWithRedirection()}}      `,
+          template: `<router-outlet /> {{ sideEffectWithRedirection() }} `,
           imports: [RouterOutlet],
         })
         class App {
@@ -549,7 +546,6 @@ describe('Integration', () => {
 
         const appRef = await bootstrapApplication(App, {
           providers: [
-            provideZonelessChangeDetection(),
             provideRouter(
               [{path: 'simple', component: SimpleCmp}],
               withDisabledInitialNavigation(),

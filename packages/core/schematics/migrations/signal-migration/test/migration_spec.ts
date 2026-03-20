@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {absoluteFrom} from '@angular/compiler-cli';
+import {initMockFileSystem} from '@angular/compiler-cli/private/testing';
 import {runTsurgeMigration} from '../../../utils/tsurge/testing';
 import {SignalInputMigration} from '../src/migration';
 import {setupTsurgeJasmineHelpers} from '../../../utils/tsurge/testing/jasmine';

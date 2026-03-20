@@ -34,6 +34,10 @@ export function modelRequiredFunction<T>(opts?: ModelOptions): ModelSignal<T> {
  * The function exposes an API for also declaring required models via the
  * `model.required` function.
  *
+ * @see [Two-way binding between components](guide/templates/two-way-binding#two-way-binding-between-components)
+ * @see [Model inputs](guide/components/inputs#model-inputs)
+ * @see [Customizing model inputs](guide/components/inputs#customizing-model-inputs)
+ *
  * @publicAPI
  * @docsPrivate Ignored because `model` is the canonical API entry.
  */
@@ -100,6 +104,9 @@ export interface ModelFunction {
  *   this.firstName.set(newFirstName);
  * }
  * ```
+ * @see [Two-way binding between components](guide/templates/two-way-binding#two-way-binding-between-components)
+ * @see [Model inputs](guide/components/inputs#model-inputs)
+ * @see [Customizing model inputs](guide/components/inputs#customizing-model-inputs)
  *
  * @publicApi 19.0
  * @initializerApiFunction

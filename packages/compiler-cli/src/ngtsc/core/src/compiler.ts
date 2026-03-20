@@ -127,6 +127,7 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 import {coreVersionSupportsFeature} from './feature_detection';
 import {angularJitApplicationTransform} from '../../transform/jit';
 import {untagAllTsFiles} from '../../shims';
+import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -422,7 +423,6 @@ export class NgCompiler {
           ticket.programDriver,
           ticket.incrementalBuildStrategy,
           IncrementalCompilation.fresh(
-            ticket.tsProgram,
             versionMapFromProgram(ticket.tsProgram, ticket.programDriver),
           ),
           ticket.enableTemplateTypeChecker,
@@ -464,9 +464,12 @@ export class NgCompiler {
     this.usePoisonedData = usePoisonedData || !!options._compilePoisonedComponents;
     this.enableTemplateTypeChecker =
       enableTemplateTypeChecker || !!options._enableTemplateTypeChecker;
-    // TODO(crisbeto): remove this flag and base `enableBlockSyntax` on the `angularCoreVersion`.
-    this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
-    this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
+    this.enableBlockSyntax =
+      this.angularCoreVersion === null ||
+      coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.0.0');
+    this.enableLetSyntax =
+      this.angularCoreVersion === null ||
+      coreVersionSupportsFeature(this.angularCoreVersion, '>= 18.1.0');
     this.enableSelectorless = options['_enableSelectorless'] ?? false;
     this.emitDeclarationOnly =
       !!options.emitDeclarationOnly && !!options._experimentalAllowEmitDeclarationOnly;
@@ -668,7 +671,7 @@ export class NgCompiler {
   }
 
   /**
-   * Add Angular.io error guide links to diagnostics for this compilation.
+   * Add https://angular.dev/errors error guide links to diagnostics for this compilation.
    */
   private addMessageTextDetails(diagnostics: ts.Diagnostic[]): ts.Diagnostic[] {
     return diagnostics.map((diag) => {
@@ -832,6 +835,8 @@ export class NgCompiler {
         compilation.isCore,
         this.closureCompilerEnabled,
         this.emitDeclarationOnly,
+        compilation.refEmitter,
+        !!this.options['_experimentalEmitIntermediateTs'],
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
@@ -1461,7 +1466,7 @@ export class NgCompiler {
     const supportJitMode = this.options['supportJitMode'] ?? true;
     const supportTestBed = this.options['supportTestBed'] ?? true;
     const externalRuntimeStyles = this.options['externalRuntimeStyles'] ?? false;
-    const typeCheckHostBindings = this.options.typeCheckHostBindings ?? false;
+    const typeCheckHostBindings = this.options.typeCheckHostBindings ?? true;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to
@@ -1628,6 +1633,7 @@ export class NgCompiler {
       semanticDepGraphUpdater,
       this.adapter,
       this.emitDeclarationOnly,
+      !!this.options['_experimentalEmitIntermediateTs'],
     );
 
     // Template type-checking may use the `ProgramDriver` to produce new `ts.Program`(s). If this
@@ -1774,7 +1780,7 @@ One of the following actions is required:
 2. Remove "strictTemplates" or set it to 'false'.
 
 More information about the template type checking compiler options can be found in the documentation:
-https://angular.dev/tools/cli/template-typecheck
+${DOC_PAGE_BASE_URL}/tools/cli/template-typecheck
       `.trim(),
     });
   }

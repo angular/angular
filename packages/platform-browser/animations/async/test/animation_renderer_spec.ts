@@ -29,6 +29,7 @@ import {
   Injectable,
   Injector,
   NgZone,
+  provideZoneChangeDetection,
   RendererFactory2,
   RendererType2,
   runInInjectionContext,
@@ -315,7 +316,10 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
           @ViewChild('elm') public element: any;
         }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+        TestBed.configureTestingModule({
+          declarations: [Cmp],
+          providers: [provideZoneChangeDetection()],
+        });
 
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
@@ -339,10 +343,10 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
         @Component({
           selector: 'my-cmp',
           template: `
-               <div #elm1 *ngIf="exp1"></div>
-               <div #elm2 @animation1 *ngIf="exp2"></div>
-               <div #elm3 @animation2 *ngIf="exp3"></div>
-            `,
+            <div #elm1 *ngIf="exp1"></div>
+            <div #elm2 @animation1 *ngIf="exp2"></div>
+            <div #elm3 @animation2 *ngIf="exp3"></div>
+          `,
           animations: [
             trigger('animation1', [transition('a => b', [])]),
             trigger('animation2', [transition(':leave', [])]),
@@ -361,7 +365,10 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
           @ViewChild('elm3') public elm3: any;
         }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+        TestBed.configureTestingModule({
+          declarations: [Cmp],
+          providers: [provideZoneChangeDetection()],
+        });
 
         const engine = TestBed.inject(AnimationEngine);
         const fixture = TestBed.createComponent(Cmp);

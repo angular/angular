@@ -1,7 +1,7 @@
 <docs-decorative-header title="Next Steps" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-Now that you have been introduced to main concepts of Angular - you're ready to put what you learned into practices with our interactive tutorials and learn more with our in-depth guides.
+Now that you have been introduced to the main concepts of Angular - you're ready to put what you learned into practice with our interactive tutorials and learn more with our in-depth guides.
 
 ## Playground
 
@@ -25,7 +25,7 @@ Put these main concepts into practice with our in-browser tutorial or build your
 Here are some in-depth guides you might be interested in reading:
 
 <docs-pill-row>
-  <docs-pill title="Components In-depth Guide" href="guide/components/importing" />
+  <docs-pill title="Components In-depth Guide" href="guide/components" />
   <docs-pill title="Template In-depth Guide" href="guide/templates" />
   <docs-pill title="Forms In-depth Guide" href="/guide/forms" />
 </docs-pill-row>

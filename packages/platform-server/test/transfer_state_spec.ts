@@ -15,7 +15,7 @@ import {
   ɵgetTransferState as getTransferState,
   Injector,
   inject,
-  ɵsetDocument as setDocument,
+  DOCUMENT,
 } from '@angular/core';
 import {BrowserModule, withEventReplay, withIncrementalHydration} from '@angular/platform-browser';
 import {renderModule, ServerModule} from '../index';
@@ -119,11 +119,11 @@ describe('transfer_state', () => {
         selector: 'app',
         imports: [Dep],
         template: `
-          <!-- This defer block will add internal defer data to the transfer state --> 
+          <!-- This defer block will add internal defer data to the transfer state -->
           @defer (hydrate on interaction) {
             <dep />
           }
-      `,
+        `,
       })
       class SimpleComponent {
         constructor() {
@@ -132,18 +132,27 @@ describe('transfer_state', () => {
         }
       }
 
-      const appId = 'custom-app-id';
-      const providers = [{provide: APP_ID, useValue: appId}];
       const hydrationFeatures = () => [withIncrementalHydration(), withEventReplay()];
 
-      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      const appId = 'custom-app-id';
+      const html = await ssr(SimpleComponent, {
+        envProviders: [{provide: APP_ID, useValue: appId}],
+        hydrationFeatures,
+      });
       const transferCacheJson = getHydrationInfoFromTransferState(html)!;
 
       // getTransferState reaches into the DOM to retrieve the transfer state.
       // So we need to set the document with the generated HTML.
       const {document} = domino.createWindow(html);
-      setDocument(document);
-      const transferState = getTransferState(Injector.create({providers}));
+
+      const transferState = getTransferState(
+        Injector.create({
+          providers: [
+            {provide: DOCUMENT, useValue: document},
+            {provide: APP_ID, useValue: appId},
+          ],
+        }),
+      );
 
       // The transfer state also contains internal hydration keys,
       expect(Object.keys(transferState).length).not.toEqual(JSON.parse(transferCacheJson).length);

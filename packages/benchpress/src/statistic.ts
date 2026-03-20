@@ -13,14 +13,12 @@ export class Statistic {
 
   static calculateMean(samples: number[]) {
     let total = 0;
-    // TODO: use reduce
     samples.forEach((x) => (total += x));
     return total / samples.length;
   }
 
   static calculateStandardDeviation(samples: number[], mean: number) {
     let deviation = 0;
-    // TODO: use reduce
     samples.forEach((x) => (deviation += Math.pow(x - mean, 2)));
     deviation = deviation / samples.length;
     deviation = Math.sqrt(deviation);

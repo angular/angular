@@ -2,7 +2,7 @@
 
 Often when building web applications, you need to repeat some code a specific number of times - for example, given an array of names, you may want to display each name in a `<p>` tag.
 
-Note: Learn more about [control flow in the essentials guide](/essentials/templates#control-flow-with-if-and-for).
+NOTE: Learn more about [control flow in the essentials guide](/essentials/templates#control-flow-with-if-and-for).
 
 In this activity, you'll learn how to use `@for` to repeat elements in a template.
 
@@ -37,7 +37,13 @@ Two things to take note of:
 In the `App` class, add a property called `users` that contains users and their names.
 
 ```ts
-[{id: 0, name: 'Sarah'}, {id: 1, name: 'Amy'}, {id: 2, name: 'Rachel'}, {id: 3, name: 'Jessica'}, {id: 4, name: 'Poornima'}]
+[
+  {id: 0, name: 'Sarah'},
+  {id: 1, name: 'Amy'},
+  {id: 2, name: 'Rachel'},
+  {id: 3, name: 'Jessica'},
+  {id: 4, name: 'Poornima'},
+];
 ```
 
 </docs-step>

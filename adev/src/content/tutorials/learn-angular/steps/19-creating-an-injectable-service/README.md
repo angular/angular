@@ -2,7 +2,7 @@
 
 Dependency injection (DI) in Angular is one of the framework's most powerful features. Consider dependency injection to be the ability for Angular to _provide_ resources you need for your application at runtime. A dependency could be a service or some other resources.
 
-Note: Learn more about [dependency injection in the essentials guide](/essentials/dependency-injection).
+NOTE: Learn more about [dependency injection in the essentials guide](/essentials/dependency-injection).
 
 In this activity, you'll learn how to create an `injectable` service.
 
@@ -12,14 +12,14 @@ One way to use a service is to act as a way to interact with data and APIs. To m
 
 To make a service eligible to be injected by the DI system use the `@Injectable` decorator. For example:
 
-<docs-code language="ts" highlight="[1, 2, 3]">
+```ts {highlight:[1,2,3]}
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 class UserService {
   // methods to retrieve and return data
 }
-</docs-code>
+```
 
 The `@Injectable` decorator notifies the DI system that the `UserService` is available to be requested in a class. `providedIn` sets the scope in which this resource is available. For now, it is good enough to understand that `providedIn: 'root'` means that the `UserService` is available to the entire application.
 

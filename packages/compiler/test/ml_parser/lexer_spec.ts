@@ -971,7 +971,7 @@ describe('HtmlLexer', () => {
             expect(result.nonNormalizedIcuExpressions).toEqual([]);
           });
 
-          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined (escapedString:false)', () => {
             const result = tokenizeWithoutErrors(
               `{\r\n` +
                 `    messages.length,\r\n` +
@@ -1856,28 +1856,6 @@ describe('HtmlLexer', () => {
       ]);
     });
 
-    it('should parse bound inputs with expressions containing newlines', () => {
-      expect(
-        tokenizeAndHumanizeParts(`<app-component
-        [attr]="[
-        {text: 'some text',url:'//www.google.com'},
-        {text:'other text',url:'//www.google.com'}]">`),
-      ).toEqual([
-        [TokenType.TAG_OPEN_START, '', 'app-component'],
-        [TokenType.ATTR_NAME, '', '[attr]'],
-        [TokenType.ATTR_QUOTE, '"'],
-        [
-          TokenType.ATTR_VALUE_TEXT,
-          '[\n' +
-            "        {text: 'some text',url:'//www.google.com'},\n" +
-            "        {text:'other text',url:'//www.google.com'}]",
-        ],
-        [TokenType.ATTR_QUOTE, '"'],
-        [TokenType.TAG_OPEN_END],
-        [TokenType.EOF],
-      ]);
-    });
-
     it('should allow whitespace', () => {
       expect(tokenizeAndHumanizeParts('<t a = b >')).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],
@@ -2116,6 +2094,27 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should parse named entities containing digits', () => {
+      expect(tokenizeAndHumanizeParts('&sup1;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u00B9', '&sup1;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts('&frac12;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u00BD', '&frac12;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts('&blk34;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u2593', '&blk34;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse hexadecimal entities', () => {
       expect(tokenizeAndHumanizeParts('&#x41;&#X41;')).toEqual([
         [TokenType.TEXT, ''],
@@ -2131,6 +2130,26 @@ describe('HtmlLexer', () => {
       expect(tokenizeAndHumanizeParts('&#65;')).toEqual([
         [TokenType.TEXT, ''],
         [TokenType.ENCODED_ENTITY, 'A', '&#65;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should parse entities with more than 4 hex digits', () => {
+      // Test 5 hex digit entity: &#x1F6C8; (🛈 - Circled Information Source)
+      expect(tokenizeAndHumanizeParts('&#x1F6C8;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u{1F6C8}', '&#x1F6C8;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should parse entities with more than 4 decimal digits', () => {
+      // Test decimal entity: &#128712; (🛈 - Circled Information Source)
+      expect(tokenizeAndHumanizeParts('&#128712;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u{1F6C8}', '&#128712;'],
         [TokenType.TEXT, ''],
         [TokenType.EOF],
       ]);
@@ -2200,17 +2219,6 @@ describe('HtmlLexer', () => {
         [TokenType.INTERPOLATION, '{{ c // comment }}'],
         [TokenType.TEXT, ''],
         [TokenType.EOF, ''],
-      ]);
-    });
-
-    it('should parse interpolation with custom markers', () => {
-      expect(
-        tokenizeAndHumanizeParts('{% a %}', {interpolationConfig: {start: '{%', end: '%}'}}),
-      ).toEqual([
-        [TokenType.TEXT, ''],
-        [TokenType.INTERPOLATION, '{%', ' a ', '%}'],
-        [TokenType.TEXT, ''],
-        [TokenType.EOF],
       ]);
     });
 
@@ -2897,7 +2905,7 @@ describe('HtmlLexer', () => {
           expect(result.nonNormalizedIcuExpressions).toEqual([]);
         });
 
-        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined (escapeString: false)', () => {
           const result = tokenizeWithoutErrors(
             `{\r\n` +
               `    messages.length,\r\n` +
@@ -3377,6 +3385,24 @@ describe('HtmlLexer', () => {
       expect(tokenizeAndHumanizeParts('@if {hello}')).toEqual(expected);
       expect(tokenizeAndHumanizeParts('@if () {hello}')).toEqual(expected);
       expect(tokenizeAndHumanizeParts('@if(){hello}')).toEqual(expected);
+    });
+
+    it('should parse @default never;', () => {
+      expect(tokenizeAndHumanizeParts('@default never;')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'default never'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should parse @default never ;', () => {
+      expect(tokenizeAndHumanizeParts('@default never ;')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'default never'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse a block with parameters', () => {

@@ -36,14 +36,14 @@ If you have any questions on adapting the new logo, or updating your own, please
 Lean into the shape of Angular’s new logo by changing the logo colors to match your brand colors, flag, cause, etc.
 
 In this example, we’ve adapted the colors to create an Angular Pride logo variation:
-![Angular pride logo](assets/images/press-kit/angular_pride.png#small "Angular pride logo")
+![Angular pride logo](assets/images/press-kit/angular_pride.png#small 'Angular pride logo')
 </docs-step>
 
 <docs-step title="Adapt the logo shape as your own">
 Lean into the shape of Angular’s new logo by adapting the shield to match your own brand.
 
 In this example, we’ve adapted the shield to create an Angular Signals logo variation:
-![Angular Signals logo](assets/images/press-kit/angular_signals.png#medium "Angular Signals logo")
+![Angular Signals logo](assets/images/press-kit/angular_signals.png#medium 'Angular Signals logo')
 </docs-step>
 
 <docs-step title="Do’s and don’ts of using Angular's brand">

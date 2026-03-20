@@ -50,7 +50,7 @@ export function* getComplianceTests(absTestConfigPath: AbsoluteFsPath): Generato
       test,
       'compilationModeFilter',
       realTestPath,
-      ['linked compile', 'full compile', 'declaration-only emit'],
+      ['linked compile', 'full compile', 'declaration-only emit', 'instruction compile'],
     ) as CompilationMode[];
 
     yield {
@@ -297,7 +297,8 @@ export type CompilationMode =
   | 'linked compile'
   | 'full compile'
   | 'local compile'
-  | 'declaration-only emit';
+  | 'declaration-only emit'
+  | 'instruction compile';
 
 export interface Expectation {
   /** The message to display if this expectation fails. */
@@ -342,7 +343,7 @@ export type ConfigOptions = Record<string, string | boolean | null>;
  */
 export interface TestCaseJson {
   description: string;
-  compilationModeFilter?: ('fulll compile' | 'linked compile')[];
+  compilationModeFilter?: CompilationMode[];
   inputFiles?: string[];
   expectations?: {
     failureMessage?: string;

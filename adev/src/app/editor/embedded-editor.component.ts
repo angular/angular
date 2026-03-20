@@ -23,7 +23,7 @@ import {
 } from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {IconComponent, TutorialType} from '@angular/docs';
-import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
+import {MatTabGroup, MatTab} from '@angular/material/tabs';
 import {map} from 'rxjs';
 
 import {MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES} from './alert-manager.service';
@@ -46,14 +46,14 @@ export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AngularSplitModule, CodeEditor, Preview, Terminal, MatTabsModule, IconComponent],
+  imports: [AngularSplitModule, CodeEditor, Preview, Terminal, MatTab, MatTabGroup, IconComponent],
   templateUrl: './embedded-editor.component.html',
   styleUrls: ['./embedded-editor.component.scss'],
   providers: [EditorUiState],
 })
 export class EmbeddedEditor {
   // Prevents from adding, removing or renaming files
-  restrictedMode = input<boolean>(false);
+  readonly restrictedMode = input<boolean>(false);
 
   readonly editorContainer = viewChild<ElementRef<HTMLDivElement>>('editorContainer');
   readonly matTabGroup = viewChild(MatTabGroup);
@@ -66,21 +66,21 @@ export class EmbeddedEditor {
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
   private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox);
 
-  protected splitDirection = signal<'horizontal' | 'vertical'>('vertical');
+  protected readonly splitDirection = signal<'horizontal' | 'vertical'>('vertical');
 
   readonly MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES;
 
-  readonly TerminalType = TerminalType;
-  readonly displayOnlyTerminal = computed(
+  protected readonly TerminalType = TerminalType;
+  protected readonly displayOnlyTerminal = computed(
     () => this.editorUiState.tutorialType() === TutorialType.CLI,
   );
-  readonly displayPreviewInMatTabGroup = signal<boolean>(true);
-  readonly selectedTabIndex = linkedSignal({
+  protected readonly displayPreviewInMatTabGroup = signal<boolean>(true);
+  protected readonly selectedTabIndex = linkedSignal({
     source: () => this.displayPreviewInMatTabGroup(),
     computation: () => 0,
   });
 
-  readonly shouldEnableReset = computed(
+  protected readonly shouldEnableReset = computed(
     () =>
       this.nodeRuntimeState.loadingStep() > LoadingStep.BOOT &&
       !this.nodeRuntimeState.isResetting(),
@@ -89,7 +89,7 @@ export class EmbeddedEditor {
   private readonly errorsCount$ = this.diagnosticsState.diagnostics$.pipe(
     map((diagnosticsItem) => diagnosticsItem.filter((item) => item.severity === 'error').length),
   );
-  readonly errorsCount = toSignal(this.errorsCount$, {initialValue: 0});
+  protected readonly errorsCount = toSignal(this.errorsCount$, {initialValue: 0});
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) {
@@ -108,7 +108,7 @@ export class EmbeddedEditor {
     });
   }
 
-  async reset(): Promise<void> {
+  protected async reset(): Promise<void> {
     await this.nodeRuntimeSandbox.reset();
   }
 

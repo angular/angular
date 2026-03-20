@@ -8,18 +8,24 @@
 
 import {TestBed} from '@angular/core/testing';
 
-import {TITLE_SUFFIX, ADevTitleStrategy, DEFAULT_PAGE_TITLE} from './a-dev-title-strategy';
+import {
+  TITLE_SUFFIX,
+  ADevTitleStrategy,
+  DEFAULT_PAGE_TITLE,
+  ALL_TITLE_META_TAGS,
+} from './a-dev-title-strategy';
 import {Router, provideRouter} from '@angular/router';
-import {Title} from '@angular/platform-browser';
+import {Meta, Title} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 
-@Component({})
+@Component({template: ''})
 class FakeComponent {}
 
 describe('ADevTitleStrategy', () => {
   let service: ADevTitleStrategy;
   let router: Router;
   let title: Title;
+  let meta: Meta;
 
   const routes = [
     {path: 'first', data: {label: 'First'}, component: FakeComponent},
@@ -51,6 +57,7 @@ describe('ADevTitleStrategy', () => {
     service = TestBed.inject(ADevTitleStrategy);
     router = TestBed.inject(Router);
     title = TestBed.inject(Title);
+    meta = TestBed.inject(Meta);
   });
 
   it('should be created', () => {
@@ -91,5 +98,16 @@ describe('ADevTitleStrategy', () => {
     service.updateTitle(router.routerState.snapshot);
 
     expect(title.setTitle).toHaveBeenCalledOnceWith('Fourth • Overview • Angular');
+  });
+
+  it('should update meta tags when title is updated', async () => {
+    spyOn(meta, 'updateTag');
+
+    await router.navigateByUrl('/third');
+    service.updateTitle(router.routerState.snapshot);
+
+    ALL_TITLE_META_TAGS.forEach((tag) => {
+      expect(meta.updateTag).toHaveBeenCalledWith({property: tag, content: 'Third • Angular'});
+    });
   });
 });

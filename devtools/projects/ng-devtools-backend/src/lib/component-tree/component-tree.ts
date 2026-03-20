@@ -22,6 +22,7 @@ import type {
 import {
   ComponentExplorerViewQuery,
   DirectiveMetadata,
+  DirectivePosition,
   DirectivesProperties,
   ElementPosition,
   PropertyQueryTypes,
@@ -47,6 +48,7 @@ import {mutateNestedProp} from '../property-mutation';
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
 import {getAppRoots} from './get-roots';
 import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './core-enums';
+import {unwrapSignal} from '../utils';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
@@ -58,7 +60,18 @@ export function getInjectorId() {
   return `${injectorId++}`;
 }
 
-export function getInjectorMetadata(injector: Injector) {
+const INTERNAL_TOKENS = [
+  'ElementRef',
+  'Renderer2',
+  'ViewContainerRef',
+  'DestroyRef',
+  'ChangeDetectorRef',
+  'Injector',
+];
+
+export function getInjectorMetadata(
+  injector: Injector,
+): ReturnType<NonNullable<ReturnType<typeof ngDebugClient>['ɵgetInjectorMetadata']>> {
   return ngDebugClient().ɵgetInjectorMetadata?.(injector) ?? null;
 }
 
@@ -72,7 +85,11 @@ export function getInjectorResolutionPath(injector: Injector): Injector[] {
 }
 
 export function getInjectorFromElementNode(element: Node): Injector | null {
-  return ngDebugClient().getInjector?.(element) ?? null;
+  try {
+    return ngDebugClient().getInjector?.(element) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function getDirectivesFromElement(element: HTMLElement): {
@@ -285,7 +302,7 @@ export function isOnPushDirective(dir: any): boolean {
     case Framework.Wiz:
       return false;
     default:
-      throw new Error(`Unknown framework: "${metadata.framework}".`);
+      throw new Error(`Unknown framework: "${(metadata as {framework: string}).framework}".`);
   }
 }
 
@@ -350,7 +367,6 @@ const getDependenciesForDirective = (
     let flags = dependency.flags as InjectOptions;
     let flagToken = '';
     if (flags !== undefined) {
-      // TODO: We need to remove this once the InjectFlags enum is removed from core
       if (typeof flags === 'number') {
         flags = {
           optional: !!(flags & 8),
@@ -391,7 +407,7 @@ const getDependenciesForDirective = (
 
 const valueToLabel = (value: any): string => {
   if (isInjectionToken(value)) {
-    return `InjectionToken(${value['_desc']})`;
+    return value.toString();
   }
 
   if (typeof value === 'object') {
@@ -461,7 +477,7 @@ export function serializeProviderRecord(
   index: number,
   hasImportPath = false,
 ): SerializedProviderRecord {
-  let type: 'type' | 'class' | 'value' | 'factory' | 'existing' = 'type';
+  let type: 'type' | 'class' | 'value' | 'factory' | 'existing' | 'internal' = 'type';
   let multi = false;
 
   if (typeof providerRecord.provider === 'object') {
@@ -477,6 +493,10 @@ export function serializeProviderRecord(
 
     if (providerRecord.provider.multi !== undefined) {
       multi = providerRecord.provider.multi;
+    }
+  } else if (typeof providerRecord.provider === 'function') {
+    if (INTERNAL_TOKENS.includes((providerRecord.token as Type<any>).name)) {
+      type = 'internal';
     }
   }
 
@@ -548,7 +568,8 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
   return rootLViews;
 };
 
-function getRootElements(): Element[] {
+/** Gets the all the root components in the Dom, including those outside the application root */
+export function getRootElements(): Element[] {
   if (!ngDebugClient().getComponent) {
     // If the ngDebugClient does not support getComponent, we cannot proceed.
     return [];
@@ -627,6 +648,9 @@ function getRootElements(): Element[] {
  * @param roots A set of root elements found during the traversal.
  */
 function discoverNonApplicationRootComponents(element: Element, roots: Set<Element>): void {
+  if (roots.has(element)) {
+    return;
+  }
   const children = Array.from(element.children);
   for (const child of children) {
     if (roots.has(child)) {
@@ -664,6 +688,9 @@ export const queryDirectiveForest = (
       return null;
     }
     forest = node.children;
+  }
+  if (node?.controlFlowBlock) {
+    return null;
   }
   return node;
 };
@@ -709,6 +736,48 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
     return;
   }
 };
+
+export function logValue(valueInfo: {
+  directiveId: DirectivePosition;
+  keyPath: string[] | null;
+}): void {
+  const node = queryDirectiveForest(valueInfo.directiveId.element, buildDirectiveForest());
+  if (!node) {
+    console.warn(
+      'Could not log the value of component',
+      valueInfo,
+      'because the directive was not found',
+    );
+    return;
+  }
+
+  if (valueInfo.directiveId.directive !== undefined) {
+    const directiveInstance = node.directives[valueInfo.directiveId.directive].instance;
+    if (valueInfo.keyPath === null) {
+      logToConsole(directiveInstance);
+      return;
+    }
+
+    const value = valueInfo.keyPath.reduce((obj, key) => obj && obj[key], directiveInstance);
+    logToConsole(value);
+    return;
+  }
+  if (node.component) {
+    const compInstance = node.component.instance;
+    if (valueInfo.keyPath === null) {
+      logToConsole(compInstance);
+      return;
+    }
+    const value = valueInfo.keyPath.reduce((obj, key) => obj && obj[key], compInstance);
+    logToConsole(value);
+    return;
+  }
+}
+
+function logToConsole(value: unknown) {
+  // tslint:disable-next-line:no-console
+  console.log(unwrapSignal(value));
+}
 
 export function serializeResolutionPath(resolutionPath: Injector[]): SerializedInjector[] {
   const serializedResolutionPath: SerializedInjector[] = [];

@@ -6,18 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
-import {Step, RECOMMENDATIONS} from './recommendations';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {Step, RECOMMENDATIONS, ApplicationComplexity} from './recommendations';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {CdkMenuModule} from '@angular/cdk/menu';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatInputModule} from '@angular/material/input';
-import {MatCardModule} from '@angular/material/card';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
 import {IconComponent} from '@angular/docs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {marked} from 'marked';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 interface Option {
   id: keyof Step;
@@ -25,29 +23,36 @@ interface Option {
   description: string;
 }
 
+const isWindows = typeof window !== 'undefined' && window.navigator.userAgent.includes('Windows');
+
 @Component({
   selector: 'adev-update-guide',
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
   imports: [
-    MatCheckboxModule,
-    MatInputModule,
-    MatCardModule,
-    MatGridListModule,
-    MatButtonToggleModule,
-    CdkMenuModule,
+    MatCheckbox,
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    CdkMenuTrigger,
+    CdkMenu,
+    CdkMenuItem,
     IconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(click)': 'copyCode($event)',
+  },
 })
-export default class AppComponent {
-  protected title = '';
+export default class UpdateComponent {
+  private readonly snackBar = inject(MatSnackBar);
+
+  protected title = signal('');
 
   protected level = 1;
   protected options: Record<string, boolean> = {
     ngUpgrade: false,
     material: false,
-    windows: isWindows(),
+    windows: isWindows,
   };
 
   protected readonly optionList: Option[] = [
@@ -63,6 +68,7 @@ export default class AppComponent {
   protected afterRecommendations: Step[] = [];
 
   protected readonly versions = [
+    {name: '21.0', number: 2100},
     {name: '20.0', number: 2000},
     {name: '19.0', number: 1900},
     {name: '18.0', number: 1800},
@@ -100,8 +106,8 @@ export default class AppComponent {
     {name: '2.1', number: 201},
     {name: '2.0', number: 200},
   ];
-  protected from = this.versions.find((version) => version.name === '19.0')!;
-  protected to = this.versions.find((version) => version.name === '20.0')!;
+  protected from = this.versions.find((version) => version.name === '20.0')!;
+  protected to = this.versions.find((version) => version.name === '21.0')!;
   protected futureVersion = 2100;
 
   protected readonly steps: Step[] = RECOMMENDATIONS;
@@ -125,11 +131,12 @@ export default class AppComponent {
     }
   }
 
-  @HostListener('click', ['$event.target'])
-  copyCode({tagName, textContent}: Element) {
+  copyCode(event: Event) {
+    const {tagName, textContent} = event.target as Element;
+
     if (tagName === 'CODE') {
-      // TODO: add a toast notification
       this.clipboard.copy(textContent!);
+      this.snackBar.open('Copied to clipboard', '', {duration: 2000});
     }
   }
 
@@ -149,9 +156,9 @@ export default class AppComponent {
     const labelMedium = 'medium applications';
     const labelAdvanced = 'advanced applications';
 
-    this.title = `${labelTitle} v${this.from.name} -> v${this.to.name}
+    this.title.set(`${labelTitle} v${this.from.name} -> v${this.to.name}
     for
-    ${this.level < 2 ? labelBasic : this.level < 3 ? labelMedium : labelAdvanced}`;
+    ${this.level < 2 ? labelBasic : this.level < 3 ? labelMedium : labelAdvanced}`);
 
     // Find applicable steps and organize them into before, during, and after upgrade
     for (const step of this.steps) {
@@ -244,7 +251,7 @@ export default class AppComponent {
     if (this.to.number < 600) {
       const actionMessage = `Update all of your dependencies to the latest Angular and the right version of TypeScript.`;
 
-      if (isWindows()) {
+      if (isWindows) {
         const packages =
           angularPackages
             .map((packageName) => `@angular/${packageName}@${angularVersion}`)
@@ -284,6 +291,16 @@ export default class AppComponent {
     }
   }
 
+  protected getComplexityLevelName(level: ApplicationComplexity): string {
+    const names: Record<ApplicationComplexity, string> = {
+      [ApplicationComplexity.Basic]: 'Basic',
+      [ApplicationComplexity.Medium]: 'Medium',
+      [ApplicationComplexity.Advanced]: 'Advanced',
+    };
+
+    return names[level] ?? 'Unknown';
+  }
+
   private replaceVariables(action: string): string {
     let newAction = action;
     newAction = newAction.replace(
@@ -293,14 +310,4 @@ export default class AppComponent {
     newAction = newAction.replace('${packageManagerInstall}', this.packageManager);
     return newAction;
   }
-}
-
-/** Whether or not the user is running on a Windows OS. */
-function isWindows(): boolean {
-  if (typeof navigator === 'undefined') {
-    return false;
-  }
-
-  const platform = navigator.platform.toLowerCase();
-  return platform.includes('windows') || platform.includes('win32');
 }

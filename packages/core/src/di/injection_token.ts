@@ -57,6 +57,9 @@ import {ɵɵdefineInjectable} from './interface/defs';
  *
  * {@example core/di/ts/injector_spec.ts region='ShakableInjectionToken'}
  *
+ *
+ * @see [What is an InjectionToken?](guide/di/defining-dependency-providers#what-is-an-injectiontoken)
+ *
  * @publicApi
  */
 export class InjectionToken<T> {
@@ -66,11 +69,30 @@ export class InjectionToken<T> {
   readonly ɵprov: unknown;
 
   /**
+   * @deprecated The `providedIn: NgModule` or `providedIn:'any'` options are deprecated. Please use the other signature.
+   */
+  constructor(
+    _desc: string,
+    options: {
+      providedIn: Type<any> | 'any';
+      factory: () => T;
+    },
+  );
+
+  /**
    * @param _desc   Description for the token,
    *                used only for debugging purposes,
    *                it should but does not need to be unique
    * @param options Options for the token's usage, as described above
    */
+  constructor(
+    _desc: string,
+    options?: {
+      providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+      factory: () => T;
+    },
+  );
+
   constructor(
     protected _desc: string,
     options?: {

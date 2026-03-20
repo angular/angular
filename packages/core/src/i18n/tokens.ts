@@ -77,11 +77,14 @@ export function getGlobalLocale(): string {
  * ```
  *
  * @publicApi
+ * @see [Import global variants of the locale data](guide/i18n/import-global-variants)
  */
-export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 'LocaleId' : '', {
-  providedIn: 'root',
-  factory: () => inject(LOCALE_ID, {optional: true, skipSelf: true}) || getGlobalLocale(),
-});
+export const LOCALE_ID: InjectionToken<string> = new InjectionToken(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'LocaleId' : '',
+  {
+    factory: () => inject(LOCALE_ID, {optional: true, skipSelf: true}) || getGlobalLocale(),
+  },
+);
 
 /**
  * Provide this token to set the default currency code your application uses for
@@ -127,9 +130,8 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  * @publicApi
  */
 export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
-  ngDevMode ? 'DefaultCurrencyCode' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'DefaultCurrencyCode' : '',
   {
-    providedIn: 'root',
     factory: () => USD_CURRENCY_CODE,
   },
 );
@@ -167,7 +169,9 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
  *
  * @publicApi
  */
-export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations' : '');
+export const TRANSLATIONS = new InjectionToken<string>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Translations' : '',
+);
 
 /**
  * Provide this token at bootstrap to set the format of your {@link TRANSLATIONS}: `xtb`,
@@ -200,7 +204,7 @@ export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations
  * @publicApi
  */
 export const TRANSLATIONS_FORMAT = new InjectionToken<string>(
-  ngDevMode ? 'TranslationsFormat' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'TranslationsFormat' : '',
 );
 
 /**

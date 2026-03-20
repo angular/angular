@@ -60,7 +60,7 @@ const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Function]: (prop: Function) => `${prop.name}(...)`,
   [PropType.HTMLNode]: (prop: Node) => prop.constructor.name,
   [PropType.Null]: (_: null) => 'null',
-  [PropType.Number]: (prop: any) => parseInt(prop, 10).toString(),
+  [PropType.Number]: (prop: any) => prop.toString(),
   [PropType.Object]: (prop: Object) => (getKeys(prop).length > 0 ? '{...}' : '{}'),
   [PropType.Symbol]: (symbol: symbol) => `Symbol(${symbol.description})`,
   [PropType.Undefined]: (_: undefined) => 'undefined',
@@ -71,6 +71,7 @@ const typeToDescriptorPreview: Formatter<string> = {
     return `${prop}`;
   },
   [PropType.Unknown]: (_: any) => 'unknown',
+  [PropType.Error]: (_: any) => '[⚠️ Error when retrieving the value]',
 };
 
 type Key = string | number;
@@ -141,6 +142,10 @@ const shallowPropTypeToTreeMetaData: Record<
     editable: false,
     expandable: false,
   },
+  [PropType.Error]: {
+    editable: false,
+    expandable: false,
+  },
 };
 
 const isEditable = (
@@ -175,13 +180,13 @@ const getPreview = (propData: TerminalType | CompositeType, isGetterOrSetter: bo
   if (propData.containerType === 'ReadonlySignal') {
     const {error, value} = safelyReadSignalValue(propData.prop);
     if (error) {
-      return 'ERROR: Could not read signal value. See console for details.';
+      return `Signal(⚠️ Error)${error.message ? `: ${error.message}` : ''}`;
     }
     return `Readonly Signal(${typeToDescriptorPreview[propData.type](value)})`;
   } else if (propData.containerType === 'WritableSignal') {
     const {error, value} = safelyReadSignalValue(propData.prop);
     if (error) {
-      return 'ERROR: Could not read signal value. See console for details.';
+      return `Signal(⚠️ Error)${error.message ? `: ${error.message}` : ''}`;
     }
     return `Signal(${typeToDescriptorPreview[propData.type](value)})`;
   }

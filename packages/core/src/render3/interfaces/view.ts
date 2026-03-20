@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AnimationLViewData} from '../../animation/interfaces';
+import type {TracingService, TracingSnapshot} from '../../application/tracing';
 import type {ChangeDetectionScheduler} from '../../change_detection/scheduling/zoneless_scheduling';
 import {TDeferBlockDetails} from '../../defer/interfaces';
 import type {Injector} from '../../di/injector';
@@ -69,6 +71,7 @@ export const EFFECTS_TO_SCHEDULE = 22;
 export const EFFECTS = 23;
 export const REACTIVE_TEMPLATE_CONSUMER = 24;
 export const AFTER_RENDER_SEQUENCES_TO_ADD = 25;
+export const ANIMATIONS = 26;
 
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
@@ -77,7 +80,7 @@ export const AFTER_RENDER_SEQUENCES_TO_ADD = 25;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 26;
+export const HEADER_OFFSET = 27;
 
 // This interface replaces the real LView interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -367,6 +370,9 @@ export interface LView<T = unknown> extends Array<any> {
 
   // AfterRenderSequences that need to be scheduled
   [AFTER_RENDER_SEQUENCES_TO_ADD]: AfterRenderSequence[] | null;
+
+  // Enter animations that apply to nodes in this view
+  [ANIMATIONS]: AnimationLViewData | null;
 }
 
 /**
@@ -381,6 +387,9 @@ export interface LViewEnvironment {
 
   /** Scheduler for change detection to notify when application state changes. */
   changeDetectionScheduler: ChangeDetectionScheduler | null;
+
+  /** Service used for tracing different parts of the application. */
+  tracingService: TracingService<TracingSnapshot> | null;
 
   /**
    * Whether `ng-reflect-*` attributes should be produced in dev mode

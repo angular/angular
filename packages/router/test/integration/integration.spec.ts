@@ -7,12 +7,12 @@
  */
 
 import {Location} from '@angular/common';
-import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
 import {
   ChangeDetectionStrategy,
   Component,
   NgModule,
   ɵConsole as Console,
+  makeEnvironmentProviders,
   signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -35,7 +35,7 @@ import {
   RoutesRecognized,
 } from '../../index';
 
-import {provideRouter} from '../../src/provide_router';
+import {provideRouter, withExperimentalPlatformNavigation} from '../../src/provide_router';
 import {
   BlankCmp,
   CollectParamsCmp,
@@ -58,6 +58,7 @@ import {
   UserCmp,
   createRoot,
   advance,
+  simulateLocationChange,
 } from './integration_helpers';
 import {guardsIntegrationSuite} from './guards.spec';
 import {lazyLoadingIntegrationSuite} from './lazy_loading.spec';
@@ -71,7 +72,7 @@ import {navigationIntegrationTestSuite} from './navigation.spec';
 import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strategy.spec';
 import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
 import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
-import {useAutoTick} from '../helpers';
+import {useAutoTick} from '@angular/private/testing';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
   describe(`${browserAPI}-based routing`, () => {
@@ -83,8 +84,12 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         imports: [...ROUTER_DIRECTIVES, TestModule],
         providers: [
           {provide: Console, useValue: noopConsole},
-          provideRouter([{path: 'simple', component: SimpleCmp}]),
-          browserAPI === 'navigation' ? ɵprovideFakePlatformNavigation() : [],
+          provideRouter(
+            [{path: 'simple', component: SimpleCmp}],
+            browserAPI === 'navigation'
+              ? withExperimentalPlatformNavigation()
+              : (makeEnvironmentProviders([]) as any),
+          ),
         ],
       });
     });
@@ -124,7 +129,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       @Component({
         selector: 'need-cd',
-        template: `{{'it works!'}}`,
+        template: `{{ 'it works!' }}`,
         standalone: false,
       })
       class NeedCdCmp {}
@@ -210,7 +215,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should work when an outlet is added/removed', async () => {
       @Component({
         selector: 'someRoot',
-        template: `[<div *ngIf="cond()"><router-outlet></router-outlet></div>]`,
+        template: `[
+          <div *ngIf="cond()"><router-outlet></router-outlet></div>
+          ]`,
         standalone: false,
       })
       class RootCmpWithLink {
@@ -229,15 +236,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       router.navigateByUrl('/simple');
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
 
       fixture.componentInstance.cond.set(false);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[]');
+      expect(fixture.nativeElement).toHaveText('[  ]');
 
       fixture.componentInstance.cond.set(true);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
     });
 
     it('should update location when navigating', async () => {
@@ -425,12 +432,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       router.navigateByUrl('/team/22/user/victor');
       await advance(fixture);
 
-      location.go('/team/22/user/fedor');
-      location.historyGo(0);
+      simulateLocationChange('/team/22/user/fedor', browserAPI);
       await advance(fixture);
 
-      location.go('/team/22/user/fedor');
-      location.historyGo(0);
+      simulateLocationChange('/team/22/user/fedor', browserAPI);
       await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
@@ -860,7 +865,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should emit an event when an outlet gets activated', async () => {
       @Component({
         selector: 'container',
-        template: `<router-outlet (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`,
+        template: `<router-outlet
+          (activate)="recordActivate($event)"
+          (deactivate)="recordDeactivate($event)"
+        ></router-outlet>`,
         standalone: false,
       })
       class Container {
@@ -922,17 +930,17 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(cmp.path.length).toEqual(2);
     });
 
-    navigationErrorsIntegrationSuite();
+    navigationErrorsIntegrationSuite(browserAPI);
     eagerUrlUpdateStrategyIntegrationSuite();
-    duplicateInFlightNavigationsIntegrationSuite();
-    navigationIntegrationTestSuite();
+    duplicateInFlightNavigationsIntegrationSuite(browserAPI);
+    navigationIntegrationTestSuite(browserAPI);
     routeDataIntegrationSuite();
     routerLinkIntegrationSpec();
-    redirectsIntegrationSuite();
+    redirectsIntegrationSuite(browserAPI);
     guardsIntegrationSuite();
     routerEventsIntegrationSuite();
     routerLinkActiveIntegrationSuite();
-    lazyLoadingIntegrationSuite();
+    lazyLoadingIntegrationSuite(browserAPI);
     routeReuseIntegrationSuite();
   });
 }

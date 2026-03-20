@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocEntry} from '@angular/compiler-cli';
+import {DocEntry, ClassEntry, MethodEntry} from '@angular/compiler-cli';
 import {basename, dirname, resolve} from 'path';
 import fs from 'fs';
 
@@ -47,6 +47,27 @@ export function interpolateCodeExamples(entries: DocEntry[]): void {
 
     for (const jsdocTag of entry.jsdocTags) {
       jsdocTag.comment = replaceExample(jsdocTag.comment);
+    }
+
+    if ('members' in entry) {
+      const members = (entry as ClassEntry).members ?? [];
+      for (const member of members) {
+        member.description = replaceExample(member.description);
+
+        for (const jsdocTag of member.jsdocTags) {
+          jsdocTag.comment = replaceExample(jsdocTag.comment);
+        }
+
+        const method = member as MethodEntry;
+        if (method.implementation) {
+          for (const functionSignature of [method.implementation, ...(method.signatures ?? [])]) {
+            functionSignature.description = replaceExample(functionSignature.description);
+            functionSignature.jsdocTags.forEach((jsdocTag) => {
+              jsdocTag.comment = replaceExample(jsdocTag.comment);
+            });
+          }
+        }
+      }
     }
   }
 }

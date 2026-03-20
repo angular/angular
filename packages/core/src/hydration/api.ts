@@ -16,7 +16,7 @@ import {
   Provider,
 } from '../di';
 import {inject} from '../di/injector_compatibility';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
 import {enableLocateOrCreateI18nNodeImpl} from '../render3/i18n/i18n_apply';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
@@ -24,18 +24,26 @@ import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructi
 import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
-import {getDocument} from '../render3/interfaces/document';
 import {TransferState} from '../transfer_state';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 import {withEventReplay} from './event_replay';
 
+import {
+  ChangeDetectionScheduler,
+  NotificationSource,
+} from '../change_detection/scheduling/zoneless_scheduling';
+import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
+import {processAndInitTriggers} from '../defer/triggering';
+import {DOCUMENT} from '../document';
+import {DOC_PAGE_BASE_URL} from '../error_details_base_url';
 import {cleanupDehydratedViews} from './cleanup';
 import {
   enableClaimDehydratedIcuCaseImpl,
   enablePrepareI18nBlockForHydrationImpl,
   setIsI18nHydrationSupportEnabled,
 } from './i18n';
+import {gatherDeferBlocksCommentNodes} from './node_lookup_utils';
 import {
   IS_HYDRATION_DOM_REUSE_ENABLED,
   IS_I18N_HYDRATION_ENABLED,
@@ -53,9 +61,6 @@ import {
   verifySsrContentsIntegrity,
 } from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
-import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
-import {gatherDeferBlocksCommentNodes} from './node_lookup_utils';
-import {processAndInitTriggers} from '../defer/triggering';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -83,7 +88,7 @@ let isIncrementalHydrationRuntimeSupportEnabled = false;
  * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
  * If there was no event with the `true` value during this time, Angular reports a warning.
  */
-const APPLICATION_IS_STABLE_TIMEOUT = 10_000;
+export const APPLICATION_IS_STABLE_TIMEOUT = 10_000;
 
 /**
  * Brings the necessary hydration code in tree-shakable manner.
@@ -148,7 +153,7 @@ function printHydrationStats(injector: Injector) {
     (isIncrementalHydrationEnabled(injector)
       ? `${ngDevMode!.deferBlocksWithIncrementalHydration} defer block(s) were configured to use incremental hydration. `
       : '') +
-    `Learn more at https://angular.dev/guide/hydration.`;
+    `Learn more at ${DOC_PAGE_BASE_URL}/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
 }
@@ -186,8 +191,7 @@ export const CLIENT_RENDER_MODE_FLAG = 'ngcm';
 /**
  * Checks whether the `RenderMode.Client` was defined for the current route.
  */
-function isClientRenderModeEnabled(): boolean {
-  const doc = getDocument();
+function isClientRenderModeEnabled(doc: Document): boolean {
   return (
     (typeof ngServerMode === 'undefined' || !ngServerMode) &&
     doc.body.hasAttribute(CLIENT_RENDER_MODE_FLAG)
@@ -237,10 +241,15 @@ export function withDomHydration(): EnvironmentProviders {
           return;
         }
 
+        const doc = inject(DOCUMENT);
         if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
-          verifySsrContentsIntegrity(getDocument());
+          verifySsrContentsIntegrity(doc);
           enableHydrationRuntimeSupport();
-        } else if (typeof ngDevMode !== 'undefined' && ngDevMode && !isClientRenderModeEnabled()) {
+        } else if (
+          typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
+          !isClientRenderModeEnabled(doc)
+        ) {
           const console = inject(Console);
           const message = formatRuntimeError(
             RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
@@ -272,6 +281,7 @@ export function withDomHydration(): EnvironmentProviders {
       {
         provide: APP_BOOTSTRAP_LISTENER,
         useFactory: () => {
+          const scheduler = inject(ChangeDetectionScheduler);
           if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
             const appRef = inject(ApplicationRef);
 
@@ -299,6 +309,8 @@ export function withDomHydration(): EnvironmentProviders {
                   countBlocksSkippedByHydration(appRef.injector);
                   printHydrationStats(appRef.injector);
                 }
+                // We need to schedule the execution of the render hooks because the hydration cleanup alters the DOM.
+                scheduler.notify(NotificationSource.RenderHook);
               });
             };
           }
@@ -315,6 +327,7 @@ export function withDomHydration(): EnvironmentProviders {
 /**
  * Returns a set of providers required to setup support for i18n hydration.
  * Requires hydration to be enabled separately.
+ * @see [I18N](guide/hydration#i18n)
  */
 export function withI18nSupport(): Provider[] {
   return [
@@ -340,6 +353,7 @@ export function withI18nSupport(): Provider[] {
  * Returns a set of providers required to setup support for incremental hydration.
  * Requires hydration to be enabled separately.
  * Enabling incremental hydration also enables event replay for the entire app.
+ * @see [Incremental Hydration](guide/incremental-hydration#how-do-you-enable-incremental-hydration-in-angular)
  */
 export function withIncrementalHydration(): Provider[] {
   const providers: Provider[] = [
@@ -367,7 +381,7 @@ export function withIncrementalHydration(): Provider[] {
       provide: APP_BOOTSTRAP_LISTENER,
       useFactory: () => {
         const injector = inject(Injector);
-        const doc = getDocument();
+        const doc = inject(DOCUMENT);
 
         return () => {
           const deferBlockData = processBlockData(injector);

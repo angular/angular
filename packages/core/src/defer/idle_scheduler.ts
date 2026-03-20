@@ -6,119 +6,146 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {OnDestroy} from '../core';
 import {Injector, inject, ɵɵdefineInjectable} from '../di';
 import {NgZone} from '../zone';
+import {IDLE_SERVICE} from './idle_service';
+import {ApplicationRef} from '../application/application_ref';
 
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
  *
  * @param callback A function to be invoked when a browser becomes idle.
  * @param injector injector for the app
+ * @param options Optional options passed to `requestIdleCallback`.
  */
-export function onIdle(callback: VoidFunction, injector: Injector) {
+export function onIdle(callback: VoidFunction, injector: Injector, options?: IdleRequestOptions) {
   const scheduler = injector.get(IdleScheduler);
   const cleanupFn = () => scheduler.remove(callback);
-  scheduler.add(callback);
+
+  scheduler.add(callback, options);
   return cleanupFn;
 }
 
+export function onIdleWrapper(options?: IdleRequestOptions) {
+  return (callback: VoidFunction, injector: Injector) => onIdle(callback, injector, options);
+}
+
 /**
- * Use shims for the `requestIdleCallback` and `cancelIdleCallback` functions for
- * environments where those functions are not available (e.g. Node.js and Safari).
- *
- * Note: we wrap the `requestIdleCallback` call into a function, so that it can be
- * overridden/mocked in test environment and picked up by the runtime code.
+ * A bucket groups callbacks sharing the same idle request options into a single
+ * `requestIdleCallback` invocation.
  */
-const _requestIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
-const _cancelIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
+interface IdleBucket {
+  idleId: number | null;
+  readonly queue: Set<VoidFunction>;
+}
 
 /**
  * Helper service to schedule `requestIdleCallback`s for batches of defer blocks,
  * to avoid calling `requestIdleCallback` for each defer block (e.g. if
  * defer blocks are defined inside a for loop).
+ *
+ * Callbacks are grouped into buckets by their serialized options key. Each bucket is
+ * scheduled independently with its own `requestIdleCallback` call, so different
+ * options never interfere with each other. Callbacks that share the same
+ * options (including no options) are batched together.
  */
-export class IdleScheduler {
-  // Indicates whether current callbacks are being invoked.
-  executingCallbacks = false;
+export class IdleScheduler implements OnDestroy {
+  // Serialize options rather than using the object reference to ensure
+  // that different IdleRequestOptions references with the same values
+  // are batched into the same bucket.
+  private readonly buckets = new Map<string, IdleBucket>();
 
-  // Currently scheduled idle callback id.
-  idleId: number | null = null;
+  // Lookup from callback to its bucket key.
+  private readonly callbackBucket = new Map<VoidFunction, string>();
+  private readonly applicationRef = inject(ApplicationRef);
 
-  // Set of callbacks to be invoked next.
-  current = new Set<VoidFunction>();
+  private readonly ngZone = inject(NgZone);
+  private readonly idleService = inject(IDLE_SERVICE);
 
-  // Set of callbacks collected while invoking current set of callbacks.
-  // Those callbacks are scheduled for the next idle period.
-  deferred = new Set<VoidFunction>();
+  add(callback: VoidFunction, options?: IdleRequestOptions) {
+    const key = getIdleRequestKey(options);
+    this.callbackBucket.set(callback, key);
 
-  ngZone = inject(NgZone);
-
-  requestIdleCallbackFn = _requestIdleCallback().bind(globalThis);
-  cancelIdleCallbackFn = _cancelIdleCallback().bind(globalThis);
-
-  add(callback: VoidFunction) {
-    const target = this.executingCallbacks ? this.deferred : this.current;
-    target.add(callback);
-    if (this.idleId === null) {
-      this.scheduleIdleCallback();
+    let bucket = this.buckets.get(key);
+    if (bucket == null) {
+      bucket = {idleId: null, queue: new Set()};
+      this.buckets.set(key, bucket);
     }
+    bucket.queue.add(callback);
+    this.scheduleBucket(bucket, options);
   }
 
   remove(callback: VoidFunction) {
-    const {current, deferred} = this;
+    const key = this.callbackBucket.get(callback);
+    if (key === undefined) return;
 
-    current.delete(callback);
-    deferred.delete(callback);
+    this.callbackBucket.delete(callback);
 
-    // If the last callback was removed and there is a pending
+    const bucket = this.buckets.get(key);
+    if (!bucket) return;
+
+    bucket.queue.delete(callback);
+
+    // If the last callback in this bucket was removed, cancel the
     // idle callback - cancel it.
-    if (current.size === 0 && deferred.size === 0) {
-      this.cancelIdleCallback();
+    if (bucket.queue.size === 0) {
+      this.cancelBucket(bucket);
+      this.buckets.delete(key);
     }
   }
 
-  private scheduleIdleCallback() {
-    const callback = () => {
-      this.cancelIdleCallback();
+  private scheduleBucket(bucket: IdleBucket, options?: IdleRequestOptions) {
+    if (bucket.idleId !== null) {
+      return;
+    }
 
-      this.executingCallbacks = true;
+    const key = getIdleRequestKey(options);
+    const callback = (deadline?: IdleDeadline) => {
+      this.cancelBucket(bucket);
 
-      for (const callback of this.current) {
-        callback();
-      }
-      this.current.clear();
+      for (const cb of bucket.queue) {
+        cb();
+        // _tick here is an optimized change detection check and is safe to call here.
+        // We also account for the time it takes to run change detection
+        // for the newly-created view as a part of the same idle callback.
+        this.applicationRef._tick();
+        bucket.queue.delete(cb);
+        this.callbackBucket.delete(cb);
 
-      this.executingCallbacks = false;
-
-      // If there are any callbacks added during an invocation
-      // of the current ones - make them "current" and schedule
-      // a new idle callback.
-      if (this.deferred.size > 0) {
-        for (const callback of this.deferred) {
-          this.current.add(callback);
+        if (deadline && deadline.timeRemaining() === 0 && !deadline.didTimeout) {
+          break;
         }
-        this.deferred.clear();
-        this.scheduleIdleCallback();
+      }
+
+      if (bucket.queue.size > 0) {
+        this.scheduleBucket(bucket, options);
+      } else {
+        this.buckets.delete(key);
       }
     };
+
     // Ensure that the callback runs in the NgZone since
     // the `requestIdleCallback` is not currently patched by Zone.js.
-    this.idleId = this.requestIdleCallbackFn(() => this.ngZone.run(callback)) as number;
+    bucket.idleId = this.idleService.requestOnIdle(
+      (deadline) => this.ngZone.run(() => callback(deadline)),
+      options,
+    );
   }
 
-  private cancelIdleCallback() {
-    if (this.idleId !== null) {
-      this.cancelIdleCallbackFn(this.idleId);
-      this.idleId = null;
+  private cancelBucket(bucket: IdleBucket) {
+    if (bucket.idleId !== null) {
+      this.idleService.cancelOnIdle(bucket.idleId);
+      bucket.idleId = null;
     }
   }
 
   ngOnDestroy() {
-    this.cancelIdleCallback();
-    this.current.clear();
-    this.deferred.clear();
+    for (const bucket of this.buckets.values()) {
+      this.cancelBucket(bucket);
+    }
+    this.buckets.clear();
+    this.callbackBucket.clear();
   }
 
   /** @nocollapse */
@@ -127,4 +154,13 @@ export class IdleScheduler {
     providedIn: 'root',
     factory: () => new IdleScheduler(),
   });
+}
+
+/** Generates a string that can be used to find identical idle request option objects. */
+function getIdleRequestKey(options?: IdleRequestOptions): string {
+  if (!options || options.timeout == null) {
+    return '';
+  }
+
+  return `${options.timeout}`;
 }

@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
+import {
+  ResourceLoader,
+  ReflectionHost,
+  PartialEvaluator,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli/private/migrations';
 import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
 import {isInputContainerNode} from '../../input_detection/input_node';
 import {DebugElementComponentInstance} from '../../pattern_advisors/debug_element_component_instance';

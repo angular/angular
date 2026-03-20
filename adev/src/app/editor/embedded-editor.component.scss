@@ -85,6 +85,11 @@ $width-breakpoint: 950px;
 .docs-editor-tabs {
   height: 100%;
   display: block;
+
+  .docs-error-icon {
+    margin-inline: 0.375rem 0.125rem;
+    font-size: 18px;
+  }
 }
 
 .adev-refresh-btn {
@@ -101,7 +106,7 @@ $width-breakpoint: 950px;
   z-index: var(--z-index-content);
 
   docs-icon {
-    color: var(--gray-400);
+    color: var(--quaternary-contrast);
     margin: auto;
     font-size: 1.3rem;
     transition: color 0.3s ease;
@@ -115,7 +120,7 @@ $width-breakpoint: 950px;
 
   &:disabled {
     docs-icon {
-      color: var(--gray-400);
+      color: var(--quaternary-contrast);
     }
   }
 }

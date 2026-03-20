@@ -2,9 +2,7 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <h2>Library Schematics</h2>
-  `,
+  template: ` <h2>Library Schematics</h2> `,
   styles: [],
   standalone: false,
 })

@@ -9,16 +9,16 @@ import {bootstrapApplication} from '@angular/platform-browser';
     <button (click)="add(text.value)">Add</button>
 
     @for (todo of todos; track $index) {
-    <p>
-      <input type="checkbox" (change)="toggle($index)" />
-      @if (todo.done) {
-      <s>{{ todo.text }}</s>
-      } @else {
-      <span>{{ todo.text }}</span>
-      }
-    </p>
+      <p>
+        <input type="checkbox" (change)="toggle($index)" />
+        @if (todo.done) {
+          <s>{{ todo.text }}</s>
+        } @else {
+          <span>{{ todo.text }}</span>
+        }
+      </p>
     } @empty {
-    <p>No todos</p>
+      <p>No todos</p>
     }
   `,
 })

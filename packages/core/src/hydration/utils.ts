@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import {
   SerializedView,
 } from './interfaces';
 import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
 import {hoverEventNames, interactionEventNames} from '../../primitives/defer/src/triggers';
 import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
@@ -411,15 +411,23 @@ export function isIncrementalHydrationEnabled(injector: Injector): boolean {
   });
 }
 
+let incrementalHydrationEnabledWarned = false;
+export function resetIncrementalHydrationEnabledWarnedForTests() {
+  incrementalHydrationEnabledWarned = false;
+}
+
 /** Throws an error if the incremental hydration is not enabled */
-export function assertIncrementalHydrationIsConfigured(injector: Injector) {
-  if (!isIncrementalHydrationEnabled(injector)) {
-    throw new RuntimeError(
-      RuntimeErrorCode.MISCONFIGURED_INCREMENTAL_HYDRATION,
-      'Angular has detected that some `@defer` blocks use `hydrate` triggers, ' +
-        'but incremental hydration was not enabled. Please ensure that the `withIncrementalHydration()` ' +
-        'call is added as an argument for the `provideClientHydration()` function call ' +
-        'in your application config.',
+export function warnIncrementalHydrationNotConfigured(): void {
+  if (!incrementalHydrationEnabledWarned) {
+    incrementalHydrationEnabledWarned = true;
+    console.warn(
+      formatRuntimeError(
+        RuntimeErrorCode.MISCONFIGURED_INCREMENTAL_HYDRATION,
+        'Angular has detected that some `@defer` blocks use `hydrate` triggers, ' +
+          'but incremental hydration was not enabled. Please ensure that the `withIncrementalHydration()` ' +
+          'call is added as an argument for the `provideClientHydration()` function call ' +
+          'in your application config.',
+      ),
     );
   }
 }
@@ -524,7 +532,7 @@ export function canHydrateNode(lView: LView, tNode: TNode): boolean {
 
 /**
  * Helper function to prepare text nodes for serialization by ensuring
- * that seperate logical text blocks in the DOM remain separate after
+ * that separate logical text blocks in the DOM remain separate after
  * serialization.
  */
 export function processTextNodeBeforeSerialization(context: HydrationContext, node: RNode) {
@@ -691,6 +699,22 @@ function getHydrateTimerTrigger(blockData: SerializedDeferBlock): number | null 
   return (trigger as SerializedTriggerDetails)?.delay ?? null;
 }
 
+function getHydrateViewportTrigger(
+  blockData: SerializedDeferBlock,
+): true | IntersectionObserverInit | null {
+  const details = blockData[DEFER_HYDRATE_TRIGGERS];
+  if (details) {
+    for (const current of details) {
+      if (current === DeferBlockTrigger.Viewport) {
+        return true;
+      } else if (typeof current === 'object' && current.trigger === DeferBlockTrigger.Viewport) {
+        return current.intersectionObserverOptions || true;
+      }
+    }
+  }
+  return null;
+}
+
 function hasHydrateTrigger(blockData: SerializedDeferBlock, trigger: DeferBlockTrigger): boolean {
   return blockData[DEFER_HYDRATE_TRIGGERS]?.includes(trigger) ?? false;
 }
@@ -706,7 +730,7 @@ function createBlockSummary(blockInfo: SerializedDeferBlock): BlockSummary {
       idle: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Idle),
       immediate: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Immediate),
       timer: getHydrateTimerTrigger(blockInfo),
-      viewport: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Viewport),
+      viewport: getHydrateViewportTrigger(blockInfo),
     },
   };
 }

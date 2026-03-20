@@ -21,18 +21,19 @@ let trustedGreyColor: SafeStyle;
     <table>
       <tbody>
         @for (row of data; track $index) {
-        <tr>
-          @for (cell of row; track $index) {
-          <td [style.backgroundColor]="getColor(cell.row)">
-            @defer (when condition; on immediate) {
-            <!--
+          <tr>
+            @for (cell of row; track $index) {
+              <td [style.backgroundColor]="getColor(cell.row)">
+                @defer (when condition; on immediate) {
+                  <!--
                     Use static text in cells to avoid the need
                     to run a new change detection cycle.
                   -->
-            Cell }
-          </td>
-          }
-        </tr>
+                  Cell
+                }
+              </td>
+            }
+          </tr>
         }
       </tbody>
     </table>

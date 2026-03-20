@@ -7,7 +7,7 @@ use `zone.js` and `long-stack-trace-zone.js` to display longStackTrace informati
 
 ### Async Task Counting Sample
 
-use `zone.js` to monitor async tasks and print the count info. 
+use `zone.js` to monitor async tasks and print the count info.
 [counting](https://stackblitz.com/edit/zonejs-counting?file=index.js)
 
 ### Profiling Sample
@@ -19,5 +19,3 @@ use `zone.js` to profiling sort algorithm.
 
 use `long-stack-trace-zone` to display full flow of complex async operations such as throttle XHR requests.
 [throttle](https://stackblitz.com/edit/zonejs-throttle?file=index.js)
-
-

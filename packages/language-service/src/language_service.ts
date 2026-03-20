@@ -9,7 +9,11 @@
 import {AST, TmplAstNode} from '@angular/compiler';
 import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
+import {
+  ErrorCode,
+  isFatalDiagnosticError,
+  ngErrorCode,
+} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
 import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
@@ -20,9 +24,12 @@ import ts from 'typescript';
 import {
   ApplyRefactoringProgressFn,
   ApplyRefactoringResult,
+  AngularInlayHint,
   GetComponentLocationsForTemplateResponse,
+  InlayHintsConfig,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
+  LinkedEditingRanges,
   PluginConfig,
 } from '../api';
 
@@ -31,6 +38,12 @@ import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
 import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
+import {getLinkedEditingRangeAtPosition} from './linked_editing_range';
+import {
+  DocumentSymbolsOptions,
+  getTemplateDocumentSymbols,
+  TemplateDocumentSymbol,
+} from './document_symbols';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
@@ -51,6 +64,7 @@ import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './uti
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {getInlayHintsForTemplate} from './inlay_hints';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -93,6 +107,18 @@ export class LanguageService {
 
   getCompilerOptions(): CompilerOptions {
     return this.options;
+  }
+
+  /**
+   * Triggers the Angular compiler's analysis pipeline without performing
+   * per-file type checking.
+   */
+  ensureProjectAnalyzed(): void {
+    this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) => {
+      // Accessing the template type checker forces compiler analysis through
+      // public API without requiring per-file diagnostics computation.
+      compiler.getTemplateTypeChecker();
+    });
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
@@ -141,11 +167,20 @@ export class LanguageService {
         const components = compiler.getComponentsWithTemplateFile(fileName);
         for (const component of components) {
           if (ts.isClassDeclaration(component)) {
-            diagnostics.push(
-              ...compiler
-                .getTemplateTypeChecker()
-                .getSuggestionDiagnosticsForComponent(component, this.tsLS),
-            );
+            try {
+              diagnostics.push(
+                ...compiler
+                  .getTemplateTypeChecker()
+                  .getSuggestionDiagnosticsForComponent(component, this.tsLS),
+              );
+            } catch (e) {
+              // Type check code may throw fatal diagnostic errors if e.g. the type check
+              // block cannot be generated. In this case, we consider that there are no available suggestion diagnostics.
+              if (isFatalDiagnosticError(e)) {
+                continue;
+              }
+              throw e;
+            }
           }
         }
       }
@@ -187,6 +222,85 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
       return this.getQuickInfoAtPositionImpl(fileName, position, compiler);
     });
+  }
+
+  /**
+   * Provide Angular-specific inlay hints for templates.
+   *
+   * This returns hints for:
+   * - @for loop variable types: `@for (user: User of users)`
+   * - @if alias types: `@if (data; as result: ApiResult)`
+   * - Event parameter types: `(click)="onClick($event: MouseEvent)"`
+   * - Pipe output types: `{{ value | async: Observable<T> }}`
+   * - @let declaration types
+   *
+   * @param fileName The file to get inlay hints for
+   * @param span The text span to get hints within
+   * @param config Optional configuration for which hints to show
+   */
+  provideInlayHints(
+    fileName: string,
+    span: ts.TextSpan,
+    config?: InlayHintsConfig,
+  ): AngularInlayHint[] {
+    // Use LsQuickInfo phase since inlay hints are similar in cost
+    return (
+      this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
+        const hints: AngularInlayHint[] = [];
+
+        if (isTypeScriptFile(fileName)) {
+          // For TypeScript files, find all components and process their templates
+          const program = compiler.getCurrentProgram();
+          const sourceFile = program.getSourceFile(fileName);
+          if (!sourceFile) {
+            return hints;
+          }
+
+          const ttc = compiler.getTemplateTypeChecker();
+
+          // Walk the source file to find component/directive classes
+          const visit = (node: ts.Node): void => {
+            if (ts.isClassDeclaration(node) && node.name) {
+              // Try to get the template for this class (component) or host element (directive)
+              try {
+                const template = ttc.getTemplate(node);
+                const hostElement = ttc.getHostElement(node);
+
+                // Process if we have either a template or host element
+                if (template || hostElement) {
+                  // This is a component with a template or a directive with host bindings
+                  const typeCheckInfo: TypeCheckInfo = {
+                    declaration: node,
+                    nodes: template ?? [],
+                  };
+                  const templateHints = getInlayHintsForTemplate(
+                    compiler,
+                    typeCheckInfo,
+                    span,
+                    config,
+                  );
+                  hints.push(...templateHints);
+                }
+              } catch {
+                // Not a component/directive or error getting template, skip
+              }
+            }
+            ts.forEachChild(node, visit);
+          };
+
+          visit(sourceFile);
+        } else {
+          // For external template files (HTML), find the associated component
+          const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, span.start, compiler);
+          if (typeCheckInfo) {
+            const templateHints = getInlayHintsForTemplate(compiler, typeCheckInfo, span, config);
+            hints.push(...templateHints);
+          }
+        }
+
+        return hints;
+      }) ?? []
+    );
   }
 
   private getQuickInfoAtPositionImpl(
@@ -262,6 +376,26 @@ export class LanguageService {
         position,
       );
       return results === null ? undefined : getUniqueLocations(results);
+    });
+  }
+
+  /**
+   * Gets linked editing ranges for synchronized editing of HTML tag pairs.
+   *
+   * When the cursor is on an element tag name, returns both the opening and closing
+   * tag name spans so they can be edited simultaneously.
+   *
+   * @param fileName The file to check
+   * @param position The cursor position in the file
+   * @returns LinkedEditingRanges if on a tag name, undefined otherwise
+   */
+  getLinkedEditingRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): LinkedEditingRanges | undefined {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
+      const result = getLinkedEditingRangeAtPosition(compiler, fileName, position);
+      return result ?? undefined;
     });
   }
 
@@ -441,6 +575,23 @@ export class LanguageService {
   getOutliningSpans(fileName: string): ts.OutliningSpan[] {
     return this.withCompilerAndPerfTracing(PerfPhase.OutliningSpans, (compiler) => {
       return getOutliningSpans(compiler, fileName);
+    });
+  }
+
+  /**
+   * Gets document symbols for Angular templates, including control flow blocks,
+   * elements, components, template references, and @let declarations.
+   * Returns symbols in NavigationTree format for compatibility with TypeScript.
+   *
+   * @param fileName The file path to get template symbols for
+   * @param options Optional configuration for document symbols behavior
+   */
+  getTemplateDocumentSymbols(
+    fileName: string,
+    options?: DocumentSymbolsOptions,
+  ): TemplateDocumentSymbol[] {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsComponentLocations, (compiler) => {
+      return getTemplateDocumentSymbols(compiler, fileName, options);
     });
   }
 
@@ -811,19 +962,66 @@ function parseNgCompilerOptions(
   if (config['forceStrictTemplates'] === true) {
     options.strictTemplates = true;
   }
-  if (config['enableBlockSyntax'] === false) {
-    options['_enableBlockSyntax'] = false;
-  }
-  if (config['enableLetSyntax'] === false) {
-    options['_enableLetSyntax'] = false;
-  }
   if (config['enableSelectorless'] === true) {
     options['_enableSelectorless'] = true;
   }
 
   options['_angularCoreVersion'] = config['angularCoreVersion'];
 
+  if (project.getCurrentDirectory()) {
+    // Attempt to resolve the version of @angular/core that is installed in the project.
+    // This is useful for monorepos where different projects may use different versions of Angular.
+    const detectedVersion = detectAngularCoreVersion(project, host);
+    if (detectedVersion !== null) {
+      options['_angularCoreVersion'] = detectedVersion;
+    }
+  }
+
   return options;
+}
+
+function detectAngularCoreVersion(
+  project: ts.server.ConfiguredProject,
+  host: ConfigurationHost,
+): string | null {
+  const configPath = project.getConfigFilePath();
+  const projectDir = host.dirname(host.resolve(configPath));
+
+  // Try to find @angular/core relative to the project directory
+  let angularCorePackageJsonPath: string | undefined;
+  try {
+    angularCorePackageJsonPath = require.resolve('@angular/core/package.json', {
+      paths: [projectDir],
+    });
+  } catch {}
+
+  if (angularCorePackageJsonPath === undefined) {
+    // Fallback: manually look for node_modules/@angular/core/package.json
+    // This is helpful in environments where require.resolve doesn't work on the target fs (e.g. tests with mock fs)
+    const candidate = host.resolve(projectDir, 'node_modules/@angular/core/package.json');
+    if (host.exists(candidate)) {
+      angularCorePackageJsonPath = candidate;
+    }
+  }
+
+  if (!angularCorePackageJsonPath) {
+    return null;
+  }
+
+  try {
+    const content = host.readFile(host.resolve(angularCorePackageJsonPath));
+    if (!content) {
+      return null;
+    }
+
+    const packageJson = JSON.parse(content) as unknown as {version?: unknown};
+    if (packageJson && typeof packageJson.version === 'string') {
+      // 0.0.0 is used for the version when building locally, so replace it with a very high version
+      return packageJson.version === '0.0.0' ? '999.999.999' : packageJson.version;
+    }
+  } catch {}
+
+  return null;
 }
 
 function createProgramDriver(project: ts.server.Project): ProgramDriver {

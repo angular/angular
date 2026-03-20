@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Type} from '../../interface/type';
+
 // This file contains types that will be published to npm in library typings files.
 
 // Formatting does horrible things to these declarations.
@@ -41,7 +43,9 @@ export type ɵɵComponentDeclaration<
   Selector extends String,
   ExportAs extends string[],
   // `string` keys are for backwards compatibility with pre-16 versions.
-  InputMap extends {[key: string]: string | {alias: string | null; required: boolean}},
+  InputMap extends {
+    [key: string]: string | {alias: string | null; required: boolean; isSignal?: boolean};
+  },
   OutputMap extends {[key: string]: string},
   QueryFields extends string[],
   NgContentSelectors extends string[],
@@ -62,7 +66,7 @@ export type ɵɵNgModuleDeclaration<T, Declarations, Imports, Exports> = unknown
  */
 export type ɵɵPipeDeclaration<
   T,
-  Name extends string,
+  Name extends string | null,
   // Optional as this was added in Angular v14. All pre-existing directives
   // are not standalone.
   IsStandalone extends boolean = false,
@@ -76,7 +80,9 @@ export type ɵɵInjectorDeclaration<T> = unknown;
 /**
  * @publicApi
  */
-export type ɵɵFactoryDeclaration<T, CtorDependencies extends CtorDependency[]> = unknown;
+export type ɵɵFactoryDeclaration<T, CtorDependencies extends CtorDependency[]> = (
+  parent?: Type<any>,
+) => T;
 
 /**
  * An object literal of this type is used to represent the metadata of a constructor dependency.

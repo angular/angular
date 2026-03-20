@@ -43,6 +43,7 @@ import {
   injectorsSeen,
   isElementInjector,
   isOnPushDirective,
+  logValue,
   nodeInjectorToResolutionPath,
   queryDirectiveForest,
   serializeProviderRecord,
@@ -53,12 +54,7 @@ import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
-import {
-  getElementRefByName,
-  getComponentRefByName,
-  parseRoutes,
-  RoutePropertyType,
-} from './router-tree';
+import {getRouterCallableConstructRef, parseRoutes, RoutePropertyType} from './router-tree';
 import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
@@ -98,6 +94,7 @@ export const subscribeToClientEvents = (
   messageBus.on('getSignalNestedProperties', getSignalNestedPropertiesCallback(messageBus));
 
   messageBus.on('updateState', updateState);
+  messageBus.on('logValue', logValue);
 
   messageBus.on('enableTimingAPI', enableTimingAPI);
   messageBus.on('disableTimingAPI', disableTimingAPI);
@@ -186,13 +183,14 @@ const getLatestComponentExplorerViewCallback =
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () =>
   checkForAngular(messageBus);
+
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
 
 const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string) => {
   const router: any = getRouterInstance();
   // If the router is not found or the navigateByUrl method is not available, we can't navigate
-  if (router && router.navigateByUrl) {
-    router.navigateByUrl(path);
+  if (router) {
+    ngDebugClient().ɵnavigateByUrl?.(router, path);
   } else {
     console.warn('Router not found or navigateByUrl method not available');
   }
@@ -200,20 +198,18 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
 
 /**
  * Opens the source code of a component or a directive in the editor.
- * @param name - The name of the component, provider, or directive to view source for.
+ * @param constructName - The name of the class/function that represents a component, provider, guard
+ * or other callable to view source for.
  * @param type - The type of the element to view source for  component, provider, or directive.
  * @returns - The element instance of the component, provider, or directive.
  */
-export const viewSourceFromRouter = (name: string, type: RoutePropertyType) => {
+export const viewSourceFromRouter = (constructName: string, type: RoutePropertyType) => {
   const router: any = getRouterInstance();
 
-  let element;
-  if (type === 'component') {
-    element = getComponentRefByName(router.config, name);
-  } else {
-    element = getElementRefByName(type, router.config, name);
+  if (router === null) {
+    return;
   }
-  return element;
+  return getRouterCallableConstructRef(router.config, type, constructName);
 };
 
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
@@ -314,16 +310,7 @@ const getSignalNestedPropertiesCallback =
 
 // todo: parse router tree with framework APIs after they are developed
 const getRoutes = (messageBus: MessageBus<Events>) => {
-  const forest = prepareForestForSerialization(
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
-    ngDebugDependencyInjectionApiIsSupported(),
-  );
-  if (forest.length === 0) return;
-
-  const rootInjector = forest[0].resolutionPath?.find((i) => i.name === 'Root');
-  if (!rootInjector) return;
-
-  const route = getRouterConfigFromRoot(rootInjector);
+  const route = getRouterConfigFromRoot();
   if (!route) return;
 
   const sanitizedRoute = sanitizeRouteData(route);
@@ -331,83 +318,13 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   messageBus.emit('updateRouterTree', [[sanitizedRoute]]);
 };
 
-const getSerializedProviderRecords = (injector: SerializedInjector) => {
-  if (!idToInjector.has(injector.id)) {
+const getRouterConfigFromRoot = (): Route | void => {
+  const router = getRouterInstance();
+  if (!router) {
     return;
   }
 
-  const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
-  const allProviderRecords: SerializedProviderRecord[] = [];
-  const tokenToRecords: Map<unknown, SerializedProviderRecord[]> = new Map();
-
-  for (const [index, providerRecord] of providerRecords.entries()) {
-    const record = serializeProviderRecord(providerRecord, index, injector.type === 'environment');
-    allProviderRecords.push(record);
-
-    const records = tokenToRecords.get(providerRecord.token) ?? [];
-    records.push(record);
-    tokenToRecords.set(providerRecord.token, records);
-  }
-  const serializedProviderRecords: SerializedProviderRecord[] = [];
-  for (const [token, records] of tokenToRecords.entries()) {
-    const multiRecords = records.filter((record) => record.multi);
-    const nonMultiRecords = records.filter((record) => !record.multi);
-    for (const record of nonMultiRecords) {
-      serializedProviderRecords.push(record);
-    }
-    const [firstMultiRecord] = multiRecords;
-    if (firstMultiRecord !== undefined) {
-      // All multi providers will have the same token, so we can just use the first one.
-      serializedProviderRecords.push({
-        token: firstMultiRecord.token,
-        type: 'multi',
-        multi: true,
-        // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
-        // provided as viewProviders
-        isViewProvider: firstMultiRecord.isViewProvider,
-        index: records.map((record) => record.index as number),
-      });
-    }
-  }
-
-  return serializedProviderRecords;
-};
-
-const getProviderValue = (
-  serializedInjector: SerializedInjector,
-  serializedProvider: SerializedProviderRecord,
-) => {
-  if (!idToInjector.has(serializedInjector.id)) {
-    return;
-  }
-
-  const injector = idToInjector.get(serializedInjector.id)!;
-  const providerRecords = getInjectorProviders(injector);
-
-  if (typeof serializedProvider.index === 'number') {
-    const provider = providerRecords[serializedProvider.index];
-    return injector.get(provider.token, null, {optional: true});
-  } else if (Array.isArray(serializedProvider.index)) {
-    const provider = serializedProvider.index.map((index) => providerRecords[index]);
-    return injector.get(provider[0].token, null, {optional: true});
-  } else {
-    return;
-  }
-};
-
-const getRouterConfigFromRoot = (injector: SerializedInjector): Route | void => {
-  const serializedProviderRecords = getSerializedProviderRecords(injector) ?? [];
-  const routerInstance = serializedProviderRecords.find(
-    (provider) => provider.token === 'Router', // get the instance of router using token
-  );
-
-  if (!routerInstance) {
-    return;
-  }
-
-  const routerProvider = getProviderValue(injector, routerInstance);
-
-  return parseRoutes(routerProvider);
+  return parseRoutes(router);
 };
 
 const checkForAngular = (messageBus: MessageBus<Events>): void => {
@@ -422,13 +339,15 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
     initializeOrGetDirectiveForestHooks();
   }
 
+  const devMode = appIsAngularInDevMode();
+
   messageBus.emit('ngAvailability', [
     {
       version: ngVersion.toString(),
-      devMode: appIsAngularInDevMode(),
+      devMode,
       ivy: appIsIvy,
       hydration: isHydrationEnabled(),
-      supportedApis: getSupportedApis(),
+      supportedApis: devMode ? getSupportedApis() : null,
     },
   ]);
 };
@@ -468,8 +387,10 @@ export interface SerializableComponentInstanceType extends ComponentType {
   id: number;
 }
 
-export interface SerializableComponentTreeNode
-  extends DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
+export interface SerializableComponentTreeNode extends DevToolsNode<
+  SerializableDirectiveInstanceType,
+  SerializableComponentInstanceType
+> {
   children: SerializableComponentTreeNode[];
   nativeElement?: never;
   // Since the nativeElement is not serializable, we will use this boolean as backup
@@ -477,26 +398,20 @@ export interface SerializableComponentTreeNode
 }
 
 function getRouterInstance() {
-  const forest = prepareForestForSerialization(
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
-    ngDebugDependencyInjectionApiIsSupported(),
-  );
-  const rootInjector = forest[0].resolutionPath?.find((i) => i.name === 'Root');
-  if (!rootInjector) {
-    return;
+  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  const rootNode = forest[0];
+
+  if (!rootNode || !rootNode.nativeElement) {
+    return null;
   }
 
-  const serializedProviderRecords = getSerializedProviderRecords(rootInjector);
-  const routerInstance = serializedProviderRecords?.find(
-    (provider) => provider.token === 'Router', // get the instance of router using token
-  );
-
-  if (!routerInstance) {
-    return;
+  const injector = getInjectorFromElementNode(rootNode.nativeElement);
+  if (!injector) {
+    return null;
   }
 
-  const router = getInjectorInstance(rootInjector, routerInstance);
-  return router;
+  const ng = ngDebugClient();
+  return (ng as any).ɵgetRouterInstance?.(injector);
 }
 
 // Here we drop properties to prepare the tree for serialization.
@@ -523,7 +438,7 @@ const prepareForestForSerialization = (
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
-      defer: node.defer,
+      controlFlowBlock: node.controlFlowBlock,
       onPush: node.component ? isOnPushDirective(node.component) : false,
 
       // native elements are not serializable
@@ -732,12 +647,14 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
   );
   if (!node) {
+    messageBus.emit('latestSignalGraph', [null]);
     return;
   }
 
   const injector = getInjectorFromElementNode(node.nativeElement!);
 
   if (!injector) {
+    messageBus.emit('latestSignalGraph', [null]);
     return;
   }
 

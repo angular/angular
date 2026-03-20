@@ -234,6 +234,18 @@ class HtmlAstToIvyAst implements html.Visitor {
         parsedProperties,
         i18nAttrsMeta,
       );
+
+      if (element.name === 'ng-container') {
+        for (const bound of attrs.bound) {
+          if (bound.type === BindingType.Attribute) {
+            this.reportError(
+              `Attribute bindings are not supported on ng-container. Use property bindings instead.`,
+              bound.sourceSpan,
+            );
+          }
+        }
+      }
+
       parsedElement = new t.Element(
         element.name,
         attributes,
@@ -607,7 +619,6 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     for (const attribute of attrs) {
       let hasBinding = false;
-      const normalizedName = normalizeAttributeName(attribute.name);
 
       // `*attr` defines template bindings
       let isTemplateBinding = false;
@@ -616,7 +627,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         i18nAttrsMeta[attribute.name] = attribute.i18n;
       }
 
-      if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      if (attribute.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
         // *-attributes
         if (elementHasInlineTemplate) {
           this.reportError(
@@ -627,7 +638,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         isTemplateBinding = true;
         elementHasInlineTemplate = true;
         const templateValue = attribute.value;
-        const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
+        const templateKey = attribute.name.substring(TEMPLATE_ATTR_PREFIX.length);
 
         const parsedVariables: ParsedVariable[] = [];
         const absoluteValueOffset = attribute.valueSpan
@@ -693,7 +704,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     variables: t.Variable[],
     references: t.Reference[],
   ) {
-    const name = normalizeAttributeName(attribute.name);
+    const name = attribute.name;
     const value = attribute.value;
     const srcSpan = attribute.sourceSpan;
     const absoluteOffset = attribute.valueSpan
@@ -703,8 +714,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     function createKeySpan(srcSpan: ParseSourceSpan, prefix: string, identifier: string) {
       // We need to adjust the start location for the keySpan to account for the removed 'data-'
       // prefix from `normalizeAttributeName`.
-      const normalizationAdjustment = attribute.name.length - name.length;
-      const keySpanStart = srcSpan.start.moveBy(prefix.length + normalizationAdjustment);
+      const keySpanStart = srcSpan.start.moveBy(prefix.length);
       const keySpanEnd = keySpanStart.moveBy(identifier.length);
       return new ParseSourceSpan(keySpanStart, keySpanEnd, keySpanStart, identifier);
     }
@@ -961,6 +971,14 @@ class HtmlAstToIvyAst implements html.Visitor {
     return directives;
   }
 
+  private filterAnimationAttributes(attributes: t.TextAttribute[]): t.TextAttribute[] {
+    return attributes.filter((a) => !a.name.startsWith('animate.'));
+  }
+
+  private filterAnimationInputs(attributes: t.BoundAttribute[]): t.BoundAttribute[] {
+    return attributes.filter((a) => a.type !== BindingType.Animation);
+  }
+
   private wrapInTemplate(
     node: t.Element | t.Component | t.Content | t.Template,
     templateProperties: ParsedProperty[],
@@ -986,8 +1004,8 @@ class HtmlAstToIvyAst implements html.Visitor {
     };
 
     if (node instanceof t.Element || node instanceof t.Component) {
-      hoistedAttrs.attributes.push(...node.attributes);
-      hoistedAttrs.inputs.push(...node.inputs);
+      hoistedAttrs.attributes.push(...this.filterAnimationAttributes(node.attributes));
+      hoistedAttrs.inputs.push(...this.filterAnimationInputs(node.inputs));
       hoistedAttrs.outputs.push(...node.outputs);
     }
 
@@ -1233,10 +1251,6 @@ class NonBindableVisitor implements html.Visitor {
 }
 
 const NON_BINDABLE_VISITOR = new NonBindableVisitor();
-
-function normalizeAttributeName(attrName: string): string {
-  return /^data-/i.test(attrName) ? attrName.substring(5) : attrName;
-}
 
 function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
   boundEvents.push(...events.map((e) => t.BoundEvent.fromParsedEvent(e)));

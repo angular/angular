@@ -23,13 +23,23 @@ import {
   markRNodeAsSkippedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
+import {getComponentName} from '../../internal/get_closest_component_name';
 import {assertDefined} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
 import {clearElementContents, createElementNode} from '../dom_node_manipulation';
+import {ComponentDef} from '../interfaces/definition';
 import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
+import {
+  ENVIRONMENT,
+  HEADER_OFFSET,
+  HYDRATION,
+  LView,
+  RENDERER,
+  TVIEW,
+  TView,
+} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {executeContentQueries} from '../queries/query_execution';
 import {
@@ -100,6 +110,31 @@ export function ɵɵelementStart(
       )
     : (tView.data[adjustedIndex] as TElementNode);
 
+  // If the node is a component host and we have a tracing service, we need to wrap the init logic.
+  if (isComponentHost(tNode)) {
+    const tracingService = lView[ENVIRONMENT].tracingService;
+
+    if (tracingService && tracingService.componentCreate) {
+      const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
+
+      return tracingService.componentCreate(getComponentName(def), () => {
+        initializeElement(index, name, lView, tNode, localRefsIndex);
+        return ɵɵelementStart;
+      });
+    }
+  }
+
+  initializeElement(index, name, lView, tNode, localRefsIndex);
+  return ɵɵelementStart;
+}
+
+function initializeElement(
+  index: number,
+  name: string,
+  lView: LView,
+  tNode: TElementNode,
+  localRefsIndex: number | undefined,
+) {
   elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);
 
   if (isDirectiveHost(tNode)) {
@@ -115,8 +150,6 @@ export function ɵɵelementStart(
   if (ngDevMode && lView[TVIEW].firstCreatePass) {
     validateElementIsKnown(lView, tNode);
   }
-
-  return ɵɵelementStart;
 }
 
 /**

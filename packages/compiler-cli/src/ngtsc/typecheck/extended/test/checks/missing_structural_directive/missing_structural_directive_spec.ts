@@ -175,6 +175,52 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should *not* produce a warning for custom structural directives imported from another file', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const dirFileName = absoluteFrom('/dir.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName: dirFileName,
+          source: `export class Foo {}`,
+        },
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div *foo="exp"></div>`,
+          },
+          source: `
+          import {Foo} from './dir';
+          export class TestCmp {}
+        `,
+          declarations: [
+            {
+              type: 'directive',
+              name: 'Foo',
+              selector: `[foo]`,
+              file: dirFileName,
+            },
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `[test-cmp]`,
+              isStandalone: true,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingStructuralDirectiveCheck],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      // No diagnostic messages are expected.
+      expect(diags.length).toBe(0);
+    });
+
     it('should *not* produce a warning for non-standalone components', () => {
       const fileName = absoluteFrom('/main.ts');
 
@@ -336,6 +382,126 @@ runInEachFileSystem(() => {
       );
 
       // What matters is that we don't get the missing structural directive diagnostic.
+    });
+
+    it('should produce a warning when missing structural directive is used alongside an imported directive', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `
+              <div *foo="bar" [bar]></div>
+            `,
+          },
+          source: `
+            export class TestCmp {}
+            export class BarDirective {}
+          `,
+          declarations: [
+            {
+              type: 'directive',
+              name: 'BarDirective',
+              selector: '[bar]',
+              inputs: {bar: 'bar'},
+            },
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `test-cmp`,
+              isStandalone: true,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingStructuralDirectiveCheck],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.MISSING_STRUCTURAL_DIRECTIVE));
+    });
+
+    it('should *not* produce a warning when structural directive with more specific selector is imported', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `
+              <div *bar></div>
+            `,
+          },
+          source: `
+            export class TestCmp {}
+            export class BarDirective {}
+          `,
+          declarations: [
+            {
+              type: 'directive',
+              name: 'BarDirective',
+              selector: 'ng-template[bar]',
+            },
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `test-cmp`,
+              isStandalone: true,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingStructuralDirectiveCheck],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+
+      expect(diags.length).toBe(0);
+    });
+
+    it('should *not* produce a warning for ngIf with template references using then/else', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `
+              <ng-container *ngIf="foo; then bar; else bam"></ng-container>
+            `,
+          },
+          declarations: [
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `test-cmp`,
+              isStandalone: true,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingStructuralDirectiveCheck],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+
+      expect(diags.length).toBe(0);
     });
   });
 });

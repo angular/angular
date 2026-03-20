@@ -15,6 +15,7 @@ import {
   Input,
   NgZone,
   createComponent,
+  provideZoneChangeDetection,
   provideZonelessChangeDetection,
   signal,
 } from '../src/core';
@@ -32,7 +33,7 @@ import {expect} from '@angular/private/testing/matchers';
 
 @Component({
   selector: 'simple-comp',
-  template: `<span>Original {{simpleBinding}}</span>`,
+  template: `<span>Original {{ simpleBinding }}</span>`,
   standalone: false,
 })
 @Injectable()
@@ -67,7 +68,7 @@ class MyIfComp {
 
 @Component({
   selector: 'autodetect-comp',
-  template: `<span (click)='click()'>{{text}}</span>`,
+  template: `<span (click)="click()">{{ text }}</span>`,
   standalone: false,
 })
 class AutoDetectComp {
@@ -80,7 +81,7 @@ class AutoDetectComp {
 
 @Component({
   selector: 'async-comp',
-  template: `<span (click)='click()'>{{text}}</span>`,
+  template: `<span (click)="click()">{{ text }}</span>`,
   standalone: false,
 })
 class AsyncComp {
@@ -111,7 +112,7 @@ class AsyncChildComp {
 
 @Component({
   selector: 'async-change-comp',
-  template: `<async-child-comp (click)='click()' [text]="text"></async-child-comp>`,
+  template: `<async-child-comp (click)="click()" [text]="text"></async-child-comp>`,
   standalone: false,
 })
 class AsyncChangeComp {
@@ -124,7 +125,7 @@ class AsyncChangeComp {
 
 @Component({
   selector: 'async-timeout-comp',
-  template: `<span (click)='click()'>{{text}}</span>`,
+  template: `<span (click)="click()">{{ text }}</span>`,
   standalone: false,
 })
 class AsyncTimeoutComp {
@@ -139,7 +140,7 @@ class AsyncTimeoutComp {
 
 @Component({
   selector: 'nested-async-timeout-comp',
-  template: `<span (click)='click()'>{{text}}</span>`,
+  template: `<span (click)="click()">{{ text }}</span>`,
   standalone: false,
 })
 class NestedAsyncTimeoutComp {
@@ -165,6 +166,7 @@ describe('ComponentFixture', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
       declarations: [
         AutoDetectComp,
         AsyncComp,
@@ -428,6 +430,7 @@ describe('ComponentFixture', () => {
     class Blank {}
 
     it('rejects whenStable promise when errors happen during appRef.tick', async () => {
+      TestBed.configureTestingModule({providers: [provideZoneChangeDetection()]});
       const fixture = TestBed.createComponent(Blank);
       const throwingThing = createComponent(ThrowingThing, {
         environmentInjector: TestBed.inject(EnvironmentInjector),
@@ -455,13 +458,13 @@ describe('ComponentFixture', () => {
         selector: 'defer-comp',
         imports: [DeferredComp, SecondDeferredComp],
         template: `<div>
-            @defer (on immediate) {
-              <DeferredComp />
-            }
-            @defer (on idle) {
-              <SecondDeferredComp />
-            }
-          </div>`,
+          @defer (on immediate) {
+            <DeferredComp />
+          }
+          @defer (on idle) {
+            <SecondDeferredComp />
+          }
+        </div>`,
       })
       class DeferComp {}
 

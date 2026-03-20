@@ -146,11 +146,11 @@ Join the conversation and help the community.
 [angularelements]: https://angular.dev/guide/elements
 [ssr]: https://angular.dev/guide/ssr
 [schematics]: https://angular.dev/tools/cli/schematics
-[lazyloading]: https://angular.dev/guide/ngmodules/lazy-loading
+[lazyloading]: https://angular.dev/guide/routing/define-routes#lazily-loaded-components
 [node.js]: https://nodejs.org/
 [npm]: https://www.npmjs.com/get-npm
 [codeofconduct]: CODE_OF_CONDUCT.md
-[X (formerly Twitter)]: https://www.twitter.com/angular
+[X (formerly Twitter)]: https://www.x.com/angular
 [bluesky]: https://bsky.app/profile/angular.dev
 [discord]: https://discord.gg/angular
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular

@@ -8,7 +8,7 @@
 
 import {Pipe, PipeTransform} from '@angular/core';
 
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './utils';
 
 /**
  * @ngModule CommonModule
@@ -42,6 +42,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * ### String Examples
  *
  * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_string'}
+ *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
  *
  * @publicApi
  */

@@ -22,6 +22,7 @@ ng_project(
     ],
     deps = [
         "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
         "//adev/shared-docs/directives",
@@ -38,6 +39,8 @@ ts_project(
         ":search-history",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/platform-browser",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/providers",
         "//adev/shared-docs/services",
         "//adev/shared-docs/testing",
     ],

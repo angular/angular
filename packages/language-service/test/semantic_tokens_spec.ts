@@ -8,15 +8,10 @@
 
 import ts from 'typescript';
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {TokenEncodingConsts, TokenModifier, TokenType} from '../src/semantic_tokens';
 import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
-import {TokenEncodingConsts, TokenType, TokenModifier} from '../src/semantic_tokens';
 
 describe('semantic tokens', () => {
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
-
   it('should return no classifications with format "Original"', () => {
     const {templateFile} = setup('<test-comp/>');
     const actual = templateFile.getEncodedSemanticClassifications(

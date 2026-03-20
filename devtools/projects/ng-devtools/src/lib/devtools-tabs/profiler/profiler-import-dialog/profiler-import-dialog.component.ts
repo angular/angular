@@ -7,15 +7,8 @@
  */
 
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialogTitle,
-  MatDialogContent,
-  MatDialogActions,
-  MatDialogClose,
-} from '@angular/material/dialog';
-import {MatButton} from '@angular/material/button';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogClose} from '@angular/material/dialog';
+import {ButtonComponent} from '../../../shared/button/button.component';
 
 interface DialogData {
   profilerVersion?: number;
@@ -28,7 +21,7 @@ interface DialogData {
   selector: 'ng-profiler-import-dialog',
   templateUrl: './profiler-import-dialog.component.html',
   styleUrls: ['./profiler-import-dialog.component.scss'],
-  imports: [MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MatButton],
+  imports: [MatDialogClose, ButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilerImportDialogComponent {

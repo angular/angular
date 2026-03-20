@@ -46,7 +46,6 @@ $code-font-size: 0.875rem;
       /* Optional, if you also want font styles */
       font-style: var(--shiki-light-font-style);
       font-weight: var(--shiki-light-font-weight);
-      text-decoration: var(--shiki-light-text-decoration);
     }
 
     .shiki-ln-line-highlighted,
@@ -161,6 +160,23 @@ $code-font-size: 0.875rem;
         max-height: 300px;
       }
     }
+
+    &.embedded {
+      border-width: 0;
+      border-radius: 0;
+    }
+
+    &.docs-code-avoid {
+      --style-color: var(--hot-red);
+    }
+
+    &.docs-code-prefer {
+      --style-color: var(--symbolic-green);
+    }
+    &.docs-code-avoid,
+    &.docs-code-prefer {
+      border-color: color-mix(in srgb, var(--style-color) 40%, var(--senary-contrast));
+    }
   }
 
   .shiki {
@@ -187,15 +203,24 @@ $code-font-size: 0.875rem;
       white-space: nowrap;
     }
 
-    .shiki .line {
-      &::before {
-        content: '$';
-        padding-inline-end: 0.5rem;
+    &:not([hideDollar]) {
+      .shiki {
+        .line {
+          &::before {
+            content: '$';
+            padding-inline-end: 0.5rem;
+          }
+        }
       }
-      display: block;
+    }
 
-      &.hidden {
-        display: none;
+    .shiki {
+      .line {
+        display: block;
+
+        &.hidden {
+          display: none;
+        }
       }
     }
   }
@@ -222,7 +247,7 @@ $code-font-size: 0.875rem;
       opacity: 1;
       path {
         transition: fill 0.3s ease;
-        fill: var(--gray-400);
+        fill: var(--quaternary-contrast);
       }
     }
     .docs-check {
@@ -273,18 +298,51 @@ $code-font-size: 0.875rem;
   }
 
   .docs-code-header {
+    display: flex;
     padding: 0.75rem;
 
-    // docs header background
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--subtle-purple);
-      border-radius: 0.25rem 0.25rem 0 0;
-      transition: background 0.3s ease;
+    background: var(--subtle-purple);
+    border-radius: 0.25rem 0.25rem 0 0;
+    transition: background 0.3s ease;
+
+    .docs-code-avoid &,
+    .docs-code-prefer & {
+      background: color-mix(in srgb, var(--style-color) 17%, var(--page-background));
+      color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+      h3 {
+        color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+      }
+    }
+
+    .docs-code-header-style {
+      display: flex;
+      align-items: center;
+      font-size: 0.8rem;
+
+      &::before {
+        font-family: var(--icons);
+        margin-right: 0.5rem;
+      }
+      &:not(:last-child)::after {
+        content: '-';
+        margin: 0 0.5rem;
+      }
+    }
+
+    .docs-code-header-style {
+      .docs-code-prefer & {
+        &::before {
+          content: 'check';
+        }
+      }
+    }
+
+    .docs-code-header-style {
+      .docs-code-avoid & {
+        &::before {
+          content: 'dangerous';
+        }
+      }
     }
   }
 
@@ -334,29 +392,11 @@ $code-font-size: 0.875rem;
       text-align: right;
       padding-block: 0.25rem;
     }
-    
+
     .line {
       &.highlighted {
         background-color: color-mix(in srgb, var(--bright-blue) 9%, var(--page-background));
         color: color-mix(in srgb, var(--bright-blue) 60%, var(--full-contrast));
-
-        span {
-          background-color: inherit;
-        }
-      }
-
-      &.remove {
-        background-color: color-mix(in srgb, var(--orange-red) 11%, var(--page-background));
-        color: color-mix(in srgb, var(--hot-red) 80%, var(--full-contrast));
-
-        span {
-          background-color: inherit;
-        }
-      }
-
-      &.add {
-        background-color: color-mix(in srgb, var(--super-green) 14%, var(--page-background));
-        color: color-mix(in srgb, var(--super-green), var(--full-contrast) 50%);
 
         span {
           background-color: inherit;
@@ -383,6 +423,11 @@ $code-font-size: 0.875rem;
     padding-block: 0.25rem;
 
     &.hidden {
+      display: none;
+    }
+
+    // Hide the last line if it's empty
+    &:last-child:empty {
       display: none;
     }
 

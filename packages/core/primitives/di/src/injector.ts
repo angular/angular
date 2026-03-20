@@ -7,7 +7,7 @@
  */
 
 import {Constructor, InjectionToken} from './injection_token';
-import {NotFound, NOT_FOUND} from './not_found';
+import {NotFound} from './not_found';
 
 export interface Injector {
   retrieve<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;

@@ -5,9 +5,15 @@ load("//adev/shared-docs/pipeline:_previews.bzl", _generate_previews = "generate
 load("//adev/shared-docs/pipeline:_stackblitz.bzl", _generate_stackblitz = "generate_stackblitz")
 load("//adev/shared-docs/pipeline:_tutorial.bzl", _generate_tutorial = "generate_tutorial")
 
-generate_guides = _generate_guides
 generate_stackblitz = _generate_stackblitz
 generate_previews = _generate_previews
 generate_playground = _generate_playground
 generate_tutorial = _generate_tutorial
 generate_nav_items = _generate_nav_items
+
+def generate_guides(**kwargs):
+    _generate_guides(
+        api_manifest = "//adev/src/assets:docs_api_manifest",
+        defined_routes = "//adev/scripts/routes:defined-routes.json",
+        **kwargs
+    )

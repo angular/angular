@@ -18,6 +18,7 @@ import {isExternalLink} from '../../utils/index';
   selector: 'a[href]:not([noBlankForExternalLink])',
   host: {
     '[attr.target]': 'target',
+    '[attr.rel]': 'rel',
   },
 })
 export class ExternalLink {
@@ -25,6 +26,7 @@ export class ExternalLink {
   private readonly platformId = inject(PLATFORM_ID);
 
   target?: '_blank' | '_self' | '_parent' | '_top' | '';
+  rel?: string;
 
   constructor() {
     this.setAnchorTarget();
@@ -37,6 +39,7 @@ export class ExternalLink {
 
     if (isExternalLink(this.anchor.nativeElement.href)) {
       this.target = '_blank';
+      this.rel = 'noopener';
     }
   }
 }

@@ -12,9 +12,11 @@ import {Routes} from '@angular/router';
 import {initializeMessageBus} from '../../../projects/ng-devtools-backend';
 
 import {ZoneUnawareIFrameMessageBus} from '../../zone-unaware-iframe-message-bus';
+import {DEVTOOLS_BACKEND_URI, DEVTOOLS_FRONTEND_URI} from '../../communication';
 
 import {DemoAppComponent} from './demo-app.component';
 import {ZippyComponent} from './zippy.component';
+import {AuxiliaryComponent} from './auxiliary/auxiliary.component';
 
 export const DEMO_ROUTES: Routes = [
   {
@@ -24,6 +26,11 @@ export const DEMO_ROUTES: Routes = [
       {
         path: '',
         loadChildren: () => import('./todo/app.module').then((m) => m.AppModule),
+      },
+      {
+        path: 'aux',
+        component: AuxiliaryComponent,
+        outlet: 'aux',
       },
     ],
     providers: [
@@ -36,9 +43,5 @@ export const DEMO_ROUTES: Routes = [
 ];
 
 initializeMessageBus(
-  new ZoneUnawareIFrameMessageBus(
-    'angular-devtools-backend',
-    'angular-devtools',
-    () => window.parent,
-  ),
+  new ZoneUnawareIFrameMessageBus(DEVTOOLS_BACKEND_URI, DEVTOOLS_FRONTEND_URI, () => window.parent),
 );

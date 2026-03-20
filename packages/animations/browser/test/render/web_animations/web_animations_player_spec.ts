@@ -98,10 +98,65 @@ describe('WebAnimationsPlayer tests', () => {
     expect(p.currentTime).toEqual(500);
     expect(p.log).toEqual(['play']);
   });
+
+  // https://github.com/angular/angular/issues/64486
+  it('should gracefully handle animation being null in Chromium-based browsers', () => {
+    element['animate'] = () => {
+      return null;
+    };
+    const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+
+    let started = false;
+    let done = false;
+    player.onStart(() => (started = true));
+    player.onDone(() => (done = true));
+
+    player.play();
+
+    expect(player.hasStarted()).toBe(false);
+    expect(started).toBe(false);
+    expect(done).toBe(true);
+
+    player.pause();
+    player.play();
+    player.restart();
+
+    expect(player.getPosition()).toBe(1);
+    player.setPosition(0.5);
+    expect(player.getPosition()).toBe(1);
+  });
+
+  // https://github.com/angular/angular/issues/64486
+  it('should gracefully handle animation exceptions in Firefox', () => {
+    element['animate'] = () => {
+      throw new Error('Simulated error');
+    };
+    const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+
+    let started = false;
+    let done = false;
+    player.onStart(() => (started = true));
+    player.onDone(() => (done = true));
+
+    player.play();
+
+    expect(player.hasStarted()).toBe(false);
+    expect(started).toBe(false);
+    expect(done).toBe(true);
+
+    player.pause();
+    player.play();
+    player.restart();
+
+    expect(player.getPosition()).toBe(1);
+    player.setPosition(0.5);
+    expect(player.getPosition()).toBe(1);
+  });
 });
 
 class MockDomAnimation implements Animation {
   log: string[] = [];
+  overallProgress = null;
   cancel(): void {
     this.log.push('cancel');
   }

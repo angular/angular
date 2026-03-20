@@ -32,7 +32,7 @@ describe('create router state', () => {
     reuseStrategy = new DefaultRouteReuseStrategy();
   });
 
-  const emptyState = () => createEmptyState(RootComponent);
+  const emptyState = () => createEmptyState(RootComponent, TestBed.inject(EnvironmentInjector));
 
   it('should create new state', async () => {
     const state = createRouterState(
@@ -181,16 +181,17 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 }
 
 async function createState(config: Routes, url: string): Promise<RouterStateSnapshot> {
-  return recognize(
+  const result = await recognize(
     TestBed.inject(EnvironmentInjector),
     TestBed.inject(RouterConfigLoader),
     RootComponent,
     config,
     tree(url),
     new DefaultUrlSerializer(),
-  )
-    .pipe(map((result) => result.state))
-    .toPromise() as Promise<RouterStateSnapshot>;
+    undefined,
+    new AbortController().signal,
+  );
+  return result.state;
 }
 
 function checkActivatedRoute(

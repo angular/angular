@@ -22,7 +22,7 @@ import {
 } from '@angular/platform-browser';
 ...
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideClientHydration(withIncrementalHydration())]
 });
 ```
@@ -31,7 +31,7 @@ Incremental Hydration depends on and enables [event replay](guide/hydration#capt
 
 ## How does incremental hydration work?
 
-Incremental hydration builds on top of full-application [hydration](guide/hydration), [deferrable views](guide/defer), and [event replay](guide/hydration#capturing-and-replaying-events). With incremental hydration, you can add additional triggers to `@defer` blocks that define incremental hydration boundaries. Adding a `hydrate` trigger to a defer block tells Angular that it should load that defer block's dependencies during server-side rendering and render the main template rather than the `@placeholder`. When client-side rendering, the dependencies are still deferred, and the defer block content stays dehydrated until its `hydrate` trigger fires. That trigger tells the defer block to fetch its dependencies and hydrate the content. Any browser events, specifically those that match listeners registered in your component, that are triggered by the user prior to hydration are queued up and replayed once the hydration process is complete.
+Incremental hydration builds on top of full-application [hydration](guide/hydration), [deferrable views](/guide/templates/defer), and [event replay](guide/hydration#capturing-and-replaying-events). With incremental hydration, you can add additional triggers to `@defer` blocks that define incremental hydration boundaries. Adding a `hydrate` trigger to a defer block tells Angular that it should load that defer block's dependencies during server-side rendering and render the main template rather than the `@placeholder`. When client-side rendering, the dependencies are still deferred, and the defer block content stays dehydrated until its `hydrate` trigger fires. That trigger tells the defer block to fetch its dependencies and hydrate the content. Any browser events, specifically those that match listeners registered in your component, that are triggered by the user prior to hydration are queued up and replayed once the hydration process is complete.
 
 ## Controlling hydration of content with triggers
 
@@ -49,7 +49,7 @@ The available triggers are as follows:
 
 | Trigger                                             | Description                                                            |
 | --------------------------------------------------- | ---------------------------------------------------------------------- |
-| [`hydrate on idle`](#hydrate-on-idle)               | Triggers when the browser is idle.                                     |
+| [`hydrate on idle`](#hydrate-on-idle)               | Triggers when the browser is idle. Supports an optional timeout.       |
 | [`hydrate on viewport`](#hydrate-on-viewport)       | Triggers when specified content enters the viewport                    |
 | [`hydrate on interaction`](#hydrate-on-interaction) | Triggers when the user interacts with specified element                |
 | [`hydrate on hover`](#hydrate-on-hover)             | Triggers when the mouse hovers over specified area                     |
@@ -60,11 +60,18 @@ The available triggers are as follows:
 
 The `hydrate on idle` trigger loads the deferrable view's dependencies and hydrates the content once the browser has reached an idle state, based on `requestIdleCallback`.
 
+You can optionally specify a timeout in milliseconds that is passed to [`requestIdleCallback`](https://developer.mozilla.org/docs/Web/API/Window/requestIdleCallback). If the browser doesn't schedule the callback soon enough, the work will run no later than the specified timeout.
+
 ```angular-html
 @defer (hydrate on idle) {
   <large-cmp />
 } @placeholder {
   <div>Large component placeholder</div>
+}
+
+<!-- With a 500ms timeout -->
+@defer (hydrate on idle(500)) {
+  <large-cmp />
 }
 ```
 
@@ -175,7 +182,7 @@ Hydrate triggers are additional triggers that are used alongside regular trigger
 ```angular-html
 @defer (on idle; hydrate on interaction) {
   <example-cmp />
-} @placeholder{
+} @placeholder {
   <div>Example Placeholder</div>
 }
 ```
@@ -194,7 +201,7 @@ Angular's component and dependency system is hierarchical, which means hydrating
   } @placeholder {
     <div>Child placeholder</div>
   }
-} @placeholder{
+} @placeholder {
   <div>Parent Placeholder</div>
 }
 ```

@@ -8,16 +8,31 @@
 
 import {
   Component,
+  ComponentRef,
   computed,
   Directive,
   effect,
   EventEmitter,
+  inject,
   input,
+  OnChanges,
+  OnDestroy,
+  output,
   Output,
+  signal,
+  SimpleChanges,
+  TemplateRef,
+  viewChild,
   ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import {SIGNAL} from '../../../primitives/signals';
-import {TestBed} from '../../../testing';
+import {fakeAsync, TestBed, tick} from '../../../testing';
+import {ViewEncapsulation} from '@angular/compiler';
+import {By} from '@angular/platform-browser';
+import {tickAnimationFrames} from '../../animation_utils/tick_animation_frames';
+import {isNode} from '@angular/private/testing';
+import {Subscription} from 'rxjs';
 
 describe('signal inputs', () => {
   beforeEach(() =>
@@ -49,6 +64,7 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -78,6 +94,7 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('changed:computed-1');
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('changed:computed-2');
@@ -116,6 +133,7 @@ describe('signal inputs', () => {
     expect(effectLog).toEqual([1]);
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(effectLog).toEqual([1, 2]);
@@ -173,32 +191,6 @@ describe('signal inputs', () => {
     expect(transformRunCount).toBe(1);
   });
 
-  it('should throw error if a required input is accessed too early', () => {
-    @Component({
-      selector: 'input-comp',
-      template: 'input:{{input()}}',
-    })
-    class InputComp {
-      input = input.required<number>({debugName: 'input'});
-
-      constructor() {
-        this.input();
-      }
-    }
-
-    @Component({
-      template: `<input-comp [input]="value" />`,
-      imports: [InputComp],
-    })
-    class TestCmp {
-      value = 1;
-    }
-
-    expect(() => TestBed.createComponent(TestCmp)).toThrowError(
-      /Input "input" is required but no value is available yet/,
-    );
-  });
-
   it('should be possible to bind to an inherited input', () => {
     @Directive()
     class BaseDir {
@@ -225,6 +217,7 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -256,12 +249,14 @@ describe('signal inputs', () => {
 
     // Changing the value from within the directive.
     host.dir.valueChange.emit(2);
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(host.value).toBe(2);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
     host.value = 3;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(host.value).toBe(3);
     expect(host.dir.value()).toBe(3);
@@ -307,5 +302,355 @@ describe('signal inputs', () => {
     fixture.detectChanges();
 
     expect(host.dir.value[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
+  });
+
+  describe('animation API', () => {
+    if (isNode) {
+      it('should pass', () => expect(true).toBe(true));
+      return;
+    }
+
+    it('should support signal inputs', fakeAsync(() => {
+      const styles = `
+        .slide-in {
+          animation: slide-in 1ms;
+        }
+        .fade-in {
+          animation: fade-in 2ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `;
+      @Component({
+        selector: 'child-cmp',
+        styles: styles,
+        template: '<p [animate.enter]="enterAnim()">I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ChildComponent {
+        enterAnim = input.required<string | string[]>();
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        imports: [ChildComponent],
+        template: '<child-cmp [enterAnim]="fade" />',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        fade = 'fade-in';
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const childCmp = fixture.debugElement.query(By.css('p'));
+
+      expect(childCmp.nativeElement.className).toContain('fade-in');
+      childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      fixture.detectChanges();
+      tick();
+      expect(childCmp.nativeElement.className).not.toContain('fade-in');
+    }));
+
+    it('should support content projection', fakeAsync(() => {
+      const animateStyles = `
+        .fade-in {
+          animation: fade 1ms forwards;
+        }
+        .fade-out {
+          animation: fade 2ms reverse;
+        }
+        @keyframes fade {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+      `;
+
+      @Component({
+        selector: 'app-container',
+        encapsulation: ViewEncapsulation.None,
+        template: `
+          <button (click)="toggle()">{{ state() ? 'Leave' : 'Enter' }}</button>
+
+          <ng-template #template>
+            <ng-content></ng-content>
+          </ng-template>
+        `,
+      })
+      class Container {
+        private readonly viewContainerRef = inject(ViewContainerRef);
+
+        protected readonly template = viewChild.required<TemplateRef<any>>('template');
+
+        protected state = signal<boolean>(false);
+
+        protected toggle() {
+          this.state() ? this.destroy() : this.create();
+        }
+
+        protected create() {
+          this.state.set(true);
+          this.viewContainerRef.createEmbeddedView(this.template());
+        }
+
+        protected destroy() {
+          this.state.set(false);
+          this.viewContainerRef.clear();
+        }
+      }
+
+      @Component({
+        selector: 'app-content',
+        template: ` <ng-content></ng-content> `,
+        styles: animateStyles,
+        host: {
+          'animate.leave': 'fade-out',
+          'animate.enter': 'fade-in',
+        },
+        encapsulation: ViewEncapsulation.None,
+      })
+      class Content {}
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <app-container>
+            <app-content>This content will be animated on enter/leave</app-content>
+          </app-container>
+        `,
+        imports: [Container, Content],
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {}
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const button = fixture.nativeElement.querySelector('button');
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-content')).toBeNull();
+      expect(button).not.toBeNull();
+
+      button.click();
+
+      // show first time
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const enterAppContent = fixture.nativeElement.querySelector('app-content');
+
+      expect(enterAppContent).not.toBeNull();
+      expect(enterAppContent.className).toEqual('fade-in');
+      enterAppContent.dispatchEvent(new AnimationEvent('animationstart'));
+      enterAppContent.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
+      tick();
+      expect(enterAppContent.className).not.toEqual('fade-in');
+      expect(fixture.debugElement.query(By.css('app-content'))).not.toBeNull();
+
+      button.click();
+
+      // hide first time
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const leaveAppContent = fixture.nativeElement.querySelector('app-content');
+
+      expect(fixture.nativeElement.outerHTML).toContain('app-content class="fade-out"');
+      expect(leaveAppContent.className).toEqual('fade-out');
+      leaveAppContent.dispatchEvent(new AnimationEvent('animationstart'));
+      leaveAppContent.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.query(By.css('app-content'))).toBeNull();
+
+      button.click();
+
+      // show second time
+      fixture.detectChanges();
+      fixture.changeDetectorRef.markForCheck();
+      tickAnimationFrames(1);
+      const enterAppContent2 = fixture.nativeElement.querySelector('app-content');
+
+      expect(enterAppContent2).not.toBeNull();
+      expect(enterAppContent2.className).toEqual('fade-in');
+      const fadeInEl = fixture.nativeElement.querySelector('.fade-in');
+      fadeInEl.dispatchEvent(new AnimationEvent('animationstart'));
+      fadeInEl.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.nativeElement.querySelector('app-content').className).not.toEqual('fade-in');
+      expect(fixture.debugElement.query(By.css('app-content'))).not.toBeNull();
+
+      button.click();
+
+      // hide second time
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const leaveAppContent2 = fixture.nativeElement.querySelector('app-content');
+
+      expect(fixture.nativeElement.outerHTML).toContain('app-content class="fade-out"');
+      expect(leaveAppContent2.className).toEqual('fade-out');
+      leaveAppContent2.dispatchEvent(new AnimationEvent('animationstart'));
+      leaveAppContent2.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade'}));
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.query(By.css('app-content'))).toBeNull();
+    }));
+
+    it('should run animations using the root injector so that the animation queue still runs when the component is destroyed before afterNextRender occurs', fakeAsync(() => {
+      const animateStyles = `
+        .fade-out {
+          animation: fade-out 100ms;
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'notification',
+        styles: animateStyles,
+        template: ` <div (click)="close()">{{ item?.id }}</div> `,
+        host: {
+          'animate.leave': 'fade-out',
+        },
+        encapsulation: ViewEncapsulation.None,
+      })
+      class Notification {
+        public item: any;
+        public closed: EventEmitter<any> = new EventEmitter<any>();
+        public close(): void {
+          this.closed.emit(this.item?.id);
+        }
+      }
+
+      @Directive({selector: '[messageRenderer]'})
+      class MessageRendererDirective implements OnChanges, OnDestroy {
+        protected componentRef: ComponentRef<Notification> | null = null;
+        protected closedSubscription: Subscription | undefined | null;
+
+        notification = input.required<any>({alias: 'messageRenderer'});
+        closed = output<string>();
+
+        protected get component(): any | null {
+          if (!this.componentRef) {
+            return null;
+          }
+          return this.componentRef.instance;
+        }
+
+        constructor(protected viewContainerRef: ViewContainerRef) {}
+
+        public ngOnChanges(changes: SimpleChanges): void {
+          // Clean up old subscription before clearing view and creating new component
+
+          this.closedSubscription?.unsubscribe();
+          this.closedSubscription = null; // Ensure it's nullified
+          this.viewContainerRef.clear();
+
+          if ('notification' in changes && changes['notification'].currentValue) {
+            const injector = this.viewContainerRef.injector;
+            this.componentRef = this.viewContainerRef.createComponent(Notification, {
+              injector,
+            });
+
+            // Assign input immediately after creation
+            if (this.component) {
+              this.component.item = this.notification();
+            }
+
+            // Manually trigger change detection for the newly created component
+            // to process its inputs and render its initial state.
+            this.componentRef.changeDetectorRef.detectChanges();
+            this.closedSubscription = this.component?.closed.subscribe(this.closedEmit);
+          }
+        }
+
+        public ngOnDestroy(): void {
+          this.closedSubscription?.unsubscribe();
+          this.closedSubscription = null;
+          this.componentRef?.destroy(); // Explicitly destroy the dynamically created component
+        }
+
+        protected closedEmit = (id: string): void => {
+          this.closed.emit(id);
+        };
+      }
+
+      @Component({
+        template: `
+          @for (itm of list(); track itm) {
+            <ng-template [messageRenderer]="itm" (closed)="removeItem($event)" />
+          }
+        `,
+        imports: [MessageRendererDirective],
+      })
+      class TestComponent {
+        list = signal([{id: '1'}]);
+
+        removeItem(id: string) {
+          this.list.update((l) => [...l.filter((i) => i.id !== id)]);
+        }
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const notification = fixture.nativeElement.querySelector('notification');
+
+      expect(notification).not.toBeNull();
+      expect(notification.classList.contains('fade-out')).toBe(false); // Initially no fade-out class
+
+      // remove the item from the list
+      fixture.componentInstance.removeItem(fixture.componentInstance.list()[0].id);
+      fixture.detectChanges(); // Detect changes for TestComponent to trigger leave animation
+      tickAnimationFrames(1); // Allow animation to start (will add 'fade-out' class)
+
+      const fadingOut = fixture.nativeElement.querySelector('notification');
+
+      expect(fadingOut).not.toBeNull();
+      expect(fadingOut.classList.contains('fade-out')).toBe(true);
+
+      // Trigger animation end to remove the element
+      notification.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out', bubbles: true}),
+      );
+      tick(300); // Advance timers by animation duration (0.5s)
+      fixture.detectChanges(); // Detect changes after animation completes and element is removed
+      expect(fixture.nativeElement.querySelector('notification')).toBeNull(); // Verify element is removed
+    }));
   });
 });

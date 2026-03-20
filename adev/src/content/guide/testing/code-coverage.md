@@ -1,57 +1,115 @@
+# Code coverage
 
-# Find out how much code you're testing
-
-The Angular CLI can run unit tests and create code coverage reports.
 Code coverage reports show you any parts of your code base that might not be properly tested by your unit tests.
 
-To generate a coverage report run the following command in the root of your project.
+## Prerequisites
 
-<docs-code language="shell">
-ng test --no-watch --code-coverage
-</docs-code>
+To generate code coverage reports with Vitest, you must install the `@vitest/coverage-v8` package:
 
-When the tests are complete, the command creates a new `/coverage` directory in the project.
-Open the `index.html` file to see a report with your source code and code coverage values.
+<docs-code-multifile>
+  <docs-code header="npm" language="shell">
+    npm install --save-dev @vitest/coverage-v8
+  </docs-code>
+  <docs-code header="yarn" language="shell">
+    yarn add --dev @vitest/coverage-v8
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D @vitest/coverage-v8
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add --dev @vitest/coverage-v8
+  </docs-code>
+</docs-code-multifile>
 
-If you want to create code-coverage reports every time you test, set the following option in the Angular CLI configuration file, `angular.json`:
+## Generating a report
 
-<docs-code language="json">
-"test": {
-  "options": {
-    "codeCoverage": true
-  }
-}
-</docs-code>
+To generate a coverage report, add the `--coverage` flag to the `ng test` command:
 
-## Code coverage enforcement
+```shell
+ng test --coverage
+```
 
-The code coverage percentages let you estimate how much of your code is tested.
-If your team decides on a set minimum amount to be unit tested, enforce this minimum with the Angular CLI.
+After the tests run, the command creates a new `coverage/` directory in the project. Open the `index.html` file to see a report with your source code and code coverage values.
 
-For example, suppose you want the code base to have a minimum of 80% code coverage.
-To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the `check` property in the `coverageReporter:` key.
+If you want to create code-coverage reports every time you test, you can set the `coverage` option to `true` in your `angular.json` file:
 
-<docs-code language="javascript">
-coverageReporter: {
-  dir: require('path').join(__dirname, './coverage/<project-name>'),
-  subdir: '.',
-  reporters: [
-    { type: 'html' },
-    { type: 'text-summary' }
-  ],
-  check: {
-    global: {
-      statements: 80,
-      branches: 80,
-      functions: 80,
-      lines: 80
+```json
+{
+  "projects": {
+    "your-project-name": {
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverage": true
+          }
+        }
+      }
     }
   }
 }
-</docs-code>
+```
 
-HELPFUL: Read more about creating and fine tuning Karma configuration in the [testing guide](guide/testing#configuration).
+## Enforcing code coverage thresholds
 
-The `check` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
+The code coverage percentages let you estimate how much of your code is tested. If your team decides on a minimum amount to be unit tested, you can enforce this minimum in your configuration.
 
-Read more on coverage configuration options in the [karma coverage documentation](https://github.com/karma-runner/karma-coverage/blob/master/docs/configuration.md).
+For example, suppose you want the code base to have a minimum of 80% code coverage. To enable this, add the `coverageThresholds` option to your `angular.json` file:
+
+```json
+{
+  "projects": {
+    "your-project-name": {
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverage": true,
+            "coverageThresholds": {
+              "statements": 80,
+              "branches": 80,
+              "functions": 80,
+              "lines": 80
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Now, if your coverage drops below 80% when you run your tests, the command will fail.
+
+## Advanced configuration
+
+You can configure several other coverage options in your `angular.json` file:
+
+- `coverageInclude`: Glob patterns of files to include in the coverage report.
+- `coverageExclude`: Glob patterns of files to exclude in the coverage report.
+- `coverageReporters`: An array of reporters to use (e.g., `html`, `lcov`, `json`).
+- `coverageWatermarks`: An object specifying `[low, high]` watermarks for the HTML reporter, which can affect the color-coding of the report.
+
+```json
+{
+  "projects": {
+    "your-project-name": {
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverage": true,
+            "coverageReporters": ["html", "lcov"],
+            "coverageWatermarks": {
+              "statements": [50, 80],
+              "branches": [50, 80],
+              "functions": [50, 80],
+              "lines": [50, 80]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```

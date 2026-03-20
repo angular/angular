@@ -23,10 +23,13 @@ import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {
+  ANIMATIONS,
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
   HYDRATION,
+  ID,
+  INJECTOR,
   LView,
   TVIEW,
   TView,
@@ -38,14 +41,17 @@ import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
-import {declareNoDirectiveHostTemplate} from './template';
+import {AnimationLViewData} from '../../animation/interfaces';
+import {removeDehydratedViews} from '../../hydration/cleanup';
 import {
   addLViewToLContainer,
   detachView,
   getLViewFromLContainer,
   removeLViewFromLContainer,
 } from '../view/container';
-import {removeDehydratedViews} from '../../hydration/cleanup';
+import {declareNoDirectiveHostTemplate} from './template';
+import {removeFromAnimationQueue} from '../../animation/queue';
+import {allLeavingAnimations} from '../../animation/longest_animation';
 
 /**
  * Creates an LContainer for an ng-template representing a root node
@@ -417,9 +423,11 @@ class LiveCollectionLContainerImpl extends LiveCollection<
       index,
       shouldAddViewToDom(this.templateTNode, dehydratedView),
     );
+    clearDetachAnimationList(this.lContainer, index);
   }
   override detach(index: number): LView<RepeaterContext<unknown>> {
     this.needsIndexUpdate ||= index !== this.length - 1;
+    maybeInitDetachAnimationList(this.lContainer, index);
     return detachExistingView<RepeaterContext<unknown>>(this.lContainer, index);
   }
   override create(index: number, value: unknown): LView<RepeaterContext<unknown>> {
@@ -433,13 +441,13 @@ class LiveCollectionLContainerImpl extends LiveCollection<
       new RepeaterContext(this.lContainer, value, index),
       {dehydratedView},
     );
-    this.operationsCounter?.recordCreate();
+    ngDevMode && this.operationsCounter?.recordCreate();
 
     return embeddedLView;
   }
   override destroy(lView: LView<RepeaterContext<unknown>>): void {
     destroyLView(lView[TVIEW], lView);
-    this.operationsCounter?.recordDestroy();
+    ngDevMode && this.operationsCounter?.recordDestroy();
   }
   override updateValue(index: number, value: unknown): void {
     this.getLView(index)[CONTEXT].$implicit = value;
@@ -447,7 +455,7 @@ class LiveCollectionLContainerImpl extends LiveCollection<
 
   reset(): void {
     this.needsIndexUpdate = false;
-    this.operationsCounter?.reset();
+    ngDevMode && this.operationsCounter?.reset();
   }
 
   updateIndexes(): void {
@@ -492,7 +500,7 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
     }
 
     const liveCollection = metadata.liveCollection;
-    reconcile(liveCollection, collection, metadata.trackByFn);
+    reconcile(liveCollection, collection, metadata.trackByFn, prevConsumer);
 
     // Warn developers about situations where the entire collection was re-created as part of the
     // reconciliation pass. Note that this warning might be "overreacting" and report cases where
@@ -565,6 +573,42 @@ function getLContainer(lView: LView, index: number): LContainer {
   ngDevMode && assertLContainer(lContainer);
 
   return lContainer;
+}
+
+function clearDetachAnimationList(lContainer: LContainer, index: number): void {
+  if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
+
+  const indexInContainer = CONTAINER_HEADER_OFFSET + index;
+  const viewToDetach = lContainer[indexInContainer] as LView;
+  const animations = viewToDetach
+    ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
+    : undefined;
+  if (
+    viewToDetach &&
+    animations &&
+    animations.detachedLeaveAnimationFns &&
+    animations.detachedLeaveAnimationFns.length > 0
+  ) {
+    const injector = viewToDetach[INJECTOR];
+    removeFromAnimationQueue(injector, animations);
+    allLeavingAnimations.delete(viewToDetach[ID]);
+    animations.detachedLeaveAnimationFns = undefined;
+  }
+}
+
+// Initialize the detach leave animation list for a view about to be detached, but only
+// if it has leave animations.
+function maybeInitDetachAnimationList(lContainer: LContainer, index: number): void {
+  if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
+
+  const indexInContainer = CONTAINER_HEADER_OFFSET + index;
+  const viewToDetach = lContainer[indexInContainer];
+  const animations = viewToDetach
+    ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
+    : undefined;
+  if (animations && animations.leave && animations.leave.size > 0) {
+    animations.detachedLeaveAnimationFns = [];
+  }
 }
 
 function detachExistingView<T>(lContainer: LContainer, index: number): LView<T> {

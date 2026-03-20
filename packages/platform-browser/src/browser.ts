@@ -13,14 +13,13 @@ import {
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
 } from '@angular/common';
 import {
-  ApplicationConfig as ApplicationConfigFromCore,
+  ApplicationConfig,
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
   ErrorHandler,
   InjectionToken,
   NgModule,
-  NgZone,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
   platformCore,
@@ -29,7 +28,6 @@ import {
   RendererFactory2,
   StaticProvider,
   Testability,
-  TestabilityRegistry,
   Type,
   ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
   ɵinternalCreateApplication as internalCreateApplication,
@@ -52,16 +50,17 @@ import {SharedStylesHost} from './dom/shared_styles_host';
 import {RuntimeErrorCode} from './errors';
 
 /**
- * Set of config options available during the application bootstrap operation.
+ * A context object that can be passed to `bootstrapApplication` to provide a pre-existing platform
+ * injector.
  *
  * @publicApi
- *
- * @deprecated
- * `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
  */
-// The below is a workaround to add a deprecated message.
-type ApplicationConfig = ApplicationConfigFromCore;
-export {ApplicationConfig};
+export interface BootstrapContext {
+  /**
+   * A reference to a platform.
+   */
+  platformRef: PlatformRef;
+}
 
 /**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
@@ -69,24 +68,22 @@ export {ApplicationConfig};
  * guide](guide/components/importing).
  *
  * @usageNotes
- * The root component passed into this function *must* be a standalone one (should have the
- * `standalone: true` flag in the `@Component` decorator config).
+ * The root component passed into this function **must** be a standalone one
  *
  * ```angular-ts
  * @Component({
- *   standalone: true,
  *   template: 'Hello world!'
  * })
- * class RootComponent {}
+ * class Root {}
  *
- * const appRef: ApplicationRef = await bootstrapApplication(RootComponent);
+ * const appRef: ApplicationRef = await bootstrapApplication(Root);
  * ```
  *
  * You can add the list of providers that should be available in the application injector by
  * specifying the `providers` field in an object passed as the second argument:
  *
  * ```ts
- * await bootstrapApplication(RootComponent, {
+ * await bootstrapApplication(Root, {
  *   providers: [
  *     {provide: BACKEND_URL, useValue: 'https://yourdomain.com/api'}
  *   ]
@@ -97,7 +94,7 @@ export {ApplicationConfig};
  * existing NgModule (and transitively from all NgModules that it imports):
  *
  * ```ts
- * await bootstrapApplication(RootComponent, {
+ * await bootstrapApplication(Root, {
  *   providers: [
  *     importProvidersFrom(SomeNgModule)
  *   ]
@@ -112,31 +109,31 @@ export {ApplicationConfig};
  * ```ts
  * import {provideProtractorTestingSupport} from '@angular/platform-browser';
  *
- * await bootstrapApplication(RootComponent, {providers: [provideProtractorTestingSupport()]});
+ * await bootstrapApplication(Root, {providers: [provideProtractorTestingSupport()]});
  * ```
  *
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
+ * @param context Optional context object that can be used to provide a pre-existing
+ *     platform injector. This is useful for advanced use-cases, for example, server-side
+ *     rendering, where the platform is created for each request.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
  */
-export function bootstrapApplication(
+export async function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
+  context?: BootstrapContext,
 ): Promise<ApplicationRef> {
-  const config = {rootComponent, ...createProvidersConfig(options)};
+  const config = {
+    rootComponent,
+    ...createProvidersConfig(options, context),
+  };
 
-  // Attempt to resolve component resources before bootstrapping in JIT mode,
-  // however don't interrupt the bootstrapping process.
   if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
-    return resolveComponentResources(fetch)
-      .catch((error) => {
-        console.error(error);
-        return Promise.resolve();
-      })
-      .then(() => internalCreateApplication(config));
+    await resolveJitResources();
   }
 
   return internalCreateApplication(config);
@@ -150,19 +147,41 @@ export function bootstrapApplication(
  *
  * @param options Extra configuration for the application environment, see `ApplicationConfig` for
  *     additional info.
+ * @param context Optional context object that can be used to provide a pre-existing
+ *     platform injector. This is useful for advanced use-cases, for example, server-side
+ *     rendering, where the platform is created for each request.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
  */
-export function createApplication(options?: ApplicationConfig) {
-  return internalCreateApplication(createProvidersConfig(options));
+export async function createApplication(
+  options?: ApplicationConfig,
+  context?: BootstrapContext,
+): Promise<ApplicationRef> {
+  if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
+    await resolveJitResources();
+  }
+
+  return internalCreateApplication(createProvidersConfig(options, context));
 }
 
-function createProvidersConfig(options?: ApplicationConfig) {
+function createProvidersConfig(options?: ApplicationConfig, context?: BootstrapContext) {
   return {
+    platformRef: context?.platformRef,
     appProviders: [...BROWSER_MODULE_PROVIDERS, ...(options?.providers ?? [])],
     platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   };
+}
+
+/** Attempt to resolve component resources before bootstrapping in JIT mode. */
+async function resolveJitResources(): Promise<void> {
+  try {
+    return await resolveComponentResources(fetch);
+  } catch (error) {
+    // Log, but don't block bootstrapping on error.
+    // tslint:disable-next-line:no-console
+    console.error(error);
+  }
 }
 
 /**
@@ -230,12 +249,10 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY,
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
   {
     provide: Testability, // Also provide as `Testability` for backwards-compatibility.
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
 ];
 
@@ -246,9 +263,8 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
-    deps: [DOCUMENT],
   },
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   DomRendererFactory2,
   SharedStylesHost,
   EventManager,

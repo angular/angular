@@ -11,17 +11,17 @@ import {By} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
 import {ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
-import {CodeExampleViewMode, ExampleViewer} from '../example-viewer/example-viewer.component';
+import {ExampleViewer} from '../example-viewer/example-viewer.component';
 import {DocViewer} from './docs-viewer.component';
 import {IconComponent} from '../../icon/icon.component';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {NavigationState} from '../../../services';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
+import {CopyLinkButton} from '../../copy-link-anchor/copy-link-anchor.component';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
-import {provideZonelessChangeDetection} from '@angular/core';
+import {Clipboard} from '@angular/cdk/clipboard';
 
 describe('DocViewer', () => {
-  let fixture: ComponentFixture<DocViewer>;
   let exampleContentSpy: jasmine.SpyObj<ExampleViewerContentLoader>;
   let navigationStateSpy: jasmine.SpyObj<NavigationState>;
 
@@ -70,46 +70,49 @@ describe('DocViewer', () => {
     <h3>Heading h3</h3>
   `;
 
+  const exampleContentWithDocsAnchor = `
+    <h2 id="test-section">
+      <a href="#test-section" class="docs-anchor" tabindex="-1" aria-label="Link to Test Section">Test Section</a>
+    </h2>
+  `;
+
   beforeEach(() => {
     exampleContentSpy = jasmine.createSpyObj('ExampleViewerContentLoader', ['getCodeExampleData']);
     navigationStateSpy = jasmine.createSpyObj(NavigationState, ['activeNavigationItem']);
   });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [DocViewer],
       providers: [
         provideRouter([]),
-        provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: NavigationState, useValue: navigationStateSpy},
       ],
     });
-
-    fixture = TestBed.createComponent(DocViewer);
-    fixture.detectChanges();
   });
 
-  it('should load doc into innerHTML', () => {
+  it('should load doc into innerHTML', async () => {
     const fixture = TestBed.createComponent(DocViewer);
     fixture.componentRef.setInput('docContent', 'hello world');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.innerHTML).toBe('hello world');
   });
 
-  it('should instantiate example viewer in snippet view mode', async () => {
+  it('should instantiate example viewer with only a single file', async () => {
     const fixture = TestBed.createComponent(DocViewer);
     fixture.componentRef.setInput('docContent', exampleDocContentWithExampleViewerPlaceholders);
-    fixture.detectChanges();
     await fixture.whenStable();
 
     const exampleViewer = fixture.debugElement.query(By.directive(ExampleViewer));
 
     expect(exampleViewer).not.toBeNull();
-    expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.SNIPPET);
 
-    const checkIcon = fixture.debugElement.query(By.directive(IconComponent));
+    const copySourceCodeButton = fixture.debugElement.query(By.directive(CopySourceCodeButton));
+    expect(copySourceCodeButton).not.toBeNull();
+
+    const checkIcon = copySourceCodeButton.query(By.directive(IconComponent));
     expect((checkIcon.nativeElement as HTMLElement).classList).toContain(
       `material-symbols-outlined`,
     );
@@ -123,13 +126,11 @@ describe('DocViewer', () => {
       'docContent',
       exampleDocContentWithExpandedExampleViewerPlaceholders,
     );
-    fixture.detectChanges();
     await fixture.whenStable();
 
     const exampleViewer = fixture.debugElement.query(By.directive(ExampleViewer));
 
     expect(exampleViewer).not.toBeNull();
-    expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.MULTI_FILE);
     expect(exampleViewer.componentInstance.tabs().length).toBe(2);
   });
 
@@ -138,7 +139,6 @@ describe('DocViewer', () => {
     const renderComponentSpy = spyOn(fixture.componentInstance, 'renderComponent' as any);
     fixture.componentRef.setInput('docContent', exampleContentWithIcons);
 
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(renderComponentSpy).toHaveBeenCalledTimes(2);
@@ -164,7 +164,6 @@ describe('DocViewer', () => {
     const renderComponentSpy = spyOn(fixture.componentInstance, 'renderComponent' as any);
     fixture.componentRef.setInput('docContent', exampleContentWithBreadcrumbPlaceholder);
 
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(renderComponentSpy).toHaveBeenCalledTimes(1);
@@ -175,7 +174,6 @@ describe('DocViewer', () => {
     const fixture = TestBed.createComponent(DocViewer);
     fixture.componentRef.setInput('docContent', exampleContentWithCodeSnippet);
 
-    fixture.detectChanges();
     await fixture.whenStable();
 
     const copySourceCodeButton = fixture.debugElement.query(By.directive(CopySourceCodeButton));
@@ -189,7 +187,6 @@ describe('DocViewer', () => {
     fixture.componentRef.setInput('docContent', exampleContentWithHeadings);
     fixture.componentRef.setInput('hasToc', true);
 
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(renderComponentSpy).toHaveBeenCalled();
@@ -202,9 +199,42 @@ describe('DocViewer', () => {
     fixture.componentRef.setInput('docContent', exampleContentWithHeadings);
     fixture.componentRef.setInput('hasToc', false);
 
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(renderComponentSpy).not.toHaveBeenCalled();
+  });
+
+  it('should setup copy link functionality for docs-anchor elements', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.componentRef.setInput('docContent', exampleContentWithDocsAnchor);
+
+    await fixture.whenStable();
+
+    const copyLinkButton = fixture.debugElement.query(By.directive(CopyLinkButton));
+    expect(copyLinkButton).toBeTruthy();
+
+    const anchor = fixture.nativeElement.querySelector('a.docs-anchor');
+    expect(anchor).toBeTruthy();
+
+    const copyButton = fixture.nativeElement.querySelector('docs-copy-link-button');
+    expect(copyButton).toBeTruthy();
+  });
+
+  it('should copy link to clipboard when copy button is clicked', async () => {
+    const clipboard = TestBed.inject(Clipboard);
+    const clipboardSpy = spyOn(clipboard, 'copy').and.returnValue(true);
+
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.componentRef.setInput('docContent', exampleContentWithDocsAnchor);
+
+    await fixture.whenStable();
+
+    const copyButton = fixture.nativeElement.querySelector('docs-copy-link-button');
+    copyButton.click();
+
+    expect(clipboardSpy).toHaveBeenCalled();
+    // Because the copyButton click bubbles up to an anchor tag, causing a navigation, it is
+    // necessary to undo this location change by going back in the history.
+    window.history.back();
   });
 });

@@ -8,24 +8,17 @@
 
 import {
   DestroyRef,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
   Injectable,
-  InjectionToken,
   NgZone,
-  ɵformatRuntimeError as formatRuntimeError,
 } from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 import {RuntimeErrorCode} from './errors';
 
 import type {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
-import {
-  ACCEPT_HEADER,
-  ACCEPT_HEADER_VALUE,
-  CONTENT_TYPE_HEADER,
-  HttpRequest,
-  X_REQUEST_URL_HEADER,
-} from './request';
+import {ACCEPT_HEADER, ACCEPT_HEADER_VALUE, CONTENT_TYPE_HEADER, HttpRequest} from './request';
 import {
   HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
@@ -40,27 +33,6 @@ import {
 import type {} from 'zone.js';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
-
-/**
- * Determine an appropriate URL for the response, by checking either
- * response url or the X-Request-URL header.
- */
-function getResponseUrl(response: Response): string | null {
-  if (response.url) {
-    return response.url;
-  }
-  // stored as lowercase in the map
-  const xRequestUrl = X_REQUEST_URL_HEADER.toLocaleLowerCase();
-  return response.headers.get(xRequestUrl);
-}
-
-/**
- * An internal injection token to reference `FetchBackend` implementation
- * in a tree-shakable way.
- */
-export const FETCH_BACKEND = new InjectionToken<FetchBackend>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'FETCH_BACKEND' : '',
-);
 
 /**
  * Uses `fetch` to send requests to a backend server.
@@ -82,13 +54,6 @@ export class FetchBackend implements HttpBackend {
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
-  private destroyed = false;
-
-  constructor() {
-    this.destroyRef.onDestroy(() => {
-      this.destroyed = true;
-    });
-  }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -159,7 +124,7 @@ export class FetchBackend implements HttpBackend {
 
     const headers = new HttpHeaders(response.headers);
     const statusText = response.statusText;
-    const url = getResponseUrl(response) ?? request.urlWithParams;
+    const url = response.url || request.urlWithParams;
 
     let status = response.status;
     let body: string | ArrayBuffer | Blob | object | null = null;
@@ -193,7 +158,7 @@ export class FetchBackend implements HttpBackend {
           // unnecessary work or triggering side effects after teardown.
           // This may happen if the app was explicitly destroyed before
           // the response returned entirely.
-          if (this.destroyed) {
+          if (this.destroyRef.destroyed) {
             // Streams left in a pending state (due to `break` without cancel) may
             // continue consuming or holding onto data behind the scenes.
             // Calling `reader.cancel()` allows the browser or the underlying
@@ -253,7 +218,7 @@ export class FetchBackend implements HttpBackend {
             headers: new HttpHeaders(response.headers),
             status: response.status,
             statusText: response.statusText,
-            url: getResponseUrl(response) ?? request.urlWithParams,
+            url: response.url || request.urlWithParams,
           }),
         );
         return;
@@ -273,6 +238,8 @@ export class FetchBackend implements HttpBackend {
 
     const redirected = response.redirected;
 
+    const responseType = response.type;
+
     if (ok) {
       observer.next(
         new HttpResponse({
@@ -282,6 +249,7 @@ export class FetchBackend implements HttpBackend {
           statusText,
           url,
           redirected,
+          responseType,
         }),
       );
 
@@ -297,6 +265,7 @@ export class FetchBackend implements HttpBackend {
           statusText,
           url,
           redirected,
+          responseType,
         }),
       );
     }
@@ -382,6 +351,7 @@ export class FetchBackend implements HttpBackend {
       redirect: req.redirect,
       referrer: req.referrer,
       integrity: req.integrity,
+      referrerPolicy: req.referrerPolicy,
     };
   }
 

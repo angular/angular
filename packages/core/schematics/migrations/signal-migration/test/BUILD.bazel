@@ -1,5 +1,5 @@
 load("@devinfra//bazel/integration:index.bzl", "integration_test")
-load("//tools:defaults2.bzl", "jasmine_test", "js_binary", "ts_project")
+load("//tools:defaults.bzl", "jasmine_test", "js_binary", "ts_project")
 
 ts_project(
     name = "test_runners_lib",
@@ -110,8 +110,6 @@ ts_project(
     testonly = True,
     srcs = ["migration_spec.ts"],
     deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/core/schematics/migrations/signal-migration/src",
         "//packages/core/schematics/utils/tsurge",
     ],

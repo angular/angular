@@ -29,7 +29,7 @@ import {
   HostDirectiveMeta,
   InputMapping,
 } from '../../../metadata';
-import {ClassDeclaration} from '../../../reflection';
+import {ClassDeclaration, Import} from '../../../reflection';
 import {SubsetOfKeys} from '../../../util/src/typescript';
 
 import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
@@ -129,10 +129,11 @@ export interface ComponentResolutionData {
 
   /**
    * Map of all types that can be defer loaded (ts.ClassDeclaration) ->
-   * corresponding import declaration (ts.ImportDeclaration) within
-   * the current source file.
+   * corresponding import information (reflection `Import`) within
+   * the current source file. The `Import` preserves the exported name
+   * as seen by the importing module so aliasing is handled correctly.
    */
-  deferrableDeclToImportDecl: Map<ClassDeclaration, ts.ImportDeclaration>;
+  deferrableDeclToImportDecl: Map<ClassDeclaration, Import>;
 
   /**
    * Map of `@defer` blocks -> their corresponding dependencies.

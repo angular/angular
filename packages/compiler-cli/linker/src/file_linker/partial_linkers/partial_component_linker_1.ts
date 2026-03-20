@@ -10,10 +10,8 @@ import {
   compileComponentFromMetadata,
   ConstantPool,
   DeclarationListEmitMode,
-  DEFAULT_INTERPOLATION_CONFIG,
   DeferBlockDepsEmitMode,
   ForwardRefHandling,
-  InterpolationConfig,
   makeBindingParser,
   outputAst as o,
   ParsedTemplate,
@@ -95,7 +93,6 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
     metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
     version: string,
   ): R3ComponentMetadata<R3TemplateDependencyMetadata> {
-    const interpolation = parseInterpolationConfig(metaObj);
     const templateSource = metaObj.getValue('template');
     const isInline = metaObj.has('isInline') ? metaObj.getBoolean('isInline') : false;
     const templateInfo = this.getTemplateInfo(templateSource, isInline);
@@ -109,7 +106,6 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
 
     const template = parseTemplate(templateInfo.code, templateInfo.sourceUrl, {
       escapedString: templateInfo.isEscaped,
-      interpolationConfig: interpolation,
       range: templateInfo.range,
       enableI18nLegacyMessageIdFormat: false,
       preserveWhitespaces: metaObj.has('preserveWhitespaces')
@@ -244,7 +240,6 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       encapsulation: metaObj.has('encapsulation')
         ? parseEncapsulation(metaObj.getValue('encapsulation'))
         : ViewEncapsulation.Emulated,
-      interpolation,
       changeDetection: metaObj.has('changeDetection')
         ? parseChangeDetectionStrategy(metaObj.getValue('changeDetection'))
         : ChangeDetectionStrategy.Default,
@@ -378,27 +373,6 @@ interface TemplateInfo {
   sourceUrl: string;
   range: Range;
   isEscaped: boolean;
-}
-
-/**
- * Extract an `InterpolationConfig` from the component declaration.
- */
-function parseInterpolationConfig<TExpression>(
-  metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
-): InterpolationConfig {
-  if (!metaObj.has('interpolation')) {
-    return DEFAULT_INTERPOLATION_CONFIG;
-  }
-
-  const interpolationExpr = metaObj.getValue('interpolation');
-  const values = interpolationExpr.getArray().map((entry) => entry.getString());
-  if (values.length !== 2) {
-    throw new FatalLinkerError(
-      interpolationExpr.expression,
-      'Unsupported interpolation config, expected an array containing exactly two strings',
-    );
-  }
-  return InterpolationConfig.fromArray(values as [string, string]);
 }
 
 /**

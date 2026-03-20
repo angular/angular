@@ -21,6 +21,7 @@ const TESTS = new Map<string, (value: string) => string>([
   ['signal_queries_signature_test', (v) => `Signal<${v}>`],
   ['signal_model_signature_test', (v) => `ModelSignal<${v}>`],
   ['unwrap_writable_signal_signature_test', (v) => v],
+  ['simple_changes_signature_test', (v) => v],
 ]);
 
 const containingDir = path.dirname(url.fileURLToPath(import.meta.url));
@@ -61,6 +62,11 @@ function testFile(testFileName: string, getType: (v: string) => string): boolean
 
     // strip comment start, and beginning (plus whitespace).
     const expectedTypeComment = leadingComments[0].replace(/(^\/\*\*?\s*|\s*\*+\/$)/g, '');
+
+    if (expectedTypeComment === '#ignore') {
+      continue;
+    }
+
     const expectedType = getType(expectedTypeComment);
     // strip excess whitespace or newlines.
     const got = member.type?.getText().replace(/(\n+|\s\s+)/g, '');

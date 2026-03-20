@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -16,8 +17,7 @@ import {
   type CompilationUnit,
 } from '../compilation';
 import * as ng from '../instruction';
-
-const ARIA_PREFIX = 'aria';
+import {isAriaAttribute} from '../util/attributes';
 
 /**
  * Map of target resolvers for event listeners.
@@ -92,7 +92,11 @@ function ensureNoIrForDebug(job: CompilationJob) {
 
 function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => reifyIrExpression(unit, expr),
+      ir.VisitorContextFlag.None,
+    );
 
     switch (op.kind) {
       case ir.OpKind.Text:
@@ -338,7 +342,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace<ir.CreateOp>(
           op,
           ir.createStatementOp(
-            new o.DeclareVarStmt(op.variable.name, op.initializer, undefined, o.StmtModifier.Final),
+            new o.DeclareVarStmt(
+              op.variable.name,
+              op.initializer,
+              o.DYNAMIC_TYPE,
+              o.StmtModifier.Final,
+            ),
           ),
         );
         break;
@@ -376,27 +385,48 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         );
         break;
       case ir.OpKind.DeferOn:
-        let args: (number | null)[] = [];
+        let args: o.Expression[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Never:
-          case ir.DeferTriggerKind.Idle:
           case ir.DeferTriggerKind.Immediate:
             break;
+          case ir.DeferTriggerKind.Idle:
+            if (op.trigger.timeout != null) {
+              args = [o.literal(op.trigger.timeout)];
+            }
+            break;
           case ir.DeferTriggerKind.Timer:
-            args = [op.trigger.delay];
+            args = [o.literal(op.trigger.delay)];
+            break;
+          case ir.DeferTriggerKind.Viewport:
+            // `hydrate` triggers don't support targets.
+            if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
+              args = op.trigger.options ? [op.trigger.options] : [];
+            } else {
+              // The slots not being defined at this point is invalid, however we
+              // catch it during type checking. Pass in null in such cases.
+              args = [o.literal(op.trigger.targetSlot?.slot ?? null)];
+              if (op.trigger.targetSlotViewSteps !== 0) {
+                args.push(o.literal(op.trigger.targetSlotViewSteps));
+              } else if (op.trigger.options) {
+                args.push(o.literal(null));
+              }
+              if (op.trigger.options) {
+                args.push(op.trigger.options);
+              }
+            }
             break;
           case ir.DeferTriggerKind.Interaction:
           case ir.DeferTriggerKind.Hover:
-          case ir.DeferTriggerKind.Viewport:
             // `hydrate` triggers don't support targets.
             if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
               args = [];
             } else {
               // The slots not being defined at this point is invalid, however we
               // catch it during type checking. Pass in null in such cases.
-              args = [op.trigger.targetSlot?.slot ?? null];
+              args = [o.literal(op.trigger.targetSlot?.slot ?? null)];
               if (op.trigger.targetSlotViewSteps !== 0) {
-                args.push(op.trigger.targetSlotViewSteps);
+                args.push(o.literal(op.trigger.targetSlotViewSteps));
               }
             }
             break;
@@ -572,6 +602,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
         ir.OpList.replace(op, ng.attachSourceLocation(op.templatePath, locationsLiteral));
         break;
+      case ir.OpKind.ControlCreate:
+        ir.OpList.replace(op, ng.controlCreate(op.sourceSpan));
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -585,7 +618,11 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
 function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => reifyIrExpression(unit, expr),
+      ir.VisitorContextFlag.None,
+    );
 
     switch (op.kind) {
       case ir.OpKind.Advance:
@@ -600,6 +637,9 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
             ? reifyDomProperty(op)
             : reifyProperty(op),
         );
+        break;
+      case ir.OpKind.Control:
+        ir.OpList.replace(op, reifyControl(op));
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
@@ -658,7 +698,12 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         ir.OpList.replace<ir.UpdateOp>(
           op,
           ir.createStatementOp(
-            new o.DeclareVarStmt(op.variable.name, op.initializer, undefined, o.StmtModifier.Final),
+            new o.DeclareVarStmt(
+              op.variable.name,
+              op.initializer,
+              o.DYNAMIC_TYPE,
+              o.StmtModifier.Final,
+            ),
           ),
         );
         break;
@@ -688,35 +733,6 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
 }
 
 /**
- * Converts an ARIA property name to its corresponding attribute name, if necessary.
- *
- * For example, converts `ariaLabel` to `aria-label`.
- *
- * https://www.w3.org/TR/wai-aria-1.2/#accessibilityroleandproperties-correspondence
- *
- * This must be kept in sync with the the function of the same name in
- * packages/core/src/render3/instructions/aria_property.ts.
- *
- * @param name A property name that starts with `aria`.
- * @returns The corresponding attribute name.
- */
-function ariaAttrName(name: string): string {
-  return name.charAt(ARIA_PREFIX.length) !== '-'
-    ? ARIA_PREFIX + '-' + name.slice(ARIA_PREFIX.length).toLowerCase()
-    : name; // Property already has attribute name.
-}
-
-/**
- * Returns whether `name` is an ARIA property (or attribute) name.
- *
- * This is a heuristic based on whether name begins with and is longer than `aria`. For example,
- * this returns true for both `ariaLabel` and `aria-label`.
- */
-function isAriaProperty(name: string): boolean {
-  return name.startsWith(ARIA_PREFIX) && name.length > ARIA_PREFIX.length;
-}
-
-/**
  * Reifies a DOM property binding operation.
  *
  * This is an optimized version of {@link reifyProperty} that avoids unnecessarily trying to bind
@@ -726,14 +742,12 @@ function isAriaProperty(name: string): boolean {
  * @returns A statement to update the property at runtime.
  */
 function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
-  return isAriaProperty(op.name)
-    ? ng.attribute(ariaAttrName(op.name), op.expression, null, null, op.sourceSpan)
-    : ng.domProperty(
-        DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
-        op.expression,
-        op.sanitizer,
-        op.sourceSpan,
-      );
+  return ng.domProperty(
+    DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+    op.expression,
+    op.sanitizer,
+    op.sourceSpan,
+  );
 }
 
 /**
@@ -746,12 +760,16 @@ function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
  * @returns A statement to update the property at runtime.
  */
 function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
-  return isAriaProperty(op.name)
+  return isAriaAttribute(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
     : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
 }
 
-function reifyIrExpression(expr: o.Expression): o.Expression {
+function reifyControl(op: ir.ControlOp): ir.UpdateOp {
+  return ng.control(op.sourceSpan);
+}
+
+function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Expression {
   if (!ir.isIrExpression(expr)) {
     return expr;
   }
@@ -808,6 +826,15 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.storeLet(expr.value, expr.sourceSpan);
     case ir.ExpressionKind.TrackContext:
       return o.variable('this');
+    case ir.ExpressionKind.ArrowFunction:
+      if (expr.varOffset === null) {
+        throw new Error(`AssertionError: variable offset was not assigned to arrow function`);
+      }
+      return ng.arrowFunction(
+        expr.varOffset,
+        unit.job.pool.getSharedFunctionReference(getArrowFunctionFactory(unit, expr), 'arrowFn'),
+        o.variable(CONTEXT_NAME),
+      );
     default:
       throw new Error(
         `AssertionError: Unsupported reification of ir.Expression kind: ${
@@ -846,7 +873,7 @@ function reifyListenerHandler(
   const params: o.FnParam[] = [];
   if (consumesDollarEvent) {
     // We need the `$event` parameter.
-    params.push(new o.FnParam('$event'));
+    params.push(new o.FnParam('$event', o.DYNAMIC_TYPE));
   }
 
   return o.fn(params, handlerStmts, undefined, undefined, name);
@@ -859,7 +886,10 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
     return op.trackByFn;
   }
 
-  const params: o.FnParam[] = [new o.FnParam('$index'), new o.FnParam('$item')];
+  const params: o.FnParam[] = [
+    new o.FnParam('$index', o.NUMBER_TYPE),
+    new o.FnParam('$item', o.DYNAMIC_TYPE),
+  ];
   let fn: o.FunctionExpr | o.ArrowFunctionExpr;
 
   if (op.trackByOps === null) {
@@ -893,4 +923,36 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
 
   op.trackByFn = unit.job.pool.getSharedFunctionReference(fn, '_forTrack');
   return op.trackByFn;
+}
+
+/** Gets a factory for an arrow function expression. */
+function getArrowFunctionFactory(
+  unit: CompilationUnit,
+  expr: ir.ArrowFunctionExpr,
+): o.ArrowFunctionExpr {
+  reifyUpdateOperations(unit, expr.ops);
+
+  const statements: o.Statement[] = [];
+  for (const op of expr.ops) {
+    if (op.kind !== ir.OpKind.Statement) {
+      throw new Error(
+        `AssertionError: expected reified statements, but found op ${ir.OpKind[op.kind]}`,
+      );
+    }
+    statements.push(op.statement);
+  }
+
+  // If there's only one return statement as the body, we can turn it into a single-line function.
+  const body =
+    statements.length === 1 && statements[0] instanceof o.ReturnStatement
+      ? statements[0].value
+      : statements;
+
+  return o.arrowFn(
+    [
+      new o.FnParam(expr.contextName, o.DYNAMIC_TYPE),
+      new o.FnParam(expr.currentViewName, o.DYNAMIC_TYPE),
+    ],
+    o.arrowFn(expr.parameters, body),
+  );
 }

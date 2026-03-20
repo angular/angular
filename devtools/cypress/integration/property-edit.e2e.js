@@ -27,9 +27,9 @@ describe('edit properties of directive in the property view tab', () => {
 
       cy.get('.explorer-panel:contains("app-todo")')
         .find('ng-property-view mat-tree-node:contains("editMode")')
-        .find('ng-property-editor .editor')
+        .find('ng-property-editor')
         .click({force: true})
-        .find('.editor-input')
+        .find('input')
         .clear()
         .type('true')
         .type('{enter}');
@@ -56,9 +56,9 @@ describe('edit properties of directive in the property view tab', () => {
       // find title variable and run through edit logic
       cy.get('.explorer-panel:contains("app-todos")')
         .find('ng-property-view mat-tree-node:contains("title")')
-        .find('ng-property-editor .editor')
+        .find('ng-property-editor')
         .click()
-        .find('.editor-input')
+        .find('input')
         .clear()
         .type('Hello World')
         .type('{enter}');

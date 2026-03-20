@@ -8,11 +8,9 @@ import {ArticleComments} from './article-comments';
       <h1>How I feel about Angular</h1>
       <article>
         <p>
-          Angular is my favorite framework, and
-          this is why. Angular has the coolest
-          deferrable view feature that makes defer
-          loading content the easiest and most
-          ergonomic it could possibly be.
+          Angular is my favorite framework, and this is why. Angular has the coolest deferrable view
+          feature that makes defer loading content the easiest and most ergonomic it could possibly
+          be.
         </p>
       </article>
 
@@ -25,7 +23,6 @@ import {ArticleComments} from './article-comments';
       } @error {
         <p>Failed to load comments</p>
       }
-
     </div>
   `,
   imports: [ArticleComments],

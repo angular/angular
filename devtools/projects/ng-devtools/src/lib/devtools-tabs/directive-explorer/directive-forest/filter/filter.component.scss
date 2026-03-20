@@ -1,5 +1,13 @@
 @use '../../../../../styles/typography';
 
+@mixin inner-icon($size) {
+  mat-icon {
+    font-size: $size;
+    width: $size;
+    height: $size;
+  }
+}
+
 :host {
   display: flex;
   align-items: center;
@@ -29,28 +37,31 @@
     flex: 1;
   }
 
-  .up-down-buttons {
+  button {
+    $size: 18px;
+    width: $size;
+    height: $size;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 1;
+    }
+
+    @include inner-icon($size);
+  }
+
+  .prev-next-buttons {
     display: flex;
     gap: 0.25rem;
-    margin-right: 0.5rem;
-
-    button {
-      width: 24px;
-      height: 24px;
-      padding: 0;
-      background: none;
-      border: none;
-      cursor: pointer;
-      opacity: 0.5;
-
-      &:hover {
-        opacity: 0.8;
-      }
-
-      &:active {
-        opacity: 1;
-      }
-    }
+    margin-right: 0.75rem;
   }
 
   .matches-count {
@@ -58,5 +69,14 @@
     font-size: 11px;
     color: var(--quaternary-contrast);
     margin: 0 0.5rem;
+  }
+
+  .clear-btn {
+    margin-right: 0.5rem;
+    $size: 16px;
+    width: $size;
+    height: $size;
+
+    @include inner-icon($size);
   }
 }

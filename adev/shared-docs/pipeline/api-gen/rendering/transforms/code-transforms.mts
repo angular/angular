@@ -7,12 +7,12 @@
  */
 
 import {
+  DecoratorEntry,
   DocEntry,
   EntryType,
   FunctionSignatureMetadata,
   GenericEntry,
   MemberEntry,
-  DecoratorEntry,
   MemberTags,
   ParameterEntry,
   PropertyEntry,
@@ -34,16 +34,20 @@ import {
 } from '../entities/categorization.mjs';
 import {CodeLineRenderable} from '../entities/renderables.mjs';
 import {HasModuleName, HasRenderableToc} from '../entities/traits.mjs';
-import {getModuleName} from '../symbol-context.mjs';
 import {
-  codeToHtml,
+  getHighlighterInstance,
   insertParenthesesForDecoratorInShikiHtml,
   replaceKeywordFromShikiHtml,
 } from '../shiki/shiki.mjs';
+import {getSymbolsAsApiEntries, getSymbolUrl} from '../symbol-context.mjs';
 
-import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms.mjs';
-import {getLinkToModule} from './url-transforms.mjs';
+import {codeToHtml} from '../../../shared/shiki.mjs';
 import {formatJs} from './format-code.mjs';
+import {
+  filterLifecycleMethods,
+  filterMergedNamespaceMembers,
+  mergeGettersAndSetters,
+} from './member-transforms.mjs';
 
 const INDENT = '  ';
 const SPACE = ' ';
@@ -85,7 +89,14 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     formattedCode = await formatJs(metadata.contents);
   }
 
-  let codeWithSyntaxHighlighting = codeToHtml(formattedCode ?? metadata?.contents, 'typescript');
+  let codeWithSyntaxHighlighting = codeToHtml(
+    getHighlighterInstance(),
+    formattedCode ?? metadata?.contents,
+    {
+      language: 'typescript',
+      apiEntries: getSymbolsAsApiEntries(),
+    },
+  );
 
   if (isDecoratorEntry(entry)) {
     // Shiki requires a keyword for correct formating of Decorators
@@ -102,11 +113,6 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     );
     // }
   }
-
-  // Note: Don't expect enum value in signatures to be linked correctly
-  // as shiki already splits them into separate span blocks.
-  // Only the enum itself will recieve a link
-  codeWithSyntaxHighlighting = addApiLinksToHtml(codeWithSyntaxHighlighting);
 
   // shiki returns the lines wrapped by 2 node : 1 pre node, 1 code node.
   // As leveraging jsdom isn't trivial here, we rely on a regex to extract the line nodes
@@ -194,7 +200,10 @@ function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   }
 
   if (isInterfaceEntry(entry)) {
-    return getCodeTocData(mergeGettersAndSetters(entry.members), isDeprecated);
+    return getCodeTocData(
+      filterMergedNamespaceMembers(mergeGettersAndSetters(entry.members)),
+      isDeprecated,
+    );
   }
 
   if (isFunctionEntry(entry)) {
@@ -470,6 +479,18 @@ export function printInitializerFunctionSignatureLine(
   return `function ${res}`;
 }
 
+export function formatExtendsClause(extendsValue: string | string[] | undefined): string {
+  if (!extendsValue) {
+    return '';
+  }
+
+  if (typeof extendsValue === 'string') {
+    return ` extends ${extendsValue}`;
+  }
+
+  return extendsValue.length > 0 ? ` extends ${extendsValue.join(', ')}` : '';
+}
+
 function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContentsData): void {
   const appendFirstAndLastLines = (
     data: CodeTableOfContentsData,
@@ -481,7 +502,7 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
 
   if (isClassEntry(entry) || isInterfaceEntry(entry)) {
     const generics = makeGenericsText(entry.generics);
-    const extendsStr = entry.extends ? ` extends ${entry.extends}` : '';
+    const extendsStr = formatExtendsClause(entry.extends);
     const implementsStr =
       entry.implements.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
 
@@ -525,14 +546,9 @@ export function addApiLinksToHtml(htmlString: string): string {
     //                                         The captured content ==>  vvvvvvvv
     /(?<!<a[^>]*>)(<(?:(?:span)|(?:code))(?!\sdata-skip-anchor)[^>]*>\s*)([^<]*?)(\s*<\/(?:span|code)>)/g,
     (type: string, span1: string, potentialSymbolName: string, span2: string) => {
-      const [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
-
-      // mySymbol() => mySymbol
-      const symbolWithoutInvocation = symbol.replace(/\([^)]*\);?/g, '');
-      const moduleName = getModuleName(symbolWithoutInvocation);
-
-      if (moduleName) {
-        return `${span1}<a href="${getLinkToModule(moduleName, symbol, subSymbol)}">${potentialSymbolName}</a>${span2}`;
+      const url = getSymbolUrl(potentialSymbolName);
+      if (url) {
+        return `${span1}<a href="${url}">${potentialSymbolName}</a>${span2}`;
       }
 
       return type;

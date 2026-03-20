@@ -11,10 +11,10 @@ import {readFile} from 'fs/promises';
 import {copyFolder, createFolder, removeFolder} from '../shared/file-system.mjs';
 import jsdom from 'jsdom';
 import {glob} from 'tinyglobby';
-import {regionParser} from '../../guides/extensions/docs-code/regions/region-parser.mjs';
 import {appendCopyrightToFile} from '../shared/copyright.mjs';
-import {FileType} from '../../guides/extensions/docs-code/sanitizers/eslint.mjs';
 import {EXCLUDE_FILES_FOR_STACKBLITZ, STACKBLITZ_CONFIG_FILENAME} from './defaults.mjs';
+import {regionParser} from '../../shared/regions/region-parser.mjs';
+import {FileType} from '../../shared/regions/remove-eslint-comments.mjs';
 
 interface StackblitzConfig {
   title: string;

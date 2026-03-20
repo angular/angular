@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "angular_jasmine_test", "copy_to_bin", "js_library", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "angular_jasmine_test", "copy_to_bin", "js_library", "ng_web_test_suite", "ts_project")
 
 copy_to_bin(
     name = "static_assets",

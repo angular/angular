@@ -15,6 +15,7 @@ import {
   Injectable,
   Injector,
   Input,
+  provideZoneChangeDetection,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -24,13 +25,18 @@ import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('view insertion', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('of a simple template', () => {
     it('should insert into an empty container, at the front, in the middle, and at the end', () => {
       let _counter = 0;
 
       @Component({
         selector: 'increment-comp',
-        template: `<span>created{{counter}}</span>`,
+        template: `<span>created{{ counter }}</span>`,
         standalone: false,
       })
       class IncrementComp {
@@ -39,9 +45,9 @@ describe('view insertion', () => {
 
       @Component({
         template: `
-              <ng-template #simple><increment-comp></increment-comp></ng-template>
-              <div #container></div>
-            `,
+          <ng-template #simple><increment-comp></increment-comp></ng-template>
+          <div #container></div>
+        `,
         standalone: false,
       })
       class App {
@@ -97,9 +103,9 @@ describe('view insertion', () => {
     it('should insert into an empty container, at the front, in the middle, and at the end', () => {
       @Component({
         template: `
-              <ng-template #empty></ng-template>
-              <div #container></div>
-            `,
+          <ng-template #empty></ng-template>
+          <div #container></div>
+        `,
         standalone: false,
       })
       class App {
@@ -146,9 +152,9 @@ describe('view insertion', () => {
       @Component({
         selector: 'comp',
         template: `
-                  <ng-template #projection><ng-content></ng-content></ng-template>
-                  <div #container></div>
-                `,
+          <ng-template #projection><ng-content></ng-content></ng-template>
+          <div #container></div>
+        `,
         standalone: false,
       })
       class Comp {
@@ -177,9 +183,7 @@ describe('view insertion', () => {
       }
 
       @Component({
-        template: `
-          <comp>test</comp>
-        `,
+        template: ` <comp>test</comp> `,
         standalone: false,
       })
       class App {}
@@ -206,9 +210,9 @@ describe('view insertion', () => {
     it('should insert into an empty container, at the front, in the middle, and at the end', () => {
       @Component({
         template: `
-                  <ng-template #subContainer><div class="dynamic" *ngIf="true">test</div></ng-template>
-                  <div #container></div>
-                `,
+          <ng-template #subContainer><div class="dynamic" *ngIf="true">test</div></ng-template>
+          <div #container></div>
+        `,
         standalone: false,
       })
       class App {
@@ -529,9 +533,9 @@ describe('view insertion', () => {
         @Component({
           selector: 'test-cmpt',
           template: `
-                <ng-template #insert>insert</ng-template>
-                <div><ng-template #vi="vi" viewInserting></ng-template></div>
-              `,
+            <ng-template #insert>insert</ng-template>
+            <div><ng-template #vi="vi" viewInserting></ng-template></div>
+          `,
           standalone: false,
         })
         class TestCmpt {
@@ -582,11 +586,11 @@ describe('view insertion', () => {
       @Component({
         selector: 'app-root',
         template: `
-            <div>start|</div>
-            <ng-container #container></ng-container>
-            <div>|end</div>
+          <div>start|</div>
+          <ng-container #container></ng-container>
+          <div>|end</div>
 
-            <div (click)="click()" >|click</div>
+          <div (click)="click()">|click</div>
         `,
         standalone: false,
       })
@@ -615,12 +619,12 @@ describe('view insertion', () => {
       @Component({
         selector: 'app-root',
         template: `
-        <div>container start|</div>
-        <ng-container #container></ng-container>
-        <div>|container end</div>
+          <div>container start|</div>
+          <ng-container #container></ng-container>
+          <div>|container end</div>
 
-        <ng-template #template >test</ng-template>
-        <div (click)="click()" >|click</div>
+          <ng-template #template>test</ng-template>
+          <div (click)="click()">|click</div>
         `,
         standalone: false,
       })
@@ -651,11 +655,13 @@ describe('view insertion', () => {
         selector: 'app-root',
         template: `
           <ng-template #parameterListItem let-parameter="parameter">
-            {{parameter}}
+            {{ parameter }}
           </ng-template>
-          <ng-container *ngFor="let parameter of items;"
+          <ng-container
+            *ngFor="let parameter of items"
             [ngTemplateOutlet]="parameterListItem"
-            [ngTemplateOutletContext]="{parameter:parameter}">
+            [ngTemplateOutletContext]="{parameter: parameter}"
+          >
           </ng-container>
         `,
         standalone: false,
@@ -868,7 +874,9 @@ describe('view insertion', () => {
       }
 
       @Component({
-        template: `<test><test><test></test></test></test>`,
+        template: `<test
+          ><test><test></test></test
+        ></test>`,
         standalone: false,
       })
       class App {}
@@ -902,7 +910,7 @@ describe('view insertion', () => {
       }
 
       @Component({
-        template: `<div failInConstructorOnce>{{value}}</div>`,
+        template: `<div failInConstructorOnce>{{ value }}</div>`,
         standalone: false,
       })
       class TestCmpt {

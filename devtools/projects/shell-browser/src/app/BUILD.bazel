@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "esbuild", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "esbuild", "ng_project", "sass_binary", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -27,12 +27,8 @@ ng_project(
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools",
-        "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/protocol",
-        "//devtools/projects/shell-browser/src/app:backend",
-        "//devtools/projects/shell-browser/src/app:background",
     ],
 )
 
@@ -76,7 +72,6 @@ ts_project(
         "chrome-application-operations.ts",
     ],
     deps = [
-        ":chrome_application_environment",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
@@ -93,6 +88,26 @@ ts_project(
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "comm_utils",
+    srcs = ["comm-utils.ts"],
+)
+
+ts_test_library(
+    name = "comm_utils_test_lib",
+    srcs = ["comm-utils.spec.ts"],
+    deps = [
+        ":comm_utils",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "comm_utils_test",
+    deps = [
+        ":comm_utils_test_lib",
     ],
 )
 
@@ -114,7 +129,6 @@ ts_project(
         "background.ts",
     ],
     deps = [
-        ":detect_angular_for_extension_icon",
         ":tab_manager",
         "//devtools/projects/protocol",
     ],
@@ -131,7 +145,7 @@ ts_project(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "tab_manager_test",
     deps = [
         ":tab_manager_test_lib",
@@ -156,6 +170,7 @@ ts_project(
     ],
     deps = [
         ":chrome_window_extensions",
+        ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
@@ -169,17 +184,19 @@ ts_project(
     ],
     deps = [
         ":chrome_message_bus",
+        ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
     ],
 )
 
 ts_project(
-    name = "detect_angular_for_extension_icon",
+    name = "detect_angular",
     srcs = [
-        "detect-angular-for-extension-icon.ts",
+        "detect-angular.ts",
     ],
     deps = [
+        ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
@@ -187,21 +204,20 @@ ts_project(
 )
 
 esbuild(
-    name = "detect_angular_for_extension_icon_bundle",
+    name = "detect_angular_bundle",
     srcs = [
         "//:node_modules/tslib",
         "//devtools/tools/esbuild:esbuild_base",
         "//devtools/tools/esbuild:esbuild_config_iife",
     ],
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
-    entry_point = "detect-angular-for-extension-icon.ts",
+    entry_point = "detect-angular.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
     deps = [
-        ":detect_angular_for_extension_icon",
+        ":detect_angular",
     ],
 )
 
@@ -215,7 +231,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "backend.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
@@ -234,7 +249,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "ng-validate.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
@@ -253,7 +267,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "background.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
@@ -272,7 +285,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "content-script.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",

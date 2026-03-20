@@ -161,10 +161,10 @@ export function routerLinkActiveIntegrationSuite() {
     it('should expose an isActive property', async () => {
       @Component({
         template: `<a routerLink="/team" routerLinkActive #rla="routerLinkActive"></a>
-               <p>{{rla.isActive}}</p>
-               <span *ngIf="rla.isActive"></span>
-               <span [ngClass]="{'highlight': rla.isActive}"></span>
-               <router-outlet></router-outlet>`,
+          <p>{{ rla.isActive }}</p>
+          <span *ngIf="rla.isActive"></span>
+          <span [ngClass]="{'highlight': rla.isActive}"></span>
+          <router-outlet></router-outlet>`,
         standalone: false,
       })
       class ComponentWithRouterLink {}

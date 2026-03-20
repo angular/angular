@@ -11,7 +11,7 @@ import {Inject, InjectionToken, LOCALE_ID, Optional, Pipe, PipeTransform} from '
 import {formatDate} from '../i18n/format_date';
 
 import {DatePipeConfig, DEFAULT_DATE_FORMAT} from './date_pipe_config';
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './utils';
 
 /**
  * Optionally-provided default timezone to use for all instances of `DatePipe` (such as `'+0430'`).
@@ -20,7 +20,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @deprecated use DATE_PIPE_DEFAULT_OPTIONS token to configure DatePipe
  */
 export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
-  ngDevMode ? 'DATE_PIPE_DEFAULT_TIMEZONE' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'DATE_PIPE_DEFAULT_TIMEZONE' : '',
 );
 
 /**
@@ -55,7 +55,7 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
  * ```
  */
 export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
-  ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '',
 );
 
 /**
@@ -213,6 +213,8 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  *   today: number = Date.now();
  * }
  * ```
+ *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
  *
  * @publicApi
  */

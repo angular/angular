@@ -10,8 +10,6 @@ import {ResourceLoader} from '@angular/compiler';
 import {
   ApplicationInitStatus,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
-  ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
   Compiler,
   COMPILER_OPTIONS,
   Component,
@@ -43,7 +41,7 @@ import {
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetInjectableDef as getInjectableDef,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
-  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
+  ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
   ɵisComponentDefPendingResolution,
   ɵisEnvironmentProviders as isEnvironmentProviders,
   ɵNG_COMP_DEF as NG_COMP_DEF,
@@ -936,9 +934,8 @@ export class TestBedCompiler {
     compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
       providers: [
         ...this.rootProviderOverrides,
-        internalProvideZoneChangeDetection({}),
+        provideZonelessChangeDetectionInternal(),
         TestBedApplicationErrorHandler,
-        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
         {
           provide: ENVIRONMENT_INITIALIZER,
           multi: true,
@@ -1073,15 +1070,30 @@ export class TestBedCompiler {
 
   private patchDefWithProviderOverrides(declaration: Type<any>, field: string): void {
     const def = (declaration as any)[field];
-    if (def && def.providersResolver) {
-      this.maybeStoreNgDef(field, declaration);
 
-      const resolver = def.providersResolver;
-      const processProvidersFn = (providers: Provider[]) => this.getOverriddenProviders(providers);
+    if (!def) {
+      return;
+    }
+
+    if (def.viewProvidersResolver) {
+      this.maybeStoreNgDef(field, declaration);
+      const viewProvidersResolver = def.viewProvidersResolver;
+      this.storeFieldOfDefOnType(declaration, field, 'viewProvidersResolver');
+      def.viewProvidersResolver = (ngDef: DirectiveDef<any>) =>
+        viewProvidersResolver(ngDef, this.processProviderOverrides);
+    }
+
+    if (def.providersResolver) {
+      this.maybeStoreNgDef(field, declaration);
+      const providersResolver = def.providersResolver;
       this.storeFieldOfDefOnType(declaration, field, 'providersResolver');
-      def.providersResolver = (ngDef: DirectiveDef<any>) => resolver(ngDef, processProvidersFn);
+      def.providersResolver = (ngDef: DirectiveDef<any>) =>
+        providersResolver(ngDef, this.processProviderOverrides);
     }
   }
+
+  private processProviderOverrides = (providers: Provider[]) =>
+    this.getOverriddenProviders(providers);
 }
 
 function initResolvers(): Resolvers {

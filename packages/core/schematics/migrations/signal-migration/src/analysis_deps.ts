@@ -7,15 +7,17 @@
  */
 
 import ts from 'typescript';
+import {
+  NgCompiler,
+  DtsMetadataReader,
+  MetadataReader,
+  PartialEvaluator,
+  TypeScriptReflectionHost,
+  ResourceLoader,
+  ReferenceEmitter,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli/private/migrations';
 
-import {DtsMetadataReader, MetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-
-import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {ReferenceEmitter} from '@angular/compiler-cli/src/ngtsc/imports';
-import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {ProgramInfo} from '../../../utils/tsurge/program_info';
 
 /**

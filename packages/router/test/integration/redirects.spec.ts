@@ -8,10 +8,17 @@
 import {LocationStrategy, Location, HashLocationStrategy} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {Router, NavigationStart, RoutesRecognized} from '../../src';
-import {createRoot, RootCmp, BlankCmp, TeamCmp, advance} from './integration_helpers';
+import {
+  createRoot,
+  RootCmp,
+  BlankCmp,
+  TeamCmp,
+  advance,
+  simulateLocationChange,
+} from './integration_helpers';
 import {childNodesAsList} from '@angular/private/testing';
 
-export function redirectsIntegrationSuite() {
+export function redirectsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('redirects', () => {
     it('should work', async () => {
       const router = TestBed.inject(Router);
@@ -117,8 +124,7 @@ export function redirectsIntegrationSuite() {
       expect(location.path()).toEqual('/initial');
 
       // location change
-      location.go('/old/team/33');
-      location.historyGo(0);
+      simulateLocationChange('/old/team/33', browserAPI);
 
       await advance(fixture);
       expect(location.path()).toEqual('/team/33');

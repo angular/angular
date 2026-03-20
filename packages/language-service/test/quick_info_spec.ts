@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project} from '../testing';
@@ -141,7 +140,6 @@ describe('quick info', () => {
 
   describe('strict templates (happy path)', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject('test', quickInfoSkeleton());
     });
@@ -221,14 +219,6 @@ describe('quick info', () => {
         });
       });
 
-      it('should work for data-let- syntax', () => {
-        expectQuickInfo({
-          templateOverride: `<ng-template ngFor data-let-he¦ro [ngForOf]="heroes">{{hero}}</ng-template>`,
-          expectedSpanText: 'hero',
-          expectedDisplayString: '(variable) hero: Hero',
-        });
-      });
-
       it('should get tags', () => {
         const templateOverride = '<div depr¦ecated></div>';
         const text = templateOverride.replace('¦', '');
@@ -257,11 +247,6 @@ describe('quick info', () => {
         it('should work for bind- syntax', () => {
           expectQuickInfo({
             templateOverride: `<test-comp bind-tcN¦ame="name"></test-comp>`,
-            expectedSpanText: 'tcName',
-            expectedDisplayString: '(property) TestComponent.name: string',
-          });
-          expectQuickInfo({
-            templateOverride: `<test-comp data-bind-tcN¦ame="name"></test-comp>`,
             expectedSpanText: 'tcName',
             expectedDisplayString: '(property) TestComponent.name: string',
           });
@@ -318,11 +303,6 @@ describe('quick info', () => {
             expectedSpanText: 'test',
             expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>',
           });
-          expectQuickInfo({
-            templateOverride: `<test-comp data-on-te¦st="myClick($event)"></test-comp>`,
-            expectedSpanText: 'test',
-            expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>',
-          });
         });
 
         it('should work for $event from EventEmitter', () => {
@@ -353,7 +333,7 @@ describe('quick info', () => {
         expect(toText(documentation)).toContain(
           'The **`HTMLDivElement`** interface provides special properties ' +
             '(beyond the regular HTMLElement interface it also has available to it by inheritance) ' +
-            'for manipulating div elements.',
+            'for manipulating <div> elements.',
         );
       });
 
@@ -368,11 +348,6 @@ describe('quick info', () => {
       it('should work for ref- syntax', () => {
         expectQuickInfo({
           templateOverride: `<div ref-ch¦art></div>`,
-          expectedSpanText: 'chart',
-          expectedDisplayString: '(reference) chart: HTMLDivElement',
-        });
-        expectQuickInfo({
-          templateOverride: `<div data-ref-ch¦art></div>`,
           expectedSpanText: 'chart',
           expectedDisplayString: '(reference) chart: HTMLDivElement',
         });
@@ -753,6 +728,14 @@ describe('quick info', () => {
             });
           });
 
+          it('idle with timeout', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on i¦dle(500ms)) { } `,
+              expectedSpanText: 'idle',
+              expectedDisplayString: '(trigger) idle',
+            });
+          });
+
           it('hover', () => {
             expectQuickInfo({
               templateOverride: `@defer (on hov¦er(x)) { } <div #x></div> `,
@@ -895,7 +878,6 @@ describe('quick info', () => {
     });
 
     it('should work for object literal with shorthand property declarations', () => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',
@@ -951,13 +933,7 @@ describe('quick info', () => {
         expectedDisplayString: string;
         expectedSpanText: string;
       }) {
-        const project = env.addProject(
-          'host-bindings',
-          {'host-bindings.ts': source},
-          {
-            typeCheckHostBindings: true,
-          },
-        );
+        const project = env.addProject('host-bindings', {'host-bindings.ts': source});
         const appFile = project.openFile('host-bindings.ts');
 
         appFile.moveCursorToText(moveTo);
@@ -1065,7 +1041,6 @@ describe('quick info', () => {
 
   describe('generics', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
     });
 
@@ -1108,7 +1083,6 @@ describe('quick info', () => {
 
   describe('non-strict compiler options', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
     });
 
@@ -1181,7 +1155,6 @@ describe('quick info', () => {
 
   describe('selectorless', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',

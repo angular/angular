@@ -21,6 +21,7 @@ ts_project(
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
         "//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html_lib",
+        "//adev/shared-docs/pipeline/shared:shiki",
     ],
 )
 

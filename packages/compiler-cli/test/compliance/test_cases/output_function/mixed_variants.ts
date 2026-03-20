@@ -1,9 +1,7 @@
 import {Directive, EventEmitter, Output, output} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 
-@Directive({
-  standalone: true,
-})
+@Directive()
 export class TestDir {
   click1 = output();
   click2 = output<boolean>();
@@ -13,5 +11,5 @@ export class TestDir {
 
   @Output() clickDecorator1 = new EventEmitter();
   @Output() clickDecorator2 = new EventEmitter<boolean>();
-  @Output('decoratorPublicName') _blaDecorator = new EventEmitter<void>();
+  @Output('decoratorPublicName3') _blaDecorator = new EventEmitter<void>();
 }

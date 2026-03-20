@@ -7,7 +7,7 @@
  */
 
 import '@angular/compiler';
-import {Component, importProvidersFrom} from '../../../src/core';
+import {Component, importProvidersFrom, provideZoneChangeDetection} from '../../../src/core';
 import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 
@@ -27,10 +27,10 @@ import {
 } from './e2e/oversized-image/oversized-image';
 import {PreconnectCheckComponent} from './e2e/preconnect-check/preconnect-check';
 import {PlaygroundComponent} from './playground';
+import {LcpCheckDuplicate} from './e2e/lcp-check-duplicate/lcp-check-duplicate';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterModule],
   template: '<router-outlet></router-outlet>',
 })
@@ -43,6 +43,7 @@ const ROUTES = [
   // Paths below are used for e2e testing:
   {path: 'e2e/basic', component: BasicComponent},
   {path: 'e2e/lcp-check', component: LcpCheckComponent},
+  {path: 'e2e/lcp-check-duplicate', component: LcpCheckDuplicate},
   {path: 'e2e/image-perf-warnings-lazy', component: ImagePerfWarningsLazyComponent},
   {path: 'e2e/image-perf-warnings-oversized', component: ImagePerfWarningsOversizedComponent},
   {path: 'e2e/svg-no-perf-oversized-warnings', component: SvgNoOversizedPerfWarningsComponent},
@@ -57,6 +58,7 @@ const ROUTES = [
 
 bootstrapApplication(RootComponent, {
   providers: [
+    provideZoneChangeDetection(),
     provideProtractorTestingSupport(), //
     importProvidersFrom(RouterModule.forRoot(ROUTES)),
   ],

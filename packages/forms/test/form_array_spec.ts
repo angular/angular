@@ -6,22 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {fakeAsync, tick} from '@angular/core/testing';
+import {Component, Directive, effect, forwardRef, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {of} from 'rxjs';
 import {
   AbstractControl,
+  ControlValueAccessor,
   FormArray,
   FormControl,
   FormGroup,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
 } from '../index';
 import {Validators} from '../src/validators';
-import {of} from 'rxjs';
 
+import {timeout, useAutoTick} from '@angular/private/testing';
 import {asyncValidator} from './util';
 
 (function () {
   describe('FormArray', () => {
+    useAutoTick();
+
     describe('adding/removing', () => {
       let a: FormArray;
       let c1: FormControl, c2: FormControl, c3: FormControl;
@@ -1087,32 +1094,32 @@ import {asyncValidator} from './util';
         return of({'other': true});
       }
 
-      it('should run the async validator', fakeAsync(() => {
+      it('should run the async validator', async () => {
         const c = new FormControl('value');
         const g = new FormArray([c], null!, asyncValidator('expected'));
 
         expect(g.pending).toEqual(true);
 
-        tick();
+        await timeout();
 
         expect(g.errors).toEqual({'async': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it('should set a single async validator from options obj', fakeAsync(() => {
+      it('should set a single async validator from options obj', async () => {
         const g = new FormArray([new FormControl('value')], {
           asyncValidators: asyncValidator('expected'),
         });
 
         expect(g.pending).toEqual(true);
 
-        tick();
+        await timeout();
 
         expect(g.errors).toEqual({'async': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it('should set multiple async validators from an array', fakeAsync(() => {
+      it('should set multiple async validators from an array', async () => {
         const g = new FormArray([new FormControl('value')], null!, [
           asyncValidator('expected'),
           otherObservableValidator,
@@ -1120,26 +1127,26 @@ import {asyncValidator} from './util';
 
         expect(g.pending).toEqual(true);
 
-        tick();
+        await timeout();
 
         expect(g.errors).toEqual({'async': true, 'other': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it('should set multiple async validators from options obj', fakeAsync(() => {
+      it('should set multiple async validators from options obj', async () => {
         const g = new FormArray([new FormControl('value')], {
           asyncValidators: [asyncValidator('expected'), otherObservableValidator],
         });
 
         expect(g.pending).toEqual(true);
 
-        tick();
+        await timeout();
 
         expect(g.errors).toEqual({'async': true, 'other': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it('should fire statusChanges events when async validators are added via options object', fakeAsync(() => {
+      it('should fire statusChanges events when async validators are added via options object', async () => {
         // The behavior is tested (in other spec files) for each of the model types (`FormControl`,
         // `FormGroup` and `FormArray`).
         let statuses: string[] = [];
@@ -1151,9 +1158,9 @@ import {asyncValidator} from './util';
         asc.statusChanges.subscribe((status: any) => statuses.push(status));
 
         // After a tick, the async validator should change status PENDING -> VALID.
-        tick();
+        await timeout();
         expect(statuses).toEqual(['VALID']);
-      }));
+      });
     });
 
     describe('disable() & enable()', () => {
@@ -1319,31 +1326,31 @@ import {asyncValidator} from './util';
           expect(arr.errors).toEqual({'expected': true});
         });
 
-        it('should clear out async array errors when disabled', fakeAsync(() => {
+        it('should clear out async array errors when disabled', async () => {
           const arr = new FormArray([new FormControl()], null!, asyncValidator('expected'));
-          tick();
+          await timeout();
           expect(arr.errors).toEqual({'async': true});
 
           arr.disable();
           expect(arr.errors).toEqual(null);
 
           arr.enable();
-          tick();
+          await timeout();
           expect(arr.errors).toEqual({'async': true});
-        }));
+        });
 
-        it('should re-populate async array errors when enabled from a child', fakeAsync(() => {
+        it('should re-populate async array errors when enabled from a child', async () => {
           const arr = new FormArray([new FormControl()], null!, asyncValidator('expected'));
-          tick();
+          await timeout();
           expect(arr.errors).toEqual({'async': true});
 
           arr.disable();
           expect(arr.errors).toEqual(null);
 
           arr.push(new FormControl());
-          tick();
+          await timeout();
           expect(arr.errors).toEqual({'async': true});
-        }));
+        });
       });
 
       describe('disabled events', () => {
@@ -1622,6 +1629,133 @@ import {asyncValidator} from './util';
             }
           });
         });
+      });
+    });
+
+    describe('FormArray.setValue is untracked', () => {
+      @Directive({
+        selector: '[testCva]',
+        providers: [
+          {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TestCvaDirective),
+            multi: true,
+          },
+        ],
+      })
+      class TestCvaDirective implements ControlValueAccessor {
+        // This is the “dangerous” signal read that must NOT get tracked by the caller of setValue().
+        static cvaSignal = signal(0);
+
+        writeValue(value: unknown): void {
+          // If setValue() is not untracked, the *caller* effect/computed may accidentally track this read.
+          TestCvaDirective.cvaSignal();
+        }
+
+        registerOnChange(_: (value: unknown) => void): void {}
+        registerOnTouched(_: () => void): void {}
+        setDisabledState(_: boolean): void {}
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TestCvaDirective],
+        template: `<input testCva [formControl]="control.at(0)" />`,
+      })
+      class HostComponent {
+        control = new FormArray([new FormControl('')]);
+      }
+
+      it('should NOT track signals read inside CVA.writeValue when setValue is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.setValue([driver()]);
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
+
+      it('should NOT track signals read inside CVA.writeValue when patchValue is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.patchValue([driver()]);
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
+
+      it('should NOT track signals read inside CVA.writeValue when reset is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.reset([driver()]);
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
       });
     });
   });

@@ -1,5 +1,5 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("//tools:defaults2.bzl", "js_test")
+load("//tools:defaults.bzl", "js_test")
 
 def module_test(name, npm_packages, skipped_entry_points = [], additional_deps = [], **kwargs):
     write_file(

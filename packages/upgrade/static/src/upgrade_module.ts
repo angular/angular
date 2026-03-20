@@ -14,6 +14,7 @@ import {
   PlatformRef,
   Testability,
   ɵNoopNgZone,
+  ɵinternalProvideZoneChangeDetection,
 } from '@angular/core';
 
 import {ɵangular1, ɵconstants, ɵutil} from '../common';
@@ -145,7 +146,7 @@ import {NgAdapterInjector} from './util';
  *
  * @publicApi
  */
-@NgModule({providers: [angular1Providers]})
+@NgModule({providers: [angular1Providers, ɵinternalProvideZoneChangeDetection({})]})
 export class UpgradeModule {
   /**
    * The AngularJS `$injector` for the upgrade application.

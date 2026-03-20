@@ -45,7 +45,8 @@ export interface InjectableDecorator {
    * provided and injected as a dependency.
    *
    * @see [Introduction to Services and DI](guide/di)
-   * @see [Dependency Injection Guide](guide/di/dependency-injection
+   * @see [Creating and using services](guide/di/creating-and-using-services)
+   * @see [Defining dependency providers](guide/di/defining-dependency-providers)
    *
    * @usageNotes
    *
@@ -60,9 +61,12 @@ export interface InjectableDecorator {
    *
    */
   (): TypeDecorator;
-  (
-    options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
-  ): TypeDecorator;
+
+  /**
+   * @deprecated The `providedIn: NgModule` or `providedIn:'any'` options are deprecated. Please use the other signatures.
+   */
+  (options?: {providedIn: Type<any> | 'any'} & InjectableProvider): TypeDecorator;
+  (options?: {providedIn: 'root' | 'platform' | null} & InjectableProvider): TypeDecorator;
   new (): Injectable;
   new (
     options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
@@ -71,6 +75,7 @@ export interface InjectableDecorator {
 
 /**
  * Type of the Injectable metadata.
+ *
  *
  * @publicApi
  */

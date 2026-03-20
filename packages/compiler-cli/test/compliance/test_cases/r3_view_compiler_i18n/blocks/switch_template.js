@@ -23,8 +23,9 @@ function MyApp_Case_4_Template(rf, ctx) {
 }
 
 …
-
-MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyApp {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: () => {
     let i18n_0;
@@ -32,7 +33,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_ID_WITH_SUFFIX$ = goog.getMsg(" Content: {$startBlockCase}before{$startTagSpan}zero{$closeTagSpan}after{$closeBlockCase}{$startBlockCase_1}before{$startTagDiv}one{$closeTagDiv}after{$closeBlockCase}{$startBlockDefault}before{$startTagButton}otherwise{$closeTagButton}after{$closeBlockDefault}", {
+      const $MSG_ID_WITH_SUFFIX$ = /* @ts-ignore */ goog.getMsg(" Content: {$startBlockCase}before{$startTagSpan}zero{$closeTagSpan}after{$closeBlockCase}{$startBlockCase_1}before{$startTagDiv}one{$closeTagDiv}after{$closeBlockCase}{$startBlockDefault}before{$startTagButton}otherwise{$closeTagButton}after{$closeBlockDefault}", {
         "closeBlockCase": "[\uFFFD/*2:1\uFFFD|\uFFFD/*3:2\uFFFD]",
         "closeBlockDefault": "\uFFFD/*4:3\uFFFD",
         "closeTagButton": "\uFFFD/#1:3\uFFFD",
@@ -61,6 +62,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       });
       i18n_0 = $MSG_ID_WITH_SUFFIX$;
     } else {
+      /* @ts-ignore */
       i18n_0 = $localize` Content: ${"\uFFFD*2:1\uFFFD"}:START_BLOCK_CASE:before${"\uFFFD#1:1\uFFFD"}:START_TAG_SPAN:zero${"\uFFFD/#1:1\uFFFD"}:CLOSE_TAG_SPAN:after${"[\uFFFD/*2:1\uFFFD|\uFFFD/*3:2\uFFFD]"}:CLOSE_BLOCK_CASE:${"\uFFFD*3:2\uFFFD"}:START_BLOCK_CASE_1:before${"\uFFFD#1:2\uFFFD"}:START_TAG_DIV:one${"\uFFFD/#1:2\uFFFD"}:CLOSE_TAG_DIV:after${"[\uFFFD/*2:1\uFFFD|\uFFFD/*3:2\uFFFD]"}:CLOSE_BLOCK_CASE:${"\uFFFD*4:3\uFFFD"}:START_BLOCK_DEFAULT:before${"\uFFFD#1:3\uFFFD"}:START_TAG_BUTTON:otherwise${"\uFFFD/#1:3\uFFFD"}:CLOSE_TAG_BUTTON:after${"\uFFFD/*4:3\uFFFD"}:CLOSE_BLOCK_DEFAULT:`;
     }
     i18n_0 = $r3$.ɵɵi18nPostprocess(i18n_0);
@@ -82,3 +84,4 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   },
   …
 });
+}

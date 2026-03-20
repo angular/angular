@@ -7,7 +7,7 @@
  */
 import {ClassDeclaration} from '../../reflection';
 
-import {ComponentScope, ComponentScopeReader, LocalModuleScope, RemoteScope} from './api';
+import {ComponentScope, ComponentScopeReader, RemoteScope} from './api';
 
 /**
  * A `ComponentScopeReader` that reads from an ordered set of child readers until it obtains the

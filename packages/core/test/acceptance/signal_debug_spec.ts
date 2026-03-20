@@ -17,6 +17,8 @@ import {
   Injectable,
   signal,
   Injector,
+  ApplicationRef,
+  afterRenderEffect,
 } from '../../src/core';
 import {
   getFrameworkDIDebugData,
@@ -264,7 +266,7 @@ describe('getSignalGraph', () => {
     @Component({
       providers: [ExternalService],
       selector: 'component-with-external-service',
-      template: `{{externalService.oneTwoThree()}}`,
+      template: `{{ externalService.oneTwoThree() }}`,
     })
     class WithExternalService {
       externalService = inject(ExternalService);
@@ -444,5 +446,39 @@ describe('getSignalGraph', () => {
     const edgesWithNodes = mapEdgeIndicesIntoNodes(edges, nodes);
     expect(edgesWithNodes).toContain({consumer: effectBNode!, producer: signalANode!});
     expect(edgesWithNodes).toContain({consumer: effectDNode!, producer: signalCNode!});
+  });
+
+  it('should stop tracking effect when ref is destroyed', () => {
+    @Component({template: ''})
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const injector = TestBed.inject(ApplicationRef).injector;
+    expect(getFrameworkDIDebugData().resolverToEffects.has(injector)).toBe(false);
+
+    const ref = effect(() => {}, {injector});
+    expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(1);
+
+    ref.destroy();
+    expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(0);
+  });
+
+  it('should stop tracking afterRenderEffect when ref is destroyed', () => {
+    @Component({template: ''})
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const injector = TestBed.inject(ApplicationRef).injector;
+    expect(getFrameworkDIDebugData().resolverToEffects.has(injector)).toBe(false);
+
+    const ref = afterRenderEffect(() => {}, {injector});
+    expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(1);
+
+    ref.destroy();
+    expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(0);
   });
 });

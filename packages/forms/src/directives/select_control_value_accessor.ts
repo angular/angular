@@ -106,7 +106,7 @@ function _extractId(valueString: string): string {
  */
 @Directive({
   selector:
-    'select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]',
+    'select:not([multiple]):not([ngNoCva])[formControlName],select:not([multiple]):not([ngNoCva])[formControl],select:not([multiple]):not([ngNoCva])[ngModel]',
   host: {'(change)': 'onChange($any($event.target).value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR],
   standalone: false,
@@ -286,7 +286,7 @@ export class NgSelectOption implements OnDestroy {
   @Input('value')
   set value(value: any) {
     this._setElementValue(value);
-    if (this._select) this._select._writeValueAfterRender();
+    this._select?._writeValueAfterRender();
   }
 
   /** @internal */
@@ -296,9 +296,7 @@ export class NgSelectOption implements OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
-    if (this._select) {
-      this._select._optionMap.delete(this.id);
-      this._select._writeValueAfterRender();
-    }
+    this._select?._optionMap.delete(this.id);
+    this._select?._writeValueAfterRender();
   }
 }

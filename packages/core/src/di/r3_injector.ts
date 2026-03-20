@@ -9,7 +9,7 @@
 import '../util/ng_dev_mode';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {OnDestroy} from '../interface/lifecycle_hooks';
+import {OnDestroy} from '../change_detection/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {
   emitInjectorToCreateInstanceEvent,
@@ -79,7 +79,6 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {
   Injector as PrimitivesInjector,
   InjectionToken as PrimitivesInjectionToken,
-  NOT_FOUND,
   NotFound,
   isNotFound,
 } from '@angular/core/primitives/di';
@@ -123,6 +122,8 @@ interface Record<T> {
 /**
  * An `Injector` that's part of the environment injector hierarchy, which exists outside of the
  * component tree.
+ *
+ * @see [Types of injector hierarchies](guide/di/hierarchical-dependency-injection#types-of-injector-hierarchies)
  *
  * @publicApi
  */
@@ -392,18 +393,23 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
         errorCode === RuntimeErrorCode.CYCLIC_DI_DEPENDENCY ||
         errorCode === RuntimeErrorCode.PROVIDER_NOT_FOUND
       ) {
-        if (!ngDevMode) {
-          throw new RuntimeError(errorCode, null);
-        }
+        // Note: we use `if (ngDevMode) { ... }` instead of an early return.
+        // ESBuild is conservative about removing dead code that follows `return;`
+        // inside a function body, so the block may remain in the bundle.
+        // Using a conditional ensures the dev-only logic is reliably tree-shaken
+        // in production builds.
+        if (ngDevMode) {
+          prependTokenToDependencyPath(error, token);
 
-        prependTokenToDependencyPath(error, token);
-
-        if (previousInjector) {
-          // We still have a parent injector, keep throwing
-          throw error;
+          if (previousInjector) {
+            // We still have a parent injector, keep throwing
+            throw error;
+          } else {
+            // Format & throw the final error message when we don't have any previous injector
+            throw augmentRuntimeError(error, this.source);
+          }
         } else {
-          // Format & throw the final error message when we don't have any previous injector
-          throw augmentRuntimeError(error, this.source);
+          throw new RuntimeError(errorCode, null);
         }
       } else {
         throw error;
@@ -449,12 +455,16 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   }
 
   override toString() {
-    const tokens: string[] = [];
-    const records = this.records;
-    for (const token of records.keys()) {
-      tokens.push(stringify(token));
+    if (ngDevMode) {
+      const tokens: string[] = [];
+      const records = this.records;
+      for (const token of records.keys()) {
+        tokens.push(stringify(token));
+      }
+      return `R3Injector[${tokens.join(', ')}]`;
     }
-    return `R3Injector[${tokens.join(', ')}]`;
+
+    return 'R3Injector[...]';
   }
 
   /**
@@ -515,7 +525,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     const prevConsumer = setActiveConsumer(null);
     try {
       if (record.value === CIRCULAR) {
-        throw cyclicDependencyError(stringify(token));
+        throw cyclicDependencyError(ngDevMode ? stringify(token) : '');
       } else if (record.value === NOT_YET) {
         record.value = CIRCULAR;
 

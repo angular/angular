@@ -2,7 +2,7 @@
 
 Now that your forms are set up with Angular, the next step is to access the values from the form controls.
 
-Note: Learn more about [adding a basic form control in the in-depth guide](/guide/forms/reactive-forms#adding-a-basic-form-control).
+NOTE: Learn more about [adding a basic form control in the in-depth guide](/guide/forms/reactive-forms#adding-a-basic-form-control).
 
 In this activity, you'll learn how to get the value from your form input.
 
@@ -14,7 +14,7 @@ In this activity, you'll learn how to get the value from your form input.
 
 To display the input value in a template, you can use the interpolation syntax `{{}}` just like any other class property of the component:
 
-<docs-code language="angular-ts" highlight="[5]">
+```angular-ts {highlight:[5]}
 @Component({
   selector: 'app-user',
   template: `
@@ -29,7 +29,7 @@ To display the input value in a template, you can use the interpolation syntax `
 export class User {
   favoriteFramework = '';
 }
-</docs-code>
+```
 
 </docs-step>
 
@@ -37,7 +37,7 @@ export class User {
 
 When you need to reference the input field value in the component class, you can do so by accessing the class property with the `this` syntax.
 
-<docs-code language="angular-ts" highlight="[15]">
+```angular-ts {highlight:[15]}
 ...
 @Component({
   selector: 'app-user',
@@ -55,7 +55,7 @@ export class User {
     alert(this.favoriteFramework);
   }
 }
-</docs-code>
+```
 
 </docs-step>
 

@@ -7,8 +7,8 @@
  */
 
 export {
-  ApplicationConfig,
   bootstrapApplication,
+  BootstrapContext,
   BrowserModule,
   createApplication,
   platformBrowser,
@@ -19,14 +19,18 @@ export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {By} from './dom/debug/by';
 export {REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
-export {EVENT_MANAGER_PLUGINS, EventManager, EventManagerPlugin} from './dom/events/event_manager';
+export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
+export {EventManagerPlugin} from './dom/events/event_manager_plugin';
 export {
-  HAMMER_GESTURE_CONFIG,
-  HAMMER_LOADER,
-  HammerGestureConfig,
-  HammerLoader,
-  HammerModule,
-} from './dom/events/hammer_gestures';
+  HydrationFeature,
+  HydrationFeatureKind,
+  provideClientHydration,
+  withEventReplay,
+  withHttpTransferCacheOptions,
+  withI18nSupport,
+  withIncrementalHydration,
+  withNoHttpTransferCache,
+} from './hydration';
 export {
   DomSanitizer,
   SafeHtml,
@@ -36,16 +40,6 @@ export {
   SafeUrl,
   SafeValue,
 } from './security/dom_sanitization_service';
-export {
-  HydrationFeature,
-  HydrationFeatureKind,
-  provideClientHydration,
-  withEventReplay,
-  withHttpTransferCacheOptions,
-  withI18nSupport,
-  withNoHttpTransferCache,
-  withIncrementalHydration,
-} from './hydration';
 
 export * from './private_export';
 export {VERSION} from './version';

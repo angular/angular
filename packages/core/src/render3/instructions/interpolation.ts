@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {assertEqual, assertLessThan} from '../../util/assert';
+import {assertLessThan} from '../../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {LView} from '../interfaces/view';
 import {getBindingIndex, incrementBindingIndex, nextBindingIndex, setBindingIndex} from '../state';

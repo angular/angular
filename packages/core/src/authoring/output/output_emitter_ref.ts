@@ -26,6 +26,8 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
  * <my-comp (valueChange)="processNewValue($event)" />
  * ```
  *
+ * @see [Custom events with outputs](guide/components/outputs)
+ *
  * @publicAPI
  */
 export class OutputEmitterRef<T> implements OutputRef<T> {

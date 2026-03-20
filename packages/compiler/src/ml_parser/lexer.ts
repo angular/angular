@@ -9,7 +9,6 @@
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
 
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './defaults';
 import {NAMED_ENTITIES} from './entities';
 import {TagContentType, TagDefinition} from './tags';
 import {
@@ -42,8 +41,6 @@ export interface LexerRange {
 export interface TokenizeOptions {
   /** Whether to tokenize ICU messages (considered as text nodes when false). */
   tokenizeExpansionForms?: boolean;
-  /** How to tokenize interpolation markers. */
-  interpolationConfig?: InterpolationConfig;
   /**
    * The start and end point of the text to parse within the `source` string.
    * The entire `source` string is parsed if this is not provided.
@@ -156,13 +153,14 @@ const SUPPORTED_BLOCKS = [
   '@placeholder',
   '@loading',
   '@error',
-];
+] as const;
+
+const INTERPOLATION = {start: '{{', end: '}}'} as const;
 
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
   private _tokenizeIcu: boolean;
-  private _interpolationConfig: InterpolationConfig;
   private _leadingTriviaCodePoints: number[] | undefined;
   private _currentTokenStart: CharacterCursor | null = null;
   private _currentTokenType: TokenType | null = null;
@@ -189,7 +187,6 @@ class _Tokenizer {
     options: TokenizeOptions,
   ) {
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
-    this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
     this._leadingTriviaCodePoints =
       options.leadingTriviaChars && options.leadingTriviaChars.map((c) => c.codePointAt(0) || 0);
     const range = options.range || {
@@ -302,6 +299,14 @@ class _Tokenizer {
     this._beginToken(TokenType.BLOCK_OPEN_START, start);
     const startToken = this._endToken([this._getBlockName()]);
 
+    if (startToken.parts[0] === 'default never' && this._attemptCharCode(chars.$SEMICOLON)) {
+      this._beginToken(TokenType.BLOCK_OPEN_END);
+      this._endToken([]);
+      this._beginToken(TokenType.BLOCK_CLOSE);
+      this._endToken([]);
+      return;
+    }
+
     if (this._cursor.peek() === chars.$LPAREN) {
       // Advance past the opening paren.
       this._cursor.advance();
@@ -321,6 +326,15 @@ class _Tokenizer {
 
     if (this._attemptCharCode(chars.$LBRACE)) {
       this._beginToken(TokenType.BLOCK_OPEN_END);
+      this._endToken([]);
+    } else if (
+      this._isBlockStart() &&
+      (startToken.parts[0] === 'case' || startToken.parts[0] === 'default')
+    ) {
+      // We only allow @case statements to be consecutive without a block in between.
+      this._beginToken(TokenType.BLOCK_OPEN_END);
+      this._endToken([]);
+      this._beginToken(TokenType.BLOCK_CLOSE);
       this._endToken([]);
     } else {
       startToken.type = TokenType.INCOMPLETE_BLOCK_OPEN;
@@ -692,7 +706,7 @@ class _Tokenizer {
       this._cursor.advance();
       try {
         const charCode = parseInt(strNum, isHex ? 16 : 10);
-        this._endToken([String.fromCharCode(charCode), this._cursor.getChars(start)]);
+        this._endToken([String.fromCodePoint(charCode), this._cursor.getChars(start)]);
       } catch {
         throw this._createError(
           _unknownEntityErrorMsg(this._cursor.getChars(start)),
@@ -790,6 +804,28 @@ class _Tokenizer {
     return [prefix, name];
   }
 
+  private _consumeSingleLineComment() {
+    this._attemptCharCodeUntilFn((code) => chars.isNewLine(code) || code === chars.$EOF);
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+  }
+
+  private _consumeMultiLineComment() {
+    this._attemptCharCodeUntilFn((code) => {
+      if (code === chars.$EOF) {
+        return true;
+      }
+      if (code === chars.$STAR) {
+        const next = this._cursor.clone();
+        next.advance();
+        return next.peek() === chars.$SLASH;
+      }
+      return false;
+    });
+    if (this._attemptStr('*/')) {
+      this._attemptCharCodeUntilFn(isNotWhitespace);
+    }
+  }
+
   private _consumeTagOpen(start: CharacterCursor) {
     let tagName: string;
     let prefix: string;
@@ -826,7 +862,21 @@ class _Tokenizer {
         this._attemptCharCodeUntilFn(isNotWhitespace);
       }
 
-      while (!isAttributeTerminator(this._cursor.peek())) {
+      while (true) {
+        if (this._attemptStr('//')) {
+          this._consumeSingleLineComment();
+          continue;
+        }
+
+        if (this._attemptStr('/*')) {
+          this._consumeMultiLineComment();
+          continue;
+        }
+
+        if (isAttributeTerminator(this._cursor.peek())) {
+          break;
+        }
+
         if (this._selectorlessEnabled && this._cursor.peek() === chars.$AT) {
           const start = this._cursor.clone();
           const nameStart = start.clone();
@@ -1145,7 +1195,7 @@ class _Tokenizer {
 
     while (!endPredicate()) {
       const current = this._cursor.clone();
-      if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
+      if (this._attemptStr(INTERPOLATION.start)) {
         this._endToken([this._processCarriageReturns(parts.join(''))], current);
         parts.length = 0;
         this._consumeInterpolation(interpolationTokenType, current, endInterpolation);
@@ -1182,7 +1232,7 @@ class _Tokenizer {
   ): void {
     const parts: string[] = [];
     this._beginToken(interpolationTokenType, interpolationStart);
-    parts.push(this._interpolationConfig.start);
+    parts.push(INTERPOLATION.start);
 
     // Find the end of the interpolation, ignoring content inside quotes.
     const expressionStart = this._cursor.clone();
@@ -1205,10 +1255,10 @@ class _Tokenizer {
       }
 
       if (inQuote === null) {
-        if (this._attemptStr(this._interpolationConfig.end)) {
+        if (this._attemptStr(INTERPOLATION.end)) {
           // We are not in a string, and we hit the end interpolation marker
           parts.push(this._getProcessedChars(expressionStart, current));
-          parts.push(this._interpolationConfig.end);
+          parts.push(INTERPOLATION.end);
           this._endToken(parts);
           return;
         } else if (this._attemptStr('//')) {
@@ -1380,13 +1430,10 @@ class _Tokenizer {
     if (this._cursor.peek() !== chars.$LBRACE) {
       return false;
     }
-    if (this._interpolationConfig) {
-      const start = this._cursor.clone();
-      const isInterpolation = this._attemptStr(this._interpolationConfig.start);
-      this._cursor = start;
-      return !isInterpolation;
-    }
-    return true;
+    const start = this._cursor.clone();
+    const isInterpolation = this._attemptStr(INTERPOLATION.start);
+    this._cursor = start;
+    return !isInterpolation;
   }
 }
 
@@ -1420,7 +1467,12 @@ function isDigitEntityEnd(code: number): boolean {
 }
 
 function isNamedEntityEnd(code: number): boolean {
-  return code === chars.$SEMICOLON || code === chars.$EOF || !chars.isAsciiLetter(code);
+  // Named entities may contain digits (e.g. &sup1;, &frac12;, &blk34;).
+  return (
+    code === chars.$SEMICOLON ||
+    code === chars.$EOF ||
+    !(chars.isAsciiLetter(code) || chars.isDigit(code))
+  );
 }
 
 function isExpansionCaseStart(peek: number): boolean {

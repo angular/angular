@@ -7,33 +7,32 @@
  */
 
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
-  Injector,
-  afterNextRender,
   effect,
+  ElementRef,
   inject,
+  Injector,
   output,
   viewChild,
   viewChildren,
 } from '@angular/core';
 
-import {WINDOW} from '../../providers/index';
-import {ClickOutside} from '../../directives/index';
-import {Search, SearchHistory} from '../../services/index';
+import {ClickOutside, SearchItem} from '../../directives';
+import {WINDOW} from '../../providers';
+import {Search, SearchHistory} from '../../services';
 
-import {TextField} from '../text-field/text-field.component';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
-import {SearchItem} from '../../directives/search-item/search-item.directive';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {form, FormField} from '@angular/forms/signals';
 import {Router, RouterLink} from '@angular/router';
 import {fromEvent} from 'rxjs';
+import {RelativeLink} from '../../pipes';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
-import {RelativeLink} from '../../pipes/relative-link.pipe';
 import {SearchHistoryComponent} from '../search-history/search-history.component';
+import {TextField} from '../text-field/text-field.component';
 
 @Component({
   selector: 'docs-search-dialog',
@@ -41,7 +40,7 @@ import {SearchHistoryComponent} from '../search-history/search-history.component
   imports: [
     ClickOutside,
     TextField,
-    ReactiveFormsModule,
+    FormField,
     SearchItem,
     AlgoliaIcon,
     RelativeLink,
@@ -52,10 +51,9 @@ import {SearchHistoryComponent} from '../search-history/search-history.component
   styleUrls: ['./search-dialog.component.scss'],
 })
 export class SearchDialog {
-  onClose = output();
-  dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
-  items = viewChildren(SearchItem);
-  textField = viewChild(TextField);
+  readonly onClose = output();
+  readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
+  readonly items = viewChildren(SearchItem);
 
   readonly history = inject(SearchHistory);
   private readonly search = inject(Search);
@@ -68,21 +66,13 @@ export class SearchDialog {
     this.injector,
   ).withWrap();
 
-  searchQuery = this.search.searchQuery;
-  resultsResource = this.search.resultsResource;
-  searchResults = this.search.searchResults;
+  readonly resultsResource = this.search.resultsResource;
+  readonly searchResults = this.search.searchResults;
 
-  // We use a FormControl instead of relying on NgModel+signal to avoid
-  // the issue https://github.com/angular/angular/issues/13568
-  // TODO: Use signal forms when available
-  searchControl = new FormControl(this.searchQuery(), {nonNullable: true});
+  searchForm = form(this.search.searchQuery);
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.keyManager.destroy());
-
-    this.searchControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      this.searchQuery.set(value);
-    });
 
     // Thinking about refactoring this to a single afterRenderEffect ?
     // Answer: It won't have the same behavior
@@ -105,9 +95,6 @@ export class SearchDialog {
         if (!this.dialog().nativeElement.open) {
           this.dialog().nativeElement.showModal?.();
         }
-        // We want to select the pre-existing text on opening
-        // In order to change the search input with minimal user interaction.
-        this.textField()?.input().nativeElement.select();
       },
     });
 

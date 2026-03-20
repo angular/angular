@@ -7,42 +7,44 @@
  */
 
 import {
+  Binary,
+  BindingPipe,
+  TmplAstBoundAttribute as BoundAttribute,
+  TmplAstBoundEvent as BoundEvent,
+  Call,
+  TmplAstComponent as Component,
+  Conditional,
+  TmplAstContent as Content,
+  TmplAstDeferredBlockError as DeferredBlockError,
+  TmplAstDeferredBlockLoading as DeferredBlockLoading,
+  TmplAstDeferredBlockPlaceholder as DeferredBlockPlaceholder,
+  TmplAstDirective as Directive,
+  TmplAstElement as Element,
+  EmptyExpr,
+  TmplAstForLoopBlock as ForLoopBlock,
+  TmplAstForLoopBlockEmpty as ForLoopBlockEmpty,
+  TmplAstIfBlockBranch as IfBlockBranch,
+  KeyedRead,
+  TmplAstLetDeclaration as LetDeclaration,
+  LiteralArray,
+  LiteralMap,
+  LiteralPrimitive,
+  TmplAstNode as Node,
   ParseError,
   parseTemplate,
   PropertyRead,
-  SafePropertyRead,
-  SafeKeyedRead,
-  KeyedRead,
-  Binary,
-  BindingPipe,
-  SafeCall,
-  Call,
-  EmptyExpr,
-  LiteralArray,
-  LiteralMap,
-  Conditional,
-  LiteralPrimitive,
-  TmplAstNode as Node,
-  TmplAstBoundEvent as BoundEvent,
-  TmplAstTextAttribute as TextAttribute,
-  TmplAstVariable as Variable,
-  TmplAstBoundAttribute as BoundAttribute,
-  TmplAstElement as Element,
-  TmplAstTimerDeferredTrigger as TimerDeferredTrigger,
   TmplAstReference as Reference,
-  TmplAstTemplate as Template,
-  TmplAstLetDeclaration as LetDeclaration,
-  TmplAstContent as Content,
-  TmplAstComponent as Component,
-  TmplAstDirective as Directive,
+  SafeCall,
+  SafeKeyedRead,
+  SafePropertyRead,
   TmplAstSwitchBlock as SwitchBlock,
   TmplAstSwitchBlockCase as SwitchBlockCase,
-  TmplAstIfBlockBranch as IfBlockBranch,
-  TmplAstForLoopBlock as ForLoopBlock,
-  TmplAstForLoopBlockEmpty as ForLoopBlockEmpty,
-  TmplAstDeferredBlockError as DeferredBlockError,
-  TmplAstDeferredBlockPlaceholder as DeferredBlockPlaceholder,
-  TmplAstDeferredBlockLoading as DeferredBlockLoading,
+  TmplAstSwitchExhaustiveCheck as SwitchExhaustiveCheck,
+  TmplAstTemplate as Template,
+  TmplAstTextAttribute as TextAttribute,
+  TmplAstIdleDeferredTrigger as IdleDeferredTrigger,
+  TmplAstTimerDeferredTrigger as TimerDeferredTrigger,
+  TmplAstVariable as Variable,
 } from '@angular/compiler';
 
 import {
@@ -611,9 +613,7 @@ describe('getTargetAtPosition for expression AST', () => {
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(BindingPipe);
-  });
 
-  it('should locate binding pipe without identifier', () => {
     // TODO: We are not able to locate pipe if identifier is missing because the
     // parser throws an error. This case is important for autocomplete.
     // const {errors, nodes, position} = parse(`{{ title | ¦ }}`);
@@ -1062,6 +1062,14 @@ describe('blocks', () => {
     expect(node).toBeInstanceOf(SwitchBlockCase);
   });
 
+  it('should visit exhautive default block on switch', () => {
+    const {nodes, position} = parse(`@switch (foo) { @d¦efault never; }`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(SwitchExhaustiveCheck);
+  });
+
   it('should visit if block main branch', () => {
     const {nodes, position} = parse(`@i¦f (title) { }`);
     const {context} = getTargetAtPosition(nodes, position)!;
@@ -1230,6 +1238,15 @@ describe('blocks', () => {
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(TimerDeferredTrigger);
     expect((node as TimerDeferredTrigger).delay).toBe(2000);
+  });
+
+  it('should visit idle on conditions on defer blocks with timeout', () => {
+    const {nodes, position} = parse(` @defer (on idle(5¦00ms)) { } `);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(IdleDeferredTrigger);
+    expect((node as IdleDeferredTrigger).timeout).toBe(500);
   });
 
   // TODO: Should the parser ingest a property read for `localRef`, instead of a string?

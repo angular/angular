@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ExampleViewer} from './example-viewer.component';
 import {ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
-import {Component, provideZonelessChangeDetection, ComponentRef} from '@angular/core';
+import {Component, ComponentRef, signal} from '@angular/core';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Clipboard} from '@angular/cdk/clipboard';
@@ -32,11 +32,9 @@ describe('ExampleViewer', () => {
   });
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [ExampleViewer],
       providers: [
-        // TODO: Find why tests warn that zone.js is still loaded
-        provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},
       ],
@@ -45,7 +43,7 @@ describe('ExampleViewer', () => {
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should set file extensions as tab names when all files have different extension', async () => {
@@ -132,7 +130,7 @@ describe('ExampleViewer', () => {
     );
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
     expect(hiddenLine).toBeTruthy();
@@ -156,13 +154,13 @@ describe('ExampleViewer', () => {
     );
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const expandButton = fixture.debugElement.query(
       By.css('button[aria-label="Expand code example"]'),
     );
     expandButton.nativeElement.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
     expect(hiddenLine).toBeNull();
@@ -192,7 +190,7 @@ describe('ExampleViewer', () => {
     );
     componentRef.setInput('githubUrl', 'https://github.com/');
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const githubButton = fixture.debugElement.query(
       By.css('a[aria-label="Open example on GitHub"]'),
@@ -213,10 +211,10 @@ describe('ExampleViewer', () => {
     componentRef.setInput('stackblitzUrl', 'https://stackblitz.com/');
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const stackblitzButton = fixture.debugElement.query(
-      By.css('a[aria-label="Edit this example in StackBlitz"]'),
+      By.css('a[aria-label="Edit example in StackBlitz"]'),
     );
     expect(stackblitzButton).toBeTruthy();
     expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl());
@@ -234,8 +232,7 @@ describe('ExampleViewer', () => {
     expect(component.expanded()).toBeFalse();
   });
 
-  // TODO(josephperrott): enable once the docs-viewer/example-viewer circle is sorted out.
-  xit('should call clipboard service when clicked on copy source code', async () => {
+  it('should call clipboard service when clicked on copy source code', async () => {
     const expectedCodeSnippetContent = 'typescript code';
     componentRef.setInput(
       'metadata',
@@ -253,6 +250,7 @@ describe('ExampleViewer', () => {
     const spy = spyOn(clipboardService, 'copy');
 
     await component.renderExample();
+    await fixture.whenStable();
     const button = fixture.debugElement.query(By.directive(CopySourceCodeButton)).nativeElement;
     button.click();
 
@@ -262,7 +260,7 @@ describe('ExampleViewer', () => {
   it('should call clipboard service when clicked on copy example link', async () => {
     componentRef.setInput('metadata', getMetadata());
     component.expanded.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const clipboardService = TestBed.inject(Clipboard);
     const spy = spyOn(clipboardService, 'copy');
@@ -271,7 +269,70 @@ describe('ExampleViewer', () => {
       By.css('button.docs-example-copy-link'),
     ).nativeElement;
     button.click();
-    expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.location.href}#example-1`);
+    const expectedUrl = location.origin + location.pathname + location.search + '#example-1';
+    expect(spy.calls.argsFor(0)[0].trim()).toBe(expectedUrl);
+  });
+
+  it('should hide code content when `hideCode` is true', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        hideCode: true,
+      }),
+    );
+
+    await component.renderExample();
+    await fixture.whenStable();
+
+    // Initially, the code should be hidden.
+    expect(component.showCode()).toBeFalse();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+  });
+
+  it('should expand/collapse code content with toggle button.', async () => {
+    componentRef.setInput('metadata', getMetadata());
+
+    await component.renderExample();
+    await fixture.whenStable();
+
+    // Initially, the code should be visible.
+    expect(component.showCode()).toBeTrue();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+
+    const codeToggleButton = fixture.debugElement.query(By.css('.docs-example-code-toggle'));
+    codeToggleButton.nativeElement.click();
+    await fixture.whenStable();
+
+    expect(component.showCode()).toBeFalse();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+
+    codeToggleButton.nativeElement.click();
+    await fixture.whenStable();
+
+    expect(component.showCode()).toBeTrue();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+  });
+
+  it('should render example', async () => {
+    exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        path: 'example.ts',
+        preview: true,
+      }),
+    );
+    await component.renderExample();
+    await fixture.whenStable();
+    expect(component.exampleComponent).toBeDefined();
+
+    const previewContainer = fixture.debugElement.query(By.css('.docs-example-viewer-preview'));
+    expect(previewContainer.nativeElement.innerHTML).toContain('ng-component');
+    expect(previewContainer.nativeElement.textContent).toContain('foobar');
   });
 });
 
@@ -283,11 +344,15 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
       {name: 'example.css', sanitizedContent: ''},
     ],
     preview: false,
+    hideCode: false,
     ...value,
+    style: undefined,
   };
 };
 
 @Component({
-  template: '',
+  template: '{{foobar}}',
 })
-class ExampleComponent {}
+class ExampleComponent {
+  foobar = signal('foobar');
+}

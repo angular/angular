@@ -11,7 +11,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 /**
  * The list of known control flow directives present in the `CommonModule`.
@@ -25,6 +30,8 @@ export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Set([
   'ngForTrackBy',
   'ngSwitchCase',
   'ngSwitchDefault',
+  'ngIfThen',
+  'ngIfElse',
 ]);
 
 /**
@@ -65,15 +72,22 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode
     if (!customStructuralDirective) return [];
 
     const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
-    if (symbol?.directives.length) {
-      return [];
-    }
+    // Check if there's a directive that matches the structural directive we're checking.
+    // The structural directive *foo desugars to [foo], so we need to check if any
+    // directive's selector would match the attribute [foo].
+    const hasStructuralDirective = symbol?.directives.some((dir) =>
+      dir.selector?.includes(`[${customStructuralDirective.name}]`),
+    );
+    if (hasStructuralDirective) return [];
 
     const sourceSpan = customStructuralDirective.keySpan || customStructuralDirective.sourceSpan;
-    const errorMessage =
+    const errorMessage = formatExtendedError(
+      ErrorCode.MISSING_STRUCTURAL_DIRECTIVE,
       `A structural directive \`${customStructuralDirective.name}\` was used in the template ` +
-      `without a corresponding import in the component. ` +
-      `Make sure that the directive is included in the \`@Component.imports\` array of this component.`;
+        `without a corresponding import in the component. ` +
+        `Make sure that the directive is included in the \`@Component.imports\` array of this component.`,
+    );
+
     return [ctx.makeTemplateDiagnostic(sourceSpan, errorMessage)];
   }
 }

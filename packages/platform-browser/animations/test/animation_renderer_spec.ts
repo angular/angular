@@ -25,6 +25,7 @@ import {
   Injectable,
   NgModule,
   NgZone,
+  provideZoneChangeDetection,
   RendererFactory2,
   RendererType2,
   ViewChild,
@@ -220,7 +221,10 @@ import {withBody, isNode, el} from '@angular/private/testing';
         }
 
         TestBed.configureTestingModule({
-          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+          providers: [
+            {provide: AnimationEngine, useClass: InjectableAnimationEngine},
+            provideZoneChangeDetection(),
+          ],
           declarations: [Cmp],
         });
 
@@ -246,10 +250,10 @@ import {withBody, isNode, el} from '@angular/private/testing';
         @Component({
           selector: 'my-cmp',
           template: `
-               <div #elm1 *ngIf="exp1"></div>
-               <div #elm2 @animation1 *ngIf="exp2"></div>
-               <div #elm3 @animation2 *ngIf="exp3"></div>
-            `,
+            <div #elm1 *ngIf="exp1"></div>
+            <div #elm2 @animation1 *ngIf="exp2"></div>
+            <div #elm3 @animation2 *ngIf="exp3"></div>
+          `,
           animations: [
             trigger('animation1', [transition('a => b', [])]),
             trigger('animation2', [transition(':leave', [])]),
@@ -269,7 +273,10 @@ import {withBody, isNode, el} from '@angular/private/testing';
         }
 
         TestBed.configureTestingModule({
-          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+          providers: [
+            {provide: AnimationEngine, useClass: InjectableAnimationEngine},
+            provideZoneChangeDetection(),
+          ],
           declarations: [Cmp],
         });
 
@@ -331,9 +338,7 @@ import {withBody, isNode, el} from '@angular/private/testing';
     it('should provide hooks at the start and end of change detection', () => {
       @Component({
         selector: 'my-cmp',
-        template: `
-          <div [@myAnimation]="exp"></div>
-        `,
+        template: ` <div [@myAnimation]="exp"></div> `,
         animations: [trigger('myAnimation', [])],
         standalone: false,
       })
@@ -465,7 +470,7 @@ import {withBody, isNode, el} from '@angular/private/testing';
           constructor(rendererFactory: RendererFactory2) {}
         }
 
-        @Component({selector: 'app-root', template: 'app-root content', standalone: true})
+        @Component({selector: 'app-root', template: 'app-root content'})
         class AppComponent {}
 
         const appRef = await bootstrapApplication(AppComponent, {
@@ -497,7 +502,7 @@ import {withBody, isNode, el} from '@angular/private/testing';
     it(
       'should clear bootstrapped component contents when async animations are used',
       withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
-        @Component({selector: 'app-root', template: 'app-root content', standalone: true})
+        @Component({selector: 'app-root', template: 'app-root content'})
         class AppComponent {}
 
         const appRef = await bootstrapApplication(AppComponent, {

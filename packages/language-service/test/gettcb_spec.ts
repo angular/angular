@@ -6,15 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
 describe('get typecheck block', () => {
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
-
   it('should find the typecheck block for an inline template', () => {
     const files = {
       'app.ts': `
@@ -93,9 +87,7 @@ describe('get typecheck block', () => {
       }`,
     };
     const env = LanguageServiceTestEnv.setup();
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     project.expectNoSourceDiagnostics();
 
     const appFile = project.openFile('app.ts');
@@ -129,9 +121,7 @@ describe('get typecheck block', () => {
       }`,
     };
     const env = LanguageServiceTestEnv.setup();
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     project.expectNoSourceDiagnostics();
 
     const appFile = project.openFile('app.ts');
@@ -165,9 +155,7 @@ describe('get typecheck block', () => {
       }`,
     };
     const env = LanguageServiceTestEnv.setup();
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     project.expectNoSourceDiagnostics();
 
     const appFile = project.openFile('app.ts');

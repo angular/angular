@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵDirectiveDebugMetadata, ɵGlobalDevModeUtils} from '@angular/core';
+import {ɵFrameworkAgnosticGlobalUtils} from '@angular/core';
 import {
   ngDebugDependencyInjectionApiIsSupported,
   ngDebugProfilerApiIsSupported,
@@ -17,7 +17,7 @@ import {
 } from './ng-debug-api';
 import {Framework} from '../component-tree/core-enums';
 
-type Ng = ɵGlobalDevModeUtils['ng'];
+type Ng = ɵFrameworkAgnosticGlobalUtils;
 
 /** Add a root element to the body. */
 const mockRoot = () => {
@@ -28,16 +28,35 @@ const mockRoot = () => {
 };
 
 /** Creates an `ng` object with a `getDirectiveMetadata` mock. */
-const fakeNgGlobal = (framework: Framework): Partial<Record<keyof Ng, () => void>> => ({
-  getComponent(): {} {
-    return {};
-  },
-  getDirectiveMetadata(): Partial<ɵDirectiveDebugMetadata> {
+const fakeNgGlobal = (framework: Framework): Partial<Ng> => {
+  const base: Partial<Ng> = {
+    getComponent<T>(_element: any): any {
+      return {};
+    },
+    getDirectiveMetadata(_directiveOrComponentInstance: any): any {
+      return {
+        framework,
+      };
+    },
+  };
+
+  // Only Angular and ACX have route debug functions
+  if (framework === Framework.Angular || framework === Framework.ACX) {
     return {
-      framework,
+      ...base,
+      ɵgetLoadedRoutes(route: any): any {
+        return [];
+      },
+      ɵnavigateByUrl(router: any, url: string): any {},
+      ɵgetRouterInstance(injector: any): any {
+        return {};
+      },
     };
-  },
-});
+  }
+
+  // Wiz does not have route debug functions
+  return base;
+};
 
 describe('ng-debug-api', () => {
   afterEach(() => {

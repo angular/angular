@@ -2,7 +2,7 @@
 
 In Angular, the component's logic and behavior are defined in the component's TypeScript class.
 
-Note: Learn more about [showing dynamic text in the essentials guide](/essentials/templates#showing-dynamic-text).
+NOTE: Learn more about [showing dynamic text in the essentials guide](/essentials/templates#showing-dynamic-text).
 
 In this activity, you'll learn how to update the component class and how to use [interpolation](/guide/templates/binding#render-dynamic-text-with-text-interpolation).
 

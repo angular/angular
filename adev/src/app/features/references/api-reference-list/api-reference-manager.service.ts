@@ -12,6 +12,7 @@ import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {getApiUrl} from '../helpers/manifest.helper';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
 import {ApiManifest} from '../interfaces/api-manifest';
+import {ApiItem} from '../interfaces/api-item';
 
 const manifest = API_MANIFEST_JSON as ApiManifest;
 
@@ -30,7 +31,7 @@ export class ApiReferenceManager {
         id: module.normalizedModuleName,
         items: module.entries.map((api) => {
           const url = getApiUrl(module, api.name);
-          const apiItem = {
+          const apiItem: ApiItem = {
             itemType: api.type,
             title: api.name,
             deprecated: api.deprecated,
@@ -38,6 +39,7 @@ export class ApiReferenceManager {
             experimental: api.experimental,
             stable: api.stable,
             url,
+            category: api.category,
           };
 
           return apiItem;

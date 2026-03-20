@@ -108,6 +108,8 @@ mapping each component input name to a `SimpleChange` object. Each `SimpleChange
 input's previous value, its current value, and a flag for whether this is the first time the input
 has changed.
 
+You can optionally pass the current class or this as the first generic argument for stronger type checking.
+
 ```ts
 @Component({
   /* ... */
@@ -115,12 +117,11 @@ has changed.
 export class UserProfile {
   name = input('');
 
-  ngOnChanges(changes: SimpleChanges) {
-    for (const inputName in changes) {
-      const inputValues = changes[inputName];
-      console.log(`Previous ${inputName} == ${inputValues.previousValue}`);
-      console.log(`Current ${inputName} == ${inputValues.currentValue}`);
-      console.log(`Is first ${inputName} change == ${inputValues.firstChange}`);
+  ngOnChanges(changes: SimpleChanges<UserProfile>) {
+    if (changes.name) {
+      console.log(`Previous: ${changes.name.previousValue}`);
+      console.log(`Current: ${changes.name.currentValue}`);
+      console.log(`Is first ${changes.name.firstChange}`);
     }
   }
 }
@@ -160,6 +161,12 @@ destroyed.
 
 You can also use `DestroyRef` to keep setup code close to cleanup code, rather than putting
 all cleanup code in the `ngOnDestroy` method.
+
+##### Detecting instance destruction
+
+`DestroyRef` provides a `destroyed` property that allows checking whether a given instance has already been destroyed. This is useful for avoiding operations on destroyed components, especially when dealing with delayed or asynchronous logic.
+
+By checking `destroyRef.destroyed`, you can prevent executing code after the instance has been cleaned up, avoiding potential errors such as `NG0911: View has already been destroyed.`.
 
 ### ngDoCheck
 
@@ -237,7 +244,7 @@ See [Using DOM APIs](guide/components/dom-apis) for guidance on working with the
 
 Render callbacks do not run during server-side rendering or during build-time pre-rendering.
 
-#### after*Render phases
+#### after\*Render phases
 
 When using `afterEveryRender` or `afterNextRender`, you can optionally split the work into phases. The
 phase gives you control over the sequencing of DOM operations, letting you sequence _write_
@@ -249,13 +256,15 @@ next phase.
 ```ts
 import {Component, ElementRef, afterNextRender} from '@angular/core';
 
-@Component({...})
+@Component({
+  /*...*/
+})
 export class UserProfile {
   private prevPadding = 0;
   private elementHeight = 0;
 
   constructor() {
-    private elementRef = inject(ElementRef);
+    const elementRef = inject(ElementRef);
     const nativeElement = elementRef.nativeElement;
 
     afterNextRender({
@@ -274,7 +283,7 @@ export class UserProfile {
         if (didWrite) {
           this.elementHeight = nativeElement.getBoundingClientRect().height;
         }
-      }
+      },
     });
   }
 }
@@ -285,8 +294,8 @@ There are four phases, run in the following order:
 | Phase            | Description                                                                                                                                                                                           |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `earlyRead`      | Use this phase to read any layout-affecting DOM properties and styles that are strictly necessary for subsequent calculation. Avoid this phase if possible, preferring the `write` and `read` phases. |
-| `mixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `write` and `read` phases.            |
 | `write`          | Use this phase to write layout-affecting DOM properties and styles.                                                                                                                                   |
+| `mixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `write` and `read` phases.            |
 | `read`           | Use this phase to read any layout-affecting DOM properties.                                                                                                                                           |
 
 ## Lifecycle interfaces

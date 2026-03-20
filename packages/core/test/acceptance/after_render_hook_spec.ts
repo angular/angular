@@ -29,6 +29,7 @@ import {
   effect,
   inject,
   signal,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 import {TestBed} from '../../testing';
@@ -46,6 +47,11 @@ function createAndAttachComponent<T>(component: Type<T>) {
 }
 
 describe('after render hooks', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let prev: boolean;
 
   describe('browser', () => {
@@ -559,7 +565,7 @@ describe('after render hooks', () => {
       describe('throw error inside reactive context', () => {
         it('inside template effect', () => {
           @Component({
-            template: `{{someFn()}}`,
+            template: `{{ someFn() }}`,
             standalone: false,
           })
           class TestCmp {
@@ -637,7 +643,7 @@ describe('after render hooks', () => {
           standalone: false,
           template: `
             @if (shouldShow) {
-              <comp/>
+              <comp />
             }
           `,
         })
@@ -892,7 +898,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'comp',
           standalone: false,
-          template: `{{outerHookCount()}}:{{innerHookCount}}`,
+          template: `{{ outerHookCount() }}:{{ innerHookCount }}`,
           changeDetection: ChangeDetectionStrategy.OnPush,
         })
         class Comp {
@@ -1258,7 +1264,7 @@ describe('after render hooks', () => {
 
       @Component({
         selector: 'test-component',
-        template: ` {{counter()}} `,
+        template: ` {{ counter() }} `,
       })
       class TestCmp {
         counter = counter;
@@ -1286,7 +1292,7 @@ describe('after render hooks', () => {
     it('allows updating state and calling markForCheck in afterRender', async () => {
       @Component({
         selector: 'test-component',
-        template: ` {{counter}} `,
+        template: ` {{ counter }} `,
       })
       class TestCmp {
         counter = 0;
@@ -1317,7 +1323,7 @@ describe('after render hooks', () => {
       const counter = signal(0);
       @Component({
         selector: 'test-component',
-        template: `{{counter()}}`,
+        template: `{{ counter() }}`,
       })
       class TestCmp {
         injector = inject(EnvironmentInjector);
@@ -1358,7 +1364,7 @@ describe('after render hooks', () => {
 
       @Component({
         selector: 'test-component',
-        template: ` {{counter()}} `,
+        template: ` {{ counter() }} `,
       })
       class TestCmp {
         counter = counter;

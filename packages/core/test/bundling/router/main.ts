@@ -23,23 +23,20 @@ import {
 @Component({
   selector: 'app-list',
   template: `
-  <ul>
-    <li><a routerLink="/item/1" routerLinkActive="active">List Item 1</a></li>
-    <li><a routerLink="/item/2" routerLinkActive="active">List Item 2</a></li>
-    <li><a routerLink="/item/3" routerLinkActive="active">List Item 3</a></li>
-  </ul>
+    <ul>
+      <li><a routerLink="/item/1" routerLinkActive="active">List Item 1</a></li>
+      <li><a routerLink="/item/2" routerLinkActive="active">List Item 2</a></li>
+      <li><a routerLink="/item/3" routerLinkActive="active">List Item 3</a></li>
+    </ul>
   `,
-  standalone: true,
   imports: [RouterLink, RouterLinkActive],
 })
 class ListComponent {}
 
 @Component({
   selector: 'app-item',
-  template: `
-  Item {{id}}
-  <p><button (click)="viewList()">Back to List</button></p>`,
-  standalone: true,
+  template: ` Item {{ id }}
+    <p><button (click)="viewList()">Back to List</button></p>`,
 })
 class ItemComponent implements OnInit {
   id = -1;
@@ -62,7 +59,6 @@ class ItemComponent implements OnInit {
 @Component({
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
-  standalone: true,
   imports: [RouterOutlet],
 })
 class RootComponent {}

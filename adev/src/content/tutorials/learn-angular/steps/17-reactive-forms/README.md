@@ -2,7 +2,7 @@
 
 When you want to manage your forms programmatically instead of relying purely on the template, reactive forms are the answer.
 
-Note: Learn more about [reactive forms in the in-depth guide](/guide/forms/reactive-forms).
+NOTE: Learn more about [reactive forms in the in-depth guide](/guide/forms/reactive-forms).
 
 In this activity, you'll learn how to set up reactive forms.
 
@@ -96,24 +96,23 @@ This method will display values from the form, you can access the values from th
 
 In the component class, add the `handleSubmit()` method to handle the form submission.
 
-<docs-code language="ts">
+```ts
 handleSubmit() {
   alert(
     this.profileForm.value.name + ' | ' + this.profileForm.value.email
   );
 }
-</docs-code>
+```
+
 </docs-step>
 
 <docs-step title="Add `ngSubmit` to the form">
 You have access to the form values, now it is time to handle the submission event and use the `handleSubmit` method.
 Angular has an event handler for this specific purpose called `ngSubmit`. Update the form element to call the `handleSubmit` method when the form is submitted.
 
-<docs-code language="angular-html" highlight="[3]">
-<form
-  [formGroup]="profileForm"
-  (ngSubmit)="handleSubmit()">
-</docs-code>
+```angular-html {highlight:[3]}
+<form [formGroup]="profileForm" (ngSubmit)="handleSubmit()"></form>
+```
 
 </docs-step>
 

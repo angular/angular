@@ -13,7 +13,6 @@ import {
   ActivatedRouteSnapshot,
   CanActivateChildFn,
   CanActivateFn,
-  CanDeactivateFn,
   CanMatchFn,
   provideRouter,
   ResolveFn,
@@ -24,13 +23,11 @@ import {
 
 @Component({
   template: '',
-  standalone: false,
 })
 export class App {}
 
 @Component({
   template: '',
-  standalone: false,
 })
 export class TeamComponent {}
 
@@ -95,7 +92,6 @@ bootstrapApplication(App, {
 // #docregion CanDeactivateFn
 @Component({
   template: '',
-  standalone: false,
 })
 export class UserComponent {
   hasUnsavedChanges = true;
@@ -135,7 +131,6 @@ bootstrapApplication(App, {
 // #docregion ResolveDataUse
 @Component({
   template: '',
-  standalone: false,
 })
 export class HeroDetailComponent {
   constructor(private activatedRoute: ActivatedRoute) {}

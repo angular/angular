@@ -8,10 +8,9 @@ For more about Angular's `resource` pattern, see [Async reactivity with `resourc
 
 ## `Using httpResource`
 
-TIP: Make sure to include `provideHttpClient` in your application providers. See [Setting up HttpClient](/guide/http/setup) for details.  
+TIP: Make sure to include `provideHttpClient` in your application providers. See [Setting up HttpClient](/guide/http/setup) for details.
 
-
-You can define an HTTP resource by returning a url: 
+You can define an HTTP resource by returning a url:
 
 ```ts
 userId = input.required<string>();
@@ -19,8 +18,8 @@ userId = input.required<string>();
 user = httpResource(() => `/api/user/${userId()}`); // A reactive function as argument
 ```
 
-`httpResource` is reactive, meaning that whenever one of the signal it depends on changes (like `userId`), the resource will emit a new http request. 
-If a request is already pending, the resource cancels the outstanding request before issuing a new one.  
+`httpResource` is reactive, meaning that whenever one of the signal it depends on changes (like `userId`), the resource will emit a new http request.
+If a request is already pending, the resource cancels the outstanding request before issuing a new one.
 
 HELPFUL: `httpResource` differs from the `HttpClient` as it initiates the request _eagerly_. In contrast, the `HttpClient` only initiates requests upon subscription to the returned `Observable`.
 
@@ -39,20 +38,21 @@ user = httpResource(() => ({
   },
   reportProgress: true,
   transferCache: true,
-  keepalive: true,  
-  mode: 'cors', 
+  keepalive: true,
+  mode: 'cors',
   redirect: 'error',
   priority: 'high',
-  cache : 'force-cache',
+  cache: 'force-cache',
   credentials: 'include',
   referrer: 'no-referrer',
-  integrity: 'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GhEXAMPLEKEY='
+  integrity: 'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GhEXAMPLEKEY=',
+  referrerPolicy: 'no-referrer',
 }));
 ```
 
 TIP: Avoid using `httpResource` for _mutations_ like `POST` or `PUT`. Instead, prefer directly using the underlying `HttpClient` APIs.
 
-The signals of the `httpResource` can be used in the template to control which elements should be displayed. 
+The signals of the `httpResource` can be used in the template to control which elements should be displayed.
 
 ```angular-html
 @if(user.hasValue()) {
@@ -66,9 +66,9 @@ The signals of the `httpResource` can be used in the template to control which e
 
 HELPFUL: Reading the `value` signal on a `resource` that is in error state throws at runtime. It is recommended to guard `value` reads with `hasValue()`.
 
-### Response types 
+### Response types
 
-By default, `httpResource` returns and parses the response as JSON. However, you can specify alternate return with additional functions on `httpResource`: 
+By default, `httpResource` returns and parses the response as JSON. However, you can specify alternate return with additional functions on `httpResource`:
 
 ```ts
 httpResource.text(() => ({ … })); // returns a string in value()
@@ -87,7 +87,7 @@ The following example uses Zod to parse and validate the response from the [Star
 ```ts
 const starWarsPersonSchema = z.object({
   name: z.string(),
-  height: z.number({ coerce: true }),
+  height: z.number({coerce: true}),
   edited: z.string().datetime(),
   films: z.array(z.string()),
 });
@@ -95,10 +95,9 @@ const starWarsPersonSchema = z.object({
 export class CharacterViewer {
   id = signal(1);
 
-  swPersonResource = httpResource(
-    () => `https://swapi.info/api/people/${this.id()}`,
-    { parse: starWarsPersonSchema.parse }
-  );
+  swPersonResource = httpResource(() => `https://swapi.info/api/people/${this.id()}`, {
+    parse: starWarsPersonSchema.parse,
+  });
 }
 ```
 
@@ -110,10 +109,7 @@ The following example shows a unit test for code using `httpResource`.
 
 ```ts
 TestBed.configureTestingModule({
-  providers: [
-    provideHttpClient(),
-    provideHttpClientTesting(),
-  ],
+  providers: [provideHttpClient(), provideHttpClientTesting()],
 });
 
 const id = signal(0);

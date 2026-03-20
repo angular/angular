@@ -26,7 +26,7 @@ All route guards share the same possible return types. This gives you flexibilit
 | `UrlTree` or `RedirectCommand`  | Redirects to another route instead of blocking                                    |
 | `Promise<T>` or `Observable<T>` | Router uses the first emitted value and then unsubscribes                         |
 
-Note: `CanMatch` behaves differently— when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
+NOTE: `CanMatch` behaves differently— when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
 
 ## Types of route guards
 
@@ -39,19 +39,24 @@ Angular provides four types of route guards, each serving different purposes:
   <docs-pill href="#canmatch" title="CanMatch"/>
 </docs-pill-row>
 
+All the guards have access to [services provided at the route level](guide/di/defining-dependency-providers#route-providers) as well as route-specific information via the `route` argument.
+
 ### CanActivate
 
 The `CanActivate` guard determines whether a user can access a route. It is most commonly used for authentication and authorization.
 
 It has access to the following default arguments:
 
-- `route: ActivatedRouteSnapshot` - Contains information about the route being activated
-- `state: RouterStateSnapshot` - Contains the router's current state
+- `route`: `ActivatedRouteSnapshot` - Contains information about the route being activated
+- `state`: `RouterStateSnapshot` - Contains the router's current state
 
 It can return the [standard return guard types](#route-guard-return-types).
 
 ```ts
-export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const authGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
   const authService = inject(AuthService);
   return authService.isAuthenticated();
 };
@@ -67,13 +72,16 @@ The `CanActivateChild` guard determines whether a user can access child routes o
 
 It has access to the following default arguments:
 
-- `childRoute: ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
-- `state: RouterStateSnapshot` - Contains the router's current state
+- `childRoute`: `ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
+- `state`: `RouterStateSnapshot` - Contains the router's current state
 
 It can return the [standard return guard types](#route-guard-return-types).
 
 ```ts
-export const adminChildGuard: CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const adminChildGuard: CanActivateChildFn = (
+  childRoute: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
   const authService = inject(AuthService);
   return authService.hasRole('admin');
 };
@@ -87,15 +95,20 @@ The `CanDeactivate` guard determines whether a user can leave a route. A common 
 
 It has access to the following default arguments:
 
-- `component: T` - The component instance being deactivated
-- `currentRoute: ActivatedRouteSnapshot` - Contains information about the current route
-- `currentState: RouterStateSnapshot` - Contains the current router state
-- `nextState: RouterStateSnapshot` - Contains the next router state being navigated to
+- `component`: `T` - The component instance being deactivated
+- `currentRoute`: `ActivatedRouteSnapshot` - Contains information about the current route
+- `currentState`: `RouterStateSnapshot` - Contains the current router state
+- `nextState`: `RouterStateSnapshot` - Contains the next router state being navigated to
 
 It can return the [standard return guard types](#route-guard-return-types).
 
 ```ts
-export const unsavedChangesGuard: CanDeactivateFn<FormComponent> = (component: FormComponent, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => {
+export const unsavedChangesGuard: CanDeactivateFn<Form> = (
+  component: Form,
+  currentRoute: ActivatedRouteSnapshot,
+  currentState: RouterStateSnapshot,
+  nextState: RouterStateSnapshot,
+) => {
   return component.hasUnsavedChanges()
     ? confirm('You have unsaved changes. Are you sure you want to leave?')
     : true;
@@ -110,8 +123,8 @@ The `CanMatch` guard determines whether a route can be matched during path match
 
 It has access to the following default arguments:
 
-- `route: Route` - The route configuration being evaluated
-- `segments: UrlSegment[]` - The URL segments that have not been consumed by previous parent route evaluations
+- `route`: `Route` - The route configuration being evaluated
+- `segments`: `UrlSegment[]` - The URL segments that have not been consumed by previous parent route evaluations
 
 It can return the [standard return guard types](#route-guard-return-types), but when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
 
@@ -130,14 +143,14 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: AdminDashboard,
-    canMatch: [adminGuard]
+    canMatch: [adminGuard],
   },
   {
     path: 'dashboard',
     component: UserDashboard,
-    canMatch: [userGuard]
-  }
-]
+    canMatch: [userGuard],
+  },
+];
 ```
 
 In this example, when the user visits `/dashboard`, the first one that matches the correct guard will be used.
@@ -151,33 +164,33 @@ Once you've created your route guards, you need to configure them in your route 
 Guards are specified as arrays in the route configuration in order to allow you to apply multiple guards to a single route. They are executed in the order they appear in the array.
 
 ```ts
-import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
-import { adminGuard } from './guards/admin.guard';
-import { canDeactivateGuard } from './guards/can-deactivate.guard';
-import { featureToggleGuard } from './guards/feature-toggle.guard';
+import {Routes} from '@angular/router';
+import {authGuard} from './guards/auth.guard';
+import {adminGuard} from './guards/admin.guard';
+import {canDeactivateGuard} from './guards/can-deactivate.guard';
+import {featureToggleGuard} from './guards/feature-toggle.guard';
 
 const routes: Routes = [
   // Basic CanActivate - requires authentication
   {
     path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [authGuard]
+    component: Dashboard,
+    canActivate: [authGuard],
   },
 
   // Multiple CanActivate guards - requires authentication AND admin role
   {
     path: 'admin',
-    component: AdminComponent,
-    canActivate: [authGuard, adminGuard]
+    component: Admin,
+    canActivate: [authGuard, adminGuard],
   },
 
   // CanActivate + CanDeactivate - protected route with unsaved changes check
   {
     path: 'profile',
-    component: ProfileComponent,
+    component: Profile,
     canActivate: [authGuard],
-    canDeactivate: [canDeactivateGuard]
+    canDeactivate: [canDeactivateGuard],
   },
 
   // CanActivateChild - protects all child routes
@@ -186,23 +199,23 @@ const routes: Routes = [
     canActivateChild: [authGuard],
     children: [
       // /users/list - PROTECTED
-      { path: 'list', component: UserListComponent },
-      // /useres/detail/:id - PROTECTED
-      { path: 'detail/:id', component: UserDetailComponent }
-    ]
+      {path: 'list', component: UserList},
+      // /users/detail/:id - PROTECTED
+      {path: 'detail/:id', component: UserDetail},
+    ],
   },
 
   // CanMatch - conditionally matches route based on feature flag
   {
     path: 'beta-feature',
-    component: BetaFeatureComponent,
-    canMatch: [featureToggleGuard]
+    component: BetaFeature,
+    canMatch: [featureToggleGuard],
   },
 
   // Fallback route if beta feature is disabled
   {
     path: 'beta-feature',
-    component: ComingSoonComponent
-  }
+    component: ComingSoon,
+  },
 ];
 ```

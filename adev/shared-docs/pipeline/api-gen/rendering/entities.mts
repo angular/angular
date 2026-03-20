@@ -35,6 +35,8 @@ export enum MemberType {
   Getter = 'getter',
   Setter = 'setter',
   EnumItem = 'enum_item',
+  Interface = 'interface',
+  TypeAlias = 'type_alias',
 }
 
 export enum DecoratorType {
@@ -96,6 +98,7 @@ export interface ConstantEntry extends DocEntry {
 /** Documentation entity for a type alias. */
 export interface TypeAliasEntry extends ConstantEntry {
   generics: GenericEntry[];
+  members: MemberEntry[]; // For merged namespaces
 }
 
 /** Documentation entity for a TypeScript class. */
@@ -107,10 +110,13 @@ export interface ClassEntry extends DocEntry {
   implements: string[];
 }
 
-// From an API doc perspective, class and interfaces are identical.
-
 /** Documentation entity for a TypeScript interface. */
-export type InterfaceEntry = ClassEntry;
+export interface InterfaceEntry extends DocEntry {
+  members: MemberEntry[];
+  generics: GenericEntry[];
+  extends: string[];
+  implements: string[];
+}
 
 /** Documentation entity for a TypeScript enum. */
 export interface EnumEntry extends DocEntry {
@@ -120,11 +126,11 @@ export interface EnumEntry extends DocEntry {
 /** Documentation entity for an Angular decorator. */
 export interface DecoratorEntry extends DocEntry {
   decoratorType: DecoratorType;
+  members: PropertyEntry[] | null;
   signatures?: {
     parameters: ParameterEntry[];
     jsdocTags: JsDocTagEntry[];
   }[];
-  members: MemberEntry[];
 }
 
 /** Documentation entity for an Angular directives and components. */
@@ -154,6 +160,9 @@ export type FunctionEntry = FunctionDefinitionEntry &
   DocEntry & {
     implementation: FunctionSignatureMetadata;
   };
+
+/** Documentation entity for a block. */
+export interface BlockEntry extends DocEntry {}
 
 /** Interface describing a function with overload signatures. */
 export interface FunctionDefinitionEntry {
@@ -187,6 +196,12 @@ export interface PropertyEntry extends MemberEntry {
 
 /** Sub-entry for a class method. */
 export type MethodEntry = MemberEntry & FunctionEntry;
+
+/** Sub-entry for an interface (included via namespace). */
+export type InterfaceMemberEntry = MemberEntry & InterfaceEntry;
+
+/** Sub-entry for a type alias (included via namespace). */
+export type TypeAliasMemberEntry = MemberEntry & TypeAliasEntry;
 
 /** Sub-entry for a single function parameter. */
 export interface ParameterEntry {

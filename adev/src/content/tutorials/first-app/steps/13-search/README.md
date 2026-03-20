@@ -20,7 +20,7 @@ In this step, you'll update the `Home` class to store data in a new array proper
 
 1. In `src/app/home/home.ts`, add new property to the class called `filteredLocationList`.
 
-   <docs-code header="Add the filteredLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[27]"/>
+   <docs-code header="Add the filteredLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[28]"/>
 
    The `filteredLocationList` hold the values that match the search criteria entered by the user.
 
@@ -35,12 +35,12 @@ The `Home` already contains an input field that you will use to capture input fr
 
 1. Update the `Home` template to include a template variable in the `input` element called `#filter`.
 
-   <docs-code header="Add a template variable to the input HTML element in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[12]"/>
+   <docs-code language="angular-ts" header="Add a template variable to the input HTML element in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[12]"/>
    This example uses a [template reference variable](guide/templates) to get access to the `input` element as its value.
 
 1. Next, update the component template to attach an event handler to the "Search" button.
 
-   <docs-code header="Bind the button click event to a method in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[13]"/>
+   <docs-code language="angular-ts" header="Bind the button click event to a method in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[13]"/>
 
    By binding to the `click` event on the `button` element, you are able to call the `filterResults` function. The argument to the function is the `value` property of the `filter` template variable. Specifically, the `.value` property from the `input` HTML element.
 
@@ -53,18 +53,19 @@ The `Home` already contains an input field that you will use to capture input fr
 <docs-step title="Implement the event handler function">
 The template has been updated to bind the `filterResults` function to the `click` event. Next, your task is to implement the `filterResults` function in the `Home` class.
 
-1. Update the `Home` class to include the implementation of the `filterResults` function.
+1.  Update the `Home` class to include the implementation of the `filterResults` function.
 
-   <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[34,43]"/>
+    <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[35,44]"/>
 
-   This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
+    This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
 
-1. Save your code.
+1.  Save your code.
 
-1. Refresh the browser and confirm that you can search the housing location data by city when you click the "Search" button after entering text.
+1.  Refresh the browser and confirm that you can search the housing location data by city when you click the "Search" button after entering text.
 
-<img alt="filtered search results based on user input" src="assets/images/tutorials/first-app/homes-app-lesson-13-step-3.png">
-</docs-step>
+       <img alt="filtered search results based on user input" src="assets/images/tutorials/first-app/homes-app-lesson-13-step-3.png">
+
+    </docs-step>
 
 </docs-workflow>
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {setActiveConsumer, type ReactiveNode} from '@angular/core/primitives/signals';
 import {TrackByFunction} from '../change_detection';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 
@@ -45,6 +46,10 @@ export abstract class LiveCollection<T, V> {
     }
   }
   move(prevIndex: number, newIdx: number): void {
+    // For move operations, the detach code path is the same one used for removing
+    // DOM nodes, which would trigger `animate.leave` bindings. We need to skip
+    // those animations in the case of a move operation so the moving elements don't
+    // unexpectedly disappear.
     this.attach(newIdx, this.detach(prevIndex));
   }
 }
@@ -99,11 +104,15 @@ function recordDuplicateKeys(keyToIdx: Map<unknown, Set<number>>, key: unknown, 
  * @param newCollection the new, incoming collection;
  * @param trackByFn key generation function that determines equality between items in the life and
  *     incoming collection;
+ * @param reactiveConsumer the reactive consumer to be used when accessing the length or iterator of
+ *     the {@link newCollection}. This ensures that if the object is a proxy, reactive reads that
+ *     occur when accessing the length or iterator are tracked.
  */
 export function reconcile<T, V>(
   liveCollection: LiveCollection<T, V>,
   newCollection: Iterable<V> | undefined | null,
   trackByFn: TrackByFunction<V>,
+  reactiveConsumer: ReactiveNode | null,
 ): void {
   let detachedItems: UniqueValueMultiKeyMap<unknown, T> | undefined = undefined;
   let liveKeysInTheFuture: Set<unknown> | undefined = undefined;
@@ -114,7 +123,9 @@ export function reconcile<T, V>(
   const duplicateKeys = ngDevMode ? new Map<unknown, Set<number>>() : undefined;
 
   if (Array.isArray(newCollection)) {
+    setActiveConsumer(reactiveConsumer);
     let newEndIdx = newCollection.length - 1;
+    setActiveConsumer(null);
 
     while (liveStartIdx <= liveEndIdx && liveStartIdx <= newEndIdx) {
       // compare from the beginning
@@ -231,7 +242,9 @@ export function reconcile<T, V>(
     }
   } else if (newCollection != null) {
     // iterable - immediately fallback to the slow path
+    setActiveConsumer(reactiveConsumer);
     const newCollectionIterator = newCollection[Symbol.iterator]();
+    setActiveConsumer(null);
     let newIterationResult = newCollectionIterator.next();
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
       const liveValue = liveCollection.at(liveStartIdx);

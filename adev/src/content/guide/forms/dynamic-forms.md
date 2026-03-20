@@ -47,7 +47,7 @@ The example includes the `DynamicFormQuestionComponent`, which defines a questio
 
 The following `QuestionBase` is a base class for a set of controls that can represent the question and its answer in the form.
 
-<docs-code header="src/app/question-base.ts" path="adev/src/content/examples/dynamic-form/src/app/question-base.ts"/>
+<docs-code header="question-base.ts" path="adev/src/content/examples/dynamic-form/src/app/question-base.ts"/>
 
 ### Define control classes
 
@@ -68,7 +68,7 @@ A dynamic form uses a service to create grouped sets of input controls, based on
 The following `QuestionControlService` collects a set of `FormGroup` instances that consume the metadata from the question model.
 You can specify default values and validation rules.
 
-<docs-code header="src/app/question-control.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question-control.service.ts"/>
+<docs-code header="question-control.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question-control.service.ts"/>
 
 ## Compose dynamic form contents
 
@@ -76,7 +76,7 @@ The dynamic form itself is represented by a container component, which you add i
 Each question is represented in the form component's template by an `<app-question>` tag, which matches an instance of `DynamicFormQuestionComponent`.
 
 The `DynamicFormQuestionComponent` is responsible for rendering the details of an individual question based on values in the data-bound question object.
-The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective "API reference") to connect the template HTML to the underlying control objects.
+The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective 'API reference') to connect the template HTML to the underlying control objects.
 The `DynamicFormQuestionComponent` creates form groups and populates them with controls defined in the question model, specifying display and validation rules.
 
 <docs-code-multifile>
@@ -87,7 +87,7 @@ The `DynamicFormQuestionComponent` creates form groups and populates them with c
 The goal of the `DynamicFormQuestionComponent` is to present question types defined in your model.
 You only have two types of questions at this point but you can imagine many more.
 The `@switch` block in the template determines which type of question to display.
-The switch uses directives with the [`formControlName`](api/forms/FormControlName "FormControlName directive API reference") and [`formGroup`](api/forms/FormGroupDirective "FormGroupDirective API reference") selectors.
+The switch uses directives with the [`formControlName`](api/forms/FormControlName 'FormControlName directive API reference') and [`formGroup`](api/forms/FormGroupDirective 'FormGroupDirective API reference') selectors.
 Both directives are defined in `ReactiveFormsModule`.
 
 ### Supply data
@@ -100,7 +100,7 @@ To maintain the questionnaire as requirements change, you only need to add, upda
 
 The `QuestionService` supplies a set of questions in the form of an array bound to `input()` questions.
 
-<docs-code header="src/app/question.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question.service.ts"/>
+<docs-code header="question.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question.service.ts"/>
 
 ## Create a dynamic form template
 

@@ -13,7 +13,10 @@ import {
   DoCheck,
   NgModule,
   OnInit,
+  provideZoneChangeDetection,
   TestabilityRegistry,
+  NgZone,
+  ɵNoopNgZone as NoopNgZone,
 } from '../src/core';
 import {getTestBed} from '../testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -43,7 +46,11 @@ describe('ApplicationRef bootstrap', () => {
     declarations: [HelloWorldComponent],
     bootstrap: [HelloWorldComponent],
     imports: [BrowserModule],
-    providers: [{provide: DOCUMENT, useFactory: () => document}],
+    providers: [
+      {provide: DOCUMENT, useFactory: () => document},
+      provideZoneChangeDetection(),
+      {provide: NgZone, useClass: NoopNgZone},
+    ],
   })
   class MyAppModule {}
 

@@ -1,29 +1,51 @@
 import {Directive} from '@angular/core';
 
 @Directive({
-  selector: '[hostBindingDir]',
+  selector: 'a[hostBindingLinkDir]',
   host: {
     '[innerHtml]': 'evil',
     '[href]': 'evil',
     '[attr.style]': 'evil',
-    '[src]': 'evil',
-    '[sandbox]': 'evil',
   },
 })
-export class HostBindingDir {
+export class HostBindingLinkDir {
   evil = 'evil';
 }
 
 @Directive({
-  selector: 'a',
+  selector: 'img[hostBindingImgDir]',
   host: {
     '[innerHtml]': 'evil',
-    '[href]': 'evil',
+    '[attr.style]': 'evil',
+    '[src]': 'nonEvil',
+  },
+})
+export class HostBindingImageDir {
+  evil = 'evil';
+  nonEvil = 'nonEvil';
+}
+
+@Directive({
+  selector: 'iframe[hostBindingIframeDir]',
+  host: {
+    '[innerHtml]': 'evil',
     '[attr.style]': 'evil',
     '[src]': 'evil',
     '[sandbox]': 'evil',
+    '[attr.attributeName]': 'nonEvil',
   },
 })
-export class HostBindingDir2 {
+export class HostBindingIframeDir {
+  evil = 'evil';
+  nonEvil = 'nonEvil';
+}
+
+@Directive({
+  selector: 'animateMotion[hostBindingSvgAnimateDir]',
+  host: {
+    '[attr.attributeName]': 'evil',
+  },
+})
+export class HostBindingSvgAnimateDir {
   evil = 'evil';
 }

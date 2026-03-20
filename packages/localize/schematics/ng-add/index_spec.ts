@@ -73,16 +73,26 @@ describe('ng-add schematic', () => {
               test: {
                 builder: '@angular-devkit/build-angular:karma',
                 options: {
-                  tsConfig: './tsconfig.spec.json',
+                  tsConfig: './tsconfig.spec-k1.json',
                   polyfills: 'zone.js',
                 },
               },
               testKarmaBuild: {
                 builder: '@angular/build:karma',
                 options: {
-                  tsConfig: './tsconfig.spec.json',
+                  tsConfig: './tsconfig.spec-k2.json',
                   polyfills: 'zone.js',
                 },
+              },
+              testBuildUnitTestA: {
+                builder: '@angular/build:unit-test',
+                options: {
+                  tsConfig: './tsconfig.spec-a.json',
+                },
+              },
+              testBuildUnitTestB: {
+                builder: '@angular/build:unit-test',
+                options: {},
               },
               server: {
                 builder: '@angular-devkit/build-angular:server',
@@ -194,7 +204,55 @@ describe('ng-add schematic', () => {
     expect(polyfills).toEqual(['@angular/localize/init']);
   });
 
-  it(`should add '@angular/localize' in 'types' tsconfigs referenced in karma builder`, async () => {
+  it(`should add '@angular/localize' in 'types' tsconfigs referenced in devkit karma builder`, async () => {
+    const tsConfig = JSON.stringify({
+      compilerOptions: {
+        types: ['node'],
+      },
+    });
+
+    host.create('tsconfig.spec-k1.json', tsConfig);
+
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const {compilerOptions} = host.readJson('tsconfig.spec-k1.json') as TsConfig;
+    const types = compilerOptions?.types;
+    expect(types).toContain('@angular/localize');
+    expect(types).toHaveSize(2);
+  });
+
+  it(`should add '@angular/localize' in 'types' tsconfigs referenced in build karma builder`, async () => {
+    const tsConfig = JSON.stringify({
+      compilerOptions: {
+        types: ['node'],
+      },
+    });
+
+    host.create('tsconfig.spec-k2.json', tsConfig);
+
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const {compilerOptions} = host.readJson('tsconfig.spec-k2.json') as TsConfig;
+    const types = compilerOptions?.types;
+    expect(types).toContain('@angular/localize');
+    expect(types).toHaveSize(2);
+  });
+
+  it(`should add '@angular/localize' in 'types' tsconfigs referenced in unit-test builder`, async () => {
+    const tsConfig = JSON.stringify({
+      compilerOptions: {
+        types: ['node'],
+      },
+    });
+
+    host.create('tsconfig.spec-a.json', tsConfig);
+
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const {compilerOptions} = host.readJson('tsconfig.spec-a.json') as TsConfig;
+    const types = compilerOptions?.types;
+    expect(types).toContain('@angular/localize');
+    expect(types).toHaveSize(2);
+  });
+
+  it(`should add '@angular/localize' in 'types' tsconfigs default for unit-test builder`, async () => {
     const tsConfig = JSON.stringify({
       compilerOptions: {
         types: ['node'],

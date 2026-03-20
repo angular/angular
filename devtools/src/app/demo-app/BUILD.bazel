@@ -58,7 +58,9 @@ ng_project(
         "//:node_modules/@angular/elements",
         "//:node_modules/@angular/router",
         "//devtools/projects/ng-devtools-backend",
+        "//devtools/src:communication",
         "//devtools/src:zone-unaware-iframe_message_bus",
+        "//devtools/src/app/demo-app/auxiliary",
         "//devtools/src/app/demo-app/todo",
     ],
 )

@@ -9,114 +9,109 @@
 import ts from 'typescript';
 
 function insertDebugNameIntoCallExpression(
-  callExpression: ts.CallExpression,
+  node: ts.CallExpression,
   debugName: string,
 ): ts.CallExpression {
-  const signalExpressionHasNoArguments = callExpression.arguments.length === 0;
-  const signalExpressionIsRequired = isRequiredSignalFunction(callExpression.expression);
-  let configPosition = signalExpressionIsRequired ? 0 : 1;
+  const isRequired = isRequiredSignalFunction(node.expression);
+  const hasNoArgs = node.arguments.length === 0;
+  const configPosition = hasNoArgs || isSignalWithObjectOnlyDefinition(node) || isRequired ? 0 : 1;
+  const existingArg =
+    configPosition >= node.arguments.length ? null : node.arguments[configPosition];
 
-  // If the call expression has no arguments, we pretend that the config object is at position 0.
-  // We do this so that we can insert a spread element at the start of the args list in a way where
-  // undefined can be the first argument but still get tree-shaken out in production builds.
-  if (signalExpressionHasNoArguments) {
-    configPosition = 0;
+  // Do nothing if the existing parameter isn't statically analyzable or already has a `debugName`.
+  if (
+    existingArg !== null &&
+    (!ts.isObjectLiteralExpression(existingArg) ||
+      existingArg.properties.some(
+        (prop) =>
+          ts.isPropertyAssignment(prop) &&
+          ts.isIdentifier(prop.name) &&
+          prop.name.text === 'debugName',
+      ))
+  ) {
+    return node;
   }
 
-  const nodeArgs = Array.from(callExpression.arguments);
-  let existingArgument = nodeArgs[configPosition];
-
-  if (existingArgument === undefined) {
-    existingArgument = ts.factory.createObjectLiteralExpression([]);
-  }
-
-  // Do nothing if an identifier is used as the config object
-  // Ex -
-  // const defaultObject = { equals: () => false };
-  // signal(123, defaultObject)
-  if (ts.isIdentifier(existingArgument)) {
-    return callExpression;
-  }
-
-  if (!ts.isObjectLiteralExpression(existingArgument)) {
-    return callExpression;
-  }
-
-  // insert debugName into the existing config object
-  const properties = Array.from(existingArgument.properties);
-  const debugNameExists = properties.some(
-    (prop) =>
-      ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === 'debugName',
+  const debugNameProperty = ts.factory.createPropertyAssignment(
+    'debugName',
+    ts.factory.createStringLiteral(debugName),
   );
 
-  if (debugNameExists) {
-    return callExpression;
-  }
+  let newArgs: ts.Expression[];
 
-  // We prepend instead of appending so that we don't overwrite an existing debugName Property
-  // `{ foo: 'bar' }` -> `{ debugName: 'myDebugName', foo: 'bar' }`
-  properties.unshift(
-    ts.factory.createPropertyAssignment('debugName', ts.factory.createStringLiteral(debugName)),
-  );
-
-  const transformedConfigProperties = ts.factory.createObjectLiteralExpression(properties);
-  const ngDevModeIdentifier = ts.factory.createIdentifier('ngDevMode');
-
-  let devModeCase: ts.ArrayLiteralExpression;
-  // if the signal expression has no arguments and the config object is not required,
-  // we need to add an undefined identifier to the start of the args list so that we can spread the
-  // config object in the right place.
-  if (signalExpressionHasNoArguments && !signalExpressionIsRequired) {
-    devModeCase = ts.factory.createArrayLiteralExpression([
-      ts.factory.createIdentifier('undefined'),
-      transformedConfigProperties,
-    ]);
-  } else {
-    devModeCase = ts.factory.createArrayLiteralExpression([
-      transformedConfigProperties,
-      ...nodeArgs.slice(configPosition + 1),
-    ]);
-  }
-
-  const nonDevModeCase = signalExpressionIsRequired
-    ? ts.factory.createArrayLiteralExpression(nodeArgs)
-    : ts.factory.createArrayLiteralExpression(nodeArgs.slice(configPosition));
-
-  const spreadElementContainingUpdatedOptions = ts.factory.createSpreadElement(
-    ts.factory.createParenthesizedExpression(
-      ts.factory.createConditionalExpression(
-        ngDevModeIdentifier,
-        /* question token */ undefined,
-        devModeCase,
-        /* colon token */ undefined,
-        nonDevModeCase,
+  if (existingArg !== null) {
+    // If there's an existing object literal already, we transform it as follows:
+    // `signal(0, {equal})` becomes `signal(0, { ...(ngDevMode ? {debugName: "n"} : {}), equal })`.
+    // During minification the spread will be removed since it's pointing to an empty object.
+    const transformedArg = ts.factory.createObjectLiteralExpression([
+      ts.factory.createSpreadAssignment(
+        createNgDevModeConditional(
+          ts.factory.createObjectLiteralExpression([debugNameProperty]),
+          ts.factory.createObjectLiteralExpression(),
+        ),
       ),
-    ),
-  );
-
-  let transformedSignalArgs: ts.NodeArray<ts.Expression>;
-
-  if (signalExpressionIsRequired || signalExpressionHasNoArguments) {
-    // 1. If the call expression is a required signal function, there is no args other than the config object.
-    // So we just use the spread element as the only argument.
-    // or
-    // 2. If the call expression has no arguments (ex. input(), model(), etc), we already added the undefined
-    // identifier in the spread element above. So we use that spread Element as is.
-    transformedSignalArgs = ts.factory.createNodeArray([spreadElementContainingUpdatedOptions]);
-  } else {
-    // 3. Signal expression is not required and has arguments.
-    // Here we leave the first argument as is and spread the rest.
-    transformedSignalArgs = ts.factory.createNodeArray([
-      nodeArgs[0],
-      spreadElementContainingUpdatedOptions,
+      ...existingArg.properties,
     ]);
+
+    newArgs = node.arguments.map((arg) => (arg === existingArg ? transformedArg : arg));
+  } else {
+    // If there's no existing argument, we transform it as follows:
+    // `input(0)` becomes `input(0, ...(ngDevMode ? [{debugName: "n"}] : []))`
+    // Spreading into an empty literal allows for the array to be dropped during minification.
+    const spreadArgs: ts.Expression[] = [];
+
+    // If we're adding an argument, but the function requires a first argument (e.g. `input()`),
+    // we have to add `undefined` before the debug literal.
+    if (hasNoArgs && !isRequired) {
+      spreadArgs.push(ts.factory.createIdentifier('undefined'));
+    }
+
+    spreadArgs.push(ts.factory.createObjectLiteralExpression([debugNameProperty]));
+
+    const spread = ts.factory.createSpreadElement(
+      createNgDevModeConditional(
+        ts.factory.createArrayLiteralExpression(spreadArgs),
+        ts.factory.createArrayLiteralExpression(),
+      ),
+    );
+
+    // Add a `ts-ignore` on the spread, because it may raise an error that we don't
+    // have a spread argument in the signature for the specific signal. We don't update
+    // the source to add the signature to avoid making it harder to read.
+    ts.addSyntheticLeadingComment(
+      spread,
+      ts.SyntaxKind.MultiLineCommentTrivia,
+      ' @ts-ignore ',
+      true,
+    );
+
+    newArgs = [...node.arguments, spread];
   }
 
-  return ts.factory.updateCallExpression(
-    callExpression,
-    callExpression.expression,
-    callExpression.typeArguments,
-    transformedSignalArgs,
+  return ts.factory.updateCallExpression(node, node.expression, node.typeArguments, newArgs);
+}
+
+/**
+ * Creates an expression in the form of `(ngDevMode ? <devModeExpression> : <prodModeExpression>)`.
+ */
+function createNgDevModeConditional(
+  devModeExpression: ts.Expression,
+  prodModeExpression: ts.Expression,
+): ts.ParenthesizedExpression {
+  ts.addSyntheticLeadingComment(
+    prodModeExpression,
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    ' istanbul ignore next ',
+    false,
+  );
+  return ts.factory.createParenthesizedExpression(
+    ts.factory.createConditionalExpression(
+      ts.factory.createIdentifier('ngDevMode'),
+      undefined,
+      devModeExpression,
+      undefined,
+      prodModeExpression,
+    ),
   );
 }
 
@@ -223,6 +218,23 @@ function isPropertyDeclarationCase(
   return ts.isIdentifier(expression) && isSignalFunction(expression);
 }
 
+type PackageName = 'core' | 'common';
+
+const signalFunctions: ReadonlyMap<string, PackageName> = new Map([
+  ['signal', 'core'],
+  ['computed', 'core'],
+  ['linkedSignal', 'core'],
+  ['input', 'core'],
+  ['model', 'core'],
+  ['viewChild', 'core'],
+  ['viewChildren', 'core'],
+  ['contentChild', 'core'],
+  ['contentChildren', 'core'],
+  ['effect', 'core'],
+  ['resource', 'core'],
+  ['httpResource', 'common'],
+]);
+
 /**
  *
  * Determines if a node is an expression that references an @angular/core imported symbol.
@@ -232,7 +244,7 @@ function isPropertyDeclarationCase(
  * const mySignal = signal(123); // expressionIsUsingAngularImportedSymbol === true
  * ```
  */
-function expressionIsUsingAngularCoreImportedSymbol(
+function expressionIsUsingAngularImportedSymbol(
   program: ts.Program,
   expression: ts.Expression,
 ): boolean {
@@ -271,23 +283,13 @@ function expressionIsUsingAngularCoreImportedSymbol(
   }
 
   const specifier = importDeclaration.moduleSpecifier.text;
+  const packageName = signalFunctions.get(expression.getText());
   return (
     specifier !== undefined &&
-    (specifier === '@angular/core' || specifier.startsWith('@angular/core/'))
+    packageName !== undefined &&
+    (specifier === `@angular/${packageName}` || specifier.startsWith(`@angular/${packageName}/`))
   );
 }
-
-const signalFunctions: ReadonlySet<string> = new Set([
-  'signal',
-  'computed',
-  'input',
-  'model',
-  'viewChild',
-  'viewChildren',
-  'contentChild',
-  'contentChildren',
-  'effect',
-]);
 
 function isSignalFunction(expression: ts.Identifier): boolean {
   const text = expression.text;
@@ -319,10 +321,10 @@ function transformVariableDeclaration(
 
   const expression = node.initializer.expression;
   if (ts.isPropertyAccessExpression(expression)) {
-    if (!expressionIsUsingAngularCoreImportedSymbol(program, expression.expression)) {
+    if (!expressionIsUsingAngularImportedSymbol(program, expression.expression)) {
       return node;
     }
-  } else if (!expressionIsUsingAngularCoreImportedSymbol(program, expression)) {
+  } else if (!expressionIsUsingAngularImportedSymbol(program, expression)) {
     return node;
   }
 
@@ -345,15 +347,18 @@ function transformVariableDeclaration(
 function transformPropertyAssignment(
   program: ts.Program,
   node: ts.ExpressionStatement & {
-    expression: ts.BinaryExpression & {right: ts.CallExpression; left: ts.PropertyAccessExpression};
+    expression: ts.BinaryExpression & {
+      right: ts.CallExpression;
+      left: ts.PropertyAccessExpression;
+    };
   },
 ): ts.ExpressionStatement {
   const expression = node.expression.right.expression;
   if (ts.isPropertyAccessExpression(expression)) {
-    if (!expressionIsUsingAngularCoreImportedSymbol(program, expression.expression)) {
+    if (!expressionIsUsingAngularImportedSymbol(program, expression.expression)) {
       return node;
     }
-  } else if (!expressionIsUsingAngularCoreImportedSymbol(program, expression)) {
+  } else if (!expressionIsUsingAngularImportedSymbol(program, expression)) {
     return node;
   }
 
@@ -375,10 +380,10 @@ function transformPropertyDeclaration(
 
   const expression = node.initializer.expression;
   if (ts.isPropertyAccessExpression(expression)) {
-    if (!expressionIsUsingAngularCoreImportedSymbol(program, expression.expression)) {
+    if (!expressionIsUsingAngularImportedSymbol(program, expression.expression)) {
       return node;
     }
-  } else if (!expressionIsUsingAngularCoreImportedSymbol(program, expression)) {
+  } else if (!expressionIsUsingAngularImportedSymbol(program, expression)) {
     return node;
   }
 
@@ -396,6 +401,24 @@ function transformPropertyDeclaration(
   } catch {
     return node;
   }
+}
+
+/**
+ * The function determines whether the target signal has an object-only definition, that includes
+ * both the computation logic and the options (unlike other signal-based primitives), or not.
+ * Ex: `linkedSignal` with computation, `resource`
+ */
+function isSignalWithObjectOnlyDefinition(callExpression: ts.CallExpression): boolean {
+  const callExpressionText = callExpression.expression.getText();
+  const nodeArgs = Array.from(callExpression.arguments);
+
+  const isLinkedSignal = callExpressionText === 'linkedSignal';
+  const isComputationLinkedSignal =
+    isLinkedSignal && nodeArgs[0].kind === ts.SyntaxKind.ObjectLiteralExpression;
+
+  const isResource = callExpressionText === 'resource';
+
+  return isComputationLinkedSignal || isResource;
 }
 
 /**

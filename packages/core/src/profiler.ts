@@ -14,7 +14,7 @@ let enablePerfLogging = false;
  * Function that will start measuring against the performance API
  * Should be used in pair with stopMeasuring
  */
-export function startMeasuring<T>(label: string): void {
+export function startMeasuring(label: string): void {
   if (!enablePerfLogging) {
     return;
   }

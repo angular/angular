@@ -9,7 +9,7 @@ To adjust the base `href` for each version of the application, the CLI adds the 
 Specify the `"subPath"` for each locale in your [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
 The following example displays `"subPath"` set to an empty string.
 
-<docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" visibleRegion="i18n-subPath"/>
+<docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" region="i18n-subPath"/>
 
 ## Configure a server
 
@@ -35,8 +35,6 @@ The following example displays an Apache configuration.
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/apache2.conf" language="apache"/>
 
-[CliBuild]: cli/build "ng build | CLI | Angular"
-
-[GuideDeployment]: tools/cli/deployment "Deployment | Angular"
-
-[GuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
+[CliBuild]: cli/build 'ng build | CLI | Angular'
+[GuideDeployment]: tools/cli/deployment 'Deployment | Angular'
+[GuideWorkspaceConfig]: reference/configs/workspace-config 'Angular workspace configuration | Angular'

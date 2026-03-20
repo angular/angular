@@ -6,10 +6,10 @@ This document describes in detail how the DI module works in Angular.
 
 The library is built on top of the following core abstractions: `Injector`, `Binding`, and `Dependency`.
 
-* An injector is created from a set of bindings.
-* An injector resolves dependencies and creates objects.
-* A binding maps a token, such as a string or class, to a factory function and a list of dependencies. So a binding defines how to create an object.
-* A dependency points to a token and contains extra information on how the object corresponding to that token should be injected.
+- An injector is created from a set of bindings.
+- An injector resolves dependencies and creates objects.
+- A binding maps a token, such as a string or class, to a factory function and a list of dependencies. So a binding defines how to create an object.
+- A dependency points to a token and contains extra information on how the object corresponding to that token should be injected.
 
 ```
 [Injector]
@@ -70,8 +70,6 @@ var engine = inj.get(Engine); //reads the Engine from the cache
 ```
 
 To avoid bugs make sure the registered objects have side-effect-free constructors. In this case, an injector acts like a hash map, where the order in which the objects got created does not matter.
-
-
 
 ## Child Injectors and Dependencies
 
@@ -151,7 +149,6 @@ class Car {
 
 ### DI Does Not Walk Down
 
-
 Dependency resolution only walks up the tree. The following will throw because DI will look for an instance of `Engine` starting from `parent`.
 
 ```
@@ -162,7 +159,6 @@ var child = parent.resolveAndCreateChild([
 
 parent.get(Car); // will throw NoProviderError
 ```
-
 
 ## Bindings
 
@@ -206,6 +202,7 @@ var inj = Injector.resolveAndCreate([
   bind("engine!").toAlias(Engine)
 ]);
 ```
+
 which implies `inj.get(Engine) === inj.get("engine!")`.
 
 Note that tokens and factory functions are decoupled.
@@ -234,7 +231,6 @@ var listOfResolvingProviders = Injector.resolve([Provider1, Provider2]);
 var inj = Injector.fromResolvedProviders(listOfResolvingProviders);
 inj.createChildFromResolvedProviders(listOfResolvedProviders);
 ```
-
 
 ### Transient Dependencies
 

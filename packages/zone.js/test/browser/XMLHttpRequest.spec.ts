@@ -416,13 +416,8 @@ describe('XMLHttpRequest', function () {
   it('should trigger readystatechange if xhr request trigger cors error', (done) => {
     const req = new XMLHttpRequest();
     let err: any = null;
-    try {
-      req.open('get', 'file:///test', true);
-    } catch (err) {
-      // in IE, open will throw Access is denied error
-      done();
-      return;
-    }
+    req.open('get', 'file:///test', true);
+
     req.addEventListener('readystatechange', function (ev) {
       if (req.readyState === 4) {
         const xhrScheduled = (req as any)[zoneSymbol('xhrScheduled')];
@@ -459,13 +454,9 @@ describe('XMLHttpRequest', function () {
       },
     });
     const req = new XMLHttpRequest();
-    try {
-      req.open('get', 'file:///test', true);
-    } catch (err) {
-      // in IE, open will throw Access is denied error
-      done();
-      return;
-    }
+
+    req.open('get', 'file:///test', true);
+
     zone.run(() => {
       let isError = false;
       let timerId = null;

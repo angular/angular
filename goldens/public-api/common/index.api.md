@@ -32,6 +32,16 @@ import { TrackByFunction } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
+import { ɵNavigateEvent } from '@angular/core';
+import { ɵNavigation } from '@angular/core';
+import { ɵNavigationCurrentEntryChangeEvent } from '@angular/core';
+import { ɵNavigationHistoryEntry } from '@angular/core';
+import { ɵNavigationNavigateOptions } from '@angular/core';
+import { ɵNavigationOptions } from '@angular/core';
+import { ɵNavigationReloadOptions } from '@angular/core';
+import { ɵNavigationResult } from '@angular/core';
+import { ɵNavigationTransition } from '@angular/core';
+import { ɵNavigationUpdateCurrentEntryOptions } from '@angular/core';
 
 // @public
 export const APP_BASE_HREF: InjectionToken<string>;
@@ -324,6 +334,7 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 
 // @public
 export interface ImageLoaderConfig {
+    height?: number;
     isPlaceholder?: boolean;
     loaderParams?: {
         [key: string]: any;
@@ -379,6 +390,8 @@ export class KeyValuePipe implements PipeTransform {
     transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>> | null;
     // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
+    // (undocumented)
+    transform<T>(input: T, compareFn?: T extends object ? (a: T[keyof T], b: T[keyof T]) => number : never): T extends object ? Array<KeyValue<keyof T, T[keyof T]>> : null;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<KeyValuePipe, never>;
     // (undocumented)
@@ -491,9 +504,9 @@ export class NgClass implements DoCheck {
 export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy {
     constructor(_viewContainerRef: ViewContainerRef);
     get componentInstance(): T | null;
-    ngComponentOutlet: Type<any> | null;
+    ngComponentOutlet: Type<T> | null;
     // (undocumented)
-    ngComponentOutletContent?: any[][];
+    ngComponentOutletContent?: Node[][];
     // (undocumented)
     ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
     // (undocumented)
@@ -626,7 +639,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     static ngAcceptInputType_priority: unknown;
     // (undocumented)
     static ngAcceptInputType_width: unknown;
-    ngOnChanges(changes: SimpleChanges): void;
+    ngOnChanges(changes: SimpleChanges<NgOptimizedImage>): void;
     ngOnInit(): void;
     ngSrc: string;
     ngSrcset: string;
@@ -716,14 +729,26 @@ export class NgSwitchDefault {
 export class NgTemplateOutlet<C = unknown> implements OnChanges {
     constructor(_viewContainerRef: ViewContainerRef);
     // (undocumented)
+    protected injector: Injector;
+    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     ngTemplateOutlet: TemplateRef<C> | null | undefined;
     ngTemplateOutletContext: C | null | undefined;
-    ngTemplateOutletInjector: Injector | null | undefined;
+    ngTemplateOutletInjector: Injector | 'outlet' | null | undefined;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet<any>, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "alias": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "alias": "ngTemplateOutlet"; "required": false; }; "ngTemplateOutletInjector": { "alias": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgTemplateOutlet<any>, never>;
+}
+
+// @public
+export class NoTrailingSlashPathLocationStrategy extends PathLocationStrategy {
+    // (undocumented)
+    prepareExternalUrl(internal: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoTrailingSlashPathLocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NoTrailingSlashPathLocationStrategy>;
 }
 
 // @public @deprecated
@@ -842,6 +867,50 @@ export abstract class PlatformLocation {
     static ɵprov: i0.ɵɵInjectableDeclaration<PlatformLocation>;
 }
 
+// @public
+export abstract class PlatformNavigation implements ɵNavigation {
+    // (undocumented)
+    abstract addEventListener(type: unknown, listener: unknown, options?: unknown): void;
+    // (undocumented)
+    abstract back(options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract canGoBack: boolean;
+    // (undocumented)
+    abstract canGoForward: boolean;
+    // (undocumented)
+    abstract currentEntry: ɵNavigationHistoryEntry | null;
+    // (undocumented)
+    abstract dispatchEvent(event: Event): boolean;
+    // (undocumented)
+    abstract entries(): ɵNavigationHistoryEntry[];
+    // (undocumented)
+    abstract forward(options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract navigate(url: string, options?: ɵNavigationNavigateOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract oncurrententrychange: ((this: ɵNavigation, ev: ɵNavigationCurrentEntryChangeEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigate: ((this: ɵNavigation, ev: ɵNavigateEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigateerror: ((this: ɵNavigation, ev: ErrorEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigatesuccess: ((this: ɵNavigation, ev: Event) => any) | null;
+    // (undocumented)
+    abstract reload(options?: ɵNavigationReloadOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract removeEventListener(type: unknown, listener: unknown, options?: unknown): void;
+    // (undocumented)
+    abstract transition: ɵNavigationTransition | null;
+    // (undocumented)
+    abstract traverseTo(key: string, options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract updateCurrentEntry(options: ɵNavigationUpdateCurrentEntryOptions): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PlatformNavigation, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformNavigation>;
+}
+
 // @public @deprecated
 export enum Plural {
     // (undocumented)
@@ -930,6 +999,16 @@ export class TitleCasePipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<TitleCasePipe, "titlecase", true>;
 }
 
+// @public
+export class TrailingSlashPathLocationStrategy extends PathLocationStrategy {
+    // (undocumented)
+    prepareExternalUrl(internal: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TrailingSlashPathLocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<TrailingSlashPathLocationStrategy>;
+}
+
 // @public @deprecated
 export enum TranslationWidth {
     Abbreviated = 1,
@@ -963,7 +1042,7 @@ export abstract class ViewportScroller {
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: i0.ɵɵInjectableDeclaration<NullViewportScroller | BrowserViewportScroller>;
 }
 
 // @public @deprecated

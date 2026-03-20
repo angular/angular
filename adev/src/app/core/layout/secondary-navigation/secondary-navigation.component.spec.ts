@@ -21,7 +21,7 @@ describe('SecondaryNavigation', () => {
     },
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [SecondaryNavigation],
       providers: [
@@ -33,7 +33,7 @@ describe('SecondaryNavigation', () => {
     });
     fixture = TestBed.createComponent(SecondaryNavigation);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

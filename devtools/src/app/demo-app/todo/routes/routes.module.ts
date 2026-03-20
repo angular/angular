@@ -9,10 +9,13 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {
-  ActivatedRouteSnapshot,
   CanActivateFn,
   RouterModule,
   RouterStateSnapshot,
+  ActivatedRouteSnapshot,
+  Resolve,
+  ResolveFn,
+  UrlSegment,
 } from '@angular/router';
 
 import {
@@ -26,12 +29,30 @@ import {
   Service4,
 } from './routes.component';
 
+export const resolverFn: ResolveFn<any> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
+  return {data: 'Resolved Data from resolverFn'};
+};
+
 export const activateGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
 ) => {
   return true;
 };
+
+export const customMatcher = (url: UrlSegment[]) => {
+  if (url.length === 1 && url[0].path === 'custom-matcher') {
+    return {consumed: url};
+  }
+  return null;
+};
+
+export function customRerunLogic() {
+  return true;
+}
 
 @NgModule({
   imports: [
@@ -60,10 +81,39 @@ export const activateGuard: CanActivateFn = (
         loadComponent: () => import('./routes.component').then((x) => x.RoutesStandaloneComponent),
       },
       {
+        matcher: customMatcher,
+        component: RoutesHomeComponent,
+      },
+      {
+        path: 'route-run-guards-and-resolvers',
+        component: RoutesHomeComponent,
+        canActivate: [activateGuard],
+        runGuardsAndResolvers: 'always',
+      },
+      {
+        path: 'route-run-guards-and-resolvers-function',
+        component: RoutesHomeComponent,
+        runGuardsAndResolvers: customRerunLogic,
+      },
+      {
         path: 'route-data',
         component: RoutesHomeComponent,
         data: {
           message: 'Hello from route!!',
+          nested: {
+            foo: 'bar',
+            baz: {
+              qux: 42,
+              quux: [3, 1, 4],
+            },
+          },
+        },
+      },
+      {
+        path: 'route-resolver',
+        component: RoutesHomeComponent,
+        resolve: {
+          resolvedData: resolverFn,
         },
       },
     ]),

@@ -1,5 +1,5 @@
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
-load("//tools:defaults2.bzl", "copy_to_bin", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "copy_to_bin", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -31,7 +31,6 @@ ts_project(
     ),
     deps = [
         ":goog_types",
-        "//:node_modules/@types/hammerjs",
         "//:node_modules/tslib",
         "//:node_modules/zone.js",
     ],
@@ -107,6 +106,8 @@ filegroup(
         "//packages/core/testing:core_testing_docs_extraction",
         "//packages/elements:elements_docs_extraction",
         "//packages/forms:forms_docs_extraction",
+        "//packages/forms/signals:forms_signals_docs_extraction",
+        "//packages/forms/signals/compat:forms_signals_compat_docs_extraction",
         "//packages/localize:localize_docs_extraction",
         "//packages/localize/src/localize:localize_init_docs_extraction",
         "//packages/platform-browser:platform-browser_docs_extraction",

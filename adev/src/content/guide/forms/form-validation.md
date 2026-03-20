@@ -13,27 +13,26 @@ Every time the value of a form control changes, Angular runs validation and gene
 You can then inspect the control's state by exporting `ngModel` to a local template variable.
 The following example exports `NgModel` into a variable called `name`:
 
-<docs-code header="template/actor-form-template.component.html (name)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="name-with-error-msg"/>
+<docs-code header="actor-form-template.component.html (name)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="name-with-error-msg"/>
 
 Notice the following features illustrated by the example.
 
-* The `<input>` element carries the HTML validation attributes: `required` and `minlength`.
-    It also carries a custom validator directive, `forbiddenName`.
-    For more information, see the [Custom validators](#defining-custom-validators) section.
+- The `<input>` element carries the HTML validation attributes: `required` and `minlength`.
+  It also carries a custom validator directive, `forbiddenName`.
+  For more information, see the [Custom validators](#defining-custom-validators) section.
 
-* `#name="ngModel"` exports `NgModel` into a local variable called `name`.
-    `NgModel` mirrors many of the properties of its underlying `FormControl` instance, so you can use this in the template to check for control states such as `valid` and `dirty`.
-    For a full list of control properties, see the [AbstractControl](api/forms/AbstractControl) API reference.
+- `#name="ngModel"` exports `NgModel` into a local variable called `name`.
+  `NgModel` mirrors many of the properties of its underlying `FormControl` instance, so you can use this in the template to check for control states such as `valid` and `dirty`.
+  For a full list of control properties, see the [AbstractControl](api/forms/AbstractControl) API reference.
+  - The outermost `@if` reveals a set of nested messages but only if the `name` is invalid and the control is either `dirty` or `touched`.
 
-  * The outermost `@if` reveals a set of nested messages but only if the `name` is invalid and the control is either `dirty` or `touched`.
-
-  * Each nested `@if` can present a custom message for one of the possible validation errors.
-        There are messages for `required`, `minlength`, and `forbiddenName`.
+  - Each nested `@if` can present a custom message for one of the possible validation errors.
+    There are messages for `required`, `minlength`, and `forbiddenName`.
 
 HELPFUL: To prevent the validator from displaying errors before the user has a chance to edit the form, you should check for either the `dirty` or `touched` states in a control.
 
-* When the user changes the value in the watched field, the control is marked as "dirty"
-* When the user blurs the form control element, the control is marked as "touched"
+- When the user changes the value in the watched field, the control is marked as "dirty"
+- When the user blurs the form control element, the control is marked as "touched"
 
 ## Validating input in reactive forms
 
@@ -45,8 +44,8 @@ Angular then calls these functions whenever the value of the control changes.
 
 Validator functions can be either synchronous or asynchronous.
 
-| Validator type   | Details |
-|:---              |:---     |
+| Validator type   | Details                                                                                                                                                                                                                 |
+| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Sync validators  | Synchronous functions that take a control instance and immediately return either a set of validation errors or `null`. Pass these in as the second argument when you instantiate a `FormControl`.                       |
 | Async validators | Asynchronous functions that take a control instance and return a Promise or Observable that later emits a set of validation errors or `null`. Pass these in as the third argument when you instantiate a `FormControl`. |
 
@@ -63,7 +62,7 @@ For a full list of built-in validators, see the [Validators](api/forms/Validator
 To update the actor form to be a reactive form, use some of the same
 built-in validators —this time, in function form, as in the following example.
 
-<docs-code header="reactive/actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" visibleRegion="form-group"/>
+<docs-code header="actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" region="form-group"/>
 
 In this example, the `name` control sets up two built-in validators —`Validators.required` and `Validators.minLength(4)`— and one custom validator, `forbiddenNameValidator`.
 
@@ -75,9 +74,9 @@ In a reactive form, you can always access any form control through the `get` met
 
 If you look at the template for the `name` input again, it is fairly similar to the template-driven example.
 
-<docs-code header="reactive/actor-form-reactive.component.html (name with error msg)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" visibleRegion="name-with-error-msg"/>
+<docs-code header="actor-form-reactive.component.html (name with error msg)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" region="name-with-error-msg"/>
 
-This form differs from the template-driven version in that it no longer exports any directives. Instead, it uses the `name` getter defined in  the component class.
+This form differs from the template-driven version in that it no longer exports any directives. Instead, it uses the `name` getter defined in the component class.
 
 Notice that the `required` attribute is still present in the template. Although it's not necessary for validation, it should be retained for accessibility purposes.
 
@@ -88,15 +87,15 @@ The built-in validators don't always match the exact use case of your applicatio
 Consider the `forbiddenNameValidator` function from the previous example.
 Here's what the definition of that function looks like.
 
-<docs-code header="shared/forbidden-name.directive.ts (forbiddenNameValidator)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" visibleRegion="custom-validator"/>
+<docs-code header="forbidden-name.directive.ts (forbiddenNameValidator)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator"/>
 
-The function is a factory that takes a regular expression to detect a *specific* forbidden name and returns a validator function.
+The function is a factory that takes a regular expression to detect a _specific_ forbidden name and returns a validator function.
 
 In this sample, the forbidden name is "bob", so the validator rejects any actor name containing "bob".
 Elsewhere it could reject "alice" or any name that the configuring regular expression matches.
 
 The `forbiddenNameValidator` factory returns the configured validator function.
-That function takes an Angular control object and returns *either* null if the control value is valid *or* a validation error object.
+That function takes an Angular control object and returns _either_ null if the control value is valid _or_ a validation error object.
 The validation error object typically has a property whose name is the validation key, `'forbiddenName'`, and whose value is an arbitrary dictionary of values that you could insert into an error message, `{name}`.
 
 Custom async validators are similar to sync validators, but they must instead return a Promise or observable that later emits null or a validation error object.
@@ -106,7 +105,7 @@ In the case of an observable, the observable must complete, at which point the f
 
 In reactive forms, add a custom validator by passing the function directly to the `FormControl`.
 
-<docs-code header="reactive/actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" visibleRegion="custom-validator"/>
+<docs-code header="actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" region="custom-validator"/>
 
 ### Adding custom validators to template-driven forms
 
@@ -116,20 +115,20 @@ For example, the corresponding `ForbiddenValidatorDirective` serves as a wrapper
 Angular recognizes the directive's role in the validation process because the directive registers itself with the `NG_VALIDATORS` provider, as shown in the following example.
 `NG_VALIDATORS` is a predefined provider with an extensible collection of validators.
 
-<docs-code header="shared/forbidden-name.directive.ts (providers)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" visibleRegion="directive-providers"/>
+<docs-code header="forbidden-name.directive.ts (providers)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers"/>
 
 The directive class then implements the `Validator` interface, so that it can easily integrate with Angular forms.
 Here is the rest of the directive to help you get an idea of how it all comes together.
 
-<docs-code header="shared/forbidden-name.directive.ts (directive)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" visibleRegion="directive"/>
+<docs-code header="forbidden-name.directive.ts (directive)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" region="directive"/>
 
 Once the `ForbiddenValidatorDirective` is ready, you can add its selector, `appForbiddenName`, to any input element to activate it.
 For example:
 
-<docs-code header="template/actor-form-template.component.html (forbidden-name-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="name-input"/>
+<docs-code header="actor-form-template.component.html (forbidden-name-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="name-input"/>
 
 HELPFUL: Notice that the custom validation directive is instantiated with `useExisting` rather than `useClass`.
-The registered validator must be *this instance* of the `ForbiddenValidatorDirective` —the instance in the form with its `forbiddenName` property bound to "bob".
+The registered validator must be _this instance_ of the `ForbiddenValidatorDirective` —the instance in the form with its `forbiddenName` property bound to "bob".
 
 If you were to replace `useExisting` with `useClass`, then you'd be registering a new class instance, one that doesn't have a `forbiddenName`.
 
@@ -139,14 +138,14 @@ Angular automatically mirrors many control properties onto the form control elem
 Use these classes to style form control elements according to the state of the form.
 The following classes are currently supported.
 
-* `.ng-valid`
-* `.ng-invalid`
-* `.ng-pending`
-* `.ng-pristine`
-* `.ng-dirty`
-* `.ng-untouched`
-* `.ng-touched`
-* `.ng-submitted` \(enclosing form element only\)
+- `.ng-valid`
+- `.ng-invalid`
+- `.ng-pending`
+- `.ng-pristine`
+- `.ng-dirty`
+- `.ng-untouched`
+- `.ng-touched`
+- `.ng-submitted` \(enclosing form element only\)
 
 In the following example, the actor form uses the `.ng-valid` and `.ng-invalid` classes to
 set the color of each form control's border.
@@ -155,14 +154,14 @@ set the color of each form control's border.
 
 ## Cross-field validation
 
-A cross-field validator is a [custom validator](#defining-custom-validators "Read about custom validators") that compares the values of different fields in a form and accepts or rejects them in combination.
+A cross-field validator is a [custom validator](#defining-custom-validators 'Read about custom validators') that compares the values of different fields in a form and accepts or rejects them in combination.
 For example, you might have a form that offers mutually incompatible options, so that if the user can choose A or B, but not both.
 Some field values might also depend on others; a user might be allowed to choose B only if A is also chosen.
 
 The following cross validation examples show how to do the following:
 
-* Validate reactive or template-based form input based on the values of two sibling controls,
-* Show a descriptive error message after the user interacted with the form and the validation failed.
+- Validate reactive or template-based form input based on the values of two sibling controls,
+- Show a descriptive error message after the user interacted with the form and the validation failed.
 
 The examples use cross-validation to ensure that actors do not reuse the same name in their role by filling out the Actor Form.
 The validators do this by checking that the actor names and roles do not match.
@@ -171,15 +170,13 @@ The validators do this by checking that the actor names and roles do not match.
 
 The form has the following structure:
 
-<docs-code language="javascript">
-
+```ts
 const actorForm = new FormGroup({
   'name': new FormControl(),
   'role': new FormControl(),
-  'skill': new FormControl()
+  'skill': new FormControl(),
 });
-
-</docs-code>
+```
 
 Notice that the `name` and `role` are sibling controls.
 To evaluate both controls in a single custom validator, you must perform the validation in a common ancestor control: the `FormGroup`.
@@ -187,19 +184,20 @@ You query the `FormGroup` for its child controls so that you can compare their v
 
 To add a validator to the `FormGroup`, pass the new validator in as the second argument on creation.
 
-<docs-code language="javascript">
-
-const actorForm = new FormGroup({
-  'name': new FormControl(),
-  'role': new FormControl(),
-  'skill': new FormControl()
-}, { validators: unambiguousRoleValidator });
-
-</docs-code>
+```ts
+const actorForm = new FormGroup(
+  {
+    'name': new FormControl(),
+    'role': new FormControl(),
+    'skill': new FormControl(),
+  },
+  {validators: unambiguousRoleValidator},
+);
+```
 
 The validator code is as follows.
 
-<docs-code header="shared/unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" visibleRegion="cross-validation-validator"/>
+<docs-code header="unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" region="cross-validation-validator"/>
 
 The `unambiguousRoleValidator` validator implements the `ValidatorFn` interface.
 It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
@@ -211,7 +209,7 @@ If they do match, the actor's role is ambiguous and the validator must mark the 
 
 To provide better user experience, the template shows an appropriate error message when the form is invalid.
 
-<docs-code header="reactive/actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" visibleRegion="cross-validation-error-message"/>
+<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" region="cross-validation-error-message"/>
 
 This `@if` displays the error if the `FormGroup` has the cross validation error returned by the `unambiguousRoleValidator` validator, but only if the user finished [interacting with the form](#control-status-css-classes).
 
@@ -220,16 +218,16 @@ This `@if` displays the error if the `FormGroup` has the cross validation error 
 For a template-driven form, you must create a directive to wrap the validator function.
 You provide that directive as the validator using the [`NG_VALIDATORS` token](/api/forms/NG_VALIDATORS), as shown in the following example.
 
-<docs-code header="shared/unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" visibleRegion="cross-validation-directive"/>
+<docs-code header="unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" region="cross-validation-directive"/>
 
 You must add the new directive to the HTML template.
 Because the validator must be registered at the highest level in the form, the following template puts the directive on the `form` tag.
 
-<docs-code header="template/actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="cross-validation-register-validator"/>
+<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="cross-validation-register-validator"/>
 
 To provide better user experience, an appropriate error message appears when the form is invalid.
 
-<docs-code header="template/actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="cross-validation-error-message"/>
+<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="cross-validation-error-message"/>
 
 This is the same in both template-driven and reactive forms.
 
@@ -238,9 +236,9 @@ This is the same in both template-driven and reactive forms.
 Asynchronous validators implement the `AsyncValidatorFn` and `AsyncValidator` interfaces.
 These are very similar to their synchronous counterparts, with the following differences.
 
-* The `validate()` functions must return a Promise or an observable,
-* The observable returned must be finite, meaning it must complete at some point.
-    To convert an infinite observable into a finite one, pipe the observable through a filtering operator such as `first`, `last`, `take`, or `takeUntil`.
+- The `validate()` functions must return a Promise or an observable,
+- The observable returned must be finite, meaning it must complete at some point.
+  To convert an infinite observable into a finite one, pipe the observable through a filtering operator such as `first`, `last`, `take`, or `takeUntil`.
 
 Asynchronous validation happens after the synchronous validation, and is performed only if the synchronous validation is successful.
 This check lets forms avoid potentially expensive async validation processes \(such as an HTTP request\) if the more basic validation methods have already found invalid input.
@@ -251,13 +249,13 @@ Inspect the control's `pending` property and use it to give visual feedback abou
 A common UI pattern is to show a spinner while the async validation is being performed.
 The following example shows how to achieve this in a template-driven form.
 
-<docs-code language="html">
+```angular-html
+<input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator />
 
-<input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
-@if(model.pending) {
+@if (model.pending) {
   <app-spinner />
 }
-</docs-code>
+```
 
 ### Implementing a custom async validator
 
@@ -267,20 +265,20 @@ To validate the potential role entry, the validator must initiate an asynchronou
 
 The following code creates the validator class, `UniqueRoleValidator`, which implements the `AsyncValidator` interface.
 
-<docs-code path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" visibleRegion="async-validator"/>
+<docs-code header="role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" region="async-validator"/>
 
 The `actorsService` property is initialized with an instance of the `ActorsService` token, which defines the following interface.
 
-<docs-code language="typescript">
+```ts
 interface ActorsService {
   isRoleTaken: (role: string) => Observable<boolean>;
 }
-</docs-code>
+```
 
 In a real world application, the `ActorsService` would be responsible for making an HTTP request to the actor database to check if the role is available.
 From the validator's point of view, the actual implementation of the service is not important, so the example can just code against the `ActorsService` interface.
 
-As the validation begins, the `UnambiguousRoleValidator` delegates to the `ActorsService` `isRoleTaken()` method with the current control value.
+As the validation begins, the `UniqueRoleValidator` delegates to the `ActorsService` `isRoleTaken()` method with the current control value.
 At this point the control is marked as `pending` and remains in this state until the observable chain returned from the `validate()` method completes.
 
 The `isRoleTaken()` method dispatches an HTTP request that checks if the role is available, and returns `Observable<boolean>` as the result.
@@ -298,15 +296,15 @@ The `pending` flag is set to `false`, and the form validity is updated.
 
 To use an async validator in reactive forms, begin by injecting the validator into a property of the component class.
 
-<docs-code path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" visibleRegion="async-validator-inject"/>
+<docs-code header="actor-form-reactive.component.2.ts" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" region="async-validator-inject"/>
 
 Then, pass the validator function directly to the `FormControl` to apply it.
 
-In the following example, the `validate` function of `UnambiguousRoleValidator` is applied to `roleControl` by passing it to the control's `asyncValidators` option and binding it to the instance of `UnambiguousRoleValidator` that was injected into `ActorFormReactiveComponent`.
+In the following example, the `validate` function of `UniqueRoleValidator` is applied to `roleControl` by passing it to the control's `asyncValidators` option and binding it to the instance of `UniqueRoleValidator` that was injected into `ActorFormReactiveComponent`.
 The value of `asyncValidators` can be either a single async validator function, or an array of functions.
 To learn more about `FormControl` options, see the [AbstractControlOptions](api/forms/AbstractControlOptions) API reference.
 
-<docs-code path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" visibleRegion="async-validator-usage"/>
+<docs-code header="actor-form-reactive.component.2.ts" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" region="async-validator-usage"/>
 
 ### Adding async validators to template-driven forms
 
@@ -314,11 +312,11 @@ To use an async validator in template-driven forms, create a new directive and r
 
 In the example below, the directive injects the `UniqueRoleValidator` class that contains the actual validation logic and invokes it in the `validate` function, triggered by Angular when validation should happen.
 
-<docs-code path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" visibleRegion="async-validator-directive"/>
+<docs-code header="role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" region="async-validator-directive"/>
 
 Then, as with synchronous validators, add the directive's selector to an input to activate it.
 
-<docs-code header="template/actor-form-template.component.html (unique-unambiguous-role-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="role-input"/>
+<docs-code header="actor-form-template.component.html (unique-unambiguous-role-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="role-input"/>
 
 ### Optimizing performance of async validators
 
@@ -331,15 +329,79 @@ You can delay updating the form validity by changing the `updateOn` property fro
 
 With template-driven forms, set the property in the template.
 
-<docs-code language="html">
-<input [(ngModel)]="name" [ngModelOptions]="{updateOn: 'blur'}">
-</docs-code>
+```angular-html
+<input [(ngModel)]="name" [ngModelOptions]="{updateOn: 'blur'}" />
+```
 
 With reactive forms, set the property in the `FormControl` instance.
 
-<docs-code language="typescript">
+```ts
 new FormControl('', {updateOn: 'blur'});
-</docs-code>
+```
+
+## Managing validators dynamically in reactive forms
+
+In complex reactive forms, you may need to add, remove, or modify validators based on user input or application state.
+Angular provides several methods on `AbstractControl` to manage validators at runtime without recreating form controls.
+
+### Adding and removing validators
+
+The [`addValidators`](api/forms/AbstractControl#addValidators) and [`removeValidators`](api/forms/AbstractControl#removeValidators) methods allow you to modify a control's validators after initialization.
+
+```ts
+onCountryChange(country: string) {
+    const postalCodeControl = this.profileForm.get('postalCode');
+
+    if (country === 'US') {
+      // Add validators for US postal codes
+      postalCodeControl.addValidators([Validators.required, Validators.pattern(/^\d{5}$/)]);
+    } else {
+      // Remove validators when not US
+      postalCodeControl.removeValidators([Validators.required]);
+    }
+
+    postalCodeControl.updateValueAndValidity();
+}
+```
+
+### Replacing all validators
+
+Use [`setValidators`](api/forms/AbstractControl#setValidators) to replace all existing synchronous validators on a control, or [`clearValidators`](api/forms/AbstractControl#clearValidators) to remove all validators.
+
+```ts
+toggleStrictNameValidation(isStenablerict: boolean) {
+  const nameControl = this.profileForm.get('name');
+
+  if (enable) {
+    // Set strict validation rules
+    nameControl.setValidators([
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern(/^[a-zA-Z]+$/),
+    ]);
+  } else {
+    // Clear all validators
+    nameControl.clearValidators();
+  }
+
+  nameControl.updateValueAndValidity();
+}
+```
+
+The same pattern applies to async validators using [`addAsyncValidators`](api/forms/AbstractControl#addAsyncValidators), [`removeAsyncValidators`](api/forms/AbstractControl#removeAsyncValidators), [`setAsyncValidators`](api/forms/AbstractControl#setAsyncValidators), and [`clearAsyncValidators`](api/forms/AbstractControl#clearAsyncValidators).
+
+### Triggering validation updates
+
+After modifying validators, call [`updateValueAndValidity`](api/forms/AbstractControl#updateValueAndValidity) to recalculate the control's validation status.
+This method accepts options to control update behavior.
+
+```ts
+// Update control and notify parent
+control.updateValueAndValidity();
+
+// Update control only, don't notify parent or emit events
+control.updateValueAndValidity({onlySelf: true, emitEvent: false});
+```
 
 ## Interaction with native HTML form validation
 

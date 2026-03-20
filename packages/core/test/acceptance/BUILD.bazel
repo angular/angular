@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -24,9 +24,11 @@ ts_project(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/primitives/devtools",
         "//packages/core/primitives/signals",
         "//packages/core/src/di/interface",
         "//packages/core/src/util",
+        "//packages/core/test/animation_utils",
         "//packages/core/test/render3:matchers",
         "//packages/core/testing",
         "//packages/localize",

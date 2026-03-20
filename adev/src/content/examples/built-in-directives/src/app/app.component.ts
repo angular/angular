@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {JsonPipe} from '@angular/common';
+import {JsonPipe, NgClass, NgStyle} from '@angular/common';
 // #docregion import-ng-if
 import {NgIf} from '@angular/common';
 // #enddocregion import-ng-if
@@ -9,12 +9,6 @@ import {NgFor} from '@angular/common';
 // #docregion import-ng-switch
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 // #enddocregion import-ng-switch
-// #docregion import-ng-style
-import {NgStyle} from '@angular/common';
-// #enddocregion import-ng-style
-// #docregion import-ng-class
-import {NgClass} from '@angular/common';
-// #enddocregion import-ng-class
 // #docregion import-forms-module
 import {FormsModule} from '@angular/forms';
 // #enddocregion import-forms-module
@@ -23,31 +17,27 @@ import {ItemDetailComponent} from './item-detail/item-detail.component';
 import {ItemSwitchComponents} from './item-switch.component';
 import {StoutItemComponent} from './item-switch.component';
 
-// #docregion import-ng-if, import-ng-for, import-ng-switch, import-ng-style, import-ng-class, import-forms-module
+// #docregion import-ng-if, import-ng-for, import-ng-switch, import-forms-module
 @Component({
-  // #enddocregion import-ng-if, import-ng-for, import-ng-switch, import-ng-style, import-ng-class, import-forms-module
+  // #enddocregion import-ng-if, import-ng-for, import-ng-switch, import-forms-module
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 
   imports: [
+    NgClass,
+    NgStyle,
     // #docregion import-ng-if
     NgIf, // <-- import into the component
     // #enddocregion import-ng-if
     // #docregion import-ng-for
     NgFor, // <-- import into the component
     // #enddocregion import-ng-for
-    // #docregion import-ng-style
-    NgStyle, // <-- import into the component
-    // #enddocregion import-ng-style
     // #docregion import-ng-switch
     NgSwitch, // <-- import into the component
     NgSwitchCase,
     NgSwitchDefault,
     // #enddocregion import-ng-switch
-    // #docregion import-ng-class
-    NgClass, // <-- import into the component
-    // #enddocregion import-ng-class
     // #docregion import-forms-module
     FormsModule, // <--- import into the component
     // #enddocregion import-forms-module
@@ -55,11 +45,11 @@ import {StoutItemComponent} from './item-switch.component';
     ItemDetailComponent,
     ItemSwitchComponents,
     StoutItemComponent,
-    // #docregion import-ng-if, import-ng-for, import-ng-style, import-ng-switch, import-ng-class, import-forms-module
+    // #docregion import-ng-if, import-ng-for, import-ng-switch, import-forms-module
   ],
 })
 export class AppComponent implements OnInit {
-  // #enddocregion import-ng-if, import-ng-for, import-ng-style, import-ng-switch, import-ng-class, import-forms-module
+  // #enddocregion import-ng-if, import-ng-for, import-ng-switch, import-forms-module
   canSave = true;
   isSpecial = true;
   isUnchanged = true;
@@ -170,6 +160,6 @@ export class AppComponent implements OnInit {
   getValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }
-  // #docregion import-ng-if, import-ng-for, import-ng-switch, import-ng-style, import-ng-class, import-forms-module
+  // #docregion import-ng-if, import-ng-for, import-ng-switch, import-forms-module
 }
-// #enddocregion import-ng-if, import-ng-for, import-ng-switch, import-ng-style, import-ng-class, import-forms-module
+// #enddocregion import-ng-if, import-ng-for, import-ng-switch, import-forms-module

@@ -7,15 +7,14 @@
  */
 
 import ts from 'typescript';
+import {NgCompilerOptions, Decorator} from '@angular/compiler-cli/private/migrations';
 import {ExtractedInput} from '../input_detection/input_decorator';
 import {
   FieldIncompatibility,
   FieldIncompatibilityReason,
 } from '../passes/problematic_patterns/incompatibility';
 import {InputNode} from '../input_detection/input_node';
-import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
 import assert from 'assert';
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 
 /**
  * Interface describing analysis performed when the input

@@ -21,15 +21,25 @@ import childProcess from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import sh from 'shelljs';
 import {glob} from 'tinyglobby';
+import {parseArgs} from 'node:util';
 
 // Do not remove `.git` as we use Git for comparisons later.
 // Also preserve `uniqueId` as it's irrelevant for the diff and not included via Bazel.
 // The `README.md` is also put together outside of Bazel, so ignore it too.
 const SKIP_FILES = [/^README\.md$/, /^uniqueId$/, /\.map$/];
 
-const packageName = process.argv[2];
+const {positionals, values: flags} = parseArgs({
+  options: {
+    write: {
+      type: 'boolean',
+      short: 'w',
+      default: false,
+    },
+  },
+  allowPositionals: true,
+});
+const packageName = positionals[0];
 if (!packageName) {
   console.error('Expected package name to be specified.');
   process.exit(1);
@@ -57,8 +67,10 @@ async function main(packageName: string) {
     git.run(['clone', '--depth=1', `https://github.com/${snapshotRepoName}.git`, tmpDir]);
     console.info(`--> Cloned snapshot repo.`);
 
+    // TODO: Remove --ignore_all_rc_files flag once a repository can be loaded in bazelrc during info
+    // commands again. See https://github.com/bazelbuild/bazel/issues/25145 for more context.
     const bazelBinDir = childProcess
-      .spawnSync(bazel, ['info', 'bazel-bin'], {
+      .spawnSync(bazel, ['--ignore_all_rc_files', 'info', 'bazel-bin'], {
         shell: true,
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'inherit'],
@@ -146,10 +158,17 @@ async function main(packageName: string) {
 
     // Add all files so that new untracked files are also visible in the diff.
     git.run(['add', '-A'], {cwd: tmpDir});
-    const diff = git.run(['diff', 'HEAD', '--color'], {cwd: tmpDir}).stdout;
-
-    console.info('\n\n----- Diff ------');
-    console.info(diff);
+    const diff = git.run(['diff', 'HEAD', flags.write ? '--no-color' : '--color'], {
+      cwd: tmpDir,
+    }).stdout;
+    if (flags.write) {
+      const outputFilePath = path.join(process.cwd(), `${packageName}.diff`);
+      fs.writeFileSync(outputFilePath, diff, 'utf-8');
+      console.info(`Saved diff to: ${outputFilePath}`);
+    } else {
+      console.info('\n\n----- Diff ------');
+      console.info(diff);
+    }
   } finally {
     await deleteDir(tmpDir);
   }
@@ -161,6 +180,19 @@ async function deleteDir(dirPath: string) {
   }
 
   // Needed as Bazel artifacts are readonly and cannot be deleted otherwise.
-  sh.chmod('-R', 'u+w', dirPath);
+  recursiveChmod(dirPath);
   await fs.promises.rm(dirPath, {recursive: true, force: true, maxRetries: 3});
+}
+
+function recursiveChmod(dirPath: string) {
+  const stats = fs.statSync(dirPath);
+
+  // Add user write permission to existing permissions.
+  fs.chmodSync(dirPath, stats.mode | 0o200);
+
+  if (stats.isDirectory()) {
+    for (const file of fs.readdirSync(dirPath)) {
+      recursiveChmod(path.join(dirPath, file));
+    }
+  }
 }

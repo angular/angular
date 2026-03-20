@@ -31,8 +31,9 @@ function MyApp_Conditional_5_Template(rf, ctx) {
 }
 
 …
-
-MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyApp {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: () => {
     let i18n_0;
@@ -40,7 +41,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_ID_WITH_SUFFIX$ = goog.getMsg(" Content: {$startBlockIf} before{$startTagSpan}zero{$closeTagSpan}after {$closeBlockIf}{$startBlockElseIf} before{$startTagDiv}one{$closeTagDiv}after {$closeBlockElseIf}{$startBlockElse} before{$startTagButton}otherwise{$closeTagButton}after {$closeBlockElse}! {$startBlockIf_1} before{$startTagSpan}seven{$closeTagSpan}after {$closeBlockIf}", {
+      const $MSG_ID_WITH_SUFFIX$ = /* @ts-ignore */ goog.getMsg(" Content: {$startBlockIf} before{$startTagSpan}zero{$closeTagSpan}after {$closeBlockIf}{$startBlockElseIf} before{$startTagDiv}one{$closeTagDiv}after {$closeBlockElseIf}{$startBlockElse} before{$startTagButton}otherwise{$closeTagButton}after {$closeBlockElse}! {$startBlockIf_1} before{$startTagSpan}seven{$closeTagSpan}after {$closeBlockIf}", {
         "closeBlockElse": "\uFFFD/*4:3\uFFFD",
         "closeBlockElseIf": "\uFFFD/*3:2\uFFFD",
         "closeBlockIf": "[\uFFFD/*2:1\uFFFD|\uFFFD/*5:4\uFFFD]",
@@ -73,6 +74,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       });
       i18n_0 = $MSG_ID_WITH_SUFFIX$;
     } else {
+      /* @ts-ignore */
       i18n_0 = $localize` Content: ${"\uFFFD*2:1\uFFFD"}:START_BLOCK_IF: before${"[\uFFFD#1:1\uFFFD|\uFFFD#1:4\uFFFD]"}:START_TAG_SPAN:zero${"[\uFFFD/#1:1\uFFFD|\uFFFD/#1:4\uFFFD]"}:CLOSE_TAG_SPAN:after ${"[\uFFFD/*2:1\uFFFD|\uFFFD/*5:4\uFFFD]"}:CLOSE_BLOCK_IF:${"\uFFFD*3:2\uFFFD"}:START_BLOCK_ELSE_IF: before${"\uFFFD#1:2\uFFFD"}:START_TAG_DIV:one${"\uFFFD/#1:2\uFFFD"}:CLOSE_TAG_DIV:after ${"\uFFFD/*3:2\uFFFD"}:CLOSE_BLOCK_ELSE_IF:${"\uFFFD*4:3\uFFFD"}:START_BLOCK_ELSE: before${"\uFFFD#1:3\uFFFD"}:START_TAG_BUTTON:otherwise${"\uFFFD/#1:3\uFFFD"}:CLOSE_TAG_BUTTON:after ${"\uFFFD/*4:3\uFFFD"}:CLOSE_BLOCK_ELSE:! ${"\uFFFD*5:4\uFFFD"}:START_BLOCK_IF_1: before${"[\uFFFD#1:1\uFFFD|\uFFFD#1:4\uFFFD]"}:START_TAG_SPAN:seven${"[\uFFFD/#1:1\uFFFD|\uFFFD/#1:4\uFFFD]"}:CLOSE_TAG_SPAN:after ${"[\uFFFD/*2:1\uFFFD|\uFFFD/*5:4\uFFFD]"}:CLOSE_BLOCK_IF:`;
     }
     i18n_0 = $r3$.ɵɵi18nPostprocess(i18n_0);
@@ -96,3 +98,4 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   },
   …
 });
+}

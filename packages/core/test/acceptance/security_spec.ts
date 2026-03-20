@@ -7,10 +7,12 @@
  */
 
 import {NgIf} from '@angular/common';
+import {DomSanitizer} from '@angular/platform-browser';
 import {
   Component,
   Directive,
   inject,
+  provideZoneChangeDetection,
   TemplateRef,
   Type,
   ViewChild,
@@ -19,7 +21,6 @@ import {
 import {RuntimeErrorCode} from '../../src/errors';
 import {global} from '../../src/util/global';
 import {ComponentFixture, TestBed} from '../../testing';
-import {DomSanitizer} from '@angular/platform-browser';
 
 describe('comment node text escaping', () => {
   // see: https://html.spec.whatwg.org/multipage/syntax.html#comments
@@ -33,7 +34,10 @@ describe('comment node text escaping', () => {
       'should not be possible to do XSS through comment reflect data when writing: ' + xssValue,
       () => {
         @Component({
-          template: `<div><span *ngIf="xssValue"></span><div>`,
+          template: `<div>
+            <span *ngIf="xssValue"></span>
+            <div></div>
+          </div>`,
           standalone: false,
         })
         class XSSComp {
@@ -60,8 +64,13 @@ describe('comment node text escaping', () => {
 });
 
 describe('iframe processing', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   function getErrorMessageRegexp() {
-    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS).toString();
+    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING).toString();
     return new RegExp(errorMessagePart);
   }
 
@@ -137,15 +146,11 @@ describe('iframe processing', () => {
         ['src', 'srcdoc'].forEach((srcAttr: string) => {
           it(
             `should work when a security-sensitive attribute is set ` +
-              `as a static attribute (checking \`${securityAttr}\`)`,
+              `as a static attribute (checking \`${securityAttr}\` with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `
-                  <iframe
-                    ${srcAttr}="${TEST_IFRAME_URL}"
-                    ${securityAttr}="">
-                  </iframe>`,
+                template: ` <iframe ${srcAttr}="${TEST_IFRAME_URL}" ${securityAttr}=""> </iframe>`,
               })
               class IframeComp {}
 
@@ -156,15 +161,15 @@ describe('iframe processing', () => {
           it(
             `should work when a security-sensitive attribute is set ` +
               `as a static attribute (checking \`${securityAttr}\` and ` +
-              `making sure it's case-insensitive)`,
+              `making sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `
-                  <iframe
-                    ${srcAttr}="${TEST_IFRAME_URL}"
-                    ${securityAttr.toUpperCase()}="">
-                  </iframe>`,
+                template: ` <iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  ${securityAttr.toUpperCase()}=""
+                >
+                </iframe>`,
               })
               class IframeComp {}
 
@@ -174,11 +179,14 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`)`,
+              `using a property binding (checking \`${securityAttr}\`, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `<iframe ${srcAttr}="${TEST_IFRAME_URL}" [${securityAttr}]="''"></iframe>`,
+                template: `<iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  [${securityAttr}]="''"
+                ></iframe>`,
               })
               class IframeComp {}
 
@@ -188,50 +196,14 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property interpolation (checking \`${securityAttr}\`)`,
+              `using a property interpolation (checking \`${securityAttr}\`, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `<iframe ${srcAttr}="${TEST_IFRAME_URL}" ${securityAttr}="{{''}}"></iframe>`,
-              })
-              class IframeComp {}
-
-              expectIframeCreationToFail(IframeComp);
-            },
-          );
-
-          it(
-            `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`, making ` +
-              `sure it's case-insensitive)`,
-            () => {
-              @Component({
-                selector: 'my-comp',
-                template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [${securityAttr.toUpperCase()}]="''"
-                    ></iframe>
-                  `,
-              })
-              class IframeComp {}
-
-              expectIframeCreationToFail(IframeComp);
-            },
-          );
-
-          it(
-            `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`)`,
-            () => {
-              @Component({
-                selector: 'my-comp',
-                template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [attr.${securityAttr}]="''"
-                    ></iframe>
-                  `,
+                template: `<iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  ${securityAttr}="{{ '' }}"
+                ></iframe>`,
               })
               class IframeComp {}
 
@@ -242,16 +214,16 @@ describe('iframe processing', () => {
           it(
             `should error when a security-sensitive attribute is applied ` +
               `using a property binding (checking \`${securityAttr}\`, making ` +
-              `sure it's case-insensitive)`,
+              `sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
                 template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [attr.${securityAttr.toUpperCase()}]="''"
-                    ></iframe>
-                  `,
+                  <iframe
+                    ${srcAttr}="${TEST_IFRAME_URL}"
+                    [${securityAttr.toUpperCase()}]="''"
+                  ></iframe>
+                `,
               })
               class IframeComp {}
 
@@ -259,15 +231,46 @@ describe('iframe processing', () => {
             },
           );
 
-          it(`should allow changing \`${srcAttr}\` after initial render`, () => {
+          it(
+            `should error when a security-sensitive attribute is applied ` +
+              `using a property binding (checking \`${securityAttr}\` (attr.), with \`${srcAttr}\`)`,
+            () => {
+              @Component({
+                selector: 'my-comp',
+                template: `
+                  <iframe ${srcAttr}="${TEST_IFRAME_URL}" [attr.${securityAttr}]="''"></iframe>
+                `,
+              })
+              class IframeComp {}
+
+              expectIframeCreationToFail(IframeComp);
+            },
+          );
+
+          it(
+            `should error when a security-sensitive attribute is applied ` +
+              `using a property binding (checking \`${securityAttr}\` with [attr.], making ` +
+              `sure it's case-insensitive, with \`${srcAttr}\`)`,
+            () => {
+              @Component({
+                selector: 'my-comp',
+                template: `
+                  <iframe
+                    ${srcAttr}="${TEST_IFRAME_URL}"
+                    [attr.${securityAttr.toUpperCase()}]="''"
+                  ></iframe>
+                `,
+              })
+              class IframeComp {}
+
+              expectIframeCreationToFail(IframeComp);
+            },
+          );
+
+          it(`should allow changing \`${srcAttr}\` after initial render with \`${securityAttr}\``, () => {
             @Component({
               selector: 'my-comp',
-              template: `
-                    <iframe
-                      ${securityAttr}="allow-forms"
-                      [${srcAttr}]="src">
-                    </iframe>
-                  `,
+              template: ` <iframe ${securityAttr}="allow-forms" [${srcAttr}]="src"> </iframe> `,
             })
             class IframeComp {
               private sanitizer = inject(DomSanitizer);
@@ -479,9 +482,7 @@ describe('iframe processing', () => {
       it('should work when a security-sensitive attribute is set as a static attribute', () => {
         @Component({
           selector: 'my-comp',
-          template: `
-            <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe>
-          `,
+          template: ` <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe> `,
         })
         class IframeComp {}
 
@@ -497,13 +498,9 @@ describe('iframe processing', () => {
         () => {
           @Component({
             selector: 'my-comp',
-            template: `
-                <section>
-                  <iframe
-                    src="${TEST_IFRAME_URL}"
-                    [referrerPolicy]="'no-referrer'"
-                  ></iframe>
-                </section>`,
+            template: ` <section>
+              <iframe src="${TEST_IFRAME_URL}" [referrerPolicy]="'no-referrer'"></iframe>
+            </section>`,
           })
           class IframeComp {}
 
@@ -640,11 +637,11 @@ describe('iframe processing', () => {
           @Component({
             selector: 'my-comp',
             template: `
-                <ng-container #container></ng-container>
-                <ng-template #template>
-                  <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
-                </ng-template>
-              `,
+              <ng-container #container></ng-container>
+              <ng-template #template>
+                <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
+              </ng-template>
+            `,
           })
           class IframeComp {
             @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -675,11 +672,10 @@ describe('iframe processing', () => {
             @Component({
               selector: 'my-comp',
               template: `
-                  <section i18n>
-                    <iframe src="${TEST_IFRAME_URL}" [sandbox]="''">
-                    </iframe>
-                  </section>
-                `,
+                <section i18n>
+                  <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe>
+                </section>
+              `,
             })
             class IframeComp {}
 
@@ -693,10 +689,7 @@ describe('iframe processing', () => {
           () => {
             @Component({
               selector: 'my-comp',
-              template: `
-                  <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''">
-                  </iframe>
-                `,
+              template: ` <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe> `,
             })
             class IframeComp {}
 
@@ -707,10 +700,7 @@ describe('iframe processing', () => {
         it('should work when a security-sensitive attributes are marked for translation', () => {
           @Component({
             selector: 'my-comp',
-            template: `
-              <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox="">
-              </iframe>
-            `,
+            template: ` <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox=""> </iframe> `,
           })
           class IframeComp {}
 
@@ -718,5 +708,63 @@ describe('iframe processing', () => {
         });
       });
     });
+  });
+});
+
+describe('SVG animation processing', () => {
+  it('should error when `attributeName` is bound', () => {
+    @Component({
+      template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+    })
+    class TestCmp {
+      attr = 'href';
+    }
+
+    expect(() => {
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+    }).toThrowError(
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
+    );
+  });
+
+  it(`should error when a directive sets a 'attributeName' as an attribute binding`, () => {
+    @Directive({
+      selector: '[dir]',
+      host: {
+        '[attr.attributeName]': "'href'",
+      },
+    })
+    class animateAttrDir {}
+
+    @Component({
+      imports: [animateAttrDir],
+      selector: 'my-comp',
+      template: '<svg><animate dir></animate></svg>',
+    })
+    class TestCmp {}
+
+    expect(() => {
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+    }).toThrowError(
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
+    );
+  });
+});
+
+describe('innerHTML processing', () => {
+  it('should drop risky attributes from elements created with innerHTML', () => {
+    @Component({
+      template: '<div [innerHTML]="html"></div>',
+    })
+    class App {
+      html = '<div action="abc"></div>';
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).not.toContain('action');
   });
 });

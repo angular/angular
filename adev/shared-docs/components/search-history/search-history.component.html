@@ -1,17 +1,31 @@
+<ng-template #searchItem let-item="item" let-type="type">
+  <i role="presentation" class="material-symbols-outlined type-icon" aria-hidden="true">
+    {{ type === 'recent' ? 'history' : 'star' }}
+  </i>
+  <span [innerHTML]="item.labelHtml" class="label"></span>
+
+  @if (item.subLabelHtml) {
+    <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> arrow_right </i>
+    <span [innerHTML]="item.subLabelHtml" class="sub-label"></span>
+  }
+</ng-template>
+
 @let items = history.items();
 
 @if (items.recent.length) {
   <p class="title">Recent</p>
   <ul class="history-results recent">
     @for (item of items.recent; track item.id; let idx = $index) {
-      <li docsSearchItem [item]="item" (mouseenter)="onMouseEnter($event, idx)">
+      <li docsSearchItem (mouseenter)="onMouseEnter($event, idx)">
         <a
           [routerLink]="'/' + item.url | relativeLink: 'pathname'"
           [fragment]="item.url | relativeLink: 'hash'"
           (click)="history.addItem(item)"
         >
-          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> history </i>
-          <span [innerHTML]="item.labelHtml"></span>
+          <ng-container
+            [ngTemplateOutlet]="searchItem"
+            [ngTemplateOutletContext]="{item, type: 'recent'}"
+          />
         </a>
 
         <button
@@ -20,7 +34,9 @@
           (click)="history.makeFavorite(item)"
           title="Make favorite"
         >
-          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> star </i>
+          <i role="presentation" class="material-symbols-outlined type-icon" aria-hidden="true">
+            star
+          </i>
         </button>
         <button
           type="button"
@@ -39,17 +55,15 @@
   <p class="title">Favorite</p>
   <ul class="history-results favorite">
     @for (item of items.favorite; track item.id; let idx = $index) {
-      <li
-        docsSearchItem
-        [item]="item"
-        (mouseenter)="onMouseEnter($event, items.recent.length + idx)"
-      >
+      <li docsSearchItem (mouseenter)="onMouseEnter($event, items.recent.length + idx)">
         <a
           [routerLink]="'/' + item.url | relativeLink: 'pathname'"
           [fragment]="item.url | relativeLink: 'hash'"
         >
-          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> star </i>
-          <span [innerHTML]="item.labelHtml"></span>
+          <ng-container
+            [ngTemplateOutlet]="searchItem"
+            [ngTemplateOutletContext]="{item, type: 'favorite'}"
+          />
         </a>
 
         <button

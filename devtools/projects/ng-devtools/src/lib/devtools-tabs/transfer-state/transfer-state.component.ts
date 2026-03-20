@@ -32,6 +32,7 @@ import {
 import {ButtonComponent} from '../../shared/button/button.component';
 import {Events, MessageBus, TransferStateValue} from '../../../../../protocol';
 import {formatBytes, getFormattedValue} from '../../shared/utils/formatting';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 interface TransferStateItem {
   key: string;
@@ -47,7 +48,6 @@ export const COPY_FEEDBACK_TIMEOUT = 2000;
 
 @Component({
   selector: 'ng-transfer-state',
-  standalone: true,
   imports: [
     MatIcon,
     MatTooltip,
@@ -62,14 +62,16 @@ export const COPY_FEEDBACK_TIMEOUT = 2000;
     MatHeaderRowDef,
     MatRowDef,
     ButtonComponent,
+    MatSnackBarModule,
   ],
   templateUrl: './transfer-state.component.html',
   styleUrls: ['./transfer-state.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferStateComponent {
-  private messageBus = inject(MessageBus) as MessageBus<Events>;
-  private clipboard = inject(Clipboard);
+  private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
+  private readonly clipboard = inject(Clipboard);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly transferStateData = signal<Record<string, TransferStateValue> | null>(null);
   readonly error = signal<string | null>(null);
@@ -142,10 +144,6 @@ export class TransferStateComponent {
     }
   }
 
-  refresh(): void {
-    this.loadTransferState();
-  }
-
   isValueLong(element: HTMLElement, isExpanded: boolean = false): boolean {
     if (isExpanded) return true;
 
@@ -175,7 +173,12 @@ export class TransferStateComponent {
         );
       }, COPY_FEEDBACK_TIMEOUT);
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      const message = 'Failed to copy to clipboard';
+      const errorDetail =
+        err instanceof Error ? `${err.name}: ${err.message}` : JSON.stringify(err);
+
+      this.snackBar.open(message, 'Dismiss', {duration: 3000, horizontalPosition: 'left'});
+      this.messageBus.emit('log', [{level: 'error', message: `${message}: ${errorDetail}`}]);
     }
   }
 }

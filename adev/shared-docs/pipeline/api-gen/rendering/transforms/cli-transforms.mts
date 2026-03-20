@@ -14,16 +14,20 @@ import {
   CliCommandRenderable,
   CliOptionRenderable,
 } from '../entities/renderables.mjs';
+import {parseMarkdown} from '../../../shared/marked/parse.mjs';
+import {getHighlighterInstance} from '../shiki/shiki.mjs';
 
 /** Given an unprocessed CLI entry, get the fully renderable CLI entry. */
 export function getCliRenderable(command: CliCommand): CliCommandRenderable {
   return {
     ...command,
     subcommands: command.subcommands?.map((sub) => getCliRenderable(sub)),
-    htmlDescription: marked.parse(command.longDescription ?? command.shortDescription) as string,
+    htmlDescription: parseMarkdown(command.longDescription ?? command.shortDescription, {
+      highlighter: getHighlighterInstance(),
+    }),
     cards: getCliCardsRenderable(command),
     argumentsLabel: getArgumentsLabel(command),
-    hasOptions: getOptions(command).length > 0,
+    optionsLabel: getOptionsLabel(command),
   };
 }
 
@@ -62,7 +66,12 @@ function getArgumentsLabel(command: CliCommand): string {
   if (args.length === 0) {
     return '';
   }
-  return command.command.replace(`${command.name} `, '');
+  const label = command.command.replace(/^ng\s+/, '').replace(`${command.name} `, '');
+  return ` ${label}`;
+}
+
+function getOptionsLabel(command: CliCommand): string {
+  return getOptions(command).length > 0 ? ' [options]' : '';
 }
 
 function getArgs(command: CliCommand): CliOption[] {

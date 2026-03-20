@@ -17,10 +17,10 @@ import {
   Properties,
 } from '../../../../../../protocol';
 
-import {FlatNode, Property} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';
 import {PropertyDataSource} from './property-data-source';
 import {getExpandedDirectiveProperties} from './property-expanded-directive-properties';
+import {FlatNode, Property} from '../../../shared/object-tree-explorer/object-tree-types';
 
 export interface DirectiveTreeData {
   dataSource: PropertyDataSource;
@@ -127,6 +127,12 @@ export class DirectivePropertyResolver {
     const keyPath = constructPathOfKeysToPropertyValue(node.prop);
     this._messageBus.emit('updateState', [{directiveId, keyPath, newValue}]);
     node.prop.descriptor.value = newValue;
+  }
+
+  logValue(node?: FlatNode): void {
+    const directiveId = this._directivePosition;
+    const keyPath = node ? constructPathOfKeysToPropertyValue(node.prop) : null;
+    this._messageBus.emit('logValue', [{directiveId, keyPath}]);
   }
 
   private _createDataSourceFromProps(props: {[name: string]: Descriptor}): PropertyDataSource {

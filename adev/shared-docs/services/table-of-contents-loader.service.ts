@@ -44,7 +44,10 @@ export class TableOfContentsLoader {
 
   private getHeadingTitle(heading: HTMLHeadingElement): string {
     const div: HTMLDivElement = this.document.createElement('div');
+
     div.innerHTML = heading.innerHTML;
+    // Remove any existing copy link buttons to avoid including their text in the title
+    div.querySelectorAll('docs-copy-link-button').forEach((el) => el.remove());
 
     return (div.textContent || '').trim();
   }

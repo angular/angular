@@ -6,7 +6,31 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {makeGenericsText} from '../../transforms/code-transforms.mjs';
+import {formatExtendsClause, makeGenericsText} from '../../transforms/code-transforms.mjs';
+
+describe('formatExtendsClause', () => {
+  it('should return an empty string when extendsValue is undefined', () => {
+    expect(formatExtendsClause(undefined)).toBe('');
+  });
+
+  it('should return an empty string when extendsValue is an empty array', () => {
+    expect(formatExtendsClause([])).toBe('');
+  });
+
+  it('should format a single string extends value', () => {
+    expect(formatExtendsClause('BaseClass')).toBe(' extends BaseClass');
+  });
+
+  it('should format a single item array', () => {
+    expect(formatExtendsClause(['BaseInterface'])).toBe(' extends BaseInterface');
+  });
+
+  it('should format multiple items in an array', () => {
+    expect(formatExtendsClause(['IAwesome1', 'IAwesome2', 'IAwesome3'])).toBe(
+      ' extends IAwesome1, IAwesome2, IAwesome3',
+    );
+  });
+});
 
 describe('makeGenericsText', () => {
   it('should return an empty string if no generics are provided', () => {

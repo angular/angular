@@ -247,6 +247,30 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('infers generic pipe return types correctly and avoids expanding to strict undefined errors', () => {
+      const messages = diagnose(
+        `<div>{{ person?.name | pipe:person?.age }}</div>`,
+        `
+        class Pipe<T> {
+          transform(value: T, a: number | undefined): T { return value; }
+        }
+        class TestComponent {
+          person?: {
+            name: string;
+            age: number;
+          };
+        }`,
+        [{type: 'pipe', name: 'Pipe', pipeName: 'pipe', isGeneric: true}],
+      );
+
+      // If the pipe was instantiated with explicit \`any\` generic bounds (e.g. \`var _pipe1 = null! as i0.Pipe<any>\`),
+      // the \`transform\` method evaluates the \`value: T\` parameter as \`value: any\`. This would break strict null
+      // checking against the optional chaining \`person?.name\` -> \`string | undefined\`.
+      // Instead, by dropping the generic arguments, TS evaluates the \`transform\` bound lazily, allowing the pipe to
+      // successfully extract \`string | undefined\` out of the first argument without union conflicts.
+      expect(messages).toEqual([]);
+    });
+
     it('does not repeat diagnostics for missing pipes in directive inputs', () => {
       // The directive here is structured so that a type constructor is used, which results in each
       // input binding being processed twice. This results in the 'uppercase' pipe being resolved
@@ -1046,7 +1070,7 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required input 'input' from directive Dir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'input' from directive Dir must be specified.`,
       ]);
     });
 
@@ -1103,8 +1127,8 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required inputs 'input', 'otherInput' from directive Dir must be specified.`,
-        `TestComponent.html(1, 1): Required input 'otherDirInput' from directive OtherDir must be specified.`,
+        `TestComponent.html(1, 2): Required inputs 'input', 'otherInput' from directive Dir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'otherDirInput' from directive OtherDir must be specified.`,
       ]);
     });
 
@@ -1136,7 +1160,7 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required input 'inputAlias' from directive Dir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'inputAlias' from directive Dir must be specified.`,
       ]);
     });
 
@@ -1337,7 +1361,7 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required input 'customAlias' from directive HostDir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'customAlias' from directive HostDir must be specified.`,
       ]);
     });
 
@@ -1366,6 +1390,65 @@ class TestComponent {
             },
           },
         ],
+      );
+
+      expect(messages).toEqual([]);
+    });
+  });
+
+  describe('switch exhaustiveness', () => {
+    it('should report an error when a case is missing in a switch block', () => {
+      const messages = diagnose(
+        `
+          @switch (value) {
+            @case ('a') {}
+            @default never;
+          }
+        `,
+        `
+          export class TestComponent {
+            value: 'a' | 'b';
+          }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(2, 20): Type '"b"' is not assignable to type 'never'.`,
+      ]);
+    });
+
+    it('should not report an error when all cases are handled', () => {
+      const messages = diagnose(
+        `
+          @switch (value) {
+            @case ('a') {}
+            @case ('b') {}
+            @default never;
+          }
+        `,
+        `
+          export class TestComponent {
+            value: 'a' | 'b';
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should not report an error when a default case is provided', () => {
+      const messages = diagnose(
+        `
+          @switch (value) {
+            @case ('a') {}
+            @default {}
+          }
+        `,
+        `
+          export class TestComponent {
+            value: 'a' | 'b';
+          }
+        `,
       );
 
       expect(messages).toEqual([]);

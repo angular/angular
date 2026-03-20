@@ -4,7 +4,7 @@ Forms are a big part of many apps because they enable your app to accept user in
 
 In Angular, there are two types of forms: template-driven and reactive. You'll learn about both over the next few activities.
 
-Note: Learn more about [forms in Angular in the in-depth guide](/guide/forms).
+NOTE: Learn more about [forms in Angular in the in-depth guide](/guide/forms).
 
 In this activity, you'll learn how to set up a form using a template-driven approach.
 
@@ -31,16 +31,16 @@ For this form to use Angular features that enable data binding to forms, you'll 
 
 Import the `FormsModule` from `@angular/forms` and add it to the `imports` array of the `User`.
 
-<docs-code language="ts" highlight="[2, 7]">
+```ts {highlight:[2,6]}
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
 @Component({
-  ...
-  imports: [FormsModule],
+...
+imports: [FormsModule],
 })
 export class User {}
-</docs-code>
+```
 
 </docs-step>
 
@@ -50,12 +50,12 @@ The `FormsModule` has a directive called `ngModel` that binds the value of the i
 
 Update the input to use the `ngModel` directive, specifically with the following syntax `[(ngModel)]="favoriteFramework"` to bind to the `favoriteFramework` property.
 
-<docs-code language="html" highlight="[3]">
+```html {highlight:[3]}
 <label for="framework">
   Favorite Framework:
   <input id="framework" type="text" [(ngModel)]="favoriteFramework" />
 </label>
-</docs-code>
+```
 
 After you've made changes, try entering a value in the input field. Notice how it updates on the screen (yes, very cool).
 

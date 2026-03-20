@@ -6,24 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationConfig, provideZonelessChangeDetection} from '@angular/core';
+import {ApplicationConfig} from '@angular/core';
 import {ApplicationEnvironment, ApplicationOperations, provideSettings} from '../../../ng-devtools';
 
 import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
 import {Events, MessageBus, PriorityAwareMessageBus} from '../../../protocol';
 import {FrameManager} from '../../../ng-devtools/src/lib/application-services/frame_manager';
-import {Platform} from '@angular/cdk/platform';
 import {ChromeMessageBus} from './chrome-message-bus';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZonelessChangeDetection(),
     {provide: FrameManager, useFactory: () => FrameManager.initialize()},
     {
       provide: ApplicationOperations,
       useClass: ChromeApplicationOperations,
-      deps: [Platform],
     },
     {
       provide: ApplicationEnvironment,

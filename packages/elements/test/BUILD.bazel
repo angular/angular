@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "ng_web_test_suite", "ts_project")
 
 ts_project(
     name = "test_lib",

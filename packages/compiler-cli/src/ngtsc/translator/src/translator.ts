@@ -10,7 +10,11 @@ import * as o from '@angular/compiler';
 import {
   AstFactory,
   BinaryOperator,
+  BuiltInType,
+  ObjectLiteralAssignment,
   ObjectLiteralProperty,
+  ObjectLiteralSpread,
+  Parameter,
   SourceMapRange,
   TemplateElement,
   TemplateLiteral,
@@ -45,6 +49,7 @@ const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperato
   [o.BinaryOperator.NullishCoalesce, '??'],
   [o.BinaryOperator.Exponentiation, '**'],
   [o.BinaryOperator.In, 'in'],
+  [o.BinaryOperator.InstanceOf, 'instanceof'],
   [o.BinaryOperator.Assign, '='],
   [o.BinaryOperator.AdditionAssignment, '+='],
   [o.BinaryOperator.SubtractionAssignment, '-='],
@@ -66,15 +71,15 @@ export interface TranslatorOptions<TExpression> {
   annotateForClosureCompiler?: boolean;
 }
 
-export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
-  implements o.ExpressionVisitor, o.StatementVisitor
+export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
+  implements o.ExpressionVisitor, o.StatementVisitor, o.TypeVisitor
 {
   private downlevelTaggedTemplates: boolean;
   private downlevelVariableDeclarations: boolean;
   private recordWrappedNode: RecordWrappedNodeFn<TExpression>;
 
   constructor(
-    private factory: AstFactory<TStatement, TExpression>,
+    private factory: AstFactory<TStatement, TExpression, TType>,
     private imports: ImportGenerator<TFile, TExpression>,
     private contextFile: TFile,
     options: TranslatorOptions<TExpression>,
@@ -95,6 +100,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
         stmt.name,
         stmt.value?.visitExpression(this, context.withExpressionMode),
         varType,
+        stmt.type?.visitType(this, context),
       ),
       stmt.leadingComments,
     );
@@ -104,7 +110,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     return this.attachComments(
       this.factory.createFunctionDeclaration(
         stmt.name,
-        stmt.params.map((param) => param.name),
+        this.translateParams(stmt.params, context),
         this.factory.createBlock(this.visitStatements(stmt.statements, context.withStatementMode)),
       ),
       stmt.leadingComments,
@@ -147,46 +153,71 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   visitReadVarExpr(ast: o.ReadVarExpr, _context: Context): TExpression {
     const identifier = this.factory.createIdentifier(ast.name!);
     this.setSourceMapRange(identifier, ast.sourceSpan);
-    return identifier;
+    return this.attachComments(identifier, ast.leadingComments);
   }
 
   visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): TExpression {
-    return this.setSourceMapRange(
-      this.factory.createCallExpression(
-        ast.fn.visitExpression(this, context),
-        ast.args.map((arg) => arg.visitExpression(this, context)),
-        ast.pure,
+    return this.attachComments(
+      this.setSourceMapRange(
+        this.factory.createCallExpression(
+          ast.fn.visitExpression(this, context),
+          ast.args.map((arg) => arg.visitExpression(this, context)),
+          ast.pure,
+        ),
+        ast.sourceSpan,
       ),
-      ast.sourceSpan,
+      ast.leadingComments,
     );
   }
 
   visitTaggedTemplateLiteralExpr(ast: o.TaggedTemplateLiteralExpr, context: Context): TExpression {
-    return this.setSourceMapRange(
-      this.createTaggedTemplateExpression(
-        ast.tag.visitExpression(this, context),
-        this.getTemplateLiteralFromAst(ast.template, context),
+    return this.attachComments(
+      this.setSourceMapRange(
+        this.createTaggedTemplateExpression(
+          ast.tag.visitExpression(this, context),
+          this.getTemplateLiteralFromAst(ast.template, context),
+        ),
+        ast.sourceSpan,
       ),
-      ast.sourceSpan,
+      ast.leadingComments,
     );
   }
 
   visitTemplateLiteralExpr(ast: o.TemplateLiteralExpr, context: Context): TExpression {
-    return this.setSourceMapRange(
-      this.factory.createTemplateLiteral(this.getTemplateLiteralFromAst(ast, context)),
-      ast.sourceSpan,
+    return this.attachComments(
+      this.setSourceMapRange(
+        this.factory.createTemplateLiteral(this.getTemplateLiteralFromAst(ast, context)),
+        ast.sourceSpan,
+      ),
+      ast.leadingComments,
     );
   }
 
   visitInstantiateExpr(ast: o.InstantiateExpr, context: Context): TExpression {
-    return this.factory.createNewExpression(
-      ast.classExpr.visitExpression(this, context),
-      ast.args.map((arg) => arg.visitExpression(this, context)),
+    return this.attachComments(
+      this.factory.createNewExpression(
+        ast.classExpr.visitExpression(this, context),
+        ast.args.map((arg) => arg.visitExpression(this, context)),
+      ),
+      ast.leadingComments,
     );
   }
 
   visitLiteralExpr(ast: o.LiteralExpr, _context: Context): TExpression {
-    return this.setSourceMapRange(this.factory.createLiteral(ast.value), ast.sourceSpan);
+    return this.attachComments(
+      this.setSourceMapRange(this.factory.createLiteral(ast.value), ast.sourceSpan),
+      ast.leadingComments,
+    );
+  }
+
+  visitRegularExpressionLiteral(ast: o.RegularExpressionLiteralExpr, context: any) {
+    return this.attachComments(
+      this.setSourceMapRange(
+        this.factory.createRegularExpressionLiteral(ast.body, ast.flags),
+        ast.sourceSpan,
+      ),
+      ast.leadingComments,
+    );
   }
 
   visitLocalizedString(ast: o.LocalizedString, context: Context): TExpression {
@@ -215,10 +246,68 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     }
 
     const localizeTag = this.factory.createIdentifier('$localize');
-    return this.setSourceMapRange(
-      this.createTaggedTemplateExpression(localizeTag, {elements, expressions}),
-      ast.sourceSpan,
+    return this.attachComments(
+      this.setSourceMapRange(
+        this.createTaggedTemplateExpression(localizeTag, {elements, expressions}),
+        ast.sourceSpan,
+      ),
+      ast.leadingComments,
     );
+  }
+
+  visitBuiltinType(ast: o.BuiltinType): TType | null {
+    let builtInType: BuiltInType;
+
+    switch (ast.name) {
+      case o.BuiltinTypeName.Bool:
+        builtInType = 'boolean';
+        break;
+      case o.BuiltinTypeName.String:
+        builtInType = 'string';
+        break;
+      case o.BuiltinTypeName.Dynamic:
+        builtInType = 'any';
+        break;
+      case o.BuiltinTypeName.Number:
+      case o.BuiltinTypeName.Int:
+        builtInType = 'number';
+        break;
+      case o.BuiltinTypeName.Function:
+        builtInType = 'function';
+        break;
+      case o.BuiltinTypeName.None:
+        builtInType = 'never';
+        break;
+      case o.BuiltinTypeName.Inferred:
+        return null;
+    }
+
+    return this.factory.createBuiltInType(builtInType);
+  }
+
+  visitExpressionType(ast: o.ExpressionType, context: Context): TType {
+    return this.factory.createExpressionType(
+      ast.value.visitExpression(this, context),
+      ast.typeParams === null || ast.typeParams.length === 0
+        ? null
+        : ast.typeParams.map((param) => param.visitType(this, context)),
+    );
+  }
+
+  visitArrayType(ast: o.ArrayType, context: Context): TType {
+    return this.factory.createArrayType(ast.of.visitType(this, context));
+  }
+
+  visitMapType(ast: o.MapType, context: Context): TType {
+    const valueType =
+      ast.valueType === null
+        ? this.factory.createBuiltInType('unknown')
+        : ast.valueType.visitType(this, context);
+    return this.factory.createMapType(valueType);
+  }
+
+  visitTransplantedType(type: o.TransplantedType<TType>): TType {
+    return this.factory.transplantType(type.type);
   }
 
   private createTaggedTemplateExpression(
@@ -274,36 +363,40 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   }
 
   visitExternalExpr(ast: o.ExternalExpr, _context: Context): TExpression {
+    let result: TExpression;
     if (ast.value.name === null) {
       if (ast.value.moduleName === null) {
         throw new Error('Invalid import without name nor moduleName');
       }
-      return this.imports.addImport({
+      result = this.imports.addImport({
         exportModuleSpecifier: ast.value.moduleName,
         exportSymbolName: null,
         requestedFile: this.contextFile,
       });
-    }
-    // If a moduleName is specified, this is a normal import. If there's no module name, it's a
-    // reference to a global/ambient symbol.
-    if (ast.value.moduleName !== null) {
+    } else if (ast.value.moduleName !== null) {
+      // If a moduleName is specified, this is a normal import. If there's no module name, it's a
+      // reference to a global/ambient symbol.
       // This is a normal import. Find the imported module.
-      return this.imports.addImport({
+      result = this.imports.addImport({
         exportModuleSpecifier: ast.value.moduleName,
         exportSymbolName: ast.value.name,
         requestedFile: this.contextFile,
       });
     } else {
       // The symbol is ambient, so just reference it.
-      return this.factory.createIdentifier(ast.value.name);
+      result = this.factory.createIdentifier(ast.value.name);
     }
+    return this.attachComments(result, ast.leadingComments);
   }
 
   visitConditionalExpr(ast: o.ConditionalExpr, context: Context): TExpression {
-    return this.factory.createConditional(
-      ast.condition.visitExpression(this, context),
-      ast.trueCase.visitExpression(this, context),
-      ast.falseCase!.visitExpression(this, context),
+    return this.attachComments(
+      this.factory.createConditional(
+        ast.condition.visitExpression(this, context),
+        ast.trueCase.visitExpression(this, context),
+        ast.falseCase!.visitExpression(this, context),
+      ),
+      ast.leadingComments,
     );
   }
 
@@ -316,27 +409,39 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       this.factory.attachComments(urlExpression, [o.leadingComment(ast.urlComment, true)]);
     }
 
-    return this.factory.createDynamicImport(urlExpression);
+    return this.attachComments(
+      this.factory.createDynamicImport(urlExpression),
+      ast.leadingComments,
+    );
   }
 
   visitNotExpr(ast: o.NotExpr, context: Context): TExpression {
-    return this.factory.createUnaryExpression('!', ast.condition.visitExpression(this, context));
+    return this.attachComments(
+      this.factory.createUnaryExpression('!', ast.condition.visitExpression(this, context)),
+      ast.leadingComments,
+    );
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, context: Context): TExpression {
-    return this.factory.createFunctionExpression(
-      ast.name ?? null,
-      ast.params.map((param) => param.name),
-      this.factory.createBlock(this.visitStatements(ast.statements, context)),
+    return this.attachComments(
+      this.factory.createFunctionExpression(
+        ast.name ?? null,
+        this.translateParams(ast.params, context),
+        this.factory.createBlock(this.visitStatements(ast.statements, context)),
+      ),
+      ast.leadingComments,
     );
   }
 
   visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any) {
-    return this.factory.createArrowFunctionExpression(
-      ast.params.map((param) => param.name),
-      Array.isArray(ast.body)
-        ? this.factory.createBlock(this.visitStatements(ast.body, context))
-        : ast.body.visitExpression(this, context),
+    return this.attachComments(
+      this.factory.createArrowFunctionExpression(
+        this.translateParams(ast.params, context),
+        Array.isArray(ast.body)
+          ? this.factory.createBlock(this.visitStatements(ast.body, context))
+          : ast.body.visitExpression(this, context),
+      ),
+      ast.leadingComments,
     );
   }
 
@@ -348,48 +453,72 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     const operator = BINARY_OPERATORS.get(ast.operator)!;
 
     if (ast.isAssignment()) {
-      return this.factory.createAssignment(
-        ast.lhs.visitExpression(this, context),
-        operator,
-        ast.rhs.visitExpression(this, context),
+      return this.attachComments(
+        this.factory.createAssignment(
+          ast.lhs.visitExpression(this, context),
+          operator,
+          ast.rhs.visitExpression(this, context),
+        ),
+        ast.leadingComments,
       );
     }
 
-    return this.factory.createBinaryExpression(
-      ast.lhs.visitExpression(this, context),
-      operator,
-      ast.rhs.visitExpression(this, context),
+    return this.attachComments(
+      this.factory.createBinaryExpression(
+        ast.lhs.visitExpression(this, context),
+        operator,
+        ast.rhs.visitExpression(this, context),
+      ),
+      ast.leadingComments,
     );
   }
 
   visitReadPropExpr(ast: o.ReadPropExpr, context: Context): TExpression {
-    return this.factory.createPropertyAccess(ast.receiver.visitExpression(this, context), ast.name);
+    return this.attachComments(
+      this.factory.createPropertyAccess(ast.receiver.visitExpression(this, context), ast.name),
+      ast.leadingComments,
+    );
   }
 
   visitReadKeyExpr(ast: o.ReadKeyExpr, context: Context): TExpression {
-    return this.factory.createElementAccess(
-      ast.receiver.visitExpression(this, context),
-      ast.index.visitExpression(this, context),
+    return this.attachComments(
+      this.factory.createElementAccess(
+        ast.receiver.visitExpression(this, context),
+        ast.index.visitExpression(this, context),
+      ),
+      ast.leadingComments,
     );
   }
 
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: Context): TExpression {
-    return this.factory.createArrayLiteral(
-      ast.entries.map((expr) =>
-        this.setSourceMapRange(expr.visitExpression(this, context), ast.sourceSpan),
+    return this.attachComments(
+      this.factory.createArrayLiteral(
+        ast.entries.map((expr) =>
+          this.setSourceMapRange(expr.visitExpression(this, context), ast.sourceSpan),
+        ),
       ),
+      ast.leadingComments,
     );
   }
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: Context): TExpression {
     const properties: ObjectLiteralProperty<TExpression>[] = ast.entries.map((entry) => {
-      return {
-        propertyName: entry.key,
-        quoted: entry.quoted,
-        value: entry.value.visitExpression(this, context),
-      };
+      return entry instanceof o.LiteralMapPropertyAssignment
+        ? ({
+            kind: 'property',
+            propertyName: entry.key,
+            quoted: entry.quoted,
+            value: entry.value.visitExpression(this, context),
+          } satisfies ObjectLiteralAssignment<TExpression>)
+        : ({
+            kind: 'spread',
+            expression: entry.expression.visitExpression(this, context),
+          } satisfies ObjectLiteralSpread<TExpression>);
     });
-    return this.setSourceMapRange(this.factory.createObjectLiteral(properties), ast.sourceSpan);
+    return this.attachComments(
+      this.setSourceMapRange(this.factory.createObjectLiteral(properties), ast.sourceSpan),
+      ast.leadingComments,
+    );
   }
 
   visitCommaExpr(ast: o.CommaExpr, context: Context): never {
@@ -400,32 +529,52 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     throw new Error('Method not implemented');
   }
 
+  visitSpreadElementExpr(ast: o.outputAst.SpreadElementExpr, context: any): TExpression {
+    const expression = ast.expression.visitExpression(this, context);
+    return this.attachComments(
+      this.setSourceMapRange(this.factory.createSpreadElement(expression), ast.sourceSpan),
+      ast.leadingComments,
+    );
+  }
+
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {
     this.recordWrappedNode(ast);
-    return ast.node;
+    return this.attachComments(ast.node, ast.leadingComments);
   }
 
   visitTypeofExpr(ast: o.TypeofExpr, context: Context): TExpression {
-    return this.factory.createTypeOfExpression(ast.expr.visitExpression(this, context));
+    return this.attachComments(
+      this.factory.createTypeOfExpression(ast.expr.visitExpression(this, context)),
+      ast.leadingComments,
+    );
   }
 
   visitVoidExpr(ast: o.VoidExpr, context: Context): TExpression {
-    return this.factory.createVoidExpression(ast.expr.visitExpression(this, context));
+    return this.attachComments(
+      this.factory.createVoidExpression(ast.expr.visitExpression(this, context)),
+      ast.leadingComments,
+    );
   }
 
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, context: Context): TExpression {
     if (!UNARY_OPERATORS.has(ast.operator)) {
       throw new Error(`Unknown unary operator: ${o.UnaryOperator[ast.operator]}`);
     }
-    return this.factory.createUnaryExpression(
-      UNARY_OPERATORS.get(ast.operator)!,
-      ast.expr.visitExpression(this, context),
+    return this.attachComments(
+      this.factory.createUnaryExpression(
+        UNARY_OPERATORS.get(ast.operator)!,
+        ast.expr.visitExpression(this, context),
+      ),
+      ast.leadingComments,
     );
   }
 
   visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
     const result = ast.expr.visitExpression(this, context);
-    return this.factory.createParenthesizedExpression(result);
+    return this.attachComments(
+      this.factory.createParenthesizedExpression(result),
+      ast.leadingComments,
+    );
   }
 
   private visitStatements(statements: o.Statement[], context: Context): TStatement[] {
@@ -441,14 +590,14 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     return this.factory.setSourceMapRange(ast, createRange(span));
   }
 
-  private attachComments(
-    statement: TStatement,
+  private attachComments<T extends TStatement | TExpression>(
+    node: T,
     leadingComments: o.LeadingComment[] | undefined,
-  ): TStatement {
-    if (leadingComments !== undefined) {
-      this.factory.attachComments(statement, leadingComments);
+  ): T {
+    if (leadingComments !== undefined && leadingComments.length > 0) {
+      this.factory.attachComments(node, leadingComments);
     }
-    return statement;
+    return node;
   }
 
   private getTemplateLiteralFromAst(
@@ -465,6 +614,13 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       ),
       expressions: ast.expressions.map((e) => e.visitExpression(this, context)),
     };
+  }
+
+  private translateParams(params: o.outputAst.FnParam[], context: Context): Parameter<TType>[] {
+    return params.map((param) => ({
+      name: param.name,
+      type: param.type?.visitType(this, context),
+    }));
   }
 }
 

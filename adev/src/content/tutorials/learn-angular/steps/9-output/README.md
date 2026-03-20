@@ -1,27 +1,27 @@
-# Component output properties 
+# Component output properties
 
 When working with components it may be required to notify other components that something has happened. Perhaps a button has been clicked, an item has been added/removed from a list or some other important update has occurred. In this scenario components need to communicate with parent components.
 
 Angular uses the `output()` function to enable this type of behavior.
 
-Note: Learn more about [custom events in the outputs guide](/guide/components/outputs).
+NOTE: Learn more about [custom events in the outputs guide](/guide/components/outputs).
 
 In this activity, you'll learn how to use the `output()` function to communicate with components.
 
 <hr />
 
-To create the communication path from child to parent components, use the `output` function to initiaize a class property.
+To create the communication path from child to parent components, use the `output` function to initialize a class property.
 
-<docs-code header="child.ts" language="ts">
+```ts {header:"child.ts"}
 @Component({...})
 class Child {
   incrementCountEvent = output<number>();
 }
-</docs-code>
+```
 
 Now the component can generate events that can be listened to by the parent component. Trigger events by calling the `emit` method:
 
-<docs-code header="child.ts" language="ts">
+```ts {header:"child.ts"}
 class Child {
   ...
 
@@ -30,7 +30,7 @@ class Child {
     this.incrementCountEvent.emit(this.count);
   }
 }
-</docs-code>
+```
 
 The emit function will generate an event with the same type as defined by the `output`.
 
@@ -45,11 +45,11 @@ Update `child.ts` by adding an output property called `addItemEvent`, be sure to
 <docs-step title="Complete `addItem` method">
 In `child.ts` update the `addItem` method; use the following code as the logic:
 
-<docs-code header="child.ts" highlight="[2]" language="ts">
+```ts {header:"child.ts", highlight:[2]}
 addItem() {
   this.addItemEvent.emit('🐢');
 }
-</docs-code>
+```
 
 </docs-step>
 

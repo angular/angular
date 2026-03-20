@@ -7,12 +7,7 @@
  */
 
 import {DocEntry} from '../../../src/ngtsc/docs';
-import {
-  ClassEntry,
-  FunctionEntry,
-  FunctionSignatureMetadata,
-  MethodEntry,
-} from '../../../src/ngtsc/docs/src/entities';
+import {ClassEntry, FunctionEntry, MethodEntry} from '../../../src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../../src/ngtsc/testing';
 
@@ -349,6 +344,91 @@ runInEachFileSystem(() => {
       expect(entry.description).toBe('Save some data.\n@Component decorators are cool.');
       expect(entry.jsdocTags.length).toBe(1);
       expect(entry.jsdocTags[0].name).toBe('deprecated');
+    });
+
+    it('should escape Angular control flow syntax', () => {
+      env.write(
+        'index.ts',
+        `
+        /**
+         * Renders a list using Angular control flow.
+         *
+         * \`\`\`html
+         * @for (item of items; track item) {
+         *   @if (item.visible) {
+         *     <div>{{item.label}}</div>
+         *   } @else {
+         *     <span>Hidden</span>
+         *   }
+         *   @empty {
+         *     <div>No items</div>
+         *   }
+         * }
+         * \`\`\`
+         *
+         * @deprecated Use something else.
+         */
+        export class Example {}
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0] as ClassEntry;
+      expect(entry.description).toContain('@for (item of items; track item)');
+      expect(entry.description).toContain('@if (item.visible)');
+      expect(entry.description).toContain('@empty {');
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0]).toEqual({
+        name: 'deprecated',
+        comment: 'Use something else.',
+      });
+    });
+
+    it('should handle a jsdoc with a url', () => {
+      env.write(
+        'index.ts',
+        `
+        /** 
+         * 
+         * @see https://www.youtube.com/watch?v=dQw4w9WgXcQ
+         */
+        export class Foo  {};
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0] as ClassEntry;
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0]).toEqual({
+        name: 'see',
+        comment: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      });
+    });
+
+    it('should handle a jsdoc with a trailing ()', () => {
+      env.write(
+        'index.ts',
+        `
+        /** 
+         * 
+         * @see {@link entry()}
+         */
+        export class Foo  {};
+      `,
+      );
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0] as ClassEntry;
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0]).toEqual({
+        name: 'see',
+        comment: '{@link entry()}',
+      });
     });
   });
 });

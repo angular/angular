@@ -13,7 +13,7 @@ Interact with your application to trigger change detection and generate data Ang
 To finish recording, click the circle again to **Stop recording**.
 
 You can also import an existing recording.
-Read more about this feature in the [Import recording](tools/devtools#import-and-export-recordings) section.
+Read more about this feature in the [Import recording](tools/devtools/profiler#import-and-export-recordings) section.
 
 ## Understand your application's execution
 
@@ -27,8 +27,7 @@ When you select a bar, DevTools displays useful information about it including:
 
 - A bar chart with all the components and directives that it captured during this cycle
 - How much time Angular spent running change detection in this cycle.
-- An estimated frame rate as experienced by the user.
-- The source which triggered change detection.
+- An estimated frame rate as experienced by the user (if below 60fps)
 
 <img src="assets/images/guide/devtools/profiler-selected-bar.png" alt="A screenshot of the 'Profiler' tab. A single bar has been selected by the user and a nearby dropdown menu displays 'Bar chart`, showing a second bar chart underneath it. The new chart has two bars which take up the majority of the space, one labeled `TodosComponent` and the other labeled `NgForOf`. The other bars are small enough to be negligible in comparison.">
 

@@ -13,8 +13,8 @@ import {HousingLocationInfo} from '../housinglocation';
       </form>
     </section>
     <section class="results">
-      @for(housingLocation of housingLocationList; track $index) {
-        <app-housing-location [housingLocation]="housingLocation"></app-housing-location>
+      @for (housingLocation of housingLocationList; track $index) {
+        <app-housing-location [housingLocation]="housingLocation" />
       }
     </section>
   `,

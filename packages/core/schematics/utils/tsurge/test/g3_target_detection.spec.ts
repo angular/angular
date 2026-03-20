@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  initMockFileSystem,
-  MockFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {initMockFileSystem, MockFileSystem} from '@angular/compiler-cli/private/testing';
+import {absoluteFrom} from '@angular/compiler-cli';
 import {OutputMigration} from './output_migration';
 
 describe('google3 target detection', () => {

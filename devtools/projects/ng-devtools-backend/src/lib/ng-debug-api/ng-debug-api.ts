@@ -70,16 +70,10 @@ export function ngDebugProfilerApiIsSupported(): boolean {
 /** Checks whether Router API is supported within window.ng */
 export function ngDebugRoutesApiIsSupported(): boolean {
   const ng = ngDebugClient();
-
-  // Temporary solution. Convert to `ɵgetLoadedRoutes` when available.
-  // If there is a Wiz application, make Routes API unavailable.
-  const roots = getAppRoots();
   return (
-    !!roots.length &&
-    !roots.some((el) => {
-      const comp = ng.getComponent!(el)!;
-      return ng.getDirectiveMetadata?.(comp)?.framework === Framework.Wiz;
-    })
+    ngDebugApiIsSupported(ng, 'ɵgetLoadedRoutes') &&
+    ngDebugApiIsSupported(ng, 'ɵgetRouterInstance') &&
+    ngDebugApiIsSupported(ng, 'ɵnavigateByUrl')
   );
 }
 

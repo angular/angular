@@ -12,10 +12,12 @@ import {
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
   Directive,
+  effect,
   ElementRef,
   inject,
   input,
   output,
+  resource,
   signal,
   TemplateRef,
   viewChild,
@@ -26,7 +28,7 @@ import {
 import {ZippyComponent} from './zippy.component';
 import {HeavyComponent} from './heavy.component';
 import {SamplePropertiesComponent} from './sample-properties.component';
-import {RouterOutlet} from '@angular/router';
+import {RouterOutlet, RouterModule} from '@angular/router';
 import {CookieRecipe} from './cookies.component';
 
 // structual directive example
@@ -57,6 +59,7 @@ export class StructuralDirective {
     HeavyComponent,
     SamplePropertiesComponent,
     RouterOutlet,
+    RouterModule,
     CookieRecipe,
   ],
 })
@@ -78,6 +81,11 @@ export class DemoAppComponent {
     return {...original, age: original.age + 1};
   });
 
+  demoRsrc = resource({
+    defaultValue: 'default_value',
+    loader: () => new Promise((res) => setTimeout(() => res('loaded_value'), 5000)),
+  });
+
   getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy() || !this.zippy()?.visible) {
       return '► Click to expand';
@@ -88,6 +96,10 @@ export class DemoAppComponent {
   constructor() {
     afterRenderEffect(() => {
       this.zippy();
+    });
+
+    effect(() => {
+      this.demoRsrc.isLoading();
     });
   }
 }

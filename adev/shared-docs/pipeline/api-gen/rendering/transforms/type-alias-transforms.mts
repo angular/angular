@@ -16,6 +16,7 @@ import {
   addHtmlUsageNotes,
   setEntryFlags,
 } from './jsdoc-transforms.mjs';
+import {addRenderableMembers} from './member-transforms.mjs';
 import {addModuleName} from './module-name.mjs';
 import {addRepo} from './repo.mjs';
 
@@ -30,7 +31,12 @@ export async function getTypeAliasRenderable(
       addHtmlAdditionalLinks(
         addHtmlUsageNotes(
           addHtmlJsDocTagComments(
-            addHtmlDescription(addRepo(addModuleName(typeAliasEntry, moduleName), repo)),
+            addHtmlDescription(
+              await addRenderableMembers(
+                addRepo(addModuleName(typeAliasEntry, moduleName), repo),
+                typeAliasEntry.name,
+              ),
+            ),
           ),
         ),
       ),

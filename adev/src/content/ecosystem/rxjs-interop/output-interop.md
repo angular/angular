@@ -8,18 +8,20 @@ The `@angular/rxjs-interop` package offers two APIs related to component and dir
 
 The `outputFromObservable` lets you create a component or directive output that emits based on an RxJS observable:
 
-<docs-code language="ts" highlight="[7]">
+```ts {highlight:[11]}
 import {Directive} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 
-@Directive({/*...*/})
+@Directive({
+  /*...*/
+})
 class Draggable {
   pointerMoves$: Observable<PointerMovements> = listenToPointerMoves();
-  
+
   // Whenever `pointerMoves$` emits, the `pointerMove` event fires.
   pointerMove = outputFromObservable(this.pointerMoves$);
 }
-</docs-code>
+```
 
 The `outputFromObservable` function has special meaning to the Angular compiler. **You may only call `outputFromObservable` in component and directive property initializers.**
 
@@ -31,20 +33,20 @@ HELPFUL: Consider using `output()` directly if you can emit values imperatively.
 
 The `outputToObservable` function lets you create an RxJS observable from a component output.
 
-<docs-code language="ts" highlight="[11]">
+```ts {highlight:[11]}
 import {outputToObservable} from '@angular/core/rxjs-interop';
 
 @Component(/*...*/)
-class CustomSlider {
-  valueChange = output<number>();
+    class CustomSlider {
+    valueChange = output<number>();
 }
 
 // Instance reference to `CustomSlider`.
 const slider: CustomSlider = createSlider();
 
 outputToObservable(slider.valueChange) // Observable<number>
-  .pipe(...)
-  .subscribe(...);
-</docs-code>
+    .pipe(...)
+    .subscribe(...);
+```
 
 HELPFUL: Consider using the `subscribe` method on `OutputRef` directly if it meets your needs.

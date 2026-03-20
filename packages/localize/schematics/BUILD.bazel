@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "copy_to_bin", "npm_package")
+load("//tools:defaults.bzl", "copy_to_bin", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 

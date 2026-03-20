@@ -10,7 +10,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 import {getPluralCategory, NgLocalization} from '../i18n/localization';
 
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './utils';
 
 const _INTERPOLATION_REGEXP: RegExp = /#/g;
 
@@ -25,6 +25,8 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  * ### Example
  *
  * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
+ *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
  *
  * @publicApi
  */

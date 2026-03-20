@@ -6,16 +6,16 @@ Component templates aren't just static HTML— they can use data from your compo
 
 ## Showing dynamic text
 
-In Angular, a *binding* creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
+In Angular, a _binding_ creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
 
 You can create a binding to show some dynamic text in a template by using double curly-braces:
 
 ```angular-ts
 @Component({
   selector: 'user-profile',
-  template: `<h1>Profile for {{userName()}}</h1>`,
+  template: `<h1>Profile for {{ userName() }}</h1>`,
 })
-export class TodoListItem {
+export class UserProfile {
   userName = signal('pro_programmer_123');
 }
 ```
@@ -47,7 +47,7 @@ Angular supports binding dynamic values into DOM properties with square brackets
 @Component({
   /*...*/
   // Set the `disabled` property of the button based on the value of `isValidUserId`.
-  template: `<button [disabled]="isValidUserId()">Save changes</button>`,
+  template: `<button [disabled]="!isValidUserId()">Save changes</button>`,
 })
 export class UserProfile {
   isValidUserId = signal(false);
@@ -58,10 +58,10 @@ You can also bind to HTML _attributes_ by prefixing the attribute name with `att
 
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to value of `listRole`. -->
-<ul [attr.role]="listRole()">
+<ul [attr.role]="listRole()"></ul>
 ```
 
-Angular automatically updates DOM properties and attribute when the bound value changes.
+Angular automatically updates DOM properties and attributes when the bound value changes.
 
 ## Handling user interaction
 
@@ -70,13 +70,15 @@ Angular lets you add event listeners to an element in your template with parenth
 ```angular-ts
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription()">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
-  cancelSubscription() { /* Your event handling code goes here. */  }
+
+  cancelSubscription() {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
@@ -85,13 +87,15 @@ If you need to pass the [event](https://developer.mozilla.org/docs/Web/API/Event
 ```angular-ts
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription($event)">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
-  cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
+
+  cancelSubscription(event: Event) {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
@@ -118,7 +122,7 @@ The `@if` block also supports an optional `@else` block:
   <!-- ... -->
 } @else {
   <h2>User settings</h2>
-  <!-- ... -->  
+  <!-- ... -->
 }
 ```
 
@@ -129,12 +133,12 @@ You can repeat part of a template multiple times with Angular's `@for` block:
 
 <ul class="user-badge-list">
   @for (badge of badges(); track badge.id) {
-    <li class="user-badge">{{badge.name}}</li>
+    <li class="user-badge">{{ badge.name }}</li>
   }
 </ul>
 ```
 
-Angular's uses the `track` keyword, shown in the example above, to associate data with the DOM elements created by `@for`. See [_Why is track in @for blocks important?_](guide/templates/control-flow#why-is-track-in-for-blocks-important) for more info.
+Angular uses the `track` keyword, shown in the example above, to associate data with the DOM elements created by `@for`. See [_Why is track in @for blocks important?_](guide/templates/control-flow#why-is-track-in-for-blocks-important) for more info.
 
 TIP: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
 

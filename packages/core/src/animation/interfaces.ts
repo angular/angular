@@ -13,7 +13,6 @@ import {InjectionToken} from '../di/injection_token';
 export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationsDisabled' : '',
   {
-    providedIn: 'root',
     factory: () => false,
   },
 );
@@ -22,9 +21,11 @@ export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
  * The event type for when `animate.enter` and `animate.leave` are used with function
  * callbacks.
  *
+ * @see [Animating your applications with animate.enter and animate.leave](guide/animations)
+ *
  * @publicApi 20.2
  */
-export type AnimationCallbackEvent = {target: Element; animationComplete: Function};
+export type AnimationCallbackEvent = {target: Element; animationComplete: VoidFunction};
 
 /**
  * A [DI token](api/core/InjectionToken) that configures the maximum animation timeout
@@ -34,11 +35,11 @@ export type AnimationCallbackEvent = {target: Element; animationComplete: Functi
  * for when stylesheets are pruned.
  *
  * @publicApi 20.2
+ * @see [Animating your applications with animate.enter and animate.leave](guide/animations)
  */
 export const MAX_ANIMATION_TIMEOUT = new InjectionToken<number>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'MaxAnimationTimeout' : '',
   {
-    providedIn: 'root',
     factory: () => MAX_ANIMATION_TIMEOUT_DEFAULT,
   },
 );
@@ -49,22 +50,48 @@ const MAX_ANIMATION_TIMEOUT_DEFAULT = 4000;
  * function callbacks.
  *
  * @publicApi 20.2
+ *
+ * @see [Animating your applications with animate.enter and animate.leave](guide/animations)
  */
 export type AnimationFunction = (event: AnimationCallbackEvent) => void;
 
-export type AnimationEventFunction = (
-  el: Element,
-  value: AnimationFunction,
-) => AnimationRemoveFunction;
-export type AnimationClassFunction = (
-  el: Element,
-  value: Set<string> | null,
-  resolvers: Function[] | undefined,
-) => AnimationRemoveFunction;
-export type AnimationRemoveFunction = (removeFn: VoidFunction) => void;
+export type RunEnterAnimationFn = VoidFunction;
+export type RunLeaveAnimationFn = () => {promise: Promise<void>; resolve: VoidFunction};
 
-export interface AnimationDetails {
-  classes: Set<string> | null;
-  classFns?: Function[];
-  animateFn: AnimationRemoveFunction;
+export interface LongestAnimation {
+  animationName: string | undefined;
+  propertyName: string | undefined;
+  duration: number;
 }
+
+export interface EnterNodeAnimations {
+  animateFns: RunEnterAnimationFn[];
+  resolvers?: VoidFunction[];
+}
+export interface LeaveNodeAnimations {
+  animateFns: RunLeaveAnimationFn[];
+  resolvers?: VoidFunction[];
+}
+
+export interface AnimationLViewData {
+  // Enter animations that apply to nodes in this view
+  enter?: Map<number, EnterNodeAnimations>;
+
+  // Leave animations that apply to nodes in this view
+  leave?: Map<number, LeaveNodeAnimations>;
+
+  // Leave animations that apply to nodes in this view
+  // We chose to use unknown instead of PromiseSettledResult<void> to avoid requiring the type
+  running?: Promise<unknown>;
+
+  // Animation functions that have been queued for this view when the view is detached.
+  // This is used to later remove them from the global animation queue if the view
+  // is attached before the animation queue runs. This is used in cases where views are
+  // moved or swapped during list reconciliation.
+  detachedLeaveAnimationFns?: VoidFunction[];
+}
+
+/**
+ * Function that returns the class or class list binded to the animate instruction
+ */
+export type AnimationClassBindingFn = () => string | string[];

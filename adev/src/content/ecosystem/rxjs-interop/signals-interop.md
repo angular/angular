@@ -1,16 +1,16 @@
 # RxJS interop with Angular signals
 
-The `@angular/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
+The `@angular/core/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
 ## Create a signal from an RxJs Observable with `toSignal`
 
 Use the `toSignal` function to create a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
-```ts
-import { Component } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { interval } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+```angular-ts
+import {Component} from '@angular/core';
+import {AsyncPipe} from '@angular/common';
+import {interval} from 'rxjs';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
   template: `{{ counter() }}`,
@@ -47,13 +47,38 @@ If you don't provide an `initialValue`, the resulting signal will return `undefi
 
 Some Observables are guaranteed to emit synchronously, such as `BehaviorSubject`. In those cases, you can specify the `requireSync: true` option.
 
-When `requiredSync` is `true`, `toSignal` enforces that the Observable emits synchronously on subscription. This guarantees that the signal always has a value, and no `undefined` type or initial value is required.
+When `requireSync` is `true`, `toSignal` enforces that the Observable emits synchronously on subscription. This guarantees that the signal always has a value, and no `undefined` type or initial value is required.
 
 ### `manualCleanup`
 
 By default, `toSignal` automatically unsubscribes from the Observable when the component or service that creates it is destroyed.
 
 To override this behavior, you can pass the `manualCleanup` option. You can use this setting for Observables that complete themselves naturally.
+
+#### Custom equality comparison
+
+Some observables may emit values that are **equals** even though they differ by reference or minor detail. The `equal` option lets you define a **custom equal function** to determine when two consecutive values should be considered the same.
+
+When two emitted values are considered equal, the resulting signal **does not update**. This prevents redundant computations, DOM updates, or effects from re-running unnecessarily.
+
+```ts
+import {Component} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {interval, map} from 'rxjs';
+
+@Component(/* ... */)
+export class EqualExample {
+  temperature$ = interval(1000).pipe(
+    map(() => ({temperature: Math.floor(Math.random() * 3) + 20})), // 20, 21, or 22 randomly
+  );
+
+  // Only update if the temperature changes
+  temperature = toSignal(this.temperature$, {
+    initialValue: {temperature: 20},
+    equal: (prev, curr) => prev.temperature === curr.temperature,
+  });
+}
+```
 
 ### Error and Completion
 
@@ -66,17 +91,15 @@ If an Observable used in `toSignal` completes, the signal continues to return th
 Use the `toObservable` utility to create an `Observable` which tracks the value of a signal. The signal's value is monitored with an `effect` which emits the value to the Observable when it changes.
 
 ```ts
-import { Component, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import {Component, signal} from '@angular/core';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component(/* ... */)
 export class SearchResults {
   query: Signal<string> = inject(QueryService).query;
   query$ = toObservable(this.query);
 
-  results$ = this.query$.pipe(
-    switchMap(query => this.http.get('/search?q=' + query ))
-  );
+  results$ = this.query$.pipe(switchMap((query) => this.http.get('/search?q=' + query)));
 }
 ```
 
@@ -94,7 +117,7 @@ Unlike Observables, signals never provide a synchronous notification of changes.
 
 ```ts
 const obs$ = toObservable(mySignal);
-obs$.subscribe(value => console.log(value));
+obs$.subscribe((value) => console.log(value));
 
 mySignal.set(1);
 mySignal.set(2);
@@ -121,11 +144,11 @@ export class UserProfile {
   protected userId = input<string>();
 
   private userResource = rxResource({
-    params: () => this.userId(),
+    params: () => ({userId: this.userId()}),
 
     // The `stream` property expects a factory function that returns
     // a data stream as an RxJS Observable.
-    stream: ({userId}) => this.userData.load(userId),
+    stream: ({params}) => this.userData.load(params.userId),
   });
 }
 ```

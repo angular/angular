@@ -11,11 +11,11 @@ import ts from 'typescript';
 import {JsDocTagEntry} from './entities';
 
 /**
- * RegExp to match the `@` character follow by any Angular decorator, used to escape Angular
- * decorators in JsDoc blocks so that they're not parsed as JsDoc tags.
+ * RegExp to match the `@` character follow by any Angular decorator and control flow syntax, used to escape Angular
+ * decorators and control flow syntax in JsDoc blocks so that they're not parsed as JsDoc tags.
  */
-const decoratorExpression =
-  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf|ViewChild|ViewChildren|ContentChild|ContentChildren))/g;
+const angularAtExpression =
+  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf|ViewChild|ViewChildren|ContentChild|ContentChildren|if|else|for|switch|case|default|empty|defer|placeholder|loading|error|let)\b)/g;
 
 /** Gets the set of JsDoc tags applied to a node. */
 export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
@@ -24,9 +24,40 @@ export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
   return ts.getJSDocTags(escapedNode).map((t) => {
     return {
       name: t.tagName.getText(),
-      comment: unescapeAngularDecorators(ts.getTextOfJSDocComment(t.comment) ?? ''),
+      comment: unescapeAngularDecorators(getJSDocTagComment(t) ?? ''),
     };
   });
+}
+
+/**
+ * Gets the comment text from a JSDoc tag
+ * This wrapper attempts to work around some TS bugs (microsoft/TypeScript#59679, microsoft/TypeScript#63027 etc).
+ */
+function getJSDocTagComment(tag: ts.JSDocTag): string | undefined {
+  const comment = tag.comment;
+  if (comment === undefined) return undefined;
+
+  // If the comment is a string, it might be the result of the TS 5.9 bug where "http" is stripped.
+  if (typeof comment === 'string') {
+    if (comment.startsWith('://')) {
+      // Try to verify if we can recover "https" or "http" from the raw tag text.
+      const rawText = tag.getText();
+      if (rawText.includes('https' + comment)) {
+        return 'https' + comment;
+      }
+      if (rawText.includes('http' + comment)) {
+        return 'http' + comment;
+      }
+    }
+    return comment;
+  }
+
+  let text = ts.getTextOfJSDocComment(comment);
+  // getTextOfJSDocComment introduces an extra space between the symbol and a trailing ()
+  if (text) {
+    text = text.replace(/ \(\)\}$/, '()}');
+  }
+  return text;
 }
 
 /**
@@ -79,12 +110,12 @@ function getEscapedNode(node: ts.HasJSDoc): ts.HasJSDoc {
   return file.statements.find((s) => ts.isClassDeclaration(s)) as ts.ClassDeclaration;
 }
 
-/** Escape the `@` character for Angular decorators. */
+/** Escape the `@` character for Angular decorators and template control flow syntax. */
 function escapeAngularDecorators(comment: string): string {
-  return comment.replace(decoratorExpression, '_NG_AT_');
+  return comment.replace(angularAtExpression, '_NG_AT_');
 }
 
-/** Unescapes the `@` character for Angular decorators. */
+/** Unescapes the `@` character for Angular decorators and template control flow syntax. */
 function unescapeAngularDecorators(comment: string): string {
   return comment.replace(/_NG_AT_/g, '@');
 }

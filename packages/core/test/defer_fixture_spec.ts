@@ -8,7 +8,7 @@
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {Component, inject, PLATFORM_ID, ViewContainerRef} from '../src/core';
-import {PendingTasksInternal} from '../src/pending_tasks';
+import {PendingTasksInternal} from '../src/pending_tasks_internal';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '../testing';
 import {expect} from '@angular/private/testing/matchers';
 
@@ -57,7 +57,7 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-        `,
+      `,
     })
     class DeferComp {}
 
@@ -267,7 +267,8 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           } @loading {
             <span class="loading">Loading...</span>
-          }w
+          }
+          w
         </div>
       `,
     })

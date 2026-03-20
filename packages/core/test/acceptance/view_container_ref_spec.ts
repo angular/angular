@@ -8,6 +8,10 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
+import {clearTranslations, loadTranslations} from '@angular/localize';
+import {By, DomSanitizer} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
+import {ANIMATION_QUEUE} from '../../src/animation/queue';
 import {
   ChangeDetectorRef,
   Compiler,
@@ -31,6 +35,7 @@ import {
   OnInit,
   Pipe,
   PipeTransform,
+  provideZoneChangeDetection,
   QueryList,
   Renderer2,
   RendererFactory2,
@@ -44,9 +49,6 @@ import {
   ɵsetDocument,
 } from '../../src/core';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
-import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By, DomSanitizer} from '@angular/platform-browser';
-import {expect} from '@angular/private/testing/matchers';
 
 describe('ViewContainerRef', () => {
   /**
@@ -103,7 +105,10 @@ describe('ViewContainerRef', () => {
     it('should construct proper TNode / DOM tree when embedded views are created in a directive constructor', () => {
       @Component({
         selector: 'view-insertion-test-cmpt',
-        template: `<div>before<ng-template constructorDir><span>|middle|</span></ng-template>after</div>`,
+        template: `<div>
+          before<ng-template constructorDir><span>|middle|</span></ng-template
+          >after
+        </div>`,
         standalone: false,
       })
       class ViewInsertionTestCmpt {}
@@ -111,7 +116,7 @@ describe('ViewContainerRef', () => {
       TestBed.configureTestingModule({declarations: [ViewInsertionTestCmpt, ConstructorDir]});
 
       const fixture = TestBed.createComponent(ViewInsertionTestCmpt);
-      expect(fixture.nativeElement).toHaveText('before|middle|after');
+      expect(fixture.nativeElement).toHaveText(' before|middle|after ');
     });
 
     it('should use comment node of host ng-container as insertion marker', () => {
@@ -122,9 +127,7 @@ describe('ViewContainerRef', () => {
       class HelloComp {}
 
       @Component({
-        template: `
-          <ng-container vcref></ng-container>
-        `,
+        template: ` <ng-container vcref></ng-container> `,
         standalone: false,
       })
       class TestComp {
@@ -170,9 +173,7 @@ describe('ViewContainerRef', () => {
       class HelloComp {}
 
       @Component({
-        template: `
-          <ng-container #container></ng-container>
-        `,
+        template: ` <ng-container #container></ng-container> `,
         standalone: false,
       })
       class TestComp {
@@ -223,7 +224,7 @@ describe('ViewContainerRef', () => {
 
     describe('element namespaces', () => {
       function runTestWithSelectors(svgSelector: string, mathMLSelector: string) {
-        it('should be set correctly for host elements of dynamically created components', () => {
+        it(`should be set correctly for host elements of dynamically created components (${svgSelector})`, () => {
           @Component({
             selector: svgSelector,
             template: '<svg><g></g></svg>',
@@ -496,6 +497,42 @@ describe('ViewContainerRef', () => {
 
       expect(fixture.nativeElement.textContent).toEqual('012');
     });
+
+    it('should move embedded views and associated DOM nodes without recreating them', () => {
+      TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
+      const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
+      const vcRefDir = fixture.debugElement
+        .query(By.directive(VCRefDirective))
+        .injector.get(VCRefDirective);
+      fixture.detectChanges();
+
+      vcRefDir.createView('A');
+      vcRefDir.createView('B');
+      vcRefDir.createView('C');
+
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>ABC');
+
+      // The DOM is manually modified here to ensure that the text node is actually moved
+      fixture.nativeElement.childNodes[2].nodeValue = '**A**';
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
+
+      let viewRef = vcRefDir.vcref.get(0);
+      vcRefDir.vcref.move(viewRef!, 2);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>BC**A**');
+
+      vcRefDir.vcref.move(viewRef!, 0);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
+
+      vcRefDir.vcref.move(viewRef!, 1);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>B**A**C');
+
+      expect(() => vcRefDir.vcref.move(viewRef!, -1)).toThrow();
+      expect(() => vcRefDir.vcref.move(viewRef!, 42)).toThrow();
+    });
   });
 
   it('should not throw when calling remove() on an empty container', () => {
@@ -755,49 +792,11 @@ describe('ViewContainerRef', () => {
     });
   });
 
-  describe('move', () => {
-    it('should move embedded views and associated DOM nodes without recreating them', () => {
-      TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
-      const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
-      const vcRefDir = fixture.debugElement
-        .query(By.directive(VCRefDirective))
-        .injector.get(VCRefDirective);
-      fixture.detectChanges();
-
-      vcRefDir.createView('A');
-      vcRefDir.createView('B');
-      vcRefDir.createView('C');
-
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>ABC');
-
-      // The DOM is manually modified here to ensure that the text node is actually moved
-      fixture.nativeElement.childNodes[2].nodeValue = '**A**';
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
-
-      let viewRef = vcRefDir.vcref.get(0);
-      vcRefDir.vcref.move(viewRef!, 2);
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>BC**A**');
-
-      vcRefDir.vcref.move(viewRef!, 0);
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
-
-      vcRefDir.vcref.move(viewRef!, 1);
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>B**A**C');
-
-      expect(() => vcRefDir.vcref.move(viewRef!, -1)).toThrow();
-      expect(() => vcRefDir.vcref.move(viewRef!, 42)).toThrow();
-    });
-  });
-
   describe('getters for the anchor node', () => {
     it('should work on templates', () => {
       @Component({
         template: `
-          <ng-template vcref let-name>{{name}}</ng-template>
+          <ng-template vcref let-name>{{ name }}</ng-template>
           <footer></footer>
         `,
         standalone: false,
@@ -1052,11 +1051,9 @@ describe('ViewContainerRef', () => {
         template: `
           <div *ngIf="visible" [template]="parent">I host a template</div>
           <ng-template #parent>
-              <div [template]="child">I host a child template</div>
+            <div [template]="child">I host a child template</div>
           </ng-template>
-          <ng-template #child>
-              I am child template
-          </ng-template>
+          <ng-template #child> I am child template </ng-template>
         `,
         standalone: false,
       })
@@ -1102,6 +1099,7 @@ describe('ViewContainerRef', () => {
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
       fixture.componentRef.instance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
     });
   });
@@ -1110,10 +1108,10 @@ describe('ViewContainerRef', () => {
     it('should work on elements', () => {
       @Component({
         template: `
-        <ng-template #tplRef let-name>{{name}}</ng-template>
-        <header vcref [tplRef]="tplRef"></header>
-        <footer></footer>
-      `,
+          <ng-template #tplRef let-name>{{ name }}</ng-template>
+          <header vcref [tplRef]="tplRef"></header>
+          <footer></footer>
+        `,
         standalone: false,
       })
       class TestComponent {}
@@ -1163,10 +1161,10 @@ describe('ViewContainerRef', () => {
 
       @Component({
         template: `
-          <ng-template #tplRef let-name>{{name}}</ng-template>
+          <ng-template #tplRef let-name>{{ name }}</ng-template>
           <header-cmp vcref [tplRef]="tplRef"></header-cmp>
           <footer></footer>
-          `,
+        `,
         standalone: false,
       })
       class TestComponent {}
@@ -1210,7 +1208,7 @@ describe('ViewContainerRef', () => {
     it('should work with multiple instances of view container refs', () => {
       @Component({
         template: `
-          <ng-template #tplRef let-name>{{name}}</ng-template>
+          <ng-template #tplRef let-name>{{ name }}</ng-template>
           <div vcref [tplRef]="tplRef"></div>
           <div vcref [tplRef]="tplRef"></div>
         `,
@@ -1240,7 +1238,7 @@ describe('ViewContainerRef', () => {
     it('should work on templates', () => {
       @Component({
         template: `
-          <ng-template vcref #tplRef [tplRef]="tplRef" let-name>{{name}}</ng-template>
+          <ng-template vcref #tplRef [tplRef]="tplRef" let-name>{{ name }}</ng-template>
           <footer></footer>
         `,
         standalone: false,
@@ -1275,7 +1273,7 @@ describe('ViewContainerRef', () => {
     it('should apply directives and pipes of the host view to the TemplateRef', () => {
       @Component({
         selector: 'child',
-        template: `{{name}}`,
+        template: `{{ name }}`,
         standalone: false,
       })
       class Child {
@@ -1294,12 +1292,12 @@ describe('ViewContainerRef', () => {
 
       @Component({
         template: `
-            <ng-template #foo>
-              <child [name]="'C' | starPipe"></child>
-            </ng-template>
-            <child vcref [tplRef]="foo" [name]="'A' | starPipe"></child>
-            <child [name]="'B' | starPipe"></child>
-          `,
+          <ng-template #foo>
+            <child [name]="'C' | starPipe"></child>
+          </ng-template>
+          <child vcref [tplRef]="foo" [name]="'A' | starPipe"></child>
+          <child [name]="'B' | starPipe"></child>
+        `,
         standalone: false,
       })
       class SomeComponent {}
@@ -1324,6 +1322,11 @@ describe('ViewContainerRef', () => {
   });
 
   describe('createComponent', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+    });
     let templateExecutionCounter = 0;
 
     beforeEach(() => (templateExecutionCounter = 0));
@@ -1406,6 +1409,7 @@ describe('ViewContainerRef', () => {
           {provide: Sanitizer, useValue: TestBed.inject(DomSanitizer)},
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
+          {provide: ANIMATION_QUEUE, useValue: TestBed.inject(ANIMATION_QUEUE)},
         ],
       })
       class MyAppModule {}
@@ -1486,7 +1490,9 @@ describe('ViewContainerRef', () => {
     it('should support reprojection of projectable nodes', () => {
       @Component({
         selector: 'reprojector',
-        template: `<embedded-cmp-with-ngcontent><ng-content></ng-content></embedded-cmp-with-ngcontent>`,
+        template: `<embedded-cmp-with-ngcontent
+          ><ng-content></ng-content
+        ></embedded-cmp-with-ngcontent>`,
         standalone: false,
       })
       class Reprojector {}
@@ -1871,6 +1877,7 @@ describe('ViewContainerRef', () => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
           declarations: [EmbeddedViewInsertionComp, VCRefDirective, HostComponent],
+          providers: [provideZoneChangeDetection()],
         });
         const hostValue = signal('initial');
         let dirValue = 'initial';
@@ -1965,7 +1972,7 @@ describe('ViewContainerRef', () => {
     it('should work with a template declared in a different component view from insertion', () => {
       @Component({
         selector: 'child',
-        template: `<div [tplDir]="tpl">{{name}}</div>`,
+        template: `<div [tplDir]="tpl">{{ name }}</div>`,
         standalone: false,
       })
       class Child {
@@ -1976,7 +1983,7 @@ describe('ViewContainerRef', () => {
       @Component({
         template: `
           <ng-template #foo>
-            <div>{{name}}</div>
+            <div>{{ name }}</div>
           </ng-template>
 
           <child [tpl]="foo"></child>
@@ -1999,6 +2006,7 @@ describe('ViewContainerRef', () => {
       );
 
       child.tpl = null;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual(`<child><div>Child</div></child>`);
     });
@@ -2007,10 +2015,7 @@ describe('ViewContainerRef', () => {
     it('should work with nested for loops with different declaration / insertion points', () => {
       @Component({
         selector: 'loop-comp',
-        template: `
-          <ng-template ngFor [ngForOf]="rows" [ngForTemplate]="tpl">
-          </ng-template>
-        `,
+        template: ` <ng-template ngFor [ngForOf]="rows" [ngForTemplate]="tpl"> </ng-template> `,
         standalone: false,
       })
       class LoopComp {
@@ -2023,7 +2028,7 @@ describe('ViewContainerRef', () => {
         template: `
           <ng-template #rowTemplate let-row>
             <ng-template #cellTemplate let-cell>
-              <div>{{cell}} - {{row.value}} - {{name}}</div>
+              <div>{{ cell }} - {{ row.value }} - {{ name }}</div>
             </ng-template>
 
             <loop-comp [tpl]="cellTemplate" [rows]="row.data"></loop-comp>
@@ -2057,6 +2062,7 @@ describe('ViewContainerRef', () => {
         {data: ['7'], value: 'four'},
       ];
       fixture.componentInstance.name = 'New name!';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement)).toEqual(
@@ -2069,8 +2075,46 @@ describe('ViewContainerRef', () => {
 
     it('should insert elements in the proper order when template root is an ng-container', () => {
       @Component({
+        template: ` <ng-container *ngFor="let item of items">|{{ item }}|</ng-container> `,
+        standalone: false,
+      })
+      class App {
+        items = ['one', 'two', 'three'];
+      }
+
+      TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
+
+      fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
+
+      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.items.push('four');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
+
+      fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe(
+        '|zero||one||two||two point five||three||four|',
+      );
+    });
+
+    it('should insert elements in the proper order when template root is an ng-container and is wrapped by an ng-container', () => {
+      @Component({
         template: `
-          <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
+          <ng-container>
+            <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
+          </ng-container>
         `,
         standalone: false,
       })
@@ -2085,53 +2129,19 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
 
       fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
 
       fixture.componentInstance.items.push('four');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
 
       fixture.componentInstance.items.splice(3, 0, 'two point five');
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe(
-        '|zero||one||two||two point five||three||four|',
-      );
-    });
-
-    it('should insert elements in the proper order when template root is an ng-container and is wrapped by an ng-container', () => {
-      @Component({
-        template: `
-              <ng-container>
-                <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
-              </ng-container>
-            `,
-        standalone: false,
-      })
-      class App {
-        items = ['one', 'two', 'three'];
-      }
-
-      TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
-
-      fixture.componentInstance.items.unshift('zero');
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
-
-      fixture.componentInstance.items.push('four');
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
-
-      fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe(
@@ -2142,8 +2152,10 @@ describe('ViewContainerRef', () => {
     it('should insert elements in the proper order when template root is an ng-container and first node is a ng-container', () => {
       @Component({
         template: `
-            <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
-          `,
+          <ng-container *ngFor="let item of items"
+            ><ng-container>|{{ item }}|</ng-container></ng-container
+          >
+        `,
         standalone: false,
       })
       class App {
@@ -2157,16 +2169,19 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
 
       fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
 
       fixture.componentInstance.items.push('four');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
 
       fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe(
@@ -2177,17 +2192,23 @@ describe('ViewContainerRef', () => {
     it('should insert elements in the proper order when template root is an ng-container, wrapped in an ng-container with the root node as an ng-container', () => {
       @Component({
         template: `
-            <ng-container>
-              <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
-            </ng-container>
-          `,
+          <ng-container>
+            <ng-container *ngFor="let item of items"
+              ><ng-container>|{{ item }}|</ng-container></ng-container
+            >
+          </ng-container>
+        `,
         standalone: false,
       })
       class App {
         items = ['one', 'two', 'three'];
       }
 
-      TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        providers: [provideZoneChangeDetection()],
+        declarations: [App],
+      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2214,7 +2235,9 @@ describe('ViewContainerRef', () => {
     it('should insert elements in the proper order when the first child node is an ICU expression', () => {
       @Component({
         template: `
-          <ng-container *ngFor="let item of items">{count, select, other {|{{ item }}|}}</ng-container>
+          <ng-container *ngFor="let item of items">{count, select,
+            other {|{{ item }}|}
+          }</ng-container>
         `,
         standalone: false,
       })
@@ -2229,16 +2252,19 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
 
       fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
 
       fixture.componentInstance.items.push('four');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
 
       fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe(
@@ -2253,7 +2279,7 @@ describe('ViewContainerRef', () => {
 
     @Component({
       selector: 'hooks',
-      template: `{{name}}`,
+      template: `{{ name }}`,
       standalone: false,
     })
     class ComponentWithHooks {
@@ -2334,6 +2360,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2352,6 +2379,7 @@ describe('ViewContainerRef', () => {
       expect(log).toEqual([]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual(
         '<hooks vcref="">A</hooks><hooks>C</hooks><hooks>B</hooks>',
@@ -2373,6 +2401,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2388,6 +2417,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       const viewRef = vcRefDir.vcref.detach(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2400,6 +2430,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.insert(viewRef!);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2415,6 +2446,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.remove(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'onDestroy-C',
@@ -2447,6 +2479,7 @@ describe('ViewContainerRef', () => {
         .query(By.directive(VCRefDirective))
         .injector.get(VCRefDirective);
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'onChanges-A',
@@ -2466,6 +2499,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2484,6 +2518,7 @@ describe('ViewContainerRef', () => {
       expect(log).toEqual([]);
 
       componentRef.instance.name = 'D';
+      fixture.changeDetectorRef.markForCheck();
       log.length = 0;
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual(
@@ -2505,6 +2540,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2520,6 +2556,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       const viewRef = vcRefDir.vcref.detach(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2532,6 +2569,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.insert(viewRef!);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2547,6 +2585,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.remove(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'onDestroy-D',
@@ -2597,6 +2636,7 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.children[0].getAttribute('title')).toBe('initial');
 
       componentRef.instance.title = 'changed';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.children[0].tagName).toBe('HOST-BINDINGS');
@@ -2606,6 +2646,11 @@ describe('ViewContainerRef', () => {
   });
 
   describe('projection', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+    });
     it('should project the ViewContainerRef content along its host, in an element', () => {
       @Component({
         selector: 'child',
@@ -2616,9 +2661,8 @@ describe('ViewContainerRef', () => {
 
       @Component({
         selector: 'parent',
-        template: `
-          <ng-template #foo>
-            <span>{{name}}</span>
+        template: ` <ng-template #foo>
+            <span>{{ name }}</span>
           </ng-template>
 
           <child>
@@ -2660,9 +2704,8 @@ describe('ViewContainerRef', () => {
 
       @Component({
         selector: 'parent',
-        template: `
-          <ng-template #foo>
-            <span>{{name}}</span>
+        template: ` <ng-template #foo>
+            <span>{{ name }}</span>
           </ng-template>
           <child-with-view>
             Before projected
@@ -2706,7 +2749,10 @@ describe('ViewContainerRef', () => {
 
       @Component({
         selector: 'my-app',
-        template: `<root-comp [show]="show"><ng-content></ng-content><div></div></root-comp>`,
+        template: `<root-comp [show]="show"
+          ><ng-content></ng-content>
+          <div></div
+        ></root-comp>`,
         standalone: false,
       })
       class MyApp {
@@ -2726,8 +2772,7 @@ describe('ViewContainerRef', () => {
     describe('with select', () => {
       @Component({
         selector: 'child-with-selector',
-        template: `
-          <p class="a"><ng-content select="header"></ng-content></p>
+        template: ` <p class="a"><ng-content select="header"></ng-content></p>
           <p class="b"><ng-content></ng-content></p>`,
         standalone: false,
       })
@@ -2738,7 +2783,7 @@ describe('ViewContainerRef', () => {
           selector: 'parent',
           template: `
             <ng-template #foo>
-              <span>{{name}}</span>
+              <span>{{ name }}</span>
             </ng-template>
             <child-with-selector>
               <header vcref [tplRef]="foo" [name]="name">blah</header>
@@ -2780,12 +2825,12 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'my-comp',
           template: `
-          <content-comp>
-            <div #target></div>
-          </content-comp>
+            <content-comp>
+              <div #target></div>
+            </content-comp>
 
-          <ng-template #source>My Content</ng-template>
-        `,
+            <ng-template #source>My Content</ng-template>
+          `,
           standalone: false,
         })
         class MyComp {
@@ -2809,7 +2854,7 @@ describe('ViewContainerRef', () => {
           selector: 'parent',
           template: `
             <ng-template #foo>
-              <span>{{name}}</span>
+              <span>{{ name }}</span>
             </ng-template>
             <child-with-selector>
               <footer vcref [tplRef]="foo" [name]="name">blah</footer>
@@ -2877,7 +2922,7 @@ describe('ViewContainerRef', () => {
     it('should check bindings for components dynamically created by root component', () => {
       @Component({
         selector: 'dynamic-cmpt-with-bindings',
-        template: `check count: {{checkCount}}`,
+        template: `check count: {{ checkCount }}`,
         standalone: false,
       })
       class DynamicCompWithBindings implements DoCheck {
@@ -2915,6 +2960,7 @@ describe('ViewContainerRef', () => {
       expect(containerEl!.childNodes.length).toBe(3);
       expect(containerEl!.childNodes[1].textContent).toBe('check count: 1');
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(containerEl!.childNodes.length).toBe(3);
@@ -2932,7 +2978,7 @@ describe('ViewContainerRef', () => {
 
       @Component({
         selector: 'child',
-        template: `<div>{{name}}</div>`,
+        template: `<div>{{ name }}</div>`,
         standalone: false,
       })
       class Child {
@@ -2979,7 +3025,7 @@ describe('ViewContainerRef', () => {
 
 @Component({
   template: `
-    <ng-template #tplRef let-name>{{name}}</ng-template>
+    <ng-template #tplRef let-name>{{ name }}</ng-template>
     <p vcref [tplRef]="tplRef"></p>
   `,
   standalone: false,
@@ -3012,7 +3058,9 @@ class VCRefDirective {
 
 @Component({
   selector: `embedded-cmp-with-ngcontent`,
-  template: `<ng-content></ng-content><hr><ng-content></ng-content>`,
+  template: `<ng-content></ng-content>
+    <hr />
+    <ng-content></ng-content>`,
   standalone: false,
 })
 class EmbeddedComponentWithNgContent {}
@@ -3034,9 +3082,7 @@ class ViewContainerRefComp {
 
 @Component({
   selector: 'view-container-ref-app',
-  template: `
-    <view-container-ref-comp></view-container-ref-comp>
-  `,
+  template: ` <view-container-ref-comp></view-container-ref-comp> `,
   standalone: false,
 })
 class ViewContainerRefApp {
@@ -3064,7 +3110,7 @@ export class StructDir {
 
 @Component({
   selector: 'destroy-cases',
-  template: `  `,
+  template: ``,
   standalone: false,
 })
 class DestroyCasesComp {

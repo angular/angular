@@ -2,7 +2,7 @@
 
 Now that you've set up the app to use Angular Router, you need to define the routes.
 
-Note: Learn more about [defining a basic route in the in-depth guide](/guide/routing/common-router-tasks#defining-a-basic-route).
+NOTE: Learn more about [defining a basic route in the in-depth guide](/guide/routing/define-routes).
 
 In this activity, you'll learn how to add and configure routes with your app.
 
@@ -43,7 +43,7 @@ In addition to defining the routes correctly, Angular Router also enables you to
 
 In `app.routes.ts`, add the `title` property to the default route (`path: ''`) and the `user` route. Here's an example:
 
-<docs-code language="ts" highlight="[8]">
+```ts {highlight:[7]}
 import {Routes} from '@angular/router';
 import {Home} from './home/home';
 
@@ -54,7 +54,7 @@ export const routes: Routes = [
     component: Home,
   },
 ];
-</docs-code>
+```
 
 </docs-step>
 

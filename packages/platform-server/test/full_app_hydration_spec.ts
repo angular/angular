@@ -27,12 +27,13 @@ import {
   afterEveryRender,
   ApplicationRef,
   ChangeDetectorRef,
+  ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
   Component,
+  ContentChild,
   ContentChildren,
   createComponent,
   destroyPlatform,
   Directive,
-  ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
@@ -43,15 +44,14 @@ import {
   Pipe,
   PipeTransform,
   PLATFORM_ID,
-  provideZonelessChangeDetection,
   Provider,
+  provideZoneChangeDetection,
   QueryList,
+  signal,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  ɵNoopNgZone as NoopNgZone,
-  ContentChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -116,19 +116,15 @@ describe('platform-server full application hydration integration', () => {
     describe('annotations', () => {
       it('should add hydration annotations to component host nodes during ssr', async () => {
         @Component({
-          standalone: true,
           selector: 'nested',
           template: 'This is a nested component.',
         })
         class NestedComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
-          template: `
-            <nested />
-          `,
+          template: ` <nested /> `,
         })
         class SimpleComponent {}
 
@@ -141,14 +137,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip local ref slots while producing hydration annotations', async () => {
         @Component({
-          standalone: true,
           selector: 'nested',
           template: 'This is a nested component.',
         })
         class NestedComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `
@@ -167,11 +161,8 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip embedded views from an ApplicationRef during annotation', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
-          template: `
-            <ng-template #tmpl>Hi!</ng-template>
-          `,
+          template: ` <ng-template #tmpl>Hi!</ng-template> `,
         })
         class SimpleComponent {
           @ViewChild('tmpl', {read: TemplateRef}) tmplRef!: TemplateRef<unknown>;
@@ -193,11 +184,8 @@ describe('platform-server full application hydration integration', () => {
     describe('server rendering', () => {
       it('should wipe out existing host element content when server side rendering', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
-          template: `
-            <div>Some content</div>
-          `,
+          template: ` <div>Some content</div> `,
         })
         class SimpleComponent {}
 
@@ -215,7 +203,6 @@ describe('platform-server full application hydration integration', () => {
     describe('hydration', () => {
       it('should remove ngh attributes after hydration on the client', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: 'Hi!',
         })
@@ -239,11 +226,8 @@ describe('platform-server full application hydration integration', () => {
       describe('basic scenarios', () => {
         it('should support text-only contents', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-              This is hydrated content.
-            `,
+            template: ` This is hydrated content. `,
           })
           class SimpleComponent {}
 
@@ -265,7 +249,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should hydrate root components with empty templates', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: '',
           })
@@ -289,14 +272,12 @@ describe('platform-server full application hydration integration', () => {
 
         it('should hydrate child components with empty templates', async () => {
           @Component({
-            standalone: true,
             selector: 'child',
             template: '',
           })
           class ChildComponent {}
 
           @Component({
-            standalone: true,
             imports: [ChildComponent],
             selector: 'app',
             template: '<child />',
@@ -321,11 +302,8 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support a single text interpolation', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-              {{ text }}
-            `,
+            template: ` {{ text }} `,
           })
           class SimpleComponent {
             text = 'text';
@@ -349,7 +327,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support text and HTML elements', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <header>Header</header>
@@ -377,7 +354,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support text and HTML elements in nested components', async () => {
           @Component({
-            standalone: true,
             selector: 'nested-cmp',
             template: `
               <h1>Hello World!</h1>
@@ -387,7 +363,6 @@ describe('platform-server full application hydration integration', () => {
           class NestedComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NestedComponent],
             template: `
@@ -426,7 +401,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support elements with local refs', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <header #headerRef>Header</header>
@@ -454,11 +428,8 @@ describe('platform-server full application hydration integration', () => {
 
         it('should handle extra child nodes within a root app component', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-              <div>Some content</div>
-            `,
+            template: ` <div>Some content</div> `,
           })
           class SimpleComponent {}
 
@@ -484,11 +455,8 @@ describe('platform-server full application hydration integration', () => {
       describe('ng-container', () => {
         it('should support empty containers', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-              This is an empty container: <ng-container></ng-container>
-            `,
+            template: ` This is an empty container: <ng-container></ng-container> `,
           })
           class SimpleComponent {}
 
@@ -510,7 +478,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support non-empty containers', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               This is a non-empty container:
@@ -540,7 +507,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support nested containers', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               This is a non-empty container:
@@ -584,13 +550,11 @@ describe('platform-server full application hydration integration', () => {
         it('should support element containers with *ngIf', async () => {
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: 'Hi!',
           })
           class Cmp {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NgIf],
             template: `
@@ -631,16 +595,15 @@ describe('platform-server full application hydration integration', () => {
         describe('*ngIf', () => {
           it('should work with *ngIf on ng-container nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf],
               template: `
-              This is a non-empty container:
-              <ng-container *ngIf="true">
-                <h1>Hello world!</h1>
-              </ng-container>
-              <div>Post-container element</div>
-            `,
+                This is a non-empty container:
+                <ng-container *ngIf="true">
+                  <h1>Hello world!</h1>
+                </ng-container>
+                <div>Post-container element</div>
+              `,
             })
             class SimpleComponent {}
 
@@ -662,7 +625,6 @@ describe('platform-server full application hydration integration', () => {
 
           it('should work with empty containers on ng-container nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf],
               template: `
@@ -691,12 +653,9 @@ describe('platform-server full application hydration integration', () => {
 
           it('should work with *ngIf on element nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf],
-              template: `
-              <h1 *ngIf="true">Hello world!</h1>
-            `,
+              template: ` <h1 *ngIf="true">Hello world!</h1> `,
             })
             class SimpleComponent {}
 
@@ -718,12 +677,9 @@ describe('platform-server full application hydration integration', () => {
 
           it('should work with empty containers on element nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf],
-              template: `
-                <h1 *ngIf="false">Hello world!</h1>
-              `,
+              template: ` <h1 *ngIf="false">Hello world!</h1> `,
             })
             class SimpleComponent {}
             const html = await ssr(SimpleComponent);
@@ -740,24 +696,20 @@ describe('platform-server full application hydration integration', () => {
 
           it('should work with *ngIf on component host nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'nested-cmp',
               imports: [NgIf],
-              template: `
-              <h1 *ngIf="true">Hello World!</h1>
-            `,
+              template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
             class NestedComponent {}
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf, NestedComponent],
               template: `
-              This is a component:
-              <nested-cmp *ngIf="true" />
-              <div>Post-container element</div>
-            `,
+                This is a component:
+                <nested-cmp *ngIf="true" />
+                <div>Post-container element</div>
+              `,
             })
             class SimpleComponent {}
 
@@ -779,18 +731,17 @@ describe('platform-server full application hydration integration', () => {
 
           it('should support nested *ngIfs', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf],
               template: `
-              This is a non-empty container:
-              <ng-container *ngIf="true">
-                <h1 *ngIf="true">
-                  <span *ngIf="true">Hello world!</span>
-                </h1>
-              </ng-container>
-              <div>Post-container element</div>
-            `,
+                This is a non-empty container:
+                <ng-container *ngIf="true">
+                  <h1 *ngIf="true">
+                    <span *ngIf="true">Hello world!</span>
+                  </h1>
+                </ng-container>
+                <div>Post-container element</div>
+              `,
             })
             class SimpleComponent {}
 
@@ -814,15 +765,14 @@ describe('platform-server full application hydration integration', () => {
         describe('*ngFor', () => {
           it('should support *ngFor on <ng-container> nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
-              <ng-container *ngFor="let item of items">
-                <h1 *ngIf="true">Item #{{ item }}</h1>
-              </ng-container>
-              <div>Post-container element</div>
-            `,
+                <ng-container *ngFor="let item of items">
+                  <h1 *ngIf="true">Item #{{ item }}</h1>
+                </ng-container>
+                <div>Post-container element</div>
+              `,
             })
             class SimpleComponent {
               items = [1, 2, 3];
@@ -851,7 +801,6 @@ describe('platform-server full application hydration integration', () => {
 
           it('should support *ngFor on element nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
@@ -888,23 +837,19 @@ describe('platform-server full application hydration integration', () => {
 
           it('should support *ngFor on host component nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'nested-cmp',
               imports: [NgIf],
-              template: `
-              <h1 *ngIf="true">Hello World!</h1>
-            `,
+              template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
             class NestedComponent {}
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf, NgFor, NestedComponent],
               template: `
-              <nested-cmp *ngFor="let item of items" />
-              <div>Post-container element</div>
-            `,
+                <nested-cmp *ngFor="let item of items" />
+                <div>Post-container element</div>
+              `,
             })
             class SimpleComponent {
               items = [1, 2, 3];
@@ -933,7 +878,6 @@ describe('platform-server full application hydration integration', () => {
 
           it('should support compact serialization for *ngFor', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
@@ -941,7 +885,9 @@ describe('platform-server full application hydration integration', () => {
                   Number {{ number }}
                   <ng-container *ngIf="number >= 0 && number < 5">is in [0, 5) range.</ng-container>
                   <ng-container *ngIf="number >= 5 && number < 8">is in [5, 8) range.</ng-container>
-                  <ng-container *ngIf="number >= 8 && number < 10">is in [8, 10) range.</ng-container>
+                  <ng-container *ngIf="number >= 8 && number < 10"
+                    >is in [8, 10) range.</ng-container
+                  >
                 </div>
               `,
             })
@@ -976,21 +922,16 @@ describe('platform-server full application hydration integration', () => {
         describe('*ngComponentOutlet', () => {
           it('should support hydration on <ng-container> nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'nested-cmp',
               imports: [NgIf],
-              template: `
-                <h1 *ngIf="true">Hello World!</h1>
-              `,
+              template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
             class NestedComponent {}
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgComponentOutlet],
-              template: `
-                <ng-container *ngComponentOutlet="NestedComponent" />`,
+              template: ` <ng-container *ngComponentOutlet="NestedComponent" />`,
             })
             class SimpleComponent {
               // This field is necessary to expose
@@ -1016,22 +957,16 @@ describe('platform-server full application hydration integration', () => {
 
           it('should support hydration on element nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'nested-cmp',
               imports: [NgIf],
-              template: `
-                <h1 *ngIf="true">Hello World!</h1>
-              `,
+              template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
             class NestedComponent {}
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgComponentOutlet],
-              template: `
-                <div *ngComponentOutlet="NestedComponent"></div>
-              `,
+              template: ` <div *ngComponentOutlet="NestedComponent"></div> `,
             })
             class SimpleComponent {
               // This field is necessary to expose
@@ -1057,21 +992,16 @@ describe('platform-server full application hydration integration', () => {
 
           it('should support hydration for nested components', async () => {
             @Component({
-              standalone: true,
               selector: 'nested-cmp',
               imports: [NgIf],
-              template: `
-                <h1 *ngIf="true">Hello World!</h1>
-              `,
+              template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
             class NestedComponent {}
 
             @Component({
-              standalone: true,
               selector: 'other-nested-cmp',
               imports: [NgComponentOutlet],
-              template: `
-                <ng-container *ngComponentOutlet="NestedComponent" />`,
+              template: ` <ng-container *ngComponentOutlet="NestedComponent" />`,
             })
             class OtherNestedComponent {
               // This field is necessary to expose
@@ -1080,11 +1010,9 @@ describe('platform-server full application hydration integration', () => {
             }
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgComponentOutlet],
-              template: `
-                <ng-container *ngComponentOutlet="OtherNestedComponent" />`,
+              template: ` <ng-container *ngComponentOutlet="OtherNestedComponent" />`,
             })
             class SimpleComponent {
               // This field is necessary to expose
@@ -1112,13 +1040,10 @@ describe('platform-server full application hydration integration', () => {
         describe('*ngTemplateOutlet', () => {
           it('should work with <ng-container>', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgTemplateOutlet],
               template: `
-                <ng-template #tmpl>
-                  This is a content of the template!
-                </ng-template>
+                <ng-template #tmpl> This is a content of the template! </ng-template>
                 <ng-container [ngTemplateOutlet]="tmpl"></ng-container>
               `,
             })
@@ -1142,13 +1067,10 @@ describe('platform-server full application hydration integration', () => {
 
           it('should work with element nodes', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgTemplateOutlet],
               template: `
-                <ng-template #tmpl>
-                  This is a content of the template!
-                </ng-template>
+                <ng-template #tmpl> This is a content of the template! </ng-template>
                 <div [ngTemplateOutlet]="tmpl"></div>
                 <div>Some extra content</div>
               `,
@@ -1175,16 +1097,12 @@ describe('platform-server full application hydration integration', () => {
         describe('ViewContainerRef', () => {
           it('should work with ViewContainerRef.createComponent', async () => {
             @Component({
-              standalone: true,
               selector: 'dynamic',
-              template: `
-                <span>This is a content of a dynamic component.</span>
-              `,
+              template: ` <span>This is a content of a dynamic component.</span> `,
             })
             class DynamicComponent {}
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
@@ -1219,7 +1137,6 @@ describe('platform-server full application hydration integration', () => {
 
           it('should work with ViewContainerRef.createEmbeddedView', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [NgIf, NgFor],
               template: `
@@ -1257,21 +1174,15 @@ describe('platform-server full application hydration integration', () => {
 
           it('should hydrate dynamically created components using root component as an anchor', async () => {
             @Component({
-              standalone: true,
               imports: [CommonModule],
               selector: 'dynamic',
-              template: `
-                    <span>This is a content of a dynamic component.</span>
-                  `,
+              template: ` <span>This is a content of a dynamic component.</span> `,
             })
             class DynamicComponent {}
 
             @Component({
-              standalone: true,
               selector: 'app',
-              template: `
-                    <main>Hi! This is the main content.</main>
-                  `,
+              template: ` <main>Hi! This is the main content.</main> `,
             })
             class SimpleComponent {
               vcr = inject(ViewContainerRef);
@@ -1305,7 +1216,6 @@ describe('platform-server full application hydration integration', () => {
 
           it('should hydrate embedded views when using root component as an anchor', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               template: `
                 <ng-template #tmpl>
@@ -1346,34 +1256,25 @@ describe('platform-server full application hydration integration', () => {
             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
           });
 
-          it('should hydrate dynamically created components using root component as an anchor', async () => {
+          it('should hydrate dynamically created components using root component as an anchor (with nested components)', async () => {
             @Component({
-              standalone: true,
               imports: [CommonModule],
               selector: 'nested-dynamic-a',
-              template: `
-                    <p>NestedDynamicComponentA</p>
-                  `,
+              template: ` <p>NestedDynamicComponentA</p> `,
             })
             class NestedDynamicComponentA {}
 
             @Component({
-              standalone: true,
               imports: [CommonModule],
               selector: 'nested-dynamic-b',
-              template: `
-                    <p>NestedDynamicComponentB</p>
-                  `,
+              template: ` <p>NestedDynamicComponentB</p> `,
             })
             class NestedDynamicComponentB {}
 
             @Component({
-              standalone: true,
               imports: [CommonModule],
               selector: 'dynamic',
-              template: `
-                    <span>This is a content of a dynamic component.</span>
-                  `,
+              template: ` <span>This is a content of a dynamic component.</span> `,
             })
             class DynamicComponent {
               vcr = inject(ViewContainerRef);
@@ -1385,11 +1286,8 @@ describe('platform-server full application hydration integration', () => {
             }
 
             @Component({
-              standalone: true,
               selector: 'app',
-              template: `
-                    <main>Hi! This is the main content.</main>
-                  `,
+              template: ` <main>Hi! This is the main content.</main> `,
             })
             class SimpleComponent {
               doc = inject(DOCUMENT);
@@ -1464,7 +1362,6 @@ describe('platform-server full application hydration integration', () => {
               "another component's host node as an anchor",
             async () => {
               @Component({
-                standalone: true,
                 selector: 'another-dynamic',
                 template: `<span>This is a content of another dynamic component.</span>`,
               })
@@ -1473,7 +1370,6 @@ describe('platform-server full application hydration integration', () => {
               }
 
               @Component({
-                standalone: true,
                 selector: 'dynamic',
                 template: `<span>This is a content of a dynamic component.</span>`,
               })
@@ -1487,7 +1383,6 @@ describe('platform-server full application hydration integration', () => {
               }
 
               @Component({
-                standalone: true,
                 selector: 'app',
                 template: `<main>Hi! This is the main content.</main>`,
               })
@@ -1527,14 +1422,13 @@ describe('platform-server full application hydration integration', () => {
               "another component's host node as an anchor",
             async () => {
               @Component({
-                standalone: true,
                 selector: 'dynamic',
                 template: `
-                      <ng-template #tmpl>
-                        <h1>Content of an embedded view</h1>
-                      </ng-template>
-                      <main>Hi! This is the dynamic component content.</main>
-                    `,
+                  <ng-template #tmpl>
+                    <h1>Content of an embedded view</h1>
+                  </ng-template>
+                  <main>Hi! This is the dynamic component content.</main>
+                `,
               })
               class DynamicComponent {
                 @ViewChild('tmpl', {read: TemplateRef}) tmpl!: TemplateRef<unknown>;
@@ -1548,7 +1442,6 @@ describe('platform-server full application hydration integration', () => {
               }
 
               @Component({
-                standalone: true,
                 selector: 'app',
                 template: `<main>Hi! This is the main content.</main>`,
               })
@@ -1589,22 +1482,21 @@ describe('platform-server full application hydration integration', () => {
               '(that is being created) and the first dehydrated view in the list',
             async () => {
               @Component({
-                standalone: true,
                 selector: 'app',
                 template: `
-                    <ng-template #tmplH1>
-                      <h1>Content of H1</h1>
-                    </ng-template>
-                    <ng-template #tmplH2>
-                      <h2>Content of H2</h2>
-                    </ng-template>
-                    <ng-template #tmplH3>
-                      <h3>Content of H3</h3>
-                    </ng-template>
-                    <p>Pre-container content</p>
-                    <ng-container #target></ng-container>
-                    <div>Post-container content</div>
-                  `,
+                  <ng-template #tmplH1>
+                    <h1>Content of H1</h1>
+                  </ng-template>
+                  <ng-template #tmplH2>
+                    <h2>Content of H2</h2>
+                  </ng-template>
+                  <ng-template #tmplH3>
+                    <h3>Content of H3</h3>
+                  </ng-template>
+                  <p>Pre-container content</p>
+                  <ng-container #target></ng-container>
+                  <div>Post-container content</div>
+                `,
               })
               class SimpleComponent {
                 @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
@@ -1656,7 +1548,6 @@ describe('platform-server full application hydration integration', () => {
 
           it('should allow injecting ViewContainerRef in the root component', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               template: `Hello World!`,
             })
@@ -1688,7 +1579,6 @@ describe('platform-server full application hydration integration', () => {
         describe('<ng-template>', () => {
           it('should support unused <ng-template>s', async () => {
             @Component({
-              standalone: true,
               selector: 'app',
               template: `
                 <ng-template #a>Some content</ng-template>
@@ -1697,9 +1587,7 @@ describe('platform-server full application hydration integration', () => {
                 <p>Tag in between</p>
                 <ng-template #c>
                   Some content
-                  <ng-template #d>
-                    Nested template content.
-                  </ng-template>
+                  <ng-template #d> Nested template content. </ng-template>
                 </ng-template>
               `,
             })
@@ -1725,19 +1613,15 @@ describe('platform-server full application hydration integration', () => {
         describe('transplanted views', () => {
           it('should work when passing TemplateRef to a different component', async () => {
             @Component({
-              standalone: true,
               imports: [CommonModule],
               selector: 'insertion-component',
-              template: `
-                <ng-container [ngTemplateOutlet]="template"></ng-container>
-              `,
+              template: ` <ng-container [ngTemplateOutlet]="template"></ng-container> `,
             })
             class InsertionComponent {
               @Input() template!: TemplateRef<unknown>;
             }
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [InsertionComponent, CommonModule],
               template: `
@@ -1777,7 +1661,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should append skip hydration flag if component uses i18n blocks and no `withI18nSupport()` call present', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: '<div i18n>Hi!</div>',
           })
@@ -1800,11 +1683,8 @@ describe('platform-server full application hydration integration', () => {
 
         it('should not append skip hydration flag if component uses i18n blocks', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-            <div i18n>Hi!</div>
-          `,
+            template: ` <div i18n>Hi!</div> `,
           })
           class SimpleComponent {}
 
@@ -1816,14 +1696,13 @@ describe('platform-server full application hydration integration', () => {
 
         it('should not append skip hydration flag if component uses i18n blocks inside embedded views', async () => {
           @Component({
-            standalone: true,
             imports: [NgIf],
             selector: 'app',
             template: `
-               <main *ngIf="true">
-                 <div *ngIf="true" i18n>Hi!</div>
-               </main>
-              `,
+              <main *ngIf="true">
+                <div *ngIf="true" i18n>Hi!</div>
+              </main>
+            `,
           })
           class SimpleComponent {}
 
@@ -1835,11 +1714,8 @@ describe('platform-server full application hydration integration', () => {
 
         it('should not append skip hydration flag if component uses i18n blocks on <ng-container>s', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-              <ng-container i18n>Hi!</ng-container>
-            `,
+            template: ` <ng-container i18n>Hi!</ng-container> `,
           })
           class SimpleComponent {}
 
@@ -1851,12 +1727,9 @@ describe('platform-server full application hydration integration', () => {
 
         it('should not append skip hydration flag if component uses i18n blocks (with *ngIfs on <ng-container>s)', async () => {
           @Component({
-            standalone: true,
             imports: [CommonModule],
             selector: 'app',
-            template: `
-              <ng-container *ngIf="true" i18n>Hi!</ng-container>
-            `,
+            template: ` <ng-container *ngIf="true" i18n>Hi!</ng-container> `,
           })
           class SimpleComponent {}
 
@@ -1873,7 +1746,6 @@ describe('platform-server full application hydration integration', () => {
           });
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `<div i18n>Some <strong>strong</strong> content</div>`,
           })
@@ -1902,16 +1774,20 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support projecting translated content', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content',
-            template: `<ng-content select="span"></ng-content><ng-content select="div"></ng-content>`,
+            template: `<ng-content select="span"></ng-content
+              ><ng-content select="div"></ng-content>`,
           })
           class ContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `<div i18n><app-content><div>one</div><span>two</span></app-content></div>`,
+            template: `<div i18n>
+              <app-content
+                ><div>one</div>
+                <span>two</span></app-content
+              >
+            </div>`,
             imports: [ContentComponent],
           })
           class SimpleComponent {}
@@ -1939,7 +1815,6 @@ describe('platform-server full application hydration integration', () => {
 
         it('should work when i18n content is not projected', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content',
             template: `
               @if (false) {
@@ -1951,7 +1826,6 @@ describe('platform-server full application hydration integration', () => {
           class ContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <app-content>
@@ -1989,20 +1863,17 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support interleaving projected content', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content',
             template: `Start <ng-content select="div" /> Middle <ng-content select="span" /> End`,
           })
           class ContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <app-content i18n>
                 <span>Span</span>
-                Middle Start
-                Middle End
+                Middle Start Middle End
                 <div>Div</div>
               </app-content>
             `,
@@ -2033,20 +1904,19 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support disjoint nodes', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content',
-            template: `Start <ng-content select=":not(span)" /> Middle <ng-content select="span" /> End`,
+            template: `Start <ng-content select=":not(span)" /> Middle
+              <ng-content select="span" /> End`,
           })
           class ContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <app-content i18n>
                 Inner Start
                 <span>Span</span>
-                { count, plural, other { Hello <span>World</span>! }}
+                {count, plural, other {Hello <span>World</span>!}}
                 Inner End
               </app-content>
             `,
@@ -2075,20 +1945,19 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content');
           expect(content.innerHTML).toBe(
-            'Start  Inner Start  Hello <span>World</span>! <!--ICU 27:0--> Inner End  Middle <span>Span</span> End',
+            'Start  Inner Start  Hello <span>World</span>!<!--ICU 28:0--> Inner End  Middle <span>Span</span> End',
           );
         });
 
         it('should support nested content projection', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content-inner',
-            template: `Start <ng-content select=":not(span)" /> Middle <ng-content select="span" /> End`,
+            template: `Start <ng-content select=":not(span)" /> Middle
+              <ng-content select="span" /> End`,
           })
           class InnerContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app-content-outer',
             template: `<app-content-inner><ng-content /></app-content-inner>`,
             imports: [InnerContentComponent],
@@ -2096,13 +1965,12 @@ describe('platform-server full application hydration integration', () => {
           class OuterContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <app-content-outer i18n>
                 Outer Start
                 <span>Span</span>
-                { count, plural, other { Hello <span>World</span>! }}
+                {count, plural, other {Hello <span>World</span>!}}
                 Outer End
               </app-content-outer>
             `,
@@ -2129,20 +1997,18 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content-outer');
           expect(content.innerHTML).toBe(
-            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 27:0--> Outer End  Middle  End</app-content-inner>',
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>!<!--ICU 28:0--> Outer End  Middle  End</app-content-inner>',
           );
         });
 
         it('should support hosting projected content', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content',
             template: `<span i18n>Start <ng-content /> End</span>`,
           })
           class ContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `<div><app-content>Middle</app-content></div>`,
             imports: [ContentComponent],
@@ -2172,14 +2038,12 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support projecting multiple elements', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content',
             template: `<ng-content />`,
           })
           class ContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <app-content i18n>
@@ -2215,14 +2079,12 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support disconnecting i18n nodes during projection', async () => {
           @Component({
-            standalone: true,
             selector: 'app-content',
             template: `Start <ng-content select="span" /> End`,
           })
           class ContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               <app-content i18n>
@@ -2258,16 +2120,17 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support using translated views as view container anchors', async () => {
           @Component({
-            standalone: true,
             selector: 'dynamic-cmp',
             template: `DynamicComponent content`,
           })
           class DynamicComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `<div i18n><div #target>one</div><span>two</span></div>`,
+            template: `<div i18n>
+              <div #target>one</div>
+              <span>two</span>
+            </div>`,
           })
           class SimpleComponent {
             @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
@@ -2310,9 +2173,11 @@ describe('platform-server full application hydration integration', () => {
           });
 
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `<div i18n><div>one</div><span>two</span></div>`,
+            template: `<div i18n>
+              <div>one</div>
+              <span>two</span>
+            </div>`,
           })
           class SimpleComponent {}
 
@@ -2344,7 +2209,6 @@ describe('platform-server full application hydration integration', () => {
           });
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `<div i18n>Some {case, plural, other {normal}} content</div>`,
           })
@@ -2370,7 +2234,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 27:0--> content/);
+          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 28:0--> content/);
         });
 
         it('should support translations that remove elements', async () => {
@@ -2379,7 +2243,6 @@ describe('platform-server full application hydration integration', () => {
           });
 
           @Component({
-            standalone: true,
             selector: 'app',
             template: `<div i18n>Hello <strong>World</strong>!</div>`,
           })
@@ -2408,9 +2271,13 @@ describe('platform-server full application hydration integration', () => {
 
         it('should cleanup dehydrated ICU cases', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `<div i18n>{isServer, select, true { This is a SERVER-ONLY content } false { This is a CLIENT-ONLY content }}</div>`,
+            template: `<div i18n>
+              {isServer, select,
+                true {This is a SERVER-ONLY content}
+                false {This is a CLIENT-ONLY content}
+              }
+            </div>`,
           })
           class SimpleComponent {
             isServer = isPlatformServer(inject(PLATFORM_ID)) + '';
@@ -2450,9 +2317,11 @@ describe('platform-server full application hydration integration', () => {
 
         it('should hydrate ICUs (simple)', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `<div i18n>{{firstCase}} {firstCase, plural, =1 {item} other {items}}, {{secondCase}} {secondCase, plural, =1 {item} other {items}}</div>`,
+            template: `<div i18n>
+              {{ firstCase }} {firstCase, plural, =1 {item} other {items}}, {{ secondCase }}
+              {secondCase, plural, =1 {item} other {items}}
+            </div>`,
           })
           class SimpleComponent {
             firstCase = 0;
@@ -2477,14 +2346,18 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.textContent).toBe('0 items, 1 item');
+          expect(div.textContent).toBe(' 0 items, 1 item ');
         });
 
         it('should hydrate ICUs (nested)', async () => {
           @Component({
-            standalone: true,
             selector: 'simple-component',
-            template: `<div i18n>{firstCase, select, 1 {one-{secondCase, select, 1 {one} 2 {two}}} 2 {two-{secondCase, select, 1 {one} 2 {two}}}}</div>`,
+            template: `<div i18n>
+              {firstCase, select,
+                1 {one-{secondCase, select, 1 {one} 2 {two}}}
+                2 {two-{secondCase, select, 1 {one} 2 {two}}}
+              }
+            </div>`,
           })
           class SimpleComponent {
             @Input() firstCase!: number;
@@ -2492,15 +2365,14 @@ describe('platform-server full application hydration integration', () => {
           }
 
           @Component({
-            standalone: true,
             imports: [SimpleComponent],
             selector: 'app',
             template: `
-                <simple-component id="one" firstCase="1" secondCase="1"></simple-component>
-                <simple-component id="two" firstCase="1" secondCase="2"></simple-component>
-                <simple-component id="three" firstCase="2" secondCase="1"></simple-component>
-                <simple-component id="four" firstCase="2" secondCase="2"></simple-component>
-              `,
+              <simple-component id="one" firstCase="1" secondCase="1"></simple-component>
+              <simple-component id="two" firstCase="1" secondCase="2"></simple-component>
+              <simple-component id="three" firstCase="2" secondCase="1"></simple-component>
+              <simple-component id="four" firstCase="2" secondCase="2"></simple-component>
+            `,
           })
           class AppComponent {}
 
@@ -2521,24 +2393,19 @@ describe('platform-server full application hydration integration', () => {
           verifyAllNodesClaimedForHydration(clientRootNode);
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
-          expect(clientRootNode.querySelector('#one').textContent).toBe('one-one');
-          expect(clientRootNode.querySelector('#two').textContent).toBe('one-two');
-          expect(clientRootNode.querySelector('#three').textContent).toBe('two-one');
-          expect(clientRootNode.querySelector('#four').textContent).toBe('two-two');
+          expect(clientRootNode.querySelector('#one').textContent).toBe(' one-one ');
+          expect(clientRootNode.querySelector('#two').textContent).toBe(' one-two ');
+          expect(clientRootNode.querySelector('#three').textContent).toBe(' two-one ');
+          expect(clientRootNode.querySelector('#four').textContent).toBe(' two-two ');
         });
 
         it('should hydrate containers', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
-                <ng-container i18n>
-                  Container #1
-                </ng-container>
-                <ng-container i18n>
-                  Container #2
-                </ng-container>
-              `,
+              <ng-container i18n> Container #1 </ng-container>
+              <ng-container i18n> Container #2 </ng-container>
+            `,
           })
           class SimpleComponent {}
 
@@ -2567,14 +2434,13 @@ describe('platform-server full application hydration integration', () => {
 
         it('should hydrate when using the *ngFor directive', async () => {
           @Component({
-            standalone: true,
             imports: [NgFor],
             selector: 'app',
             template: `
-                <ol i18n>
-                  <li *ngFor="let item of items">{{ item }}</li>
-                </ol>
-              `,
+              <ol i18n>
+                <li *ngFor="let item of items">{{ item }}</li>
+              </ol>
+            `,
           })
           class SimpleComponent {
             items = [1, 2, 3];
@@ -2603,15 +2469,14 @@ describe('platform-server full application hydration integration', () => {
 
         it('should hydrate when using @for control flow', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
-                <ol i18n>
-                  @for (item of items; track $index) {
-                    <li>{{ item }}</li>
-                  }
-                </ol>
-              `,
+              <ol i18n>
+                @for (item of items; track $index) {
+                  <li>{{ item }}</li>
+                }
+              </ol>
+            `,
           })
           class SimpleComponent {
             items = [1, 2, 3];
@@ -2646,20 +2511,16 @@ describe('platform-server full application hydration integration', () => {
             });
 
             @Component({
-              standalone: true,
               selector: 'cmp-a',
               template: `<ng-content />`,
             })
             class CmpA {}
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [CmpA],
               template: `
-                <cmp-a i18n ngSkipHydration>
-                  Some <strong>strong</strong> content
-                </cmp-a>
+                <cmp-a i18n ngSkipHydration> Some <strong>strong</strong> content </cmp-a>
               `,
             })
             class SimpleComponent {}
@@ -2692,20 +2553,16 @@ describe('platform-server full application hydration integration', () => {
             });
 
             @Component({
-              standalone: true,
               selector: 'cmp-a',
               template: `<ng-content />`,
             })
             class CmpA {}
 
             @Component({
-              standalone: true,
               selector: 'app',
               imports: [CmpA],
               template: `
-                <cmp-a ngSkipHydration>
-                  Some <strong i18n>strong</strong> content
-                </cmp-a>
+                <cmp-a ngSkipHydration> Some <strong i18n>strong</strong> content </cmp-a>
               `,
             })
             class SimpleComponent {}
@@ -2740,11 +2597,8 @@ describe('platform-server full application hydration integration', () => {
       describe('support is disabled', () => {
         it('should append skip hydration flag if component uses i18n blocks', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-            <div i18n>Hi!</div>
-          `,
+            template: ` <div i18n>Hi!</div> `,
           })
           class SimpleComponent {}
 
@@ -2765,12 +2619,9 @@ describe('platform-server full application hydration integration', () => {
 
         it('should keep the skip hydration flag if component uses i18n blocks', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             host: {ngSkipHydration: 'true'},
-            template: `
-            <div i18n>Hi!</div>
-          `,
+            template: ` <div i18n>Hi!</div> `,
           })
           class SimpleComponent {}
 
@@ -2791,14 +2642,13 @@ describe('platform-server full application hydration integration', () => {
 
         it('should append skip hydration flag if component uses i18n blocks inside embedded views', async () => {
           @Component({
-            standalone: true,
             imports: [NgIf],
             selector: 'app',
             template: `
-               <main *ngIf="true">
-                 <div *ngIf="true" i18n>Hi!</div>
-               </main>
-              `,
+              <main *ngIf="true">
+                <div *ngIf="true" i18n>Hi!</div>
+              </main>
+            `,
           })
           class SimpleComponent {}
 
@@ -2819,11 +2669,8 @@ describe('platform-server full application hydration integration', () => {
 
         it('should append skip hydration flag if component uses i18n blocks on <ng-container>s', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-              <ng-container i18n>Hi!</ng-container>
-            `,
+            template: ` <ng-container i18n>Hi!</ng-container> `,
           })
           class SimpleComponent {}
 
@@ -2844,12 +2691,9 @@ describe('platform-server full application hydration integration', () => {
 
         it('should append skip hydration flag if component uses i18n blocks (with *ngIfs on <ng-container>s)', async () => {
           @Component({
-            standalone: true,
             imports: [CommonModule],
             selector: 'app',
-            template: `
-              <ng-container *ngIf="true" i18n>Hi!</ng-container>
-            `,
+            template: ` <ng-container *ngIf="true" i18n>Hi!</ng-container> `,
           })
           class SimpleComponent {}
 
@@ -2870,11 +2714,8 @@ describe('platform-server full application hydration integration', () => {
 
         it('should *not* throw when i18n attributes are used', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-              <div i18n-title title="Hello world">Hi!</div>
-            `,
+            template: ` <div i18n-title title="Hello world">Hi!</div> `,
           })
           class SimpleComponent {}
 
@@ -2899,22 +2740,18 @@ describe('platform-server full application hydration integration', () => {
             'excluded using `ngSkipHydration`',
           async () => {
             @Component({
-              standalone: true,
               selector: 'nested',
-              template: `
-                <div i18n>Hi!</div>
-              `,
+              template: ` <div i18n>Hi!</div> `,
             })
             class NestedComponent {}
 
             @Component({
-              standalone: true,
               imports: [NestedComponent],
               selector: 'app',
               template: `
-               Nested component with i18n inside:
-               <nested ngSkipHydration />
-             `,
+                Nested component with i18n inside:
+                <nested ngSkipHydration />
+              `,
             })
             class SimpleComponent {}
 
@@ -2937,23 +2774,19 @@ describe('platform-server full application hydration integration', () => {
 
         it('should exclude components with i18n from hydration automatically', async () => {
           @Component({
-            standalone: true,
             selector: 'nested',
-            template: `
-            <div i18n>Hi!</div>
-          `,
+            template: ` <div i18n>Hi!</div> `,
           })
           class NestedComponent {}
 
           @Component({
-            standalone: true,
             imports: [NestedComponent],
             selector: 'app',
             template: `
-            Nested component with i18n inside
-            (the content of this component would be excluded from hydration):
-            <nested />
-          `,
+              Nested component with i18n inside (the content of this component would be excluded
+              from hydration):
+              <nested />
+            `,
           })
           class SimpleComponent {}
 
@@ -2979,19 +2812,18 @@ describe('platform-server full application hydration integration', () => {
       it('should not trigger defer blocks on the server', async () => {
         @Component({
           selector: 'my-lazy-cmp',
-          standalone: true,
+
           template: 'Hi!',
         })
         class MyLazyCmp {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [MyLazyCmp],
           template: `
-            Visible: {{ isVisible }}.
+            Visible: {{ isVisible() }}.
 
-            @defer (when isVisible) {
+            @defer (when isVisible()) {
               <my-lazy-cmp />
             } @loading {
               Loading...
@@ -3003,13 +2835,16 @@ describe('platform-server full application hydration integration', () => {
           `,
         })
         class SimpleComponent {
-          isVisible = false;
+          isVisible = signal(false);
+          pendingTasks = inject(PendingTasks);
 
           ngOnInit() {
+            const removeTask = this.pendingTasks.add();
             setTimeout(() => {
               // This changes the triggering condition of the defer block,
               // but it should be ignored and the placeholder content should be visible.
-              this.isVisible = true;
+              this.isVisible.set(true);
+              removeTask();
             });
           }
         }
@@ -3051,13 +2886,13 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'my-lazy-cmp',
-          standalone: true,
+
           template: 'Hi!',
         })
         class MyLazyCmp {}
 
+        // prettier-ignore
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [MyLazyCmp],
           template: `
@@ -3084,21 +2919,20 @@ describe('platform-server full application hydration integration', () => {
       it('should hydrate a placeholder block', async () => {
         @Component({
           selector: 'my-lazy-cmp',
-          standalone: true,
+
           template: 'Hi!',
         })
         class MyLazyCmp {}
 
         @Component({
           selector: 'my-placeholder-cmp',
-          standalone: true,
+
           imports: [NgIf],
           template: '<div *ngIf="true">Hi!</div>',
         })
         class MyPlaceholderCmp {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [MyLazyCmp, MyPlaceholderCmp],
           template: `
@@ -3144,21 +2978,21 @@ describe('platform-server full application hydration integration', () => {
       it('should render nothing on the server if no placeholder block is provided', async () => {
         @Component({
           selector: 'my-lazy-cmp',
-          standalone: true,
+
           template: 'Hi!',
         })
         class MyLazyCmp {}
 
         @Component({
           selector: 'my-placeholder-cmp',
-          standalone: true,
+
           imports: [NgIf],
           template: '<div *ngIf="true">Hi!</div>',
         })
         class MyPlaceholderCmp {}
 
+        // prettier-ignore
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [MyLazyCmp, MyPlaceholderCmp],
           template: `
@@ -3197,13 +3031,12 @@ describe('platform-server full application hydration integration', () => {
         // when `on viewport` trigger is used for a defer block.
         @Component({
           selector: 'my-lazy-cmp',
-          standalone: true,
+
           template: 'Hi!',
         })
         class MyLazyCmp {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [MyLazyCmp],
           template: `
@@ -3243,32 +3076,30 @@ describe('platform-server full application hydration integration', () => {
       it('should not hydrate when an entire block in skip hydration section', async () => {
         @Component({
           selector: 'my-lazy-cmp',
-          standalone: true,
+
           template: 'Hi!',
         })
         class MyLazyCmp {}
 
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
-             <main>
-               <ng-content />
-             </main>
-           `,
+            <main>
+              <ng-content />
+            </main>
+          `,
         })
         class ProjectorCmp {}
 
         @Component({
           selector: 'my-placeholder-cmp',
-          standalone: true,
+
           imports: [NgIf],
           template: '<div *ngIf="true">Hi!</div>',
         })
         class MyPlaceholderCmp {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [MyLazyCmp, MyPlaceholderCmp, ProjectorCmp],
           template: `
@@ -3321,32 +3152,30 @@ describe('platform-server full application hydration integration', () => {
       it('should not hydrate when a placeholder block in skip hydration section', async () => {
         @Component({
           selector: 'my-lazy-cmp',
-          standalone: true,
+
           template: 'Hi!',
         })
         class MyLazyCmp {}
 
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
-             <main>
-               <ng-content />
-             </main>
-           `,
+            <main>
+              <ng-content />
+            </main>
+          `,
         })
         class ProjectorCmp {}
 
         @Component({
           selector: 'my-placeholder-cmp',
-          standalone: true,
+
           imports: [NgIf],
           template: '<div *ngIf="true">Hi!</div>',
         })
         class MyPlaceholderCmp {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [MyLazyCmp, MyPlaceholderCmp, ProjectorCmp],
           template: `
@@ -3400,7 +3229,6 @@ describe('platform-server full application hydration integration', () => {
     describe('ShadowDom encapsulation', () => {
       it('should append skip hydration flag if component uses ShadowDom encapsulation', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           encapsulation: ViewEncapsulation.ShadowDom,
           template: `Hi!`,
@@ -3418,7 +3246,6 @@ describe('platform-server full application hydration integration', () => {
           '(but keep parent and sibling elements hydratable)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'shadow-dom',
             encapsulation: ViewEncapsulation.ShadowDom,
             template: `ShadowDom component`,
@@ -3427,7 +3254,6 @@ describe('platform-server full application hydration integration', () => {
           class ShadowDomComponent {}
 
           @Component({
-            standalone: true,
             selector: 'regular',
             template: `<p>Regular component</p>`,
           })
@@ -3436,15 +3262,14 @@ describe('platform-server full application hydration integration', () => {
           }
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [RegularComponent, ShadowDomComponent],
             template: `
-                <main>Main content</main>
-                <regular id="1" />
-                <shadow-dom />
-                <regular id="2" />
-              `,
+              <main>Main content</main>
+              <regular id="1" />
+              <shadow-dom />
+              <regular id="2" />
+            `,
           })
           class SimpleComponent {}
 
@@ -3462,7 +3287,6 @@ describe('platform-server full application hydration integration', () => {
     describe('ngSkipHydration', () => {
       it('should skip hydrating elements with ngSkipHydration attribute', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: `
             <h1>Hello World!</h1>
@@ -3474,12 +3298,18 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `
             <header>Header</header>
-            <nested-cmp [title]="someTitle" style="width:100px; height:200px; color:red" moo="car" foo="value" baz ngSkipHydration />
+            <nested-cmp
+              [title]="someTitle"
+              style="width:100px; height:200px; color:red"
+              moo="car"
+              foo="value"
+              baz
+              ngSkipHydration
+            />
             <footer>Footer</footer>
           `,
         })
@@ -3505,11 +3335,8 @@ describe('platform-server full application hydration integration', () => {
         'should skip hydrating elements when host element ' + 'has the ngSkipHydration attribute',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
-            template: `
-            <main>Main content</main>
-          `,
+            template: ` <main>Main content</main> `,
           })
           class SimpleComponent {}
 
@@ -3544,25 +3371,21 @@ describe('platform-server full application hydration integration', () => {
           '(when component with `ngSkipHydration` goes first)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'nested',
             imports: [NgIf],
-            template: `
-               <ng-container *ngIf="true">Hello world</ng-container>
-             `,
+            template: ` <ng-container *ngIf="true">Hello world</ng-container> `,
           })
           class Nested {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NgIf, Nested],
             template: `
-                <nested ngSkipHydration />
-                <nested />
-                <nested ngSkipHydration />
-                <nested />
-              `,
+              <nested ngSkipHydration />
+              <nested />
+              <nested ngSkipHydration />
+              <nested />
+            `,
           })
           class SimpleComponent {}
 
@@ -3588,53 +3411,44 @@ describe('platform-server full application hydration integration', () => {
           '(view containers with embedded views as projection root nodes)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'regular-cmp',
-            template: `
-                <ng-content />
-              `,
+            template: ` <ng-content /> `,
           })
           class RegularCmp {}
 
           @Component({
-            standalone: true,
             selector: 'deeply-nested',
             host: {ngSkipHydration: 'true'},
-            template: `
-                <ng-content />
-              `,
+            template: ` <ng-content /> `,
           })
           class DeeplyNested {}
 
           @Component({
-            standalone: true,
             selector: 'deeply-nested-wrapper',
             host: {ngSkipHydration: 'true'},
             imports: [RegularCmp],
             template: `
-                <regular-cmp>
-                  <ng-content />
-                </regular-cmp>
-              `,
+              <regular-cmp>
+                <ng-content />
+              </regular-cmp>
+            `,
           })
           class DeeplyNestedWrapper {}
 
           @Component({
-            standalone: true,
             selector: 'layout',
             imports: [DeeplyNested, DeeplyNestedWrapper],
             template: `
-                <deeply-nested>
-                  <deeply-nested-wrapper>
-                    <ng-content />
-                  </deeply-nested-wrapper>
-                </deeply-nested>
-              `,
+              <deeply-nested>
+                <deeply-nested-wrapper>
+                  <ng-content />
+                </deeply-nested-wrapper>
+              </deeply-nested>
+            `,
           })
           class Layout {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NgIf, Layout],
             template: `
@@ -3667,60 +3481,50 @@ describe('platform-server full application hydration integration', () => {
           '(view containers with components as projection root nodes)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'dynamic-cmp',
             template: `DynamicComponent content`,
           })
           class DynamicComponent {}
 
           @Component({
-            standalone: true,
             selector: 'regular-cmp',
-            template: `
-            <ng-content />
-          `,
+            template: ` <ng-content /> `,
           })
           class RegularCmp {}
 
           @Component({
-            standalone: true,
             selector: 'deeply-nested',
             host: {ngSkipHydration: 'true'},
-            template: `
-            <ng-content />
-          `,
+            template: ` <ng-content /> `,
           })
           class DeeplyNested {}
 
           @Component({
-            standalone: true,
             selector: 'deeply-nested-wrapper',
             host: {ngSkipHydration: 'true'},
             imports: [RegularCmp],
             template: `
-            <regular-cmp>
-              <ng-content />
-            </regular-cmp>
-          `,
+              <regular-cmp>
+                <ng-content />
+              </regular-cmp>
+            `,
           })
           class DeeplyNestedWrapper {}
 
           @Component({
-            standalone: true,
             selector: 'layout',
             imports: [DeeplyNested, DeeplyNestedWrapper],
             template: `
-            <deeply-nested>
-              <deeply-nested-wrapper>
-                <ng-content />
-              </deeply-nested-wrapper>
-            </deeply-nested>
-          `,
+              <deeply-nested>
+                <deeply-nested-wrapper>
+                  <ng-content />
+                </deeply-nested-wrapper>
+              </deeply-nested>
+            `,
           })
           class Layout {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NgIf, Layout],
             template: `
@@ -3767,26 +3571,19 @@ describe('platform-server full application hydration integration', () => {
           '(with ng-containers as projection root nodes)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'regular-cmp',
-            template: `
-                <ng-content />
-              `,
+            template: ` <ng-content /> `,
           })
           class RegularCmp {}
 
           @Component({
-            standalone: true,
             selector: 'deeply-nested',
             host: {ngSkipHydration: 'true'},
-            template: `
-              <ng-content />
-            `,
+            template: ` <ng-content /> `,
           })
           class DeeplyNested {}
 
           @Component({
-            standalone: true,
             selector: 'deeply-nested-wrapper',
             host: {ngSkipHydration: 'true'},
             imports: [RegularCmp],
@@ -3799,7 +3596,6 @@ describe('platform-server full application hydration integration', () => {
           class DeeplyNestedWrapper {}
 
           @Component({
-            standalone: true,
             selector: 'layout',
             imports: [DeeplyNested, DeeplyNestedWrapper],
             template: `
@@ -3813,7 +3609,6 @@ describe('platform-server full application hydration integration', () => {
           class Layout {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NgIf, Layout],
             template: `
@@ -3846,25 +3641,21 @@ describe('platform-server full application hydration integration', () => {
           '(when component without `ngSkipHydration` goes first)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'nested',
             imports: [NgIf],
-            template: `
-               <ng-container *ngIf="true">Hello world</ng-container>
-             `,
+            template: ` <ng-container *ngIf="true">Hello world</ng-container> `,
           })
           class Nested {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NgIf, Nested],
             template: `
-               <nested />
-               <nested ngSkipHydration />
-               <nested />
-               <nested ngSkipHydration />
-             `,
+              <nested />
+              <nested ngSkipHydration />
+              <nested />
+              <nested ngSkipHydration />
+            `,
           })
           class SimpleComponent {}
 
@@ -3887,7 +3678,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should hydrate when the value of an attribute is "ngskiphydration"', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: `
             <h1>Hello World!</h1>
@@ -3899,12 +3689,17 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `
             <header>Header</header>
-            <nested-cmp style="width:100px; height:200px; color:red" moo="car" foo="value" baz [title]="ngSkipHydration" />
+            <nested-cmp
+              style="width:100px; height:200px; color:red"
+              moo="car"
+              foo="value"
+              baz
+              [title]="ngSkipHydration"
+            />
             <footer>Footer</footer>
           `,
         })
@@ -3928,14 +3723,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip hydrating elements with ngSkipHydration host binding', async () => {
         @Component({
-          standalone: true,
           selector: 'second-cmp',
           template: `<div>Not hydrated</div>`,
         })
         class SecondCmd {}
 
         @Component({
-          standalone: true,
           imports: [SecondCmd],
           selector: 'nested-cmp',
           template: `<second-cmp />`,
@@ -3944,12 +3737,9 @@ describe('platform-server full application hydration integration', () => {
         class NestedCmp {}
 
         @Component({
-          standalone: true,
           imports: [NestedCmp],
           selector: 'app',
-          template: `
-            <nested-cmp />
-          `,
+          template: ` <nested-cmp /> `,
         })
         class SimpleComponent {}
 
@@ -3971,29 +3761,27 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip hydrating all child content of an element with ngSkipHydration attribute', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: `
-              <h1>Hello World!</h1>
-              <div>This is the content of a nested component</div>
-            `,
+            <h1>Hello World!</h1>
+            <div>This is the content of a nested component</div>
+          `,
         })
         class NestedComponent {
           @Input() title = '';
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `
-              <header>Header</header>
-              <nested-cmp ngSkipHydration>
-                <h1>Dehydrated content header</h1>
-                <p>This content is definitely dehydrated and could use some water.</p>
-              </nested-cmp>
-              <footer>Footer</footer>
-            `,
+            <header>Header</header>
+            <nested-cmp ngSkipHydration>
+              <h1>Dehydrated content header</h1>
+              <p>This content is definitely dehydrated and could use some water.</p>
+            </nested-cmp>
+            <footer>Footer</footer>
+          `,
         })
         class SimpleComponent {}
 
@@ -4015,28 +3803,26 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip hydrating when ng-containers exist and ngSkipHydration attribute is present', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: `
-              <h1>Hello World!</h1>
-              <div>This is the content of a nested component</div>
-            `,
+            <h1>Hello World!</h1>
+            <div>This is the content of a nested component</div>
+          `,
         })
         class NestedComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `
-              <header>Header</header>
-                <nested-cmp ngSkipHydration>
-                  <ng-container>
-                    <h1>Dehydrated content header</h1>
-                  </ng-container>
-                </nested-cmp>
-              <footer>Footer</footer>
-            `,
+            <header>Header</header>
+            <nested-cmp ngSkipHydration>
+              <ng-container>
+                <h1>Dehydrated content header</h1>
+              </ng-container>
+            </nested-cmp>
+            <footer>Footer</footer>
+          `,
         })
         class SimpleComponent {}
 
@@ -4065,12 +3851,11 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip hydrating and safely allow DOM manipulation inside block that was skipped', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: `
-              <h1>Hello World!</h1>
-              <div #nestedDiv>This is the content of a nested component</div>
-            `,
+            <h1>Hello World!</h1>
+            <div #nestedDiv>This is the content of a nested component</div>
+          `,
         })
         class NestedComponent {
           el = inject(ElementRef);
@@ -4083,14 +3868,13 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `
-              <header>Header</header>
-              <nested-cmp ngSkipHydration />
-              <footer>Footer</footer>
-            `,
+            <header>Header</header>
+            <nested-cmp ngSkipHydration />
+            <footer>Footer</footer>
+          `,
         })
         class SimpleComponent {}
 
@@ -4113,14 +3897,13 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip hydrating and safely allow adding and removing DOM nodes inside block that was skipped', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: `
-              <h1>Hello World!</h1>
-              <div #nestedDiv>
-                <p>This content will be removed</p>
-              </div>
-            `,
+            <h1>Hello World!</h1>
+            <div #nestedDiv>
+              <p>This content will be removed</p>
+            </div>
+          `,
         })
         class NestedComponent {
           el = inject(ElementRef);
@@ -4134,14 +3917,13 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `
-              <header>Header</header>
-              <nested-cmp ngSkipHydration />
-              <footer>Footer</footer>
-            `,
+            <header>Header</header>
+            <nested-cmp ngSkipHydration />
+            <footer>Footer</footer>
+          `,
         })
         class SimpleComponent {}
 
@@ -4164,7 +3946,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should skip hydrating elements with ngSkipHydration attribute on ViewContainerRef host', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: `<p>Just some text</p>`,
         })
@@ -4182,27 +3963,22 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           imports: [NestedComponent],
           template: `
-                <main>
-                  <nested-cmp></nested-cmp>
-                </main>
-              `,
+            <main>
+              <nested-cmp></nested-cmp>
+            </main>
+          `,
         })
         class ProjectorCmp {
           vcr = inject(ViewContainerRef);
         }
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
-          template: `
-              <projector-cmp ngSkipHydration>
-              </projector-cmp>
-            `,
+          template: ` <projector-cmp ngSkipHydration> </projector-cmp> `,
         })
         class SimpleComponent {}
 
@@ -4227,12 +4003,11 @@ describe('platform-server full application hydration integration', () => {
           'which is not a component host',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
-                <header ngSkipHydration>Header</header>
-                <footer ngSkipHydration>Footer</footer>
-              `,
+              <header ngSkipHydration>Header</header>
+              <footer ngSkipHydration>Footer</footer>
+            `,
           })
           class SimpleComponent {}
 
@@ -4261,19 +4036,15 @@ describe('platform-server full application hydration integration', () => {
           'which is not a component host (when using host bindings)',
         async () => {
           @Directive({
-            standalone: true,
             selector: '[dir]',
             host: {ngSkipHydration: 'true'},
           })
           class Dir {}
 
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [Dir],
-            template: `
-                <div dir></div>
-              `,
+            template: ` <div dir></div> `,
           })
           class SimpleComponent {}
 
@@ -4305,13 +4076,13 @@ describe('platform-server full application hydration integration', () => {
     describe('corrupted text nodes restoration', () => {
       it('should support empty text nodes', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             This is hydrated content.
-            <span>{{spanText}}</span>.
-            <p>{{pText}}</p>
-            <div>{{anotherText}}</div>
+            <span>{{ spanText }}</span
+            >.
+            <p>{{ pText }}</p>
+            <div>{{ anotherText }}</div>
           `,
         })
         class SimpleComponent {
@@ -4341,13 +4112,12 @@ describe('platform-server full application hydration integration', () => {
           '(when interpolation is on a new line)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
-                <div>
-                  {{ text }}
-                </div>
-              `,
+              <div>
+                {{ text }}
+              </div>
+            `,
           })
           class SimpleComponent {
             text = '';
@@ -4382,7 +4152,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should not treat text nodes with `&nbsp`s as empty', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             <div>&nbsp;{{ text }}&nbsp;</div>
@@ -4419,11 +4188,11 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support restoration of multiple text nodes in a row', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
-            This is hydrated content.<span>{{emptyText}}{{moreText}}{{andMoreText}}</span>.
-            <p>{{secondEmptyText}}{{secondMoreText}}</p>
+            This is hydrated content.<span>{{ emptyText }}{{ moreText }}{{ andMoreText }}</span
+            >.
+            <p>{{ secondEmptyText }}{{ secondMoreText }}</p>
           `,
         })
         class SimpleComponent {
@@ -4452,7 +4221,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support projected text node content with plain text nodes', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf],
           template: `
@@ -4485,7 +4253,6 @@ describe('platform-server full application hydration integration', () => {
     describe('post-hydration cleanup', () => {
       it('should cleanup unclaimed views in a component (when using elements)', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf],
           template: `
@@ -4532,7 +4299,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should cleanup unclaimed views in a component (when using <ng-container>s)', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf],
           template: `
@@ -4582,17 +4348,16 @@ describe('platform-server full application hydration integration', () => {
           'root component is used as an anchor for ViewContainerRef',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             imports: [NgIf],
             template: `
-                <ng-template #tmpl>
-                  <span *ngIf="isServer">This is a SERVER-ONLY content (embedded view)</span>
-                  <div *ngIf="!isServer">This is a CLIENT-ONLY content (embedded view)</div>
-                </ng-template>
-                <b *ngIf="isServer">This is a SERVER-ONLY content (root component)</b>
-                <i *ngIf="!isServer">This is a CLIENT-ONLY content (root component)</i>
-              `,
+              <ng-template #tmpl>
+                <span *ngIf="isServer">This is a SERVER-ONLY content (embedded view)</span>
+                <div *ngIf="!isServer">This is a CLIENT-ONLY content (embedded view)</div>
+              </ng-template>
+              <b *ngIf="isServer">This is a SERVER-ONLY content (root component)</b>
+              <i *ngIf="!isServer">This is a CLIENT-ONLY content (root component)</i>
+            `,
           })
           class SimpleComponent {
             // This flag is intentionally different between the client
@@ -4661,7 +4426,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should cleanup within inner containers', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf],
           template: `
@@ -4715,7 +4479,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should reconcile *ngFor-generated views', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf, NgFor],
           template: `
@@ -4765,7 +4528,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should cleanup dehydrated views within dynamically created components', async () => {
         @Component({
-          standalone: true,
           imports: [CommonModule],
           selector: 'dynamic',
           template: `
@@ -4783,7 +4545,6 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf, NgFor],
           template: `
@@ -4830,107 +4591,135 @@ describe('platform-server full application hydration integration', () => {
         expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
       });
 
-      it('should trigger change detection after cleanup (immediate)', async () => {
-        const observedChildCountLog: number[] = [];
+      [true, false].forEach((zoneless) => {
+        it(`should trigger ${zoneless ? 'zoneless' : 'zone'} change detection after cleanup (immediate)`, async () => {
+          const observedChildCountLog: number[] = [];
 
-        @Component({
-          standalone: true,
-          selector: 'app',
-          imports: [NgIf],
-          template: `
-            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
-            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
-          `,
-        })
-        class SimpleComponent {
-          isServer = isPlatformServer(inject(PLATFORM_ID));
-          elementRef = inject(ElementRef);
+          @Component({
+            selector: 'app',
+            imports: [NgIf],
+            template: `
+              <span *ngIf="isServer">This is a SERVER-ONLY content</span>
+              <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+            `,
+          })
+          class SimpleComponent {
+            isServer = isPlatformServer(inject(PLATFORM_ID));
+            elementRef = inject(ElementRef);
 
-          constructor() {
-            afterEveryRender(() => {
-              observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
-            });
+            constructor() {
+              afterEveryRender(() => {
+                observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
+              });
+            }
           }
-        }
+          const envProviders = zoneless ? [] : [provideZoneChangeDetection() as any];
+          const html = await ssr(SimpleComponent, {envProviders});
+          let ssrContents = getAppContents(html);
 
-        const html = await ssr(SimpleComponent);
-        let ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
 
-        expect(ssrContents).toContain('<app ngh');
+          resetTViewsFor(SimpleComponent);
 
-        resetTViewsFor(SimpleComponent);
+          // Before hydration
+          expect(observedChildCountLog).toEqual([]);
 
-        // Before hydration
-        expect(observedChildCountLog).toEqual([]);
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders,
+          });
+          await appRef.whenStable();
 
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
-        await appRef.whenStable();
-
-        // afterRender should be triggered by:
-        //   1.) Bootstrap
-        //   2.) Microtask empty event
-        //   3.) Stabilization + cleanup
-        expect(observedChildCountLog).toEqual([2, 2, 1]);
-      });
-
-      it('should trigger change detection after cleanup (deferred)', async () => {
-        const observedChildCountLog: number[] = [];
-
-        @Component({
-          standalone: true,
-          selector: 'app',
-          imports: [NgIf],
-          template: `
-            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
-            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
-          `,
-        })
-        class SimpleComponent {
-          isServer = isPlatformServer(inject(PLATFORM_ID));
-          elementRef = inject(ElementRef);
-
-          constructor() {
-            afterEveryRender(() => {
-              observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
-            });
-
-            // Create a dummy promise to prevent stabilization
-            new Promise<void>((resolve) => {
-              setTimeout(resolve, 0);
-            });
+          if (zoneless) {
+            //   1.) Bootstrap
+            //   2.) After cleanup
+            expect(observedChildCountLog).toEqual([2, 1]);
+          } else {
+            // afterRender should be triggered by:
+            //   1.) Bootstrap
+            //   2.) Microtask empty event
+            //   3.) Stabilization + cleanup
+            expect(observedChildCountLog).toEqual([2, 2, 1]);
           }
-        }
+        });
 
-        const html = await ssr(SimpleComponent);
-        let ssrContents = getAppContents(html);
+        it(`should trigger ${zoneless ? 'zoneless' : 'zone'} change detection after cleanup (deferred)`, async () => {
+          const observedChildCountLog: number[] = [];
 
-        expect(ssrContents).toContain('<app ngh');
+          @Component({
+            selector: 'app',
+            imports: [NgIf],
+            template: `
+              <span *ngIf="isServer">This is a SERVER-ONLY content</span>
+              <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+            `,
+          })
+          class SimpleComponent {
+            isServer = isPlatformServer(inject(PLATFORM_ID));
+            elementRef = inject(ElementRef);
 
-        resetTViewsFor(SimpleComponent);
+            constructor() {
+              afterEveryRender(() => {
+                observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
+              });
 
-        // Before hydration
-        expect(observedChildCountLog).toEqual([]);
+              // Create a dummy promise to prevent stabilization
+              inject(PendingTasks).run(
+                async () =>
+                  await new Promise<void>((resolve) => {
+                    setTimeout(resolve, 0);
+                  }),
+              );
+            }
+          }
 
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          const envProviders = zoneless ? [] : [provideZoneChangeDetection() as any];
+          const html = await ssr(SimpleComponent, {envProviders});
+          let ssrContents = getAppContents(html);
 
-        // afterRender should be triggered by:
-        //   1.) Bootstrap
-        //   2.) Microtask empty event
-        expect(observedChildCountLog).toEqual([2, 2]);
+          expect(ssrContents).toContain('<app ngh');
 
-        await appRef.whenStable();
+          resetTViewsFor(SimpleComponent);
 
-        // afterRender should be triggered by:
-        //   3.) Microtask empty event
-        //   4.) Stabilization + cleanup
-        expect(observedChildCountLog).toEqual([2, 2, 2, 1]);
+          // Before hydration
+          expect(observedChildCountLog).toEqual([]);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders,
+          });
+
+          if (zoneless) {
+            // afterRender should be triggered by:
+            //   1.) Bootstrap
+            expect(observedChildCountLog).toEqual([2]);
+          } else {
+            // afterRender should be triggered by:
+            //   1.) Bootstrap
+            //   2.) Microtask empty event
+            expect(observedChildCountLog).toEqual([2, 2]);
+          }
+
+          // Cleanup will happen when stable, it will also schedule another change detection run, so we need to wait for stability again.
+          await appRef.whenStable();
+
+          await appRef.whenStable();
+
+          if (zoneless) {
+            // afterRender should be triggered by:
+            //   2.) After stablization & cleanup
+            expect(observedChildCountLog).toEqual([2, 1]);
+          } else {
+            // afterRender should be triggered by:
+            //   3.) Microtask empty event
+            //   4.) Stabilization + cleanup
+            expect(observedChildCountLog).toEqual([2, 2, 2, 2, 1]);
+          }
+        });
       });
     });
 
     describe('content projection', () => {
       it('should project plain text', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <main>
@@ -4941,14 +4730,9 @@ describe('platform-server full application hydration integration', () => {
         class ProjectorCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
-          template: `
-            <projector-cmp>
-              Projected content is just a plain text.
-            </projector-cmp>
-          `,
+          template: ` <projector-cmp> Projected content is just a plain text. </projector-cmp> `,
         })
         class SimpleComponent {}
 
@@ -4977,7 +4761,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should allow re-projection of child content', async () => {
         @Component({
-          standalone: true,
           selector: 'mat-step',
           template: `<ng-template><ng-content /></ng-template>`,
         })
@@ -4986,7 +4769,6 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'mat-stepper',
           imports: [NgTemplateOutlet],
           template: `
@@ -5000,14 +4782,12 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           template: 'Nested cmp content',
         })
         class NestedCmp {}
 
         @Component({
-          standalone: true,
           imports: [MatStepper, MatStep, NgIf, NestedCmp],
           selector: 'app',
           template: `
@@ -5019,9 +4799,7 @@ describe('platform-server full application hydration integration', () => {
               </mat-step>
 
               <mat-step>
-                <ng-container *ngIf="true">
-                  Using ng-containers with *ngIf
-                </ng-container>
+                <ng-container *ngIf="true"> Using ng-containers with *ngIf </ng-container>
               </mat-step>
 
               <mat-step>
@@ -5033,7 +4811,6 @@ describe('platform-server full application hydration integration', () => {
               <mat-step>
                 <nested-cmp />
               </mat-step>
-
             </mat-stepper>
           `,
         })
@@ -5064,7 +4841,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should project plain text and HTML elements', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <main>
@@ -5075,7 +4851,6 @@ describe('platform-server full application hydration integration', () => {
         class ProjectorCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
@@ -5105,7 +4880,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support re-projection of contents', async () => {
         @Component({
-          standalone: true,
           selector: 'reprojector-cmp',
           template: `
             <main>
@@ -5116,7 +4890,6 @@ describe('platform-server full application hydration integration', () => {
         class ReprojectorCmp {}
 
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           imports: [ReprojectorCmp],
           template: `
@@ -5130,14 +4903,9 @@ describe('platform-server full application hydration integration', () => {
         class ProjectorCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
-          template: `
-            <projector-cmp>
-              Projected content is a plain text.
-            </projector-cmp>
-          `,
+          template: ` <projector-cmp> Projected content is a plain text. </projector-cmp> `,
         })
         class SimpleComponent {}
 
@@ -5159,7 +4927,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle multiple nodes projected in a single slot', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <ng-content select="foo" />
@@ -5168,14 +4935,13 @@ describe('platform-server full application hydration integration', () => {
         })
         class ProjectorCmp {}
 
-        @Component({selector: 'foo', standalone: true, template: ''})
+        @Component({selector: 'foo', template: ''})
         class FooCmp {}
 
-        @Component({selector: 'bar', standalone: true, template: ''})
+        @Component({selector: 'bar', template: ''})
         class BarCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp, FooCmp, BarCmp],
           selector: 'app',
           template: `
@@ -5206,7 +4972,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle multiple nodes projected in a single slot (different order)', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <ng-content select="foo" />
@@ -5215,14 +4980,13 @@ describe('platform-server full application hydration integration', () => {
         })
         class ProjectorCmp {}
 
-        @Component({selector: 'foo', standalone: true, template: ''})
+        @Component({selector: 'foo', template: ''})
         class FooCmp {}
 
-        @Component({selector: 'bar', standalone: true, template: ''})
+        @Component({selector: 'bar', template: ''})
         class BarCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp, FooCmp, BarCmp],
           selector: 'app',
           template: `
@@ -5253,7 +5017,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle empty projection slots within <ng-container>', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           imports: [CommonModule],
           template: `
@@ -5269,12 +5032,9 @@ describe('platform-server full application hydration integration', () => {
         class ProjectorCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
-          template: `
-            <projector-cmp />
-          `,
+          template: ` <projector-cmp /> `,
         })
         class SimpleComponent {}
 
@@ -5299,7 +5059,6 @@ describe('platform-server full application hydration integration', () => {
           '(when no other elements are present)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'projector-cmp',
             imports: [CommonModule],
             template: `
@@ -5312,12 +5071,9 @@ describe('platform-server full application hydration integration', () => {
           class ProjectorCmp {}
 
           @Component({
-            standalone: true,
             imports: [ProjectorCmp],
             selector: 'app',
-            template: `
-              <projector-cmp />
-            `,
+            template: ` <projector-cmp /> `,
           })
           class SimpleComponent {}
 
@@ -5343,22 +5099,18 @@ describe('platform-server full application hydration integration', () => {
           '(when no other elements are present)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'projector-cmp',
             template: `
               <ng-content select="[left]"></ng-content>
               <ng-content select="[right]"></ng-content>
-             `,
+            `,
           })
           class ProjectorCmp {}
 
           @Component({
-            standalone: true,
             imports: [ProjectorCmp],
             selector: 'app',
-            template: `
-              <projector-cmp />
-            `,
+            template: ` <projector-cmp /> `,
           })
           class SimpleComponent {}
 
@@ -5381,21 +5133,19 @@ describe('platform-server full application hydration integration', () => {
 
       it('should project contents into different slots', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <div>
-              Header slot: <ng-content select="header"></ng-content>
-              Main slot: <ng-content select="main"></ng-content>
-              Footer slot: <ng-content select="footer"></ng-content>
-              <ng-content></ng-content> <!-- everything else -->
+              Header slot: <ng-content select="header"></ng-content> Main slot:
+              <ng-content select="main"></ng-content> Footer slot:
+              <ng-content select="footer"></ng-content> <ng-content></ng-content>
+              <!-- everything else -->
             </div>
           `,
         })
         class ProjectorCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
@@ -5429,7 +5179,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle view container nodes that go after projection slots', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           imports: [CommonModule],
           template: `
@@ -5444,12 +5193,9 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
-          template: `
-            <projector-cmp />
-          `,
+          template: ` <projector-cmp /> `,
         })
         class SimpleComponent {}
 
@@ -5474,7 +5220,6 @@ describe('platform-server full application hydration integration', () => {
           '(when view container host node is <ng-container>)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'projector-cmp',
             imports: [CommonModule],
             template: `
@@ -5489,12 +5234,9 @@ describe('platform-server full application hydration integration', () => {
           }
 
           @Component({
-            standalone: true,
             imports: [ProjectorCmp],
             selector: 'app',
-            template: `
-              <projector-cmp />
-            `,
+            template: ` <projector-cmp /> `,
           })
           class SimpleComponent {}
 
@@ -5516,15 +5258,13 @@ describe('platform-server full application hydration integration', () => {
       );
 
       describe('partial projection', () => {
-        it('should support cases when some element nodes are not projected', async () => {
+        it('should support cases when some element nodes are not projected (ng-content)', async () => {
           @Component({
-            standalone: true,
             selector: 'projector-cmp',
             template: `
               <div>
-                Header slot: <ng-content select="header" />
-                Main slot: <ng-content select="main" />
-                Footer slot: <ng-content select="footer" />
+                Header slot: <ng-content select="header" /> Main slot:
+                <ng-content select="main" /> Footer slot: <ng-content select="footer" />
                 <!-- no "default" projection bucket -->
               </div>
             `,
@@ -5532,7 +5272,6 @@ describe('platform-server full application hydration integration', () => {
           class ProjectorCmp {}
 
           @Component({
-            standalone: true,
             imports: [ProjectorCmp],
             selector: 'app',
             template: `
@@ -5564,16 +5303,14 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
 
-        it('should support cases when some element nodes are not projected', async () => {
+        it('should support cases when some element nodes are not projected (@if)', async () => {
           @Component({
-            standalone: true,
             selector: 'app-dropdown-content',
             template: `<ng-content />`,
           })
           class DropdownContentComponent {}
 
           @Component({
-            standalone: true,
             selector: 'app-dropdown',
             template: `
               @if (false) {
@@ -5584,7 +5321,6 @@ describe('platform-server full application hydration integration', () => {
           class DropdownComponent {}
 
           @Component({
-            standalone: true,
             imports: [DropdownComponent, DropdownContentComponent],
             selector: 'app-menu',
             template: `
@@ -5599,13 +5335,9 @@ describe('platform-server full application hydration integration', () => {
 
           @Component({
             selector: 'app',
-            standalone: true,
+
             imports: [MenuComponent],
-            template: `
-              <app-menu>
-                Menu Content
-              </app-menu>
-            `,
+            template: ` <app-menu> Menu Content </app-menu> `,
           })
           class SimpleComponent {}
 
@@ -5632,14 +5364,12 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support cases when view containers are not projected', async () => {
           @Component({
-            standalone: true,
             selector: 'projector-cmp',
             template: `No content projection slots.`,
           })
           class ProjectorCmp {}
 
           @Component({
-            standalone: true,
             imports: [ProjectorCmp],
             selector: 'app',
             template: `
@@ -5671,21 +5401,18 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support cases when component nodes are not projected', async () => {
           @Component({
-            standalone: true,
             selector: 'projector-cmp',
             template: `No content projection slots.`,
           })
           class ProjectorCmp {}
 
           @Component({
-            standalone: true,
             selector: 'nested',
             template: 'This is a nested component.',
           })
           class NestedComponent {}
 
           @Component({
-            standalone: true,
             imports: [ProjectorCmp, NestedComponent],
             selector: 'app',
             template: `
@@ -5717,35 +5444,32 @@ describe('platform-server full application hydration integration', () => {
 
         it('should support cases when component nodes are not projected in nested components', async () => {
           @Component({
-            standalone: true,
             selector: 'projector-cmp',
             template: `
-                <main>
-                  <ng-content />
-                </main>
-              `,
+              <main>
+                <ng-content />
+              </main>
+            `,
           })
           class ProjectorCmp {}
 
           @Component({
-            standalone: true,
             selector: 'nested',
             template: 'No content projection slots.',
           })
           class NestedComponent {}
 
           @Component({
-            standalone: true,
             imports: [ProjectorCmp, NestedComponent],
             selector: 'app',
             template: `
-                <projector-cmp>
-                  <nested>
-                    <h1>This node is not projected.</h1>
-                    <h2>This node is not projected as well.</h2>
-                  </nested>
-                </projector-cmp>
-              `,
+              <projector-cmp>
+                <nested>
+                  <h1>This node is not projected.</h1>
+                  <h2>This node is not projected as well.</h2>
+                </nested>
+              </projector-cmp>
+            `,
           })
           class SimpleComponent {}
 
@@ -5768,7 +5492,6 @@ describe('platform-server full application hydration integration', () => {
 
       it("should project contents with *ngIf's", async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <main>
@@ -5779,7 +5502,6 @@ describe('platform-server full application hydration integration', () => {
         class ProjectorCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp, CommonModule],
           selector: 'app',
           template: `
@@ -5810,7 +5532,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should project contents with *ngFor', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <main>
@@ -5821,7 +5542,6 @@ describe('platform-server full application hydration integration', () => {
         class ProjectorCmp {}
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp, CommonModule],
           selector: 'app',
           template: `
@@ -5852,7 +5572,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support projecting contents outside of a current host element', async () => {
         @Component({
-          standalone: true,
           selector: 'dynamic-cmp',
           template: `<div #target></div>`,
         })
@@ -5865,7 +5584,6 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <ng-template #ref>
@@ -5904,7 +5622,6 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp, CommonModule],
           selector: 'app',
           template: `
@@ -5946,9 +5663,7 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           selector: 'app-shell',
           imports: [NgTemplateOutlet],
-          template: `
-          <ng-container [ngTemplateOutlet]="customTemplate"></ng-container>
-        `,
+          template: ` <ng-container [ngTemplateOutlet]="customTemplate"></ng-container> `,
         })
         class ShellCmp {
           @ContentChild('customTemplate', {static: true})
@@ -5959,11 +5674,11 @@ describe('platform-server full application hydration integration', () => {
           imports: [ShellCmp],
           selector: 'app',
           template: `
-          <app-shell>
-            <ng-template #customTemplate>
-              <p>template</p>
-            </ng-template>
-          </app-shell>
+            <app-shell>
+              <ng-template #customTemplate>
+                <p>template</p>
+              </ng-template>
+            </app-shell>
           `,
         })
         class SimpleComponent {}
@@ -5985,21 +5700,18 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle projected containers inside other containers', async () => {
         @Component({
-          standalone: true,
           selector: 'child-comp',
           template: '<ng-content />',
         })
         class ChildComp {}
 
         @Component({
-          standalone: true,
           selector: 'root-comp',
           template: '<ng-content />',
         })
         class RootComp {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule, RootComp, ChildComp],
           template: `
@@ -6032,23 +5744,21 @@ describe('platform-server full application hydration integration', () => {
 
       it('should throw an error when projecting DOM nodes via ViewContainerRef.createComponent API', async () => {
         @Component({
-          standalone: true,
           selector: 'dynamic',
           template: `
-              <ng-content />
-              <ng-content />
-            `,
+            <ng-content />
+            <ng-content />
+          `,
         })
         class DynamicComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf, NgFor],
           template: `
-              <div #target></div>
-              <main>Hi! This is the main content.</main>
-            `,
+            <div #target></div>
+            <main>Hi! This is the main content.</main>
+          `,
         })
         class SimpleComponent {
           @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
@@ -6085,23 +5795,21 @@ describe('platform-server full application hydration integration', () => {
 
       it('should throw an error when projecting DOM nodes via createComponent function call', async () => {
         @Component({
-          standalone: true,
           selector: 'dynamic',
           template: `
-              <ng-content />
-              <ng-content />
-            `,
+            <ng-content />
+            <ng-content />
+          `,
         })
         class DynamicComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf, NgFor],
           template: `
-              <div #target></div>
-              <main>Hi! This is the main content.</main>
-            `,
+            <div #target></div>
+            <main>Hi! This is the main content.</main>
+          `,
         })
         class SimpleComponent {
           @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
@@ -6140,7 +5848,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support cases when <ng-content> is used with *ngIf="false"', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           imports: [NgIf],
           template: `
@@ -6153,15 +5860,14 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
-              <projector-cmp [project]="project">
-                <h1>This node is not projected.</h1>
-                <h2>This node is not projected as well.</h2>
-              </projector-cmp>
-            `,
+            <projector-cmp [project]="project">
+              <h1>This node is not projected.</h1>
+              <h2>This node is not projected as well.</h2>
+            </projector-cmp>
+          `,
         })
         class SimpleComponent {
           project = false;
@@ -6205,7 +5911,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support cases when <ng-content> is used with *ngIf="true"', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           imports: [NgIf],
           template: `
@@ -6218,15 +5923,14 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
-              <projector-cmp [project]="project">
-                <h1>This node is projected.</h1>
-                <h2>This node is projected as well.</h2>
-              </projector-cmp>
-            `,
+            <projector-cmp [project]="project">
+              <h1>This node is projected.</h1>
+              <h2>This node is projected as well.</h2>
+            </projector-cmp>
+          `,
         })
         class SimpleComponent {
           project = true;
@@ -6270,13 +5974,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support slots with fallback content', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <div>
-              Header slot: <ng-content select="header">Header fallback</ng-content>
-              Main slot: <ng-content select="main"><main>Main fallback</main></ng-content>
-              Footer slot: <ng-content select="footer">Footer fallback {{expr}}</ng-content>
+              Header slot: <ng-content select="header">Header fallback</ng-content> Main slot:
+              <ng-content select="main"><main>Main fallback</main></ng-content> Footer slot:
+              <ng-content select="footer">Footer fallback {{ expr }}</ng-content>
               <ng-content>Wildcard fallback</ng-content>
             </div>
           `,
@@ -6286,7 +5989,6 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
           template: `<projector-cmp></projector-cmp>`,
@@ -6316,13 +6018,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support mixed slots with and without fallback content', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: `
             <div>
-              Header slot: <ng-content select="header">Header fallback</ng-content>
-              Main slot: <ng-content select="main"><main>Main fallback</main></ng-content>
-              Footer slot: <ng-content select="footer">Footer fallback {{expr}}</ng-content>
+              Header slot: <ng-content select="header">Header fallback</ng-content> Main slot:
+              <ng-content select="main"><main>Main fallback</main></ng-content> Footer slot:
+              <ng-content select="footer">Footer fallback {{ expr }}</ng-content>
               <ng-content>Wildcard fallback</ng-content>
             </div>
           `,
@@ -6332,14 +6033,13 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
             <projector-cmp>
               <header>Header override</header>
               <footer>
-                <h1>Footer override {{expr}}</h1>
+                <h1>Footer override {{ expr }}</h1>
               </footer>
             </projector-cmp>
           `,
@@ -6372,84 +6072,11 @@ describe('platform-server full application hydration integration', () => {
       });
     });
 
-    describe('unsupported Zone.js config', () => {
-      it('should log a warning when a noop zone is used', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `Hi!`,
-        })
-        class SimpleComponent {}
-
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
-
-        expect(ssrContents).toContain('<app ngh');
-
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [{provide: NgZone, useValue: new NoopNgZone()}, withDebugConsole()],
-        });
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        verifyHasLog(
-          appRef,
-          'NG05000: Angular detected that hydration was enabled for an application ' +
-            'that uses a custom or a noop Zone.js implementation.',
-        );
-
-        const clientRootNode = compRef.location.nativeElement;
-
-        verifyAllNodesClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-      });
-
-      it('should log a warning when a custom zone is used', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `Hi!`,
-        })
-        class SimpleComponent {}
-
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
-
-        expect(ssrContents).toContain('<app ngh');
-
-        resetTViewsFor(SimpleComponent);
-
-        class CustomNgZone extends NgZone {}
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [{provide: NgZone, useValue: new CustomNgZone({})}, withDebugConsole()],
-        });
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        verifyHasLog(
-          appRef,
-          'NG05000: Angular detected that hydration was enabled for an application ' +
-            'that uses a custom or a noop Zone.js implementation.',
-        );
-
-        const clientRootNode = compRef.location.nativeElement;
-
-        verifyAllNodesClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-      });
-    });
-
     describe('error handling', () => {
       it('should handle text node mismatch', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
-          template: `
-        <div id="abc">This is an original content</div>
-    `,
+          template: ` <div id="abc">This is an original content</div> `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6482,12 +6109,11 @@ describe('platform-server full application hydration integration', () => {
 
       it('should not crash when a node can not be found during hydration', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
-        Some text.
-        <div id="abc">This is an original content</div>
-    `,
+            Some text.
+            <div id="abc">This is an original content</div>
+          `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6521,15 +6147,14 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle element node mismatch', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
-        <div id="abc">
-          <p>This is an original content</p>
-          <b>Bold text</b>
-          <i>Italic text</i>
-        </div>
-    `,
+            <div id="abc">
+              <p>This is an original content</p>
+              <b>Bold text</b>
+              <i>Italic text</i>
+            </div>
+          `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6561,14 +6186,13 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle <ng-container> node mismatch', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
-        <b>Bold text</b>
-        <ng-container>
-          <p>This is an original content</p>
-        </ng-container>
-      `,
+            <b>Bold text</b>
+            <ng-container>
+              <p>This is an original content</p>
+            </ng-container>
+          `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6604,15 +6228,14 @@ describe('platform-server full application hydration integration', () => {
           '(when it is wrapped into a non-container node)',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
-          <div id="abc" class="wrapper">
-            <ng-container>
-              <p>This is an original content</p>
-            </ng-container>
-          </div>
-        `,
+              <div id="abc" class="wrapper">
+                <ng-container>
+                  <p>This is an original content</p>
+                </ng-container>
+              </div>
+            `,
           })
           class SimpleComponent {
             private doc = inject(DOCUMENT);
@@ -6646,13 +6269,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle <ng-template> node mismatch', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule],
           template: `
-          <b *ngIf="true">Bold text</b>
-          <i *ngIf="false">Italic text</i>
-        `,
+            <b *ngIf="true">Bold text</b>
+            <i *ngIf="false">Italic text</i>
+          `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6687,13 +6309,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle node mismatches in nested components', async () => {
         @Component({
-          standalone: true,
           selector: 'nested-cmp',
           imports: [CommonModule],
           template: `
-          <b *ngIf="true">Bold text</b>
-          <i *ngIf="false">Italic text</i>
-        `,
+            <b *ngIf="true">Bold text</b>
+            <i *ngIf="false">Italic text</i>
+          `,
         })
         class NestedComponent {
           private doc = inject(DOCUMENT);
@@ -6707,7 +6328,6 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NestedComponent],
           template: `<nested-cmp />`,
@@ -6737,16 +6357,15 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle sibling count mismatch', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule],
           template: `
-          <ng-container *ngIf="true">
-            <b>Bold text</b>
-            <i>Italic text</i>
-          </ng-container>
-          <main>Main content</main>
-        `,
+            <ng-container *ngIf="true">
+              <b>Bold text</b>
+              <i>Italic text</i>
+            </ng-container>
+            <main>Main content</main>
+          `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6777,7 +6396,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle ViewContainerRef node mismatch', async () => {
         @Directive({
-          standalone: true,
           selector: 'b',
         })
         class SimpleDir {
@@ -6785,12 +6403,9 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule, SimpleDir],
-          template: `
-        <b>Bold text</b>
-      `,
+          template: ` <b>Bold text</b> `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6825,7 +6440,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle a mismatch for a node that goes after a ViewContainerRef node', async () => {
         @Directive({
-          standalone: true,
           selector: 'b',
         })
         class SimpleDir {
@@ -6833,7 +6447,6 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule, SimpleDir],
           template: `
@@ -6873,22 +6486,20 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle a case when a node is not found (removed)', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: '<ng-content />',
         })
         class ProjectorComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule, ProjectorComponent],
           template: `
-        <projector-cmp>
-          <b>Bold text</b>
-          <i>Italic text</i>
-        </projector-cmp>
-      `,
+            <projector-cmp>
+              <b>Bold text</b>
+              <i>Italic text</i>
+            </projector-cmp>
+          `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6912,21 +6523,19 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle a case when a node is not found (detached)', async () => {
         @Component({
-          standalone: true,
           selector: 'projector-cmp',
           template: '<ng-content />',
         })
         class ProjectorComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule, ProjectorComponent],
           template: `
-        <projector-cmp>
-          <b>Bold text</b>
-        </projector-cmp>
-      `,
+            <projector-cmp>
+              <b>Bold text</b>
+            </projector-cmp>
+          `,
         })
         class SimpleComponent {
           private doc = inject(DOCUMENT);
@@ -6960,7 +6569,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle a case when a node is not found (invalid DOM)', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [CommonModule],
           template: `
@@ -7001,7 +6609,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should log a warning when there was no hydration info in the TransferState', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `Hi!`,
         })
@@ -7043,7 +6650,6 @@ describe('platform-server full application hydration integration', () => {
           'but a client mode marker is present',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `Hi!`,
           })
@@ -7074,7 +6680,6 @@ describe('platform-server full application hydration integration', () => {
         const logs: string[] = [];
 
         @Component({
-          standalone: true,
           selector: 'app',
           template: `Hi!`,
         })
@@ -7125,7 +6730,6 @@ describe('platform-server full application hydration integration', () => {
     describe('@if', () => {
       it('should work with `if`s that have different value on the client and on the server', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgIf],
           template: `
@@ -7136,9 +6740,14 @@ describe('platform-server full application hydration integration', () => {
               <i>This is NgIf CLIENT-ONLY content</i>
             </ng-template>
 
-            @if (isServer) { <b>This is new if SERVER-ONLY content</b> }
-            @else { <i id="client-only">This is new if CLIENT-ONLY content</i> }
-            @if (alwaysTrue) { <p>CLIENT and SERVER content</p> }
+            @if (isServer) {
+              <b>This is new if SERVER-ONLY content</b>
+            } @else {
+              <i id="client-only">This is new if CLIENT-ONLY content</i>
+            }
+            @if (alwaysTrue) {
+              <p>CLIENT and SERVER content</p>
+            }
           `,
         })
         class SimpleComponent {
@@ -7148,8 +6757,10 @@ describe('platform-server full application hydration integration', () => {
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          pendingTasks = inject(PendingTasks);
           ngOnInit() {
-            setTimeout(() => {}, 100);
+            const remove = this.pendingTasks.add();
+            setTimeout(() => void remove(), 100);
           }
         }
 
@@ -7204,16 +6815,15 @@ describe('platform-server full application hydration integration', () => {
 
       it('should support nested `if`s', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             This is a non-empty block:
             @if (true) {
               @if (true) {
                 <h1>
-                @if (true) {
-                  <span>Hello world!</span>
-                }
+                  @if (true) {
+                    <span>Hello world!</span>
+                  }
                 </h1>
               }
             }
@@ -7240,7 +6850,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should hydrate `else` blocks', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @if (conditionA) {
@@ -7290,28 +6899,35 @@ describe('platform-server full application hydration integration', () => {
     describe('@switch', () => {
       it('should work with `switch`es that have different value on the client and on the server', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [NgSwitch, NgSwitchCase],
           template: `
-              <ng-container [ngSwitch]="isServer">
-                <b *ngSwitchCase="true">This is NgSwitch SERVER-ONLY content</b>
-                <i *ngSwitchCase="false" id="old">This is NgSwitch CLIENT-ONLY content</i>
-              </ng-container>
+            <ng-container [ngSwitch]="isServer">
+              <b *ngSwitchCase="true">This is NgSwitch SERVER-ONLY content</b>
+              <i *ngSwitchCase="false" id="old">This is NgSwitch CLIENT-ONLY content</i>
+            </ng-container>
 
-              @switch (isServer) {
-                @case (true) { <b>This is a SERVER-ONLY content</b> }
-                @case (false) { <i id="new">This is a CLIENT-ONLY content</i> }
+            @switch (isServer) {
+              @case (true) {
+                <b>This is a SERVER-ONLY content</b>
               }
-            `,
+              @case (false) {
+                <i id="new">This is a CLIENT-ONLY content</i>
+              }
+            }
+          `,
         })
         class SimpleComponent {
           // This flag is intentionally different between the client
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          pendingTasks = inject(PendingTasks);
           ngOnInit() {
-            setTimeout(() => {}, 100);
+            const remove = this.pendingTasks.add();
+            setTimeout(() => {
+              remove();
+            }, 100);
           }
         }
 
@@ -7363,14 +6979,17 @@ describe('platform-server full application hydration integration', () => {
 
       it('should cleanup rendered case if none of the cases match on the client', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
-              @switch (label) {
-                @case ('A') { This is A }
-                @case ('B') { This is B }
+            @switch (label) {
+              @case ('A') {
+                This is A
               }
-            `,
+              @case ('B') {
+                This is B
+              }
+            }
+          `,
         })
         class SimpleComponent {
           // This flag is intentionally different between the client
@@ -7414,7 +7033,6 @@ describe('platform-server full application hydration integration', () => {
     describe('@for', () => {
       it('should hydrate for loop content', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @for (item of items; track item) {
@@ -7451,7 +7069,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should hydrate @empty block content', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @for (item of items; track item) {
@@ -7486,15 +7103,14 @@ describe('platform-server full application hydration integration', () => {
           'on the server and main content on the client',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
-                @for (item of items; track item) {
-                  <p>Item #{{ item }}</p>
-                } @empty {
-                  <div>This is an "empty" block</div>
-                }
-              `,
+              @for (item of items; track item) {
+                <p>Item #{{ item }}</p>
+              } @empty {
+                <div>This is an "empty" block</div>
+              }
+            `,
           })
           class SimpleComponent {
             items = isPlatformServer(inject(PLATFORM_ID)) ? [] : [1, 2, 3];
@@ -7545,7 +7161,6 @@ describe('platform-server full application hydration integration', () => {
           'on the client and main content on the server',
         async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: `
               @for (item of items; track item) {
@@ -7602,13 +7217,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle different number of items rendered on the client and on the server', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
-                @for (item of items; track item) {
-                  <p id="{{ item }}">Item #{{ item }}</p>
-                }
-              `,
+            @for (item of items; track item) {
+              <p id="{{ item }}">Item #{{ item }}</p>
+            }
+          `,
         })
         class SimpleComponent {
           // Item '3' is the same, the rest of the items are different.
@@ -7655,12 +7269,12 @@ describe('platform-server full application hydration integration', () => {
       it('should handle a reconciliation with swaps', async () => {
         @Component({
           selector: 'app',
-          standalone: true,
+
           template: `
-                @for(item of items; track item) {
-                  <div>{{ item }}</div>
-                }
-              `,
+            @for (item of items; track item) {
+              <div>{{ item }}</div>
+            }
+          `,
         })
         class SimpleComponent {
           items = ['a', 'b', 'c'];
@@ -7704,11 +7318,10 @@ describe('platform-server full application hydration integration', () => {
     describe('@let', () => {
       it('should handle a let declaration', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @let greeting = name + '!!!';
-            Hello, {{greeting}}
+            Hello, {{ greeting }}
           `,
         })
         class SimpleComponent {
@@ -7739,13 +7352,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle multiple let declarations that depend on each other', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @let plusOne = value + 1;
             @let plusTwo = plusOne + 1;
             @let result = plusTwo + 1;
-            Result: {{result}}
+            Result: {{ result }}
           `,
         })
         class SimpleComponent {
@@ -7778,7 +7390,6 @@ describe('platform-server full application hydration integration', () => {
       it('should handle a let declaration using a pipe that injects ChangeDetectorRef', async () => {
         @Pipe({
           name: 'double',
-          standalone: true,
         })
         class DoublePipe implements PipeTransform {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -7789,12 +7400,11 @@ describe('platform-server full application hydration integration', () => {
         }
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [DoublePipe],
           template: `
             @let result = value | double;
-            Result: {{result}}
+            Result: {{ result }}
           `,
         })
         class SimpleComponent {
@@ -7825,13 +7435,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle let declarations referenced through multiple levels of views', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @if (true) {
               @if (true) {
                 @let three = two + 1;
-                The result is {{three}}
+                The result is {{ three }}
               }
               @let two = one + 1;
             }
@@ -7873,19 +7482,17 @@ describe('platform-server full application hydration integration', () => {
             <ng-content>Fallback content</ng-content>
             <ng-content select="footer">Fallback footer</ng-content>
           `,
-          standalone: true,
         })
         class InnerComponent {}
 
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             <inner>
               @let one = 1;
-              <footer>|Footer value {{one}}</footer>
+              <footer>|Footer value {{ one }}</footer>
               @let two = one + 1;
-              <header>Header value {{two}}|</header>
+              <header>Header value {{ two }}|</header>
             </inner>
           `,
           imports: [InnerComponent],
@@ -7916,13 +7523,12 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle let declaration before and directly inside of an embedded view', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @let before = 'before';
             @if (true) {
               @let inside = 'inside';
-              {{before}}|{{inside}}
+              {{ before }}|{{ inside }}
             }
           `,
         })
@@ -7948,16 +7554,15 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle let declaration before, directly inside of and after an embedded view', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @let before = 'before';
             @if (true) {
               @let inside = 'inside';
-              {{inside}}
+              {{ inside }}
             }
             @let after = 'after';
-            {{before}}|{{after}}
+            {{ before }}|{{ after }}
           `,
         })
         class SimpleComponent {}
@@ -7982,12 +7587,11 @@ describe('platform-server full application hydration integration', () => {
 
       it('should handle let declaration with array inside of an embedded view', async () => {
         @Component({
-          standalone: true,
           selector: 'app',
           template: `
             @let foo = ['foo'];
             @if (true) {
-              {{foo}}
+              {{ foo }}
             }
           `,
         })
@@ -8025,7 +7629,7 @@ describe('platform-server full application hydration integration', () => {
             <test>
               @let a = 1;
               @let b = a + 1;
-              <span foo>{{b}}</span>
+              <span foo>{{ b }}</span>
             </test>
           `,
         })
@@ -8052,53 +7656,11 @@ describe('platform-server full application hydration integration', () => {
       });
     });
 
-    describe('zoneless', () => {
-      it('should not produce "unsupported configuration" warnings for zoneless mode', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `
-            <header>Header</header>
-            <footer>Footer</footer>
-          `,
-        })
-        class SimpleComponent {}
-
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
-
-        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
-
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [
-            withDebugConsole(),
-            provideZonelessChangeDetection() as unknown as Provider[],
-          ],
-        });
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        // Make sure there are no extra logs in case zoneless mode is enabled.
-        verifyHasNoLog(
-          appRef,
-          'NG05000: Angular detected that hydration was enabled for an application ' +
-            'that uses a custom or a noop Zone.js implementation.',
-        );
-
-        const clientRootNode = compRef.location.nativeElement;
-        verifyAllNodesClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-      });
-    });
-
     describe('Router', () => {
       it('should wait for lazy routes before triggering post-hydration cleanup', async () => {
         const ngZone = TestBed.inject(NgZone);
 
         @Component({
-          standalone: true,
           selector: 'lazy',
           template: `LazyCmp content`,
         })
@@ -8118,7 +7680,6 @@ describe('platform-server full application hydration integration', () => {
         ];
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [RouterOutlet],
           template: `
@@ -8161,7 +7722,6 @@ describe('platform-server full application hydration integration', () => {
         const ngZone = TestBed.inject(NgZone);
 
         @Component({
-          standalone: true,
           selector: 'lazy',
           template: `LazyCmp content`,
         })
@@ -8181,7 +7741,6 @@ describe('platform-server full application hydration integration', () => {
         ];
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [RouterOutlet],
           template: `
@@ -8192,7 +7751,6 @@ describe('platform-server full application hydration integration', () => {
         class SimpleComponent {}
 
         const envProviders = [
-          provideZonelessChangeDetection(),
           {provide: PlatformLocation, useClass: MockPlatformLocation},
           provideRouter(routes),
         ] as unknown as Provider[];
@@ -8222,7 +7780,6 @@ describe('platform-server full application hydration integration', () => {
 
       it('should cleanup dehydrated views in routed components that use ViewContainerRef', async () => {
         @Component({
-          standalone: true,
           selector: 'cmp-a',
           template: `
             @if (isServer) {
@@ -8245,12 +7802,9 @@ describe('platform-server full application hydration integration', () => {
         ];
 
         @Component({
-          standalone: true,
           selector: 'app',
           imports: [RouterOutlet],
-          template: `
-            <router-outlet />
-          `,
+          template: ` <router-outlet /> `,
         })
         class SimpleComponent {}
 

@@ -22,7 +22,7 @@ import {
   viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
+import {MatTabGroup, MatTab, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
 import {debounceTime, from, map, switchMap} from 'rxjs';
 
@@ -32,11 +32,13 @@ import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 import {DownloadManager} from '../download-manager.service';
 import {StackBlitzOpener} from '../stackblitz-opener.service';
-import {ClickOutside, IconComponent} from '@angular/docs';
+import {IconComponent} from '@angular/docs';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
 import {MatTooltip} from '@angular/material/tooltip';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
+import {NodeRuntimeState} from '../node-runtime-state.service';
+import {LoadingStep} from '../enums/loading-steps';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -52,10 +54,11 @@ const ANGULAR_DEV = 'https://angular.dev';
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatTabsModule,
+    MatTabGroup,
+    MatTab,
+    MatTabLabel,
     MatTooltip,
     IconComponent,
-    ClickOutside,
     CdkMenu,
     CdkMenuItem,
     CdkMenuTrigger,
@@ -73,6 +76,7 @@ export class CodeEditor {
 
   private readonly destroyRef = inject(DestroyRef);
 
+  private readonly nodeRuntimeState = inject(NodeRuntimeState);
   private readonly codeMirrorEditor = inject(CodeMirrorEditor);
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
@@ -99,11 +103,11 @@ export class CodeEditor {
 
   readonly TerminalType = TerminalType;
 
-  readonly displayErrorsBox = signal<boolean>(false);
-  readonly errors = signal<DiagnosticWithLocation[]>([]);
-  readonly files = this.codeMirrorEditor.openFiles;
-  readonly isCreatingFile = signal<boolean>(false);
-  readonly isRenamingFile = signal<boolean>(false);
+  protected readonly displayErrorsBox = signal<boolean>(false);
+  protected readonly errors = signal<DiagnosticWithLocation[]>([]);
+  protected readonly files = this.codeMirrorEditor.openFiles;
+  protected readonly isCreatingFile = signal<boolean>(false);
+  protected readonly isRenamingFile = signal<boolean>(false);
 
   constructor() {
     afterRenderEffect(() => {
@@ -125,16 +129,73 @@ export class CodeEditor {
 
         this.listenToTabChange();
         this.setSelectedTabOnTutorialChange();
+        this.listenToFileOpenRequests();
       });
 
       cleanupFn(() => this.codeMirrorEditor.disable());
     });
   }
 
-  openCurrentSolutionInFirebaseStudio(): void {
+  private listenToFileOpenRequests() {
+    // Handler for opening files at specific locations
+    const openFile = (file: string, line: number, character: number) => {
+      // Normalize the file path - Vite uses /app/... but editor uses src/app/...
+      let normalizedPath = file;
+      if (file.startsWith('/')) {
+        // Remove leading slash and prepend 'src'
+        normalizedPath = 'src' + file;
+      }
+
+      // Find the file in the files list
+      const targetFile = this.files().find((f) => f.filename === normalizedPath);
+      if (targetFile) {
+        // Switch to the file's tab
+        const fileIndex = this.files().indexOf(targetFile);
+        this.matTabGroup().selectedIndex = fileIndex;
+
+        // Explicitly change the current file in the editor
+        this.codeMirrorEditor.changeCurrentFile(targetFile.filename);
+
+        // Wait for the tab to switch and file to load, then scroll to the line
+        setTimeout(() => {
+          this.codeMirrorEditor.scrollToLine(line - 1, character); // Convert to 0-based
+        }, 200);
+      } else {
+        // console.warn('File not found in editor:', normalizedPath);
+      }
+    };
+
+    // Listen for CustomEvent (backward compatibility)
+    const handleCustomEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<{file: string; line: number; character: number}>;
+      const {file, line, character} = customEvent.detail;
+      openFile(file, line, character);
+    };
+
+    // Listen for postMessage from preview iframe (Vite error overlay)
+    const handlePostMessage = (event: MessageEvent) => {
+      // Check if this is an openFileAtLocation message
+      if (event.data?.type === 'openFileAtLocation') {
+        const {file, line, character} = event.data;
+        openFile(file, line, character);
+      }
+    };
+
+    window.addEventListener('openFileAtLocation', handleCustomEvent);
+    window.addEventListener('message', handlePostMessage);
+
+    // Cleanup listeners on destroy
+    this.destroyRef.onDestroy(() => {
+      window.removeEventListener('openFileAtLocation', handleCustomEvent);
+      window.removeEventListener('message', handlePostMessage);
+    });
+  }
+
+  protected openCurrentSolutionInFirebaseStudio(): void {
     this.firebaseStudioLauncher.openCurrentSolutionInFirebaseStudio();
   }
-  async openCurrentCodeInStackBlitz(): Promise<void> {
+
+  protected async openCurrentCodeInStackBlitz(): Promise<void> {
     const title = this.title.getTitle();
 
     const path = this.location.path();
@@ -144,43 +205,58 @@ export class CodeEditor {
     await this.stackblitzOpener.openCurrentSolutionInStackBlitz({title, description});
   }
 
-  async downloadCurrentCodeEditorState(): Promise<void> {
+  protected async downloadCurrentCodeEditorState(): Promise<void> {
     const embeddedTutorialManager = await injectEmbeddedTutorialManager(this.environmentInjector);
     const name = embeddedTutorialManager.tutorialId();
     await this.downloadManager.downloadCurrentStateOfTheSolution(name);
   }
 
-  closeErrorsBox(): void {
+  protected closeErrorsBox(): void {
     this.displayErrorsBox.set(false);
   }
 
-  closeRenameFile(): void {
+  protected openFileAtLocation(error: DiagnosticWithLocation): void {
+    // Scroll the editor to the error location
+    // The error is always in the current file since diagnostics are file-specific
+    const lineNumber = error.lineNumber;
+    const characterPosition = error.characterPosition;
+
+    // Calculate the position in the document
+    // CodeMirror uses 0-based line numbers, but our error uses 1-based
+    const line = Math.max(0, lineNumber - 1);
+
+    // Request the editor to scroll to this line
+    // We'll need to add a method to CodeMirrorEditor service to handle this
+    this.codeMirrorEditor.scrollToLine(line, characterPosition);
+  }
+
+  protected closeRenameFile(): void {
     this.isRenamingFile.set(false);
   }
 
-  canRenameFile = (filename: string) => this.canDeleteFile(filename);
+  protected canRenameFile = (filename: string) => this.canDeleteFile(filename);
 
-  canDeleteFile(filename: string) {
+  protected canDeleteFile(filename: string) {
     return !REQUIRED_FILES.has(filename) && !this.restrictedMode();
   }
 
-  canCreateFile = () => !this.restrictedMode();
+  protected canCreateFile = () => !this.restrictedMode();
 
-  async deleteFile(filename: string) {
+  protected async deleteFile(filename: string) {
     await this.codeMirrorEditor.deleteFile(filename);
     this.matTabGroup().selectedIndex = 0;
   }
 
-  onAddButtonClick() {
+  protected onAddButtonClick() {
     this.isCreatingFile.set(true);
     this.matTabGroup().selectedIndex = this.files().length;
   }
 
-  onRenameButtonClick() {
+  protected onRenameButtonClick() {
     this.isRenamingFile.set(true);
   }
 
-  async renameFile(event: SubmitEvent, oldPath: string) {
+  protected async renameFile(event: SubmitEvent, oldPath: string) {
     const renameFileInput = this.renameFileInputRef();
     if (!renameFileInput) return;
 
@@ -188,12 +264,7 @@ export class CodeEditor {
 
     const renameFileInputValue = renameFileInput.nativeElement.value;
 
-    if (renameFileInputValue) {
-      if (renameFileInputValue.includes('..')) {
-        alert('File name can not contain ".."');
-        return;
-      }
-
+    if (this.validateFileName(renameFileInputValue)) {
       // src is hidden from users, here we manually add it to the new filename
       const newFile = 'src/' + renameFileInputValue;
 
@@ -208,20 +279,15 @@ export class CodeEditor {
     this.isRenamingFile.set(false);
   }
 
-  async createFile(event: SubmitEvent) {
+  protected async createFile(event?: SubmitEvent) {
     const fileInput = this.createFileInputRef();
     if (!fileInput) return;
 
-    event.preventDefault();
+    event?.preventDefault();
 
     const newFileInputValue = fileInput.nativeElement.value;
 
-    if (newFileInputValue) {
-      if (newFileInputValue.includes('..')) {
-        alert('File name can not contain ".."');
-        return;
-      }
-
+    if (this.validateFileName(newFileInputValue)) {
       // src is hidden from users, here we manually add it to the new filename
       const newFile = 'src/' + newFileInputValue;
 
@@ -236,8 +302,26 @@ export class CodeEditor {
     this.isCreatingFile.set(false);
   }
 
+  private validateFileName(fileName: string): boolean {
+    if (!fileName) {
+      return false;
+    }
+    if (fileName.split('/').pop()?.indexOf('.') === 0) {
+      alert('File must contain a name.');
+      return false;
+    }
+    if (fileName.includes('..')) {
+      alert('File name can not contain ".."');
+      return false;
+    }
+    return true;
+  }
+
   private listenToDiagnosticsChange(): void {
     this.errors$.subscribe((diagnostics) => {
+      if (this.nodeRuntimeState.loadingStep() !== LoadingStep.READY) {
+        return;
+      }
       this.errors.set(diagnostics);
       this.displayErrorsBox.set(diagnostics.length > 0);
     });

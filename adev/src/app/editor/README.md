@@ -7,7 +7,6 @@
   - [Deleting a file](#deleting-a-file)
   - [Switching a project](#switching-a-project)
 - [Components and services](#components-and-services)
-
   - [EmbeddedEditor](#EmbeddedEditor)
   - [CodeEditor](#CodeEditor)
     - [CodeMirrorEditor](#CodeMirrorEditor)
@@ -43,13 +42,11 @@
 ### Loading a project
 
 1. The page responsible for the embedded editor lazy loads the [`EmbeddedEditor`](./embedded-editor.component.ts) component and the [`NodeRuntimeSandbox`](./node-runtime-sandbox.service.ts), then triggers the initialization of all components and services. The embedded editor is available in the following pages:
-
    - homepage: https://angular.dev
    - playground: https://angular.dev/playground
    - tutorial pages: https://angular.dev/tutorials
 
 2. The project assets are fetched by the [`EmbeddedTutorialManager`](./embedded-tutorial-manager.service.ts). Meanwhile:
-
    - The code editor is initialized
    - The code editor initializes the TypeScript Web Worker, which initializes the "default file system map" using TypeScript's CDN.
    - The WebContainer is initialized
@@ -75,7 +72,6 @@
 2. The new file tab is opened.
 3. The user types the new file name.
 4. If the file name is valid, the file is created in the WebContainer filesystem by the [`NodeRuntimeSandbox`](./node-runtime-sandbox.service.ts).
-
    - `..` is disallowed in the file name to prevent users to create files outside the `src` directory.
 
 5. The file is added to the TypeScript virtual file system, allowing the TypeScript web worker to provide diagnostics, autocomplete and type features for the new file. Also, exports from the new file are available in other files.

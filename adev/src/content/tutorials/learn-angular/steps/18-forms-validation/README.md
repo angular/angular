@@ -2,7 +2,7 @@
 
 Another common scenario when working with forms is the need to validate the inputs to ensure the correct data is submitted.
 
-Note: Learn more about [validating form input in the in-depth guide](/guide/forms/reactive-forms#validating-form-input).
+NOTE: Learn more about [validating form input in the in-depth guide](/guide/forms/reactive-forms#validating-form-input).
 
 In this activity, you'll learn how to validate forms with reactive forms.
 
@@ -14,12 +14,12 @@ In this activity, you'll learn how to validate forms with reactive forms.
 
 Angular provides a set of validation tools. To use them, first update the component to import `Validators` from `@angular/forms`.
 
-<docs-code language="ts" highlight="[1]">
+```ts {highlight:[1]}
 import {ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({...})
 export class App {}
-</docs-code>
+```
 
 </docs-step>
 

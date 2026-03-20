@@ -10,6 +10,7 @@ import {ComponentRef, inject, Injectable} from '@angular/core';
 
 import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
+import {Route} from './models';
 import {TreeNode} from './utils/tree';
 
 /**
@@ -30,6 +31,31 @@ export type DetachedRouteHandleInternal = {
   componentRef: ComponentRef<any>;
   route: TreeNode<ActivatedRoute>;
 };
+
+/**
+ * @description
+ *
+ * Destroys the component associated with a `DetachedRouteHandle`.
+ *
+ * This function should be used when a `RouteReuseStrategy` decides to drop a stored handle
+ * and wants to ensure that the component is destroyed.
+ *
+ * @param handle The detached route handle to destroy.
+ *
+ * @publicApi
+ * @see [Manually destroying detached route handles](guide/routing/customizing-route-behavior#manually-destroying-detached-route-handles)
+ */
+export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void {
+  const internalHandle = handle as DetachedRouteHandleInternal;
+  if (internalHandle && internalHandle.componentRef) {
+    internalHandle.componentRef.destroy();
+  }
+}
+
+export interface ExperimentalRouteReuseStrategy {
+  shouldDestroyInjector?(route: Route): boolean;
+  retrieveStoredRouteHandles?(): Array<DetachedRouteHandleInternal>;
+}
 
 /**
  * @description
@@ -108,6 +134,19 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
    */
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
     return future.routeConfig === curr.routeConfig;
+  }
+
+  /**
+   * Determines if the injector for the given route should be destroyed.
+   *
+   * This method is called by the router when the `RouteReuseStrategy` is destroyed.
+   * If this method returns `true`, the router will destroy the injector for the given route.
+   *
+   * @see {@link withExperimentalAutoCleanupInjectors}
+   * @xperimental 21.1
+   */
+  shouldDestroyInjector(route: Route): boolean {
+    return true;
   }
 }
 

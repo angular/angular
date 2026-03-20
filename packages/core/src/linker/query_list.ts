@@ -40,6 +40,8 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
  * ```
  *
  * @publicApi
+ *
+ * @see [Using QueryList](guide/components/queries#using-querylist)
  */
 export class QueryList<T> implements Iterable<T> {
   public readonly dirty = true;

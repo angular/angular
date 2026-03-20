@@ -10,12 +10,12 @@ import {EnvironmentInjector} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {Route} from '../models';
+import {PartialMatchRouteSnapshot, Route} from '../models';
 import {runCanMatchGuards} from '../operators/check_guards';
+import {ActivatedRouteSnapshot} from '../router_state';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
-import {last} from './collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
@@ -34,24 +34,49 @@ const noMatch: MatchResult = {
   positionalParamSegments: {},
 };
 
+export function createPreMatchRouteSnapshot(
+  snapshot: ActivatedRouteSnapshot,
+): PartialMatchRouteSnapshot {
+  return {
+    routeConfig: snapshot.routeConfig,
+    url: snapshot.url,
+    params: snapshot.params,
+    queryParams: snapshot.queryParams,
+    fragment: snapshot.fragment,
+    data: snapshot.data,
+    outlet: snapshot.outlet,
+    title: snapshot.title,
+    paramMap: snapshot.paramMap,
+    queryParamMap: snapshot.queryParamMap,
+  };
+}
+
 export function matchWithChecks(
   segmentGroup: UrlSegmentGroup,
   route: Route,
   segments: UrlSegment[],
   injector: EnvironmentInjector,
   urlSerializer: UrlSerializer,
+  createSnapshot: (result: MatchResult) => ActivatedRouteSnapshot,
+  abortSignal: AbortSignal,
 ): Observable<MatchResult> {
   const result = match(segmentGroup, route, segments);
   if (!result.matched) {
     return of(result);
   }
 
+  const currentSnapshot = createPreMatchRouteSnapshot(createSnapshot(result));
   // Only create the Route's `EnvironmentInjector` if it matches the attempted
   // navigation
   injector = getOrCreateRouteInjectorIfNeeded(route, injector);
-  return runCanMatchGuards(injector, route, segments, urlSerializer).pipe(
-    map((v) => (v === true ? result : {...noMatch})),
-  );
+  return runCanMatchGuards(
+    injector,
+    route,
+    segments,
+    urlSerializer,
+    currentSnapshot,
+    abortSignal,
+  ).pipe(map((v) => (v === true ? result : {...noMatch})));
 }
 
 export function match(
@@ -59,10 +84,6 @@ export function match(
   route: Route,
   segments: UrlSegment[],
 ): MatchResult {
-  if (route.path === '**') {
-    return createWildcardMatchResult(segments);
-  }
-
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
       return {...noMatch};
@@ -97,16 +118,6 @@ export function match(
     // TODO(atscott): investigate combining parameters and positionalParamSegments
     parameters,
     positionalParamSegments: res.posParams ?? {},
-  };
-}
-
-function createWildcardMatchResult(segments: UrlSegment[]): MatchResult {
-  return {
-    matched: true,
-    parameters: segments.length > 0 ? last(segments)!.parameters : {},
-    consumedSegments: segments,
-    remainingSegments: [],
-    positionalParamSegments: {},
   };
 }
 

@@ -7,6 +7,7 @@
  */
 
 import {
+  ArrowFunction,
   AST,
   AstVisitor,
   ASTWithSource,
@@ -26,9 +27,11 @@ import {
   PrefixNot,
   PropertyRead,
   RecursiveAstVisitor,
+  RegularExpressionLiteral,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  SpreadElement,
   TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
@@ -37,24 +40,24 @@ import {
   Unary,
   VoidExpression,
 } from '../../../src/expression_parser/ast';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 
 class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;
   // using non-null assertion because they're both re(set) by unparse()
   private _expression!: string;
-  private _interpolationConfig!: InterpolationConfig;
 
-  unparse(ast: AST, interpolationConfig: InterpolationConfig) {
+  unparse(ast: AST) {
     this._expression = '';
-    this._interpolationConfig = interpolationConfig;
     this._visit(ast);
     return this._expression;
   }
 
   visitPropertyRead(ast: PropertyRead, context: any) {
     this._visit(ast.receiver);
-    this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}` : `.${ast.name}`;
+    this._expression +=
+      ast.receiver instanceof ImplicitReceiver || ast.receiver instanceof ThisReceiver
+        ? `${ast.name}`
+        : `.${ast.name}`;
   }
 
   visitUnary(ast: Unary, context: any) {
@@ -127,9 +130,9 @@ class Unparser implements AstVisitor {
     for (let i = 0; i < ast.strings.length; i++) {
       this._expression += ast.strings[i];
       if (i < ast.expressions.length) {
-        this._expression += `${this._interpolationConfig.start} `;
+        this._expression += `{{ `;
         this._visit(ast.expressions[i]);
-        this._expression += ` ${this._interpolationConfig.end}`;
+        this._expression += ` }}`;
       }
     }
   }
@@ -160,8 +163,14 @@ class Unparser implements AstVisitor {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
       const key = ast.keys[i];
-      this._expression += key.quoted ? JSON.stringify(key.key) : key.key;
-      this._expression += ': ';
+
+      if (key.kind === 'spread') {
+        this._expression += '...';
+      } else {
+        this._expression += key.quoted ? JSON.stringify(key.key) : key.key;
+        this._expression += ': ';
+      }
+
       this._visit(ast.values[i]);
     }
 
@@ -237,6 +246,25 @@ class Unparser implements AstVisitor {
     this._expression += ')';
   }
 
+  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {
+    this._expression += `/${ast.body}/${ast.flags || ''}`;
+  }
+
+  visitSpreadElement(ast: SpreadElement, context: any) {
+    this._expression += '...';
+    this._visit(ast.expression);
+  }
+
+  visitArrowFunction(ast: ArrowFunction, context: any) {
+    if (ast.parameters.length === 1) {
+      this._expression += ast.parameters[0].name;
+    } else {
+      this._expression += `(${ast.parameters.map((e) => e.name).join(', ')})`;
+    }
+    this._expression += ' => ';
+    this._visit(ast.body);
+  }
+
   private _visit(ast: AST) {
     ast.visit(this);
   }
@@ -244,20 +272,14 @@ class Unparser implements AstVisitor {
 
 const sharedUnparser = new Unparser();
 
-export function unparse(
-  ast: AST,
-  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-): string {
-  return sharedUnparser.unparse(ast, interpolationConfig);
+export function unparse(ast: AST): string {
+  return sharedUnparser.unparse(ast);
 }
 
 // [unparsed AST, original source code of AST]
 type UnparsedWithSpan = [string, string];
 
-export function unparseWithSpan(
-  ast: ASTWithSource,
-  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-): UnparsedWithSpan[] {
+export function unparseWithSpan(ast: ASTWithSource): UnparsedWithSpan[] {
   const unparsed: UnparsedWithSpan[] = [];
   const source = ast.source!;
   const recursiveSpanUnparser = new (class extends RecursiveAstVisitor {
@@ -265,7 +287,7 @@ export function unparseWithSpan(
       const span = ast[spanKey];
       const prefix = spanKey === 'span' ? '' : `[${spanKey}] `;
       const src = source.substring(span.start, span.end);
-      unparsedList.push([unparse(ast, interpolationConfig), prefix + src]);
+      unparsedList.push([unparse(ast), prefix + src]);
     }
 
     override visit(ast: AST, unparsedList: UnparsedWithSpan[]) {

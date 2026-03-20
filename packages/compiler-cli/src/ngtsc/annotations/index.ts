@@ -18,8 +18,14 @@ export {
   ResourceLoader,
   ResourceLoaderContext,
   JitDeclarationRegistry,
+  unwrapExpression,
 } from './common';
 export {ComponentDecoratorHandler} from './component';
+export {
+  extractTemplate,
+  ExternalTemplateDeclaration,
+  InlineTemplateDeclaration,
+} from './component/src/resources';
 export {
   DirectiveDecoratorHandler,
   InitializerApiFunction,
@@ -34,6 +40,8 @@ export {
   tryParseSignalInputMapping,
   tryParseSignalModelMapping,
   tryParseSignalQueryFromInitializer,
+  extractDecoratorQueryMetadata,
+  parseDecoratorInputTransformFunction,
 } from './directive';
 export {NgModuleDecoratorHandler} from './ng_module';
 export {InjectableDecoratorHandler} from './src/injectable';

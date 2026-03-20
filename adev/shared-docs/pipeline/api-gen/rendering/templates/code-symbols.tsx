@@ -7,8 +7,7 @@
  */
 
 import {h} from 'preact';
-import {getModuleName} from '../symbol-context.mjs';
-import {getLinkToModule} from '../transforms/url-transforms.mjs';
+import {getSymbolUrl} from '../symbol-context.mjs';
 
 const symbolRegex = /([a-zA-Z_$][a-zA-Z_$0-9\.]*)/;
 
@@ -23,11 +22,8 @@ export function CodeSymbol(props: {code: string}) {
         // Every even index is a non-match when the regex has 1 capturing group
         if (index % 2 === 0) return rawSymbol;
 
-        let [symbol, subSymbol] = rawSymbol.split('.'); // Also takes care of methods, enum value etc.
-        const moduleName = getModuleName(symbol);
-
-        if (moduleName) {
-          const url = getLinkToModule(moduleName, symbol, subSymbol);
+        const url = getSymbolUrl(rawSymbol);
+        if (url) {
           return <a href={url}>{rawSymbol}</a>;
         }
 

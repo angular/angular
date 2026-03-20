@@ -8,8 +8,8 @@
 import ts from 'typescript';
 
 import {EntryType} from './entities';
-import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractGenerics} from './generics_extractor';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 
 /** Extract the documentation entry for a type alias. */
 export function extractTypeAlias(declaration: ts.TypeAliasDeclaration) {
@@ -25,5 +25,6 @@ export function extractTypeAlias(declaration: ts.TypeAliasDeclaration) {
     rawComment: extractRawJsDoc(declaration),
     description: extractJsDocDescription(declaration),
     jsdocTags: extractJsDocTags(declaration),
+    members: [],
   };
 }

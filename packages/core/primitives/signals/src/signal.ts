@@ -62,8 +62,8 @@ export function createSignal<T>(
   const getter = (() => signalGetFn(node)) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
-    getter.toString = () => `[Signal${debugName}: ${node.value}]`;
+    getter.toString = () =>
+      `[Signal${node.debugName ? ' (' + node.debugName + ')' : ''}: ${String(node.value)}]`;
   }
 
   runPostProducerCreatedFn(node);
@@ -108,7 +108,6 @@ export function runPostSignalSetFn<T>(node: SignalNode<T>): void {
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
-// TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
 export const SIGNAL_NODE: SignalNode<unknown> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,

@@ -33,6 +33,7 @@ import {NgModuleType} from '../../src/render3';
 import {getNgModuleDef} from '../../src/render3/def_getters';
 import {ComponentFixture, inject, TestBed} from '../../testing';
 
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {
   clearModulesForTest,
@@ -103,7 +104,7 @@ class SomePipe {
 
 @Component({
   selector: 'comp',
-  template: `<div  [someDir]="'someValue' | somePipe"></div>`,
+  template: `<div [someDir]="'someValue' | somePipe"></div>`,
   standalone: false,
 })
 class CompUsingModuleDirectiveAndPipe {}
@@ -541,7 +542,7 @@ describe('NgModule', () => {
 
     it('should throw when no type and not @Inject (class case)', () => {
       expect(() => createInjector([NoAnnotations])).toThrowError(
-        "NG0204: Can't resolve all parameters for NoAnnotations: (?).",
+        /NG0204: Can't resolve all parameters for NoAnnotations: \(\?\)./,
       );
     });
 
@@ -625,7 +626,7 @@ describe('NgModule', () => {
       const errorMsg =
         'NG0201: No provider found for `SportsCar`. ' +
         'Source: SomeModule. Path: car -> SportsCar. ' +
-        'Find more at https://angular.dev/errors/NG0201';
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`;
       expect(() => injector.get('car')).toThrowError(errorMsg);
     });
 
@@ -831,7 +832,7 @@ describe('NgModule', () => {
       const errorMsg =
         'NG0201: No provider found for `NonExisting`. ' +
         'Source: SomeModule. ' +
-        'Find more at https://angular.dev/errors/NG0201';
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`;
       expect(() => injector.get('NonExisting')).toThrowError(errorMsg);
     });
 
@@ -839,7 +840,7 @@ describe('NgModule', () => {
       expect(() =>
         createInjector([Car, {provide: Engine, useClass: CyclicEngine}]).get(Car),
       ).toThrowError(
-        'NG0200: Circular dependency detected for `Car`. Source: SomeModule. Path: Car -> Engine -> Car. Find more at https://angular.dev/errors/NG0200',
+        `NG0200: Circular dependency detected for \`Car\`. Source: SomeModule. Path: Car -> Engine -> Car. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 

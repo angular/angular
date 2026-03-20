@@ -117,6 +117,24 @@ export function convertToParamMap(params: Params): ParamMap {
   return new ParamsAsMap(params);
 }
 
+function matchParts(
+  routeParts: string[],
+  urlSegments: UrlSegment[],
+  posParams: {[key: string]: UrlSegment},
+): boolean {
+  for (let i = 0; i < routeParts.length; i++) {
+    const part = routeParts[i];
+    const segment = urlSegments[i];
+    const isParameter = part[0] === ':';
+    if (isParameter) {
+      posParams[part.substring(1)] = segment;
+    } else if (part !== segment.path) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Matches the route configuration (`route`) against the actual URL (`segments`).
  *
@@ -138,34 +156,63 @@ export function defaultUrlMatcher(
   route: Route,
 ): UrlMatchResult | null {
   const parts = route.path!.split('/');
+  const wildcardIndex = parts.indexOf('**');
+  if (wildcardIndex === -1) {
+    // No wildcard, use original logic
+    if (parts.length > segments.length) {
+      // The actual URL is shorter than the config, no match
+      return null;
+    }
 
-  if (parts.length > segments.length) {
+    if (
+      route.pathMatch === 'full' &&
+      (segmentGroup.hasChildren() || parts.length < segments.length)
+    ) {
+      // The config is longer than the actual URL but we are looking for a full match, return null
+      return null;
+    }
+
+    const posParams: {[key: string]: UrlSegment} = {};
+    const consumed = segments.slice(0, parts.length);
+    if (!matchParts(parts, consumed, posParams)) {
+      return null;
+    }
+    return {consumed, posParams};
+  }
+
+  // Path has a wildcard.
+  if (wildcardIndex !== parts.lastIndexOf('**')) {
+    // We do not support more than one wildcard segment in the path
+    return null;
+  }
+
+  const pre = parts.slice(0, wildcardIndex);
+  const post = parts.slice(wildcardIndex + 1);
+
+  if (pre.length + post.length > segments.length) {
     // The actual URL is shorter than the config, no match
     return null;
   }
 
-  if (
-    route.pathMatch === 'full' &&
-    (segmentGroup.hasChildren() || parts.length < segments.length)
-  ) {
+  if (route.pathMatch === 'full' && segmentGroup.hasChildren() && route.path !== '**') {
     // The config is longer than the actual URL but we are looking for a full match, return null
     return null;
   }
 
   const posParams: {[key: string]: UrlSegment} = {};
 
-  // Check each config part against the actual URL
-  for (let index = 0; index < parts.length; index++) {
-    const part = parts[index];
-    const segment = segments[index];
-    const isParameter = part[0] === ':';
-    if (isParameter) {
-      posParams[part.substring(1)] = segment;
-    } else if (part !== segment.path) {
-      // The actual URL part does not match the config, no match
-      return null;
-    }
+  // Match the segments before the wildcard
+  if (!matchParts(pre, segments.slice(0, pre.length), posParams)) {
+    return null;
+  }
+  // Match the segments after the wildcard
+  if (!matchParts(post, segments.slice(segments.length - post.length), posParams)) {
+    return null;
   }
 
-  return {consumed: segments.slice(0, parts.length), posParams};
+  // TODO(atscott): put the wildcard segments into a _splat param.
+  // this would require a breaking change to the UrlMatchResult to allow UrlSegment[]
+  // since the splat could be multiple segments.
+
+  return {consumed: segments, posParams};
 }

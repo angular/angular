@@ -18,20 +18,12 @@ export function deduplicateTextBindings(job: CompilationJob): void {
     for (const op of unit.update.reversed()) {
       if (op.kind === ir.OpKind.Binding && op.isTextAttribute) {
         const seenForElement = seen.get(op.target) || new Set();
-        if (seenForElement.has(op.name)) {
-          if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-            // For most duplicated attributes, TemplateDefinitionBuilder lists all of the values in
-            // the consts array. However, for style and class attributes it only keeps the last one.
-            // We replicate that behavior here since it has actual consequences for apps with
-            // duplicate class or style attrs.
-            if (op.name === 'style' || op.name === 'class') {
-              ir.OpList.remove<ir.UpdateOp>(op);
-            }
-          } else {
-            // TODO: Determine the correct behavior. It would probably make sense to merge multiple
-            // style and class attributes. Alternatively we could just throw an error, as HTML
-            // doesn't permit duplicate attributes.
-          }
+        // For most duplicated attributes, TemplateDefinitionBuilder lists all of the values in
+        // the consts array. However, for style and class attributes it only keeps the last one.
+        // We replicate that behavior here since it has actual consequences for apps with
+        // duplicate class or style attrs.
+        if (seenForElement.has(op.name) && (op.name === 'style' || op.name === 'class')) {
+          ir.OpList.remove<ir.UpdateOp>(op);
         }
         seenForElement.add(op.name);
         seen.set(op.target, seenForElement);

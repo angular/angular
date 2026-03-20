@@ -5,7 +5,7 @@ consts: () => {
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n    Some text\n    {$startTagSpan}Text inside span{$closeTagSpan}\n  ", {
+      const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = /* @ts-ignore */ goog.getMsg("\n    Some text\n    {$startTagSpan}Text inside span{$closeTagSpan}\n  ", {
         "closeTagSpan": "\uFFFD/#3\uFFFD",
         "startTagSpan": "\uFFFD#3\uFFFD"
       }, {
@@ -17,6 +17,7 @@ consts: () => {
       $I18N_0$ = $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$;
   }
   else {
+      /* @ts-ignore */
       $I18N_0$ = $localize `
     Some text
     ${"\uFFFD#3\uFFFD"}:START_TAG_SPAN:Text inside span${"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Type} from '@angular/core';
+import {EnvironmentInjector, Type} from '@angular/core';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -63,8 +63,11 @@ export class RouterState extends Tree<ActivatedRoute> {
   }
 }
 
-export function createEmptyState(rootComponent: Type<any> | null): RouterState {
-  const snapshot = createEmptyStateSnapshot(rootComponent);
+export function createEmptyState(
+  rootComponent: Type<any> | null,
+  injector: EnvironmentInjector,
+): RouterState {
+  const snapshot = createEmptyStateSnapshot(rootComponent, injector);
   const emptyUrl = new BehaviorSubject([new UrlSegment('', {})]);
   const emptyParams = new BehaviorSubject({});
   const emptyData = new BehaviorSubject({});
@@ -84,7 +87,10 @@ export function createEmptyState(rootComponent: Type<any> | null): RouterState {
   return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
 }
 
-export function createEmptyStateSnapshot(rootComponent: Type<any> | null): RouterStateSnapshot {
+export function createEmptyStateSnapshot(
+  rootComponent: Type<any> | null,
+  injector: EnvironmentInjector,
+): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};
@@ -99,6 +105,7 @@ export function createEmptyStateSnapshot(rootComponent: Type<any> | null): Route
     rootComponent,
     null,
     {},
+    injector,
   );
   return new RouterStateSnapshot('', new TreeNode<ActivatedRouteSnapshot>(activated, []));
 }
@@ -115,7 +122,7 @@ export function createEmptyStateSnapshot(rootComponent: Type<any> | null): Route
  * on shallow equality. For example, changing deeply nested properties in resolved `data` will not
  * cause the `ActivatedRoute.data` `Observable` to emit a new value.
  *
- * {@example router/activated-route/module.ts region="activated-route"}
+ * {@example router/activated-route/activated_route_component.ts region="activated-route"}
  *
  * @see [Getting route information](guide/routing/common-router-tasks#getting-route-information)
  *
@@ -315,6 +322,8 @@ export function getInherited(
  * }
  * ```
  *
+ * @see [Understanding route snapshots](guide/routing/read-route-state#understanding-route-snapshots)
+ *
  * @publicApi
  */
 export class ActivatedRouteSnapshot {
@@ -330,6 +339,8 @@ export class ActivatedRouteSnapshot {
   _paramMap?: ParamMap;
   /** @internal */
   _queryParamMap?: ParamMap;
+  /** @internal */
+  readonly _environmentInjector: EnvironmentInjector;
 
   /** The resolved route title */
   get title(): string | undefined {
@@ -374,9 +385,11 @@ export class ActivatedRouteSnapshot {
     public component: Type<any> | null,
     routeConfig: Route | null,
     resolve: ResolveData,
+    environmentInjector: EnvironmentInjector,
   ) {
     this.routeConfig = routeConfig;
     this._resolve = resolve;
+    this._environmentInjector = environmentInjector;
   }
 
   /** The root of the router state */

@@ -299,7 +299,7 @@ runInEachFileSystem(() => {
         );
       });
 
-      it('should discover properties in template expressions', () => {
+      it('should discover properties in structural directive', () => {
         const template = '<div *ngFor="let foo of foos"></div>';
         const refs = getTemplateIdentifiers(bind(template));
 
@@ -507,7 +507,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should discover references to references', () => {
+    it('should discover references used in an interpolation', () => {
       const template = `<div #foo>{{foo.className}}</div>`;
       const refs = getTemplateIdentifiers(bind(template));
       const elementIdentifier: ElementIdentifier = {
@@ -592,7 +592,7 @@ runInEachFileSystem(() => {
       expect(fooRef.target!.directive).toEqual(declB);
     });
 
-    it('should discover references to references', () => {
+    it('should discover references used in an event binding', () => {
       const template = `<div #foo (ngSubmit)="do(foo)"></div>`;
       const refs = getTemplateIdentifiers(bind(template));
       const elementIdentifier: ElementIdentifier = {
@@ -709,7 +709,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should discover references to variables', () => {
+    it('should discover references to variables used in an event binding', () => {
       const template = `<div *ngFor="let foo of foos" (click)="do(foo)"></div>`;
       const refs = getTemplateIdentifiers(bind(template));
       const variableIdentifier: VariableIdentifier = {

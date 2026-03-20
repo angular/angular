@@ -25,7 +25,6 @@ import {
   OnDestroy,
   Provider,
   RendererFactory2,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
 } from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../index';
 
@@ -51,12 +50,12 @@ export function instantiateDefaultStyleNormalizer() {
   return new WebAnimationsStyleNormalizer();
 }
 
-export function instantiateRendererFactory(
-  renderer: DomRendererFactory2,
-  engine: AnimationEngine,
-  zone: NgZone,
-) {
-  return new AnimationRendererFactory(renderer, engine, zone);
+export function instantiateRendererFactory() {
+  return new AnimationRendererFactory(
+    inject(DomRendererFactory2),
+    inject(AnimationEngine),
+    inject(NgZone),
+  );
 }
 
 const SHARED_ANIMATION_PROVIDERS: Provider[] = [
@@ -65,7 +64,6 @@ const SHARED_ANIMATION_PROVIDERS: Provider[] = [
   {
     provide: RendererFactory2,
     useFactory: instantiateRendererFactory,
-    deps: [DomRendererFactory2, AnimationEngine, NgZone],
   },
 ];
 

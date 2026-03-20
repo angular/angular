@@ -1,5 +1,5 @@
 load("//packages/compiler-cli/test/compliance/partial:partial_compliance_goldens.bzl", "partial_compliance_golden")
-load("//tools:defaults2.bzl", "copy_to_bin")
+load("//tools:defaults.bzl", "copy_to_bin")
 
 package(default_visibility = ["//packages/compiler-cli/test/compliance:__subpackages__"])
 
@@ -8,4 +8,6 @@ copy_to_bin(
     srcs = glob(["*/**"]),
 )
 
-[partial_compliance_golden(filePath = path) for path in glob(include = ["**/TEST_CASES.json"])]
+[partial_compliance_golden(filePath = path) for path in glob(
+    include = ["**/TEST_CASES.json"],
+)]

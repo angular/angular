@@ -7,7 +7,7 @@ TIP: This guide assumes you've already read the [Essentials Guide](essentials). 
 The `@Component` decorator accepts a `changeDetection` option that controls the component's **change
 detection mode**. There are two change detection mode options.
 
-**`ChangeDetectionStrategy.Default`** is, unsurprisingly, the default strategy. In this mode,
+**`ChangeDetectionStrategy.Eager`/`Default`** is, unsurprisingly, the default strategy. In this mode,
 Angular checks whether the component's DOM needs an update whenever any activity may have occurred
 application-wide. Activities that trigger this checking include user interaction, network response,
 timers, and more.
@@ -40,7 +40,7 @@ import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 @Component({
   ...,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  template: '<some-unknown-component></some-unknown-component>'
+  template: '<some-unknown-component />'
 })
 export class ComponentWithCustomElements { }
 ```

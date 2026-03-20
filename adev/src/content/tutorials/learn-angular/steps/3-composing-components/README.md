@@ -4,7 +4,7 @@ You've learned to update the component template, component logic, and component 
 
 The `selector` property of the component configuration gives you a name to use when referencing the component in another template. You use the `selector` like an HTML tag, for example `app-user` would be `<app-user />` in the template.
 
-Note: Learn more about [using components in the essentials guide](/essentials/components#using-components).
+NOTE: Learn more about [using components in the essentials guide](/essentials/components#using-components).
 
 In this activity, you'll learn how to compose components.
 
@@ -17,9 +17,8 @@ In this example, there are two components `User` and `App`.
 <docs-step title="Add a reference to `User`">
 Update the `App` template to include a reference to the `User` which uses the selector `app-user`. Be sure to add `User` to the imports array of `App`, this makes it available for use in the `App` template.
 
-```ts
-template: `<app-user />`,
-imports: [User]
+```angular-html
+template: `<app-user />`, imports: [User]
 ```
 
 The component now displays the message `Username: youngTech`. You can update the template code to include more markup.
@@ -28,8 +27,10 @@ The component now displays the message `Username: youngTech`. You can update the
 <docs-step title="Add more markup">
 Because you can use any HTML markup that you want in a template, try updating the template for `App` to also include more HTML elements. This example will add a `<section>` element as the parent of the `<app-user>` element.
 
-```ts
-template: `<section><app-user /></section>`,
+```angular-html
+template: `
+<section><app-user /></section>
+`,
 ```
 
 </docs-step>

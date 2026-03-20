@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, ɵRuntimeError as RuntimeError, type Signal} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 import type {AbstractControl} from '../model/abstract_model';
@@ -26,6 +26,14 @@ import {ngModelWarning} from './reactive_errors';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 /**
+ * DI token that provides a writable signal that controls can use to set the signal of parse errors
+ * for the `FormField` directive or reactive directives. Used internally by `transformedValue`.
+ */
+export const ɵFORM_FIELD_PARSE_ERRORS = new InjectionToken<{
+  readonly set: (value: Signal<ReadonlyArray<{readonly kind: string}>> | undefined) => void;
+}>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_FIELD_PARSE_ERRORS' : '');
+
+/**
  * Token to provide to allow SetDisabledState to always be called when a CVA is added, regardless of
  * whether the control is disabled or enabled.
  *
@@ -34,7 +42,6 @@ import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 export const CALL_SET_DISABLED_STATE = new InjectionToken(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'CallSetDisabledState' : '',
   {
-    providedIn: 'root',
     factory: () => setDisabledStateDefault,
   },
 );
@@ -65,7 +72,7 @@ export function controlPath(name: string | null, parent: ControlContainer): stri
  * @param control Form control instance that should be linked.
  * @param dir Directive that should be linked with a given control.
  */
-export function setUpControl(
+export function setUpControlValueAccessor(
   control: FormControl,
   dir: NgControl,
   callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault,
@@ -121,10 +128,9 @@ export function cleanUpControl(
   // case. We still check the presence of `valueAccessor` before invoking its methods to make sure
   // that cleanup works correctly if app code or tests are setup to ignore the error thrown from
   // `selectValueAccessor`. See https://github.com/angular/angular/issues/40521.
-  if (dir.valueAccessor) {
-    dir.valueAccessor.registerOnChange(noop);
-    dir.valueAccessor.registerOnTouched(noop);
-  }
+
+  dir?.valueAccessor?.registerOnChange(noop);
+  dir?.valueAccessor?.registerOnTouched(noop);
 
   cleanUpValidators(control, dir);
 
@@ -371,7 +377,7 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
 }
 
 export function syncPendingControls(
-  form: FormGroup,
+  form: AbstractControl,
   directives: Set<NgControl> | NgControl[],
 ): void {
   form._syncPendingControls();
@@ -387,7 +393,7 @@ export function syncPendingControls(
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
   dir: NgControl,
-  valueAccessors: ControlValueAccessor[],
+  valueAccessors: ControlValueAccessor[] | null | undefined,
 ): ControlValueAccessor | null {
   if (!valueAccessors) return null;
 

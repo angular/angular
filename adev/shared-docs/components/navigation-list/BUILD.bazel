@@ -20,6 +20,7 @@ ng_project(
         "//adev:node_modules/@angular/material",
         "//adev:node_modules/@angular/router",
         "//adev/shared-docs/components/icon",
+        "//adev/shared-docs/components/slide-toggle",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/pipes",
         "//adev/shared-docs/services",

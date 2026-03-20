@@ -35,7 +35,7 @@ export interface NgModule {
    * The set of injectable objects that are available in the injector
    * of this module.
    *
-   * @see [Dependency Injection guide](guide/di/dependency-injection
+   * @see [Dependency Injection guide](guide/di/dependency-injection)
    * @see [NgModule guide](guide/ngmodules/providers)
    *
    * @usageNotes

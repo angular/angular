@@ -2,7 +2,7 @@
 
 Angular introduced improved APIs for queries that are considered
 production ready as of v19.
-Read more about signal queries and their benefits in the [dedicated guide](guide/signals/queries).
+Read more about signal queries and their benefits in the [dedicated guide](guide/components/queries).
 
 To support existing teams that would like to use signal queries, the Angular team
 provides an automated migration that converts existing decorator query fields to the new API.
@@ -26,16 +26,16 @@ See more details in the section [below](#vscode-extension).
 
 **Before**
 
-```typescript
+```angular-ts
 import {Component, ContentChild} from '@angular/core';
 
 @Component({
-  template: `Has ref: {{someRef ? 'Yes' : 'No'}}`
+  template: `Has ref: {{ someRef ? 'Yes' : 'No' }}`,
 })
 export class MyComponent {
-  @ContentChild('someRef') ref: ElementRef|undefined = undefined;
+  @ContentChild('someRef') ref: ElementRef | undefined = undefined;
 
-  someMethod() {
+  someMethod(): void {
     if (this.ref) {
       this.ref.nativeElement;
     }
@@ -45,16 +45,16 @@ export class MyComponent {
 
 **After**
 
-```typescript
+```angular-ts
 import {Component, contentChild} from '@angular/core';
 
 @Component({
-  template: `Has ref: {{someRef() ? 'Yes' : 'No'}}`
+  template: `Has ref: {{ someRef() ? 'Yes' : 'No' }}`,
 })
 export class MyComponent {
   readonly ref = contentChild<ElementRef>('someRef');
 
-  someMethod() {
+  someMethod(): void {
     const ref = this.ref();
     if (ref) {
       ref.nativeElement;
@@ -102,7 +102,7 @@ references outside this directory are silently skipped, potentially breaking you
 
 ## VSCode extension
 
-![Screenshot of the VSCode extension and clicking on an `@ViewChild` field](assets/images/migrations/signal-queries-vscode.png "Screenshot of the VSCode extension and clicking on an `@ViewChild` field.")
+![Screenshot of the VSCode extension and clicking on an `@ViewChild` field](assets/images/migrations/signal-queries-vscode.png 'Screenshot of the VSCode extension and clicking on an `@ViewChild` field.')
 
 The migration is available as a [code refactor action](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) in VSCode.
 

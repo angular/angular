@@ -11,10 +11,8 @@
       const LIGHT_MODE_CLASS_NAME = 'docs-light-mode';
       const PREFERS_COLOR_SCHEME_DARK = '(prefers-color-scheme: dark)';
 
-
       const theme = localStorage.getItem(THEME_PREFERENCE_LOCAL_STORAGE_KEY) ?? 'auto';
-      const prefersDark =
-        window.matchMedia && window.matchMedia(PREFERS_COLOR_SCHEME_DARK).matches;
+      const prefersDark = window.matchMedia && window.matchMedia(PREFERS_COLOR_SCHEME_DARK).matches;
       const documentClassList = this.document.documentElement.classList;
 
       // clearing classes before setting them.
@@ -25,7 +23,7 @@
         documentClassList.add(LIGHT_MODE_CLASS_NAME);
       }
 
-      if(location.search.includes('uwu')) {
+      if (location.search.includes('uwu')) {
         documentClassList.add('uwu');
       }
     </script>
@@ -47,8 +45,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Primary Meta Tags -->
-    <meta name="title" content="Angular" />
     <meta name="description" content="The web development framework for building modern apps." />
+    <meta name="author" content="Angular Team" />
+    <meta
+      name="keywords"
+      content="Angular framework, TypeScript, web development, hydration, Signals, standalone components, accessibility, performance"
+    />
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
@@ -77,6 +79,8 @@
     <meta property="og:image" content="https://angular.dev/assets/images/ng-image.jpg" />
 
     <!-- Twitter -->
+    <meta name="twitter:site" content="@Angular" />
+    <meta name="twitter:creator" content="@Angular" />
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://angular.dev/" />
     <meta property="twitter:title" content="Angular" />
@@ -87,6 +91,8 @@
     <meta property="twitter:image" content="https://angular.dev/assets/images/ng-image.jpg" />
 
     <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&family=DM+Mono:ital@0;1&display=swap"
       rel="stylesheet"

@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {WritableSignal} from '../core_reactivity_export_internal';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
+import {controlCreateInternal, controlUpdateInternal} from './instructions/control';
+import {markViewDirty} from './instructions/mark_view_dirty';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
 import {TVIEW} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, nextBindingIndex} from './state';
 import {stringifyForError} from './util/stringify_utils';
-import {createOutputListener} from './view/directive_outputs';
-import {markViewDirty} from './instructions/mark_view_dirty';
 import {getComponentLViewByIndex} from './util/view_utils';
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {createOutputListener} from './view/directive_outputs';
 
 /** Symbol used to store and retrieve metadata about a binding. */
 export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');
@@ -28,6 +29,7 @@ export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');
  * For example, `inputBinding('value', () => 123)` creates an input binding.
  *
  * @publicApi
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export interface Binding {
   readonly [BINDING]: unknown;
@@ -43,16 +45,17 @@ export interface BindingInternal extends Binding {
   targetIdx?: number;
 
   /** Callback that will be invoked during creation. */
-  create?(): void;
+  create?(slot?: number): void;
 
   /** Callback that will be invoked during updates. */
-  update?(): void;
+  update?(slot?: number): void;
 }
 
 /**
  * Represents a dynamically-created directive with bindings targeting it specifically.
  *
  * @publicApi
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export interface DirectiveWithBindings<T> {
   /** Directive type that should be created. */
@@ -63,8 +66,14 @@ export interface DirectiveWithBindings<T> {
 }
 
 // These are constant between all the bindings so we can reuse the objects.
-const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'input', requiredVars: 1};
-const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'output', requiredVars: 0};
+const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {
+  kind: 'input',
+  requiredVars: 1,
+};
+const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {
+  kind: 'output',
+  requiredVars: 0,
+};
 
 // TODO(pk): this is a sketch of an input binding instruction that still needs some cleanups
 // - take an index of a directive on TNode (as matched), review all the index mappings that we need to do
@@ -114,20 +123,36 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
  * In this example we create an instance of the `MyButton` component and bind the value of
  * the `isDisabled` signal to its `disabled` input.
  *
- * ```
+ * ```ts
  * const isDisabled = signal(false);
  *
  * createComponent(MyButton, {
  *   bindings: [inputBinding('disabled', isDisabled)]
  * });
  * ```
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function inputBinding(publicName: string, value: () => unknown): Binding {
+  if (publicName === 'formField') {
+    const binding: BindingInternal = {
+      [BINDING]: INPUT_BINDING_METADATA,
+      create: () => {
+        controlCreateInternal();
+      },
+      update: () => {
+        // Update the [formField] input binding, regardless of whether this targets a 'FormField' directive.
+        inputBindingUpdate(binding.targetIdx!, publicName, value());
+        controlUpdateInternal();
+      },
+    };
+    return binding;
+  }
+
   // Note: ideally we would use a class here, but it seems like they
   // don't get tree shaken when constructed by a function like this.
   const binding: BindingInternal = {
     [BINDING]: INPUT_BINDING_METADATA,
-    update: () => inputBindingUpdate((binding as BindingInternal).targetIdx!, publicName, value()),
+    update: () => inputBindingUpdate(binding.targetIdx!, publicName, value()),
   };
 
   return binding;
@@ -142,7 +167,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
  * In this example we create an instance of the `MyCheckbox` component and listen
  * to its `onChange` event.
  *
- * ```
+ * ```ts
  * interface CheckboxChange {
  *   value: string;
  * }
@@ -153,6 +178,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
  *   ],
  * });
  * ```
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function outputBinding<T>(eventName: string, listener: (event: T) => unknown): Binding {
   // Note: ideally we would use a class here, but it seems like they
@@ -181,7 +207,7 @@ export function outputBinding<T>(eventName: string, listener: (event: T) => unkn
  * In this example we create an instance of the `MyCheckbox` component and bind to its `value`
  * input using a two-way binding.
  *
- * ```
+ * ```ts
  * const checkboxValue = signal('');
  *
  * createComponent(MyCheckbox, {
@@ -190,6 +216,7 @@ export function outputBinding<T>(eventName: string, listener: (event: T) => unkn
  *   ],
  * });
  * ```
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function twoWayBinding(publicName: string, value: WritableSignal<unknown>): Binding {
   const input = inputBinding(publicName, value) as BindingInternal;

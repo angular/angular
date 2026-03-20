@@ -30,7 +30,7 @@ import {
 } from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
-import {Component, HostBinding, ViewChild} from '../../src/core';
+import {Component, HostBinding, ViewChild, provideZoneChangeDetection} from '../../src/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {isNode} from '@angular/private/testing';
@@ -53,7 +53,10 @@ import {HostListener} from '../../src/metadata/directives';
     beforeEach(() => {
       resetLog();
       TestBed.configureTestingModule({
-        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+        providers: [
+          {provide: AnimationDriver, useClass: MockAnimationDriver},
+          provideZoneChangeDetection(),
+        ],
         imports: [BrowserAnimationsModule, CommonModule],
       });
     });
@@ -268,8 +271,7 @@ import {HostListener} from '../../src/metadata/directives';
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="exp" #parent>
-              <div *ngFor="let item of items" class="item e-{{ item }}">
-              </div>
+              <div *ngFor="let item of items" class="item e-{{ item }}"></div>
             </div>
           `,
           animations: [
@@ -524,9 +526,7 @@ import {HostListener} from '../../src/metadata/directives';
       it('should retain style values when :self is used inside of a query', () => {
         @Component({
           selector: 'ani-cmp',
-          template: `
-            <div [@myAnimation]="exp"></div>
-          `,
+          template: ` <div [@myAnimation]="exp"></div> `,
           animations: [
             trigger('myAnimation', [
               transition('* => go', [
@@ -637,12 +637,12 @@ import {HostListener} from '../../src/metadata/directives';
         @Component({
           selector: 'ani-cmp',
           template: `
-          <div [@myAnimation]="exp">
-            <div *ngFor="let item of items" class="item">
-              {{ item }}
+            <div [@myAnimation]="exp">
+              <div *ngFor="let item of items" class="item">
+                {{ item }}
+              </div>
             </div>
-          </div>
-        `,
+          `,
           animations: [
             trigger('myAnimation', [
               transition('* => go', [
@@ -709,12 +709,12 @@ import {HostListener} from '../../src/metadata/directives';
         @Component({
           selector: 'ani-cmp',
           template: `
-          <div [@myAnimation]="exp">
-            <div *ngFor="let item of items" class="item">
-              {{ item }}
+            <div [@myAnimation]="exp">
+              <div *ngFor="let item of items" class="item">
+                {{ item }}
+              </div>
             </div>
-          </div>
-        `,
+          `,
           animations: [
             trigger('myAnimation', [
               transition('* => go', [
@@ -1748,12 +1748,12 @@ import {HostListener} from '../../src/metadata/directives';
           @Component({
             selector: 'cmp',
             template: `
-             <div [@myAnimation]="exp">
-              <div *ngFor="let item of items" class="item">
-                {{ item }}
+              <div [@myAnimation]="exp">
+                <div *ngFor="let item of items" class="item">
+                  {{ item }}
+                </div>
               </div>
-             </div>
-          `,
+            `,
             animations: [
               trigger('myAnimation', [
                 transition('* => go', [
@@ -1789,12 +1789,12 @@ import {HostListener} from '../../src/metadata/directives';
           @Component({
             selector: 'cmp',
             template: `
-             <div [@myAnimation]="exp">
-              <div *ngFor="let item of items" class="item">
-                {{ item }}
+              <div [@myAnimation]="exp">
+                <div *ngFor="let item of items" class="item">
+                  {{ item }}
+                </div>
               </div>
-             </div>
-          `,
+            `,
             animations: [
               trigger('myAnimation', [
                 transition('* => go', [
@@ -2250,8 +2250,7 @@ import {HostListener} from '../../src/metadata/directives';
           template: `
             <div [@parent]="exp1" class="parent1" #parent>
               <div [@parent]="exp1" class="parent2">
-                <div [@child]="exp2" class="child">
-                </div>
+                <div [@child]="exp2" class="child"></div>
               </div>
             </div>
           `,
@@ -2393,10 +2392,10 @@ import {HostListener} from '../../src/metadata/directives';
         @Component({
           selector: 'child-cmp',
           template: `
-               <section>
-                 <div class="inner-div" @myChildAnimation></div>
-               </section>
-             `,
+            <section>
+              <div class="inner-div" @myChildAnimation></div>
+            </section>
+          `,
           animations: [
             trigger('myChildAnimation', [
               transition(':leave', [style({opacity: 0}), animate('1s', style({opacity: 1}))]),
@@ -2459,9 +2458,7 @@ import {HostListener} from '../../src/metadata/directives';
 
         @Component({
           selector: 'child-cmp',
-          template: `
-               <nested-child-cmp></nested-child-cmp>
-             `,
+          template: ` <nested-child-cmp></nested-child-cmp> `,
           standalone: false,
         })
         class ChildCmp {}
@@ -2469,10 +2466,10 @@ import {HostListener} from '../../src/metadata/directives';
         @Component({
           selector: 'nested-child-cmp',
           template: `
-               <section>
-                 <div class="inner-div" @myChildAnimation></div>
-               </section>
-             `,
+            <section>
+              <div class="inner-div" @myChildAnimation></div>
+            </section>
+          `,
           animations: [
             trigger('myChildAnimation', [
               transition(':leave', [style({opacity: 0}), animate('1s', style({opacity: 1}))]),
@@ -2521,7 +2518,8 @@ import {HostListener} from '../../src/metadata/directives';
           selector: 'ani-cmp',
           template: `
             <div @parent *ngIf="exp" class="parent">
-              this <div @child>child</div>
+              this
+              <div @child>child</div>
             </div>
           `,
           animations: [
@@ -2574,15 +2572,11 @@ import {HostListener} from '../../src/metadata/directives';
             <section class="container" [@anim]="exp ? 'enter' : 'leave'">
               <div class="a" *ngIf="exp">
                 <div class="b" *ngIf="exp">
-                  <div class="c" *ngIf="exp">
-                    text
-                  </div>
+                  <div class="c" *ngIf="exp">text</div>
                 </div>
               </div>
               <div>
-                <div class="d" *ngIf="exp">
-                  text2
-                </div>
+                <div class="d" *ngIf="exp">text2</div>
               </div>
             </section>
           `,
@@ -2751,10 +2745,32 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: `
-            <div data-name="p" class="parent" @parent *ngIf="exp" (@parent.start)="callback($event)" (@parent.done)="callback($event)">
-              <div data-name="c1" @child (@child.start)="callback($event)" (@child.done)="callback($event)"></div>
-              <div data-name="c2" @child (@child.start)="callback($event)" (@child.done)="callback($event)"></div>
-              <div data-name="c3" @childWithAnimation (@childWithAnimation.start)="callback($event)" (@childWithAnimation.done)="callback($event)"></div>
+            <div
+              data-name="p"
+              class="parent"
+              @parent
+              *ngIf="exp"
+              (@parent.start)="callback($event)"
+              (@parent.done)="callback($event)"
+            >
+              <div
+                data-name="c1"
+                @child
+                (@child.start)="callback($event)"
+                (@child.done)="callback($event)"
+              ></div>
+              <div
+                data-name="c2"
+                @child
+                (@child.start)="callback($event)"
+                (@child.done)="callback($event)"
+              ></div>
+              <div
+                data-name="c3"
+                @childWithAnimation
+                (@childWithAnimation.start)="callback($event)"
+                (@childWithAnimation.done)="callback($event)"
+              ></div>
             </div>
           `,
           standalone: false,
@@ -2857,11 +2873,13 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: `
-            <div *ngIf="!remove"
-                 [@parent]="exp"
-                 (@parent.start)="track($event)"
-                 (@parent.done)="track($event)">
-                 <child-cmp #child></child-cmp>
+            <div
+              *ngIf="!remove"
+              [@parent]="exp"
+              (@parent.start)="track($event)"
+              (@parent.done)="track($event)"
+            >
+              <child-cmp #child></child-cmp>
             </div>
           `,
           standalone: false,
@@ -2889,9 +2907,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: `
-            <div [@child]="exp"
-                 (@child.start)="track($event)"
-                 (@child.done)="track($event)"></div>
+            <div [@child]="exp" (@child.start)="track($event)" (@child.done)="track($event)"></div>
           `,
           standalone: false,
         })
@@ -2972,11 +2988,19 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: `
-               <div [@parent1]="parent1Exp" (@parent1.start)="track($event)"
-                    [@parent2]="parent2Exp" (@parent2.start)="track($event)">
-                 <div [@child1]="child1Exp" (@child1.start)="track($event)"
-                      [@child2]="child2Exp" (@child2.start)="track($event)"></div>
-               </div>
+            <div
+              [@parent1]="parent1Exp"
+              (@parent1.start)="track($event)"
+              [@parent2]="parent2Exp"
+              (@parent2.start)="track($event)"
+            >
+              <div
+                [@child1]="child1Exp"
+                (@child1.start)="track($event)"
+                [@child2]="child2Exp"
+                (@child2.start)="track($event)"
+              ></div>
+            </div>
           `,
           standalone: false,
         })
@@ -3205,16 +3229,16 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: `
-               <div @parent *ngIf="exp1" class="container">
-                 <div *ngIf="exp2">
-                   <div @child>
-                     <div *ngIf="exp3">
-                       <div class="item"></div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-             `,
+            <div @parent *ngIf="exp1" class="container">
+              <div *ngIf="exp2">
+                <div @child>
+                  <div *ngIf="exp3">
+                    <div class="item"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `,
           standalone: false,
         })
         class Cmp {
@@ -3268,16 +3292,16 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: `
-               <div @parent *ngIf="exp1" class="container">
-                 <div *ngIf="exp2">
-                   <div @child>
-                     <div *ngIf="exp3">
-                       <div class="item"></div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-             `,
+            <div @parent *ngIf="exp1" class="container">
+              <div *ngIf="exp2">
+                <div @child>
+                  <div *ngIf="exp3">
+                    <div class="item"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `,
           standalone: false,
         })
         class Cmp {
@@ -3318,7 +3342,7 @@ import {HostListener} from '../../src/metadata/directives';
           template: `
             <div class="grand-parent" [@grandParentAnimation]="childPresent">
               <div class="parent" [@parentAnimation]="childPresent">
-              <div *ngIf="childPresent" class="child"></div>
+                <div *ngIf="childPresent" class="child"></div>
               </div>
             </div>
           `,
@@ -3363,10 +3387,10 @@ import {HostListener} from '../../src/metadata/directives';
         @Component({
           selector: 'cmp',
           template: `
-          <div class="parent" [@parent]="exp">
-            <div class="child" *ngIf="exp"></div>
-          </div>
-        `,
+            <div class="parent" [@parent]="exp">
+              <div class="child" *ngIf="exp"></div>
+            </div>
+          `,
           animations: [
             trigger('parent', [
               state('true', style({backgroundColor: 'red'})),
@@ -3423,10 +3447,10 @@ import {HostListener} from '../../src/metadata/directives';
         @Component({
           selector: 'cmp',
           template: `
-          <div class="parent" [@parent]="exp">
-            <div class="child" *ngIf="exp"></div>
-          </div>
-        `,
+            <div class="parent" [@parent]="exp">
+              <div class="child" *ngIf="exp"></div>
+            </div>
+          `,
           animations: [
             trigger('parent', [
               state('true', style({backgroundColor: 'red'})),

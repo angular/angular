@@ -90,10 +90,18 @@ export function createFileSystemTsReadDirectoryFn(
         const directories: string[] = [];
 
         for (const child of children) {
-          if (fs.stat(fs.join(resolvedPath, child))?.isDirectory()) {
-            directories.push(child);
-          } else {
-            files.push(child);
+          try {
+            if (fs.stat(fs.join(resolvedPath, child))?.isDirectory()) {
+              directories.push(child);
+            } else {
+              files.push(child);
+            }
+          } catch (error) {
+            if (error instanceof Error && error.message.includes('ENOENT')) {
+              // may be a dangling link or other file system error, ignore
+              continue;
+            }
+            throw error;
           }
         }
 

@@ -151,7 +151,7 @@ export type PlaygroundRouteData = {
   starterTemplate?: PlaygroundTemplate;
 };
 
-export type PlaygroundTemplate = Required<Pick<NavigationItem, 'path' | 'label'>>;
+export type PlaygroundTemplate = Required<Pick<NavigationItem, 'path' | 'label'>> & {id: string};
 
 // Note: only the fields being used are defined in this type
 export interface PackageJson {

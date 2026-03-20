@@ -3,21 +3,19 @@
 We would love for you to contribute to Angular and help make it even better than it is today!
 As a contributor, here are the guidelines we would like you to follow:
 
- - [Code of Conduct](#coc)
- - [Question or Problem?](#question)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
- - [Coding Rules](#rules)
- - [Commit Message Guidelines](#commit)
- - [Signing the CLA](#cla)
-
+- [Code of Conduct](#coc)
+- [Question or Problem?](#question)
+- [Issues and Bugs](#issue)
+- [Feature Requests](#feature)
+- [Submission Guidelines](#submit)
+- [Coding Rules](#rules)
+- [Commit Message Guidelines](#commit)
+- [Signing the CLA](#cla)
 
 ## <a name="coc"></a> Code of Conduct
 
 Help us keep Angular open and inclusive.
 Please read and follow our [Code of Conduct][coc].
-
 
 ## <a name="question"></a> Got a Question or Problem?
 
@@ -34,27 +32,24 @@ To save your and our time, we will systematically close all issues that are requ
 
 If you would like to chat about the question in real-time, you can reach out via [the Angular community Discord server][discord].
 
-
 ## <a name="issue"></a> Found a Bug?
 
 If you find a bug in the source code, you can help us by [submitting an issue](#submit-issue) to our [GitHub Repository][github].
 Even better, you can [submit a Pull Request](#submit-pr) with a fix.
 
-
 ## <a name="feature"></a> Missing a Feature?
-You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub Repository.
-If you would like to *implement* a new feature, please consider the size of the change in order to determine the right steps to proceed:
 
-* For a **Major Feature**, first open an issue and outline your proposal so that it can be discussed.
+You can _request_ a new feature by [submitting an issue](#submit-issue) to our GitHub Repository.
+If you would like to _implement_ a new feature, please consider the size of the change in order to determine the right steps to proceed:
+
+- For a **Major Feature**, first open an issue and outline your proposal so that it can be discussed.
   This process allows us to better coordinate our efforts, prevent duplication of work, and help you to craft the change so that it is successfully accepted into the project.
 
   **Note**: Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major feature.
 
-* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
-
+- **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
 
 ## <a name="submit"></a> Submission Guidelines
-
 
 ### <a name="submit-issue"></a> Submitting an Issue
 
@@ -74,50 +69,67 @@ Unfortunately, we are not able to investigate / fix bugs without a minimal repro
 
 You can file new issues by selecting from our [new issue templates](https://github.com/angular/angular/issues/new/choose) and filling out the issue template.
 
+### <a name="pr-quality"></a> Contribution Quality
+
+We strongly value open source contribution and pull requests from community contributors. Please note that every pull request is reviewed and merged by an actual person on the team, which does take time and effort. That is time and effort that does take away from other valuable work. With that in mind we have an minimum set of expectations that are required of any community contribution pull request that is opened.
+
+1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
+   - You don't want to duplicate existing efforts.
+2. Be sure that an issue or pull request clearly describes the problem you're fixing, or documents the design for the feature you'd like to add. Issues require a _minimal_ reproduction.
+
+3. Discussing the design in an issue upfront helps to ensure that we're ready to accept your work. Pull requests are not the right place to do design work.
+   - When in doubt, open an issue first before doing any sort of speculative implementation work
+
+4. Ideally the PR should be tied to an issue, but this is not required
+
+5. The change should improve code quality (i.e. addressing a TODO) or should impact / improve a feature
+
+6. Micro optimizations will only be accepted if they are validated by an actual benchmark
+
+7. Do not open pull requests that are addressing feature requests that are not labeled as "help wanted" as they usually need additional design work before we could accept pull requests
+
+8. The change should be well tested
+
+If your pull request does not meet these minimum expectations, we may close your PR. Also, if your PR introduces a breaking change, it's possible the level of churn this breaking change causes may block our ability to move forward with it. We may close your PR in that situation, as well. Otherwise, we're excited to see your contributions and enthusiasm for Angular!
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
-   You don't want to duplicate existing efforts.
-
-2. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
-   Discussing the design upfront helps to ensure that we're ready to accept your work.
-
-3. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
+1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
    We cannot accept code without a signed CLA.
    Make sure you author all contributed Git commits with email address associated with your CLA signature.
 
-4. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the [angular/angular](https://github.com/angular/angular/fork) repo.
+2. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the [angular/angular](https://github.com/angular/angular/fork) repo.
 
-5. In your forked repository, make your changes in a new git branch:
+3. In your forked repository, make your changes in a new git branch:
 
-     ```shell
-     git checkout -b my-fix-branch main
-     ```
+   ```shell
+   git checkout -b my-fix-branch main
+   ```
 
-6. Create your patch, **including appropriate test cases**.
+4. Create your patch, **including appropriate test cases**.
 
-7. Follow our [Coding Rules](#rules).
+5. Follow our [Coding Rules](#rules).
 
-8. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
+6. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
 
-9. Commit your changes using a descriptive commit message that follows our [commit message conventions][commit-message-guidelines].
+7. Commit your changes using a descriptive commit message that follows our [commit message conventions][commit-message-guidelines].
    Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
-     ```shell
-     git commit --all
-     ```
-    Note: the optional commit `--all` command line option will automatically "add" and "rm" edited files.
+   ```shell
+   git commit --all
+   ```
 
-10. Push your branch to GitHub:
+   Note: the optional commit `--all` command line option will automatically "add" and "rm" edited files.
 
-    ```shell
-    git push origin my-fix-branch
-    ```
+8. Push your branch to GitHub:
 
-11. In GitHub, send a pull request to `angular:main`.
+   ```shell
+   git push origin my-fix-branch
+   ```
+
+9. In GitHub, send a pull request to `angular:main`.
 
 ### Reviewing a Pull Request
 
@@ -133,15 +145,14 @@ If we ask for changes via code reviews then:
 
 3. Create a fixup commit and push to your GitHub repository (this will update your Pull Request):
 
-    ```shell
-    git commit --all --fixup HEAD
-    git push
-    ```
+   ```shell
+   git commit --all --fixup HEAD
+   git push
+   ```
 
-    For more info on working with fixup commits see [here](./contributing-docs/using-fixup-commits.md).
+   For more info on working with fixup commits see [here](./contributing-docs/using-fixup-commits.md).
 
 That's it! Thank you for your contribution!
-
 
 ##### Updating the commit message
 
@@ -150,69 +161,68 @@ In order to update the commit message of the last commit on your branch:
 
 1. Check out your branch:
 
-    ```shell
-    git checkout my-fix-branch
-    ```
+   ```shell
+   git checkout my-fix-branch
+   ```
 
 2. Amend the last commit and modify the commit message:
 
-    ```shell
-    git commit --amend
-    ```
+   ```shell
+   git commit --amend
+   ```
 
 3. Push to your GitHub repository:
 
-    ```shell
-    git push --force-with-lease
-    ```
+   ```shell
+   git push --force-with-lease
+   ```
 
 > NOTE:<br />
 > If you need to update the commit message of an earlier commit, you can use `git rebase` in interactive mode.
 > See the [git docs](https://git-scm.com/docs/git-rebase#_interactive_mode) for more details.
 
-
 #### After your pull request is merged
 
 After your pull request is merged, you can safely delete your branch and pull the changes from the main (upstream) repository:
 
-* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+- Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
 
-    ```shell
-    git push origin --delete my-fix-branch
-    ```
+  ```shell
+  git push origin --delete my-fix-branch
+  ```
 
-* Check out the main branch:
+- Check out the main branch:
 
-    ```shell
-    git checkout main -f
-    ```
+  ```shell
+  git checkout main -f
+  ```
 
-* Delete the local branch:
+- Delete the local branch:
 
-    ```shell
-    git branch -D my-fix-branch
-    ```
+  ```shell
+  git branch -D my-fix-branch
+  ```
 
-* Update your local `main` with the latest upstream version:
+- Update your local `main` with the latest upstream version:
 
-    ```shell
-    git pull --ff upstream main
-    ```
-
+  ```shell
+  git pull --ff upstream main
+  ```
 
 ## <a name="rules"></a> Coding Rules
+
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
-* All features or bug fixes **must be tested** by one or more specs (unit-tests).
-* All public API methods **must be documented**.
-* We follow [Google's TypeScript Style Guide][ts-style-guide], but wrap all code at **100 characters**.
+- All features or bug fixes **must be tested** by one or more specs (unit-tests).
+- All public API methods **must be documented**.
+- We follow [Google's TypeScript Style Guide][ts-style-guide], but wrap all code at **100 characters**.
 
-   An automated formatter is available, see [building-and-testing-angular.md](./contributing-docs/building-and-testing-angular.md#formatting-your-source-code).
-
+  An automated formatter is available, see [building-and-testing-angular.md](./contributing-docs/building-and-testing-angular.md#formatting-your-source-code).
 
 ## <a name="commit"></a> Commit Message Guidelines
 
 We have very precise rules over how our Git commit messages must be formatted:
+
 ```
 <type>(<scope>): <short summary>
 ```
@@ -224,21 +234,18 @@ See [Commit Message Guidelines][commit-message-guidelines] for details.
 Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
 changes to be accepted, the CLA must be signed. It's a quick process, we promise!
 
-* For individuals, we have a [simple click-through form][individual-cla].
-* For corporations, we'll need you to
+- For individuals, we have a [simple click-through form][individual-cla].
+- For corporations, we'll need you to
   [print, sign and one of scan+email, fax or mail the form][corporate-cla].
 
 If you have more than one GitHub accounts, or multiple email addresses associated with a single GitHub account, you must sign the CLA using the primary email address of the GitHub account used to author Git commits and send pull requests.
 
 The following documents can help you sort out issues with GitHub accounts and multiple email addresses:
 
-  * https://help.github.com/articles/setting-your-commit-email-address-in-git/
-  * https://stackoverflow.com/questions/37245303/what-does-usera-committed-with-userb-13-days-ago-on-github-mean
-  * https://help.github.com/articles/about-commit-email-addresses/
-  * https://help.github.com/articles/blocking-command-line-pushes-that-expose-your-personal-email-address/
-
-
-
+- https://help.github.com/articles/setting-your-commit-email-address-in-git/
+- https://stackoverflow.com/questions/37245303/what-does-usera-committed-with-userb-13-days-ago-on-github-mean
+- https://help.github.com/articles/about-commit-email-addresses/
+- https://help.github.com/articles/blocking-command-line-pushes-that-expose-your-personal-email-address/
 
 [coc]: https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate

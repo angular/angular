@@ -12,11 +12,11 @@ import {afterNextRender, InjectionToken, Injector, runInInjectionContext} from '
 import {ActivatedRouteSnapshot} from '../router_state';
 
 export const CREATE_VIEW_TRANSITION = new InjectionToken<typeof createViewTransition>(
-  ngDevMode ? 'view transition helper' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'view transition helper' : '',
 );
 export const VIEW_TRANSITION_OPTIONS = new InjectionToken<
   ViewTransitionsFeatureOptions & {skipNextTransition: boolean}
->(ngDevMode ? 'view transition options' : '');
+>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'view transition options' : '');
 
 /**
  * Options to configure the View Transitions integration in the Router.
@@ -94,7 +94,17 @@ export function createViewTransition(
     // complete (below), which includes the update phase of the routed components.
     return createRenderPromise(injector);
   });
+  transition.updateCallbackDone.catch((error) => {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.error(error);
+    }
+  });
   transition.ready.catch((error) => {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.error(error);
+    }
+  });
+  transition.finished.catch((error) => {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       console.error(error);
     }

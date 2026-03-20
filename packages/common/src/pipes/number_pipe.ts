@@ -18,7 +18,7 @@ import {
 import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
 
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './utils';
 import {RuntimeErrorCode} from '../errors';
 
 /**
@@ -82,6 +82,8 @@ import {RuntimeErrorCode} from '../errors';
  *
  * {@example common/pipes/ts/number_pipe.ts region='NumberPipe'}
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @publicApi
  */
 @Pipe({
@@ -139,6 +141,8 @@ export class DecimalPipe implements PipeTransform {
  * where the caller's default locale is `en-US`.
  *
  * {@example common/pipes/ts/percent_pipe.ts region='PercentPipe'}
+ *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
  *
  * @publicApi
  */
@@ -205,6 +209,8 @@ export class PercentPipe implements PipeTransform {
  * where the caller's default locale is `en-US`.
  *
  * {@example common/pipes/ts/currency_pipe.ts region='CurrencyPipe'}
+ *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
  *
  * @publicApi
  */

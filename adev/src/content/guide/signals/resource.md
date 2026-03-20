@@ -2,7 +2,7 @@
 
 IMPORTANT: `resource` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
 
-Most signal APIs are synchronous— `signal`, `computed`, `input`, etc. However, applications often need to deal with data that is available asynchronously. A `Resource` gives you a way to incorporate async data into your application's signal-based code.
+All signal APIs are synchronous— `signal`, `computed`, `input`, etc. However, applications often need to deal with data that is available asynchronously. A `Resource` gives you a way to incorporate async data into your application's signal-based code and still allow you to access its data synchronously.
 
 You can use a `Resource` to perform any kind of async operation, but the most common use-case for `Resource` is fetching data from a server. The following example creates a resource to fetch some user data.
 
@@ -115,7 +115,7 @@ The `status` signal provides a specific `ResourceStatus` that describes the stat
 | ------------- | :---------------- | ---------------------------------------------------------------------------- |
 | `'idle'`      | `undefined`       | The resource has no valid request and the loader has not run.                |
 | `'error'`     | `undefined`       | The loader has encountered an error.                                         |
-| `'loading'`   | `undefined`       | The loader is running as a result of the `request` value changing.           |
+| `'loading'`   | `undefined`       | The loader is running as a result of the `params` value changing.            |
 | `'reloading'` | Previous value    | The loader is running as a result calling of the resource's `reload` method. |
 | `'resolved'`  | Resolved value    | The loader has completed.                                                    |
 | `'local'`     | Locally set value | The resource's value has been set locally via `.set()` or `.update()`        |
@@ -125,3 +125,55 @@ You can use this status information to conditionally display user interface elem
 ## Reactive data fetching with `httpResource`
 
 [`httpResource`](/guide/http/http-resource) is a wrapper around `HttpClient` that gives you the request status and response as signals. It makes HTTP requests through the Angular HTTP stack, including interceptors.
+
+## Resource composition with snapshots
+
+A `ResourceSnapshot` is a structured representation of a resource's current state. Every resource has a `snapshot` property that provides a signal of its current state.
+
+```ts
+const userId: Signal<string> = getUserId();
+
+const userResource = resource({
+  params: () => ({id: userId()}),
+  loader: ({params}) => fetchUser(params),
+});
+
+const userSnapshot = userResource.snapshot;
+```
+
+Each snapshot contains a `status` and either a `value` or an `error`.
+
+### Composing resources with snapshots
+
+You can create new resources from snapshots using `resourceFromSnapshots`. This enables composition with signal APIs like `computed` and `linkedSignal` to transform resource behavior.
+
+```ts
+import {linkedSignal, resourceFromSnapshots, Resource, ResourceSnapshot} from '@angular/core';
+
+function withPreviousValue<T>(input: Resource<T>): Resource<T> {
+  const derived = linkedSignal<ResourceSnapshot<T>, ResourceSnapshot<T>>({
+    source: input.snapshot,
+    computation: (snap, previous) => {
+      if (snap.status === 'loading' && previous && previous.value.status !== 'error') {
+        // When the input resource enters loading state, we keep the value
+        // from its previous state, if any.
+        return {status: 'loading' as const, value: previous.value.value};
+      }
+
+      // Otherwise we simply forward the state of the input resource.
+      return snap;
+    },
+  });
+
+  return resourceFromSnapshots(derived);
+}
+
+@Component({
+  /*... */
+})
+export class AwesomeProfile {
+  userId = input.required<number>();
+  user = withPreviousValue(httpResource(() => `/user/${this.userId()}`));
+  // When userId changes, user.value() keeps the old user data until the new one loads
+}
+```

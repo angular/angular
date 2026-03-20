@@ -34,10 +34,14 @@ export interface ToObservableOptions {
 
 /**
  * Exposes the value of an Angular `Signal` as an RxJS `Observable`.
+ * As it reflects a state, the observable will always emit the latest value upon subscription.
  *
  * The signal's value will be propagated into the `Observable`'s subscribers using an `effect`.
  *
  * `toObservable` must be called in an injection context unless an injector is provided via options.
+ *
+ * @see [RxJS interop with Angular signals](ecosystem/rxjs-interop)
+ * @see [Create an RxJS Observable from a signal with toObservable](ecosystem/rxjs-interop#create-an-rxjs-observable-from-a-signal-with-toobservable)
  *
  * @publicApi 20.0
  */

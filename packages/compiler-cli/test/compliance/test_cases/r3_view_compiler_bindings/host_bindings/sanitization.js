@@ -1,13 +1,26 @@
-hostBindings: function HostBindingDir_HostBindings(rf, ctx) {
+hostBindings: function HostBindingLinkDir_HostBindings(rf, ctx) {
   if (rf & 2) {
-    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("href", ctx.evil, $r3$.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.evil, $r3$.ɵɵsanitizeUrlOrResourceUrl)("sandbox", ctx.evil, $r3$.ɵɵvalidateIframeAttribute);
+    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("href", ctx.evil, $r3$.ɵɵsanitizeUrl);
     $r3$.ɵɵattribute("style", ctx.evil, $r3$.ɵɵsanitizeStyle);
-  } 
+  }
 }
 …
-hostBindings: function HostBindingDir2_HostBindings(rf, ctx) {
+hostBindings: function HostBindingImageDir_HostBindings(rf, ctx) {
   if (rf & 2) {
-    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("href", ctx.evil, $r3$.ɵɵsanitizeUrl)("src", ctx.evil)("sandbox", ctx.evil, $r3$.ɵɵvalidateIframeAttribute);
-    $r3$.ɵɵattribute("style", ctx.evil, $r3$.ɵɵsanitizeStyle);
-  } 
+    i0.ɵɵdomProperty("innerHTML", ctx.evil, i0.ɵɵsanitizeHtml)("src", ctx.nonEvil, i0.ɵɵsanitizeUrl);
+    i0.ɵɵattribute("style", ctx.evil, i0.ɵɵsanitizeStyle);
+  }
 }
+…
+hostBindings: function HostBindingIframeDir_HostBindings(rf, ctx) {
+  if (rf & 2) {
+    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("src", ctx.evil, i0.ɵɵsanitizeResourceUrl)("sandbox", ctx.evil, $r3$.ɵɵvalidateAttribute);
+    $r3$.ɵɵattribute("style", ctx.evil, $r3$.ɵɵsanitizeStyle)("attributeName", ctx.nonEvil);
+  }
+}
+…
+hostBindings: function HostBindingSvgAnimateDir_HostBindings(rf, ctx) {
+  if (rf & 2) {
+    i0.ɵɵattribute("attributeName", ctx.evil, i0.ɵɵvalidateAttribute);
+  }
+} 

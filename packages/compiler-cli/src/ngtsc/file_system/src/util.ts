@@ -8,7 +8,7 @@
 import ts from 'typescript';
 import {AbsoluteFsPath, PathString} from './types';
 
-const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
+const TS_DTS_TSX_JS_EXTENSION = /(?:\.d)?\.ts$|\.tsx$|\.js$/;
 
 /**
  * Convert Windows-style separators to POSIX separators.
@@ -19,10 +19,10 @@ export function normalizeSeparators(path: string): string {
 }
 
 /**
- * Remove a .ts, .d.ts, or .js extension from a file name.
+ * Remove a .ts, .d.ts, .tsx, or .js extension from a file name.
  */
 export function stripExtension<T extends PathString>(path: T): T {
-  return path.replace(TS_DTS_JS_EXTENSION, '') as T;
+  return path.replace(TS_DTS_TSX_JS_EXTENSION, '') as T;
 }
 
 export function getSourceFileOrError(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile {

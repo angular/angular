@@ -56,7 +56,6 @@ export interface Watch {
   [SIGNAL]: WatchNode;
 }
 export interface WatchNode extends ReactiveNode {
-  hasRun: boolean;
   fn: ((onCleanup: WatchCleanupRegisterFn) => void) | null;
   schedule: ((watch: Watch) => void) | null;
   cleanupFn: WatchCleanupFn;
@@ -111,10 +110,10 @@ export function createWatch(
     }
 
     node.dirty = false;
-    if (node.hasRun && !consumerPollProducersForChange(node)) {
+    if (node.version > 0 && !consumerPollProducersForChange(node)) {
       return;
     }
-    node.hasRun = true;
+    node.version++;
 
     const prevConsumer = consumerBeforeComputation(node);
     try {
@@ -141,8 +140,7 @@ const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
-// TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
-const WATCH_NODE: Partial<WatchNode> = /* @__PURE__ */ (() => {
+const WATCH_NODE: Omit<WatchNode, 'fn' | 'schedule' | 'ref'> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
     consumerIsAlwaysLive: true,
@@ -152,7 +150,6 @@ const WATCH_NODE: Partial<WatchNode> = /* @__PURE__ */ (() => {
         node.schedule(node.ref);
       }
     },
-    hasRun: false,
     cleanupFn: NOOP_CLEANUP_FN,
   };
 })();

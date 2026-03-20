@@ -1,5 +1,5 @@
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
-load("//tools:defaults2.bzl", "js_binary", "js_run_binary")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
+load("//tools:defaults.bzl", "js_binary", "js_run_binary")
 
 def partial_compliance_golden(filePath):
     """Creates the generate and testing targets for partial compile results.
@@ -13,7 +13,7 @@ def partial_compliance_golden(filePath):
         "//packages/core:npm_package",
         "//packages:package_json",
         filePath,
-    ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path])
+    ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path], allow_empty = True)
 
     js_binary(
         name = generate_partial_name,

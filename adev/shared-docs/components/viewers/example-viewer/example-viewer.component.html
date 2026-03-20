@@ -1,13 +1,14 @@
 <div class="docs-example-viewer" role="group">
   <header class="docs-example-viewer-actions">
-    @if (view() === CodeExampleViewMode.SNIPPET) {
-      <span>{{ exampleMetadata()?.title }}</span>
-    }
-
-    @if (view() === CodeExampleViewMode.MULTI_FILE) {
-      <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
+    @if (showCode()) {
+      <mat-tab-group
+        #codeTabs
+        animationDuration="0ms"
+        mat-stretch-tabs="false"
+        (selectedTabChange)="onTabIndexChange($event.index)"
+      >
         @for (tab of tabs(); track tab) {
-          <mat-tab [label]="tab.name"></mat-tab>
+          <mat-tab [label]="tab.name" />
         }
       </mat-tab-group>
     }
@@ -15,9 +16,28 @@
     <div class="docs-example-viewer-icons">
       <button
         type="button"
+        role="switch"
+        class="docs-example-code-toggle"
+        [class.docs-example-code-toggle__show]="!showCode()"
+        [attr.aria-checked]="showCode()"
+        [attr.aria-label]="showCode() ? 'Hide code' : 'Show code'"
+        (click)="showCode.set(!showCode())"
+        [matTooltip]="showCode() ? 'Hide code' : 'Show code'"
+        matTooltipPosition="above"
+      >
+        @if (!showCode()) {
+          <span class="docs-example-show-code"><docs-icon>code</docs-icon> Show Code</span>
+        } @else {
+          <docs-icon>code_off</docs-icon>
+        }
+      </button>
+      <button
+        type="button"
         class="docs-example-copy-link"
         [attr.aria-label]="'Copy link to ' + exampleMetadata()?.title + ' example to the clipboard'"
         (click)="copyLink()"
+        matTooltip="Copy link to example"
+        matTooltipPosition="above"
       >
         <i aria-hidden="true">
           <svg
@@ -41,8 +61,9 @@
         <button
           type="button"
           (click)="toggleExampleVisibility()"
-          [attr.title]="(expanded() ? 'Collapse' : 'Expand') + ' example'"
           [attr.aria-label]="(expanded() ? 'Collapse' : 'Expand') + ' code example'"
+          matTooltip="{{ expanded() ? 'Collapse' : 'Expand' }} example"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             @if (!expanded()) {
@@ -66,7 +87,7 @@
                 fill="none"
               >
                 <path
-                  fill="var(--gray-400)"
+                  fill="var(--quaternary-contrast)"
                   d="M3.4 22 2 20.6 8.6 14H4v-2h8v8h-2v-4.6L3.4 22ZM12 12V4h2v4.6L20.6 2 22 3.4 15.4 10H20v2h-8Z"
                 />
               </svg>
@@ -77,16 +98,14 @@
     </div>
   </header>
 
-  <div
-    class="docs-example-viewer-code-wrapper"
-    [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
-    [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
-  >
-    <button docs-copy-source-code></button>
-    @if (snippetCode()?.sanitizedContent; as content) {
-      <div [innerHTML]="content"></div>
-    }
-  </div>
+  @if (showCode()) {
+    <div class="docs-example-viewer-code-wrapper" [class.shell]="snippetCode()?.shell">
+      <button docs-copy-source-code></button>
+      @if (snippetCode()?.sanitizedContent; as content) {
+        <div class="docs-example-code-block" [innerHTML]="content"></div>
+      }
+    </div>
+  }
 
   @if (exampleComponent) {
     <div class="docs-example-viewer-preview">
@@ -100,9 +119,10 @@
         <a
           [href]="githubUrl()"
           target="_blank"
-          title="Open example on GitHub"
           class="docs-example-github-link"
           aria-label="Open example on GitHub"
+          matTooltip="Open example on GitHub"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             <svg
@@ -128,8 +148,9 @@
           [href]="stackblitzUrl()"
           target="_blank"
           class="docs-example-stackblitz-link"
-          title="Edit this example in StackBlitz"
-          aria-label="Edit this example in StackBlitz"
+          aria-label="Edit example in StackBlitz"
+          matTooltip="Edit example in StackBlitz"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             <svg

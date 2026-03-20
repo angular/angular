@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-
 import ts from 'typescript';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {AbsoluteFsPath} from '@angular/compiler-cli';
+import {NgCompiler, NgCompilerOptions} from '@angular/compiler-cli/private/migrations';
 
 /**
  * Base information for a TypeScript project, including an instantiated

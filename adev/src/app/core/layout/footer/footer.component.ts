@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, VERSION} from '@angular/core';
 import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
 import {ANGULAR_LINKS} from '../../constants/links';
@@ -19,5 +19,6 @@ import {ANGULAR_LINKS} from '../../constants/links';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Footer {
+  protected angularVersion = VERSION.full;
   protected ngLinks = ANGULAR_LINKS;
 }

@@ -12,8 +12,8 @@ import {
   SvgD3Node,
   TreeD3Node,
   TreeNode,
-  TreeVisualizer,
-} from '../../shared/tree-visualizer-host/tree-visualizer';
+} from '../../shared/tree-visualizer/tree-visualizer';
+import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 
 // Types
 
@@ -22,7 +22,7 @@ export interface InjectorPath {
   path: SerializedInjector[];
 }
 
-export type InjectorTreeVisualizer = TreeVisualizer<InjectorTreeNode>;
+export type InjectorTreeVisualizer = TreeVisualizerComponent<InjectorTreeNode>;
 
 export interface InjectorTreeNode extends TreeNode {
   injector: SerializedInjector;
@@ -154,6 +154,12 @@ export function transformInjectorResolutionPathsIntoTree(
         injector,
         children: [],
       };
+
+      if (injector.providers !== undefined) {
+        const providerText = injector.providers === 1 ? 'Provider' : 'Providers';
+        next.subLabel = `${injector.providers} ${providerText}`;
+      }
+
       next.injector.node = injectorIdToNode.get(next.injector.id);
       currentLevel.push(next);
       currentLevel = next.children;
@@ -289,4 +295,64 @@ export function d3InjectorTreeNodeModifier(d3Node: SvgD3Node<InjectorTreeNode>) 
       }
       return -1;
     });
+}
+
+/** Returns whether InjectorTreeNodes are equal (excl. children comparison). */
+export function areInjectorTreeNodesEqual(a: InjectorTreeNode, b: InjectorTreeNode): boolean {
+  const isSameInjector = equalInjector(a?.injector, b?.injector);
+  const isSameLabel = a?.label === b?.label;
+  const isSameSubLabel = a?.subLabel === b?.subLabel;
+
+  return isSameInjector && isSameLabel && isSameSubLabel;
+}
+
+/** Returns whether injector trees (InjectorTreeNodes with children) are equal. */
+export function areInjectorTreesEqual(
+  a: InjectorTreeNode | null,
+  b: InjectorTreeNode | null,
+): boolean {
+  if (!a && !b) {
+    return true;
+  }
+  if ((a && !b) || (!a && b)) {
+    return false;
+  }
+
+  const stackA: InjectorTreeNode[] = [a!];
+  const stackB: InjectorTreeNode[] = [b!];
+
+  while (stackA.length && stackB.length) {
+    const aNode = stackA.pop()!;
+    const bNode = stackB.pop()!;
+
+    const isDiffChildrenLength = aNode?.children.length !== bNode?.children.length;
+
+    if (!areInjectorTreeNodesEqual(aNode, bNode) || isDiffChildrenLength) {
+      return false;
+    }
+
+    if (aNode?.children && bNode?.children) {
+      for (let i = 0; i < aNode.children.length; i++) {
+        const aChild = aNode.children[i];
+        const bChild = bNode.children[i];
+
+        stackA.push(aChild);
+        stackB.push(bChild);
+      }
+    }
+  }
+
+  return true;
+}
+
+/** Checks whether an injector belongs to the element tree. */
+export function isElementTreeInjector(injector: SerializedInjector | undefined): boolean {
+  const type = injector?.type;
+  return type === 'element';
+}
+
+/** Checks whether an injector belongs to the environment tree. */
+export function isEnvironmentTreeInjector(injector: SerializedInjector | undefined): boolean {
+  const type = injector?.type;
+  return type === 'environment' || type === 'null' || type === 'imported-module';
 }

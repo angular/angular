@@ -8,6 +8,7 @@
 @use './theme' as th;
 @use './inputs';
 @use './tables';
+@use '../lib/devtools-tabs/directive-explorer/property-pane/property-view/property-view-body/prop-actions-menu/prop-actions-menu-cdk';
 
 @include mat.all-component-typographies();
 @include mat.core();

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {platform} from 'node:os';
+import ts from 'typescript';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
-import {platform} from 'os';
-import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
@@ -27,14 +27,28 @@ const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 
 const varRegExp = (name: string): RegExp => new RegExp(`const \\w+ = \\[\"${name}\"\\];`);
 
-const viewQueryRegExp = (predicate: string, flags: number, ref?: string): RegExp => {
-  const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵɵviewQuery\\(${predicate}, ${flags}${maybeRef}\\)`);
+const viewQueryRegExp = (queries: [{predicate: string; flags: number; ref?: string}]): RegExp => {
+  let result = `i0\\.ɵɵviewQuery`;
+
+  for (const {ref, predicate, flags} of queries) {
+    const maybeRef = ref ? `, ${ref}` : ``;
+    result += `\\(${predicate}, ${flags}${maybeRef}\\)`;
+  }
+
+  return new RegExp(result);
 };
 
-const contentQueryRegExp = (predicate: string, flags: number, ref?: string): RegExp => {
-  const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵɵcontentQuery\\(dirIndex, ${predicate}, ${flags}${maybeRef}\\)`);
+const contentQueryRegExp = (
+  queries: {predicate: string; flags: number; ref?: string}[],
+): RegExp => {
+  let result = `i0\\.ɵɵcontentQuery`;
+
+  for (const {predicate, flags, ref} of queries) {
+    const maybeRef = ref ? `, ${ref}` : ``;
+    result += `\\(dirIndex, ${predicate}, ${flags}${maybeRef}\\)`;
+  }
+
+  return new RegExp(result);
 };
 
 const setClassMetadataRegExp = (expectedType: string): RegExp =>
@@ -148,7 +162,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
       );
       expect(jsContents).toContain("providedIn: 'root' })");
       expect(jsContents).not.toContain('__decorate');
@@ -299,30 +313,48 @@ runInEachFileSystem((os: string) => {
         expect(updateInstances?.length).toBe(1);
       });
 
-      it('should compile animate.enter with a host binding string', () => {
+      it('should throw an error when legacy animations are used with animate.enter', () => {
         env.write(
           'test.ts',
           `
-          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+          import {Component} from '@angular/core';
 
           @Component({
             selector: 'test-cmp',
-            host: {'animate.enter': 'fade'},
-            template:
-              '<div><p>I should slide in</p></div>',
+            template: '<div animate.enter="some-class"></div>',
+            animations: [],
           })
-          class TestComponent {
-            show = signal(false);
-          }
+          class TestComponent {}
         `,
         );
 
-        env.driveMain();
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `A component cannot have both the '@Component.animations' property (legacy animations) and use 'animate.enter' or 'animate.leave' in the template.`,
+        );
+      });
 
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('i0.ɵɵanimateEnter("fade");');
-        const updateInstances = jsContents.match(/ɵɵanimateEnter\(/g);
-        expect(updateInstances?.length).toBe(1);
+      it('should throw an error when legacy animations are used with animate.leave', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div animate.leave="some-class"></div>',
+            animations: [],
+          })
+          class TestComponent {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `A component cannot have both the '@Component.animations' property (legacy animations) and use 'animate.enter' or 'animate.leave' in the template.`,
+        );
       });
     });
 
@@ -462,7 +494,9 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(
         'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
       );
-      expect(jsContents).toContain('return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));');
+      expect(jsContents).toContain(
+        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      );
       expect(jsContents).toContain(
         '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep));',
       );
@@ -500,7 +534,9 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(
         'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
       );
-      expect(jsContents).toContain('return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));');
+      expect(jsContents).toContain(
+        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      );
       expect(jsContents).toContain(
         '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep, 10));',
       );
@@ -537,7 +573,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain('Mod.ɵmod =');
       expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
       );
       expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
@@ -594,7 +630,7 @@ runInEachFileSystem((os: string) => {
 
       expect(jsContents).toContain(
         `Service.ɵfac = function Service_Factory(__ngFactoryType__) { ` +
-          `return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
+          `/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
       );
     });
 
@@ -1414,7 +1450,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveA {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-a',
           template: '...',
           standalone: false,
         })
@@ -1435,7 +1471,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveB {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-b',
           template: '...',
           standalone: false,
         })
@@ -1445,7 +1481,8 @@ runInEachFileSystem((os: string) => {
           selector: 'app',
           template: \`
             <div dir></div>
-            <comp></comp>
+            <comp-a></comp-a>
+            <comp-b></comp-b>
           \`,
           standalone: false,
         })
@@ -1520,7 +1557,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveA {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-a',
           template: '...',
           standalone: false,
         })
@@ -1541,7 +1578,7 @@ runInEachFileSystem((os: string) => {
         class DirectiveB {}
 
         @Component({
-          selector: 'comp',
+          selector: 'comp-b',
           template: '...',
           standalone: false,
         })
@@ -1559,7 +1596,8 @@ runInEachFileSystem((os: string) => {
           selector: 'app',
           template: \`
             <div dir></div>
-            <comp></comp>
+            <comp-a></comp-a>
+            <comp-b></comp-b>
           \`,
           standalone: false,
         })
@@ -1582,7 +1620,12 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should compile Components with a templateUrl in a different rootDir', () => {
-      env.tsconfig({}, ['./extraRootDir']);
+      env.tsconfig(
+        {},
+        {
+          rootDirs: ['.', './extraRootDir'],
+        },
+      );
       env.write('extraRootDir/test.html', '<p>Hello World</p>');
       env.write(
         'test.ts',
@@ -1605,7 +1648,12 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should compile Components with an absolute templateUrl in a different rootDir', () => {
-      env.tsconfig({}, ['./extraRootDir']);
+      env.tsconfig(
+        {},
+        {
+          rootDirs: ['.', './extraRootDir'],
+        },
+      );
       env.write('extraRootDir/test.html', '<p>Hello World</p>');
       env.write(
         'test.ts',
@@ -2171,9 +2219,8 @@ runInEachFileSystem((os: string) => {
         JSON.stringify({
           extends: './tsconfig-base.json',
           compilerOptions: {
-            baseUrl: '.',
             paths: {
-              '*': ['*', 'shared/*'],
+              'foo': ['./shared/foo/index'],
             },
           },
         }),
@@ -2346,6 +2393,18 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should use absolute import for forward references that were resolved from an absolute file', () => {
+      env.write(
+        'tsconfig.json',
+        JSON.stringify({
+          extends: './tsconfig-base.json',
+          compilerOptions: {
+            paths: {
+              'dir': ['./dir.ts'],
+            },
+          },
+        }),
+      );
+
       env.write(
         'dir.ts',
         `
@@ -2547,11 +2606,69 @@ runInEachFileSystem((os: string) => {
           export class HelloDir {}
 
           const someVar = {} as any;
+          const tuple = [() => {}] as const;
 
           @Component({
             template: '<div hello></div>',
             imports: [
               someVar,
+              HelloDir,
+              'invalid',
+              tuple,
+            ]
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(3);
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[0].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[0])).toBe('someVar');
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type '{}'`);
+      }
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[1].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[1])).toBe(`'invalid'`);
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type 'string'`);
+      }
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[2].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[2])).toBe('tuple');
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type '[(not statically analyzable)]'.`);
+      }
+    });
+
+    it('should report imports diagnostic for declaration file in original expression', () => {
+      env.write(
+        'node_modules/external/index.d.ts',
+        `
+        export declare const UNRESOLVED_ITEM: readonly [unresolved];
+      `,
+      );
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive} from '@angular/core';
+          import {UNRESOLVED_ITEM as Unresolved} from 'external';
+
+          @Directive({selector: '[hello]'})
+          export class HelloDir {}
+
+          @Component({
+            template: '<div hello></div>',
+            imports: [
+              [Unresolved],
               HelloDir,
             ]
           })
@@ -2564,11 +2681,12 @@ runInEachFileSystem((os: string) => {
         ? ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')
         : '';
       expect(diags.length).toBe(1);
-      expect(getDiagnosticSourceCode(diags[0])).toBe('someVar');
+      expect(diags[0].file!.fileName).toContain('test.ts');
+      expect(getDiagnosticSourceCode(diags[0])).toBe('Unresolved');
       expect(message).toContain(
         `'imports' must be an array of components, directives, pipes, or NgModules.`,
       );
-      expect(message).toContain(`Value is of type '{}'`);
+      expect(message).toContain(`Value is of type '[(not statically analyzable)]'.`);
     });
 
     describe('empty and missing selectors', () => {
@@ -3229,7 +3347,7 @@ runInEachFileSystem((os: string) => {
 
           const NOT_A_FUNCTION: any = null!;
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: NOT_A_FUNCTION}) value!: number;
           }
@@ -3249,7 +3367,6 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
             inputs: [{
               name: 'value',
               transform: NOT_A_FUNCTION
@@ -3274,7 +3391,7 @@ runInEachFileSystem((os: string) => {
           `
               import {Directive, Input} from '@angular/core';
 
-              @Directive({selector: '[dir]', standalone: true})
+              @Directive({selector: '[dir]'})
               export class Dir {
                 @Input({transform: (val) => 1}) value!: number;
               }
@@ -3293,7 +3410,7 @@ runInEachFileSystem((os: string) => {
           `
           import {Directive, Input} from '@angular/core';
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: <T>(val: T) => 1}) value!: number;
           }
@@ -3312,7 +3429,7 @@ runInEachFileSystem((os: string) => {
           `
           import {Directive, Input} from '@angular/core';
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: (val: string) => 1}) value!: number;
 
@@ -3345,7 +3462,7 @@ runInEachFileSystem((os: string) => {
             import {Directive, Input} from '@angular/core';
             import {toNumber} from './util';
 
-            @Directive({selector: '[dir]', standalone: true})
+            @Directive({selector: '[dir]'})
             export class Dir {
               @Input({transform: toNumber}) value!: number;
             }
@@ -3376,7 +3493,7 @@ runInEachFileSystem((os: string) => {
               import {Directive, Input} from '@angular/core';
               import {toNumber} from './util';
 
-              @Directive({selector: '[dir]', standalone: true})
+              @Directive({selector: '[dir]'})
               export class Dir {
                 @Input({transform: toNumber}) value!: number;
               }
@@ -3411,7 +3528,7 @@ runInEachFileSystem((os: string) => {
               import {Directive, Input} from '@angular/core';
               import {toNumber} from './util';
 
-              @Directive({selector: '[dir]', standalone: true})
+              @Directive({selector: '[dir]'})
               export class Dir {
                 @Input({transform: toNumber}) value!: number;
               }
@@ -3434,7 +3551,7 @@ runInEachFileSystem((os: string) => {
             foo: boolean;
           }
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: (val: InternalType) => 1}) val!: number;
           }
@@ -3457,7 +3574,7 @@ runInEachFileSystem((os: string) => {
             return (innerValue: string) => outerValue;
           }
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: createTransform(1)}) value!: number;
           }
@@ -5012,7 +5129,7 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        `FooCmp.ɵfac = function FooCmp_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
+        `FooCmp.ɵfac = function FooCmp_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
       );
     });
 
@@ -5205,9 +5322,11 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
       // match `i0.ɵɵcontentQuery(dirIndex, _c1, 5, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 5, 'TemplateRef'));
+      expect(jsContents).toMatch(
+        contentQueryRegExp([{predicate: '\\w+', flags: 5, ref: 'TemplateRef'}]),
+      );
       // match `i0.ɵɵviewQuery(_c2, 5, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 5));
+      expect(jsContents).toMatch(viewQueryRegExp([{predicate: '\\w+', flags: 5}]));
     });
 
     it('should generate queries for directives', () => {
@@ -5240,13 +5359,15 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
       // match `i0.ɵɵcontentQuery(dirIndex, _c1, 5, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 5, 'TemplateRef'));
+      expect(jsContents).toMatch(
+        contentQueryRegExp([{predicate: '\\w+', flags: 5, ref: 'TemplateRef'}]),
+      );
 
       // match `i0.ɵɵviewQuery(_c2, 5)`
       // Note that while ViewQuery doesn't necessarily make sense on a directive,
       // because it doesn't have a view, we still need to handle it because a component
       // could extend the directive.
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 5));
+      expect(jsContents).toMatch(viewQueryRegExp([{predicate: '\\w+', flags: 5}]));
     });
 
     it('should handle queries that use forwardRef', () => {
@@ -5271,13 +5392,15 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, 5, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', 5));
-      // match `i0.ɵɵcontentQuery(dirIndex, ViewContainerRef, 5, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', 5));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c0, 5, null)`
+      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, 5, null)(dirIndex, ViewContainerRef, 5, null)(dirIndex, _c0, 5, null)`
+      expect(jsContents).toMatch(
+        contentQueryRegExp([
+          {predicate: 'TemplateRef', flags: 5},
+          {predicate: 'ViewContainerRef', flags: 5},
+          {predicate: '_c0', flags: 5},
+        ]),
+      );
       expect(jsContents).toContain('_c0 = ["parens"];');
-      expect(jsContents).toMatch(contentQueryRegExp('_c0', 5));
     });
 
     it('should handle queries that use an InjectionToken', () => {
@@ -5302,9 +5425,9 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       // match `i0.ɵɵviewQuery(TOKEN, 5, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('TOKEN', 5));
+      expect(jsContents).toMatch(viewQueryRegExp([{predicate: 'TOKEN', flags: 5}]));
       // match `i0.ɵɵcontentQuery(dirIndex, TOKEN, 5, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', 5));
+      expect(jsContents).toMatch(contentQueryRegExp([{predicate: 'TOKEN', flags: 5}]));
     });
 
     it('should compile expressions that write keys', () => {
@@ -5340,13 +5463,13 @@ runInEachFileSystem((os: string) => {
         })
         class FooCmp {
           @HostListener('click')
-          onClick(event: any): void {}
+          onClick(): void {}
 
           @HostListener('document:click', ['$event.target'])
-          onDocumentClick(eventTarget: HTMLElement): void {}
+          onDocumentClick(eventTarget: EventTarget | null): void {}
 
           @HostListener('window:scroll')
-          onWindowScroll(event: any): void {}
+          onWindowScroll(): void {}
         }
     `,
       );
@@ -5375,7 +5498,7 @@ runInEachFileSystem((os: string) => {
         })
         class FooCmp {
           @HostListener('UnknownTarget:click')
-          onClick(event: any): void {}
+          onClick(): void {}
         }
     `,
       );
@@ -5466,17 +5589,24 @@ runInEachFileSystem((os: string) => {
             '[attr.hello]': 'foo',
             '(click)': 'onClick($event)',
             '(body:click)': 'onBodyClick($event)',
-            '[prop]': 'bar',
+            '[id]': 'bar',
           },
         })
         class FooCmp {
+          arg1: any;
+          arg2: any;
+          arg3: any;
+          foo: any;
+          bar: any;
+
           onClick(event: any): void {}
+          onBodyClick(event: any): void {}
 
           @HostBinding('class.someclass')
           get someClass(): boolean { return false; }
 
-          @HostListener('change', ['arg1', 'arg2', 'arg3'])
-          onChange(event: any, arg: any): void {}
+          @HostListener('change', ['$event', 'arg1', 'arg2', 'arg3'])
+          onChange(event: any, arg1: any, arg2: any, arg3: any): void {}
         }
     `,
       );
@@ -5487,10 +5617,10 @@ runInEachFileSystem((os: string) => {
       hostVars: 4,
       hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler() { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange($event, ctx.arg1, ctx.arg2, ctx.arg3); });
         }
         if (rf & 2) {
-          i0.ɵɵdomProperty("prop", ctx.bar);
+          i0.ɵɵdomProperty("id", ctx.bar);
           i0.ɵɵattribute("hello", ctx.foo);
           i0.ɵɵclassProp("someclass", ctx.someClass);
         }
@@ -5608,6 +5738,8 @@ runInEachFileSystem((os: string) => {
           selector: '[test]',
         })
         class Dir {
+          arg: any;
+
           @HostListener('change', ['$event', 'arg'])
           onChange(event: any, arg: any): void {}
         }
@@ -5811,27 +5943,6 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(
         ':@@custom\u241Fdcb6170595f5d548a3d00937e87d11858f51ad04\u241F7419139165339437596:Some text',
       );
-    });
-
-    it("@Component's `interpolation` should override default interpolation config", () => {
-      env.write(
-        `test.ts`,
-        `
-      import {Component} from '@angular/core';
-      @Component({
-        selector: 'cmp-with-custom-interpolation-a',
-        template: \`<div>{%text%}</div>\`,
-        interpolation: ['{%', '%}']
-      })
-      class ComponentWithCustomInterpolationA {
-        text = 'Custom Interpolation A';
-      }
-    `,
-      );
-
-      env.driveMain();
-      const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('ɵɵtextInterpolate(ctx.text)');
     });
 
     it('should handle `encapsulation` field', () => {
@@ -6063,7 +6174,7 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
 
       expect(jsContents).toContain(
-        'function Base_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Base)(i0.ɵɵinject(Dep)); }',
+        'function Base_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Base)(i0.ɵɵinject(Dep)); }',
       );
       expect(jsContents).toContain(
         '(() => { let ɵChild_BaseFactory; return function Child_Factory(__ngFactoryType__) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(__ngFactoryType__ || Child); }; })();',
@@ -7221,8 +7332,8 @@ runInEachFileSystem((os: string) => {
       `,
       ];
 
-      cases.forEach((template) => {
-        it('should not throw', () => {
+      cases.forEach((template, index) => {
+        it(`should not throw [id=${index}]`, () => {
           env.write('test.ts', getComponentScript(template));
           const errors = env.driveDiagnostics();
           expect(errors.length).toBe(0);
@@ -7536,7 +7647,7 @@ runInEachFileSystem((os: string) => {
         expect(diags[1].messageText).toBe('NgModule "import" field contains a cycle');
       });
 
-      it('should report if an NgModule imports itself via a forwardRef', () => {
+      it('should report if an NgModule imports itself via a forwardRef (nested)', () => {
         env.write(
           'test.ts',
           `
@@ -7686,7 +7797,9 @@ runInEachFileSystem((os: string) => {
           );
 
           const diags = await driveDiagnostics();
-          expect(diags[0].messageText).toBe('component is missing a template');
+          expect(diags[0].messageText).toBe(
+            '@Component is missing a template. Add either a `template` or `templateUrl`',
+          );
           expect(diags[0].file!.fileName).toBe(absoluteFrom('/test.ts'));
         });
 
@@ -7851,9 +7964,7 @@ runInEachFileSystem((os: string) => {
           `
         import {Directive, NgModule} from '@angular/core';
 
-        @Directive({
-          standalone: true,
-        })
+        @Directive()
         class HostDir {}
 
         // The directive is not exported.
@@ -8464,35 +8575,25 @@ runInEachFileSystem((os: string) => {
         hostVars: 6,
         hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
+            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
         }
       `;
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
       });
 
-      it('should generate sanitizers for unsafe properties in hostBindings fn in Directives', () => {
+      it('should generate sanitizers for unsafe properties in hostBindings function in Directives', () => {
         env.write(
           `test.ts`,
           `
-        import {Component, Directive, HostBinding, Input, NgModule} from '@angular/core';
+        import {Component, Directive, HostBinding, Input} from '@angular/core';
 
         @Directive({
-          selector: '[unsafeProps]',
-          standalone: false,
+          selector: 'a[unsafeProps]',
         })
         class UnsafePropsDirective {
           @HostBinding('href')
           propHref: string;
-
-          @HostBinding('src')
-          propSrc: string;
-
-          @HostBinding('action')
-          propAction: string;
-
-          @HostBinding('profile')
-          propProfile: string;
 
           @HostBinding('innerHTML')
           propInnerHTML: string;
@@ -8506,28 +8607,53 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'foo',
           template: '<a [unsafeProps]="ctxProp">Link Title</a>',
-          standalone: false,
+          imports: [UnsafePropsDirective]
         })
         class FooCmp {
           ctxProp = '';
         }
-
-        @NgModule({declarations: [FooCmp, UnsafePropsDirective]})
-        class MyModule {}
       `,
         );
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
         const hostBindingsFn = `
-        hostVars: 6,
+        hostVars: 3,
         hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrl)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
+            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
         }
       `;
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+      });
+
+      it('should generate sanitizers for URL properties in SVG script fn in Component', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: \`
+                <svg>
+                  <script [attr.xlink:href]="attr" [attr.href]="attr"></script>
+                </svg>
+              \`,
+            })
+            export class TestCmp {
+              attr = './script.js';
+            }
+          `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵattribute("href", ctx.attr, i0.ɵɵsanitizeResourceUrl, "xlink")("href", ctx.attr, i0.ɵɵsanitizeResourceUrl);',
+        );
       });
 
       it('should not generate sanitizers for URL properties in hostBindings fn in Component', () => {
@@ -8537,10 +8663,9 @@ runInEachFileSystem((os: string) => {
         import {Component} from '@angular/core';
 
         @Component({
-          selector: 'foo',
+          selector: 'a[foo]',
           template: '<a href="example.com">Link Title</a>',
           host: {
-            '[src]': 'srcProp',
             '[href]': 'hrefProp',
             '[title]': 'titleProp',
             '[attr.src]': 'srcAttr',
@@ -8548,18 +8673,24 @@ runInEachFileSystem((os: string) => {
             '[attr.title]': 'titleAttr',
           }
         })
-        class FooCmp {}
+        class FooCmp {
+          hrefProp: any;
+          titleProp: any;
+          srcAttr: any;
+          hrefAttr: any;
+          titleAttr: any;
+        }
       `,
         );
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
         const hostBindingsFn = `
-        hostVars: 6,
+        hostVars: 5,
         hostBindings: function FooCmp_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("src", ctx.srcProp)("href", ctx.hrefProp)("title", ctx.titleProp);
-            i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);
+            i0.ɵɵdomProperty("href", ctx.hrefProp, i0.ɵɵsanitizeUrl)("title", ctx.titleProp);
+            i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr, i0.ɵɵsanitizeUrl)("title", ctx.titleAttr);
           }
         }
       `;
@@ -9205,17 +9336,13 @@ runInEachFileSystem((os: string) => {
             @Input({required: true}) input: any;
           }
 
-          @Directive({
-            selector: '[dir]',
-            standalone: true
-          })
+          @Directive({selector: '[dir]'})
           export class Dir extends BaseDir {}
 
           @Component({
             selector: 'test-cmp',
             template: '<div dir></div>',
-            standalone: true,
-            imports: [Dir]
+                        imports: [Dir]
           })
           export class Cmp {}
         `,
@@ -9239,16 +9366,12 @@ runInEachFileSystem((os: string) => {
             @Input({required: true}) input: any;
           }
 
-          @Directive({
-            selector: '[dir]',
-            standalone: true
-          })
+          @Directive({selector: '[dir]'})
           export class Dir extends BaseDir {}
 
           @Component({
             selector: 'test-cmp',
             template: '<div dir [input]="value"></div>',
-            standalone: true,
             imports: [Dir]
           })
           export class Cmp {
@@ -9258,6 +9381,33 @@ runInEachFileSystem((os: string) => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
+      });
+    });
+
+    describe('SVG animation processing', () => {
+      it('should generate SVG animation validation instruction', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+              standalone: false,
+            })
+            export class TestCmp {
+              attr = 'opacity';
+            }
+          `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵattribute("attributeName", ctx.attr, i0.ɵɵvalidateAttribute);',
+        );
       });
     });
 
@@ -9682,11 +9832,11 @@ runInEachFileSystem((os: string) => {
         // Only `sandbox` has an extra validation fn (since it's security-sensitive),
         // the `title` property doesn't have an extra validation fn.
         expect(jsContents).toContain(
-          'ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)("title", "Hi!")',
+          'ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateAttribute)("title", "Hi!")',
         );
 
         // The `allow` property is also security-sensitive, thus an extra validation fn.
-        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateIframeAttribute)');
+        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
       });
 
       it(
@@ -9716,7 +9866,7 @@ runInEachFileSystem((os: string) => {
           // Make sure that the `sandbox` has an extra validation fn,
           // and the check is case-insensitive (since the `setAttribute` DOM API
           // is case-insensitive as well).
-          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateIframeAttribute)');
+          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateAttribute)');
         },
       );
 
@@ -9727,14 +9877,12 @@ runInEachFileSystem((os: string) => {
                 import {Component, Directive} from '@angular/core';
 
                 @Directive({
-                  standalone: true,
                   selector: '[sandbox]',
                   inputs: ['sandbox']
                 })
                 class Dir {}
 
                 @Component({
-                  standalone: true,
                   imports: [Dir],
                   template: \`
                     <div [sandbox]="''" [title]="'Hi!'"></div>
@@ -9759,6 +9907,7 @@ runInEachFileSystem((os: string) => {
               import {Directive} from '@angular/core';
 
               @Directive({
+                selector: 'iframe[someDir]',
                 host: {
                   '[sandbox]': "''",
                   '[attr.allow]': "''",
@@ -9775,11 +9924,11 @@ runInEachFileSystem((os: string) => {
         // The `sandbox` is potentially a security-sensitive attribute of an <iframe>.
         // Generate an extra validation function to invoke at runtime, which would
         // check if an underlying host element is an <iframe>.
-        expect(jsContents).toContain('ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)');
+        expect(jsContents).toContain('ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateAttribute)');
 
         // Similar to the above, but for an attribute binding (host attributes are
         // represented via `ɵɵattribute`).
-        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateIframeAttribute)');
+        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
       });
 
       it(
@@ -9805,7 +9954,7 @@ runInEachFileSystem((os: string) => {
 
           // Make sure that we generate a validation fn for the `sandbox` attribute,
           // even when it was declared as `SANDBOX`.
-          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateIframeAttribute)');
+          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateAttribute)');
         },
       );
     });
@@ -10048,7 +10197,7 @@ runInEachFileSystem((os: string) => {
 
       it('should not error when an undecorated class from a declaration file is provided', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
           export declare class Testability {
           }
@@ -10073,7 +10222,7 @@ runInEachFileSystem((os: string) => {
 
       it('should not error when an undecorated class without a constructor from a declaration file is provided via useClass', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
             export declare class Testability {
             }
@@ -10129,7 +10278,7 @@ runInEachFileSystem((os: string) => {
       // can be updated.
       xit('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
             export declare class NgZone {}
 
@@ -10161,7 +10310,7 @@ runInEachFileSystem((os: string) => {
 
       it('should not error when an class with a factory definition and a non-trivial constructor in a declaration file is provided via useClass', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
             import * as i0 from '@angular/core';
 
@@ -10602,8 +10751,7 @@ runInEachFileSystem((os: string) => {
         import {Component, NgModule} from '@angular/core';
 
         @Component({
-          standalone: true,
-          selector: 'standalone-component',
+                    selector: 'standalone-component',
           template: '...',
         })
         class StandaloneComponent {}
@@ -10629,8 +10777,7 @@ runInEachFileSystem((os: string) => {
         import {Component, NgModule, forwardRef} from '@angular/core';
 
         @Component({
-          standalone: true,
-          selector: 'standalone-component',
+                    selector: 'standalone-component',
           template: '...',
         })
         class StandaloneComponent {}
@@ -10647,26 +10794,25 @@ runInEachFileSystem((os: string) => {
       expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
     });
 
-    it('should be able to turn off control flow using a compiler flag', () => {
-      env.tsconfig({_enableBlockSyntax: false});
+    it('should compile a component with a complex generic', () => {
       env.write(
-        '/test.ts',
+        'test.ts',
         `
-        import { Component } from '@angular/core';
+          import {Component} from '@angular/core';
 
-        @Component({
-          standalone: true,
-          template: 'My email is foo@bar.com',
-        })
-        export class TestCmp {}
-      `,
+          @Component({
+            selector: 'app-root',
+            template: '',
+          })
+          export class App<
+            T extends object = object,
+            TOptions extends { [K in keyof T]?: T[K] } = object
+          > {}
+        `,
       );
 
-      env.driveMain();
-
-      // If blocks are enabled, this test will fail since `@bar.com` is an incomplete block.
-      const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('text(0, "My email is foo@bar.com")');
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
     });
 
     describe('InjectorDef emit optimizations for standalone', () => {
@@ -10685,7 +10831,6 @@ runInEachFileSystem((os: string) => {
           export class DepModule {}
 
           @Component({
-            standalone: true,
             selector: 'standalone-cmp',
             imports: [DepModule],
             template: '',
@@ -11119,7 +11264,6 @@ runInEachFileSystem((os: string) => {
             import {Component} from '@angular/core';
 
             @Component({
-              standalone: true,
               template: '...',
             })
             export class Comp {}

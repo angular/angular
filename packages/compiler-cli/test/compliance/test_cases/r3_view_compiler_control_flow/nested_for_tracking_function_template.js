@@ -1,12 +1,15 @@
 function _forTrack0($index, $item) {
+  /* @ts-ignore */
   return this.trackByGrandparent($item, $index);
 }
 
 function _forTrack1($index, $item) {
+  /* @ts-ignore */
   return this.trackByParent($item, $index);
 }
 
 function _forTrack2($index, $item) {
+  /* @ts-ignore */
   return this.trackByChild($item, $index);
 }
 

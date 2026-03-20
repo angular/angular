@@ -7,12 +7,20 @@
 import { AbsoluteFsPath } from '@angular/compiler-cli/private/localize';
 import { Element as Element_2 } from '@angular/compiler';
 import { Logger } from '@angular/compiler-cli/private/localize';
+import { MessageId } from '../../../../../index';
 import { NodePath } from '@babel/core';
 import { ParseError } from '@angular/compiler';
 import { PathManipulation } from '@angular/compiler-cli/private/localize';
 import { PluginObj } from '@babel/core';
 import { ReadonlyFileSystem } from '@angular/compiler-cli/private/localize';
 import { types } from '@babel/core';
+import { ɵParsedMessage } from '../../../index';
+import { ɵParsedMessage as ɵParsedMessage_2 } from '../../../../index';
+import { ɵParsedTranslation } from '../../index';
+import { ɵParsedTranslation as ɵParsedTranslation_2 } from '../../../../index';
+import { ɵParsedTranslation as ɵParsedTranslation_3 } from '../../../../../index';
+import { ɵSourceLocation } from '../../index';
+import { ɵSourceMessage } from '../../../../../index';
 
 // @public
 export class ArbTranslationParser implements TranslationParser<ArbJsonObject> {
@@ -26,14 +34,14 @@ export class ArbTranslationParser implements TranslationParser<ArbJsonObject> {
 export class ArbTranslationSerializer implements TranslationSerializer {
     constructor(sourceLocale: string, basePath: AbsoluteFsPath, fs: PathManipulation);
     // (undocumented)
-    serialize(messages: ParsedMessage[]): string;
+    serialize(messages: ɵParsedMessage_2[]): string;
 }
 
 // @public
 export function buildLocalizeReplacement(messageParts: TemplateStringsArray, substitutions: readonly types.Expression[]): types.Expression;
 
 // @public
-export function checkDuplicateMessages(fs: PathManipulation, messages: ParsedMessage[], duplicateMessageHandling: DiagnosticHandlingStrategy, basePath: AbsoluteFsPath): Diagnostics;
+export function checkDuplicateMessages(fs: PathManipulation, messages: ɵParsedMessage[], duplicateMessageHandling: DiagnosticHandlingStrategy, basePath: AbsoluteFsPath): Diagnostics;
 
 // @public
 export type DiagnosticHandlingStrategy = 'error' | 'warning' | 'ignore';
@@ -66,23 +74,23 @@ export function isGlobalIdentifier(identifier: NodePath<types.Identifier>): bool
 export class LegacyMessageIdMigrationSerializer implements TranslationSerializer {
     constructor(_diagnostics: Diagnostics);
     // (undocumented)
-    serialize(messages: ParsedMessage[]): string;
+    serialize(messages: ɵParsedMessage_2[]): string;
 }
 
 // @public
-export function makeEs2015TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ParsedTranslation>, { missingTranslation, localizeName }?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
+export function makeEs2015TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation_2>, input?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
 
 // @public
-export function makeEs5TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ParsedTranslation>, { missingTranslation, localizeName }?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
+export function makeEs5TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation_2>, input?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
 
 // @public
-export function makeLocalePlugin(locale: string, { localizeName }?: TranslatePluginOptions): PluginObj;
+export function makeLocalePlugin(locale: string, input?: TranslatePluginOptions): PluginObj;
 
 // @public
 export class MessageExtractor {
-    constructor(fs: ReadonlyFileSystem, logger: Logger, { basePath, useSourceMaps, localizeName }: ExtractionOptions);
+    constructor(fs: ReadonlyFileSystem, logger: Logger, input: ExtractionOptions);
     // (undocumented)
-    extractMessages(filename: string): ParsedMessage[];
+    extractMessages(filename: string): ɵParsedMessage[];
 }
 
 // @public
@@ -97,23 +105,23 @@ export class SimpleJsonTranslationParser implements TranslationParser<SimpleJson
 export class SimpleJsonTranslationSerializer implements TranslationSerializer {
     constructor(sourceLocale: string);
     // (undocumented)
-    serialize(messages: ParsedMessage[]): string;
+    serialize(messages: ɵParsedMessage_2[]): string;
 }
 
 // @public
-export function translate(diagnostics: Diagnostics, translations: Record<string, ParsedTranslation>, messageParts: TemplateStringsArray, substitutions: readonly any[], missingTranslation: DiagnosticHandlingStrategy): [TemplateStringsArray, readonly any[]];
+export function translate(diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>, messageParts: TemplateStringsArray, substitutions: readonly any[], missingTranslation: DiagnosticHandlingStrategy): [TemplateStringsArray, readonly any[]];
 
 // @public
-export function unwrapExpressionsFromTemplateLiteral(quasi: NodePath<types.TemplateLiteral>, fs?: PathManipulation): [types.Expression[], (SourceLocation | undefined)[]];
+export function unwrapExpressionsFromTemplateLiteral(quasi: NodePath<types.TemplateLiteral>, fs?: PathManipulation): [types.Expression[], (ɵSourceLocation | undefined)[]];
 
 // @public
-export function unwrapMessagePartsFromLocalizeCall(call: NodePath<types.CallExpression>, fs?: PathManipulation): [TemplateStringsArray, (SourceLocation | undefined)[]];
+export function unwrapMessagePartsFromLocalizeCall(call: NodePath<types.CallExpression>, fs?: PathManipulation): [TemplateStringsArray, (ɵSourceLocation | undefined)[]];
 
 // @public
-export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<types.TemplateElement>[], fs?: PathManipulation): [TemplateStringsArray, (SourceLocation | undefined)[]];
+export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<types.TemplateElement>[], fs?: PathManipulation): [TemplateStringsArray, (ɵSourceLocation | undefined)[]];
 
 // @public
-export function unwrapSubstitutionsFromLocalizeCall(call: NodePath<types.CallExpression>, fs?: PathManipulation): [types.Expression[], (SourceLocation | undefined)[]];
+export function unwrapSubstitutionsFromLocalizeCall(call: NodePath<types.CallExpression>, fs?: PathManipulation): [types.Expression[], (ɵSourceLocation | undefined)[]];
 
 // @public
 export class Xliff1TranslationParser implements TranslationParser<XmlTranslationParserHint> {
@@ -127,7 +135,7 @@ export class Xliff1TranslationParser implements TranslationParser<XmlTranslation
 export class Xliff1TranslationSerializer implements TranslationSerializer {
     constructor(sourceLocale: string, basePath: AbsoluteFsPath, useLegacyIds: boolean, formatOptions?: FormatOptions, fs?: PathManipulation);
     // (undocumented)
-    serialize(messages: ParsedMessage[]): string;
+    serialize(messages: ɵParsedMessage_2[]): string;
 }
 
 // @public
@@ -142,14 +150,14 @@ export class Xliff2TranslationParser implements TranslationParser<XmlTranslation
 export class Xliff2TranslationSerializer implements TranslationSerializer {
     constructor(sourceLocale: string, basePath: AbsoluteFsPath, useLegacyIds: boolean, formatOptions?: FormatOptions, fs?: PathManipulation);
     // (undocumented)
-    serialize(messages: ParsedMessage[]): string;
+    serialize(messages: ɵParsedMessage_2[]): string;
 }
 
 // @public
 export class XmbTranslationSerializer implements TranslationSerializer {
     constructor(basePath: AbsoluteFsPath, useLegacyIds: boolean, fs?: PathManipulation);
     // (undocumented)
-    serialize(messages: ParsedMessage[]): string;
+    serialize(messages: ɵParsedMessage_2[]): string;
 }
 
 // @public

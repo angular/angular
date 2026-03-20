@@ -23,7 +23,7 @@ export interface ValueSansProvider {
 
 /**
  * Configures the `Injector` to return a value for a token.
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @usageNotes
  *
@@ -72,7 +72,7 @@ export interface StaticClassSansProvider {
 
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @usageNotes
  *
@@ -104,7 +104,7 @@ export interface StaticClassProvider extends StaticClassSansProvider {
 /**
  * Configures the `Injector` to return an instance of a token.
  *
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @usageNotes
  *
@@ -125,7 +125,7 @@ export interface ConstructorSansProvider {
 /**
  * Configures the `Injector` to return an instance of a token.
  *
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @usageNotes
  *
@@ -154,7 +154,7 @@ export interface ConstructorProvider extends ConstructorSansProvider {
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
  * @see {@link ExistingProvider}
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @publicApi
  */
@@ -168,7 +168,7 @@ export interface ExistingSansProvider {
 /**
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @usageNotes
  *
@@ -197,7 +197,7 @@ export interface ExistingProvider extends ExistingSansProvider {
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
  *
  * @see {@link FactoryProvider}
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @publicApi
  */
@@ -217,7 +217,7 @@ export interface FactorySansProvider {
 
 /**
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @usageNotes
  *
@@ -283,7 +283,7 @@ export interface TypeProvider extends Type<any> {}
  * Configures the `Injector` to return a value by invoking a `useClass` function.
  * Base for `ClassProvider` decorator.
  *
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @publicApi
  */
@@ -296,7 +296,7 @@ export interface ClassSansProvider {
 
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @usageNotes
  *
@@ -327,7 +327,7 @@ export interface ClassProvider extends ClassSansProvider {
 
 /**
  * Describes how the `Injector` should be configured.
- * @see [Dependency Injection Guide](guide/di/dependency-injection.
+ * @see [Dependency Injection Guide](guide/di/dependency-injection)
  *
  * @see {@link StaticProvider}
  *
@@ -394,19 +394,3 @@ export interface ModuleWithProviders<T> {
   ngModule: Type<T>;
   providers?: Array<Provider | EnvironmentProviders>;
 }
-
-/**
- * Providers that were imported from NgModules via the `importProvidersFrom` function.
- *
- * These providers are meant for use in an application injector (or other environment injectors) and
- * should not be used in component injectors.
- *
- * This type cannot be directly implemented. It's returned from the `importProvidersFrom` function
- * and serves to prevent the extracted NgModule providers from being used in the wrong contexts.
- *
- * @see {@link importProvidersFrom}
- *
- * @publicApi
- * @deprecated replaced by `EnvironmentProviders`
- */
-export type ImportedNgModuleProviders = EnvironmentProviders;

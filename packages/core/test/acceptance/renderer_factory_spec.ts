@@ -30,6 +30,7 @@ import {
   Component,
   DoCheck,
   NgZone,
+  provideZoneChangeDetection,
   Renderer2,
   RendererFactory2,
   RendererStyleFlags2,
@@ -41,6 +42,11 @@ import {NoopNgZone} from '../../src/zone/ng_zone';
 import {TestBed} from '../../testing';
 
 describe('renderer factory lifecycle', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let logs: string[] = [];
   let lastCapturedType: RendererType2 | null = null;
 
@@ -203,13 +209,15 @@ describe('renderer factory lifecycle', () => {
       })
       class AnimComp {}
 
-      const rendererFactory = new MockRendererFactory(['setProperty']);
-
+      let rendererFactory!: MockRendererFactory;
       TestBed.configureTestingModule({
         providers: [
           {
             provide: RendererFactory2,
-            useValue: rendererFactory,
+            useFactory: (doc: Document) => {
+              rendererFactory = new MockRendererFactory(doc, ['setProperty']);
+              return rendererFactory;
+            },
             deps: [DOCUMENT],
           },
         ],
@@ -239,12 +247,15 @@ describe('renderer factory lifecycle', () => {
       visible = true;
     }
 
-    const rendererFactory = new MockRendererFactory(['destroy', 'createElement']);
+    let rendererFactory!: MockRendererFactory;
     TestBed.configureTestingModule({
       providers: [
         {
           provide: RendererFactory2,
-          useValue: rendererFactory,
+          useFactory: (doc: Document) => {
+            rendererFactory = new MockRendererFactory(doc, ['destroy', 'createElement']);
+            return rendererFactory;
+          },
           deps: [DOCUMENT],
         },
       ],
@@ -301,9 +312,11 @@ describe('animation renderer factory', () => {
   @Component({
     selector: 'some-component',
     template: `
-      <div [@myAnimation]="exp"
-           (@myAnimation.start)="callback($event)"
-           (@myAnimation.done)="callback($event)">
+      <div
+        [@myAnimation]="exp"
+        (@myAnimation.start)="callback($event)"
+        (@myAnimation.done)="callback($event)"
+      >
         foo
       </div>
     `,
@@ -358,6 +371,7 @@ describe('animation renderer factory', () => {
       );
 
       fixture.componentInstance.exp = 'on';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       const [player] = getAnimationLog();
@@ -390,11 +404,7 @@ function getRendererFactory2(document: Document): RendererFactory2 {
     appId,
     true,
     document,
-    isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID,
     fakeNgZone,
-    null,
-    true,
-    0,
     null,
   );
   const origCreateRenderer = rendererFactory.createRenderer;
@@ -517,6 +527,7 @@ describe('Renderer2 destruction hooks', () => {
     expect(fixture.nativeElement.textContent).toBe('ABC');
 
     fixture.componentInstance.isContentVisible = false;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');
@@ -529,6 +540,7 @@ describe('Renderer2 destruction hooks', () => {
     expect(fixture.nativeElement.textContent).toBe('comp(A)comp(B)comp(C)');
 
     fixture.componentInstance.isContentVisible = false;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');
@@ -539,12 +551,15 @@ export class MockRendererFactory implements RendererFactory2 {
   lastRenderer: any;
   private _spyOnMethods: string[];
 
-  constructor(spyOnMethods?: string[]) {
+  constructor(
+    private document: Document,
+    spyOnMethods?: string[],
+  ) {
     this._spyOnMethods = spyOnMethods || [];
   }
 
   createRenderer(hostElement: RElement | null, rendererType: RendererType2 | null): Renderer2 {
-    const renderer = (this.lastRenderer = new MockRenderer(this._spyOnMethods));
+    const renderer = (this.lastRenderer = new MockRenderer(this._spyOnMethods, this.document));
     return renderer;
   }
 }
@@ -555,7 +570,10 @@ class MockRenderer implements Renderer2 {
 
   destroyNode: ((node: any) => void) | null = null;
 
-  constructor(spyOnMethods: string[]) {
+  constructor(
+    spyOnMethods: string[],
+    private document: Document,
+  ) {
     spyOnMethods.forEach((methodName) => {
       this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
     });
@@ -563,13 +581,15 @@ class MockRenderer implements Renderer2 {
 
   destroy(): void {}
   createComment(value: string): Comment {
-    return document.createComment(value);
+    return this.document.createComment(value);
   }
   createElement(name: string, namespace?: string | null): Element {
-    return namespace ? document.createElementNS(namespace, name) : document.createElement(name);
+    return namespace
+      ? this.document.createElementNS(namespace, name)
+      : this.document.createElement(name);
   }
   createText(value: string): Text {
-    return document.createTextNode(value);
+    return this.document.createTextNode(value);
   }
   appendChild(parent: RElement, newChild: Node): void {
     parent.appendChild(newChild);
@@ -582,7 +602,7 @@ class MockRenderer implements Renderer2 {
   }
   selectRootElement(selectorOrNode: string | any): RElement {
     return typeof selectorOrNode === 'string'
-      ? document.querySelector<HTMLElement>(selectorOrNode)!
+      ? this.document.querySelector<HTMLElement>(selectorOrNode)!
       : selectorOrNode;
   }
   parentNode(node: Node): Element | null {

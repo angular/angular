@@ -1,12 +1,16 @@
-load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
     name = "utils",
     srcs = [
+        "control-flow.ts",
         "debouncer.ts",
         "formatting.ts",
+    ],
+    deps = [
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -18,7 +22,7 @@ ts_test_library(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
     deps = [
         ":utils_tests",

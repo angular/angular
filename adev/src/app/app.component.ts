@@ -55,11 +55,11 @@ export class AppComponent {
   private readonly router = inject(Router);
   private readonly headerService = inject(HeaderService);
 
-  isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  protected isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  displaySecondaryNav = signal(false);
-  displayFooter = signal(false);
-  displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
+  protected readonly displaySecondaryNav = signal(false);
+  protected readonly displayFooter = signal(false);
+  protected readonly displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
   constructor() {
     this.closeSearchDialogOnNavigationSkipped();
@@ -81,7 +81,15 @@ export class AppComponent {
       });
   }
 
-  focusFirstHeading(): void {
+  protected focusFirstHeading(): void {
+    const main = this.document.querySelector<HTMLElement>('main');
+    if (main) {
+      main.setAttribute('tabindex', '-1');
+      main.focus();
+      return;
+    }
+
+    // Fallback: focus the first h1 (legacy support for pages without main)
     const h1 = this.document.querySelector<HTMLHeadingElement>('h1:not(docs-top-level-banner h1)');
     h1?.focus();
   }

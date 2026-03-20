@@ -25,10 +25,15 @@ ng_project(
         "//adev:node_modules/@angular/router",
         "//adev:node_modules/rxjs",
         "//adev/shared-docs/components/breadcrumb",
+        "//adev/shared-docs/components/copy-link-anchor",
         "//adev/shared-docs/components/copy-source-code-button",
+        "//adev/shared-docs/components/icon",
+        "//adev/shared-docs/components/tab-group",
         "//adev/shared-docs/components/table-of-contents",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
+        "//adev/shared-docs/services",
+        "//adev/shared-docs/utils",
     ],
 )
 
@@ -59,6 +64,7 @@ ts_project(
         "//adev:node_modules/@angular/platform-browser",
         "//adev:node_modules/@angular/router",
         "//adev/shared-docs/components/breadcrumb",
+        "//adev/shared-docs/components/copy-link-anchor",
         "//adev/shared-docs/components/copy-source-code-button",
         "//adev/shared-docs/components/icon",
         "//adev/shared-docs/components/table-of-contents",

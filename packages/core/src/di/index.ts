@@ -34,7 +34,6 @@ export {
   ClassProvider,
   ModuleWithProviders,
   ClassSansProvider,
-  ImportedNgModuleProviders,
   ConstructorProvider,
   EnvironmentProviders,
   ConstructorSansProvider,

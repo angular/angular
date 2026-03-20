@@ -8,8 +8,8 @@
 
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
 import {TokenizeOptions} from '../../src/ml_parser/lexer';
+import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
 import {ParseError} from '../../src/parse_util';
 
 import {
@@ -49,6 +49,33 @@ describe('HtmlParser', () => {
       it('should parse CDATA', () => {
         expect(humanizeDom(parser.parse('<![CDATA[text]]>', 'TestComp'))).toEqual([
           [html.Text, 'text', 0, ['text']],
+        ]);
+      });
+
+      it('should parse text nodes with HTML entities (5+ hex digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source)
+        expect(humanizeDom(parser.parse('<div>&#x1F6C8;</div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Text, '\u{1F6C8}', 1, [''], ['\u{1F6C8}', '&#x1F6C8;'], ['']],
+        ]);
+      });
+
+      it('should parse text nodes with decimal HTML entities (5+ digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source) as decimal 128712
+        expect(humanizeDom(parser.parse('<div>&#128712;</div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Text, '\u{1F6C8}', 1, [''], ['\u{1F6C8}', '&#128712;'], ['']],
+        ]);
+      });
+
+      it('should parse named HTML entities containing digits', () => {
+        expect(humanizeDom(parser.parse('<div>&sup1;</div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Text, '\u00B9', 1, [''], ['\u00B9', '&sup1;'], ['']],
+        ]);
+        expect(humanizeDom(parser.parse('<div>&frac12;</div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Text, '\u00BD', 1, [''], ['\u00BD', '&frac12;'], ['']],
         ]);
       });
 
@@ -326,32 +353,19 @@ describe('HtmlParser', () => {
         ]);
       });
 
-      it('should parse attributes containing unquoted interpolation', () => {
-        expect(humanizeDom(parser.parse('<div foo={{message}}></div>', 'TestComp'))).toEqual([
+      it('should parse attributes containing encoded entities (5+ hex digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source)
+        expect(humanizeDom(parser.parse('<div foo="&#x1F6C8;"></div>', 'TestComp'))).toEqual([
           [html.Element, 'div', 0],
-          [html.Attribute, 'foo', '{{message}}', [''], ['{{', 'message', '}}'], ['']],
+          [html.Attribute, 'foo', '\u{1F6C8}', [''], ['\u{1F6C8}', '&#x1F6C8;'], ['']],
         ]);
       });
 
-      it('should parse bound inputs with expressions containing newlines', () => {
-        expect(
-          humanizeDom(
-            parser.parse(
-              `<app-component\n                        [attr]="[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]">` +
-                `</app-component>`,
-              'TestComp',
-            ),
-          ),
-        ).toEqual([
-          [html.Element, 'app-component', 0],
-          [
-            html.Attribute,
-            '[attr]',
-            `[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]`,
-            [
-              `[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]`,
-            ],
-          ],
+      it('should parse attributes containing encoded decimal entities (5+ digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source) as decimal 128712
+        expect(humanizeDom(parser.parse('<div foo="&#128712;"></div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Attribute, 'foo', '\u{1F6C8}', [''], ['\u{1F6C8}', '&#128712;'], ['']],
         ]);
       });
 
@@ -435,6 +449,13 @@ describe('HtmlParser', () => {
           ]);
         });
 
+        it('should not parse any other animate prefix binding as animate.leave', () => {
+          expect(humanizeDom(parser.parse(`<div animateAbc="bar"></div>`, 'TestComp'))).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, 'animateAbc', 'bar', ['bar']],
+          ]);
+        });
+
         it('should parse both animate.enter and animate.leave as static attributes', () => {
           expect(
             humanizeDom(
@@ -484,6 +505,15 @@ describe('HtmlParser', () => {
           ).toEqual([
             [html.Element, 'div', 0],
             [html.Attribute, '(animate.leave)', 'onAnimation($event)', ['onAnimation($event)']],
+          ]);
+        });
+
+        it('should not parse other animate prefixes as animate.leave', () => {
+          expect(
+            humanizeDom(parser.parse(`<div (animateXYZ)="onAnimation()"></div>`, 'TestComp')),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, '(animateXYZ)', 'onAnimation()', ['onAnimation()']],
           ]);
         });
 
@@ -538,7 +568,7 @@ describe('HtmlParser', () => {
     });
 
     describe('expansion forms', () => {
-      it('should parse out expansion forms', () => {
+      it('should parse out expansion forms (with multiple cases)', () => {
         const parsed = parser.parse(
           `<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
           'TestComp',
@@ -677,7 +707,7 @@ describe('HtmlParser', () => {
         expect(parsed.errors).toEqual([]);
       });
 
-      it('should not normalize line-endings in ICU expressions in external templates when `i18nNormalizeLineEndingsInICUs` is not set', () => {
+      it('should not normalize line-endings in ICU expressions in external templates when `i18nNormalizeLineEndingsInICUs` is not set (escapedString:false)', () => {
         const parsed = parser.parse(
           `<div>\r\n` +
             `  {\r\n` +
@@ -1027,6 +1057,63 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should parse consecutive @case statements', () => {
+        expect(
+          humanizeDom(
+            parser.parse(`@switch (expr) {@case ('foo') @case ('bar') { <input> }}`, `TestComp`),
+          ),
+        ).toEqual([
+          [html.Block, 'switch', 0],
+          [html.BlockParameter, 'expr'],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'foo'`],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'bar'`],
+          [html.Text, ' ', 2, [' ']],
+          [html.Element, 'input', 2],
+          [html.Text, ' ', 2, [' ']],
+        ]);
+      });
+
+      it('should parse empty cases in a switch block', () => {
+        expect(
+          humanizeDom(
+            parser.parse(
+              `@switch (expr) {@case ('foo') {} @case ('bar') {bar} @case('baz') { baz }}`,
+              `TestComp`,
+            ),
+          ),
+        ).toEqual([
+          [html.Block, 'switch', 0],
+          [html.BlockParameter, 'expr'],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'foo'`],
+          [html.Text, ' ', 1, [' ']],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'bar'`],
+          [html.Text, 'bar', 2, ['bar']],
+          [html.Text, ' ', 1, [' ']],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'baz'`],
+          [html.Text, ' baz ', 2, [' baz ']],
+        ]);
+      });
+
+      it('should parse exhaustive default checks in a switch block', () => {
+        expect(
+          humanizeDom(
+            parser.parse(`@switch (expr) {@case ('foo') {} @default never;}`, `TestComp`),
+          ),
+        ).toEqual([
+          [html.Block, 'switch', 0],
+          [html.BlockParameter, 'expr'],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'foo'`],
+          [html.Text, ' ', 1, [' ']],
+          [html.Block, 'default never', 1],
+        ]);
+      });
+
       it('should close void elements used right before a block', () => {
         expect(humanizeDom(parser.parse('<img>@defer {hello}', 'TestComp'))).toEqual([
           [html.Element, 'img', 0],
@@ -1047,7 +1134,7 @@ describe('HtmlParser', () => {
         expect(humanizeErrors(errors)).toEqual([
           [
             null,
-            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead.',
             '0:5',
           ],
         ]);
@@ -1059,7 +1146,7 @@ describe('HtmlParser', () => {
         expect(humanizeErrors(errors)).toEqual([
           [
             null,
-            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
+            'Unexpected closing block. The block may have been closed earlier. Did you forget to close the <strong> element? If you meant to write the `}` character, you should use the "&#125;" HTML entity instead.',
             '0:21',
           ],
         ]);
@@ -1076,8 +1163,20 @@ describe('HtmlParser', () => {
           ],
           [
             null,
-            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead.',
             '0:28',
+          ],
+        ]);
+      });
+
+      it('should report a final @case without a body', () => {
+        const errors = parser.parse('@switch (expr) {@case (1)}', 'TestComp').errors;
+        expect(errors.length).toEqual(1);
+        expect(humanizeErrors(errors)).toEqual([
+          [
+            'case',
+            'Incomplete block "case". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:16',
           ],
         ]);
       });
@@ -1141,7 +1240,7 @@ describe('HtmlParser', () => {
         ]);
       });
 
-      it('should parse an incomplete block with no parameters', () => {
+      it('should parse an incomplete block with no body', () => {
         const result = parser.parse(
           'This is the @if({alias: "foo"}) block with params',
           'TestComp',
@@ -1612,6 +1711,25 @@ describe('HtmlParser', () => {
               '{{&amp (no semi-colon)}}' +
               '{{&#xyz; (invalid hex)}}' +
               '{{&#25BE; (invalid decimal)}}',
+          ],
+        ]);
+      });
+
+      it('should decode HTML entities with 5+ hex digits in interpolations', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source)
+        expect(
+          humanizeDomSourceSpans(parser.parse('{{&#x1F6C8;}}' + '{{&#128712;}}', 'TestComp')),
+        ).toEqual([
+          [
+            html.Text,
+            '{{\u{1F6C8}}}' + '{{\u{1F6C8}}}',
+            0,
+            [''],
+            ['{{', '&#x1F6C8;', '}}'],
+            [''],
+            ['{{', '&#128712;', '}}'],
+            [''],
+            '{{&#x1F6C8;}}' + '{{&#128712;}}',
           ],
         ]);
       });

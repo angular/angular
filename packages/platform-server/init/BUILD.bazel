@@ -1,6 +1,6 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@npm//:rollup/package_json.bzl", rollup = "bin")
-load("//tools:defaults2.bzl", "ng_project", "tsec_test")
+load("//tools:defaults.bzl", "ng_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 

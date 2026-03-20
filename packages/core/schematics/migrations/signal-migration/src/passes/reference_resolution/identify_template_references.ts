@@ -6,16 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstNode} from '@angular/compiler';
-import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {extractTemplate} from '@angular/compiler-cli/src/ngtsc/annotations/component/src/resources';
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
-import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
+
+import {TmplAstNode} from '@angular/compiler';
+import {absoluteFrom, OptimizeFor} from '@angular/compiler-cli';
+import {
+  NgCompilerOptions,
+  ResourceLoader,
+  extractTemplate,
+  PartialEvaluator,
+  ClassDeclaration,
+  ReflectionHost,
+  CompilationMode,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli/private/migrations';
 import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
 import {TemplateReferenceVisitor} from './template_reference_visitor';
 import {attemptExtractTemplateDefinition} from '../../utils/extract_template';

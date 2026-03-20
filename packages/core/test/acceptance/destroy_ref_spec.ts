@@ -14,6 +14,7 @@ import {
   Directive,
   EnvironmentInjector,
   inject,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -72,11 +73,16 @@ describe('DestroyRef', () => {
 
       expect(() => {
         destroyRef.onDestroy(() => {});
-      }).toThrowError('NG0205: Injector has already been destroyed.');
+      }).toThrowError(/NG0205: Injector has already been destroyed./);
     });
   });
 
   describe('for node injector', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+    });
     it('should inject cleanup context in components', () => {
       let destroyed = false;
 
@@ -114,7 +120,8 @@ describe('DestroyRef', () => {
         imports: [WithCleanupDirective],
         // note: we are trying to register a LView-level cleanup _before_ TView-level one (event
         // listener)
-        template: `<div withCleanup></div><button (click)="noop()"></button>`,
+        template: `<div withCleanup></div>
+          <button (click)="noop()"></button>`,
       })
       class TestCmp {
         noop() {}

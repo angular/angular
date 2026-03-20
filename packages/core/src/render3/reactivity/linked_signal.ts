@@ -27,7 +27,7 @@ const identityFn = <T>(v: T) => v;
  */
 export function linkedSignal<D>(
   computation: () => D,
-  options?: {equal?: ValueEqualityFn<NoInfer<D>>},
+  options?: {equal?: ValueEqualityFn<NoInfer<D>>; debugName?: string},
 ): WritableSignal<D>;
 
 /**
@@ -37,11 +37,13 @@ export function linkedSignal<D>(
  * Note: The computation is reactive, meaning the linked signal will automatically update whenever any of the signals used within the computation change.
  *
  * @publicApi 20.0
+ * @see [Dependent state with linkedSignal](guide/signals/linked-signal)
  */
 export function linkedSignal<S, D>(options: {
   source: () => S;
   computation: (source: NoInfer<S>, previous?: {source: NoInfer<S>; value: NoInfer<D>}) => D;
   equal?: ValueEqualityFn<NoInfer<D>>;
+  debugName?: string;
 }): WritableSignal<D>;
 
 export function linkedSignal<S, D>(
@@ -50,9 +52,10 @@ export function linkedSignal<S, D>(
         source: () => S;
         computation: ComputationFn<S, D>;
         equal?: ValueEqualityFn<D>;
+        debugName?: string;
       }
     | (() => D),
-  options?: {equal?: ValueEqualityFn<D>},
+  options?: {equal?: ValueEqualityFn<D>; debugName?: string},
 ): WritableSignal<D> {
   if (typeof optionsOrComputation === 'function') {
     const getter = createLinkedSignal<D, D>(
@@ -60,20 +63,24 @@ export function linkedSignal<S, D>(
       identityFn<D>,
       options?.equal,
     ) as LinkedSignalGetter<D, D> & WritableSignal<D>;
-    return upgradeLinkedSignalGetter(getter);
+    return upgradeLinkedSignalGetter(getter, options?.debugName);
   } else {
     const getter = createLinkedSignal<S, D>(
       optionsOrComputation.source,
       optionsOrComputation.computation,
       optionsOrComputation.equal,
     );
-    return upgradeLinkedSignalGetter(getter);
+    return upgradeLinkedSignalGetter(getter, optionsOrComputation.debugName);
   }
 }
 
-function upgradeLinkedSignalGetter<S, D>(getter: LinkedSignalGetter<S, D>): WritableSignal<D> {
-  if (ngDevMode) {
-    getter.toString = () => `[LinkedSignal: ${getter()}]`;
+function upgradeLinkedSignalGetter<S, D>(
+  getter: LinkedSignalGetter<S, D>,
+  debugName?: string,
+): WritableSignal<D> {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    getter[SIGNAL].debugName = debugName;
+    getter.toString = () => `[LinkedSignal${debugName ? ' (' + debugName + ')' : ''}: ${getter()}]`;
   }
 
   const node = getter[SIGNAL] as LinkedSignalNode<S, D>;

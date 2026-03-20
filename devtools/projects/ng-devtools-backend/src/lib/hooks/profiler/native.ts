@@ -7,7 +7,6 @@
  */
 
 import {ɵProfilerEvent} from '@angular/core';
-
 import {getDirectiveHostElement} from '../../directive-forest';
 import {ngDebugClient} from '../../ng-debug-api/ng-debug-api';
 import {runOutsideAngular} from '../../utils';

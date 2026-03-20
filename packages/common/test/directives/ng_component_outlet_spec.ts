@@ -26,7 +26,6 @@ import {
   Input,
   inputBinding,
   NgModule,
-  NgModuleFactory,
   NO_ERRORS_SCHEMA,
   Optional,
   Output,
@@ -40,26 +39,29 @@ import {
   ViewChildren,
   ViewContainerRef,
 } from '@angular/core';
-import {TestBed, waitForAsync} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('insert/remove', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [TestModule]});
+    TestBed.configureTestingModule({
+      imports: [TestModule],
+    });
   });
 
-  it('should do nothing if component is null', waitForAsync(() => {
+  it('should do nothing if component is null', () => {
     const template = `<ng-template *ngComponentOutlet="currentComponent"></ng-template>`;
     TestBed.overrideComponent(TestComponent, {set: {template: template}});
     let fixture = TestBed.createComponent(TestComponent);
 
     fixture.componentInstance.currentComponent = null;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement).toHaveText('');
-  }));
+  });
 
-  it('should insert content specified by a component', waitForAsync(() => {
+  it('should insert content specified by a component', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     fixture.detectChanges();
@@ -67,26 +69,28 @@ describe('insert/remove', () => {
 
     fixture.componentInstance.currentComponent = InjectedComponent;
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('foo');
-  }));
+  });
 
-  it('should emit a ComponentRef once a component was created', waitForAsync(() => {
+  it('should emit a ComponentRef once a component was created', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('');
 
     fixture.componentInstance.cmpRef = undefined;
+    fixture.changeDetectorRef.markForCheck();
     fixture.componentInstance.currentComponent = InjectedComponent;
 
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('foo');
     expect(fixture.componentInstance.cmpRef).toBeInstanceOf(ComponentRef);
     expect(fixture.componentInstance.cmpRef!.instance).toBeInstanceOf(InjectedComponent);
-  }));
+  });
 
-  it('should clear view if component becomes null', waitForAsync(() => {
+  it('should clear view if component becomes null', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     fixture.detectChanges();
@@ -94,16 +98,18 @@ describe('insert/remove', () => {
 
     fixture.componentInstance.currentComponent = InjectedComponent;
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('foo');
 
     fixture.componentInstance.currentComponent = null;
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('');
-  }));
+  });
 
-  it('should swap content if component changes', waitForAsync(() => {
+  it('should swap content if component changes', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     fixture.detectChanges();
@@ -111,16 +117,18 @@ describe('insert/remove', () => {
 
     fixture.componentInstance.currentComponent = InjectedComponent;
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('foo');
 
     fixture.componentInstance.currentComponent = InjectedComponentAgain;
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('bar');
-  }));
+  });
 
-  it('should use the injector, if one supplied', waitForAsync(() => {
+  it('should use the injector, if one supplied', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     const uniqueValue = {};
@@ -130,14 +138,15 @@ describe('insert/remove', () => {
       parent: fixture.componentRef.injector,
     });
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
     expect(cmpRef).toBeInstanceOf(ComponentRef);
     expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
     expect(cmpRef.instance.testToken).toBe(uniqueValue);
-  }));
+  });
 
-  it('should use the environmentInjector, if one supplied', waitForAsync(() => {
+  it('should use the environmentInjector, if one supplied', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     const uniqueValue = {};
@@ -153,27 +162,29 @@ describe('insert/remove', () => {
       environmentInjector,
     );
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
     expect(cmpRef).toBeInstanceOf(ComponentRef);
     expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
     expect(cmpRef.instance.testToken).toBe(uniqueValue);
-  }));
+  });
 
-  it('should resolve with an injector', waitForAsync(() => {
+  it('should resolve with an injector', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     // We are accessing a ViewChild (ngComponentOutlet) before change detection has run
     fixture.componentInstance.cmpRef = undefined;
     fixture.componentInstance.currentComponent = InjectedComponent;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
     expect(cmpRef).toBeInstanceOf(ComponentRef);
     expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
     expect(cmpRef.instance.testToken).toBeNull();
-  }));
+  });
 
-  it('should render projectable nodes, if supplied', waitForAsync(() => {
+  it('should render projectable nodes, if supplied', () => {
     const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
     TestBed.overrideComponent(TestComponent, {set: {template: template}}).configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
@@ -194,11 +205,12 @@ describe('insert/remove', () => {
         .rootNodes,
     ];
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('projected foo');
-  }));
+  });
 
-  it('should resolve components from other modules, if supplied as an NgModule class reference', waitForAsync(() => {
+  it('should resolve components from other modules, if supplied as an NgModule class reference', () => {
     let fixture = TestBed.createComponent(TestComponent);
 
     fixture.detectChanges();
@@ -207,11 +219,12 @@ describe('insert/remove', () => {
     fixture.componentInstance.ngModule = TestModule2;
     fixture.componentInstance.currentComponent = Module2InjectedComponent;
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('baz');
-  }));
+  });
 
-  it('should clean up moduleRef, if supplied as an NgModule class reference', waitForAsync(() => {
+  it('should clean up moduleRef, if supplied as an NgModule class reference', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.componentInstance.ngModule = TestModule2;
     fixture.componentInstance.currentComponent = Module2InjectedComponent;
@@ -223,24 +236,26 @@ describe('insert/remove', () => {
     expect(moduleRef.destroy).not.toHaveBeenCalled();
     fixture.destroy();
     expect(moduleRef.destroy).toHaveBeenCalled();
-  }));
+  });
 
-  it('should re-create moduleRef when changed (NgModule class reference)', waitForAsync(() => {
+  it('should re-create moduleRef when changed (NgModule class reference)', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.componentInstance.ngModule = TestModule2;
     fixture.componentInstance.currentComponent = Module2InjectedComponent;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement).toHaveText('baz');
 
     fixture.componentInstance.ngModule = TestModule3;
     fixture.componentInstance.currentComponent = Module3InjectedComponent;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement).toHaveText('bat');
-  }));
+  });
 
-  it('should override providers from parent component using custom injector', waitForAsync(() => {
+  it('should override providers from parent component using custom injector', () => {
     TestBed.overrideComponent(InjectedComponent, {set: {template: 'Value: {{testToken}}'}});
     TestBed.overrideComponent(TestComponent, {
       set: {providers: [{provide: TEST_TOKEN, useValue: 'parent'}]},
@@ -251,10 +266,11 @@ describe('insert/remove', () => {
       providers: [{provide: TEST_TOKEN, useValue: 'child'}],
       parent: fixture.componentInstance.vcRef.injector,
     });
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement).toHaveText('Value: child');
-  }));
+  });
 
   it('should be available as a standalone directive', () => {
     @Component({
@@ -285,6 +301,7 @@ describe('insert/remove', () => {
     expect(outlet.componentInstance).toBeNull();
 
     fixture.componentInstance.currentComponent = InjectedComponent;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(outlet.componentInstance).toBeInstanceOf(InjectedComponent);
@@ -295,31 +312,37 @@ describe('inputs', () => {
   it('should be binding the component input', () => {
     const fixture = TestBed.createComponent(TestInputsComponent);
     fixture.componentInstance.currentComponent = ComponentWithInputs;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: Baz');
 
     fixture.componentInstance.inputs = {};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: Baz');
 
     fixture.componentInstance.inputs = {foo: 'Foo', bar: 'Bar'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: Bar, baz: Baz');
 
     fixture.componentInstance.inputs = {foo: 'Foo'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: , baz: Baz');
 
     fixture.componentInstance.inputs = {foo: 'Foo', baz: null};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: , baz: ');
 
     fixture.componentInstance.inputs = undefined;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: ');
@@ -328,21 +351,25 @@ describe('inputs', () => {
   it('should be binding the component input (with mutable inputs)', () => {
     const fixture = TestBed.createComponent(TestInputsComponent);
     fixture.componentInstance.currentComponent = ComponentWithInputs;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: , bar: , baz: Baz');
 
     fixture.componentInstance.inputs = {foo: 'Hello', bar: 'World'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: Hello, bar: World, baz: Baz');
 
     fixture.componentInstance.inputs['bar'] = 'Angular';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: Hello, bar: Angular, baz: Baz');
 
     delete fixture.componentInstance.inputs['foo'];
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: , bar: Angular, baz: Baz');
@@ -352,11 +379,13 @@ describe('inputs', () => {
     const fixture = TestBed.createComponent(TestInputsComponent);
     fixture.componentInstance.currentComponent = ComponentWithInputs;
     fixture.componentInstance.inputs = {foo: 'Foo', bar: 'Bar'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('foo: Foo, bar: Bar, baz: Baz');
 
     fixture.componentInstance.currentComponent = AnotherComponentWithInputs;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('[ANOTHER] foo: Foo, bar: Bar, baz: Baz');

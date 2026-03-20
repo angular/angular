@@ -159,7 +159,7 @@ describe('DefaultDomRendererV2', () => {
     expect(window.getComputedStyle(none).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
   });
 
-  it('shadow components should not be polluted by child components styles when using IsolatedShadowDom', () => {
+  it('shadow components should not be polluted by child components styles when using ExperimentalIsolatedShadowDom', () => {
     const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
     fixture.detectChanges();
 
@@ -216,12 +216,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is still in DOM
@@ -239,12 +241,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is still in DOM
@@ -263,12 +267,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is not in DOM
@@ -286,12 +292,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is not in DOM
@@ -423,13 +431,14 @@ async function styleCount(
 
 @Component({
   selector: 'cmp-emulated',
-  template: `
-    <div class="emulated"></div>`,
+  template: ` <div class="emulated"></div>`,
   styles: [
-    `.emulated {
-      background-color: blue;
-      color: blue;
-    }`,
+    `
+      .emulated {
+        background-color: blue;
+        color: blue;
+      }
+    `,
   ],
   encapsulation: ViewEncapsulation.Emulated,
   standalone: false,
@@ -438,13 +447,14 @@ class CmpEncapsulationEmulated {}
 
 @Component({
   selector: 'cmp-none',
-  template: `
-    <div class="none"></div>`,
+  template: ` <div class="none"></div>`,
   styles: [
-    `.none {
-      background-color: lime;
-      color: lime;
-    }`,
+    `
+      .none {
+        background-color: lime;
+        color: lime;
+      }
+    `,
   ],
   encapsulation: ViewEncapsulation.None,
   standalone: false,
@@ -453,15 +463,16 @@ class CmpEncapsulationNone {}
 
 @Component({
   selector: 'cmp-none',
-  template: `
-    <div class="none"></div>`,
+  template: ` <div class="none"></div>`,
   styles: [
-    `.none {
-      background-color: lime;
-      color: lime;
-    }
+    `
+      .none {
+        background-color: lime;
+        color: lime;
+      }
 
-    /*# sourceMappingURL=cmp-none.css.map */`,
+      /*# sourceMappingURL=cmp-none.css.map */
+    `,
   ],
   encapsulation: ViewEncapsulation.None,
   standalone: false,
@@ -470,12 +481,13 @@ class CmpEncapsulationNoneWithSourceMap {}
 
 @Component({
   selector: 'cmp-shadow',
-  template: `
-    <div class="shadow"></div>`,
+  template: ` <div class="shadow"></div>`,
   styles: [
-    `.shadow {
-      color: red;
-    }`,
+    `
+      .shadow {
+        color: red;
+      }
+    `,
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
   standalone: false,
@@ -484,17 +496,18 @@ class CmpEncapsulationShadow {}
 
 @Component({
   selector: 'cmp-shadow-children',
-  template: `
-    <div class="shadow">
-      <cmp-emulated></cmp-emulated>
-      <cmp-none></cmp-none>
-    </div>`,
+  template: ` <div class="shadow">
+    <cmp-emulated></cmp-emulated>
+    <cmp-none></cmp-none>
+  </div>`,
   styles: [
-    `.shadow {
-      color: red;
-    }`,
+    `
+      .shadow {
+        color: red;
+      }
+    `,
   ],
-  encapsulation: ViewEncapsulation.IsolatedShadowDom,
+  encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
   standalone: false,
 })
 class CmpEncapsulationIsolatedShadowWithChildren {}
@@ -512,9 +525,7 @@ export class SomeApp {}
 
 @Component({
   selector: 'shadow-parent-app-with-children',
-  template: `
-    <cmp-shadow-children></cmp-shadow-children>
-  `,
+  template: ` <cmp-shadow-children></cmp-shadow-children> `,
   standalone: false,
 })
 export class IsolatedShadowComponentParentApp {}

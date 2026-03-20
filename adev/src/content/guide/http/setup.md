@@ -6,53 +6,45 @@ Before you can use `HttpClient` in your app, you must configure it using [depend
 
 `HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `app.config.ts`.
 
-<docs-code language="ts">
+```ts
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(),
-  ]
+  providers: [provideHttpClient()],
 };
-</docs-code>
+```
 
 If your app is using NgModule-based bootstrap instead, you can include `provideHttpClient` in the providers of your app's NgModule:
 
-<docs-code language="ts">
+```ts
 @NgModule({
-  providers: [
-    provideHttpClient(),
-  ],
+  providers: [provideHttpClient()],
   // ... other application configuration
 })
 export class AppModule {}
-</docs-code>
+```
 
 You can then inject the `HttpClient` service as a dependency of your components, services, or other classes:
 
-<docs-code language="ts">
+```ts
 @Injectable({providedIn: 'root'})
 export class ConfigService {
   private http = inject(HttpClient);
   // This service can now make HTTP requests via `this.http`.
 }
-</docs-code>
+```
 
 ## Configuring features of `HttpClient`
 
 `provideHttpClient` accepts a list of optional feature configurations, to enable or configure the behavior of different aspects of the client. This section details the optional features and their usages.
 
-### `withFetch`
+### `withXhr`
 
-<docs-code language="ts">
+```ts
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(
-      withFetch(),
-    ),
-  ]
+  providers: [provideHttpClient(withXhr())],
 };
-</docs-code>
+```
 
-By default, `HttpClient` uses the [`XMLHttpRequest`](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest) API to make requests. The `withFetch` feature switches the client to use the [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API) API instead.
+By default, `HttpClient` uses the [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API) API to make requests. The `withXhr` feature switches the client to use the [`XMLHttpRequest`](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest) API instead.
 
 `fetch` is a more modern API and is available in a few environments where `XMLHttpRequest` is not supported. It does have a few limitations, such as not producing upload progress events.
 
@@ -94,12 +86,12 @@ Some applications may configure `HttpClient` using the older API based on NgModu
 
 This table lists the NgModules available from `@angular/common/http` and how they relate to the provider configuration functions above.
 
-| **NgModule**                            | `provideHttpClient()` equivalent              |
-| --------------------------------------- | --------------------------------------------- |
-| `HttpClientModule`                      | `provideHttpClient(withInterceptorsFromDi())` |
-| `HttpClientJsonpModule`                 | `withJsonpSupport()`                          |
-| `HttpClientXsrfModule.withOptions(...)` | `withXsrfConfiguration(...)`                  |
-| `HttpClientXsrfModule.disable()`        | `withNoXsrfProtection()`                      |
+| **NgModule**                            | `provideHttpClient()` equivalent                         |
+| --------------------------------------- | -------------------------------------------------------- |
+| `HttpClientModule`                      | `provideHttpClient(withInterceptorsFromDi(), withXhr())` |
+| `HttpClientJsonpModule`                 | `withJsonpSupport()`                                     |
+| `HttpClientXsrfModule.withOptions(...)` | `withXsrfConfiguration(...)`                             |
+| `HttpClientXsrfModule.disable()`        | `withNoXsrfProtection()`                                 |
 
 <docs-callout important title="Use caution when using HttpClientModule in multiple injectors">
 When `HttpClientModule` is present in multiple injectors, the behavior of interceptors is poorly defined and depends on the exact options and provider/import ordering.

@@ -32,13 +32,12 @@ import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
-import {PendingTasksInternal} from '../pending_tasks';
+import {PendingTasksInternal} from '../pending_tasks_internal';
 import {RendererFactory2} from '../render/api';
 import {AfterRenderManager} from '../render3/after_render/manager';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/def_getters';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
-import {LView} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
@@ -46,7 +45,7 @@ import {TESTABILITY} from '../testability/testability';
 import {NgZone} from '../zone/ng_zone';
 
 import {profiler} from '../render3/profiler';
-import {ProfilerEvent} from '../render3/profiler_types';
+import {ProfilerEvent} from '../../primitives/devtools';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {ApplicationInitStatus} from './application_init';
@@ -154,25 +153,6 @@ export interface BootstrapOptions {
    * @deprecated BootstrapOptions is deprecated. Use `provideZoneChangeDetection` instead to configure coalescing.
    */
   ngZoneRunCoalescing?: boolean;
-
-  /**
-   * When false, change detection is scheduled when Angular receives
-   * a clear indication that templates need to be refreshed. This includes:
-   *
-   * - calling `ChangeDetectorRef.markForCheck`
-   * - calling `ComponentRef.setInput`
-   * - updating a signal that is read in a template
-   * - attaching a view that is marked dirty
-   * - removing a view
-   * - registering a render hook (templates are only refreshed if render hooks do one of the above)
-   *
-   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
-   *    new behavior in v18 which schedule change detection for the above events when they occur
-   *    outside the Zone. After monitoring the results post-release, we have determined that this
-   *    feature is working as desired and do not believe it should ever be disabled by setting
-   *    this option to `true`.
-   */
-  ignoreChangesOutsideZone?: boolean;
 }
 
 /** Maximum number of times ApplicationRef will refresh all attached views in a single tick. */
@@ -313,7 +293,8 @@ export class ApplicationRef {
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private allTestViews: Set<InternalViewRef<unknown>> = new Set();
   private autoDetectTestViews: Set<InternalViewRef<unknown>> = new Set();
-  private includeAllTestViews = false;
+  /** @internal */
+  includeAllTestViews = false;
   /** @internal */
   afterTick = new Subject<void>();
   /** @internal */
@@ -610,6 +591,7 @@ export class ApplicationRef {
   private tickImpl = (): void => {
     (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     if (this._runningTick) {
+      profiler(ProfilerEvent.ChangeDetectionEnd);
       throw new RuntimeError(
         RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
         ngDevMode && 'ApplicationRef.tick is called recursively',
@@ -648,8 +630,11 @@ export class ApplicationRef {
     let runs = 0;
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
       profiler(ProfilerEvent.ChangeDetectionSyncStart);
-      this.synchronizeOnce();
-      profiler(ProfilerEvent.ChangeDetectionSyncEnd);
+      try {
+        this.synchronizeOnce();
+      } finally {
+        profiler(ProfilerEvent.ChangeDetectionSyncEnd);
+      }
     }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {

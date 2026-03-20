@@ -117,6 +117,7 @@ export class ViewFixture {
         sanitizer: sanitizer || null,
         changeDetectionScheduler: null,
         ngReflect: false,
+        tracingService: null,
       },
       hostRenderer,
       null,

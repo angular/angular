@@ -11,10 +11,10 @@ import {Subscription} from 'rxjs';
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
-import {EnvironmentProviders} from '../../di/interface/provider';
+import {EnvironmentProviders, Provider} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../../errors';
-import {PendingTasksInternal} from '../../pending_tasks';
+import {PendingTasksInternal} from '../../pending_tasks_internal';
 import {
   scheduleCallbackWithMicrotask,
   scheduleCallbackWithRafRace,
@@ -28,10 +28,10 @@ import {
   PROVIDED_ZONELESS,
   SCHEDULE_IN_ROOT_ZONE,
   ZONELESS_ENABLED,
-  ZONELESS_SCHEDULER_DISABLED,
 } from './zoneless_scheduling';
 import {TracingService} from '../../application/tracing';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {OnDestroy} from '../lifecycle_hooks';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -57,15 +57,13 @@ function trackMicrotaskNotificationForDebugging() {
 }
 
 @Injectable({providedIn: 'root'})
-export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
+export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, OnDestroy {
   private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
   private readonly taskService = inject(PendingTasksInternal);
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly tracing = inject(TracingService, {optional: true});
-  private readonly disableScheduling =
-    inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
@@ -85,12 +83,28 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   constructor() {
     this.subscriptions.add(
       this.appRef.afterTick.subscribe(() => {
+        // Prevent stabilization if cleanup causes the last task to be removed
+        // before we can switch to the microtask scheduler.
+        const task = this.taskService.add();
         // If the scheduler isn't running a tick but the application ticked, that means
         // someone called ApplicationRef.tick manually. In this case, we should cancel
         // any change detections that had been scheduled so we don't run an extra one.
         if (!this.runningTick) {
           this.cleanup();
+          // Ticks that happen when ZoneJS is present do not get the microtask scheduling treatment.
+          // ZoneJS is responsible for rerunning change detection on microtask queue empty.
+          // Ticks initiated from tests also do not get microtask treatment so those ticks
+          // do not affect stability timing, which tests are quite sensitive to.
+          // TODO(atscott): we really should not use microtask scheduler
+          // _ever_ when ZoneJS is enabled because ZoneJS is responsible for rerunning change
+          // detection on microtask queue empty. This change breaks some tests
+          if (!this.zonelessEnabled || this.appRef.includeAllTestViews) {
+            this.taskService.remove(task);
+            return;
+          }
         }
+        this.switchToMicrotaskScheduler();
+        this.taskService.remove(task);
       }),
     );
     this.subscriptions.add(
@@ -103,15 +117,22 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         }
       }),
     );
+  }
 
-    // TODO(atscott): These conditions will need to change when zoneless is the default
-    // Instead, they should flip to checking if ZoneJS scheduling is provided
-    this.disableScheduling ||=
-      !this.zonelessEnabled &&
-      // NoopNgZone without enabling zoneless means no scheduling whatsoever
-      (this.ngZone instanceof NoopNgZone ||
-        // The same goes for the lack of Zone without enabling zoneless scheduling
-        !this.zoneIsDefined);
+  // If we're notified of a change within 1 microtask of running change
+  // detection, run another round in the same event loop. This allows code
+  // which uses Promise.resolve (see NgModel) to avoid
+  // ExpressionChanged...Error to still be reflected in a single browser
+  // paint, even if that spans multiple rounds of change detection.
+  private switchToMicrotaskScheduler(): void {
+    this.ngZone.runOutsideAngular(() => {
+      const task = this.taskService.add();
+      this.useMicrotaskScheduler = true;
+      queueMicrotask(() => {
+        this.useMicrotaskScheduler = false;
+        this.taskService.remove(task);
+      });
+    });
   }
 
   notify(source: NotificationSource): void {
@@ -127,15 +148,13 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
 
-    let force = false;
-
     switch (source) {
-      case NotificationSource.MarkAncestorsForTraversal: {
+      case NotificationSource.MarkAncestorsForTraversal:
+      case NotificationSource.DeferBlockStateUpdate: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
         break;
       }
       case NotificationSource.DebugApplyChanges:
-      case NotificationSource.DeferBlockStateUpdate:
       case NotificationSource.MarkForCheck:
       case NotificationSource.Listener:
       case NotificationSource.SetInput: {
@@ -147,34 +166,19 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         // during CD. In practice this is a no-op since the elements code also calls via a
         // `markForRefresh()` API which sends `NotificationSource.MarkAncestorsForTraversal` anyway.
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
-        force = true;
         break;
       }
       case NotificationSource.RootEffect: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.RootEffects;
-        // Root effects still force a CD, even if the scheduler is disabled. This ensures that
-        // effects always run, even when triggered from outside the zone when the scheduler is
-        // otherwise disabled.
-        force = true;
         break;
       }
       case NotificationSource.ViewEffect: {
         // This is technically a no-op, since view effects will also send a
         // `MarkAncestorsForTraversal` notification. Still, we set this for logical consistency.
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
-        // View effects still force a CD, even if the scheduler is disabled. This ensures that
-        // effects always run, even when triggered from outside the zone when the scheduler is
-        // otherwise disabled.
-        force = true;
         break;
       }
       case NotificationSource.PendingTaskRemoved: {
-        // Removing a pending task via the public API forces a scheduled tick, ensuring that
-        // stability is async and delayed until there was at least an opportunity to run
-        // application synchronization. This prevents some footguns when working with the
-        // public API for pending tasks where developers attempt to update application state
-        // immediately after removing the last task.
-        force = true;
         break;
       }
       case NotificationSource.ViewDetachedFromDOM:
@@ -194,7 +198,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     // context which produced the notification.
     this.appRef.tracingSnapshot = this.tracing?.snapshot(this.appRef.tracingSnapshot) ?? null;
 
-    if (!this.shouldScheduleTick(force)) {
+    if (!this.shouldScheduleTick()) {
       return;
     }
 
@@ -220,8 +224,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
   }
 
-  private shouldScheduleTick(force: boolean): boolean {
-    if ((this.disableScheduling && !force) || this.appRef.destroyed) {
+  private shouldScheduleTick(): boolean {
+    if (this.appRef.destroyed) {
       return false;
     }
     // already scheduled or running
@@ -293,21 +297,11 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         this.schedulerTickApplyArgs,
       );
     } catch (e: unknown) {
-      this.taskService.remove(task);
       this.applicationErrorHandler(e);
     } finally {
+      this.taskService.remove(task);
       this.cleanup();
     }
-    // If we're notified of a change within 1 microtask of running change
-    // detection, run another round in the same event loop. This allows code
-    // which uses Promise.resolve (see NgModel) to avoid
-    // ExpressionChanged...Error to still be reflected in a single browser
-    // paint, even if that spans multiple rounds of change detection.
-    this.useMicrotaskScheduler = true;
-    scheduleCallbackWithMicrotask(() => {
-      this.useMicrotaskScheduler = false;
-      this.taskService.remove(task);
-    });
   }
 
   ngOnDestroy() {
@@ -368,6 +362,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * @publicApi 20.2
  *
  * @see {@link /api/platform-browser/bootstrapApplication bootstrapApplication}
+ * @see [Angular without ZoneJS (Zoneless)](guide/zoneless)
  */
 export function provideZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
@@ -383,12 +378,17 @@ export function provideZonelessChangeDetection(): EnvironmentProviders {
   }
 
   return makeEnvironmentProviders([
-    {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
-    {provide: NgZone, useClass: NoopNgZone},
-    {provide: ZONELESS_ENABLED, useValue: true},
-    {provide: SCHEDULE_IN_ROOT_ZONE, useValue: false},
+    ...provideZonelessChangeDetectionInternal(),
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],
   ]);
+}
+
+export function provideZonelessChangeDetectionInternal(): Provider[] {
+  return [
+    {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+    {provide: NgZone, useClass: NoopNgZone},
+    {provide: ZONELESS_ENABLED, useValue: true},
+  ];
 }

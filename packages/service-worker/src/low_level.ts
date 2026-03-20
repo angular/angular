@@ -71,23 +71,6 @@ export interface VersionReadyEvent {
 }
 
 /**
- * An event emitted when a specific version of the app has encountered a critical failure
- * that prevents it from functioning correctly.
- *
- * When a version fails, the service worker will notify all clients currently using that version
- * and may degrade to serving only existing clients if the failed version was the latest one.
- *
- * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
- *
- * @publicApi
- */
-export interface VersionFailedEvent {
-  type: 'VERSION_FAILED';
-  version: {hash: string; appData?: object};
-  error: string;
-}
-
-/**
  * A union of all event types that can be emitted by
  * {@link SwUpdate#versionUpdates}.
  *
@@ -97,7 +80,6 @@ export type VersionEvent =
   | VersionDetectedEvent
   | VersionInstallationFailedEvent
   | VersionReadyEvent
-  | VersionFailedEvent
   | NoNewVersionDetectedEvent;
 
 /**
@@ -109,7 +91,7 @@ export type VersionEvent =
  * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
  *
- * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+ * @see [Handling an unrecoverable state](ecosystem/service-workers/communications#handling-an-unrecoverable-state)
 
  *
  * @publicApi

@@ -14,6 +14,8 @@ import {
   ExternalReference,
   ForwardRefHandling,
   getSafePropertyAccessString,
+  LiteralArrayExpr,
+  literalMap,
   MaybeForwardRefExpression,
   ParsedHostBindings,
   ParseError,
@@ -24,7 +26,10 @@ import {
   R3QueryMetadata,
   R3Reference,
   verifyHostBindings,
+  R3Identifiers,
+  ArrowFunctionExpr,
   WrappedNodeExpr,
+  literal,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -76,6 +81,7 @@ import {
   ReferencesRegistry,
   toR3Reference,
   tryUnwrapForwardRef,
+  UndecoratedMetadataExtractor,
   unwrapConstructorDependencies,
   unwrapExpression,
   validateConstructorDependencies,
@@ -312,6 +318,8 @@ export function extractDirectiveMetadata(
       !member.isStatic && member.kind === ClassMemberKind.Method && member.name === 'ngOnChanges',
   );
 
+  const controlCreate = extractControlDirectiveDefinition(members);
+
   // Parse exportAs.
   let exportAs: string[] | null = null;
   if (directive.has('exportAs')) {
@@ -386,7 +394,7 @@ export function extractDirectiveMetadata(
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
   const sourceFile = clazz.getSourceFile();
-  const type = wrapTypeReference(reflector, clazz);
+  const type = wrapTypeReference(clazz);
 
   const rawHostDirectives = directive.get('hostDirectives') || null;
   const hostDirectives =
@@ -432,11 +440,11 @@ export function extractDirectiveMetadata(
     queries: contentQueries,
     viewQueries,
     selector,
-    fullInheritance: false,
     type,
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: createSourceSpan(clazz.name),
     usesInheritance,
+    controlCreate,
     exportAs,
     providers,
     isStandalone,
@@ -855,6 +863,140 @@ export function parseFieldStringArrayValue(
   return value;
 }
 
+/**
+ * Returns a function that can be used to extract data for the `setClassMetadata`
+ * calls from undecorated directive class members.
+ */
+export function getDirectiveUndecoratedMetadataExtractor(
+  reflector: ReflectionHost,
+  importTracker: ImportedSymbolsTracker,
+): UndecoratedMetadataExtractor {
+  return (member: ClassMember): LiteralArrayExpr | null => {
+    const input = tryParseSignalInputMapping(member, reflector, importTracker);
+    if (input !== null) {
+      return getDecoratorMetaArray([
+        [new ExternalExpr(R3Identifiers.inputDecorator), memberMetadataFromSignalInput(input)],
+      ]);
+    }
+
+    const output = tryParseInitializerBasedOutput(member, reflector, importTracker);
+    if (output !== null) {
+      return getDecoratorMetaArray([
+        [
+          new ExternalExpr(R3Identifiers.outputDecorator),
+          memberMetadataFromInitializerOutput(output.metadata),
+        ],
+      ]);
+    }
+
+    const model = tryParseSignalModelMapping(member, reflector, importTracker);
+    if (model !== null) {
+      return getDecoratorMetaArray([
+        [
+          new ExternalExpr(R3Identifiers.inputDecorator),
+          memberMetadataFromSignalInput(model.input),
+        ],
+        [
+          new ExternalExpr(R3Identifiers.outputDecorator),
+          memberMetadataFromInitializerOutput(model.output),
+        ],
+      ]);
+    }
+
+    const query = tryParseSignalQueryFromInitializer(member, reflector, importTracker);
+    if (query !== null) {
+      let identifier: ExternalReference;
+      if (query.name === 'viewChild') {
+        identifier = R3Identifiers.viewChildDecorator;
+      } else if (query.name === 'viewChildren') {
+        identifier = R3Identifiers.viewChildrenDecorator;
+      } else if (query.name === 'contentChild') {
+        identifier = R3Identifiers.contentChildDecorator;
+      } else if (query.name === 'contentChildren') {
+        identifier = R3Identifiers.contentChildrenDecorator;
+      } else {
+        return null;
+      }
+
+      return getDecoratorMetaArray([
+        [new ExternalExpr(identifier), memberMetadataFromSignalQuery(query.call)],
+      ]);
+    }
+
+    return null;
+  };
+}
+
+function getDecoratorMetaArray(
+  decorators: [type: ExternalExpr, args: LiteralArrayExpr][],
+): LiteralArrayExpr {
+  return new LiteralArrayExpr(
+    decorators.map(([type, args]) =>
+      literalMap([
+        {key: 'type', value: type, quoted: false},
+        {key: 'args', value: args, quoted: false},
+      ]),
+    ),
+  );
+}
+
+function memberMetadataFromSignalInput(input: InputMapping): LiteralArrayExpr {
+  // Note that for signal inputs the transform is captured in the signal
+  // initializer so we don't need to capture it here.
+  return new LiteralArrayExpr([
+    literalMap([
+      {
+        key: 'isSignal',
+        value: literal(true),
+        quoted: false,
+      },
+      {
+        key: 'alias',
+        value: literal(input.bindingPropertyName),
+        quoted: false,
+      },
+      {
+        key: 'required',
+        value: literal(input.required),
+        quoted: false,
+      },
+    ]),
+  ]);
+}
+
+function memberMetadataFromInitializerOutput(output: InputOrOutput): LiteralArrayExpr {
+  return new LiteralArrayExpr([literal(output.bindingPropertyName)]);
+}
+
+function memberMetadataFromSignalQuery(call: ts.CallExpression): LiteralArrayExpr {
+  const firstArg = call.arguments[0];
+  const firstArgMeta =
+    ts.isStringLiteralLike(firstArg) || ts.isCallExpression(firstArg)
+      ? new WrappedNodeExpr(firstArg)
+      : // If the first argument is a class reference, we need to wrap it in a `forwardRef`
+        // because the reference might occur after the current class. This wouldn't be flagged
+        // on the query initializer, because it executes after the class is initialized, whereas
+        // `setClassMetadata` runs immediately.
+        new ExternalExpr(R3Identifiers.forwardRef).callFn([
+          new ArrowFunctionExpr([], new WrappedNodeExpr(firstArg)),
+        ]);
+
+  const entries: Expression[] = [
+    // We use wrapped nodes here, because the output AST doesn't support spread assignments.
+    firstArgMeta,
+    new WrappedNodeExpr(
+      ts.factory.createObjectLiteralExpression([
+        ...(call.arguments.length > 1
+          ? [ts.factory.createSpreadAssignment(call.arguments[1])]
+          : []),
+        ts.factory.createPropertyAssignment('isSignal', ts.factory.createTrue()),
+      ]),
+    ),
+  ];
+
+  return new LiteralArrayExpr(entries);
+}
+
 function isStringArrayOrDie(value: any, name: string, node: ts.Expression): value is string[] {
   if (!Array.isArray(value)) {
     return false;
@@ -1204,6 +1346,7 @@ function parseInputFields(
   emitDeclarationOnly: boolean,
 ): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
+  const bindings = new Map<string, ClassMember>();
 
   for (const member of members) {
     const classPropertyName = member.name;
@@ -1221,6 +1364,18 @@ function parseInputFields(
     if (inputMapping === null) {
       continue;
     }
+
+    const bindingPropertyName = inputMapping.bindingPropertyName;
+    if (bindings.has(bindingPropertyName)) {
+      const firstMember = bindings.get(bindingPropertyName)!;
+      throw new FatalDiagnosticError(
+        ErrorCode.DUPLICATE_BINDING_NAME,
+        member.node ?? clazz,
+        `Input '${bindingPropertyName}' is bound to both '${firstMember.name}' and '${member.name}'.`,
+        [makeRelatedInformation(firstMember.node ?? clazz, `The first binding is declared here.`)],
+      );
+    }
+    bindings.set(bindingPropertyName, member);
 
     if (member.isStatic) {
       throw new FatalDiagnosticError(
@@ -1438,6 +1593,64 @@ function assertEmittableInputType(
 }
 
 /**
+ * Extracts the `controlCreate` definition for the private control directive contract from the
+ * directive class.
+ *
+ * This looks for a lifecycle method called `ɵngControlCreate`. If present, a control directive
+ * definition will be extracted, and `ɵɵControlFeature` will be applied to the directive.
+ *
+ * A control directive may declare a pass-through input name, by including a generic type on the
+ * type of the `ControlDirectiveHost` parameter of `ɵngControlCreate`:
+ *
+ * ```ts
+ * class MyControlDirective {
+ *   ɵngControlCreate<T>(host: ControlDirectiveHost<'formField'>): void {}
+ * }
+ * ```
+ *
+ * If present, this will be extracted as the `passThroughInput` property of the control directive
+ * definition.
+ */
+function extractControlDirectiveDefinition(
+  members: ClassMember[],
+): R3DirectiveMetadata['controlCreate'] {
+  const controlCreateMember = members.find(
+    (member) =>
+      !member.isStatic &&
+      member.kind === ClassMemberKind.Method &&
+      member.name === 'ɵngControlCreate',
+  );
+
+  if (
+    controlCreateMember === undefined ||
+    controlCreateMember.node === null ||
+    !ts.isMethodDeclaration(controlCreateMember.node)
+  ) {
+    return null;
+  }
+
+  const {node} = controlCreateMember;
+  if (
+    node.parameters.length === 0 ||
+    node.parameters[0].type === undefined ||
+    !ts.isTypeReferenceNode(node.parameters[0].type)
+  ) {
+    return {passThroughInput: null};
+  }
+
+  const type = node.parameters[0].type;
+  if (
+    type.typeArguments?.length !== 1 ||
+    !ts.isLiteralTypeNode(type.typeArguments[0]) ||
+    !ts.isStringLiteral(type.typeArguments[0].literal)
+  ) {
+    return {passThroughInput: null};
+  }
+
+  return {passThroughInput: type.typeArguments[0].literal.text};
+}
+
+/**
  * Iterates through all specified class members and attempts to detect
  * view and content queries defined.
  *
@@ -1542,6 +1755,7 @@ function parseOutputFields(
   outputsFromMeta: Record<string, string>,
 ): Record<string, string> {
   const outputs = {} as Record<string, string>;
+  const bindings = new Map<string, ClassMember>();
 
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
@@ -1585,6 +1799,17 @@ function parseOutputFields(
     } else {
       continue;
     }
+
+    if (bindings.has(bindingPropertyName)) {
+      const firstMember = bindings.get(bindingPropertyName)!;
+      throw new FatalDiagnosticError(
+        ErrorCode.DUPLICATE_BINDING_NAME,
+        member.node ?? clazz,
+        `Output '${bindingPropertyName}' is bound to both '${firstMember.name}' and '${member.name}'.`,
+        [makeRelatedInformation(firstMember.node ?? clazz, `The first binding is declared here.`)],
+      );
+    }
+    bindings.set(bindingPropertyName, member);
 
     // Validate that initializer-based outputs are not accidentally declared
     // in the `outputs` class metadata.

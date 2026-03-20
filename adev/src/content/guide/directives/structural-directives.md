@@ -31,7 +31,7 @@ Structural directives can be applied directly on an element by prefixing the dir
 You can use this with `SelectDirective` as follows:
 
 ```angular-html
-<p *select="let data from source">The data is: {{data}}</p>
+<p *select="let data; from: source">The data is: {{ data }}</p>
 ```
 
 This example shows the flexibility of structural directive shorthand syntax, which is sometimes called _microsyntax_.
@@ -40,11 +40,11 @@ When used in this way, only the structural directive and its bindings are applie
 
 ```angular-html
 <!-- Shorthand syntax: -->
-<p class="data-view" *select="let data from source">The data is: {{data}}</p>
+<p class="data-view" *select="let data; from: source">The data is: {{ data }}</p>
 
 <!-- Long-form syntax: -->
 <ng-template select let-data [selectFrom]="source">
-  <p class="data-view">The data is: {{data}}</p>
+  <p class="data-view">The data is: {{ data }}</p>
 </ng-template>
 ```
 
@@ -56,7 +56,7 @@ The second piece of syntax is a key-expression pair, `from source`. `from` is a 
 
 ## One structural directive per element
 
-You can only apply one structural directive per element when using the shorthand syntax. This is because there is only one `<ng-template>` element onto which that directive gets unwrapped. Multiple directives would require multiple nested `<ng-template>`, and it's unclear which directive should be first. `<ng-container>` can be used when to create wrapper layers when multiple structural directives need to be applied around the same physical DOM element or component, which allows the user to define the nested structure.
+You can only apply one structural directive per element when using the shorthand syntax. This is because there is only one `<ng-template>` element onto which that directive gets unwrapped. Multiple directives would require multiple nested `<ng-template>`, and it's unclear which directive should be first. `<ng-container>` can be used to create wrapper layers when multiple structural directives need to be applied around the same physical DOM element or component, which allows the user to define the nested structure.
 
 ## Creating a structural directive
 
@@ -85,7 +85,6 @@ export class SelectDirective {
   private templateRef = inject(TemplateRef);
   private viewContainerRef = inject(ViewContainerRef);
 }
-
 ```
 
 </docs-step>
@@ -95,7 +94,6 @@ Add a `selectFrom` `input()` property.
 ```ts
 export class SelectDirective {
   // ...
-
   selectFrom = input.required<DataSource>();
 }
 ```
@@ -107,7 +105,6 @@ With `SelectDirective` now scaffolded as a structural directive with its input, 
 ```ts
 export class SelectDirective {
   // ...
-
   async ngOnInit() {
     const data = await this.selectFrom.load();
     this.viewContainerRef.createEmbeddedView(this.templateRef, {
@@ -128,11 +125,9 @@ That's it - `SelectDirective` is up and running. A follow-up step might be to [a
 
 When you write your own structural directives, use the following syntax:
 
-<docs-code hideCopy language="typescript">
-
-*:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
-
-</docs-code>
+```ts {hideCopy}
+_: prefix = "( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )_";
+```
 
 The following patterns describe each portion of the structural directive grammar:
 
@@ -154,23 +149,23 @@ let = "let" :local "=" :export ";"?
 
 Angular translates structural directive shorthand into the normal binding syntax as follows:
 
-| Shorthand | Translation |
-|:--- |:--- |
-| `prefix` and naked `expression` | `[prefix]="expression"` |
-| `keyExp` | `[prefixKey]="expression"` (The `prefix` is added to the `key`) |
-| `let local` | `let-local="export"` |
+| Shorthand                       | Translation                                                     |
+| :------------------------------ | :-------------------------------------------------------------- |
+| `prefix` and naked `expression` | `[prefix]="expression"`                                         |
+| `keyExp`                        | `[prefixKey]="expression"` (The `prefix` is added to the `key`) |
+| `let local`                     | `let-local="export"`                                            |
 
 ### Shorthand examples
 
 The following table provides shorthand examples:
 
-| Shorthand | How Angular interprets the syntax |
-|:--- |:--- |
-| `*myDir="let item of [1,2,3]"` | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">` |
+| Shorthand                                                             | How Angular interprets the syntax                                                                             |
+| :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| `*myDir="let item of [1,2,3]"`                                        | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">`                                                          |
 | `*myDir="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template myDir let-item [myDirOf]="[1,2,3]" let-items="myDirOf" [myDirTrackBy]="myTrack" let-i="index">` |
-| `*ngComponentOutlet="componentClass";` | `<ng-template [ngComponentOutlet]="componentClass">` |
-| `*ngComponentOutlet="componentClass; inputs: myInputs";` | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">` |
-| `*myDir="exp as value"` | `<ng-template [myDir]="exp" let-value="myDir">` |
+| `*ngComponentOutlet="componentClass";`                                | `<ng-template [ngComponentOutlet]="componentClass">`                                                          |
+| `*ngComponentOutlet="componentClass; inputs: myInputs";`              | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">`                     |
+| `*myDir="exp as value"`                                               | `<ng-template [myDir]="exp" let-value="myDir">`                                                               |
 
 ## Improving template type checking for custom directives
 
@@ -178,11 +173,11 @@ You can improve template type checking for custom directives by adding template 
 These guards help the Angular template type checker find mistakes in the template at compile time, which can avoid runtime errors.
 Two different types of guards are possible:
 
-* `ngTemplateGuard_(input)` lets you control how an input expression should be narrowed based on the type of a specific input.
-* `ngTemplateContextGuard` is used to determine the type of the context object for the template, based on the type of the directive itself.
+- `ngTemplateGuard_(input)` lets you control how an input expression should be narrowed based on the type of a specific input.
+- `ngTemplateContextGuard` is used to determine the type of the context object for the template, based on the type of the directive itself.
 
 This section provides examples of both kinds of guards.
-For more information, see [Template type checking](tools/cli/template-typecheck "Template type-checking guide").
+For more information, see [Template type checking](tools/cli/template-typecheck 'Template type-checking guide').
 
 ### Type narrowing with template guards
 
@@ -190,8 +185,8 @@ A structural directive in a template controls whether that template is rendered 
 
 There are two narrowings which are possible with input guards:
 
-* Narrowing the input expression based on a TypeScript type assertion function.
-* Narrowing the input expression based on its truthiness.
+- Narrowing the input expression based on a TypeScript type assertion function.
+- Narrowing the input expression based on its truthiness.
 
 To narrow the input expression by defining a type assertion function:
 

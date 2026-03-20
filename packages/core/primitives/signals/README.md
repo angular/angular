@@ -12,8 +12,6 @@ This context and getter function mechanism allows for signal dependencies of a c
 
 ### Source signals
 
-
-
 ### Writable signals: `signal()`
 
 The `createSignal()` function produces a specific type of signal that tracks a stored value. In addition to providing a getter function, these signals can be wired up with additional APIs for changing the value of the signal (along with notifying any dependents of the change). These include the `.set` operation for replacing the signal value, and `.update` for deriving a new value. In Angular, these are exposed as functions on the signal getter itself. For example:
@@ -22,7 +20,7 @@ The `createSignal()` function produces a specific type of signal that tracks a s
 const counter = signal(0);
 
 counter.set(2);
-counter.update(count => count + 1);
+counter.update((count) => count + 1);
 ```
 
 #### Equality
@@ -30,8 +28,9 @@ counter.update(count => count + 1);
 The signal creation function one can, optionally, specify an equality comparator function. The comparator is used to decide whether the new supplied value is the same, or different, as compared to the current signal’s value.
 
 If the equality function determines that 2 values are equal it will:
-* block update of signal’s value;
-* skip change propagation.
+
+- block update of signal’s value;
+- skip change propagation.
 
 ### Declarative derived values
 
@@ -46,7 +45,7 @@ const isEven = computed(() => counter() % 2 === 0);
 
 Because the calculation function used to create the `computed` is executed in a reactive context, any signals read by that calculation will be tracked as dependencies, and the value of the computed signal recalculated whenever any of those dependencies changes.
 
-Similarly to signals, the `computed` can (optionally) specify an equality comparator function. 
+Similarly to signals, the `computed` can (optionally) specify an equality comparator function.
 
 ### Side effects: `createWatch()`
 
@@ -72,11 +71,13 @@ Effects do not execute synchronously with the set (see the section on glitch-fre
 ```typescript
 const counter = signal(0);
 const untrackedCounter = signal(0);
-effect(() => console.log(`counter: ${counter()}, untrackedCounter: ${untracked(untrackedCounter)}`));
+effect(() =>
+  console.log(`counter: ${counter()}, untrackedCounter: ${untracked(untrackedCounter)}`),
+);
 // counter: 0, untrackedCounter: 0
 
 untrackedCounter.set(1);
-// effect does not rerun because untrackedCounter was untracked 
+// effect does not rerun because untrackedCounter was untracked
 
 counter.set(1);
 // counter: 1, untrackedCounter: 1
@@ -98,8 +99,8 @@ Throughout the rest of this document, "producer" and "consumer" are used to desc
 
 Consumers always keep track of the producers they depend on. Producers only track dependencies from consumers which are considered "live". A consumer is "live" when either:
 
-* It sets the `consumerIsAlwaysLive` property of its `ReactiveNode` to `true`, or
-* It's also a producer which is depended upon by a live consumer.
+- It sets the `consumerIsAlwaysLive` property of its `ReactiveNode` to `true`, or
+- It's also a producer which is depended upon by a live consumer.
 
 In that sense, "liveness" is a transitive property of consumers.
 
@@ -120,6 +121,7 @@ double = null;
 ```
 
 If the dependency graph maintained a hard reference from `counter` to `double`, then `double` would be retained(not garbage collected) even though the user dropped their last reference to the actual signal. But because `double` is not live, the graph doesn't hold a reference from `counter` to `double`, and `double` can be freed when the user drops it.
+
 #### Non-live consumers and polling
 
 A consequence of not tracking an edge from `counter` to `double` is that when counter is changed:
@@ -148,7 +150,7 @@ Consider the following setup:
 
 ```typescript
 const counter = signal(0);
-const evenOrOdd = computed(() => counter() % 2 === 0 ? 'even' : 'odd');
+const evenOrOdd = computed(() => (counter() % 2 === 0 ? 'even' : 'odd'));
 effect(() => console.log(counter() + ' is ' + evenOrOdd()));
 
 counter.set(1);
@@ -175,7 +177,7 @@ We refer to this as the "push/pull" algorithm: "dirtiness" is eagerly _pushed_ t
 When a reactive context operation (for example, an `effect`'s side effect function) is executed, the signals that it reads are tracked as dependencies. However, this may not be the same set of signals from one execution to the next. For example, this computed signal:
 
 ```typescript
-const dynamic = computed(() => useA() ? dataA() : dataB());
+const dynamic = computed(() => (useA() ? dataA() : dataB()));
 ```
 
 reads either `dataA` or `dataB` depending on the value of the `useA` signal. At any given point, it will have a dependency set of either `[useA, dataA]` or `[useA, dataB]`, and it can never depend on `dataA` and `dataB` at the same time.

@@ -37,19 +37,12 @@ function processPipeBindingsInView(unit: CompilationUnit): void {
         throw new Error(`AssertionError: pipe bindings should not appear in child expressions`);
       }
 
-      if (unit.job.compatibility) {
-        // TODO: We can delete this cast and check once compatibility mode is removed.
-        const slotHandle = (updateOp as any).target;
-        if (slotHandle == undefined) {
-          throw new Error(`AssertionError: expected slot handle to be assigned for pipe creation`);
-        }
-        addPipeToCreationBlock(unit, (updateOp as any).target, expr);
-      } else {
-        // When not in compatibility mode, we just add the pipe to the end of the create block. This
-        // is not only simpler and faster, but allows more chaining opportunities for other
-        // instructions.
-        unit.create.push(ir.createPipeOp(expr.target, expr.targetSlot, expr.name));
+      // TODO: We can delete this cast and check once compatibility mode is removed.
+      const slotHandle = (updateOp as any).target;
+      if (slotHandle == undefined) {
+        throw new Error(`AssertionError: expected slot handle to be assigned for pipe creation`);
       }
+      addPipeToCreationBlock(unit, (updateOp as any).target, expr);
     });
   }
 }

@@ -13,6 +13,7 @@ import {
   Component,
   Input,
   NgModule,
+  provideZoneChangeDetection,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -67,6 +68,7 @@ export class DeclarationComponent {
 @NgModule({
   declarations: [DeclarationComponent, InsertionComponent],
   bootstrap: [DeclarationComponent],
+  providers: [provideZoneChangeDetection()],
   imports: [BrowserModule],
 })
 export class TransplantedViewsModule {}

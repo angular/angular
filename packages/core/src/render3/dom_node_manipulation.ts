@@ -81,9 +81,16 @@ export function nativeAppendOrInsertBefore(
  * @param renderer A renderer to be used
  * @param rNode The native node that should be removed
  * @param isHostElement A flag indicating if a node to be removed is a host of a component.
+ * @param requireSynchronousElementRemoval A flag indicating if a node requires synchronous
+ * removal from the DOM.
  */
-export function nativeRemoveNode(renderer: Renderer, rNode: RNode, isHostElement?: boolean): void {
-  renderer.removeChild(null, rNode, isHostElement);
+export function nativeRemoveNode(
+  renderer: Renderer,
+  rNode: RNode,
+  isHostElement?: boolean,
+  requireSynchronousElementRemoval?: boolean,
+): void {
+  renderer.removeChild(null, rNode, isHostElement, requireSynchronousElementRemoval);
 }
 
 /**

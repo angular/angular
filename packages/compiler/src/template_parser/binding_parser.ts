@@ -28,11 +28,9 @@ import {
   SafeKeyedRead,
   SafePropertyRead,
   TemplateBinding,
-  ThisReceiver,
   VariableBinding,
 } from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {InterpolationConfig} from '../ml_parser/defaults';
 import {mergeNsAndName} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
@@ -62,14 +60,9 @@ export interface HostListeners {
 export class BindingParser {
   constructor(
     private _exprParser: Parser,
-    private _interpolationConfig: InterpolationConfig,
     private _schemaRegistry: ElementSchemaRegistry,
     public errors: ParseError[],
   ) {}
-
-  get interpolationConfig(): InterpolationConfig {
-    return this._interpolationConfig;
-  }
 
   createBoundHostProperties(
     properties: HostProperties,
@@ -154,7 +147,6 @@ export class BindingParser {
         sourceSpan,
         absoluteOffset,
         interpolatedTokens,
-        this._interpolationConfig,
       )!;
       if (ast) {
         this.errors.push(...ast.errors);
@@ -403,7 +395,7 @@ export class BindingParser {
         targetMatchableAttrs,
         targetProps,
       );
-    } else if (name.startsWith(ANIMATE_PREFIX)) {
+    } else if (name.startsWith(`${ANIMATE_PREFIX}${PROPERTY_PARTS_SEPARATOR}`)) {
       this._parseAnimation(
         name,
         this.parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
@@ -536,18 +528,8 @@ export class BindingParser {
   ): ASTWithSource {
     try {
       const ast = isHostBinding
-        ? this._exprParser.parseSimpleBinding(
-            value,
-            sourceSpan,
-            absoluteOffset,
-            this._interpolationConfig,
-          )
-        : this._exprParser.parseBinding(
-            value,
-            sourceSpan,
-            absoluteOffset,
-            this._interpolationConfig,
-          );
+        ? this._exprParser.parseSimpleBinding(value, sourceSpan, absoluteOffset)
+        : this._exprParser.parseBinding(value, sourceSpan, absoluteOffset);
       if (ast) {
         this.errors.push(...ast.errors);
       }
@@ -780,7 +762,7 @@ export class BindingParser {
     if (isAssignmentEvent) {
       eventType = ParsedEventType.TwoWay;
     }
-    if (name.startsWith(ANIMATE_PREFIX)) {
+    if (name.startsWith(`${ANIMATE_PREFIX}${PROPERTY_PARTS_SEPARATOR}`)) {
       eventType = ParsedEventType.Animation;
     }
 
@@ -795,12 +777,7 @@ export class BindingParser {
     const absoluteOffset = sourceSpan && sourceSpan.start ? sourceSpan.start.offset : 0;
 
     try {
-      const ast = this._exprParser.parseAction(
-        value,
-        sourceSpan,
-        absoluteOffset,
-        this._interpolationConfig,
-      );
+      const ast = this._exprParser.parseAction(value, sourceSpan, absoluteOffset);
       if (ast) {
         this.errors.push(...ast.errors);
       }
@@ -859,8 +836,7 @@ export class BindingParser {
       ast.args.length === 1 &&
       ast.receiver instanceof PropertyRead &&
       ast.receiver.name === '$any' &&
-      ast.receiver.receiver instanceof ImplicitReceiver &&
-      !(ast.receiver.receiver instanceof ThisReceiver)
+      ast.receiver.receiver instanceof ImplicitReceiver
     ) {
       return this._isAllowedAssignmentEvent(ast.args[0]);
     }

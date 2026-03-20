@@ -1,0 +1,85 @@
+@let availableActions = this.availableActions();
+
+@if (availableActionsCount() === 1) {
+  @if (availableActions.showSignalGraph) {
+    @let graphBtnTooltip = `Show '${node().prop.name}' signal graph`;
+
+    <button
+      class="prop-action-btn show-signal"
+      type="button"
+      [matTooltip]="graphBtnTooltip"
+      [aria-label]="graphBtnTooltip"
+      (click)="showInSignalGraph($event)"
+    >
+      <mat-icon>graph_2</mat-icon>
+    </button>
+  }
+
+  @if (availableActions.logToConsole) {
+    @let tooltip = "Log '" + node().prop.name + "' to console";
+
+    <button
+      class="prop-action-btn log-value"
+      type="button"
+      [matTooltip]="tooltip"
+      [aria-label]="tooltip"
+      (click)="logValue($event)"
+    >
+      <mat-icon>terminal</mat-icon>
+    </button>
+  }
+} @else if (availableActionsCount() > 1) {
+  <button
+    ngMenuTrigger
+    #ctxMenuElement
+    #ctxMenuTrigger="ngMenuTrigger"
+    [menu]="ctxMenu()"
+    class="prop-action-btn open-menu"
+    type="button"
+    aria-label="Show property actions"
+    (click)="$event.stopPropagation()"
+  >
+    <mat-icon>more_vert</mat-icon>
+  </button>
+
+  <ng-template
+    #ctxMenuOverlay="cdkConnectedOverlay"
+    cdkAttachPopoverAsChild
+    [cdkConnectedOverlayOpen]="ctxMenuTrigger.expanded()"
+    [cdkConnectedOverlayPositions]="CTX_MENU_POSITIONS"
+    [cdkConnectedOverlay]="{
+      origin: ctxMenuElement,
+      usePopover: 'inline',
+      push: false,
+      flexibleDimensions: false,
+    }"
+  >
+    <div
+      ngMenu
+      #ctxMenu="ngMenu"
+      class="ctx-menu"
+      [style.min-height.px]="CTX_MENU_ITEM_HEIGHT * availableActionsCount()"
+    >
+      <ng-template ngMenuContent>
+        @if (availableActions.showSignalGraph) {
+          <button
+            ngMenuItem
+            value="graph"
+            class="ng-ctx-menu-item"
+            (click)="showInSignalGraph($event)"
+          >
+            <mat-icon>graph_2</mat-icon>
+            <span>Show in signal graph</span>
+          </button>
+        }
+
+        @if (availableActions.logToConsole) {
+          <button ngMenuItem value="log" class="ng-ctx-menu-item" (click)="logValue($event)">
+            <mat-icon>terminal</mat-icon>
+            <span>Log to console</span>
+          </button>
+        }
+      </ng-template>
+    </div>
+  </ng-template>
+}

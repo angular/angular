@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   Component,
   createComponent,
@@ -36,7 +37,6 @@ import {
 } from '../../src/core';
 import {stringifyForError} from '../../src/render3/util/stringify_utils';
 import {TestBed} from '../../testing';
-import {ChangeDetectionStrategy} from '@angular/compiler';
 
 describe('createComponent', () => {
   it('should create an instance of a standalone component', () => {
@@ -94,8 +94,7 @@ describe('createComponent', () => {
   it('should render projected content', () => {
     @Component({
       template: `
-        <ng-content></ng-content>|
-        <ng-content></ng-content>|
+        <ng-content></ng-content>| <ng-content></ng-content>|
         <ng-content></ng-content>
       `,
     })
@@ -598,7 +597,7 @@ describe('createComponent', () => {
     });
 
     it('should throw if a component class is attached', () => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class NotADir {}
 
       @Component({template: ''})
@@ -1115,7 +1114,6 @@ describe('createComponent', () => {
 
     it('should update view of component set with the onPush strategy after input change', () => {
       @Component({
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: 'Value: {{ value }}',
       })
@@ -1139,6 +1137,34 @@ describe('createComponent', () => {
       valueSignal.set(20);
       componentRef.changeDetectorRef.detectChanges();
       expect(hostElement.textContent).toBe('Value: 20');
+    });
+
+    it(`should support input bindings named 'formField'`, () => {
+      // Angular has specialized support for binding to form controls (e.g. `[formField]="field"`).
+      // This test ensures that dynamic input bindings can still target arbitrary inputs with the
+      // same name.
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() formField = '';
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const valueSignal = signal('hello');
+
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('formField', valueSignal)],
+      });
+
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.formField).toBe('hello');
+
+      valueSignal.set('goodbye');
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.formField).toBe('goodbye');
     });
   });
 

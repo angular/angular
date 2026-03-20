@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ImportedSymbolsTracker} from '@angular/compiler-cli/src/ngtsc/imports';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/ngtsc/transform/jit';
+import {
+  ImportedSymbolsTracker,
+  TypeScriptReflectionHost,
+  getInitializerApiJitTransform,
+} from '@angular/compiler-cli/private/testing';
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
@@ -25,7 +27,7 @@ async function main() {
     skipLibCheck: true,
     module: ts.ModuleKind.ESNext,
     target: ts.ScriptTarget.ESNext,
-    moduleResolution: ts.ModuleResolutionKind.Node10,
+    moduleResolution: ts.ModuleResolutionKind.NodeNext,
   });
 
   const host = new TypeScriptReflectionHost(program.getTypeChecker());

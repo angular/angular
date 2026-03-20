@@ -19,6 +19,7 @@ import {
   isInitializerApiFunctionEntry,
   isInterfaceEntry,
   isTypeAliasEntry,
+  isBlockEntry,
 } from './entities/categorization.mjs';
 import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables.mjs';
 import {getClassRenderable} from './transforms/class-transforms.mjs';
@@ -39,6 +40,7 @@ import {
 import {addModuleName} from './transforms/module-name.mjs';
 import {addRepo} from './transforms/repo.mjs';
 import {getTypeAliasRenderable} from './transforms/type-alias-transforms.mjs';
+import {getBlockRenderable} from './transforms/block-transforms.mjs';
 
 export async function getRenderable(
   entry: DocEntry | CliCommand,
@@ -72,6 +74,9 @@ export async function getRenderable(
   }
   if (isInitializerApiFunctionEntry(entry)) {
     return getInitializerApiFunctionRenderable(entry, moduleName, repo);
+  }
+  if (isBlockEntry(entry)) {
+    return getBlockRenderable(entry, moduleName, repo);
   }
 
   // Fallback to an uncategorized renderable.

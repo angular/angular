@@ -50,7 +50,6 @@ export * from './i18n/index';
 export * from './injectable_compiler_2';
 export {publishFacade} from './jit_compiler_facade';
 export * from './ml_parser/ast';
-export {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
 export * from './ml_parser/html_parser';
 export * from './ml_parser/html_tags';
 export {LexerRange} from './ml_parser/lexer';
@@ -58,7 +57,7 @@ export {ParseTreeResult, TreeError} from './ml_parser/parser';
 export * from './ml_parser/tags';
 export {TokenType as LexerTokenType} from './ml_parser/tokens';
 export * from './ml_parser/xml_parser';
-export {EmitterVisitorContext} from './output/abstract_emitter';
+export {EmitterVisitorContext, AbstractEmitterVisitor} from './output/abstract_emitter';
 export {
   ArrayType,
   ArrowFunctionExpr,
@@ -99,6 +98,7 @@ export {
   ReadKeyExpr,
   ReadPropExpr,
   ReadVarExpr,
+  RegularExpressionLiteralExpr,
   ReturnStatement,
   Statement,
   StatementVisitor,
@@ -116,6 +116,9 @@ export {
   UnaryOperatorExpr,
   VoidExpr,
   WrappedNodeExpr,
+  LiteralMapPropertyAssignment,
+  LiteralMapSpreadAssignment,
+  SpreadElementExpr,
 } from './output/output_ast';
 export {JitEvaluator} from './output/output_jit';
 export {SourceMap} from './output/source_map';
@@ -165,6 +168,8 @@ export {
   Reference as TmplAstReference,
   SwitchBlock as TmplAstSwitchBlock,
   SwitchBlockCase as TmplAstSwitchBlockCase,
+  SwitchBlockCaseGroup as TmplAstSwitchBlockCaseGroup,
+  SwitchExhaustiveCheck as TmplAstSwitchExhaustiveCheck,
   Template as TmplAstTemplate,
   Text as TmplAstText,
   TextAttribute as TmplAstTextAttribute,

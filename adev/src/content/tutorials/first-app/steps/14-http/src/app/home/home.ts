@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectorRef, Component, inject} from '@angular/core';
 import {HousingLocation} from '../housing-location/housing-location';
 import {HousingLocationInfo} from '../housinglocation';
 import {HousingService} from '../housing.service';
@@ -14,14 +14,15 @@ import {HousingService} from '../housing.service';
       </form>
     </section>
     <section class="results">
-      @for(housingLocation of filteredLocationList; track $index) {
-        <app-housing-location [housingLocation]="housingLocation"></app-housing-location>
+      @for (housingLocation of filteredLocationList; track $index) {
+        <app-housing-location [housingLocation]="housingLocation" />
       }
     </section>
   `,
   styleUrls: ['./home.css'],
 })
 export class Home {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   housingLocationList: HousingLocationInfo[] = [];
   housingService: HousingService = inject(HousingService);
   filteredLocationList: HousingLocationInfo[] = [];

@@ -51,6 +51,7 @@ const QUERY_1_2 = [
 
 const dir1 = {
   one: 1,
+  pi: 3.14159,
   nested: {
     arr: [
       {
@@ -95,6 +96,14 @@ describe('deeplySerializeSelectedProperties', () => {
         value: 1,
         containerType: null,
       },
+      pi: {
+        type: PropType.Number,
+        expandable: false,
+        editable: true,
+        preview: '3.14159',
+        value: 3.14159,
+        containerType: null,
+      },
       nested: {
         type: PropType.Object,
         editable: false,
@@ -123,6 +132,14 @@ describe('deeplySerializeSelectedProperties', () => {
         editable: true,
         preview: '1',
         value: 1,
+        containerType: null,
+      },
+      pi: {
+        type: PropType.Number,
+        expandable: false,
+        editable: true,
+        preview: '3.14159',
+        value: 3.14159,
         containerType: null,
       },
       nested: {

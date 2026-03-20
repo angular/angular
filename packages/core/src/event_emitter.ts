@@ -13,7 +13,7 @@ import {OutputRef} from './authoring/output/output_ref';
 import {isInInjectionContext} from './di/contextual';
 import {inject} from './di/injector_compatibility';
 import {DestroyRef} from './linker/destroy_ref';
-import {PendingTasksInternal} from './pending_tasks';
+import {PendingTasksInternal} from './pending_tasks_internal';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -62,6 +62,8 @@ import {PendingTasksInternal} from './pending_tasks';
  * ```html
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
+ *
+ * @see [Declaring outputs with the @Output decorator](guide/components/outputs#declaring-outputs-with-the-output-decorator)
  *
  * @publicApi
  */

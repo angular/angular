@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "copy_to_bin", "ts_project")
+load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
 
 package(
     default_visibility = [
@@ -20,10 +20,8 @@ ts_project(
         "//:node_modules/typescript",
         "//packages/compiler-cli",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
-        "//packages/core/schematics/utils/tsurge/helpers/ast",
     ],
 )

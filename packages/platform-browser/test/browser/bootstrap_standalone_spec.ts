@@ -18,10 +18,11 @@ import {
   PlatformRef,
   ɵR3Injector as R3Injector,
   ɵNoopNgZone as NoopNgZone,
+  APP_ID,
+  signal,
 } from '@angular/core';
-import {withBody} from '@angular/private/testing';
-
-import {bootstrapApplication, BrowserModule} from '../../src/browser';
+import {isNode, withBody} from '@angular/private/testing';
+import {bootstrapApplication, BrowserModule, createApplication} from '../../src/browser';
 
 describe('bootstrapApplication for standalone components', () => {
   beforeEach(destroyPlatform);
@@ -46,8 +47,7 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        standalone: true,
-        template: `({{testToken}})`,
+        template: `({{ testToken }})`,
         imports: [AmbientModule],
       })
       class StandaloneCmp {
@@ -70,7 +70,6 @@ describe('bootstrapApplication for standalone components', () => {
     withBody('<test-app></test-app>', async () => {
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: ``,
       })
       class StandaloneCmp {}
@@ -113,8 +112,7 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        template: `({{service.ambientToken}})`,
-        standalone: true,
+        template: `({{ service.ambientToken }})`,
         imports: [AmbientModule],
       })
       class StandaloneCmp {
@@ -132,11 +130,8 @@ describe('bootstrapApplication for standalone components', () => {
         fail('Expected to throw');
       } catch (e: unknown) {
         expect(e).toBeInstanceOf(Error);
-        expect((e as Error).message).toContain(
-          'NG0201: No provider found for `InjectionToken ambient token`. ' +
-            'Source: Standalone[StandaloneCmp]. ' +
-            'Path: NeedsAmbientProvider -> InjectionToken ambient token. ' +
-            'Find more at https://angular.dev/errors/NG0201',
+        expect((e as Error).message).toMatch(
+          /NG0201: No provider found for `InjectionToken ambient token`\. Source: Standalone\[StandaloneCmp\]\. Path: NeedsAmbientProvider -> InjectionToken ambient token\. Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG0201/,
         );
       }
     }),
@@ -148,7 +143,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: '...',
-        standalone: true,
         imports: [BrowserModule],
       })
       class StandaloneCmp {}
@@ -182,7 +176,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: '...',
-        standalone: true,
         imports: [SomeDependencyModule],
       })
       class StandaloneCmp {}
@@ -221,7 +214,6 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: 'Hello',
       })
       class ComponentWithOnDestroy {
@@ -248,6 +240,82 @@ describe('bootstrapApplication for standalone components', () => {
 
       // Make sure the DOM has been cleaned up as well.
       expect(document.body.textContent).toBe('');
+    }),
+  );
+
+  it('should throw and error if the APP_ID is not valid', async () => {
+    withBody('<test-app></test-app>', async () => {
+      @Component({
+        selector: 'test-app',
+        template: ``,
+        imports: [],
+      })
+      class StandaloneCmp {}
+
+      try {
+        await bootstrapApplication(StandaloneCmp, {
+          providers: [{provide: APP_ID, useValue: 'foo:bar'}],
+        });
+
+        // we expect the bootstrap process to fail because of the invalid APP_ID value
+        fail('Expected to throw');
+      } catch (e: unknown) {
+        expect(e).toBeInstanceOf(Error);
+        expect((e as Error).message).toContain(
+          'APP_ID value "foo:bar" is not alphanumeric. The APP_ID must be a string of alphanumeric characters.',
+        );
+      }
+    });
+  });
+});
+
+describe('createApplication', () => {
+  beforeEach(destroyPlatform);
+  afterEach(destroyPlatform);
+
+  it(
+    'creates an `ApplicationRef` which can bootstrap a component',
+    withBody('<test-app></test-app>', async () => {
+      @Component({
+        selector: 'test-app',
+        template: `Hello, {{ name() }}!`,
+      })
+      class TestComp {
+        protected readonly name = signal('Dev');
+      }
+
+      const appRef = await createApplication();
+      appRef.bootstrap(TestComp);
+
+      expect(document.body.textContent.trim()).toBe('Hello, Dev!');
+    }),
+  );
+
+  it(
+    'creates an `ApplicationRef` which can bootstrap a JIT component with an external resource',
+    withBody('<test-app></test-app>', async () => {
+      // Resolving resources only makes sense in the browser.
+      if (isNode) {
+        expect().nothing();
+        return;
+      }
+
+      const templateUrl = URL.createObjectURL(new Blob(['Hello, {{ name() }}!']));
+
+      @Component({
+        selector: 'test-app',
+        templateUrl,
+      })
+      class TestComp {
+        protected readonly name = signal('Dev');
+      }
+
+      const appRef = await createApplication();
+      appRef.bootstrap(TestComp);
+
+      expect(document.body.textContent.trim()).toBe('Hello, Dev!');
+
+      URL.revokeObjectURL(templateUrl);
     }),
   );
 });

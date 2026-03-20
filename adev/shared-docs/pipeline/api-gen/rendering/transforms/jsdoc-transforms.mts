@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {marked} from 'marked';
 import {JsDocTagEntry} from '../entities.mjs';
 
 import {getDeprecatedEntry, getTagSinceVersion} from '../entities/categorization.mjs';
@@ -16,18 +15,25 @@ import {
   HasDeprecatedFlag,
   HasDescription,
   HasDeveloperPreviewFlag,
+  hasExperimentalFlag,
   HasHtmlDescription,
   HasHtmlUsageNotes,
   HasJsDocTags,
   HasModuleName,
   HasRenderableJsDocTags,
-  hasExperimentalFlag,
   HasStableFlag,
+  MaybeJsDocTags,
 } from '../entities/traits.mjs';
 
-import {getLinkToModule} from './url-transforms.mjs';
+import {parseMarkdown} from '../../../shared/marked/parse.mjs';
+import {getHighlighterInstance} from '../shiki/shiki.mjs';
+import {
+  getCurrentSymbol,
+  getSymbolsAsApiEntries,
+  getSymbolUrl,
+  unknownSymbolMessage,
+} from '../symbol-context.mjs';
 import {addApiLinksToHtml} from './code-transforms.mjs';
-import {getCurrentSymbol, getModuleName, unknownSymbolMessage} from '../symbol-context.mjs';
 
 const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
 export const JS_DOC_SEE_TAG = 'see';
@@ -38,7 +44,7 @@ const jsDoclinkRegex = /\{\s*@link\s+([^}]+)\s*\}/;
 const jsDoclinkRegexGlobal = new RegExp(jsDoclinkRegex.source, 'g');
 
 /** Given an entity with a description, gets the entity augmented with an `htmlDescription`. */
-export function addHtmlDescription<T extends HasDescription & HasModuleName>(
+export function addHtmlDescription<T extends HasDescription & HasModuleName & MaybeJsDocTags>(
   entry: T,
 ): T & HasHtmlDescription {
   const firstParagraphRule = /(.*?)(?:\n\n|$)/s;
@@ -51,10 +57,17 @@ export function addHtmlDescription<T extends HasDescription & HasModuleName>(
         ?.comment ?? '';
   }
 
-  const description = !!entry.description ? entry.description : jsDocDescription;
-  const shortTextMatch = description.match(firstParagraphRule);
+  let description = entry.description || jsDocDescription;
+  let shortDescription = description.match(firstParagraphRule)?.[0] ?? '';
+
+  // For the cases where the @description tag is after a short description
+  if (jsDocDescription && description !== jsDocDescription) {
+    shortDescription = entry.description;
+    description = jsDocDescription;
+  }
+
   const htmlDescription = getHtmlForJsDocText(description).trim();
-  const shortHtmlDescription = getHtmlForJsDocText(shortTextMatch ? shortTextMatch[0] : '').trim();
+  const shortHtmlDescription = getHtmlForJsDocText(shortDescription).trim();
 
   return {...entry, htmlDescription, shortHtmlDescription};
 }
@@ -100,7 +113,12 @@ export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtml
 
 /** Given a markdown JsDoc text, gets the rendered HTML. */
 function getHtmlForJsDocText(text: string): string {
-  const parsed = marked.parse(convertLinks(wrapExampleHtmlElementsWithCode(text))) as string;
+  const mdToParse = convertLinks(wrapExampleHtmlElementsWithCode(text));
+  const parsed = parseMarkdown(mdToParse, {
+    apiEntries: getSymbolsAsApiEntries(),
+    highlighter: getHighlighterInstance(),
+    definedRoutes: [],
+  });
   return addApiLinksToHtml(parsed);
 }
 
@@ -110,7 +128,7 @@ export function setEntryFlags<T extends HasJsDocTags & HasModuleName>(
   const deprecationMessage = getDeprecatedEntry(entry);
   return {
     ...entry,
-    deprecated: getTagSinceVersion(entry, 'deprecated'),
+    deprecated: getTagSinceVersion(entry, 'deprecated', true),
     deprecationMessage: deprecationMessage
       ? getHtmlForJsDocText(deprecationMessage)
       : deprecationMessage,
@@ -127,11 +145,14 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
     .filter((tag) => tag.name === JS_DOC_SEE_TAG)
     .map((tag) => tag.comment)
     .map((comment) => {
+      // TODO: Throw when the comment is an absolute link.
+      // With TS 5.9 this is not possible as the ts api that extracts comments from tags strips the "http" part of links.
+
       const markdownLinkMatch = comment.match(markdownLinkRule);
 
       if (markdownLinkMatch) {
         return {
-          label: markdownLinkMatch[1],
+          label: convertBackticksToCodeTags(markdownLinkMatch[1]),
           url: markdownLinkMatch[2],
           title: markdownLinkMatch[3],
         };
@@ -141,7 +162,11 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
 
       if (linkMatch) {
         const link = linkMatch[1];
-        const {url, label} = parseAtLink(link);
+        const parsed = parseAtLink(link);
+        if (!parsed) {
+          return undefined;
+        }
+        const {url, label} = parsed;
         return {label, url};
       }
 
@@ -150,6 +175,15 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
     .filter((link): link is LinkEntryRenderable => !!link);
 
   return seeAlsoLinks;
+}
+
+/**
+ * Converts backticks to HTML code tags.
+ * This handles code blocks within link text, e.g., `ViewContainerRef.createComponent`
+ */
+function convertBackticksToCodeTags(text: string): string {
+  // Convert backticks to <code> tags
+  return text.replace(/`([^`]+)`/g, '<code>$1</code>');
 }
 
 /**
@@ -168,17 +202,17 @@ function wrapExampleHtmlElementsWithCode(text: string) {
  */
 function convertLinks(text: string) {
   return text.replace(jsDoclinkRegexGlobal, (_, link) => {
-    const {label, url} = parseAtLink(link);
+    const parsed = parseAtLink(link);
+    if (!parsed) {
+      return `<code>${link}</code>`; // leave the link as-is if we can't parse it
+    }
+    const {label, url} = parsed;
 
     return `<a href="${url}"><code>${label}</code></a>`;
   });
 }
 
-function parseAtLink(link: string): {label: string; url: string} {
-  // Because of microsoft/TypeScript/issues/59679
-  // getTextOfJSDocComment introduces an extra space between the symbol and a trailing ()
-  link = link.replace(/ \(\)$/, '');
-
+function parseAtLink(link: string): {label: string; url: string} | undefined {
   let [rawSymbol, description] = link.split(/\s(.+)/);
   if (rawSymbol.startsWith('#')) {
     rawSymbol = rawSymbol.substring(1);
@@ -195,24 +229,18 @@ function parseAtLink(link: string): {label: string; url: string} {
     };
   }
 
-  let [symbol, subSymbol] = rawSymbol.replace(/\(\)$/, '').split(/(?:#|\.)/);
-
-  let moduleName = getModuleName(symbol);
+  let url = getSymbolUrl(rawSymbol);
   const label = description ?? rawSymbol;
 
-  const currentSymbol = getCurrentSymbol();
+  if (!url) {
+    const currentSymbol = getCurrentSymbol();
+    // 2nd attempt, try to get the module name in the context of the current symbol
+    url = getSymbolUrl(`${currentSymbol}.${rawSymbol}`);
 
-  if (!moduleName) {
-    // 2nd attemp, try to get the module name in the context of the current symbol
-    moduleName = getModuleName(`${currentSymbol}.${symbol}`);
-
-    if (!moduleName || !currentSymbol) {
-      throw unknownSymbolMessage(link, symbol);
+    if (!url || !currentSymbol) {
+      throw unknownSymbolMessage(link, rawSymbol);
     }
-
-    subSymbol = symbol;
-    symbol = currentSymbol;
   }
 
-  return {label, url: getLinkToModule(moduleName, symbol, subSymbol)};
+  return {label, url};
 }

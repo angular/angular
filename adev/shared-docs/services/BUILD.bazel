@@ -32,7 +32,6 @@ ng_project(
         "//adev:node_modules/rxjs",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
-        "//adev/shared-docs/utils",
     ],
 )
 

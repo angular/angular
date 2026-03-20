@@ -1,7 +1,8 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@devinfra//bazel/validation:defs.bzl", "validate_ts_version_matching")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("//:yarn.bzl", "YARN_PATH")
-load("//tools:defaults2.bzl", "copy_to_bin", "js_binary")
+load("//tools:defaults.bzl", "copy_to_bin")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,9 +10,7 @@ exports_files([
     "LICENSE",
     "karma-js.conf.js",
     "browser-providers.conf.js",
-    YARN_PATH,
     "package.json",
-    "angular.json",
 ])
 
 npm_link_all_packages(
@@ -23,6 +22,11 @@ filegroup(
     # in a js_library target, which doesn't allow source file deps
     name = "package_json",
     srcs = ["package.json"],
+)
+
+validate_ts_version_matching(
+    module_lock_file = "MODULE.bazel.lock",
+    package_json = "package.json",
 )
 
 alias(
@@ -60,16 +64,6 @@ config_setting(
     values = {"stamp": "true"},
 )
 
-js_binary(
-    name = "yarn_vendored",
-    data = [".yarn/releases/yarn-1.22.22.cjs"],
-    entry_point = ".yarn/releases/yarn-1.22.22.cjs",
-    visibility = [
-        "//integration:__subpackages__",
-        "//modules/ssr-benchmarks:__subpackages__",
-    ],
-)
-
 alias(
     name = "sauce_connect",
     actual = select({
@@ -77,4 +71,19 @@ alias(
         "@devinfra//bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
         "@devinfra//bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
     }),
+)
+
+# When enabled, this flag substitutes dependency versions with snapshot repositories
+# for all packages in this repository. Note that this does not apply to peer
+# dependencies, as they must be installed directly.
+bool_flag(
+    name = "enable_language_server_snapshot_repo_deps",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "language_server_package_json_use_snapshot_repo_deps",
+    flag_values = {
+        ":enable_language_server_snapshot_repo_deps": "true",
+    },
 )

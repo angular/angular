@@ -6,16 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
 describe('get outlining spans', () => {
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
-
   it('should get block outlining spans for an inline template', () => {
     const files = {
       'app.ts': `

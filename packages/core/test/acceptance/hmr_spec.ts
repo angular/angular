@@ -20,6 +20,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  provideZoneChangeDetection,
   QueryList,
   SimpleChanges,
   Type,
@@ -38,9 +39,19 @@ import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {ComponentType} from '../../src/render3';
+import {getComponentLView} from '../../src/render3/util/discovery_utils';
+import {DEHYDRATED_VIEWS} from '../../src/render3/interfaces/container';
+import {HEADER_OFFSET, TVIEW} from '../../src/render3/interfaces/view';
+import {isLContainer} from '../../src/render3/interfaces/type_checks';
+import {NUM_ROOT_NODES} from '../../src/hydration/interfaces';
 import {isNode} from '@angular/private/testing';
 
 describe('hot module replacement', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should recreate a single usage of a basic component', () => {
     let instance!: ChildCmp;
     const initialMetadata: Component = {
@@ -122,12 +133,12 @@ describe('hot module replacement', () => {
       imports: [ChildCmp],
       template: `
         <i>Unrelated node #1</i>
-        <child-cmp text="A"/>
+        <child-cmp text="A" />
         <u>Unrelated node #2</u>
-        <child-cmp text="B"/>
+        <child-cmp text="B" />
         <b>Unrelated node #3</b>
         <main>
-          <child-cmp text="C"/>
+          <child-cmp text="C" />
         </main>
       `,
     })
@@ -215,7 +226,7 @@ describe('hot module replacement', () => {
 
     @Component({
       imports: [ChildCmp, ChildSubCmp],
-      template: `<child-cmp/>|<child-sub-cmp/>`,
+      template: `<child-cmp />|<child-sub-cmp />`,
     })
     class RootCmp {}
 
@@ -317,7 +328,7 @@ describe('hot module replacement', () => {
 
     @Component({
       imports: [ChildCmp],
-      template: `<child-cmp staticValue="1" [dynamicValue]="dynamicValue"/>`,
+      template: `<child-cmp staticValue="1" [dynamicValue]="dynamicValue" />`,
     })
     class RootCmp {
       dynamicValue = '1';
@@ -400,8 +411,8 @@ describe('hot module replacement', () => {
       imports: [ChildCmp],
       template: `
         @for (current of items; track current.id) {
-          <child-cmp [value]="current.name"/>
-          <hr>
+          <child-cmp [value]="current.name" />
+          <hr />
         }
       `,
     })
@@ -579,7 +590,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ParentCmp],
-        template: `<parent-cmp/>`,
+        template: `<parent-cmp />`,
       })
       class RootCmp {}
 
@@ -628,7 +639,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ParentCmp],
-        template: `<parent-cmp/>`,
+        template: `<parent-cmp />`,
       })
       class RootCmp {}
 
@@ -688,7 +699,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ParentCmp],
-        template: `<parent-cmp/>`,
+        template: `<parent-cmp />`,
       })
       class RootCmp {}
 
@@ -736,7 +747,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ParentCmp],
-        template: `<parent-cmp/>`,
+        template: `<parent-cmp />`,
       })
       class RootCmp {}
 
@@ -1003,8 +1014,8 @@ describe('hot module replacement', () => {
         // Note that we test two of the same component one after the other
         // specifically because during testing it was a problematic pattern.
         template: `
-          <parent-cmp text="A"/>
-          <parent-cmp text="B"/>
+          <parent-cmp text="A" />
+          <parent-cmp text="B" />
         `,
         imports: [ParentCmp],
       })
@@ -1090,7 +1101,7 @@ describe('hot module replacement', () => {
       }
 
       @Component({
-        template: `<parent-cmp/>`,
+        template: `<parent-cmp />`,
         imports: [ParentCmp],
       })
       class RootCmp {}
@@ -1167,7 +1178,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ChildCmp],
-        template: `<child-cmp [value]="value"/>`,
+        template: `<child-cmp [value]="value" />`,
       })
       class RootCmp {
         value = 1;
@@ -1236,7 +1247,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ChildCmp],
-        template: `<child-cmp (changed)="onChange()"/>`,
+        template: `<child-cmp (changed)="onChange()" />`,
       })
       class RootCmp {
         onChange() {
@@ -1286,7 +1297,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ChildCmp],
-        template: `<child-cmp (changed)="onChange()"/>`,
+        template: `<child-cmp (changed)="onChange()" />`,
       })
       class RootCmp {
         onChange() {
@@ -1404,7 +1415,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ChildCmp, DirA, DirB],
-        template: `<child-cmp dir-a dir-b/>`,
+        template: `<child-cmp dir-a dir-b />`,
       })
       class RootCmp {}
 
@@ -1661,7 +1672,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ChildCmp],
-        template: `<child-cmp [state]="state" [attr.foo]="'The state is ' + state"/>`,
+        template: `<child-cmp [state]="state" [attr.foo]="'The state is ' + state" />`,
       })
       class RootCmp {
         state = 0;
@@ -1713,7 +1724,7 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ChildCmp],
-        template: `<child-cmp class="static" [state]="state" [class.foo]="state"/>`,
+        template: `<child-cmp class="static" [state]="state" [class.foo]="state" />`,
       })
       class RootCmp {
         state = false;
@@ -1752,7 +1763,11 @@ describe('hot module replacement', () => {
 
       @Component({
         imports: [ChildCmp],
-        template: `<child-cmp style="opacity: 0.5;" [state]="state" [style.width]="state ? '3px' : '12px'"/>`,
+        template: `<child-cmp
+          style="opacity: 0.5;"
+          [state]="state"
+          [style.width]="state ? '3px' : '12px'"
+        />`,
       })
       class RootCmp {
         state = false;
@@ -2063,6 +2078,65 @@ describe('hot module replacement', () => {
         '<child-cmp>The text translates to <strong>двадесет</strong>!</child-cmp>',
       );
     });
+  });
+
+  it('should clean up dehydrated views from LContainers during HMR', () => {
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: '@if (true) { <div>Initial</div> }',
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    const childEl = fixture.nativeElement.querySelector('child-cmp')!;
+    expectHTML(fixture.nativeElement, '<child-cmp><div>Initial</div></child-cmp>');
+
+    // Simulate SSR dehydrated views by injecting fake dehydrated DOM nodes
+    // into the LContainer's DEHYDRATED_VIEWS slot. During SSR hydration,
+    // Angular stores references to server-rendered DOM in this slot.
+    const childLView = getComponentLView(childEl);
+    const tView = childLView[TVIEW];
+
+    // Create fake dehydrated DOM content that simulates SSR remnants.
+    // Insert before existing content so the node has a nextSibling,
+    // which removeDehydratedView validates in dev mode.
+    const dehydratedNode = document.createElement('div');
+    dehydratedNode.textContent = 'SSR ghost';
+    childEl.insertBefore(dehydratedNode, childEl.firstChild);
+
+    // Find the LContainer created by the @if and inject dehydrated views.
+    for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+      if (isLContainer(childLView[i])) {
+        childLView[i][DEHYDRATED_VIEWS] = [
+          {firstChild: dehydratedNode, data: {[NUM_ROOT_NODES]: 1}},
+        ];
+        break;
+      }
+    }
+
+    // Verify the dehydrated node is present in the DOM.
+    expect(childEl.innerHTML).toContain('SSR ghost');
+
+    // Trigger HMR replacement.
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      template: '@if (true) { <div>Replaced</div> }',
+    });
+    fixture.detectChanges();
+
+    // After HMR, dehydrated DOM nodes should have been cleaned up — no duplication.
+    expect(childEl.innerHTML).not.toContain('SSR ghost');
+    expectHTML(fixture.nativeElement, '<child-cmp><div>Replaced</div></child-cmp>');
   });
 
   // Testing utilities

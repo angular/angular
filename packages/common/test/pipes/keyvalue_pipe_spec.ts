@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {KeyValuePipe} from '../../index';
 import {JsonPipe} from '../../public_api';
 import {defaultComparator} from '../../src/pipes/keyvalue_pipe';
-import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
 
 describe('KeyValuePipe', () => {
   it('should return null when given null', () => {
@@ -98,6 +98,59 @@ describe('KeyValuePipe', () => {
       let value!: {[key: number]: string} | null;
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform(value)).toEqual(null);
+    });
+
+    it('should accept an object with optional keys', () => {
+      interface MyInterface {
+        one: string;
+        two: number;
+        three: string;
+        four: string;
+      }
+      const myData: Partial<MyInterface> = {
+        one: 'One',
+        two: 2,
+        three: undefined,
+      };
+
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(myData)?.length).toEqual(3);
+
+      const differ = (a: string | number | undefined, b: string | number | undefined): number => {
+        return 1;
+      };
+      expect(pipe.transform(myData, differ)?.length).toEqual(3);
+    });
+
+    it('should accept an nullable object with optional keys (null)', () => {
+      interface MyInterface {
+        one?: string;
+        two?: string;
+        three?: string;
+      }
+
+      let value!: MyInterface | null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
+
+    it('should accept an nullable object with optional keys (non-null)', () => {
+      interface MyInterface {
+        one?: string;
+        two?: string;
+        three?: string;
+      }
+
+      const value: MyInterface | null = {};
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)?.length).toEqual(0);
+
+      // we use the random condition to make sure the typing includes null (else TS's inference is too smart and strips null)
+      const value2: MyInterface | null = Math.random() <= 1 ? {one: '1', three: '3'} : null;
+      const kv = pipe.transform(value2);
+      expect(kv?.length).toEqual(2);
+      expect(kv).toContain({key: 'one', value: '1'});
+      expect(kv).toContain({key: 'three', value: '3'});
     });
   });
 

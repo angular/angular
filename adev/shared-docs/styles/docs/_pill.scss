@@ -1,9 +1,12 @@
 // Pill
+@use './../links' as links;
 
 @mixin docs-pill() {
   .docs-pill {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     // Default blue
     --pill-accent: var(--bright-blue);
     background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
@@ -25,8 +28,11 @@
       background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
     }
 
-    .docs-icon-small {
-      margin-inline-start: 0.25rem;
+    // External link icon
+    &[href^='http:'],
+    &[href^='https:'] {
+      margin-left: 0rem;
+      @include links.external-link-with-icon();
     }
 
     .docs-dark-mode & {
