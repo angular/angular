@@ -35,8 +35,7 @@
     {
       "name": "coverage",
       "type": "boolean",
-      "default": false,
-      "description": "Enables coverage reporting for tests."
+      "description": "Enables coverage reporting for tests. If not specified, the coverage configuration from a runner configuration file will be used if present. Otherwise, coverage is disabled by default."
     },
     {
       "name": "coverage-exclude",
