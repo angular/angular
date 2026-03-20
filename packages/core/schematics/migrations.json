@@ -14,6 +14,11 @@
       "version": "22.0.0",
       "description": "Adds 'strictTemplates: true' in tsconfig.json.",
       "factory": "./bundles/strict-templates.cjs#migrate"
+    },
+    "can-match-snapshot-required": {
+      "version": "22.0.0",
+      "description": "Adds the required third argument to canMatch callsites.",
+      "factory": "./bundles/can-match-snapshot-required.cjs#migrate"
     }
   }
 }

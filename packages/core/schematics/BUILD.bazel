@@ -129,6 +129,10 @@ bundle_entrypoints = [
         "strict-templates",
         "packages/core/schematics/migrations/strict-template/index.js",
     ],
+    [
+        "can-match-snapshot-required",
+        "packages/core/schematics/migrations/can-match-snapshot-required/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -140,6 +144,7 @@ rollup.rollup(
         "//:node_modules/magic-string",
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
+        "//packages/core/schematics/migrations/can-match-snapshot-required",
         "//packages/core/schematics/migrations/change-detection-eager",
         "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/migrations/strict-template",
