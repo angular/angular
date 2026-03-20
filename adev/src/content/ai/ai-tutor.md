@@ -12,18 +12,18 @@ You can access the AI tutor via the [Angular MCP server](ai/mcp).
 2. Create a new Angular project `ng new <project-name>`
 3. Navigate to your new project (`cd <project-name>`) in an AI-powered editor or tool, like the [Gemini CLI](https://geminicli.com/)
 4. Enter a prompt like `launch the Angular AI tutor`
-   ![A screenshot demonstrating how to launch the Angular AI Tutor in the Gemini CLI.](assets/images/launch-ai-tutor.png 'Launch the Angular AI Tutor')
+   ![A screenshot demonstrating how to launch the Angular AI Tutor in the Gemini CLI.](https://placehold.co/800x450?text=Launch+AI+Tutor)
 
 ## Using the AI Tutor
 
 Each module begins with a brief concept explanation.
-![A screenshot of the Angular AI Tutor presenting a brief concept explanation.](assets/images/ai-tutor-preview-1.png 'Angular AI Tutor explanation')
+![A screenshot of the Angular AI Tutor presenting a brief concept explanation.](https://placehold.co/800x450?text=Concept+Explanation)
 If applicable, the tutor will present a code example to demonstrate the concept.
-![A screenshot of the Angular AI Tutor showing a code example.](assets/images/ai-tutor-preview-2.png 'Angular AI Tutor code example')
+![A screenshot of the Angular AI Tutor showing a code example.](https://placehold.co/800x450?text=Code+Example)
 The tutor will also provide an open-ended exercise to test your understanding.
-![A screenshot of the Angular AI Tutor providing an exercise.](assets/images/ai-tutor-preview-3.png 'Angular AI Tutor exercise')
+![A screenshot of the Angular AI Tutor providing an exercise.](https://placehold.co/800x450?text=Exercise)
 Finally, the tutor will check your work before moving onto the next module.
-![A screenshot of the Angular AI Tutor checking the user's work.](assets/images/ai-tutor-preview-4.png 'Angular AI Tutor check')
+![A screenshot of the Angular AI Tutor checking the user's work.](https://placehold.co/800x450?text=Feedback)
 
 ## How It Works: The Learning Cycle
 
