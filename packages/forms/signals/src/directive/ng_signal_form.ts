@@ -40,7 +40,7 @@ import {FieldTree} from '../api/types';
 export class FormRoot<T> {
   readonly fieldTree = input.required<FieldTree<T>>({alias: 'formRoot'});
 
-  protected onSubmit(event: Event): void {
+  protected onSubmit(event: SubmitEvent): void {
     event.preventDefault();
     submit(this.fieldTree(), undefined, event);
   }
