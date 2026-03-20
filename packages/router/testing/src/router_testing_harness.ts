@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   Component,
   DebugElement,
   Injectable,
@@ -44,6 +45,7 @@ export class RootFixtureService {
 @Component({
   template: '<router-outlet [routerOutletData]="routerOutletData()"></router-outlet>',
   imports: [RouterOutlet],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class RootCmp {
   @ViewChild(RouterOutlet) outlet?: RouterOutlet;
