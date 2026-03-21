@@ -105,6 +105,25 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'none|href',
       'none|xlink:href',
 
+      // SVG elements that support href but were missing from the schema.
+      // See: https://issuetracker.google.com/issues/494429770
+      'image|href',
+      'image|xlink:href',
+      'use|href',
+      'use|xlink:href',
+      'feImage|href',
+      'feImage|xlink:href',
+      'textPath|href',
+      'textPath|xlink:href',
+      'pattern|href',
+      'pattern|xlink:href',
+      'linearGradient|href',
+      'linearGradient|xlink:href',
+      'radialGradient|href',
+      'radialGradient|xlink:href',
+      'mpath|href',
+      'mpath|xlink:href',
+
       // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
       'img|src',
       'video|src',
@@ -135,6 +154,20 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'set|attributeName',
       'animateMotion|attributeName',
       'animateTransform|attributeName',
+
+      // SVG animation value-carrying attributes that can inject javascript: URIs
+      // into security-sensitive target attributes (e.g., href) via browser animation engine.
+      // See: https://issuetracker.google.com/issues/494429770
+      'animate|values',
+      'animate|from',
+      'animate|to',
+      'set|to',
+      'animateMotion|values',
+      'animateMotion|from',
+      'animateMotion|to',
+      'animateTransform|values',
+      'animateTransform|from',
+      'animateTransform|to',
 
       'unknown|attributeName',
 
