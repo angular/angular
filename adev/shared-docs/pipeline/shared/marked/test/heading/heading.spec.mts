@@ -135,4 +135,29 @@ describe('markdown to html', () => {
     // We ensure that we still style the heading content
     expect(markdownDocument.querySelector('strong')).toBeDefined();
   });
+
+  it('should strip all HTML tags from the aria-label attribute', () => {
+    const markdownDocument = JSDOM.fragment(
+      parseMarkdown(
+        '## **Phase 5: Experimental Signal Forms (⚠️ WARNING: Subject to Change)**',
+        rendererContext,
+      ),
+    );
+    const h2Anchor = markdownDocument.querySelector('h2 > a');
+
+    expect(h2Anchor!.innerHTML).toBe(
+      '<strong><span class="docs-emoji">Phase 5: Experimental Signal Forms (⚠️ WARNING: Subject to Change)</span></strong>',
+    );
+    expect(h2Anchor!.getAttribute('aria-label')).toBe(
+      'Link to Phase 5: Experimental Signal Forms (⚠️ WARNING: Subject to Change)',
+    );
+  });
+
+  it('should escape double quotes from the aria-label attribute', () => {
+    const markdownDocument = JSDOM.fragment(parseMarkdown('## "Special" heading', rendererContext));
+    const h2Anchor = markdownDocument.querySelector('h2 > a');
+
+    expect(h2Anchor!.innerHTML).toBe('"Special" heading');
+    expect(h2Anchor!.getAttribute('aria-label')).toBe('Link to "Special" heading');
+  });
 });
