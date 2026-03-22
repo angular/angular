@@ -429,8 +429,8 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'skills/{*,.*}',
-          'skills/**/{*,.*}',
+          '.agent/skills/{*,.*}',
+          '.agent/skills/**/{*,.*}',
         ])
     reviewers:
       users:
