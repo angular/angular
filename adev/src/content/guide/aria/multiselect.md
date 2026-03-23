@@ -63,6 +63,14 @@ The multiselect pattern combines [Combobox](guide/aria/combobox) and [Listbox](g
 
 ## Examples
 
+### Note on styling
+
+The examples in this guide rely on CSS variables defined in the Angular documentation stylesheets.
+
+If you copy these examples into your own project, the styles may not appear as expected unless these variables are also included or defined in your application.
+
+You may need to inspect the documentation source styles or define equivalent CSS variables manually.
+
 ### Basic multiselect
 
 Users need to select multiple items from a list of options. A readonly combobox paired with a multi-enabled listbox provides familiar multiselect functionality with full accessibility support.
