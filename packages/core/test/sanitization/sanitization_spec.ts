@@ -137,6 +137,10 @@ describe('sanitization', () => {
     expect(() => ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'iframe', 'src')).toThrowError(
       ERROR,
     );
+    expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'object', 'data')).toThrowError(ERROR);
+    expect(() => ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'object', 'data')).toThrowError(
+      ERROR,
+    );
     expect(() =>
       ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustHtml('javascript:true'), 'iframe', 'src'),
     ).toThrowError(/Required a safe ResourceURL, got a HTML/);
@@ -145,6 +149,13 @@ describe('sanitization', () => {
         bypassSanitizationTrustResourceUrl('javascript:true'),
         'iframe',
         'src',
+      ).toString(),
+    ).toEqual('javascript:true');
+    expect(
+      ɵɵsanitizeUrlOrResourceUrl(
+        bypassSanitizationTrustResourceUrl('javascript:true'),
+        'object',
+        'data',
       ).toString(),
     ).toEqual('javascript:true');
   });
