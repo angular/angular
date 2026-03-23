@@ -643,3 +643,51 @@ async function createRoot<T>(router: Router, type: Type<T>): Promise<ComponentFi
   await advance(f);
   return f;
 }
+
+it('should not match routes when using nested empty paths with named outlets', async () => {
+  @Component({
+    selector: 'root-cmp',
+    template: `
+      <router-outlet></router-outlet>
+      <router-outlet name="secondary"></router-outlet>
+    `,
+  })
+  class RootCmp {}
+
+  @Component({template: 'Primary'})
+  class PrimaryCmp {}
+
+  @Component({template: 'Secondary'})
+  class SecondaryCmp {}
+
+  TestBed.configureTestingModule({
+    declarations: [RootCmp, PrimaryCmp, SecondaryCmp],
+    imports: [
+      RouterTestingModule.withRoutes([
+        {
+          path: '',
+          children: [
+            {path: 'component', component: PrimaryCmp},
+          ],
+        },
+        {
+          path: '',
+          outlet: 'secondary',
+          children: [
+            {path: 'component-copy', component: SecondaryCmp},
+          ],
+        },
+      ]),
+    ],
+  });
+
+  const router = TestBed.inject(Router);
+  const fixture = TestBed.createComponent(RootCmp);
+
+  router.initialNavigation();
+  
+  fixture.detectChanges();
+
+  const result = await router.navigateByUrl('/component(secondary:component-copy)');
+
+  expect(result).toBeFalse();
