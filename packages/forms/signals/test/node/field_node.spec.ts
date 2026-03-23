@@ -1023,6 +1023,37 @@ describe('FieldNode', () => {
       expect(f.a().valid()).toBe(false);
     });
 
+    it('should get error by kind', () => {
+      const f = form(
+        signal({a: 1}),
+        (p) => {
+          validate(p.a, ({value}) => {
+            if (value() > 10) {
+              return [{kind: 'too-damn-high'}, {kind: 'bad'}];
+            }
+            return undefined;
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().getError('too-damn-high')).toBeUndefined();
+      expect(f.a().getError('bad')).toBeUndefined();
+
+      f.a().value.set(11);
+      const errorHigh = f.a().getError('too-damn-high');
+      expect(errorHigh).toBeDefined();
+      expect(errorHigh?.kind).toBe('too-damn-high');
+      expect(errorHigh?.fieldTree).toBe(f.a);
+
+      const errorBad = f.a().getError('bad');
+      expect(errorBad).toBeDefined();
+      expect(errorBad?.kind).toBe('bad');
+      expect(errorBad?.fieldTree).toBe(f.a);
+
+      expect(f.a().getError('non-existent')).toBeUndefined();
+    });
+
     it('should validate required field', () => {
       const data = signal({first: '', last: ''});
       const f = form(

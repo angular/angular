@@ -537,6 +537,17 @@ export interface FieldState<
   markAsTouched(options?: MarkAsTouchedOptions): void;
 
   /**
+   * Gets the first validation error of the given kind on this field.
+   *
+   * This method is reactive and will re-evaluate when the field's errors change if called
+   * within a reactive context (e.g. `computed` or `effect`).
+   *
+   * @param kind The kind of error (e.g. 'required', 'min').
+   * @returns The first matching error, or `undefined` if none.
+   */
+  getError(kind: string): ValidationError.WithFieldTree | undefined;
+
+  /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
