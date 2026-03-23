@@ -17,6 +17,7 @@ jasmine_test(
     name = "codegen",
     data = [
         ":test_lib",
+        "//packages/animations:npm_package",
         "//packages/compiler-cli/test/compliance/test_cases",
         "//packages/core:npm_package",
     ],

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {R3Identifiers} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -65,10 +64,10 @@ import {
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {
-  DirectiveResources,
   CompoundMetadataReader,
   CompoundMetadataRegistry,
   DirectiveMeta,
+  DirectiveResources,
   DtsMetadataReader,
   ExportedProviderStatusResolver,
   HostDirectivesResolver,
@@ -106,8 +105,8 @@ import {
   DecoratorHandler,
   DtsTransformRegistry,
   ivyTransformFactory,
-  TraitCompiler,
   signalMetadataTransform,
+  TraitCompiler,
 } from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
@@ -124,10 +123,10 @@ import {SourceFileValidator} from '../../validation';
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
-import {coreVersionSupportsFeature} from './feature_detection';
-import {angularJitApplicationTransform} from '../../transform/jit';
-import {untagAllTsFiles} from '../../shims';
 import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
+import {untagAllTsFiles} from '../../shims';
+import {angularJitApplicationTransform} from '../../transform/jit';
+import {coreVersionSupportsFeature} from './feature_detection';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -658,7 +657,7 @@ export class NgCompiler {
       if (templateSemanticsChecker !== null) {
         diagnostics.push(...templateSemanticsChecker.getDiagnosticsForComponent(component));
       }
-      if (this.options.strictTemplates && extendedTemplateChecker !== null) {
+      if (this.strictTemplates && extendedTemplateChecker !== null) {
         diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
       }
     } catch (err: unknown) {
@@ -1037,13 +1036,20 @@ export class NgCompiler {
     });
   }
 
+  /**
+   * strictTemplate is `true` by default.
+   * Explicit opt-out is required to disable strictness
+   */
+  private get strictTemplates(): boolean {
+    return this.options.strictTemplates !== false;
+  }
+
   private get fullTemplateTypeCheck(): boolean {
     // Determine the strictness level of type checking based on compiler options. As
     // `strictTemplates` is a superset of `fullTemplateTypeCheck`, the former implies the latter.
     // Also see `verifyCompatibleTypeCheckOptions` where it is verified that `fullTemplateTypeCheck`
     // is not disabled when `strictTemplates` is enabled.
-    const strictTemplates = !!this.options.strictTemplates;
-    return strictTemplates || !!this.options.fullTemplateTypeCheck;
+    return this.strictTemplates || !!this.options.fullTemplateTypeCheck;
   }
 
   private getTypeCheckingConfig(): TypeCheckingConfig {
@@ -1051,7 +1057,7 @@ export class NgCompiler {
     // `strictTemplates` is a superset of `fullTemplateTypeCheck`, the former implies the latter.
     // Also see `verifyCompatibleTypeCheckOptions` where it is verified that `fullTemplateTypeCheck`
     // is not disabled when `strictTemplates` is enabled.
-    const strictTemplates = !!this.options.strictTemplates;
+    const strictTemplates = this.strictTemplates;
 
     const useInlineTypeConstructors = this.programDriver.supportsInlineOperations;
     const checkTwoWayBoundEvents = this.options['_checkTwoWayBoundEvents'] ?? false;
@@ -1278,7 +1284,7 @@ export class NgCompiler {
           }),
         );
       }
-      if (this.options.strictTemplates && extendedTemplateChecker !== null) {
+      if (this.strictTemplates && extendedTemplateChecker !== null) {
         diagnostics.push(
           ...compilation.traitCompiler.runAdditionalChecks(sf, (clazz, handler) => {
             return handler.extendedTemplateCheck?.(clazz, extendedTemplateChecker) || null;
@@ -1765,7 +1771,7 @@ function getR3SymbolsFile(program: ts.Program): ts.SourceFile | null {
 function* verifyCompatibleTypeCheckOptions(
   options: NgCompilerOptions,
 ): Generator<ts.Diagnostic, void, void> {
-  if (options.fullTemplateTypeCheck === false && options.strictTemplates === true) {
+  if (options.fullTemplateTypeCheck === false && options.strictTemplates !== false) {
     yield makeConfigDiagnostic({
       category: ts.DiagnosticCategory.Error,
       code: ErrorCode.CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK,
@@ -1777,7 +1783,7 @@ the latter can not be explicitly disabled.
 
 One of the following actions is required:
 1. Remove the "fullTemplateTypeCheck" option.
-2. Remove "strictTemplates" or set it to 'false'.
+2. Set "strictTemplates" to 'false'.
 
 More information about the template type checking compiler options can be found in the documentation:
 ${DOC_PAGE_BASE_URL}/tools/cli/template-typecheck
