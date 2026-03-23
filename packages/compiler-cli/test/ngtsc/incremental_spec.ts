@@ -630,7 +630,7 @@ runInEachFileSystem(() => {
     });
 
     it('should compile incrementally with template type-checking turned on', () => {
-      env.tsconfig({fullTemplateTypeCheck: true});
+      env.tsconfig({strictTemplates: true});
       env.write(
         'main.ts',
         `
@@ -652,7 +652,7 @@ runInEachFileSystem(() => {
       // This test verifies that ambient types declared in node_modules/@types are still available
       // in incremental compilations. In the below code, the usage of `require` should be valid
       // in the original program and the incremental program.
-      env.tsconfig({fullTemplateTypeCheck: true}, {types: ['node']});
+      env.tsconfig({strictTemplates: true}, {types: ['node']});
       env.write('node_modules/@types/node/index.d.ts', 'declare var require: any;');
       env.write(
         'main.ts',
@@ -673,7 +673,7 @@ runInEachFileSystem(() => {
 
     // https://github.com/angular/angular/pull/26036
     it('should handle redirected source files', () => {
-      env.tsconfig({fullTemplateTypeCheck: true});
+      env.tsconfig({strictTemplates: true});
 
       // This file structure has an identical version of "a" under the root node_modules and inside
       // of "b". Because their package.json file indicates it is the exact same version of "a",
@@ -710,7 +710,7 @@ runInEachFileSystem(() => {
     });
 
     it('should allow incremental compilation with redirected source files', () => {
-      env.tsconfig({fullTemplateTypeCheck: true});
+      env.tsconfig({strictTemplates: true});
 
       // This file structure has an identical version of "a" under the root node_modules and inside
       // of "b". Because their package.json file indicates it is the exact same version of "a",

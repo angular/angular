@@ -291,36 +291,6 @@ describe('getSemanticDiagnostics', () => {
     ]);
   });
 
-  it('reports a warning when the project configuration prevents good type inference', () => {
-    const files = {
-      'app.ts': `
-        import {Component, NgModule} from '@angular/core';
-        import {CommonModule} from '@angular/common';
-
-        @Component({
-          template: '<div *ngFor="let user of users">{{user}}</div>',
-          standalone: false,
-        })
-        export class MyComponent {
-          users = ['Alpha', 'Beta'];
-        }
-      `,
-    };
-
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      // Disable `strictTemplates`.
-      strictTemplates: false,
-      // Use `fullTemplateTypeCheck` mode instead.
-      fullTemplateTypeCheck: true,
-    });
-    const diags = project.getDiagnosticsForFile('app.ts');
-    expect(diags.length).toBe(1);
-    const diag = diags[0];
-    expect(diag.code).toBe(ngErrorCode(ErrorCode.SUGGEST_SUBOPTIMAL_TYPE_INFERENCE));
-    expect(diag.category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(getTextOfDiagnostic(diag)).toBe('user');
-  });
-
   it('should process a component that would otherwise require an inline TCB', () => {
     const files = {
       'app.ts': `

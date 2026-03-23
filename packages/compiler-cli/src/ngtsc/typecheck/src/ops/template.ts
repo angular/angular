@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {TmplAstBoundAttribute, TmplAstDirective, TmplAstTemplate} from '@angular/compiler';
+import {TcbDirectiveMetadata} from '../../api';
 import {TcbOp} from './base';
 import {declareVariable, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
-import type {Scope} from './scope';
-import {TcbDirectiveMetadata} from '../../api';
 import {tcbExpression} from './expression';
+import type {Scope} from './scope';
 
 /**
  * A `TcbOp` which generates a variable for a `TmplAstTemplate`'s context.
@@ -192,15 +192,6 @@ export class TcbTemplateBodyOp extends TcbOp {
           guardInvoke.markIgnoreDiagnostics();
           guardInvoke.addParseSpanInfo(hostNode.sourceSpan);
           guards.push(guardInvoke);
-        } else if (
-          isTemplate &&
-          hostNode.variables.length > 0 &&
-          this.tcb.env.config.suggestionsForSuboptimalTypeInference
-        ) {
-          // The compiler could have inferred a better type for the variables in this template,
-          // but was prevented from doing so by the type-checking configuration. Issue a warning
-          // diagnostic.
-          this.tcb.oobRecorder.suboptimalTypeInference(this.tcb.id, hostNode.variables);
         }
       }
     }
