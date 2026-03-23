@@ -50,8 +50,6 @@ export interface LegacyNgcOptions {
     allowEmptyCodegenFiles?: boolean;
     flatModuleId?: string;
     flatModuleOutFile?: string;
-    // @deprecated
-    fullTemplateTypeCheck?: boolean;
     preserveWhitespaces?: boolean;
     strictInjectionParameters?: boolean;
 }

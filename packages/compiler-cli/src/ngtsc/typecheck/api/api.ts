@@ -432,20 +432,6 @@ export interface TypeCheckingConfig {
   useInlineTypeConstructors: boolean;
 
   /**
-   * Whether or not to produce diagnostic suggestions in cases where the compiler could have
-   * inferred a better type for a construct, but was prevented from doing so by the current type
-   * checking configuration.
-   *
-   * For example, if the compiler could have used a template context guard to infer a better type
-   * for a structural directive's context and `let-` variables, but the user is in
-   * `fullTemplateTypeCheck` mode and such guards are therefore disabled.
-   *
-   * This mode is useful for clients like the Language Service which want to inform users of
-   * opportunities to improve their own developer experience.
-   */
-  suggestionsForSuboptimalTypeInference: boolean;
-
-  /**
    * Whether the type of two-way bindings should be widened to allow `WritableSignal`.
    */
   allowSignalsInTwoWayBindings: boolean;

@@ -128,18 +128,6 @@ describe('language service adapter', () => {
       const diag = diags.find(isSuggestStrictTemplatesDiag);
       expect(diag).toBeUndefined();
     });
-
-    it('does not suggest turning on strict mode is fullTemplateTypeCheck flag is on', () => {
-      configFileFs.overwriteConfigFile(TSCONFIG, {
-        angularCompilerOptions: {
-          fullTemplateTypeCheck: true,
-        },
-      });
-      const diags = ngLS.getCompilerOptionsDiagnostics();
-      const diag = diags.find(isSuggestStrictTemplatesDiag);
-      expect(diag).toBeUndefined();
-    });
-
     function isSuggestStrictTemplatesDiag(diag: ts.Diagnostic) {
       return diag.code === ngErrorCode(ErrorCode.SUGGEST_STRICT_TEMPLATES);
     }

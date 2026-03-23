@@ -24,22 +24,6 @@ export interface LegacyNgcOptions {
   allowEmptyCodegenFiles?: boolean;
 
   /**
-   * Whether to type check the entire template.
-   *
-   * This flag currently controls a couple aspects of template type-checking, including
-   * whether embedded views are checked.
-   *
-   * For maximum type-checking, set this to `true`, and set `strictTemplates` to `true`.
-   *
-   * It is an error for this flag to be `false`, while `strictTemplates` is set to `true`.
-   *
-   * @deprecated The `fullTemplateTypeCheck` option has been superseded by the more granular
-   * `strictTemplates` family of compiler options. Usage of `fullTemplateTypeCheck` is therefore
-   * deprecated, `strictTemplates` and its related options should be used instead.
-   */
-  fullTemplateTypeCheck?: boolean;
-
-  /**
    * Whether to generate a flat module index of the given name and the corresponding
    * flat module metadata. This option is intended to be used when creating flat
    * modules similar to how `@angular/core` and `@angular/common` are packaged.
@@ -100,8 +84,6 @@ export interface TypeCheckingOptions {
   /**
    * If `true`, implies all template strictness flags below (unless individually disabled).
    *
-   * This flag is a superset of the deprecated `fullTemplateTypeCheck` option.
-   *
    * Defaults to `true`
    */
   strictTemplates?: boolean;
@@ -115,7 +97,7 @@ export interface TypeCheckingOptions {
    * directive or component is receiving the binding. If set to `true`, both sides of the assignment
    * are checked.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictInputTypes?: boolean;
 
@@ -123,7 +105,7 @@ export interface TypeCheckingOptions {
    * Whether to check if the input binding attempts to assign to a restricted field (readonly,
    * private, or protected) on the directive/component.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck", "strictTemplates" and/or
+   * Defaults to `false`, even if "strictTemplates" and/or
    * "strictInputTypes" is set. Note that if `strictInputTypes` is not set, or set to `false`, this
    * flag has no effect.
    *
@@ -140,7 +122,7 @@ export interface TypeCheckingOptions {
    * binding expressions are wrapped in a non-null assertion operator to effectively disable strict
    * null checks.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set. Note that if `strictInputTypes` is
+   * Defaults to `false`. Note that if `strictInputTypes` is
    * not set, or set to `false`, this flag has no effect.
    */
   strictNullInputTypes?: boolean;
@@ -154,7 +136,7 @@ export interface TypeCheckingOptions {
    * without a value, so with this flag set to `true`, an error would be reported. If set to
    * `false`, text attributes will never report an error.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set. Note that if `strictInputTypes` is
+   * Defaults to `false`. Note that if `strictInputTypes` is
    * not set, or set to `false`, this flag has no effect.
    */
   strictAttributeTypes?: boolean;
@@ -166,7 +148,7 @@ export interface TypeCheckingOptions {
    * then the return type of `a?.b` for example will be the same as the type of the ternary
    * expression `a != null ? a.b : a`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictSafeNavigationTypes?: boolean;
 
@@ -177,7 +159,7 @@ export interface TypeCheckingOptions {
    * determined by the type of `document.createElement` for the given DOM node. If set to `false`,
    * the type of `ref` for DOM nodes will be `any`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictDomLocalRefTypes?: boolean;
 
@@ -189,7 +171,7 @@ export interface TypeCheckingOptions {
    * `EventEmitter`/`Subject` of the output. If set to `false`, the `$event` variable will be of
    * type `any`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictOutputEventTypes?: boolean;
 
@@ -200,7 +182,7 @@ export interface TypeCheckingOptions {
    * `HTMLElementEventMap`, with a fallback to the native `Event` type. If set to `false`, the
    * `$event` variable will be of type `any`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictDomEventTypes?: boolean;
 
@@ -213,7 +195,7 @@ export interface TypeCheckingOptions {
    * will be included in the context type for the template. If `false`, any generic parameters will
    * be set to `any` in the template context type.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`.
    */
   strictContextGenerics?: boolean;
 
@@ -221,7 +203,7 @@ export interface TypeCheckingOptions {
    * Whether object or array literals defined in templates use their inferred type, or are
    * interpreted as `any`.
    *
-   * Defaults to `false` unless `fullTemplateTypeCheck` or `strictTemplates` are set.
+   * Defaults to `false` unless `strictTemplates` is set.
    */
   strictLiteralTypes?: boolean;
 }

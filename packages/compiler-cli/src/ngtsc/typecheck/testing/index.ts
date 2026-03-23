@@ -32,9 +32,10 @@ import {
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
-import ts from 'typescript';
 import {globSync} from 'tinyglobby';
+import ts from 'typescript';
 
+import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
 import {
   absoluteFrom,
   AbsoluteFsPath,
@@ -81,6 +82,7 @@ import {
   ScopeData,
   TypeCheckScopeRegistry,
 } from '../../scope';
+import {sfExtensionData} from '../../shims';
 import {makeProgram, resolveFromRunfiles} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {
@@ -93,18 +95,16 @@ import {
   TypeCheckContext,
 } from '../api';
 import {
-  TypeCheckId,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
+  TypeCheckId,
   TypeCheckingConfig,
 } from '../api/api';
+import {DomSchemaChecker} from '../api/schema';
 import {TemplateTypeCheckerImpl} from '../src/checker';
+import {TcbGenericContextBehavior} from '../src/ops/context';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TypeCheckFile} from '../src/type_check_file';
-import {sfExtensionData} from '../../shims';
-import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
-import {TcbGenericContextBehavior} from '../src/ops/context';
-import {DomSchemaChecker} from '../api/schema';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -288,7 +288,6 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   strictLiteralTypes: true,
   enableTemplateTypeChecker: false,
   useInlineTypeConstructors: true,
-  suggestionsForSuboptimalTypeInference: false,
   controlFlowPreventingContentProjection: 'warning',
   unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
@@ -446,7 +445,6 @@ export function tcb(
     strictLiteralTypes: true,
     enableTemplateTypeChecker: false,
     useInlineTypeConstructors: true,
-    suggestionsForSuboptimalTypeInference: false,
     allowSignalsInTwoWayBindings: true,
     checkTwoWayBoundEvents: true,
     allowDomEventAssertion: true,

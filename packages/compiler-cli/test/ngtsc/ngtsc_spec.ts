@@ -1053,7 +1053,7 @@ runInEachFileSystem((os: string) => {
 
         it('should still perform schema checks in embedded views', () => {
           env.tsconfig({
-            'fullTemplateTypeCheck': false,
+            'strictTemplates': false,
             'annotateForClosureCompiler': true,
           });
           env.write(

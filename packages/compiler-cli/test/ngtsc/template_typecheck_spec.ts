@@ -29,7 +29,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({fullTemplateTypeCheck: true});
+      env.tsconfig({strictTemplates: true});
       env.write(
         'node_modules/@angular/animations/index.d.ts',
         `
@@ -117,7 +117,7 @@ runInEachFileSystem(() => {
 
     it('should check regular attributes that are directive inputs', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictAttributeTypes: true,
       });
@@ -158,7 +158,7 @@ runInEachFileSystem(() => {
     // This is not supported at runtime
     xit('should produce diagnostics when mapping to multiple fields and bound types are incorrect', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictAttributeTypes: true,
       });
@@ -198,7 +198,7 @@ runInEachFileSystem(() => {
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictOutputEventTypes: true,
       });
@@ -276,7 +276,7 @@ runInEachFileSystem(() => {
     });
 
     it('should check event bindings', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+      env.tsconfig({strictTemplates: true, strictOutputEventTypes: true});
       env.write(
         'test.ts',
         `
@@ -307,18 +307,17 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(3);
+      expect(diags.length).toBe(4);
       expect(diags[0].messageText).toEqual(
         `Argument of type 'number' is not assignable to parameter of type 'string'.`,
       );
       expect(diags[1].messageText).toEqual(
         `Property 'updated' does not exist on type 'TestCmp'. Did you mean 'update'?`,
       );
-      // Disabled because `checkTypeOfDomEvents` is disabled by default
-      // expect(diags[2].messageText)
-      //     .toEqual(
-      //         `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
-      expect(diags[2].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
+      expect(diags[2].messageText).toEqual(
+        `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`,
+      );
+      expect(diags[3].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
     });
 
     // https://github.com/angular/angular/issues/35073
@@ -869,7 +868,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and their type when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -891,7 +890,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not their type when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -935,7 +934,7 @@ runInEachFileSystem(() => {
 
       it('should check expressions and their nullability when enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
           strictInputTypes: true,
           strictNullInputTypes: true,
         });
@@ -964,7 +963,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not their nullability when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: true, strictNullInputTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1008,7 +1007,7 @@ runInEachFileSystem(() => {
 
       it('should infer result type for safe navigation expressions when enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
           strictInputTypes: true,
           strictNullInputTypes: true,
           strictSafeNavigationTypes: true,
@@ -1039,7 +1038,8 @@ runInEachFileSystem(() => {
 
       it('should not infer result type for safe navigation expressions when not enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
+          strictSafeNavigationTypes: false,
           strictInputTypes: true,
         });
 
@@ -1084,7 +1084,7 @@ runInEachFileSystem(() => {
       });
 
       it('should expressions and infer type of $event when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -1110,7 +1110,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not infer type of $event when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1145,7 +1145,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and let $event be of type AnimationEvent when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -1171,7 +1171,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and let $event be of type any when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1204,7 +1204,7 @@ runInEachFileSystem(() => {
       });
 
       it('should infer the type of DOM references when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictDomLocalRefTypes: true});
+        env.tsconfig({strictTemplates: true, strictDomLocalRefTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1224,7 +1224,7 @@ runInEachFileSystem(() => {
       });
 
       it('should let the type of DOM references be any when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictDomLocalRefTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -1264,7 +1264,7 @@ runInEachFileSystem(() => {
 
       it('should produce an error for text attributes when enabled', () => {
         env.tsconfig({
-          fullTemplateTypeCheck: true,
+          strictTemplates: true,
           strictInputTypes: true,
           strictAttributeTypes: true,
         });
@@ -1285,7 +1285,7 @@ runInEachFileSystem(() => {
       });
 
       it('should not produce an error for text attributes when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictAttributeTypes: false, strictInputTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -1317,7 +1317,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions and infer type of $event when enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictDomEventTypes: true});
+        env.tsconfig({strictTemplates: true, strictDomEventTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -1343,7 +1343,7 @@ runInEachFileSystem(() => {
       });
 
       it('should check expressions but not infer type of $event when not enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true});
+        env.tsconfig({strictTemplates: true, strictDomEventTypes: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1491,7 +1491,7 @@ runInEachFileSystem(() => {
     });
 
     it('should report an error inside the NgFor template', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -1730,7 +1730,7 @@ runInEachFileSystem(() => {
     });
 
     it('should allow the implicit value of an NgFor to be invoked', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -1868,8 +1868,8 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknown');
     });
 
-    it('should report an error with an unknown pipe even if `fullTemplateTypeCheck` is disabled', () => {
-      env.tsconfig({fullTemplateTypeCheck: false});
+    it('should report an error with an unknown pipe even if `strictTemplates` is disabled', () => {
+      env.tsconfig({strictTemplates: false});
       env.write(
         'test.ts',
         `
@@ -1956,7 +1956,7 @@ runInEachFileSystem(() => {
 
     it('should constrain types using type parameter bounds', () => {
       env.tsconfig({
-        fullTemplateTypeCheck: true,
+        strictTemplates: true,
         strictInputTypes: true,
         strictContextGenerics: true,
       });
@@ -2020,7 +2020,7 @@ runInEachFileSystem(() => {
       });
 
       it("should be treated as 'any' without strictTemplates", () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: false});
+        env.tsconfig();
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -2038,7 +2038,7 @@ runInEachFileSystem(() => {
     });
 
     it('should properly type-check inherited directives', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -2090,7 +2090,7 @@ runInEachFileSystem(() => {
     });
 
     it('should properly type-check inherited directives from external libraries', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
 
       env.write(
         'node_modules/external/index.d.ts',
@@ -2182,8 +2182,13 @@ runInEachFileSystem(() => {
       `,
       );
       const diags = env.driveDiagnostics();
-      expect(diags.length).toEqual(1);
-      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y = !y');
+      expect(diags.length).toEqual(2);
+      expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y');
+      expect(getSourceCodeForDiagnostic(diags[1])).toEqual('y = !y');
+      expect(diags[0].messageText).toEqual(`Type 'false' is not assignable to type 'true'.`);
+      expect(diags[1].messageText).toEqual(
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+      );
     });
 
     it('should detect a duplicate variable declaration', () => {
@@ -2234,7 +2239,7 @@ runInEachFileSystem(() => {
         '_useHostForImportGeneration': true,
         // Because the tsconfig is overridden, template type-checking needs to be turned back on
         // explicitly as well.
-        'fullTemplateTypeCheck': true,
+        'strictTemplates': true,
       });
 
       // 'alpha' declares the directive which will ultimately be imported.
@@ -2296,7 +2301,7 @@ runInEachFileSystem(() => {
 
     describe('input coercion', () => {
       beforeEach(() => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+        env.tsconfig({strictTemplates: true, strictInputTypes: true});
         env.write(
           'node_modules/@angular/material/index.d.ts',
           `
@@ -3142,7 +3147,7 @@ runInEachFileSystem(() => {
       describe('with strictInputAccessModifiers', () => {
         beforeEach(() => {
           env.tsconfig({
-            fullTemplateTypeCheck: true,
+            strictTemplates: true,
             strictInputTypes: true,
             strictInputAccessModifiers: true,
           });
@@ -3207,7 +3212,7 @@ runInEachFileSystem(() => {
 
       describe('with strict inputs', () => {
         beforeEach(() => {
-          env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+          env.tsconfig({strictTemplates: true, strictInputTypes: true});
         });
 
         it('should not produce diagnostics for correct inputs which assign to readonly, private, or protected fields', () => {
@@ -3255,7 +3260,7 @@ runInEachFileSystem(() => {
     });
 
     it('should not produce diagnostics for undeclared inputs', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -3289,7 +3294,7 @@ runInEachFileSystem(() => {
     });
 
     it('should produce diagnostics for invalid expressions when assigned into an undeclared input', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -3323,7 +3328,7 @@ runInEachFileSystem(() => {
     });
 
     it('should not produce diagnostics for undeclared inputs inherited from a base class', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig({strictTemplates: true, strictInputTypes: true});
       env.write(
         'test.ts',
         `
@@ -3611,7 +3616,7 @@ runInEachFileSystem(() => {
 
     describe('legacy schema checking with the DOM schema', () => {
       beforeEach(() => {
-        env.tsconfig({fullTemplateTypeCheck: false});
+        env.tsconfig({strictTemplates: false});
       });
 
       it('should check for unknown elements', () => {
@@ -4125,35 +4130,6 @@ runInEachFileSystem(() => {
 
     describe('option compatibility verification', () => {
       beforeEach(() => env.write('index.ts', `export const a = 1;`));
-
-      it('should error if "fullTemplateTypeCheck" is false when "strictTemplates" is true', () => {
-        env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: true});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(
-          'Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.',
-        );
-      });
-      it('should not error if "fullTemplateTypeCheck" is false when "strictTemplates" is false', () => {
-        env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: false});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
-      });
-      it('should not error if "fullTemplateTypeCheck" is not set when "strictTemplates" is true', () => {
-        env.tsconfig({strictTemplates: true});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
-      });
-      it('should not error if "fullTemplateTypeCheck" is true set when "strictTemplates" is true', () => {
-        env.tsconfig({strictTemplates: true});
-
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
-      });
-
       it('should error if "strictTemplates" is false when "extendedDiagnostics" is configured', () => {
         env.tsconfig({strictTemplates: false, extendedDiagnostics: {}});
 
@@ -4302,7 +4278,7 @@ suppress
       it('should accept a program with a flat index', () => {
         // This test asserts that flat indices don't have any negative interactions with the
         // generation of template type-checking code in the program.
-        env.tsconfig({fullTemplateTypeCheck: true, flatModuleOutFile: 'flat.js'});
+        env.tsconfig({strictTemplates: true, flatModuleOutFile: 'flat.js'});
 
         expect(env.driveDiagnostics()).toEqual([]);
       });
@@ -5913,8 +5889,8 @@ suppress
 
     describe('for loop blocks', () => {
       beforeEach(() => {
-        // `fullTemplateTypeCheck: true` is necessary so content inside `ng-template` is checked.
-        env.tsconfig({fullTemplateTypeCheck: true});
+        // `strictTemplates: true` is necessary so content inside `ng-template` is checked.
+        env.tsconfig({strictTemplates: true});
       });
 
       it('should check bindings inside of for loop blocks', () => {

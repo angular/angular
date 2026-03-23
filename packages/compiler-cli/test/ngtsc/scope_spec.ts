@@ -360,7 +360,7 @@ runInEachFileSystem(() => {
       });
 
       it('should not produce component template type-check errors if its module is invalid', () => {
-        env.tsconfig({'fullTemplateTypeCheck': true});
+        env.tsconfig({'strictTemplates': true});
 
         // Set up 3 files, each of which declare an NgModule that's invalid in some way. This will
         // produce a bunch of diagnostics related to the issues with the modules. Each module also

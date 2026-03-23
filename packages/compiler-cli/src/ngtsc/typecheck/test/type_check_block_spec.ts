@@ -1153,7 +1153,6 @@ describe('type check blocks', () => {
       strictLiteralTypes: true,
       enableTemplateTypeChecker: false,
       useInlineTypeConstructors: true,
-      suggestionsForSuboptimalTypeInference: false,
       controlFlowPreventingContentProjection: 'warning',
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
