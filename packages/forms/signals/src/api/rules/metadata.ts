@@ -9,7 +9,7 @@
 import {type Signal} from '@angular/core';
 import {FieldPathNode} from '../../schema/path_node';
 import {assertPathIsCurrent} from '../../schema/schema';
-import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
+import type {FieldState, LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 
 /**
  * Sets a value for the {@link MetadataKey} for this field.
@@ -150,7 +150,7 @@ export class MetadataKey<TRead, TWrite, TAcc> {
   /** Use {@link reducedMetadataKey}. */
   protected constructor(
     readonly reducer: MetadataReducer<TAcc, TWrite>,
-    readonly create: ((s: Signal<TAcc>) => TRead) | undefined,
+    readonly create: ((state: FieldState<unknown>, data: Signal<TAcc>) => TRead) | undefined,
   ) {}
 }
 
@@ -211,7 +211,7 @@ export function createMetadataKey<TWrite, TAcc>(
  * @experimental 21.0.0
  */
 export function createManagedMetadataKey<TRead, TWrite>(
-  create: (s: Signal<TWrite | undefined>) => TRead,
+  create: (state: FieldState<unknown>, data: Signal<TWrite | undefined>) => TRead,
 ): MetadataKey<TRead, TWrite, TWrite | undefined>;
 /**
  * Creates a metadata key that exposes a managed value based on the accumulated result of the values
@@ -229,16 +229,16 @@ export function createManagedMetadataKey<TRead, TWrite>(
  * @experimental 21.0.0
  */
 export function createManagedMetadataKey<TRead, TWrite, TAcc>(
-  create: (s: Signal<TAcc>) => TRead,
+  create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
   reducer: MetadataReducer<TAcc, TWrite>,
 ): MetadataKey<TRead, TWrite, TAcc>;
 export function createManagedMetadataKey<TRead, TWrite, TAcc>(
-  create: (s: Signal<TAcc>) => TRead,
+  create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
   reducer?: MetadataReducer<TAcc, TWrite>,
 ): MetadataKey<TRead, TWrite, TAcc> {
   return new (MetadataKey as new (
     reducer: MetadataReducer<TAcc, TWrite>,
-    create: (s: Signal<TAcc>) => TRead,
+    create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
   ) => MetadataKey<TRead, TWrite, TAcc>)(reducer ?? MetadataReducer.override<any>(), create);
 }
 

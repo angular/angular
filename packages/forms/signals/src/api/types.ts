@@ -346,28 +346,28 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
    *
    * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
    */
-  readonly max?: Signal<number | undefined>;
+  readonly max: Signal<number | undefined> | undefined;
 
   /**
    * A signal indicating the field's maximum string length, if applicable.
    *
    * Applies to `<input>`, `<textarea>`, and custom controls.
    */
-  readonly maxLength?: Signal<number | undefined>;
+  readonly maxLength: Signal<number | undefined> | undefined;
 
   /**
    * A signal indicating the field's minimum value, if applicable.
    *
    * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
    */
-  readonly min?: Signal<number | undefined>;
+  readonly min: Signal<number | undefined> | undefined;
 
   /**
    * A signal indicating the field's minimum string length, if applicable.
    *
    * Applies to `<input>`, `<textarea>`, and custom controls.
    */
-  readonly minLength?: Signal<number | undefined>;
+  readonly minLength: Signal<number | undefined> | undefined;
 
   /**
    * A signal of a unique name for the field, by default based on the name of its parent field.
