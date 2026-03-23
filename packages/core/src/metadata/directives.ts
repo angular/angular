@@ -787,7 +787,7 @@ export interface InputDecorator {
    * class BankAccount {
    *   // This property is bound using its original name.
    *   // Defining argument required as true inside the Input Decorator
-   *   // makes this property deceleration as mandatory
+   *   // makes this property declaration as mandatory
    *   @Input({ required: true }) bankName!: string;
    *   // Argument alias makes this property value is bound to a different property name
    *   // when this component is instantiated in a template.
