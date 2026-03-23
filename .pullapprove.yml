@@ -434,7 +434,7 @@ groups:
         ])
     reviewers:
       users:
-        - marktechson
+        - MarkTechson
         - kirjs
         - ~JeanMeche
         - ~dgp1130
