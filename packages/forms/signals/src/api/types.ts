@@ -52,7 +52,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
    * Whether to ignore any of the validators when submitting:
    * - 'pending': Will submit if there are no invalid validators, pending validators do not block submission (default)
    * - 'none': Will not submit unless all validators are passing, pending validators block submission
-   * - 'ignore': Will always submit regardless of invalid or pending validators
+   * - 'all': Will always submit regardless of invalid or pending validators
    */
   ignoreValidators?: 'pending' | 'none' | 'all';
 }
