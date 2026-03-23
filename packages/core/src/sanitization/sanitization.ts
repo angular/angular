@@ -214,8 +214,16 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
 }
 
 // Define sets outside the function for O(1) lookups and memory efficiency
-const SRC_RESOURCE_TAGS = new Set(['embed', 'frame', 'iframe', 'media', 'script']);
-const HREF_RESOURCE_TAGS = new Set(['base', 'link', 'script']);
+const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined> = {
+  embed: {src: true},
+  frame: {src: true},
+  iframe: {src: true},
+  media: {src: true},
+  script: {src: true, href: true, 'xlink:href': true},
+  base: {href: true},
+  link: {href: true},
+  object: {data: true},
+};
 
 /**
  * Detects which sanitizer to use for URL property, based on tag name and prop name.
@@ -225,10 +233,7 @@ const HREF_RESOURCE_TAGS = new Set(['base', 'link', 'script']);
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  const isResource =
-    (prop === 'src' && SRC_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'href' && HREF_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'xlink:href' && tag === 'script');
+  const isResource = RESOURCE_MAP[tag]?.[prop] === true;
 
   return isResource ? ɵɵsanitizeResourceUrl : ɵɵsanitizeUrl;
 }
