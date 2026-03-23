@@ -130,6 +130,7 @@ export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = T
 export interface FieldState<TValue, TKey extends string | number = string | number> extends ReadonlyFieldState<TValue, TKey> {
     readonly controlValue: WritableSignal<TValue>;
     readonly fieldTree: FieldTree<unknown, TKey>;
+    getError(kind: string): ValidationError.WithFieldTree | undefined;
     markAsDirty(): void;
     markAsTouched(options?: MarkAsTouchedOptions): void;
     reloadValidation(): void;

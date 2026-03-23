@@ -249,6 +249,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataState.get(key);
   }
 
+  getError(kind: string): ValidationError.WithFieldTree | undefined {
+    return this.errors().find((e) => e.kind === kind);
+  }
+
   hasMetadata(key: MetadataKey<any, any, any>): boolean {
     return this.metadataState.has(key);
   }
