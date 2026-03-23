@@ -31,8 +31,6 @@ import {
   ImplicitReceiver,
 } from '@angular/compiler';
 import ts from 'typescript';
-import {createSourceSpan} from '../../annotations/common';
-import {ClassDeclaration} from '../../reflection';
 
 /**
  * Comment attached to an AST node that serves as a guard to distinguish nodes
@@ -40,61 +38,89 @@ import {ClassDeclaration} from '../../reflection';
  */
 const GUARD_COMMENT_TEXT = 'hostBindingsBlockGuard';
 
-/** Node that represent a static name of a member. */
-type StaticName = ts.Identifier | ts.StringLiteralLike;
+/** Represents information extracted from the source AST. */
+export type SourceNode =
+  | StaticSourceNode
+  | {
+      kind: 'unspecified';
+      sourceSpan: ParseSourceSpan;
+    };
 
-/** Property assignment node with a static name and initializer. */
-type StaticPropertyAssignment = ts.PropertyAssignment & {
-  name: StaticName;
-  initializer: ts.StringLiteralLike;
-};
+/** A `SourceNode` which represents a static expression. */
+export interface StaticSourceNode {
+  kind: 'string' | 'identifier';
+  /** Raw source code of the node (e.g. strings include the quotes). */
+  source: string;
+  /** Actual text of the node (e.g. value inside the quotes in strings). */
+  text: string;
+  /** Location information about the node. */
+  sourceSpan: ParseSourceSpan;
+}
+
+/** A single binding inside the `host` object of a directive. */
+export interface HostObjectLiteralBinding {
+  /** Node representing the key of the binding. */
+  key: SourceNode;
+  /** Node representing the value of the binding. */
+  value: SourceNode;
+  /** Location information about the entire binding. */
+  sourceSpan: ParseSourceSpan;
+}
+
+/** A single binding declared by a `@HostListener` decorator on a class member. */
+export interface HostListenerDecorator {
+  /** Node declaring the name of the event (e.g. first argument of `@HostListener`). */
+  eventName: SourceNode | null;
+  /** Node representing the name of the member that was decorated. */
+  memberName: StaticSourceNode;
+  /** Location information about the member that the decorator is set on. */
+  memberSpan: ParseSourceSpan;
+  /** Arguments passed to the event. */
+  arguments: SourceNode[];
+  /** Location information about the decorator. */
+  decoratorSpan: ParseSourceSpan;
+}
+
+/** A single binding declared by the `@HostBinding` decorator on a class member. */
+export interface HostBindingDecorator {
+  /** Node representing the name of the member that was decorated. */
+  memberName: StaticSourceNode;
+  /** Location information about the member that the decorator is set on. */
+  memberSpan: ParseSourceSpan;
+  /** Arguments passed into the decorator */
+  arguments: SourceNode[];
+  /** Location information about the decorator. */
+  decoratorSpan: ParseSourceSpan;
+}
 
 /**
  * Creates an AST node that represents the host element of a directive.
  * Can return null if there are no valid bindings to be checked.
- * @param type Whether the host element is for a directive or a component.
- * @param selector Selector of the directive.
- * @param sourceNode Class declaration for the directive.
- * @param literal `host` object literal from the decorator.
- * @param bindingDecorators `HostBinding` decorators discovered on the node.
- * @param listenerDecorators `HostListener` decorators discovered on the node.
+ * @param meta Metadata used to construct the host element.
  */
 export function createHostElement(
   type: 'component' | 'directive',
   selector: string | null,
-  sourceNode: ClassDeclaration,
-  literal: ts.ObjectLiteralExpression | null,
-  bindingDecorators: Iterable<ts.Decorator>,
-  listenerDecorators: Iterable<ts.Decorator>,
+  nameSpan: ParseSourceSpan,
+  hostObjectLiteralBindings: HostObjectLiteralBinding[],
+  hostBindingDecorators: HostBindingDecorator[],
+  hostListenerDecorators: HostListenerDecorator[],
 ): TmplAstHostElement | null {
   const bindings: TmplAstBoundAttribute[] = [];
   const listeners: TmplAstBoundEvent[] = [];
   let parser: BindingParser | null = null;
 
-  if (literal !== null) {
-    for (const prop of literal.properties) {
-      // We only support type checking of static bindings.
-      if (
-        ts.isPropertyAssignment(prop) &&
-        ts.isStringLiteralLike(prop.initializer) &&
-        isStaticName(prop.name)
-      ) {
-        parser ??= makeBindingParser();
-        createNodeFromHostLiteralProperty(
-          prop as StaticPropertyAssignment,
-          parser,
-          bindings,
-          listeners,
-        );
-      }
-    }
+  for (const binding of hostObjectLiteralBindings) {
+    // We only support type checking of static bindings.
+    parser ??= makeBindingParser();
+    createNodeFromHostLiteralProperty(binding, parser, bindings, listeners);
   }
 
-  for (const decorator of bindingDecorators) {
+  for (const decorator of hostBindingDecorators) {
     createNodeFromBindingDecorator(decorator, bindings);
   }
 
-  for (const decorator of listenerDecorators) {
+  for (const decorator of hostListenerDecorators) {
     parser ??= makeBindingParser();
     createNodeFromListenerDecorator(decorator, parser, listeners);
   }
@@ -122,7 +148,7 @@ export function createHostElement(
     tagNames.push(`ng-${type}`);
   }
 
-  return new TmplAstHostElement(tagNames, bindings, listeners, createSourceSpan(sourceNode.name));
+  return new TmplAstHostElement(tagNames, bindings, listeners, nameSpan);
 }
 
 /**
@@ -173,7 +199,7 @@ export function isHostBindingsBlockGuard(node: ts.Node): boolean {
  * @param listeners Array tracking the event listeners of the host element.
  */
 function createNodeFromHostLiteralProperty(
-  property: StaticPropertyAssignment,
+  binding: HostObjectLiteralBinding,
   parser: BindingParser,
   bindings: TmplAstBoundAttribute[],
   listeners: TmplAstBoundEvent[],
@@ -181,17 +207,25 @@ function createNodeFromHostLiteralProperty(
   // TODO(crisbeto): surface parsing errors here, because currently they just get ignored.
   // They'll still get reported when the handler tries to parse the bindings, but here we
   // can highlight the nodes more accurately.
-  const {name, initializer} = property;
+  const {key, value, sourceSpan} = binding;
 
-  if (name.text.startsWith('[') && name.text.endsWith(']')) {
-    const {attrName, type} = inferBoundAttribute(name.text.slice(1, -1));
-    const valueSpan = createStaticExpressionSpan(initializer);
-    const ast = parser.parseBinding(initializer.text, true, valueSpan, valueSpan.start.offset);
+  if (key.kind !== 'string' || value.kind !== 'string') {
+    return;
+  }
+
+  if (key.text.startsWith('[') && key.text.endsWith(']')) {
+    const {attrName, type} = inferBoundAttribute(key.text.slice(1, -1));
+    const ast = parser.parseBinding(
+      value.text,
+      true,
+      value.sourceSpan,
+      value.sourceSpan.start.offset,
+    );
     if (ast.errors.length > 0) {
       return; // See TODO above.
     }
 
-    fixupSpans(ast, initializer);
+    fixupSpans(ast, value);
     bindings.push(
       new TmplAstBoundAttribute(
         attrName,
@@ -199,31 +233,31 @@ function createNodeFromHostLiteralProperty(
         0,
         ast,
         null,
-        createSourceSpan(property),
-        createStaticExpressionSpan(name),
-        valueSpan,
+        sourceSpan,
+        key.sourceSpan,
+        value.sourceSpan,
         undefined,
       ),
     );
-  } else if (name.text.startsWith('(') && name.text.endsWith(')')) {
+  } else if (key.text.startsWith('(') && key.text.endsWith(')')) {
     const events: ParsedEvent[] = [];
 
     parser.parseEvent(
-      name.text.slice(1, -1),
-      initializer.text,
+      key.text.slice(1, -1),
+      value.text,
       false,
-      createSourceSpan(property),
-      createStaticExpressionSpan(initializer),
+      sourceSpan,
+      value.sourceSpan,
       [],
       events,
-      createStaticExpressionSpan(name),
+      key.sourceSpan,
     );
 
     if (events.length === 0 || events[0].handler.errors.length > 0) {
       return; // See TODO above.
     }
 
-    fixupSpans(events[0].handler, initializer);
+    fixupSpans(events[0].handler, value);
     listeners.push(TmplAstBoundEvent.fromParsedEvent(events[0]));
   }
 }
@@ -234,34 +268,23 @@ function createNodeFromHostLiteralProperty(
  * @param bindings Array tracking the bound attributes of the host element.
  */
 function createNodeFromBindingDecorator(
-  decorator: ts.Decorator,
+  decorator: HostBindingDecorator,
   bindings: TmplAstBoundAttribute[],
 ): void {
-  // We only support decorators that are being called.
-  if (!ts.isCallExpression(decorator.expression)) {
-    return;
-  }
-
-  const args = decorator.expression.arguments;
-  const property = decorator.parent;
-  let nameNode: StaticName | null = null;
-  let propertyName: StaticName | null = null;
-
-  if (property && ts.isPropertyDeclaration(property) && isStaticName(property.name)) {
-    propertyName = property.name;
-  }
+  const args = decorator.arguments;
+  let nameNode: SourceNode;
 
   // The first parameter is optional. If omitted, the name
   // of the class member is used as the property.
   if (args.length === 0) {
-    nameNode = propertyName;
-  } else if (ts.isStringLiteralLike(args[0])) {
+    nameNode = decorator.memberName;
+  } else if (args[0].kind === 'string') {
     nameNode = args[0];
   } else {
     return;
   }
 
-  if (nameNode === null || propertyName === null) {
+  if (nameNode.kind !== 'string' && nameNode.kind !== 'identifier') {
     return;
   }
 
@@ -272,17 +295,21 @@ function createNodeFromBindingDecorator(
   // manually here. Note that we use a dummy span with -1/-1 as offsets, because it isn't
   // used for type checking and constructing it accurately would take some effort.
   const span = new ParseSpan(-1, -1);
-  const propertyStart = property.getStart();
+  const propertyStart = decorator.memberSpan.start.offset;
   const receiver = new ThisReceiver(span, new AbsoluteSourceSpan(propertyStart, propertyStart));
-  const nameSpan = new AbsoluteSourceSpan(propertyName.getStart(), propertyName.getEnd());
-  const read = ts.isIdentifier(propertyName)
-    ? new PropertyRead(span, nameSpan, nameSpan, receiver, propertyName.text)
-    : new KeyedRead(
-        span,
-        nameSpan,
-        receiver,
-        new LiteralPrimitive(span, nameSpan, propertyName.text),
-      );
+  const nameSpan = new AbsoluteSourceSpan(
+    nameNode.sourceSpan.start.offset,
+    nameNode.sourceSpan.end.offset,
+  );
+  const read =
+    decorator.memberName.kind === 'string'
+      ? new KeyedRead(
+          span,
+          nameSpan,
+          receiver,
+          new LiteralPrimitive(span, nameSpan, decorator.memberName.text),
+        )
+      : new PropertyRead(span, nameSpan, nameSpan, receiver, decorator.memberName.text);
   const {attrName, type} = inferBoundAttribute(nameNode.text);
 
   bindings.push(
@@ -292,9 +319,9 @@ function createNodeFromBindingDecorator(
       0,
       read,
       null,
-      createSourceSpan(decorator),
-      createStaticExpressionSpan(nameNode),
-      createSourceSpan(decorator),
+      decorator.decoratorSpan,
+      nameNode.sourceSpan,
+      decorator.decoratorSpan,
       undefined,
     ),
   );
@@ -307,25 +334,11 @@ function createNodeFromBindingDecorator(
  * @param bindings Array tracking the bound events of the host element.
  */
 function createNodeFromListenerDecorator(
-  decorator: ts.Decorator,
+  decorator: HostListenerDecorator,
   parser: BindingParser,
   listeners: TmplAstBoundEvent[],
 ): void {
-  // We only support decorators that are being called with at least one argument.
-  if (!ts.isCallExpression(decorator.expression) || decorator.expression.arguments.length === 0) {
-    return;
-  }
-
-  const args = decorator.expression.arguments;
-  const method = decorator.parent;
-
-  // Only handle decorators that are statically analyzable.
-  if (
-    !method ||
-    !ts.isMethodDeclaration(method) ||
-    !isStaticName(method.name) ||
-    !ts.isStringLiteralLike(args[0])
-  ) {
+  if (decorator.eventName === null || decorator.eventName.kind !== 'string') {
     return;
   }
 
@@ -335,53 +348,61 @@ function createNodeFromListenerDecorator(
   // something like `(foo)="handleFoo()"` in the AST. Instead we construct the expressions
   // manually here. Note that we use a dummy span with -1/-1 as offsets, because it isn't
   // used for type checking and constructing it accurately would take some effort.
-  const span = new ParseSpan(-1, -1);
+  const dummySpan = new ParseSpan(-1, -1);
   const argNodes: AST[] = [];
-  const methodStart = method.getStart();
-  const methodReceiver = new ThisReceiver(span, new AbsoluteSourceSpan(methodStart, methodStart));
-  const nameSpan = new AbsoluteSourceSpan(method.name.getStart(), method.name.getEnd());
-  const receiver = ts.isIdentifier(method.name)
-    ? new PropertyRead(span, nameSpan, nameSpan, methodReceiver, method.name.text)
-    : new KeyedRead(
-        span,
-        nameSpan,
-        methodReceiver,
-        new LiteralPrimitive(span, nameSpan, method.name.text),
-      );
+  const methodStart = decorator.memberSpan.start.offset;
+  const methodReceiver = new ThisReceiver(
+    dummySpan,
+    new AbsoluteSourceSpan(methodStart, methodStart),
+  );
+  const nameSpan = new AbsoluteSourceSpan(
+    decorator.memberName.sourceSpan.start.offset,
+    decorator.memberName.sourceSpan.end.offset,
+  );
+  const receiver =
+    decorator.memberName.kind === 'string'
+      ? new KeyedRead(
+          dummySpan,
+          nameSpan,
+          methodReceiver,
+          new LiteralPrimitive(dummySpan, nameSpan, decorator.memberName.text),
+        )
+      : new PropertyRead(dummySpan, nameSpan, nameSpan, methodReceiver, decorator.memberName.text);
 
-  if (args.length > 1 && ts.isArrayLiteralExpression(args[1])) {
-    for (const expr of args[1].elements) {
-      // If the parameter is a static string, parse it using the binding parser since it can be any
-      // expression, otherwise treat it as `any` so the rest of the parameters can be checked.
-      if (ts.isStringLiteralLike(expr)) {
-        const span = createStaticExpressionSpan(expr);
-        const ast = parser.parseBinding(expr.text, true, span, span.start.offset);
-        fixupSpans(ast, expr);
-        argNodes.push(ast);
-      } else {
-        // Represents `$any(0)`. We need to construct it manually in order to set the right spans.
-        const expressionSpan = new AbsoluteSourceSpan(expr.getStart(), expr.getEnd());
-        const anyRead = new PropertyRead(
-          span,
-          expressionSpan,
-          expressionSpan,
-          new ImplicitReceiver(span, expressionSpan),
-          '$any',
-        );
-        const anyCall = new Call(
-          span,
-          expressionSpan,
-          anyRead,
-          [new LiteralPrimitive(span, expressionSpan, 0)],
-          expressionSpan,
-        );
-        argNodes.push(anyCall);
-      }
+  for (const arg of decorator.arguments) {
+    // If the parameter is a static string, parse it using the binding parser since it can be any
+    // expression, otherwise treat it as `any` so the rest of the parameters can be checked.
+    if (arg.kind === 'string') {
+      const span = arg.sourceSpan;
+      const ast = parser.parseBinding(arg.text, true, span, span.start.offset);
+      fixupSpans(ast, arg);
+      argNodes.push(ast);
+    } else {
+      // Represents `$any(0)`. We need to construct it manually in order to set the right spans.
+      const expressionSpan = new AbsoluteSourceSpan(
+        arg.sourceSpan.start.offset,
+        arg.sourceSpan.end.offset,
+      );
+      const anyRead = new PropertyRead(
+        dummySpan,
+        expressionSpan,
+        expressionSpan,
+        new ImplicitReceiver(dummySpan, expressionSpan),
+        '$any',
+      );
+      const anyCall = new Call(
+        dummySpan,
+        expressionSpan,
+        anyRead,
+        [new LiteralPrimitive(dummySpan, expressionSpan, 0)],
+        expressionSpan,
+      );
+      argNodes.push(anyCall);
     }
   }
 
-  const callNode = new Call(span, nameSpan, receiver, argNodes, span);
-  const eventNameNode = args[0];
+  const callNode = new Call(dummySpan, nameSpan, receiver, argNodes, dummySpan);
+  const eventNameNode = decorator.eventName;
   let type: ParsedEventType;
   let eventName: string;
   let phase: string | null;
@@ -408,9 +429,9 @@ function createNodeFromListenerDecorator(
       callNode,
       target,
       phase,
-      createSourceSpan(decorator),
-      createSourceSpan(decorator),
-      createStaticExpressionSpan(eventNameNode),
+      decorator.decoratorSpan,
+      decorator.decoratorSpan,
+      eventNameNode.sourceSpan,
     ),
   );
 }
@@ -452,31 +473,12 @@ function inferBoundAttribute(name: string): {attrName: string; type: BindingType
   return {attrName, type};
 }
 
-/** Checks whether the specified node is a static name node. */
-function isStaticName(node: ts.Node): node is StaticName {
-  return ts.isIdentifier(node) || ts.isStringLiteralLike(node);
-}
-
-/** Creates a `ParseSourceSpan` pointing to a static expression AST node's source. */
-function createStaticExpressionSpan(node: ts.StringLiteralLike | ts.Identifier): ParseSourceSpan {
-  const span = createSourceSpan(node);
-
-  // Offset by one on both sides to skip over the quotes.
-  if (ts.isStringLiteralLike(node)) {
-    span.fullStart = span.fullStart.moveBy(1);
-    span.start = span.start.moveBy(1);
-    span.end = span.end.moveBy(-1);
-  }
-
-  return span;
-}
-
 /**
  * Adjusts the spans of a parsed AST so that they're appropriate for a host bindings context.
  * @param ast The parsed AST that may need to be adjusted.
  * @param initializer TypeScript node from which the source of the AST was extracted.
  */
-function fixupSpans(ast: AST, initializer: ts.StringLiteralLike): void {
+function fixupSpans(ast: AST, node: StaticSourceNode): void {
   // When parsing the initializer as a property/event binding, we use `.text` which excludes escaped
   // quotes and is generally what we want, because preserving them would result in a parser error,
   // however it has the downside in that the spans of the expressions following the escaped
@@ -501,11 +503,13 @@ function fixupSpans(ast: AST, initializer: ts.StringLiteralLike): void {
   // 4. Constructing some sort of string like `<host ${name.getText()}=${initializer.getText()}/>`,
   // passing it through the HTML parser and extracting the first attribute from it - wasn't explored
   // much, but likely has the same issues as approach #3.
-  const escapeIndex = initializer.getText().indexOf('\\', 1);
+  const escapeIndex = node.source.indexOf('\\', 1);
 
   if (escapeIndex > -1) {
-    const newSpan = new ParseSpan(0, initializer.getWidth());
-    const newSourceSpan = new AbsoluteSourceSpan(initializer.getStart(), initializer.getEnd());
+    const start = node.sourceSpan.start.offset;
+    const end = node.sourceSpan.end.offset;
+    const newSpan = new ParseSpan(0, end - start);
+    const newSourceSpan = new AbsoluteSourceSpan(start, end);
     ast.visit(new ReplaceSpanVisitor(escapeIndex, newSpan, newSourceSpan));
   }
 }

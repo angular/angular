@@ -135,6 +135,7 @@ import {
   compileNgFactoryDefField,
   compileResults,
   createForwardRefResolver,
+  createSourceSpan,
   extractClassDebugInfo,
   extractClassMetadata,
   extractSchemas,
@@ -231,10 +232,12 @@ const isUsedPipe = (decl: AnyUsedType): decl is UsedPipe =>
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler
-  implements
-    DecoratorHandler<Decorator, ComponentAnalysisData, ComponentSymbol, ComponentResolutionData>
-{
+export class ComponentDecoratorHandler implements DecoratorHandler<
+  Decorator,
+  ComponentAnalysisData,
+  ComponentSymbol,
+  ComponentResolutionData
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -1167,10 +1170,10 @@ export class ComponentDecoratorHandler
       ? createHostElement(
           'component',
           meta.meta.selector,
-          node,
-          meta.hostBindingNodes.literal,
-          meta.hostBindingNodes.bindingDecorators,
-          meta.hostBindingNodes.listenerDecorators,
+          createSourceSpan(node.name),
+          meta.hostBindingNodes.hostObjectLiteralBindings,
+          meta.hostBindingNodes.hostBindingDecorators,
+          meta.hostBindingNodes.hostListenerDecorators,
         )
       : null;
     const hostBindingsContext: HostBindingsContext | null =

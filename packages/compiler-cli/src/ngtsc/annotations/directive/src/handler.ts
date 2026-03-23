@@ -63,6 +63,7 @@ import {
   compileInputTransformFields,
   compileNgFactoryDefField,
   compileResults,
+  createSourceSpan,
   extractClassMetadata,
   findAngularDecorator,
   getDirectiveDiagnostics,
@@ -132,9 +133,12 @@ export interface DirectiveHandlerData {
   resources: DirectiveResources;
 }
 
-export class DirectiveDecoratorHandler
-  implements DecoratorHandler<Decorator | null, DirectiveHandlerData, DirectiveSymbol, unknown>
-{
+export class DirectiveDecoratorHandler implements DecoratorHandler<
+  Decorator | null,
+  DirectiveHandlerData,
+  DirectiveSymbol,
+  unknown
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -360,10 +364,10 @@ export class DirectiveDecoratorHandler
     const hostElement = createHostElement(
       'directive',
       meta.meta.selector,
-      node,
-      meta.hostBindingNodes.literal,
-      meta.hostBindingNodes.bindingDecorators,
-      meta.hostBindingNodes.listenerDecorators,
+      createSourceSpan(node.name),
+      meta.hostBindingNodes.hostObjectLiteralBindings,
+      meta.hostBindingNodes.hostBindingDecorators,
+      meta.hostBindingNodes.hostListenerDecorators,
     );
 
     if (hostElement !== null && scope.directivesOnHost !== null) {
