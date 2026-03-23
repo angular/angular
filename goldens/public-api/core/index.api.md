@@ -499,13 +499,16 @@ export const CSP_NONCE: InjectionToken<string | null>;
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 // @public
-export function debounced<T>(source: () => T, wait: NoInfer<number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void)>, options?: NoInfer<DebouncedOptions<T>>): Resource<T>;
+export function debounced<T>(source: () => T, wait: NoInfer<DebounceTimer<T>>, options?: NoInfer<DebouncedOptions<T>>): Resource<T>;
 
 // @public
 export interface DebouncedOptions<T> {
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
 }
+
+// @public
+export type DebounceTimer<T> = number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void);
 
 // @public (undocumented)
 export class DebugElement extends DebugNode {

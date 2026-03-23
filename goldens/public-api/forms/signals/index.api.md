@@ -6,6 +6,7 @@
 
 import { AbstractControl } from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
+import { DebounceTimer } from '@angular/core';
 import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
@@ -47,6 +48,7 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
 
 // @public
 export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root> {
+    readonly debounce?: DebounceTimer<TParams | undefined>;
     readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
@@ -260,6 +262,7 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path:
 
 // @public
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
+    readonly debounce?: DebounceTimer<string | HttpResourceRequest | undefined>;
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly options?: HttpResourceOptions<TResult, unknown>;

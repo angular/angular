@@ -12,7 +12,7 @@ import {effect} from '../render3/reactivity/effect';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
 import {signal} from '../render3/reactivity/signal';
 import {untracked} from '../render3/reactivity/untracked';
-import {Resource, ResourceSnapshot, type DebouncedOptions} from './api';
+import {Resource, ResourceSnapshot, type DebounceTimer, type DebouncedOptions} from './api';
 import {resourceFromSnapshots} from './from_snapshots';
 import {
   invalidResourceCreationInParams,
@@ -33,7 +33,7 @@ import {
  */
 export function debounced<T>(
   source: () => T,
-  wait: NoInfer<number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void)>,
+  wait: NoInfer<DebounceTimer<T>>,
   options?: NoInfer<DebouncedOptions<T>>,
 ): Resource<T> {
   if (isInParamsFunction()) {
