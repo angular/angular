@@ -80,7 +80,7 @@ export class ChromeMessageBus extends MessageBus<Events> {
   }
 
   override destroy(): void {
-    this._listeners.forEach((l) => window.removeEventListener('message', l));
+    this._listeners.forEach((l) => this._port.onMessage.removeListener(l));
     this._listeners = [];
   }
 }
