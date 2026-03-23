@@ -332,6 +332,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
  * Provides change detection without ZoneJS for the application bootstrapped using
  * `bootstrapApplication`.
  *
+ * NOTE: Zoneless is enabled by default in Angular v21+. Ensure `provideZoneChangeDetection` is not used to override this default.
+ *
  * This function allows you to configure the application to not use the state/state changes of
  * ZoneJS to schedule change detection in the application. This will work when ZoneJS is not present
  * on the page at all or if it exists because something else is using it (either another Angular
