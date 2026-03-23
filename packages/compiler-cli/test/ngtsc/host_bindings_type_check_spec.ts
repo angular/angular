@@ -579,7 +579,7 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[1])).toBe('handleClick');
     });
 
-    it('should report diagnostic on the entire initializer of property binding if node contains escaped string', () => {
+    it('should report diagnostic on the entire expression of property binding if node contains escaped string', () => {
       env.write(
         'test.ts',
         `
@@ -599,10 +599,10 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Dir'.`);
-      expect(getDiagnosticSourceCode(diags[0])).toBe(`'prefix + \\'123\\' + doesNotExist'`);
+      expect(getDiagnosticSourceCode(diags[0])).toBe(`prefix + \\'123\\' + doesNotExist`);
     });
 
-    it('should report diagnostic on the entire initializer of event binding if node contains escaped string', () => {
+    it('should report diagnostic on the entire expression of event binding if node contains escaped string', () => {
       env.write(
         'test.ts',
         `
@@ -624,7 +624,7 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
-      expect(getDiagnosticSourceCode(diags[0])).toBe(`'handleClick(\\'foo\\')'`);
+      expect(getDiagnosticSourceCode(diags[0])).toBe(`handleClick(\\'foo\\')`);
     });
 
     it('should preserve diagnostic location of nodes that occur before escaped string', () => {
