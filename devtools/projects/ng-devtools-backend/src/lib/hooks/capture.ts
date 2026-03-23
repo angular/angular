@@ -21,6 +21,7 @@ import {isCustomElement, runOutsideAngular} from '../utils';
 
 import {initializeOrGetDirectiveForestHooks} from '.';
 import {DirectiveForestHooks} from './hooks';
+import {IdentityTracker} from './identity-tracker';
 import {Hooks} from './profiler';
 
 let inProgress = false;
@@ -40,6 +41,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   }
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
+  IdentityTracker.getInstance().setProfilingActive(true);
   hooks = getHooks(onFrame);
   initializeOrGetDirectiveForestHooks().profiler.subscribe(hooks);
 };
@@ -50,6 +52,7 @@ export const stop = (): ProfilerFrame => {
   initializeOrGetDirectiveForestHooks().profiler.unsubscribe(hooks);
   hooks = {};
   inProgress = false;
+  IdentityTracker.getInstance().setProfilingActive(false);
   return result;
 };
 
