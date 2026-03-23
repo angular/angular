@@ -118,7 +118,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
-    opts.factory,
+    (_state, params) => opts.factory(params),
   );
   RESOURCE[IS_ASYNC_VALIDATION_RESOURCE] = true;
 

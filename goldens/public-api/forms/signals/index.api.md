@@ -79,10 +79,10 @@ export type CompatSchemaPath<TControl extends AbstractControl, TPathKind extends
 };
 
 // @public
-export function createManagedMetadataKey<TRead, TWrite>(create: (s: Signal<TWrite | undefined>) => TRead): MetadataKey<TRead, TWrite, TWrite | undefined>;
+export function createManagedMetadataKey<TRead, TWrite>(create: (state: FieldState<unknown>, data: Signal<TWrite | undefined>) => TRead): MetadataKey<TRead, TWrite, TWrite | undefined>;
 
 // @public
-export function createManagedMetadataKey<TRead, TWrite, TAcc>(create: (s: Signal<TAcc>) => TRead, reducer: MetadataReducer<TAcc, TWrite>): MetadataKey<TRead, TWrite, TAcc>;
+export function createManagedMetadataKey<TRead, TWrite, TAcc>(create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead, reducer: MetadataReducer<TAcc, TWrite>): MetadataKey<TRead, TWrite, TAcc>;
 
 // @public
 export function createMetadataKey<TWrite>(): MetadataKey<Signal<TWrite | undefined>, TWrite, TWrite | undefined>;
@@ -345,9 +345,9 @@ export function metadata<TValue, TKey extends MetadataKey<any, any, any>, TPathK
 
 // @public
 export class MetadataKey<TRead, TWrite, TAcc> {
-    protected constructor(reducer: MetadataReducer<TAcc, TWrite>, create: ((s: Signal<TAcc>) => TRead) | undefined);
+    protected constructor(reducer: MetadataReducer<TAcc, TWrite>, create: ((state: FieldState<unknown>, data: Signal<TAcc>) => TRead) | undefined);
     // (undocumented)
-    readonly create: ((s: Signal<TAcc>) => TRead) | undefined;
+    readonly create: ((state: FieldState<unknown>, data: Signal<TAcc>) => TRead) | undefined;
     // (undocumented)
     readonly reducer: MetadataReducer<TAcc, TWrite>;
 }
@@ -509,11 +509,11 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
-    readonly max?: Signal<number | undefined>;
-    readonly maxLength?: Signal<number | undefined>;
+    readonly max: Signal<number | undefined> | undefined;
+    readonly maxLength: Signal<number | undefined> | undefined;
     metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
-    readonly min?: Signal<number | undefined>;
-    readonly minLength?: Signal<number | undefined>;
+    readonly min: Signal<number | undefined> | undefined;
+    readonly minLength: Signal<number | undefined> | undefined;
     readonly name: Signal<string>;
     readonly pattern: Signal<readonly RegExp[]>;
     readonly pending: Signal<boolean>;

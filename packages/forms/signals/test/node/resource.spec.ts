@@ -7,7 +7,14 @@
  */
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Injector, resource, signal, type Signal} from '@angular/core';
+import {
+  ApplicationRef,
+  assertNotInReactiveContext,
+  Injector,
+  resource,
+  signal,
+  type Signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
@@ -57,7 +64,7 @@ describe('resources', () => {
 
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
-      const RES = createManagedMetadataKey((params: Signal<{x: string} | undefined>) =>
+      const RES = createManagedMetadataKey((_state, params: Signal<{x: string} | undefined>) =>
         resource({
           params,
           loader: async ({params}) => `got: ${params.x}`,
@@ -102,7 +109,7 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
-        const RES = createManagedMetadataKey((params: Signal<{x: string} | undefined>) =>
+        const RES = createManagedMetadataKey((_state, params: Signal<{x: string} | undefined>) =>
           resource({
             params,
             loader: async ({params}) => `got: ${params.x}`,
@@ -388,7 +395,7 @@ describe('resources', () => {
   });
 
   it('should not allow accessing resource metadata on a field that does not define its params', () => {
-    const RES = createManagedMetadataKey((params: Signal<string | undefined>) =>
+    const RES = createManagedMetadataKey((_state, params: Signal<string | undefined>) =>
       resource({params, loader: async () => 'hi'}),
     );
 
@@ -438,5 +445,29 @@ describe('resources', () => {
       expect(usernameForm().invalid()).toBe(true);
       expect(usernameForm().pending()).toBe(false);
     });
+  });
+
+  it('should allow accessing basic field state properties during creation without reading them', () => {
+    let success = false;
+
+    const RES = createManagedMetadataKey((state, _params: Signal<string | undefined>) => {
+      // We shouldn't be captured in the reactive context of node creation here.
+      assertNotInReactiveContext(createManagedMetadataKey);
+
+      state.value();
+      state.disabled();
+
+      success = true;
+    });
+
+    form(
+      signal(''),
+      (p) => {
+        metadata(p, RES, () => 'trigger');
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(success).toBeTrue();
   });
 });

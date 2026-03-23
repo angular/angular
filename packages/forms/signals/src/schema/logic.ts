@@ -308,6 +308,10 @@ export class LogicContainer {
     return this.metadata.has(key);
   }
 
+  hasMetadataKeys(): boolean {
+    return this.metadata.size > 0;
+  }
+
   /**
    * Gets an iterable of [metadata key, logic function] pairs.
    * @returns An iterable of metadata keys.
