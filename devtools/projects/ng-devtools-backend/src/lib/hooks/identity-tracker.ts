@@ -34,6 +34,14 @@ export class IdentityTracker {
   private _currentDirectiveId = new Map<any, number>();
   isComponent = new Map<any, boolean>();
 
+  /**
+   * Directives that were removed while profiling was active.
+   * Cleanup is deferred until profiling stops so that the profiler
+   * can still look up IDs / positions of destroyed components.
+   */
+  private _pendingRemovals = new Set<any>();
+  private _isProfiling = false;
+
   // private constructor for Singleton Pattern
   private constructor() {}
 
@@ -56,6 +64,18 @@ export class IdentityTracker {
     return this._currentDirectiveId.has(dir);
   }
 
+  /**
+   * Toggle profiling state. While profiling is active, removed directive
+   * entries are kept so the profiler can still resolve IDs and positions.
+   * When profiling stops, deferred removals are flushed.
+   */
+  setProfilingActive(active: boolean): void {
+    this._isProfiling = active;
+    if (!active) {
+      this._flushPendingRemovals();
+    }
+  }
+
   index(): {
     newNodes: NodeArray;
     removedNodes: NodeArray;
@@ -71,10 +91,11 @@ export class IdentityTracker {
     this._currentDirectiveId.forEach((_: number, dir: any) => {
       if (!allNodes.has(dir)) {
         removedNodes.push({directive: dir, isComponent: !!this.isComponent.get(dir)});
-        // We can't clean these up because during profiling
-        // they might be requested for removed components
-        // this._currentDirectiveId.delete(dir);
-        // this._currentDirectivePosition.delete(dir);
+        if (this._isProfiling) {
+          this._pendingRemovals.add(dir);
+        } else {
+          this._cleanupDirective(dir);
+        }
       }
     });
     return {newNodes, removedNodes, indexedForest, directiveForest};
@@ -110,9 +131,25 @@ export class IdentityTracker {
     }
   }
 
+  private _cleanupDirective(dir: any): void {
+    this._currentDirectiveId.delete(dir);
+    this._currentDirectivePosition.delete(dir);
+    this.isComponent.delete(dir);
+  }
+
+  private _flushPendingRemovals(): void {
+    for (const dir of this._pendingRemovals) {
+      this._cleanupDirective(dir);
+    }
+    this._pendingRemovals.clear();
+  }
+
   destroy(): void {
     this._currentDirectivePosition = new Map<any, ElementPosition>();
     this._currentDirectiveId = new Map<any, number>();
+    this.isComponent = new Map<any, boolean>();
+    this._pendingRemovals.clear();
+    this._isProfiling = false;
   }
 }
 
