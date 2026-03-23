@@ -105,6 +105,13 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'none|href',
       'none|xlink:href',
 
+      // SVG animation value attributes — may animate URL-bearing attrs (e.g. attributeName="href")
+      // https://www.w3.org/TR/SVG11/animate.html#ToAttribute
+      'animate|to',
+      'animate|from',
+      'animate|values',
+      'set|to',
+
       // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
       'img|src',
       'video|src',
