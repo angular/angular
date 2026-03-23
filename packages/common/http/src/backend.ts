@@ -42,7 +42,7 @@ import {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useExisting: HttpXhrBackend})
+@Injectable({providedIn: 'root', useExisting: FetchBackend})
 export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
@@ -90,8 +90,7 @@ export class HttpInterceptorHandler implements HttpHandler {
                 "to use `fetch` APIs. It's strongly recommended to " +
                 'enable `fetch` for applications that use Server-Side Rendering ' +
                 'for better performance and compatibility. ' +
-                'To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` ' +
-                'call at the root of the application.',
+                'To enable `fetch`, remove the `withXhr()` feature from the `provideHttpClient()` call',
             ),
           );
       }

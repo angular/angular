@@ -90,7 +90,7 @@ function validateXhrCompatibility(req: HttpRequest<any>) {
       console.warn(
         formatRuntimeError(
           errorCode,
-          `Angular detected that a \`HttpClient\` request with the \`${property}\` option was sent using XHR, which does not support it. To use the \`${property}\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
+          `Angular detected that a \`HttpClient\` request with the \`${property}\` option was sent using XHR, which does not support it. To use the \`${property}\` option, use the Fetch API by removing \`withXhr()\` from the \`provideHttpClient()\` call.`,
         ),
       );
     }
