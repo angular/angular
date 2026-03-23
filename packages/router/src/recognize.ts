@@ -454,6 +454,7 @@ export class Recognizer {
       consumedSegments,
       remainingSegments,
       childConfig,
+      outlet,
     );
 
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
