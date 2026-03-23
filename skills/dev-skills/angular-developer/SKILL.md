@@ -28,7 +28,7 @@ When asked to create a new Angular project, you must determine the correct execu
 **Step 1: Check for an explicit user version.**
 
 - **IF** the user requests a specific version (e.g., Angular 15), bypass local installations and strictly use `npx`.
-- **Command:** `npx @angular/cli@<requested_version> ng new <project-name>`
+- **Command:** `npx @angular/cli@<requested_version> new <project-name>`
 
 **Step 2: Check for an existing Angular installation.**
 
@@ -39,7 +39,7 @@ When asked to create a new Angular project, you must determine the correct execu
 **Step 3: Fallback to Latest.**
 
 - **IF** no specific version is requested AND the `ng version` command fails (indicating no Angular installation exists), you must use `npx` to fetch the latest version.
-- **Command:** `npx @angular/cli@latest ng new <project-name>`
+- **Command:** `npx @angular/cli@latest new <project-name>`
 
 ## Components
 
