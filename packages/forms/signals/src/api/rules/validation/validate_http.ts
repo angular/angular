@@ -7,7 +7,7 @@
  */
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {Signal} from '@angular/core';
+import {DebounceTimer, ResourceSnapshot, Signal} from '@angular/core';
 import {
   FieldContext,
   SchemaPath,
@@ -62,6 +62,12 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    * The options to use when creating the httpResource.
    */
   readonly options?: HttpResourceOptions<TResult, unknown>;
+
+  /**
+   * Duration in milliseconds to wait before triggering the async operation, or a function that
+   * returns a promise that resolves when the update should proceed.
+   */
+  readonly debounce?: DebounceTimer<string | HttpResourceRequest | undefined>;
 }
 
 /**
@@ -83,7 +89,10 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
   opts: HttpValidatorOptions<TValue, TResult, TPathKind>,
 ) {
   validateAsync(path, {
-    params: opts.request,
+    params: opts.request as (
+      ctx: FieldContext<TValue, TPathKind>,
+    ) => string | HttpResourceRequest | undefined,
+    debounce: opts.debounce,
     factory: (request: Signal<any>) => httpResource(request, opts.options),
     onSuccess: opts.onSuccess,
     onError: opts.onError,

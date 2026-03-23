@@ -305,3 +305,11 @@ export interface DebouncedOptions<T> {
   /** The equality function to use for comparing values. */
   equal?: ValueEqualityFn<T>;
 }
+
+/**
+ * Represents the wait condition for item debouncing.
+ * Can be a number of milliseconds or a function that returns a Promise.
+ */
+export type DebounceTimer<T> =
+  | number
+  | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void);

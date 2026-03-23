@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ResourceRef, Signal} from '@angular/core';
+import {DebounceTimer, ResourceRef, ResourceSnapshot, Signal, debounced} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -68,6 +68,12 @@ export interface AsyncValidatorOptions<
   readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
 
   /**
+   * Duration in milliseconds to wait before triggering the async operation, or a function that
+   * returns a promise that resolves when the update should proceed.
+   */
+  readonly debounce?: DebounceTimer<TParams | undefined>;
+
+  /**
    * A function that receives the resource params and returns a resource of the given params.
    * The given params should be used as is to create the resource.
    * The forms system will report the params as `undefined` when this validation doesn't need to be run.
@@ -118,7 +124,13 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
-    (_state, params) => opts.factory(params),
+    (_state, params) => {
+      if (opts.debounce !== undefined) {
+        const debouncedResource = debounced(() => params(), opts.debounce);
+        return opts.factory(debouncedResource.value);
+      }
+      return opts.factory(params);
+    },
   );
   RESOURCE[IS_ASYNC_VALIDATION_RESOURCE] = true;
 
