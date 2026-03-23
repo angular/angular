@@ -4178,6 +4178,7 @@ runInEachFileSystem(() => {
 
       it('should error if "extendedDiagnostics.defaultCategory" is set to an unknown value', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             defaultCategory: 'does-not-exist',
           },
@@ -4199,6 +4200,7 @@ suppress
       });
       it('should not error if "extendedDiagnostics.defaultCategory" is set to a known value', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             defaultCategory: DiagnosticCategoryLabel.Error,
           },
@@ -4210,6 +4212,7 @@ suppress
 
       it('should error if "extendedDiagnostics.checks" contains an unknown check', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               doesNotExist: DiagnosticCategoryLabel.Error,
@@ -4225,6 +4228,7 @@ suppress
       });
       it('should not error if "extendedDiagnostics.checks" contains all known checks', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               [invalidBananaInBoxFactory.name]: DiagnosticCategoryLabel.Error,
@@ -4238,6 +4242,7 @@ suppress
 
       it('should error if "extendedDiagnostics.checks" contains an unknown diagnostic category', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               [invalidBananaInBoxFactory.name]: 'does-not-exist',
@@ -4261,6 +4266,7 @@ suppress
       });
       it('should not error if "extendedDiagnostics.checks" contains all known diagnostic categories', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               [invalidBananaInBoxFactory.name]: DiagnosticCategoryLabel.Error,
@@ -7044,6 +7050,7 @@ suppress
 
       it('should allow the content projection diagnostic to be disabled individually', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               controlFlowPreventingContentProjection: DiagnosticCategoryLabel.Suppress,
@@ -7082,6 +7089,7 @@ suppress
 
       it('should allow the content projection diagnostic to be disabled via `defaultCategory`', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             defaultCategory: DiagnosticCategoryLabel.Suppress,
           },
@@ -8232,6 +8240,7 @@ suppress
 
       it('should be able to opt out for checking for unused imports via the tsconfig', () => {
         env.tsconfig({
+          strictTemplates: true,
           extendedDiagnostics: {
             checks: {
               unusedStandaloneImports: DiagnosticCategoryLabel.Suppress,
