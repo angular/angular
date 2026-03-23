@@ -7,12 +7,10 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {provideHttpClient, withFetch} from '@angular/common/http';
 import {
   ApplicationConfig,
   ErrorHandler,
   inject,
-  provideZonelessChangeDetection,
   provideEnvironmentInitializer,
 } from '@angular/core';
 import {
@@ -37,9 +35,7 @@ import {TYPESCRIPT_VFS_WORKER_PROVIDER} from './editor/code-editor/workers/facto
 export const appConfig: ApplicationConfig = {
   providers: [
     routerProviders,
-    provideZonelessChangeDetection(),
     provideClientHydration(),
-    provideHttpClient(withFetch()),
     provideEnvironmentInitializer(() => inject(AnalyticsService)),
     provideAlgoliaSearchClient(environment),
     {provide: ENVIRONMENT, useValue: environment},
