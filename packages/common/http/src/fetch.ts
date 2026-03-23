@@ -45,7 +45,7 @@ const XSSI_PREFIX = /^\)\]\}',?\n/;
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class FetchBackend implements HttpBackend {
   // We use an arrow function to always reference the current global implementation of `fetch`.
   // This is helpful for cases when the global `fetch` implementation is modified by external code,
