@@ -25,7 +25,7 @@ Additional testing environments require custom bindings. See the [adding harness
 
 ### Using the loader from `TestbedHarnessEnvironment` for unit tests
 
-For unit tests you can create a harness loader from [TestbedHarnessEnvironment](/api/cdk/testing/TestbedHarnessEnvironment). This environment uses a [component fixture](api/core/testing/ComponentFixture) created by Angular's `TestBed`.
+For unit tests you can create a harness loader from [TestbedHarnessEnvironment](/api/cdk/testing/testbed/TestbedHarnessEnvironment). This environment uses a [component fixture](api/core/testing/ComponentFixture) created by Angular's `TestBed`.
 
 To create a harness loader rooted at the fixture's root element, use the `loader()` method:
 
@@ -68,7 +68,7 @@ To get `ComponentHarness` for the first instance of the element, use the `getHar
 const myComponentHarness = await loader.getHarness(MyComponent);
 
 // Get harnesses for all instances of the element
-const myComponentHarnesses = await loader.getHarnesses(MyComponent);
+const myComponentHarnesses = await loader.getAllHarnesses(MyComponent);
 ```
 
 In addition to `getHarness` and `getAllHarnesses`, `HarnessLoader` has several other useful methods for querying for harnesses:
