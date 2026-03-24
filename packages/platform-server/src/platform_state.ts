@@ -55,6 +55,24 @@ export class PlatformState {
   getDocument(): any {
     return this._doc;
   }
+
+  /**
+   * Renders the current state of the platform to an object containing the head and body.
+   */
+  renderToParts(): {head: string; body: string} {
+    if (ngDevMode && !this._enableDomEmulation && !window?.document) {
+      throw new Error('Disabled DOM emulation should only run in browser environments');
+    }
+    const measuringLabel = 'renderToParts';
+    startMeasuring(measuringLabel);
+    
+    // Fallbacks if doc is somehow malformed
+    const headHtml = this._doc.head?.innerHTML ?? '';
+    const bodyHtml = this._doc.body?.innerHTML ?? '';
+
+    stopMeasuring(measuringLabel);
+    return {head: headHtml, body: bodyHtml};
+  }
 }
 
 export function enableDomEmulation(injector: Injector): boolean {

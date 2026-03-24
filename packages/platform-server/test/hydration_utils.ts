@@ -27,7 +27,7 @@ import {
 } from '@angular/platform-browser';
 
 import {provideServerRendering} from '../public_api';
-import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
+import {EVENT_DISPATCH_SCRIPT_ID, renderApplication, renderApplicationParts, ServerApplicationParts} from '../src/utils';
 
 import {getAppContents, stripUtilAttributes} from './dom_utils';
 
@@ -268,6 +268,47 @@ export async function ssr(
       bootstrapApplication(component, {providers}, context);
 
     return await renderApplication(bootstrap, {
+      document: options?.doc ?? defaultHtml,
+    });
+  } finally {
+    // Leave server mode so the remaining test is back in "client mode".
+    globalThis['ngServerMode'] = undefined;
+  }
+}
+
+/**
+ * This renders the application with server side rendering logic into parts.
+ *
+ * @param component the test component to be rendered
+ * @param doc the document
+ * @param envProviders the environment providers
+ * @returns a promise containing the server rendered app parts
+ */
+export async function ssrParts(
+  component: Type<unknown>,
+  options: {
+    doc?: string;
+    envProviders?: Provider[];
+    hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
+    enableHydration?: boolean;
+  } = {},
+): Promise<ServerApplicationParts> {
+  try {
+    // Enter server mode for the duration of this function.
+    globalThis['ngServerMode'] = true;
+
+    const defaultHtml = DEFAULT_DOCUMENT;
+    const {enableHydration = true, envProviders = [], hydrationFeatures = () => []} = options;
+    const providers = [
+      ...envProviders,
+      provideServerRendering(),
+      enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
+    ];
+
+    const bootstrap = (context: BootstrapContext) =>
+      bootstrapApplication(component, {providers}, context);
+
+    return await renderApplicationParts(bootstrap, {
       document: options?.doc ?? defaultHtml,
     });
   } finally {

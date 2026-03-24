@@ -21,6 +21,7 @@ import {
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵstartMeasuring as startMeasuring,
   ɵstopMeasuring as stopMeasuring,
+  ɵISOLATED_HYDRATION_DOM_BOUNDARY as ISOLATED_HYDRATION_DOM_BOUNDARY,
 } from '@angular/core';
 import {BootstrapContext} from '@angular/platform-browser';
 
@@ -96,7 +97,8 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
     return;
   }
 
-  appendSsrContentIntegrityMarker(doc);
+  const boundaries = environmentInjector.get(ISOLATED_HYDRATION_DOM_BOUNDARY, []);
+  appendSsrContentIntegrityMarker(doc, boundaries);
 
   const eventTypesToReplay = annotateForHydration(applicationRef, doc);
   if (eventTypesToReplay.regular.size || eventTypesToReplay.capture.size) {
@@ -120,12 +122,28 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
  * This behaviour breaks hydration, so we'll detect on the client side if this
  * marker comment is still available or else throw an error
  */
-function appendSsrContentIntegrityMarker(doc: Document) {
+function appendSsrContentIntegrityMarker(
+  doc: Document,
+  boundaries: (Element | string)[] = [],
+) {
   // Adding a ng hydration marker comment
   const comment = doc.createComment(SSR_CONTENT_INTEGRITY_MARKER);
-  doc.body.firstChild
-    ? doc.body.insertBefore(comment, doc.body.firstChild)
-    : doc.body.append(comment);
+  
+  let targetNode: Element | null = null;
+  if (boundaries.length > 0) {
+    const boundary = boundaries[0];
+    targetNode = typeof boundary === 'string' ? doc.querySelector(boundary) : boundary;
+  }
+  
+  if (!targetNode && doc.body) {
+    targetNode = doc.body;
+  }
+  
+  if (targetNode) {
+    targetNode.firstChild
+      ? targetNode.insertBefore(comment, targetNode.firstChild)
+      : targetNode.append(comment);
+  }
 }
 
 /**
@@ -219,6 +237,52 @@ export async function renderInternal(
   }
 
   return platformState.renderToString();
+}
+
+/**
+ * Result of the headless server rendering.
+ * @publicApi
+ */
+export interface ServerApplicationParts {
+  head: string;
+  body: string;
+}
+
+export async function renderApplicationPartsInternal(
+  platformRef: PlatformRef,
+  applicationRef: ApplicationRef,
+): Promise<ServerApplicationParts> {
+  const platformState = platformRef.injector.get(PlatformState);
+  prepareForHydration(platformState, applicationRef);
+  appendServerContextInfo(applicationRef);
+
+  // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
+  const environmentInjector = applicationRef.injector;
+  const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
+  if (callbacks) {
+    const asyncCallbacks: Promise<void>[] = [];
+    for (const callback of callbacks) {
+      try {
+        const callbackResult = callback();
+        if (callbackResult) {
+          asyncCallbacks.push(callbackResult);
+        }
+      } catch (e) {
+        // Ignore exceptions.
+        console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
+      }
+    }
+
+    if (asyncCallbacks.length) {
+      for (const result of await Promise.allSettled(asyncCallbacks)) {
+        if (result.status === 'rejected') {
+          console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', result.reason);
+        }
+      }
+    }
+  }
+
+  return platformState.renderToParts();
 }
 
 /**
@@ -344,6 +408,69 @@ export async function renderApplication(
     stopMeasuring(measuringLabel);
 
     const rendered = await renderInternal(platformRef, applicationRef);
+    stopMeasuring(_renderLabel);
+    return rendered;
+  } finally {
+    await asyncDestroyPlatform(platformRef);
+    stopMeasuring(renderAppLabel);
+  }
+}
+
+/**
+ * Bootstraps an instance of an Angular application and renders it down to its head and body.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * import { BootstrapContext, bootstrapApplication } from '@angular/platform-browser';
+ * import { renderApplicationParts } from '@angular/platform-server';
+ * import { ApplicationConfig } from '@angular/core';
+ * import { AppComponent } from './app.component';
+ *
+ * const appConfig: ApplicationConfig = { providers: [...] };
+ * const bootstrap = (context: BootstrapContext) =>
+ *   bootstrapApplication(AppComponent, config, context);
+ * const output = await renderApplicationParts(bootstrap);
+ * console.log(output.head, output.body);
+ * ```
+ *
+ * @param bootstrap A method that when invoked returns a promise that returns an `ApplicationRef`
+ *     instance once resolved. The method is invoked with an `Injector` instance that
+ *     provides access to the platform-level dependency injection context.
+ * @param options Additional configuration for the render operation:
+ *  - `document` - the document of the page to render, either as an HTML string or
+ *                 as a reference to the `document` instance.
+ *  - `url` - the URL for the current render request.
+ *  - `platformProviders` - the platform level providers for the current render request.
+ *
+ * @returns A Promise, that returns an object containing the head and body string segments.
+ *
+ * @publicApi
+ */
+export async function renderApplicationParts(
+  bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>,
+  options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
+): Promise<ServerApplicationParts> {
+  const renderAppLabel = 'renderApplicationParts';
+  const bootstrapLabel = 'bootstrap';
+  const _renderLabel = '_renderParts';
+
+  startMeasuring(renderAppLabel);
+  const platformRef = createServerPlatform(options);
+  try {
+    startMeasuring(bootstrapLabel);
+    const applicationRef = await bootstrap({platformRef});
+    stopMeasuring(bootstrapLabel);
+
+    startMeasuring(_renderLabel);
+
+    const measuringLabel = 'whenStable';
+    startMeasuring(measuringLabel);
+    // Block until application is stable.
+    await applicationRef.whenStable();
+    stopMeasuring(measuringLabel);
+
+    const rendered = await renderApplicationPartsInternal(platformRef, applicationRef);
     stopMeasuring(_renderLabel);
     return rendered;
   } finally {

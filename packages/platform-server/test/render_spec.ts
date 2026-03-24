@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {ssr} from './hydration_utils';
+import {ssr, ssrParts} from './hydration_utils';
 
 describe('renderApplication', () => {
   it('should render ARIA attributes from attribute bindings', async () => {
@@ -34,5 +34,25 @@ describe('renderApplication', () => {
 
     const html = await ssr(SomeComponent);
     expect(html).toContain('aria-label="a third label"');
+  });
+});
+
+describe('renderApplicationParts', () => {
+  it('should render head and body separately', async () => {
+    @Component({
+      selector: 'app',
+      template: '<div>hello parts</div>',
+    })
+    class SomeComponent {}
+
+    const parts = await ssrParts(SomeComponent, {
+      doc: '<html><head><title>Test Parts Title</title></head><body><app></app></body></html>',
+    });
+
+    expect(parts.head).toContain('<title>Test Parts Title</title>');
+    expect(parts.head).not.toContain('<div>hello parts</div>');
+    expect(parts.body).toContain('<app ng-version=');
+    expect(parts.body).toContain('<div>hello parts</div>');
+    expect(parts.body).not.toContain('<title>Test Parts Title</title>');
   });
 });
