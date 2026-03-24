@@ -668,8 +668,6 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
   'Component',
-  // TODO(jeanmeche): remove the ts-ignore when OnPush is the default
-  // @ts-ignore
   (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}),
   Directive,
   undefined,
