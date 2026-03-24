@@ -663,15 +663,27 @@ export class Scope {
     // After expanding the directives, we might need to queue an operation to check any unclaimed
     // outputs.
     if (node instanceof TmplAstElement || node instanceof TmplAstHostElement) {
+      let hasComponent = false;
       // Go through the directives and register any outputs that it claims in `claimedOutputs`.
       for (const dir of directives) {
+        if (dir.isComponent) {
+          hasComponent = true;
+        }
         for (const outputProperty of dir.outputs.propertyNames) {
           claimedOutputs.add(outputProperty);
         }
       }
 
       this.opQueue.push(
-        new TcbUnclaimedOutputsOp(this.tcb, this, node, events, bindings, claimedOutputs),
+        new TcbUnclaimedOutputsOp(
+          this.tcb,
+          this,
+          node,
+          events,
+          bindings,
+          claimedOutputs,
+          hasComponent && this.tcb.env.config.checkComponentHostDomEvents,
+        ),
       );
     }
   }
@@ -741,7 +753,15 @@ export class Scope {
       }
     } else {
       this.opQueue.push(
-        new TcbUnclaimedOutputsOp(this.tcb, this, node, node.outputs, node.inputs, claimedOutputs),
+        new TcbUnclaimedOutputsOp(
+          this.tcb,
+          this,
+          node,
+          node.outputs,
+          node.inputs,
+          claimedOutputs,
+          this.tcb.env.config.checkComponentHostDomEvents,
+        ),
       );
     }
   }

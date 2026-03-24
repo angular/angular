@@ -450,6 +450,12 @@ export enum ErrorCode {
   MULTIPLE_MATCHING_COMPONENTS = 8023,
 
   /**
+   * Raised when `skipComponentOutputDomEvents` is enabled and a component host binds to an event
+   * that is not declared as an output.
+   */
+  UNCLAIMED_COMPONENT_EVENT_BINDING = 8024,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *

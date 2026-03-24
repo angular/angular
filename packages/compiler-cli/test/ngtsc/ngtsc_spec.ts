@@ -5671,6 +5671,108 @@ runInEachFileSystem((os: string) => {
       );
     });
 
+    it('should emit masked component listeners when enabled in angularCompilerOptions', () => {
+      env.tsconfig({
+        skipComponentOutputDomEvents: true,
+      });
+      env.write(
+        'test.ts',
+        `
+        import {Component, EventEmitter, Output} from '@angular/core';
+
+        @Component({
+          selector: 'custom-change',
+          template: '<input (change)="noop()">',
+        })
+        export class CustomChange {
+          @Output() change = new EventEmitter<void>();
+          noop() {}
+        }
+
+        @Component({
+          template: '<custom-change (change)="onChange()"></custom-change>',
+          imports: [CustomChange],
+        })
+        export class TestCmp {
+          onChange() {}
+        }
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(
+        `ɵɵlistener("change", function TestCmp_Template_custom_change_change_0_listener() { return ctx.onChange(); }, null, true);`,
+      );
+    });
+
+    it('should not emit masked component listeners by default', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, EventEmitter, Output} from '@angular/core';
+
+        @Component({
+          selector: 'custom-change',
+          template: '<input (change)="noop()">',
+        })
+        export class CustomChange {
+          @Output() change = new EventEmitter<void>();
+          noop() {}
+        }
+
+        @Component({
+          template: '<custom-change (change)="onChange()"></custom-change>',
+          imports: [CustomChange],
+        })
+        export class TestCmp {
+          onChange() {}
+        }
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(
+        `ɵɵlistener("change", function TestCmp_Template_custom_change_change_0_listener() { return ctx.onChange(); });`,
+      );
+      expect(jsContents).not.toContain(
+        `ɵɵlistener("change", function TestCmp_Template_custom_change_change_0_listener() { return ctx.onChange(); }, null, true);`,
+      );
+    });
+
+    it('should report an error for unclaimed component host events when enabled', () => {
+      env.tsconfig({
+        skipComponentOutputDomEvents: true,
+      });
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'custom-change',
+          template: '<input>',
+        })
+        export class CustomChange {}
+
+        @Component({
+          template: '<custom-change (change)="onChange()"></custom-change>',
+          imports: [CustomChange],
+        })
+        export class TestCmp {
+          onChange() {}
+        }
+    `,
+      );
+
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics.length).toBe(1);
+      expect(diagnostics[0].messageText).toContain(
+        'With "skipComponentOutputDomEvents" enabled, event bindings on components must target declared outputs.',
+      );
+    });
+
     it('should accept dynamic host attribute bindings', () => {
       env.write(
         'other.d.ts',

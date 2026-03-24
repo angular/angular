@@ -20,6 +20,37 @@ import {TestBed} from '../../../testing';
 import {BehaviorSubject, Observable, share, Subject} from 'rxjs';
 
 describe('output() function', () => {
+  it('should invoke listeners from bubbling DOM events when names collide by default', () => {
+    @Component({
+      selector: 'custom-change',
+      template: '<input (change)="noop()">',
+    })
+    class CustomChange {
+      change = output<void>();
+
+      noop() {}
+    }
+
+    @Component({
+      template: '<custom-change (change)="count = count + 1"></custom-change>',
+      imports: [CustomChange],
+    })
+    class App {
+      count = 0;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.dispatchEvent(new Event('change', {bubbles: true}));
+    expect(fixture.componentInstance.count).toBe(1);
+
+    const customChange = fixture.debugElement.children[0].componentInstance as CustomChange;
+    customChange.change.emit();
+    expect(fixture.componentInstance.count).toBe(2);
+  });
+
   it('should support emitting values', () => {
     @Directive({
       selector: '[dir]',

@@ -1090,6 +1090,7 @@ export class NgCompiler {
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: strictTemplates,
+        checkComponentHostDomEvents: this.options.skipComponentOutputDomEvents === true,
         checkTypeOfDomReferences: strictTemplates,
         // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
@@ -1113,11 +1114,13 @@ export class NgCompiler {
         allowDomEventAssertion,
       };
     } else {
+      const enforceComponentOutputEventBindings =
+        this.options.skipComponentOutputDomEvents === true;
       typeCheckingConfig = {
         applyTemplateContextGuards: false,
         checkQueries: false,
-        checkTemplateBodies: false,
-        checkControlFlowBodies: false,
+        checkTemplateBodies: enforceComponentOutputEventBindings,
+        checkControlFlowBodies: enforceComponentOutputEventBindings,
         // Enable deep schema checking in "basic" template type-checking mode only if Closure
         // compilation is requested, which is a good proxy for "only in google3".
         alwaysCheckSchemaInTemplateBodies: this.closureCompilerEnabled,
@@ -1129,6 +1132,7 @@ export class NgCompiler {
         checkTypeOfOutputEvents: false,
         checkTypeOfAnimationEvents: false,
         checkTypeOfDomEvents: false,
+        checkComponentHostDomEvents: enforceComponentOutputEventBindings,
         checkTypeOfDomReferences: false,
         checkTypeOfNonDomReferences: false,
         checkTypeOfPipes: false,
@@ -1540,6 +1544,7 @@ export class NgCompiler {
         this.enableHmr,
         this.implicitStandaloneValue,
         typeCheckHostBindings,
+        this.options.skipComponentOutputDomEvents === true,
         this.enableSelectorless,
         this.emitDeclarationOnly,
       ),

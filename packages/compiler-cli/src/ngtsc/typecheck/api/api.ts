@@ -307,6 +307,13 @@ export interface TypeCheckingConfig {
   checkTypeOfDomEvents: boolean;
 
   /**
+   * Whether unclaimed event bindings on component hosts should be rejected.
+   *
+   * This is used by the `skipComponentOutputDomEvents` compiler option.
+   */
+  checkComponentHostDomEvents: boolean;
+
+  /**
    * Whether to infer the type of local references to DOM elements.
    *
    * If this is `true`, the type of a `#ref` variable on a DOM node in the template will be

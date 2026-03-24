@@ -21,10 +21,12 @@ import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
 import {
+  DEFAULT_TEMPLATE_COMPILATION_OPTIONS,
   CompilationUnit,
   ComponentCompilationJob,
   HostBindingCompilationJob,
   TemplateCompilationMode,
+  type TemplateCompilationOptions,
   type CompilationJob,
   type ViewCompilationUnit,
 } from './compilation';
@@ -63,11 +65,13 @@ export function ingestComponent(
   allDeferrableDepsFn: o.ReadVarExpr | null,
   relativeTemplatePath: string | null,
   enableDebugLocations: boolean,
+  options: Readonly<TemplateCompilationOptions> = DEFAULT_TEMPLATE_COMPILATION_OPTIONS,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
     constantPool,
     compilationMode,
+    options,
     relativeContextFilePath,
     i18nUseExternalIds,
     deferMeta,

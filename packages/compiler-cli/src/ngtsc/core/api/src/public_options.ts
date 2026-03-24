@@ -466,4 +466,15 @@ export interface MiscOptions {
    * another library without option set will not issue error if rendered in orphan way.
    */
   forbidOrphanComponents?: boolean;
+
+  /**
+   * Enables masking of bubbling DOM events on component hosts when a component output has the same
+   * name.
+   *
+   * When enabled, generated listener instructions prioritize component outputs over same-named
+   * bubbling native events from the component's internal template.
+   *
+   * Defaults to `false`.
+   */
+  skipComponentOutputDomEvents?: boolean;
 }

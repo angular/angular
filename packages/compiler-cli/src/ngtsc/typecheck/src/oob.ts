@@ -218,6 +218,12 @@ export interface OutOfBandDiagnosticRecorder {
   ): void;
 
   /**
+   * Reports an event binding on a component host that does not match any declared outputs when
+   * `skipComponentOutputDomEvents` is enabled.
+   */
+  unclaimedComponentEventBinding(id: TypeCheckId, node: TmplAstBoundEvent): void;
+
+  /**
    * Reports that an implicit deferred trigger is set on a block that does not have a placeholder.
    */
   deferImplicitTriggerMissingPlaceholder(
@@ -841,6 +847,20 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.UNCLAIMED_DIRECTIVE_BINDING),
         errorMsg,
+      ),
+    );
+  }
+
+  unclaimedComponentEventBinding(id: TypeCheckId, node: TmplAstBoundEvent): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.keySpan || node.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.UNCLAIMED_COMPONENT_EVENT_BINDING),
+        `Event "${node.name}" is not declared as an @Output on this component host. ` +
+          `With "skipComponentOutputDomEvents" enabled, event bindings on components must target declared outputs.`,
       ),
     );
   }

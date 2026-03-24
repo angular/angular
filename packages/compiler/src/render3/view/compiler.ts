@@ -11,7 +11,12 @@ import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {ShadowCss} from '../../shadow_css';
-import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeline/src/compilation';
+import {
+  CompilationJobKind,
+  DEFAULT_TEMPLATE_COMPILATION_OPTIONS,
+  TemplateCompilationMode,
+  type TemplateCompilationOptions,
+} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {BindingParser} from '../../template_parser/binding_parser';
@@ -189,6 +194,7 @@ export function compileComponentFromMetadata(
   meta: R3ComponentMetadata<R3TemplateDependency>,
   constantPool: ConstantPool,
   bindingParser: BindingParser,
+  options: Readonly<TemplateCompilationOptions> = DEFAULT_TEMPLATE_COMPILATION_OPTIONS,
 ): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
@@ -225,6 +231,7 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
     getTemplateSourceLocationsEnabled(),
+    options,
   );
 
   // Then the IR is transformed to prepare it for code generation.

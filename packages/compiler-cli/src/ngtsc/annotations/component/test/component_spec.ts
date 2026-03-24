@@ -161,6 +161,7 @@ function setup(
     /* enableHmr */ false,
     /* implicitStandaloneValue */ true,
     /* typeCheckHostBindings */ true,
+    /* skipComponentOutputDomEvents */ false,
     /* enableSelectorless */ false,
     /* emitDeclarationOnly */ false,
   );

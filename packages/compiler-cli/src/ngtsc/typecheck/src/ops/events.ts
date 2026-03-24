@@ -137,6 +137,7 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
     private outputs: TmplAstBoundEvent[],
     private inputs: TmplAstBoundAttribute[] | null,
     private claimedOutputs: Set<string> | null,
+    private enforceClaimedOutputsOnComponentHost = false,
   ) {
     super();
   }
@@ -152,6 +153,14 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
     for (const output of this.outputs) {
       if (this.claimedOutputs?.has(output.name)) {
         // Skip this event handler as it was claimed by a directive.
+        continue;
+      }
+      if (
+        this.enforceClaimedOutputsOnComponentHost &&
+        output.target === null &&
+        output.type === ParsedEventType.Regular
+      ) {
+        this.tcb.oobRecorder.unclaimedComponentEventBinding(this.tcb.id, output);
         continue;
       }
 

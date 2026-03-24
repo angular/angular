@@ -34,6 +34,7 @@ export function ɵɵlistener(
   eventName: string,
   listenerFn: EventCallback,
   eventTargetResolver?: GlobalTargetResolver,
+  skipComponentOutputDomEvents = false,
 ): typeof ɵɵlistener {
   const lView = getLView<{} | null>();
   const tView = getTView();
@@ -46,6 +47,7 @@ export function ɵɵlistener(
     eventName,
     listenerFn,
     eventTargetResolver,
+    skipComponentOutputDomEvents,
   );
   return ɵɵlistener;
 }
@@ -127,17 +129,29 @@ export function listenerInternal(
   eventName: string,
   listenerFn: EventCallback,
   eventTargetResolver?: GlobalTargetResolver,
+  skipComponentOutputDomEvents = false,
 ): void {
   ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
 
   let processOutputs = true;
   let wrappedListener: WrappedEventCallback | null = null;
+  const outputConfig = tNode.outputs?.[eventName];
+  const hostDirectiveOutputConfig = tNode.hostDirectiveOutputs?.[eventName];
+  const componentHostIndex = tNode.directiveStart + tNode.componentOffset;
+  const hasComponentOutput =
+    skipComponentOutputDomEvents &&
+    tNode.componentOffset > -1 &&
+    outputConfig?.includes(componentHostIndex) === true;
 
   // Adding a native event listener is applicable when:
   // - The corresponding TNode represents a DOM element.
   // - The event target has a resolver (usually resulting in a global object,
   //   such as `window` or `document`).
-  if (tNode.type & TNodeType.AnyRNode || eventTargetResolver) {
+  // A component output should always mask bubbling DOM events with the same name.
+  if (
+    (tNode.type & TNodeType.AnyRNode || eventTargetResolver) &&
+    (!hasComponentOutput || !!eventTargetResolver)
+  ) {
     wrappedListener ??= wrapListener(tNode, lView, listenerFn);
     const hasCoalescedDomEvent = listenToDomEvent(
       tNode,
@@ -157,9 +171,6 @@ export function listenerInternal(
   }
 
   if (processOutputs) {
-    const outputConfig = tNode.outputs?.[eventName];
-    const hostDirectiveOutputConfig = tNode.hostDirectiveOutputs?.[eventName];
-
     if (hostDirectiveOutputConfig && hostDirectiveOutputConfig.length) {
       for (let i = 0; i < hostDirectiveOutputConfig.length; i += 2) {
         const index = hostDirectiveOutputConfig[i] as number;

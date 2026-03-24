@@ -249,6 +249,44 @@ describe('outputs', () => {
     expect(clickCounter).toBe(1);
   });
 
+  it('should invoke listeners from bubbling DOM events with the same name by default', () => {
+    let counter = 0;
+
+    @Component({
+      selector: 'component-with-change',
+      template: '<input (change)="noop()">',
+      standalone: false,
+    })
+    class ComponentWithChange {
+      @Output() change = new EventEmitter<string>();
+
+      noop() {}
+    }
+
+    @Component({
+      template: '<component-with-change (change)="onChange()"></component-with-change>',
+      standalone: false,
+    })
+    class App {
+      @ViewChild(ComponentWithChange) componentWithChange!: ComponentWithChange;
+
+      onChange() {
+        counter++;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [App, ComponentWithChange]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.dispatchEvent(new Event('change', {bubbles: true}));
+    expect(counter).toBe(1);
+
+    fixture.componentInstance.componentWithChange.change.emit('component-output');
+    expect(counter).toBe(2);
+  });
+
   it('should fire event listeners along with outputs if they match', () => {
     let counter = 0;
 

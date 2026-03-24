@@ -30,6 +30,7 @@
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
+    "skipComponentOutputDomEvents": false,
     // #enddocregion angular-compiler-options
     "strictInputAccessModifiers": true,
     "strictTemplates": true

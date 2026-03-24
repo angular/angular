@@ -26,6 +26,18 @@ export enum TemplateCompilationMode {
   DomOnly,
 }
 
+export interface TemplateCompilationOptions {
+  /**
+   * Whether listeners on component hosts should skip generating fallback native DOM listeners when
+   * the event is not matched by a declared output.
+   */
+  skipComponentOutputDomEvents: boolean;
+}
+
+export const DEFAULT_TEMPLATE_COMPILATION_OPTIONS: Readonly<TemplateCompilationOptions> = {
+  skipComponentOutputDomEvents: false,
+};
+
 /**
  * An entire ongoing compilation, which will result in one or more template functions when complete.
  * Contains one or more corresponding compilation units.
@@ -35,6 +47,7 @@ export abstract class CompilationJob {
     readonly componentName: string,
     readonly pool: ConstantPool,
     readonly mode: TemplateCompilationMode,
+    readonly options: Readonly<TemplateCompilationOptions> = DEFAULT_TEMPLATE_COMPILATION_OPTIONS,
   ) {}
 
   kind: CompilationJobKind = CompilationJobKind.Both;
@@ -67,6 +80,10 @@ export abstract class CompilationJob {
    * Tracks the next `ir.XrefId` which can be assigned as template structures are ingested.
    */
   private nextXrefId: ir.XrefId = 0 as ir.XrefId;
+
+  get skipComponentOutputDomEvents(): boolean {
+    return this.options.skipComponentOutputDomEvents;
+  }
 }
 
 /**
@@ -78,6 +95,7 @@ export class ComponentCompilationJob extends CompilationJob {
     componentName: string,
     pool: ConstantPool,
     mode: TemplateCompilationMode,
+    options: Readonly<TemplateCompilationOptions>,
     readonly relativeContextFilePath: string,
     readonly i18nUseExternalIds: boolean,
     readonly deferMeta: R3ComponentDeferMetadata,
@@ -85,7 +103,7 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly relativeTemplatePath: string | null,
     readonly enableDebugLocations: boolean,
   ) {
-    super(componentName, pool, mode);
+    super(componentName, pool, mode, options);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
   }

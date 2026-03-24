@@ -198,12 +198,21 @@ export function listener(
   name: string,
   handlerFn: o.Expression,
   eventTargetResolver: o.ExternalReference | null,
-  syntheticHost: boolean,
+  {
+    skipComponentOutputDomEvents,
+    syntheticHost,
+  }: {
+    skipComponentOutputDomEvents: boolean;
+    syntheticHost: boolean;
+  },
   sourceSpan: ParseSourceSpan,
 ): ir.CreateOp {
   const args = [o.literal(name), handlerFn];
-  if (eventTargetResolver !== null) {
-    args.push(o.importExpr(eventTargetResolver));
+  if (eventTargetResolver !== null || skipComponentOutputDomEvents) {
+    args.push(eventTargetResolver !== null ? o.importExpr(eventTargetResolver) : o.literal(null));
+  }
+  if (skipComponentOutputDomEvents) {
+    args.push(o.literal(true));
   }
   return call(
     syntheticHost ? Identifiers.syntheticHostListener : Identifiers.listener,

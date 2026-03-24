@@ -176,6 +176,19 @@ Can be used to instruct the template compiler to produce `.metadata.json` files 
 
 For library projects created with the Angular CLI, the development configuration default is `true`.
 
+### `skipComponentOutputDomEvents`
+
+When `true`, Angular skips generating fallback DOM event handling for component host event bindings that are not claimed by component/directive outputs.
+
+This option helps avoid ambiguity when a component output name collides with a bubbling native DOM event name from inside the component template.
+
+With this option enabled:
+
+- `(event)` on a component host is expected to target a declared `@Output`/`output()` event.
+- If the event is not declared as an output on that component host, the compiler reports an error.
+
+Default is `false`.
+
 ### `strictMetadataEmit`
 
 When `true`, reports an error to the `.metadata.json` file if `"skipMetadataEmit"` is `false`.

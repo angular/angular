@@ -320,7 +320,10 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 op.name,
                 listenerFn,
                 eventTargetResolver,
-                op.hostListener && op.isLegacyAnimationListener,
+                {
+                  skipComponentOutputDomEvents: unit.job.skipComponentOutputDomEvents,
+                  syntheticHost: op.hostListener && op.isLegacyAnimationListener,
+                },
                 op.sourceSpan,
               ),
         );

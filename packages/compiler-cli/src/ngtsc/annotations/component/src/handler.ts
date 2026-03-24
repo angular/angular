@@ -231,10 +231,12 @@ const isUsedPipe = (decl: AnyUsedType): decl is UsedPipe =>
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler
-  implements
-    DecoratorHandler<Decorator, ComponentAnalysisData, ComponentSymbol, ComponentResolutionData>
-{
+export class ComponentDecoratorHandler implements DecoratorHandler<
+  Decorator,
+  ComponentAnalysisData,
+  ComponentSymbol,
+  ComponentResolutionData
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -280,6 +282,7 @@ export class ComponentDecoratorHandler
     private readonly enableHmr: boolean,
     private readonly implicitStandaloneValue: boolean,
     private readonly typeCheckHostBindings: boolean,
+    private readonly skipComponentOutputDomEvents: boolean,
     private readonly enableSelectorless: boolean,
     private readonly emitDeclarationOnly: boolean,
   ) {
@@ -1448,7 +1451,9 @@ export class ComponentDecoratorHandler
       removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
     }
 
-    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser(), {
+      skipComponentOutputDomEvents: this.skipComponentOutputDomEvents,
+    });
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1578,7 +1583,9 @@ export class ComponentDecoratorHandler
     }
 
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser(), {
+      skipComponentOutputDomEvents: this.skipComponentOutputDomEvents,
+    });
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1636,7 +1643,9 @@ export class ComponentDecoratorHandler
       defer,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser(), {
+      skipComponentOutputDomEvents: this.skipComponentOutputDomEvents,
+    });
     const classMetadata =
       analysis.classMetadata !== null
         ? compileComponentClassMetadata(analysis.classMetadata, null).toStmt()
