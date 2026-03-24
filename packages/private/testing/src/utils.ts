@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {TestBed} from '../../../core/testing';
-import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
+import {ApplicationRef, ɵresetJitOptions as resetJitOptions} from '@angular/core';
 
 /**
  * Wraps a function in a new function which sets up document and HTML for running a test.
@@ -295,5 +295,46 @@ export async function waitFor<T>(
 
     // Guarantee a macro-task between retries.
     await new Promise((resolve) => void realSetTimeout(resolve, interval));
+  }
+}
+
+/**
+ * Executes a function and waits for the application to become stable.
+ *
+ * Use this when the action triggers asynchronous work
+ * (e.g. a `resource` loader) that must complete before assertions run.
+ *
+ * @example
+ * ```ts
+ * const res = await actAsync(() => resource({ loader: fetchUser, injector }));
+ * expect(res.status()).toBe('resolved');
+ * ```
+ */
+export async function actAsync<T>(fn: () => T): Promise<T> {
+  const result = fn();
+  await TestBed.inject(ApplicationRef).whenStable();
+  return result;
+}
+
+/**
+ * Executes a function and flushes the Angular scheduler synchronously.
+ *
+ * Use this when the action triggers synchronous state
+ * changes that need to be flushed through the scheduler before assertions run.
+ *
+ * @example
+ * ```ts
+ * const fixture = act(() => TestBed.createComponent(TestComp));
+ * expect(fixture.nativeElement.textContent).toBe('initial');
+ *
+ * act(() => fixture.componentInstance.value.set('updated'));
+ * expect(fixture.nativeElement.textContent).toBe('updated');
+ * ```
+ */
+export function act<T>(fn: () => T): T {
+  try {
+    return fn();
+  } finally {
+    TestBed.tick();
   }
 }

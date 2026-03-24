@@ -25,22 +25,6 @@ import {
   validateTree,
 } from '../../../public_api';
 
-function promiseWithResolvers<T>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
-}
-
 describe('Forms compat', () => {
   it('should not error on a valid value', () => {
     const cat = signal({
@@ -345,7 +329,7 @@ describe('Forms compat', () => {
       expect(f().submitting()).toBe(false);
       expect(f.age().submitting()).toBe(false);
 
-      const {promise, resolve} = promiseWithResolvers<TreeValidationResult>();
+      const {promise, resolve} = Promise.withResolvers<TreeValidationResult>();
 
       const result = submit(f, {
         action: (field) => {
