@@ -875,7 +875,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   },
   {
     label: 'Build with AI',
-    status: 'new',
     children: [
       {
         label: 'Get Started',
@@ -888,9 +887,10 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'ai/develop-with-ai',
       },
       {
-        label: 'Design Patterns',
-        path: 'ai/design-patterns',
-        contentPath: 'ai/design-patterns',
+        label: 'Agent Skills',
+        path: 'ai/agent-skills',
+        contentPath: 'ai/agent-skills',
+        status: 'new',
       },
       {
         label: 'Angular CLI MCP Server setup',
@@ -901,6 +901,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Angular AI Tutor',
         path: 'ai/ai-tutor',
         contentPath: 'ai/ai-tutor',
+      },
+      {
+        label: 'Design Patterns',
+        path: 'ai/design-patterns',
+        contentPath: 'ai/design-patterns',
       },
     ],
   },
