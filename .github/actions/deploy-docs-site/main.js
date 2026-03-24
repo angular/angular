@@ -29176,7 +29176,7 @@ var JSONStringify2 = (value, replacer, space) => {
   const convertedToCustomJSON = originalStringify2(
     value,
     (key, value2) => {
-      const isNoise = typeof value2 === "string" && Boolean(value2.match(noiseValue2));
+      const isNoise = typeof value2 === "string" && noiseValue2.test(value2);
       if (isNoise)
         return value2.toString() + "n";
       if (typeof value2 === "bigint")
@@ -29196,12 +29196,29 @@ var JSONStringify2 = (value, replacer, space) => {
   const denoisedJSON = processedJSON.replace(noiseStringify2, "$1$2$3");
   return denoisedJSON;
 };
-var isContextSourceSupported2 = () => JSON.parse("1", (_, __, context3) => !!context3 && context3.source === "1");
+var featureCache = /* @__PURE__ */ new Map();
+var isContextSourceSupported2 = () => {
+  const parseFingerprint = JSON.parse.toString();
+  if (featureCache.has(parseFingerprint)) {
+    return featureCache.get(parseFingerprint);
+  }
+  try {
+    const result = JSON.parse(
+      "1",
+      (_, __, context3) => !!context3?.source && context3.source === "1"
+    );
+    featureCache.set(parseFingerprint, result);
+    return result;
+  } catch {
+    featureCache.set(parseFingerprint, false);
+    return false;
+  }
+};
 var convertMarkedBigIntsReviver2 = (key, value, context3, userReviver) => {
-  const isCustomFormatBigInt = typeof value === "string" && value.match(customFormat2);
+  const isCustomFormatBigInt = typeof value === "string" && customFormat2.test(value);
   if (isCustomFormatBigInt)
     return BigInt(value.slice(0, -1));
-  const isNoiseValue = typeof value === "string" && value.match(noiseValue2);
+  const isNoiseValue = typeof value === "string" && noiseValue2.test(value);
   if (isNoiseValue)
     return value.slice(0, -1);
   if (typeof userReviver !== "function")
@@ -29233,7 +29250,7 @@ var JSONParse2 = (text, reviver) => {
     stringsOrLargeNumbers2,
     (text2, digits, fractional, exponential) => {
       const isString = text2[0] === '"';
-      const isNoise = isString && Boolean(text2.match(noiseValueWithQuotes2));
+      const isNoise = isString && noiseValueWithQuotes2.test(text2);
       if (isNoise)
         return text2.substring(0, text2.length - 1) + 'n"';
       const isFractionalOrExponential = fractional || exponential;
@@ -33536,7 +33553,7 @@ tmp/lib/tmp.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-PZCO3UAP.mjs:
+@angular/ng-dev/bundles/chunk-GLEWX2LH.mjs:
   (*! Bundled license information:
   
   @octokit/request-error/dist-src/index.js:
