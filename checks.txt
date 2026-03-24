@@ -1,0 +1,18 @@
+test	fail	11m2s	https://github.com/angular/angular/actions/runs/23516209930/job/68449134784	
+Inclusive Language	pass	1s	https://github.com/jpoehnelt/in-solidarity-bot	
+adev	pass	14m43s	https://github.com/angular/angular/actions/runs/23516209930/job/68449134770	
+assistant_to_the_branch_manager	pass	8s	https://github.com/angular/angular/actions/runs/23516209405/job/68449132364	
+cla/google	pass	13s	https://cla.developers.google.com/about	
+devtools	pass	13m24s	https://github.com/angular/angular/actions/runs/23516209930/job/68449134797	
+integration-tests	pass	7m51s	https://github.com/angular/angular/actions/runs/23516209930/job/68449134761	
+lint	pass	1m39s	https://github.com/angular/angular/actions/runs/23516209930/job/68449134747	
+post_approval_changes	pass	6s	https://github.com/angular/angular/actions/runs/23516209415/job/68449132415	
+pull_request_labels	pass	8s	https://github.com/angular/angular/actions/runs/23516209415/job/68449132385	
+trigger	pass	10s	https://github.com/angular/angular/actions/runs/23516209409/job/68449132368	
+adev-build	skipping	0	https://github.com/angular/angular/actions/runs/23516209924/job/68449134701	
+issue_labels	skipping	0	https://github.com/angular/angular/actions/runs/23516209415/job/68449132615	
+vscode-ng-language-service	pass	7m54s	https://github.com/angular/angular/actions/runs/23516209930/job/68449134746	
+zone-js	pass	2m27s	https://github.com/angular/angular/actions/runs/23516209930/job/68449134769	
+ci/angular: merge status	pending	0		Missing required labels: target: *, status "google-internal-tests" is pending, status "pullapprove" is pending
+google-internal-tests	pending	0	http://go/angular-g3sync-start	Waiting for tests to start. @Googlers: Initiate a presubmit. See -->
+pullapprove	pending	0	https://app.pullapprove.com/report/?url=https%3A//pullapprove-storage-production.s3.amazonaws.com/reports/54594185-98d6-4f14-a989-34e3a42bd220.json&fingerprint=6166234310dd0dfd3d81c40997c21e97	Waiting to send reviews as PR is WIP

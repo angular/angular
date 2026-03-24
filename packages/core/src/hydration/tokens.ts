@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {inject} from '../di/injector_compatibility';
 import {InjectionToken} from '../di/injection_token';
 
@@ -98,9 +97,6 @@ export const IS_ENABLED_BLOCKING_INITIAL_NAVIGATION = new InjectionToken<boolean
 export const ISOLATED_HYDRATION_DOM_BOUNDARY = new InjectionToken<(Element | string)[]>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'ISOLATED_HYDRATION_DOM_BOUNDARY' : '',
   {
-    factory: () => {
-      const doc = inject(DOCUMENT);
-      return [doc.body];
-    },
+    factory: () => [],
   },
 );

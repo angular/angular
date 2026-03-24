@@ -112,6 +112,8 @@ export enum HydrationFeatureKind {
     // (undocumented)
     HttpTransferCacheOptions = 1,
     // (undocumented)
+    HydrationBoundary = 5,
+    // (undocumented)
     I18nSupport = 2,
     // (undocumented)
     IncrementalHydration = 4,
@@ -205,6 +207,9 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
 
 // @public
 export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions>;
+
+// @public
+export function withHydrationBoundary(hostNodes: (Element | string)[]): HydrationFeature<HydrationFeatureKind.HydrationBoundary>;
 
 // @public
 export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport>;

@@ -10,7 +10,12 @@ export {PlatformState} from './platform_state';
 export {provideServerRendering} from './provide_server';
 export {platformServer, ServerModule} from './server';
 export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
-export {renderApplication, renderApplicationParts, renderModule, ServerApplicationParts} from './utils';
+export {
+  renderApplication,
+  renderApplicationParts,
+  renderModule,
+  ServerApplicationParts,
+} from './utils';
 
 export * from './private_export';
 export {VERSION} from './version';

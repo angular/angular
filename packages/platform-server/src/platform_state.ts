@@ -65,7 +65,7 @@ export class PlatformState {
     }
     const measuringLabel = 'renderToParts';
     startMeasuring(measuringLabel);
-    
+
     // Fallbacks if doc is somehow malformed
     const headHtml = this._doc.head?.innerHTML ?? '';
     const bodyHtml = this._doc.body?.innerHTML ?? '';

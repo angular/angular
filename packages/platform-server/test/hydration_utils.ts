@@ -27,7 +27,12 @@ import {
 } from '@angular/platform-browser';
 
 import {provideServerRendering} from '../public_api';
-import {EVENT_DISPATCH_SCRIPT_ID, renderApplication, renderApplicationParts, ServerApplicationParts} from '../src/utils';
+import {
+  EVENT_DISPATCH_SCRIPT_ID,
+  renderApplication,
+  renderApplicationParts,
+  ServerApplicationParts,
+} from '../src/utils';
 
 import {getAppContents, stripUtilAttributes} from './dom_utils';
 

@@ -27,6 +27,7 @@ export {
   provideClientHydration,
   withEventReplay,
   withHttpTransferCacheOptions,
+  withHydrationBoundary,
   withI18nSupport,
   withIncrementalHydration,
   withNoHttpTransferCache,

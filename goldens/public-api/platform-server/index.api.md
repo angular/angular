@@ -35,6 +35,10 @@ export function platformServer(extraProviders?: StaticProvider[] | undefined): P
 export class PlatformState {
     constructor(_doc: any);
     getDocument(): any;
+    renderToParts(): {
+        head: string;
+        body: string;
+    };
     renderToString(): string;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PlatformState, never>;
@@ -53,11 +57,26 @@ export function renderApplication(bootstrap: (context: BootstrapContext) => Prom
 }): Promise<string>;
 
 // @public
+export function renderApplicationParts(bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>, options: {
+    document?: string | Document;
+    url?: string;
+    platformProviders?: Provider[];
+}): Promise<ServerApplicationParts>;
+
+// @public
 export function renderModule<T>(moduleType: Type<T>, options: {
     document?: string | Document;
     url?: string;
     extraProviders?: StaticProvider[];
 }): Promise<string>;
+
+// @public
+export interface ServerApplicationParts {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    head: string;
+}
 
 // @public
 export class ServerModule {

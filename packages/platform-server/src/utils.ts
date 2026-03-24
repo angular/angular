@@ -122,23 +122,20 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
  * This behaviour breaks hydration, so we'll detect on the client side if this
  * marker comment is still available or else throw an error
  */
-function appendSsrContentIntegrityMarker(
-  doc: Document,
-  boundaries: (Element | string)[] = [],
-) {
+function appendSsrContentIntegrityMarker(doc: Document, boundaries: (Element | string)[] = []) {
   // Adding a ng hydration marker comment
   const comment = doc.createComment(SSR_CONTENT_INTEGRITY_MARKER);
-  
+
   let targetNode: Element | null = null;
   if (boundaries.length > 0) {
     const boundary = boundaries[0];
     targetNode = typeof boundary === 'string' ? doc.querySelector(boundary) : boundary;
   }
-  
+
   if (!targetNode && doc.body) {
     targetNode = doc.body;
   }
-  
+
   if (targetNode) {
     targetNode.firstChild
       ? targetNode.insertBefore(comment, targetNode.firstChild)
@@ -193,24 +190,7 @@ function insertEventRecordScript(
   stopMeasuring(measuringLabel);
 }
 
-/**
- * Renders an Angular application to a string.
- *
- * @private
- *
- * @param platformRef - Reference to the Angular platform.
- * @param applicationRef - Reference to the Angular application.
- * @returns A promise that resolves to the rendered string.
- */
-export async function renderInternal(
-  platformRef: PlatformRef,
-  applicationRef: ApplicationRef,
-): Promise<string> {
-  const platformState = platformRef.injector.get(PlatformState);
-  prepareForHydration(platformState, applicationRef);
-  appendServerContextInfo(applicationRef);
-
-  // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
+async function runBeforeAppSerializedCallbacks(applicationRef: ApplicationRef): Promise<void> {
   const environmentInjector = applicationRef.injector;
   const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
   if (callbacks) {
@@ -235,6 +215,27 @@ export async function renderInternal(
       }
     }
   }
+}
+
+/**
+ * Renders an Angular application to a string.
+ *
+ * @private
+ *
+ * @param platformRef - Reference to the Angular platform.
+ * @param applicationRef - Reference to the Angular application.
+ * @returns A promise that resolves to the rendered string.
+ */
+export async function renderInternal(
+  platformRef: PlatformRef,
+  applicationRef: ApplicationRef,
+): Promise<string> {
+  const platformState = platformRef.injector.get(PlatformState);
+  prepareForHydration(platformState, applicationRef);
+  appendServerContextInfo(applicationRef);
+
+  // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
+  await runBeforeAppSerializedCallbacks(applicationRef);
 
   return platformState.renderToString();
 }
@@ -257,30 +258,7 @@ export async function renderApplicationPartsInternal(
   appendServerContextInfo(applicationRef);
 
   // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
-  const environmentInjector = applicationRef.injector;
-  const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
-  if (callbacks) {
-    const asyncCallbacks: Promise<void>[] = [];
-    for (const callback of callbacks) {
-      try {
-        const callbackResult = callback();
-        if (callbackResult) {
-          asyncCallbacks.push(callbackResult);
-        }
-      } catch (e) {
-        // Ignore exceptions.
-        console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
-      }
-    }
-
-    if (asyncCallbacks.length) {
-      for (const result of await Promise.allSettled(asyncCallbacks)) {
-        if (result.status === 'rejected') {
-          console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', result.reason);
-        }
-      }
-    }
-  }
+  await runBeforeAppSerializedCallbacks(applicationRef);
 
   return platformState.renderToParts();
 }

@@ -403,13 +403,18 @@ export function calcPathForNode(
  */
 export function gatherDeferBlocksCommentNodes(
   doc: Document,
-  nodes: (Element | string)[],
+  boundaries: (Element | string)[] = [],
 ): Map<string, Comment> {
+  if (!boundaries || boundaries.length === 0) {
+    boundaries = [doc.body];
+  }
   const nodesByBlockId = new Map<string, Comment>();
-  for (const node of nodes) {
-    const parentNode = typeof node === 'string' ? doc.querySelector(node) : node;
+  for (const boundary of boundaries) {
+    const parentNode = typeof boundary === 'string' ? doc.querySelector(boundary) : boundary;
     if (!parentNode) continue;
-    const commentNodesIterator = doc.createNodeIterator(parentNode, NodeFilter.SHOW_COMMENT, {acceptNode});
+    const commentNodesIterator = doc.createNodeIterator(parentNode, NodeFilter.SHOW_COMMENT, {
+      acceptNode,
+    });
     let currentNode: Comment;
 
     while ((currentNode = commentNodesIterator.nextNode() as Comment)) {

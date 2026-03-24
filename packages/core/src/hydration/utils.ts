@@ -632,11 +632,14 @@ export function getParentBlockHydrationQueue(
 
 function gatherDeferBlocksByJSActionAttribute(
   doc: Document,
-  boundaries: (Element | string)[],
+  boundaries: (Element | string)[] = [],
 ): Set<HTMLElement> {
+  if (!boundaries || boundaries.length === 0) {
+    boundaries = [doc.body];
+  }
   const blockMap = new Set<HTMLElement>();
   const eventTypes = [hoverEventNames.join(':;'), interactionEventNames.join(':;')].join('|');
-  
+
   for (const boundary of boundaries) {
     const parentNode = typeof boundary === 'string' ? doc.querySelector(boundary) : boundary;
     if (!parentNode) continue;
@@ -657,8 +660,11 @@ function gatherDeferBlocksByJSActionAttribute(
 export function appendDeferBlocksToJSActionMap(
   doc: Document,
   injector: Injector,
-  boundaries: (Element | string)[],
+  boundaries: (Element | string)[] = [],
 ) {
+  if (!boundaries || boundaries.length === 0) {
+    boundaries = [doc.body];
+  }
   const blockMap = gatherDeferBlocksByJSActionAttribute(doc, boundaries);
   const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
   for (let rNode of blockMap) {
@@ -791,6 +797,9 @@ export function verifySsrContentsIntegrity(
   doc: Document,
   boundaries: (Element | string)[] = [],
 ): void {
+  if (!boundaries || boundaries.length === 0) {
+    boundaries = [doc.body];
+  }
   for (const boundary of boundaries) {
     const boundaryElement = typeof boundary === 'string' ? doc.querySelector(boundary) : boundary;
     if (boundaryElement) {

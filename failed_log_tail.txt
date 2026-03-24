@@ -1,0 +1,100 @@
+test	Run CI tests for framework	2026-03-24T23:08:02.5485968Z //packages/examples/upgrade/static/ts/lite-multi:lite-multi_protractor   [0m[32mPASSED[0m in 6.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5488112Z //packages/examples/upgrade/static/ts/lite-multi-shared:lite-multi-shared_protractor [0m[32mPASSED[0m in 6.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5489710Z //packages/forms:forms_api                                               [0m[32mPASSED[0m in 17.7s
+test	Run CI tests for framework	2026-03-24T23:08:02.5491520Z //packages/forms:forms_errors                                            [0m[32mPASSED[0m in 5.2s
+test	Run CI tests for framework	2026-03-24T23:08:02.5493338Z //packages/forms/signals/test/node:test                                  [0m[32mPASSED[0m in 8.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5495405Z //packages/forms/signals/test/web:test_chromium                          [0m[32mPASSED[0m in 5.2s
+test	Run CI tests for framework	2026-03-24T23:08:02.5496453Z //packages/forms/signals/test/web:test_firefox                           [0m[32mPASSED[0m in 9.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5497883Z //packages/forms/test:test                                               [0m[32mPASSED[0m in 10.7s
+test	Run CI tests for framework	2026-03-24T23:08:02.5499128Z //packages/forms/test:test_web_chromium                                  [0m[32mPASSED[0m in 7.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5499988Z //packages/forms/test:test_web_firefox                                   [0m[32mPASSED[0m in 10.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5502454Z //packages/localize:localize_api                                         [0m[32mPASSED[0m in 20.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5504098Z //packages/misc/angular-in-memory-web-api/test:test_web_chromium         [0m[32mPASSED[0m in 6.5s
+test	Run CI tests for framework	2026-03-24T23:08:02.5506477Z //packages/misc/angular-in-memory-web-api/test:test_web_firefox          [0m[32mPASSED[0m in 14.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5508803Z //packages/platform-browser:platform-browser_deps                        [0m[32mPASSED[0m in 1.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5511247Z //packages/platform-browser:platform-browser_errors                      [0m[32mPASSED[0m in 5.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5513083Z //packages/platform-browser:tsec_test                                    [0m[32mPASSED[0m in 6.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5514825Z //packages/platform-browser-dynamic:platform-browser-dynamic_api         [0m[32mPASSED[0m in 10.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5517931Z //packages/platform-browser-dynamic/test:test                            [0m[32mPASSED[0m in 4.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5519774Z //packages/platform-browser-dynamic/test:test_web_chromium               [0m[32mPASSED[0m in 6.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5521932Z //packages/platform-browser-dynamic/test:test_web_firefox                [0m[32mPASSED[0m in 16.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5523541Z //packages/platform-browser/animations:tsec_test                         [0m[32mPASSED[0m in 4.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5525545Z //packages/platform-browser/animations/async:tsec_test                   [0m[32mPASSED[0m in 4.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5527260Z //packages/platform-browser/animations/async/test:test                   [0m[32mPASSED[0m in 5.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5529018Z //packages/platform-browser/animations/async/test:test_web_chromium      [0m[32mPASSED[0m in 5.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5530776Z //packages/platform-browser/animations/async/test:test_web_firefox       [0m[32mPASSED[0m in 11.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5532600Z //packages/platform-browser/animations/test:test                         [0m[32mPASSED[0m in 6.2s
+test	Run CI tests for framework	2026-03-24T23:08:02.5534645Z //packages/platform-browser/animations/test:test_web_chromium            [0m[32mPASSED[0m in 11.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5537056Z //packages/platform-browser/animations/test:test_web_firefox             [0m[32mPASSED[0m in 14.2s
+test	Run CI tests for framework	2026-03-24T23:08:02.5538906Z //packages/platform-browser/test:test                                    [0m[32mPASSED[0m in 6.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5540195Z //packages/platform-browser/test:test_web_chromium                       [0m[32mPASSED[0m in 9.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5541520Z //packages/platform-browser/test:test_web_firefox                        [0m[32mPASSED[0m in 17.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5542353Z //packages/platform-server:platform-server_api                           [0m[32mPASSED[0m in 14.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5543144Z //packages/platform-server:platform-server_deps                          [0m[32mPASSED[0m in 1.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5543894Z //packages/platform-server:tsec_test                                     [0m[32mPASSED[0m in 7.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5545404Z //packages/platform-server/test:dom_utils_deps                           [0m[32mPASSED[0m in 1.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5547030Z //packages/platform-server/test:event_replay_test                        [0m[32mPASSED[0m in 5.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5549713Z //packages/platform-server/test:test                                     [0m[32mPASSED[0m in 16.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5551395Z //packages/platform-server/test:test_lib_deps                            [0m[32mPASSED[0m in 1.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5552966Z //packages/router:router_api                                             [0m[32mPASSED[0m in 16.5s
+test	Run CI tests for framework	2026-03-24T23:08:02.5554431Z //packages/router:router_errors                                          [0m[32mPASSED[0m in 6.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5556698Z //packages/router/test:test                                              [0m[32mPASSED[0m in 16.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5558601Z //packages/router/test:test_web_chromium                                 [0m[32mPASSED[0m in 13.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5560243Z //packages/router/test:test_web_firefox                                  [0m[32mPASSED[0m in 25.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5561807Z //packages/router/testing/test:test                                      [0m[32mPASSED[0m in 8.2s
+test	Run CI tests for framework	2026-03-24T23:08:02.5563485Z //packages/router/testing/test:test_web_chromium                         [0m[32mPASSED[0m in 5.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5565009Z //packages/router/testing/test:test_web_firefox                          [0m[32mPASSED[0m in 11.5s
+test	Run CI tests for framework	2026-03-24T23:08:02.5566934Z //packages/router/upgrade/test:test_web_chromium                         [0m[32mPASSED[0m in 2.5s
+test	Run CI tests for framework	2026-03-24T23:08:02.5568513Z //packages/router/upgrade/test:test_web_firefox                          [0m[32mPASSED[0m in 10.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5570806Z //packages/service-worker:service-worker_api                             [0m[32mPASSED[0m in 12.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5572471Z //packages/service-worker:service-worker_errors                          [0m[32mPASSED[0m in 4.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5574156Z //packages/service-worker/config/test:test                               [0m[32mPASSED[0m in 6.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5575844Z //packages/service-worker/test:test                                      [0m[32mPASSED[0m in 4.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5577486Z //packages/service-worker/test:test_web_chromium                         [0m[32mPASSED[0m in 4.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5579797Z //packages/service-worker/test:test_web_firefox                          [0m[32mPASSED[0m in 6.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5581404Z //packages/service-worker/worker/test:test                               [0m[32mPASSED[0m in 3.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5582974Z //packages/upgrade:upgrade_api                                           [0m[32mPASSED[0m in 13.7s
+test	Run CI tests for framework	2026-03-24T23:08:02.5584849Z //packages/upgrade/src/common/test:test_chromium                         [0m[32mPASSED[0m in 5.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5586520Z //packages/upgrade/src/common/test:test_firefox                          [0m[32mPASSED[0m in 13.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5588295Z //packages/upgrade/static/test:test_chromium                             [0m[32mPASSED[0m in 11.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5590182Z //packages/upgrade/static/test:test_firefox                              [0m[32mPASSED[0m in 16.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5592466Z //packages/upgrade/static/testing/test:test_chromium                     [0m[32mPASSED[0m in 3.7s
+test	Run CI tests for framework	2026-03-24T23:08:02.5594456Z //packages/upgrade/static/testing/test:test_firefox                      [0m[32mPASSED[0m in 15.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5596494Z //packages/compiler-cli/test/compliance/codegen:codegen                  [0m[32mPASSED[0m in 34.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5597696Z   Stats over 2 runs: max = 34.4s, min = 32.3s, avg = 33.4s, dev = 1.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5599142Z //packages/compiler-cli/test/compliance/full:full                        [0m[32mPASSED[0m in 34.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5600666Z   Stats over 2 runs: max = 34.4s, min = 27.0s, avg = 30.7s, dev = 3.7s
+test	Run CI tests for framework	2026-03-24T23:08:02.5602551Z //packages/compiler-cli/test/compliance/linked:linked                    [0m[32mPASSED[0m in 15.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5603811Z   Stats over 2 runs: max = 15.3s, min = 9.6s, avg = 12.5s, dev = 2.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5606090Z //packages/compiler-cli/test/compliance/local:local                      [0m[32mPASSED[0m in 8.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5607247Z   Stats over 2 runs: max = 8.1s, min = 7.3s, avg = 7.7s, dev = 0.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5608974Z //packages/common/http/test:test                                          [0m[35mFLAKY[0m, failed in 2 out of 3 in 6.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5610364Z   Stats over 3 runs: max = 6.6s, min = 5.5s, avg = 6.1s, dev = 0.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5612238Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/packages/common/http/test/test/test_attempts/attempt_1.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5615346Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/packages/common/http/test/test/test_attempts/attempt_2.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5618642Z //.github/actions/deploy-docs-site:main_test                             [0m[31m[1mFAILED[0m in 3 out of 3 in 5.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5620721Z   Stats over 3 runs: max = 5.4s, min = 0.5s, avg = 2.2s, dev = 2.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5623264Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/.github/actions/deploy-docs-site/main_test/test.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5626037Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/.github/actions/deploy-docs-site/main_test/test_attempts/attempt_1.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5628726Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/.github/actions/deploy-docs-site/main_test/test_attempts/attempt_2.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5631206Z //packages/platform-browser:platform-browser_api                         [0m[31m[1mFAILED[0m in 3 out of 3 in 17.0s
+test	Run CI tests for framework	2026-03-24T23:08:02.5632832Z   Stats over 3 runs: max = 17.0s, min = 12.4s, avg = 15.3s, dev = 2.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5634544Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/packages/platform-browser/platform-browser_api/test.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5638019Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/packages/platform-browser/platform-browser_api/test_attempts/attempt_1.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5641720Z   /home/runner/.cache/bazel/_bazel_runner/d249b5591f4df4cc05a9b72938674089/execroot/_main/bazel-out/k8-fastbuild/testlogs/packages/platform-browser/platform-browser_api/test_attempts/attempt_2.log
+test	Run CI tests for framework	2026-03-24T23:08:02.5644341Z //packages/compiler-cli/test/compliance/declaration-only:declaration-only [0m[32mPASSED[0m in 31.4s
+test	Run CI tests for framework	2026-03-24T23:08:02.5646257Z   Stats over 4 runs: max = 31.4s, min = 18.9s, avg = 26.3s, dev = 5.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5647538Z //packages/compiler-cli/test/ngtsc:ngtsc                                 [0m[32mPASSED[0m in 101.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5648947Z   Stats over 4 runs: max = 101.1s, min = 72.4s, avg = 87.7s, dev = 10.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5650586Z //packages/core/test:test                                                [0m[32mPASSED[0m in 10.8s
+test	Run CI tests for framework	2026-03-24T23:08:02.5652205Z   Stats over 4 runs: max = 10.8s, min = 8.7s, avg = 9.6s, dev = 0.9s
+test	Run CI tests for framework	2026-03-24T23:08:02.5653589Z //packages/language-service/test:test                                    [0m[32mPASSED[0m in 107.3s
+test	Run CI tests for framework	2026-03-24T23:08:02.5654681Z   Stats over 4 runs: max = 107.3s, min = 80.6s, avg = 94.1s, dev = 9.6s
+test	Run CI tests for framework	2026-03-24T23:08:02.5656978Z //packages/language-service/test/legacy:legacy                           [0m[32mPASSED[0m in 41.1s
+test	Run CI tests for framework	2026-03-24T23:08:02.5658113Z   Stats over 4 runs: max = 41.1s, min = 15.4s, avg = 23.7s, dev = 10.2s
+test	Run CI tests for framework	2026-03-24T23:08:02.5658664Z 
+test	Run CI tests for framework	2026-03-24T23:08:02.5659439Z Executed 229 out of 788 tests: 786 tests pass and [0m[31m[1m2 fail remotely[0m.
+test	Run CI tests for framework	2026-03-24T23:08:02.5661174Z There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
+test	Run CI tests for framework	2026-03-24T23:08:02.6487680Z  ELIFECYCLE  Command failed with exit code 3.
+test	Run CI tests for framework	2026-03-24T23:08:02.6704985Z [0m
+test	Run CI tests for framework	2026-03-24T23:08:02.6720326Z ##[error]Process completed with exit code 3.
