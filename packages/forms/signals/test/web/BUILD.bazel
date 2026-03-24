@@ -7,6 +7,7 @@ ng_project(
         "**/*.spec.ts",
         "**/*.ts",
     ]),
+    tsconfig = "//packages/forms/signals/test:tsconfig_test",
     deps = [
         "//packages/core",
         "//packages/core/testing",

@@ -67,6 +67,7 @@ import {
   type ValidationError,
   type WithOptionalFieldTree,
 } from '../../public_api';
+import {act} from '@angular/private/testing';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
 import {TestInputValidityMonitor} from './test_input_validity_monitor';
 
@@ -1645,7 +1646,7 @@ describe('field directive', () => {
 
     describe('pending', () => {
       it('should bind to custom control', async () => {
-        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+        const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
         @Component({
           selector: 'custom-control',
@@ -1690,7 +1691,7 @@ describe('field directive', () => {
       });
 
       it('should bind to a custom control when composed as a host directive', async () => {
-        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+        const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
         @Component({
           selector: 'custom-control',
@@ -1736,7 +1737,7 @@ describe('field directive', () => {
       });
 
       it('should be reset when field changes on custom control', async () => {
-        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+        const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
@@ -1780,7 +1781,7 @@ describe('field directive', () => {
       });
 
       it('should bind to directive input on native control', async () => {
-        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+        const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
         @Directive({selector: '[testDir]'})
         class TestDir {
@@ -1818,7 +1819,7 @@ describe('field directive', () => {
       });
 
       it('should bind to directive input on custom control', async () => {
-        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+        const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
         @Directive({selector: '[testDir]'})
         class TestDir {
@@ -5091,7 +5092,7 @@ describe('field directive', () => {
   });
 
   it('should synchronize pending status', async () => {
-    const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+    const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
     @Component({
       selector: 'my-input',
@@ -5986,7 +5987,7 @@ describe('field directive', () => {
 
   describe('debounce', () => {
     it('should support native control', async () => {
-      const {promise, resolve} = promiseWithResolvers<void>();
+      const {promise, resolve} = Promise.withResolvers<void>();
 
       @Component({
         imports: [FormField],
@@ -6013,7 +6014,7 @@ describe('field directive', () => {
     });
 
     it('should support custom control', async () => {
-      const {promise, resolve} = promiseWithResolvers<void>();
+      const {promise, resolve} = Promise.withResolvers<void>();
 
       @Component({
         selector: 'my-input',
@@ -6045,7 +6046,7 @@ describe('field directive', () => {
     });
 
     it('should reset control when debounced update is reset', async () => {
-      const {promise, resolve} = promiseWithResolvers<void>();
+      const {promise, resolve} = Promise.withResolvers<void>();
 
       @Component({
         imports: [FormField],
@@ -6083,7 +6084,7 @@ describe('field directive', () => {
     });
 
     it('should reset child control when debounced update is reset at root', async () => {
-      const {promise, resolve} = promiseWithResolvers<void>();
+      const {promise, resolve} = Promise.withResolvers<void>();
 
       @Component({
         imports: [FormField],
@@ -6277,7 +6278,7 @@ describe('field directive', () => {
   });
 
   it('should create & bind input when a macro task is running', async () => {
-    const {promise, resolve} = promiseWithResolvers<void>();
+    const {promise, resolve} = Promise.withResolvers<void>();
 
     @Component({
       selector: 'app-form',
@@ -6540,34 +6541,4 @@ function setupRadioWithBindingsGroup() {
   const cmp = fix.componentInstance as TestCmp;
 
   return {cmp, inputA, inputB, inputC, ABC};
-}
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-// TODO: share this with submit.spec.ts
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
 }
