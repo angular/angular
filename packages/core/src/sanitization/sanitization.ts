@@ -282,25 +282,23 @@ function getSanitizer(): Sanitizer | null {
   return lView && lView[ENVIRONMENT].sanitizer;
 }
 
-const attributeName: ReadonlySet<string> = new Set(['attributename']);
-
 /**
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>> = {
-  'iframe': new Set([
-    'sandbox',
-    'allow',
-    'allowfullscreen',
-    'referrerpolicy',
-    'csp',
-    'fetchpriority',
-  ]),
-  'animate': attributeName,
-  'set': attributeName,
-  'animatemotion': attributeName,
-  'animatetransform': attributeName,
+const SECURITY_SENSITIVE_ELEMENTS: Record<string, Record<string, true | undefined> | undefined> = {
+  iframe: {
+    sandbox: true,
+    allow: true,
+    allowfullscreen: true,
+    referrerpolicy: true,
+    csp: true,
+    fetchpriority: true,
+  },
+  animate: {attributename: true},
+  set: {attributename: true},
+  animatemotion: {attributename: true},
+  animatetransform: {attributename: true},
 };
 
 /**
@@ -313,7 +311,7 @@ const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>>
 export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
-  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.has(lowerCaseAttrName)) {
+  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.[lowerCaseAttrName]) {
     return value;
   }
 
