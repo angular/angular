@@ -4,7 +4,6 @@
   @if (node().expandable) {
     <!-- We stop propagration on dblClick to prevent to show the element panel -->
     <button
-      [style.left]="PADDING_LEFT_STEP * node().level + 'px'"
       (click)="treeControl().toggle(node())"
       (dblclick)="$event.stopPropagation()"
       [attr.aria-label]="'Toggle ' + node().name"
