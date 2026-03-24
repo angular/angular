@@ -81,8 +81,6 @@ export class TreeNodeComponent {
 
   private matchedText: HTMLElement | null = null;
 
-  protected readonly PADDING_LEFT_STEP = PADDING_LEFT_STEP;
-
   constructor() {
     afterRenderEffect({write: () => this.handleMatchedText()});
   }
