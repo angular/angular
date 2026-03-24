@@ -131,8 +131,8 @@ export class FormField<T> {
 
   // Compute some helper booleans about the type of element we're sitting on.
   private readonly elementIsNativeFormElement = isNativeFormElement(this.element);
-  private readonly elementAcceptsNumericValues = isNumericFormElement(this.element);
   private readonly elementAcceptsTextualValues = isTextualFormElement(this.element);
+  private _elementAcceptsNumericValues: boolean | undefined;
 
   /**
    * Utility that casts `this.element` to `NativeFormControl` to avoid repeated type guards. Only
@@ -360,7 +360,8 @@ export class FormField<T> {
     switch (key) {
       case 'min':
       case 'max':
-        return this.elementAcceptsNumericValues;
+        return (this._elementAcceptsNumericValues ??= isNumericFormElement(this.element));
+
       case 'minLength':
       case 'maxLength':
         return this.elementAcceptsTextualValues;

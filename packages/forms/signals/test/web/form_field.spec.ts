@@ -2633,6 +2633,25 @@ describe('field directive', () => {
         expect(element.min).toBe('5');
       });
 
+      it('should apply min/max if type is late-bound to a numeric type during initialization', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input [type]="inputType()" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly inputType = signal('number');
+          readonly min = signal(10);
+          readonly f = form(signal(15), (p) => {
+            min(p, this.min);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        expect(input.min).toBe('10');
+      });
+
       it('should bind to a custom control host directive', () => {
         @Directive()
         class CustomControlDir implements FormValueControl<number> {
@@ -3019,6 +3038,24 @@ describe('field directive', () => {
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const element = fixture.nativeElement.firstChild as HTMLSelectElement;
         expect(element.getAttribute('maxlength')).toBeNull();
+      });
+
+      it('should apply maxLength if type is late-bound to a textual type during initialization', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input [type]="inputType()" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly inputType = signal('email');
+          readonly f = form(signal('abc'), (p) => {
+            maxLength(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        expect(input.maxLength).toBe(10);
       });
 
       it('should be reset when field changes on native control', () => {
