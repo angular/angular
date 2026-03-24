@@ -403,26 +403,30 @@ export function calcPathForNode(
  */
 export function gatherDeferBlocksCommentNodes(
   doc: Document,
-  node: HTMLElement,
+  nodes: (Element | string)[],
 ): Map<string, Comment> {
-  const commentNodesIterator = doc.createNodeIterator(node, NodeFilter.SHOW_COMMENT, {acceptNode});
-  let currentNode: Comment;
-
   const nodesByBlockId = new Map<string, Comment>();
-  while ((currentNode = commentNodesIterator.nextNode() as Comment)) {
-    const nghPattern = 'ngh=';
-    const content = currentNode?.textContent;
-    const nghIdx = content?.indexOf(nghPattern) ?? -1;
-    if (nghIdx > -1) {
-      const nghValue = content!.substring(nghIdx + nghPattern.length).trim();
-      // Make sure the value has an expected format.
-      ngDevMode &&
-        assertEqual(
-          nghValue.startsWith('d'),
-          true,
-          'Invalid defer block id found in a comment node.',
-        );
-      nodesByBlockId.set(nghValue, currentNode);
+  for (const node of nodes) {
+    const parentNode = typeof node === 'string' ? doc.querySelector(node) : node;
+    if (!parentNode) continue;
+    const commentNodesIterator = doc.createNodeIterator(parentNode, NodeFilter.SHOW_COMMENT, {acceptNode});
+    let currentNode: Comment;
+
+    while ((currentNode = commentNodesIterator.nextNode() as Comment)) {
+      const nghPattern = 'ngh=';
+      const content = currentNode?.textContent;
+      const nghIdx = content?.indexOf(nghPattern) ?? -1;
+      if (nghIdx > -1) {
+        const nghValue = content!.substring(nghIdx + nghPattern.length).trim();
+        // Make sure the value has an expected format.
+        ngDevMode &&
+          assertEqual(
+            nghValue.startsWith('d'),
+            true,
+            'Invalid defer block id found in a comment node.',
+          );
+        nodesByBlockId.set(nghValue, currentNode);
+      }
     }
   }
   return nodesByBlockId;

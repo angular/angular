@@ -22,6 +22,7 @@ import {
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵwithIncrementalHydration,
   ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
+  ɵISOLATED_HYDRATION_DOM_BOUNDARY as ISOLATED_HYDRATION_DOM_BOUNDARY,
   provideStabilityDebugging,
 } from '@angular/core';
 import {RuntimeErrorCode} from './errors';
@@ -38,6 +39,7 @@ export enum HydrationFeatureKind {
   I18nSupport,
   EventReplay,
   IncrementalHydration,
+  HydrationBoundary,
 }
 
 /**
@@ -142,6 +144,30 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  */
 export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration> {
   return hydrationFeature(HydrationFeatureKind.IncrementalHydration, ɵwithIncrementalHydration());
+}
+
+/**
+ * Restricts the boundaries of the DOM search for hydration. By default, hydration
+ * searches the entire `document.body`. This feature configures hydration to only search
+ * within the given elements.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can configure hydration boundaries:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration(withHydrationBoundary([myElement]))]
+ * });
+ * ```
+ * @publicApi
+ * @see {@link provideClientHydration}
+ */
+export function withHydrationBoundary(
+  hostNodes: (Element | string)[],
+): HydrationFeature<HydrationFeatureKind.HydrationBoundary> {
+  return hydrationFeature(HydrationFeatureKind.HydrationBoundary, [
+    {provide: ISOLATED_HYDRATION_DOM_BOUNDARY, useValue: hostNodes},
+  ]);
 }
 
 /**

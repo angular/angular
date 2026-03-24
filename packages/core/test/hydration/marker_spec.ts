@@ -57,6 +57,29 @@ describe('verifySsrContentsIntegrity', () => {
     const dom = await doc(
       `<!doctype html><title>Hi</title>\n<!--${SSR_CONTENT_INTEGRITY_MARKER}-->\n<app-root></app-root>`,
     );
-    expect(() => verifySsrContentsIntegrity(dom)).not.toThrow();
+    expect(() => verifySsrContentsIntegrity(dom, [dom.body])).not.toThrow();
+  });
+
+  it('succeeds when integrity marker is inside a specified element boundary', async () => {
+    const dom = await doc(
+      `<!doctype html><head></head><body><div id="island"><!--${SSR_CONTENT_INTEGRITY_MARKER}--><app-root></app-root></div></body>`,
+    );
+    const island = dom.getElementById('island')!;
+    expect(() => verifySsrContentsIntegrity(dom, [island])).not.toThrow();
+  });
+
+  it('succeeds when integrity marker is inside a specified selector boundary', async () => {
+    const dom = await doc(
+      `<!doctype html><head></head><body><div id="island"><!--${SSR_CONTENT_INTEGRITY_MARKER}--><app-root></app-root></div></body>`,
+    );
+    expect(() => verifySsrContentsIntegrity(dom, ['#island'])).not.toThrow();
+  });
+
+  it('fails when integrity marker is outside the specified boundary', async () => {
+    const dom = await doc(
+      // Marker is inside body, but we configure `#island` as the boundary.
+      `<!doctype html><head></head><body><!--${SSR_CONTENT_INTEGRITY_MARKER}--><div id="island"><app-root></app-root></div></body>`,
+    );
+    expect(() => verifySsrContentsIntegrity(dom, ['#island'])).toThrowError(/NG0507/);
   });
 });

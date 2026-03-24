@@ -49,6 +49,7 @@ import {
   IS_I18N_HYDRATION_ENABLED,
   IS_INCREMENTAL_HYDRATION_ENABLED,
   PRESERVE_HOST_CONTENT,
+  ISOLATED_HYDRATION_DOM_BOUNDARY,
 } from './tokens';
 import {
   appendDeferBlocksToJSActionMap,
@@ -242,8 +243,9 @@ export function withDomHydration(): EnvironmentProviders {
         }
 
         const doc = inject(DOCUMENT);
+        const hydrationBoundaries = inject(ISOLATED_HYDRATION_DOM_BOUNDARY);
         if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
-          verifySsrContentsIntegrity(doc);
+          verifySsrContentsIntegrity(doc, hydrationBoundaries);
           enableHydrationRuntimeSupport();
         } else if (
           typeof ngDevMode !== 'undefined' &&
@@ -382,12 +384,13 @@ export function withIncrementalHydration(): Provider[] {
       useFactory: () => {
         const injector = inject(Injector);
         const doc = inject(DOCUMENT);
+        const hydrationBoundaries = inject(ISOLATED_HYDRATION_DOM_BOUNDARY);
 
         return () => {
           const deferBlockData = processBlockData(injector);
-          const commentsByBlockId = gatherDeferBlocksCommentNodes(doc, doc.body);
+          const commentsByBlockId = gatherDeferBlocksCommentNodes(doc, hydrationBoundaries);
           processAndInitTriggers(injector, deferBlockData, commentsByBlockId);
-          appendDeferBlocksToJSActionMap(doc, injector);
+          appendDeferBlocksToJSActionMap(doc, injector, hydrationBoundaries);
         };
       },
       multi: true,

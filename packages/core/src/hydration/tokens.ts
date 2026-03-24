@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '@angular/common';
+import {inject} from '../di/injector_compatibility';
 import {InjectionToken} from '../di/injection_token';
 
 /**
@@ -87,4 +89,18 @@ export const JSACTION_BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Ele
  */
 export const IS_ENABLED_BLOCKING_INITIAL_NAVIGATION = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'IS_ENABLED_BLOCKING_INITIAL_NAVIGATION' : '',
+);
+
+/**
+ * Internal token that stores the explicit DOM boundary(ies) for hydration targeting document fragments.
+ * Defaults to `[document.body]`.
+ */
+export const ISOLATED_HYDRATION_DOM_BOUNDARY = new InjectionToken<(Element | string)[]>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'ISOLATED_HYDRATION_DOM_BOUNDARY' : '',
+  {
+    factory: () => {
+      const doc = inject(DOCUMENT);
+      return [doc.body];
+    },
+  },
 );

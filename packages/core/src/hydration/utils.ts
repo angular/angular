@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -630,22 +630,36 @@ export function getParentBlockHydrationQueue(
   return {parentBlockPromise, hydrationQueue};
 }
 
-function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
-  const jsactionNodes = doc.body.querySelectorAll('[jsaction]');
+function gatherDeferBlocksByJSActionAttribute(
+  doc: Document,
+  boundaries: (Element | string)[],
+): Set<HTMLElement> {
   const blockMap = new Set<HTMLElement>();
   const eventTypes = [hoverEventNames.join(':;'), interactionEventNames.join(':;')].join('|');
-  for (let node of jsactionNodes) {
-    const attr = node.getAttribute('jsaction');
-    const blockId = node.getAttribute('ngb');
-    if (attr?.match(eventTypes) && blockId !== null) {
-      blockMap.add(node as HTMLElement);
+  
+  for (const boundary of boundaries) {
+    const parentNode = typeof boundary === 'string' ? doc.querySelector(boundary) : boundary;
+    if (!parentNode) continue;
+
+    const jsactionNodes = parentNode.querySelectorAll('[jsaction]');
+    for (let i = 0; i < jsactionNodes.length; i++) {
+      const node = jsactionNodes[i];
+      const attr = node.getAttribute('jsaction');
+      const blockId = node.getAttribute('ngb');
+      if (attr?.match(eventTypes) && blockId !== null) {
+        blockMap.add(node as HTMLElement);
+      }
     }
   }
   return blockMap;
 }
 
-export function appendDeferBlocksToJSActionMap(doc: Document, injector: Injector) {
-  const blockMap = gatherDeferBlocksByJSActionAttribute(doc);
+export function appendDeferBlocksToJSActionMap(
+  doc: Document,
+  injector: Injector,
+  boundaries: (Element | string)[],
+) {
+  const blockMap = gatherDeferBlocksByJSActionAttribute(doc, boundaries);
   const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
   for (let rNode of blockMap) {
     sharedMapFunction(rNode, jsActionMap);
@@ -773,29 +787,39 @@ function skipTextNodes(node: ChildNode | null): ChildNode | null {
  *
  * Note: this function is invoked only on the client, so it's safe to use DOM APIs.
  */
-export function verifySsrContentsIntegrity(doc: Document): void {
-  for (const node of doc.body.childNodes) {
-    if (isSsrContentsIntegrity(node)) {
-      return;
+export function verifySsrContentsIntegrity(
+  doc: Document,
+  boundaries: (Element | string)[] = [],
+): void {
+  for (const boundary of boundaries) {
+    const boundaryElement = typeof boundary === 'string' ? doc.querySelector(boundary) : boundary;
+    if (boundaryElement) {
+      for (const node of boundaryElement.childNodes) {
+        if (isSsrContentsIntegrity(node)) {
+          return;
+        }
+      }
     }
   }
 
-  // Check if the HTML parser may have moved the marker to just before the <body> tag,
+  // Fallback check: if boundaries precisely matches `[doc.body]`, we check
+  // if the HTML parser may have moved the marker to just before the <body> tag,
   // e.g. because the body tag was implicit and not present in the markup. An implicit body
   // tag is unlikely to interfer with whitespace/comments inside of the app's root element.
+  if (boundaries.length === 1 && boundaries[0] === doc.body) {
+    // Case 1: Implicit body. Example:
+    //   <!doctype html><head><title>Hi</title></head><!--nghm--><app-root></app-root>
+    const beforeBody = skipTextNodes(doc.body.previousSibling);
+    if (isSsrContentsIntegrity(beforeBody)) {
+      return;
+    }
 
-  // Case 1: Implicit body. Example:
-  //   <!doctype html><head><title>Hi</title></head><!--nghm--><app-root></app-root>
-  const beforeBody = skipTextNodes(doc.body.previousSibling);
-  if (isSsrContentsIntegrity(beforeBody)) {
-    return;
-  }
-
-  // Case 2: Implicit body & head. Example:
-  //   <!doctype html><head><title>Hi</title><!--nghm--><app-root></app-root>
-  let endOfHead = skipTextNodes(doc.head.lastChild);
-  if (isSsrContentsIntegrity(endOfHead)) {
-    return;
+    // Case 2: Implicit body & head. Example:
+    //   <!doctype html><head><title>Hi</title><!--nghm--><app-root></app-root>
+    let endOfHead = skipTextNodes(doc.head.lastChild);
+    if (isSsrContentsIntegrity(endOfHead)) {
+      return;
+    }
   }
 
   throw new RuntimeError(
