@@ -500,3 +500,5 @@ export function isNgLanguageService(
 ): ls is NgLanguageService {
   return 'getTcb' in ls;
 }
+
+export * from './src/template_target';
