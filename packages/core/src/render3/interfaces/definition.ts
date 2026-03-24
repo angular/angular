@@ -17,7 +17,6 @@ import {FactoryFn} from '../definition_factory';
 import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
 import type {TView} from './view';
-import {InputFlags} from './input_flags';
 import type {ControlDirectiveDef} from './control';
 
 /**
@@ -119,7 +118,7 @@ export interface DirectiveDef<T> {
    */
   readonly inputs: Record<
     string,
-    [minifiedName: string, flags: InputFlags, transform: InputTransformFunction | null]
+    [minifiedName: string, flags: number, transform: InputTransformFunction | null]
   >;
 
   /**
@@ -127,7 +126,7 @@ export interface DirectiveDef<T> {
    * used to do further processing after the `inputs` have been inverted.
    */
   readonly inputConfig: {
-    [P in keyof T]?: string | [InputFlags, string, string?, InputTransformFunction?];
+    [P in keyof T]?: string | [number, string, string?, InputTransformFunction?];
   };
 
   /**
