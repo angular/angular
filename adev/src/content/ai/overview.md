@@ -115,4 +115,5 @@ To learn about LLM prompts and AI IDE setup, see the following guides:
 
 <docs-pill-row>
   <docs-pill href="ai/develop-with-ai" title="LLM prompts and IDE setup"/>
+  <docs-pill href="ai/agent-skills" title="Agent Skills"/>
 </docs-pill-row>
