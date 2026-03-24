@@ -431,6 +431,8 @@ For the Node.js variant `AngularNodeAppEngine`, you can also provide `NG_ALLOWED
 export NG_ALLOWED_HOSTS="example.com,*.trusted-example.com"
 ```
 
+IMPORTANT: You can use `*` as a value in `allowedHosts` to allow all hostnames, though this is generally discouraged and presents a security risk. Accepting any host header can expose your application to host header injection and [Server-Side Request Forgery (SSRF)](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/SSRF) attacks. This configuration should only be used when validation for `Host` and `X-Forwarded-Host` headers is performed in another layer, such as a load balancer or reverse proxy. For better security, we recommend using an explicit list of allowed hosts whenever possible. See [GHSA-x288-3778-4hhx](https://github.com/angular/angular-cli/security/advisories/GHSA-x288-3778-4hhx) for more details.
+
 ## Auditing Angular applications
 
 Angular applications must follow the same security principles as regular web applications, and must be audited as such.
