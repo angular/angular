@@ -23,6 +23,10 @@
     "./api": {
       "types": "./api.d.ts",
       "default": "./api_bundle.js"
+    },
+    "./private": {
+      "types": "./private.d.ts",
+      "default": "./private_bundle.js"
     }
   },
   "repository": {
