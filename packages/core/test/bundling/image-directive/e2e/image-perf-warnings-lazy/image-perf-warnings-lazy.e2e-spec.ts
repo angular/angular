@@ -23,9 +23,13 @@ describe('Image performance warnings', () => {
     let srcB = await imgs.get(1).getAttribute('src');
     expect(srcB.endsWith('b.png')).toBe(true);
 
-    // Make sure that only one warning is in the console for image `a.png`,
-    // since the `b.png` should be below the fold and not treated as an LCP element.
-    const logs = await collectBrowserLogs(logging.Level.WARNING);
+    // Make sure that only one LCP performance warning is in the console for image `a.png`,
+    // since `b.png` should be below the fold and not treated as an LCP element.
+    // NOTE: We specifically filter on the IMAGE_PERFORMANCE_WARNING (913) code because the browser
+    // or framework may emit other unrelated warning logs here.
+    const logs = (await collectBrowserLogs(logging.Level.WARNING)).filter((l) =>
+      l.message.includes('NG0913'),
+    );
     expect(logs.length).toEqual(1);
     // Verify that the error code and the image src are present in the error message.
     expect(logs[0].message).toMatch(/NG0913.*?a\.png/);
