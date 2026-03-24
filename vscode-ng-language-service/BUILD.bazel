@@ -63,6 +63,8 @@ npm_package(
     exclude_srcs_patterns = [
         "*.map",
         "**/*.map",
+        "node_modules/@angular/language-service/private_bundle.js",
+        "node_modules/@angular/language-service/private.d.ts",
     ],
     include_srcs_packages = [
         "**",

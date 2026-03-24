@@ -23,6 +23,16 @@ ts_project(
 )
 
 ts_project(
+    name = "private",
+    srcs = [
+        "private.ts",
+    ],
+    deps = [
+        "//packages/language-service/src",
+    ],
+)
+
+ts_project(
     name = "factory_lib",
     srcs = ["plugin-factory.ts"],
     deps = [
@@ -46,6 +56,20 @@ esbuild(
     deps = [":api"],
 )
 
+esbuild(
+    name = "private_bundle",
+    entry_point = ":private.ts",
+    external = [
+        "typescript",
+        "@angular/compiler",
+        "@angular/compiler-cli",
+        "@angular/compiler-cli/*",
+    ],
+    format = "cjs",
+    platform = "node",
+    deps = [":private"],
+)
+
 npm_package(
     srcs = [
         "index.d.ts",
@@ -55,6 +79,8 @@ npm_package(
         ":api_types",
         ":factory_bundle",
         ":factory_lib_types",
+        ":private_bundle",
+        ":private_types",
         "//packages/language-service/bundles:language-service.js",
     ],
     package = "@angular/language-service",
