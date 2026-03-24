@@ -22,7 +22,7 @@ When reviewing a pull request for the `angular` repository, follow these essenti
    - **Payload Size**: Pay attention to the impact of changes on the final client payload size.
 
 3. **Execution Workflow**:
-   Determine the appropriate review method. If the user explicitly asks for a `local` or `remote` review in their request, that takes precedence. Otherwise, use the GitHub MCP or available scripts to determine if the review should be `local` or `remote`.
+   Determine the appropriate review method. If the user explicitly asks for a `remote` or `local` review in their request, that takes precedence (e.g. "leave comments on the PR" implies `remote`). Otherwise, use the GitHub MCP or available scripts to determine if the review should be `local` or `remote`.
 
    **Common Review Practices (Applies to both Local and Remote)**
    - **Preparation & Checklist**:
@@ -35,7 +35,7 @@ When reviewing a pull request for the `angular` repository, follow these essenti
    - **Constructive Feedback**: Provide clear, actionable, and polite feedback. Explain the _why_ behind your suggestions or edits. Do **NOT** leave inline comments purely to praise, agree with, or acknowledge a correct implementation detail, as this clutters the review. If you want to praise the PR, do so in the single general PR comment.
 
    **A. Local Code Review (If the PR is owned by the author requesting the review)**
-   - **Checkout**: Check out the PR branch locally (if it doesn't already exist, fetch it).
+   - **Checkout**: Check out the PR branch locally (if it doesn't already exist, fetch it). If checking out the branch fails due to a worktree claim (e.g. "fatal: '<branch>' is already used by worktree at '<path>'"), do the review in that directory.
    - **Review & Edit**: Execute the review directly on the code. Instead of adding inline PR comments for suggestions, format the codebase or apply the edits directly to the files.
    - **Feedback**: Summarize the review findings and the concrete changes you made in a message to the user, referencing the completed items from your checklist.
    - **Do NOT Commit or Push**: Leave the changes uncommitted in the working directory so the user can easily review the pending edits locally. Let the user know the changes are ready for their review, but do not ask for approval to push.
