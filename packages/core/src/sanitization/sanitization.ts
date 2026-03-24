@@ -222,7 +222,7 @@ const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined>
   script: {src: true, href: true, 'xlink:href': true},
   base: {href: true},
   link: {href: true},
-  object: {data: true},
+  object: {data: true, codebase: true},
 };
 
 /**
