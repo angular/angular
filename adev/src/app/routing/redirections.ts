@@ -128,13 +128,8 @@ export const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/tools/cli/build-system-migration#hot-module-replacement',
   },
   {
-    path: 'guide',
-    children: [
-      {
-        path: 'pipes',
-        redirectTo: '/guide/templates/pipes',
-      },
-    ],
+    path: 'guide/pipes',
+    redirectTo: '/guide/templates/pipes',
   },
   {
     path: 'guide/experimental/zoneless',
