@@ -504,6 +504,13 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
+            label: 'Form submission',
+            path: 'guide/forms/signals/form-submission',
+            contentPath: 'guide/forms/signals/form-submission',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
             label: 'Schemas',
             path: 'guide/forms/signals/schemas',
             contentPath: 'guide/forms/signals/schemas',

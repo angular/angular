@@ -1,0 +1,327 @@
+# Form submission
+
+When a user submits a form, your application typically needs to handle multiple concerns at once: surfacing validation errors, preventing duplicate submission, sending data to a server, and much more. Handling each of these manually can be tedious and prone to error.
+
+Signal Forms provides a `submit()` function that helps you manage the form submission lifecycle. This guide walks through how to use it.
+
+## What does `submit()` do?
+
+The `submit()` function runs through a specific sequence:
+
+1. **Mark interactive fields as touched** — This surfaces any validation errors that were hidden because the user hadn't interacted with the field yet. Hidden, disabled, and readonly fields are skipped.
+2. **Check validation** — If any validation rules have failed, submission stops and the `action` function does not run.
+3. **Run the action** — The `action` function executes with the form's current value.
+4. **Handle the result** — If the action returns errors, they are routed to their target fields. If it returns nothing, the submission is treated as successful.
+
+The `submit()` function returns a `Promise<boolean>` that resolves to `true` when the action completes without errors, and `false` when validation fails or the action returns errors.
+
+## Setting up form submission with `FormRoot`
+
+The most common way to use the `submit()` function is through the `FormRoot` directive.
+
+The `FormRoot` directive handles three things automatically when bound to a `<form>` element:
+
+1. **Sets `novalidate`** — Disables the browser's built-in validation so Signal Forms manages validation instead
+2. **Prevents default** — Stops the browser from navigating on form submission
+3. **Calls `submit()`** — Triggers the submission flow when the user submits the form
+
+NOTE: The `FormRoot` directive sets `novalidate` automatically. You do not need to add it manually when using `FormRoot`.
+
+`FormRoot` handles the submission event, but you still need to tell it _what to do_ with the form data. That requires three things:
+
+1. Bind your form to the `FormRoot` directive
+2. Pass a `submission` option to the `form()` function
+3. Define an `action` function within the `submission` option that manages the submitted data
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, FormRoot, required} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-contact',
+  imports: [FormField, FormRoot],
+  template: `
+    <form [formRoot]="contactForm">
+      <label>
+        Name
+        <input [formField]="contactForm.name" />
+      </label>
+
+      <label>
+        Email
+        <input type="email" [formField]="contactForm.email" />
+      </label>
+
+      <button type="submit">Send</button>
+    </form>
+  `,
+})
+export class Contact {
+  contactModel = signal({
+    name: '',
+    email: '',
+  });
+
+  contactForm = form(
+    this.contactModel,
+    (schemaPath) => {
+      required(schemaPath.name);
+      required(schemaPath.email);
+    },
+    {
+      submission: {
+        action: async (field) => {
+          const response = await fetch('/api/contact', {
+            method: 'POST',
+            body: JSON.stringify(field().value()),
+          });
+
+          if (!response.ok) {
+            return {kind: 'serverError', message: 'Failed to submit form'};
+          }
+        },
+      },
+    },
+  );
+}
+```
+
+The `action` function runs only when no validation rules have failed. By default, pending async validators do not block submission (see [Controlling validation gating](#controlling-validation-gating-with-ignorevalidators) for more details). The action receives the field tree and a `detail` object with `root` and `submitted` field trees, which is useful when submitting a sub-form.
+
+## Showing submission state with `submitting()`
+
+When you need to track whether the form is in the process of submitting, Signal Forms provides a `submitting()` signal that returns `true` while the `action` function is running. Use it to show loading indicators or disable the submit button to prevent duplicate submissions.
+
+```angular-html
+<button type="submit" [disabled]="contactForm().submitting()">
+  @if (contactForm().submitting()) {
+    Sending...
+  } @else {
+    Send
+  }
+</button>
+```
+
+Once the `action` function succeeds or returns an error, the `submitting()` signal automatically resets back to `false`.
+
+## Managing submission errors
+
+### Server errors
+
+When your `action` function communicates with a server, the server may return errors that need to appear on specific fields. Return these errors from the `action` to route them to their target fields.
+
+#### Errors on the submitted field
+
+By default, errors returned from the `action` are assigned to the submitted field (the field tree you passed to `submit()`):
+
+```ts
+action: async (field) => {
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    body: JSON.stringify(field().value()),
+  });
+
+  if (!response.ok) {
+    return {kind: 'serverError', message: 'Failed to submit form'};
+  }
+};
+```
+
+#### Errors on specific fields
+
+When you want to route an error to a specific field, include a `fieldTree` property pointing to that field:
+
+```ts
+action: async (field) => {
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    body: JSON.stringify(field().value()),
+  });
+
+  if (!response.ok) {
+    const body = await response.json();
+    return {kind: 'taken', message: body.message, fieldTree: field.email};
+  }
+};
+```
+
+#### Multiple errors
+
+When you want to report errors on multiple fields, return an array:
+
+```ts
+action: async (field) => {
+  const response = await fetch('/api/register', {
+    method: 'POST',
+    body: JSON.stringify(field().value()),
+  });
+
+  if (!response.ok) {
+    const body = await response.json();
+    return body.errors.map((err: {field: string; message: string}) => ({
+      kind: 'serverError',
+      message: err.message,
+      fieldTree: field[err.field as keyof typeof field],
+    }));
+  }
+};
+```
+
+### Auto-clearing submission errors
+
+Submission errors clear automatically when the user edits the field. If the `action` returns an error on the email field, that error disappears as soon as the user changes the email value.
+
+This differs from validation errors, which recompute reactively. Validation rules run again on each change and may produce the same error. Submission errors are one-time results from the server — once cleared, they do not reappear unless the form is submitted again.
+
+TIP: Submission errors appear alongside validation errors in the field's `errors()` signal. For guidance on displaying errors in your template, see the [Field State Management guide](guide/forms/signals/field-state-management).
+
+## Handling invalid submissions with `onInvalid`
+
+When validation fails, the `action` function does not run. If you need to respond to a failed submission attempt — such as scrolling to the first error, showing a toast, or focusing an invalid field — use the `onInvalid` callback.
+
+```ts
+contactForm = form(
+  this.contactModel,
+  (schemaPath) => {
+    required(schemaPath.name);
+    required(schemaPath.email);
+  },
+  {
+    submission: {
+      action: async (field) => {
+        await fetch('/api/contact', {
+          method: 'POST',
+          body: JSON.stringify(field().value()),
+        });
+      },
+      onInvalid: (field) => {
+        const firstError = field().errorSummary()[0];
+        firstError?.fieldTree().focusBoundControl();
+      },
+    },
+  },
+);
+```
+
+The `onInvalid` callback receives the same `(field, detail)` parameters as `action`. It runs after all interactive fields are marked as touched, so validation errors are already visible in the UI when it executes.
+
+## Controlling validation gating with `ignoreValidators`
+
+By default, `submit()` ignores pending validators. If no validators have failed, the action runs even if some async validators are still in progress. The `ignoreValidators` option gives you control over this behavior.
+
+| Value       | Behavior                                                                 |
+| ----------- | ------------------------------------------------------------------------ |
+| `'pending'` | Submit if no validators have failed, even if some are pending (default)  |
+| `'none'`    | Submit only if all validators pass — pending validators block submission |
+| `'all'`     | Always submit regardless of validation state                             |
+
+```ts
+contactForm = form(
+  this.contactModel,
+  (schemaPath) => {
+    required(schemaPath.name);
+    required(schemaPath.email);
+  },
+  {
+    submission: {
+      action: async (field) => {
+        await fetch('/api/contact', {
+          method: 'POST',
+          body: JSON.stringify(field().value()),
+        });
+      },
+      ignoreValidators: 'none',
+    },
+  },
+);
+```
+
+Use `'none'` when your form has async validators (such as checking username availability) and you need all validation to complete before submitting. Use `'all'` for draft-saving scenarios where you want to persist data regardless of validation state.
+
+## Manual submission with `submit()`
+
+The `FormRoot` directive is the most common way to trigger submission, but you can also call `submit()` directly. This is useful for multi-step wizards, auto-save, or triggering submission from outside the form element.
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, required, submit} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-contact',
+  imports: [FormField],
+  template: `
+    <label>
+      Name
+      <input [formField]="contactForm.name" />
+    </label>
+
+    <label>
+      Email
+      <input type="email" [formField]="contactForm.email" />
+    </label>
+
+    <button (click)="onSave()">Save</button>
+  `,
+})
+export class Contact {
+  contactModel = signal({
+    name: '',
+    email: '',
+  });
+
+  contactForm = form(this.contactModel, (schemaPath) => {
+    required(schemaPath.name);
+    required(schemaPath.email);
+  });
+
+  async onSave() {
+    // When calling `submit()` directly, you pass the action as the second argument
+    // instead of configuring it in `FormOptions`.
+    const success = await submit(this.contactForm, async (field) => {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        body: JSON.stringify(field().value()),
+      });
+
+      if (!response.ok) {
+        return {kind: 'serverError', message: 'Failed to save'};
+      }
+    });
+
+    if (success) {
+      // Handle success — navigate, show confirmation, etc.
+    }
+  }
+}
+```
+
+## Handling side effects after submission
+
+The `submit()` function returns a `Promise<boolean>`, which you can use to trigger side effects based on whether the submission succeeded or failed.
+
+```ts
+async onSave() {
+  const success = await submit(this.contactForm, async (field) => {
+    await fetch('/api/contact', {
+      method: 'POST',
+      body: JSON.stringify(field().value()),
+    });
+  });
+
+  if (success) {
+    this.router.navigate(['/confirmation']);
+  }
+}
+```
+
+Side effects like navigation, toast notifications, or resetting the form belong _after_ the `await` — not inside the `action` function. The `action` is for communicating with the server and returning errors. Everything else happens in the calling code.
+
+## Next steps
+
+This guide covered submitting forms and handling form submission errors. Related guides explore other aspects of Signal Forms:
+
+<docs-pill-row>
+  <docs-pill href="guide/forms/signals/validation" title="Validation" />
+  <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
+  <docs-pill href="guide/forms/signals/form-logic" title="Adding form logic" />
+</docs-pill-row>
