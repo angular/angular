@@ -80,8 +80,14 @@ export class EventManager {
     handler: Function,
     options?: ListenerOptions,
   ): Function {
-    const plugin = this._findPluginFor(eventName);
-    return plugin.addEventListener(element, eventName, handler, options);
+    const parsedEvent = parseEventName(eventName);
+    const plugin = this._findPluginFor(parsedEvent.eventName);
+    return plugin.addEventListener(
+      element,
+      parsedEvent.eventName,
+      parsedEvent.prevent || parsedEvent.stop ? applyEventModifiers(handler, parsedEvent) : handler,
+      options,
+    );
   }
 
   /**
@@ -111,4 +117,40 @@ export class EventManager {
     this._eventNameToPlugin.set(eventName, plugin);
     return plugin;
   }
+}
+
+function parseEventName(eventName: string): {eventName: string; prevent: boolean; stop: boolean} {
+  const [name, ...modifiers] = eventName.split('.');
+  if (modifiers.length === 0) {
+    return {eventName, prevent: false, stop: false};
+  }
+
+  let prevent = false;
+  let stop = false;
+  for (const modifier of modifiers) {
+    if (modifier === 'prevent') {
+      prevent = true;
+    } else if (modifier === 'stop') {
+      stop = true;
+    } else {
+      return {eventName, prevent: false, stop: false};
+    }
+  }
+
+  return {eventName: name, prevent, stop};
+}
+
+function applyEventModifiers(
+  handler: Function,
+  {prevent, stop}: {prevent: boolean; stop: boolean},
+): Function {
+  return (event: Event) => {
+    if (prevent) {
+      event.preventDefault();
+    }
+    if (stop) {
+      event.stopPropagation();
+    }
+    return handler(event);
+  };
 }

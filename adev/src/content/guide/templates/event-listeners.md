@@ -135,6 +135,29 @@ export class App{
 
 If the event handler statement evaluates to `false`, Angular automatically calls `preventDefault()`, similar to [native event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes#event_handler_attributes). _Always prefer explicitly calling `preventDefault`_, as this approach makes the code's intent obvious.
 
+## Using event modifiers
+
+Angular also supports event modifiers in the event name:
+
+- `.prevent` calls [`event.preventDefault()`](https://developer.mozilla.org/docs/Web/API/Event/preventDefault)
+- `.stop` calls [`event.stopPropagation()`](https://developer.mozilla.org/docs/Web/API/Event/stopPropagation)
+
+```angular-html
+<a href="/dashboard" (click.prevent)="openDashboard()"> Open dashboard </a>
+```
+
+```angular-html
+<button (click.stop)="toggleMenu()">Toggle menu</button>
+```
+
+You can combine them:
+
+```angular-html
+<button (click.prevent.stop)="onAction()">Action</button>
+```
+
+In this case Angular calls `preventDefault()` and `stopPropagation()` before running your handler.
+
 ## Extend event handling
 
 Angular’s event system is extensible via custom event plugins registered with the `EVENT_MANAGER_PLUGINS` injection token.

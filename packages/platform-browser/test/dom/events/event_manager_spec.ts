@@ -82,6 +82,74 @@ import type {} from 'zone.js';
       expect(receivedEvent).toBe(dispatchedEvent);
     });
 
+    it('should stop event propagation when the stop modifier is used', () => {
+      const parent = el('<div></div>');
+      const child = el('<input></input>');
+      parent.appendChild(child);
+      doc.body.appendChild(parent);
+
+      const parentHandler = jasmine.createSpy('parentHandler');
+      const childHandler = jasmine.createSpy('childHandler');
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+
+      manager.addEventListener(parent, 'change', parentHandler);
+      manager.addEventListener(child, 'change.stop', childHandler);
+
+      const event = new Event('change', {bubbles: true, cancelable: true});
+      child.dispatchEvent(event);
+
+      expect(childHandler).toHaveBeenCalled();
+      expect(parentHandler).not.toHaveBeenCalled();
+    });
+
+    it('should call preventDefault when the prevent modifier is used', () => {
+      const element = el('<input></input>');
+      doc.body.appendChild(element);
+
+      const handler = jasmine.createSpy('handler');
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+      manager.addEventListener(element, 'change.prevent', handler);
+
+      const event = new Event('change', {cancelable: true});
+      const preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
+      element.dispatchEvent(event);
+
+      expect(handler).toHaveBeenCalled();
+      expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+
+    it('should apply prevent and stop modifiers together', () => {
+      const parent = el('<div></div>');
+      const child = el('<input></input>');
+      parent.appendChild(child);
+      doc.body.appendChild(parent);
+
+      const parentHandler = jasmine.createSpy('parentHandler');
+      const handler = jasmine.createSpy('handler');
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+      manager.addEventListener(parent, 'change', parentHandler);
+      manager.addEventListener(child, 'change.prevent.stop', handler);
+
+      const event = new Event('change', {bubbles: true, cancelable: true});
+      const preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
+      child.dispatchEvent(event);
+
+      expect(handler).toHaveBeenCalled();
+      expect(preventDefaultSpy).toHaveBeenCalled();
+      expect(parentHandler).not.toHaveBeenCalled();
+    });
+
+    it('should keep non-modifier dotted event names unchanged', () => {
+      const element = el('<div></div>');
+      const handler = jasmine.createSpy('handler');
+      const plugin = new FakeEventManagerPlugin(doc, ['keydown.enter']);
+      const manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
+
+      manager.addEventListener(element, 'keydown.enter', handler);
+
+      expect(plugin.eventHandler['keydown.enter']).toBe(handler);
+    });
+
     it('should keep zone when addEventListener', () => {
       const Zone = (window as any)['Zone'];
 

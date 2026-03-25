@@ -253,6 +253,80 @@ describe('event listeners', () => {
       button.click();
       expect(fixture.componentInstance.comp).toBeInstanceOf(MyComp);
     });
+
+    it('should prevent bubbling to component host listeners with the stop modifier', () => {
+      @Component({
+        selector: 'my-component',
+        template: '<input (change.stop)="onChange($event)">',
+      })
+      class MyComponent {
+        didHandleChange = false;
+
+        onChange(_event: Event) {
+          this.didHandleChange = true;
+        }
+      }
+
+      @Component({
+        imports: [MyComponent],
+        template: '<my-component (change)="doSomething($event)"></my-component>',
+      })
+      class App {
+        events: Event[] = [];
+
+        doSomething(event: Event) {
+          this.events.push(event);
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.dispatchEvent(new Event('change', {bubbles: true}));
+      fixture.detectChanges();
+
+      const myComponent = fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+      expect(myComponent.didHandleChange).toBeTrue();
+      expect(fixture.componentInstance.events).toEqual([]);
+    });
+
+    it('should allow bubbling to component host listeners with the prevent modifier', () => {
+      @Component({
+        selector: 'my-component',
+        template: '<input (change.prevent)="onChange($event)">',
+      })
+      class MyComponent {
+        didHandleChange = false;
+
+        onChange(_event: Event) {
+          this.didHandleChange = true;
+        }
+      }
+
+      @Component({
+        imports: [MyComponent],
+        template: '<my-component (change)="doSomething($event)"></my-component>',
+      })
+      class App {
+        events: Event[] = [];
+
+        doSomething(event: Event) {
+          this.events.push(event);
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
+      fixture.detectChanges();
+
+      const myComponent = fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+      expect(myComponent.didHandleChange).toBeTrue();
+      expect(fixture.componentInstance.events.length).toBe(1);
+    });
   });
 
   describe('prevent default', () => {
