@@ -7,34 +7,27 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
+import {ConnectionPositionPair} from '@angular/cdk/overlay';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  PLATFORM_ID,
-  inject,
-  signal,
-} from '@angular/core';
+import {Component, DestroyRef, PLATFORM_ID, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
-  NavigationState,
+  IS_SEARCH_DIALOG_OPEN,
   IconComponent,
+  NavigationState,
   getBaseUrlAfterRedirects,
   isApple,
-  IS_SEARCH_DIALOG_OPEN,
 } from '@angular/docs';
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routing/routes';
-import {Theme, ThemeManager} from '../../services/theme-manager.service';
-import {VersionManager} from '../../services/version-manager.service';
-import {ConnectionPositionPair} from '@angular/cdk/overlay';
-import {ANGULAR_LINKS} from '../../constants/links';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
+import {ANGULAR_LINKS} from '../../constants/links';
 import {PAGE_PREFIX} from '../../constants/pages';
+import {Theme, ThemeManager} from '../../services/theme-manager.service';
+import {VersionManager} from '../../services/version-manager.service';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -43,7 +36,6 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
   imports: [RouterLink, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger, IconComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Navigation {
   private readonly destroyRef = inject(DestroyRef);

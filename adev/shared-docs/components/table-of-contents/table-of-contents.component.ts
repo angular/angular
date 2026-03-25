@@ -6,23 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  input,
-  inject,
-  afterNextRender,
-  signal,
-} from '@angular/core';
 import {Location, ViewportScroller} from '@angular/common';
+import {afterNextRender, Component, DestroyRef, inject, input, signal} from '@angular/core';
 import {TableOfContentsLevel} from '../../interfaces/index';
 import {TableOfContentsLoader} from '../../services';
 import {IconComponent} from '../icon/icon.component';
 
 @Component({
   selector: 'docs-table-of-contents',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './table-of-contents.component.html',
   styleUrls: ['./table-of-contents.component.scss'],
   imports: [IconComponent],

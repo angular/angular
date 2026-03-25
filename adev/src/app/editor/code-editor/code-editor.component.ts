@@ -8,7 +8,6 @@
 
 import {Location} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -22,23 +21,23 @@ import {
   viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {MatTabGroup, MatTab, MatTabLabel} from '@angular/material/tabs';
+import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
 import {debounceTime, from, map, switchMap} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
 
-import {CodeMirrorEditor} from './code-mirror-editor.service';
-import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
-import {DownloadManager} from '../download-manager.service';
-import {StackBlitzOpener} from '../stackblitz-opener.service';
-import {IconComponent} from '@angular/docs';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
+import {IconComponent} from '@angular/docs';
 import {MatTooltip} from '@angular/material/tooltip';
+import {DownloadManager} from '../download-manager.service';
+import {LoadingStep} from '../enums/loading-steps';
+import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
 import {NodeRuntimeState} from '../node-runtime-state.service';
-import {LoadingStep} from '../enums/loading-steps';
+import {StackBlitzOpener} from '../stackblitz-opener.service';
+import {CodeMirrorEditor} from './code-mirror-editor.service';
+import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -52,7 +51,6 @@ const ANGULAR_DEV = 'https://angular.dev';
   selector: 'docs-tutorial-code-editor',
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTabGroup,
     MatTab,

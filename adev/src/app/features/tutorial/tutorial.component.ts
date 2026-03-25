@@ -9,7 +9,6 @@
 import {isPlatformBrowser, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
@@ -30,24 +29,23 @@ import {
   DocViewer,
   IconComponent,
   NavigationItem,
-  NavigationList,
-  TutorialType,
   TutorialNavigationData,
   TutorialNavigationItem,
+  TutorialType,
 } from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {from} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
+import {PAGE_PREFIX} from '../../core/constants/pages';
 import {
+  EmbeddedEditor,
   EmbeddedTutorialManager,
+  injectNodeRuntimeSandbox,
   LoadingStep,
   NodeRuntimeState,
-  EmbeddedEditor,
-  injectNodeRuntimeSandbox,
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
-import {PAGE_PREFIX} from '../../core/constants/pages';
 import {TutorialNavigationList} from './tutorial-navigation-list';
 
 const INTRODUCTION_LABEL = 'Introduction';
@@ -65,7 +63,6 @@ const INTRODUCTION_LABEL = 'Introduction';
   ],
   templateUrl: './tutorial.component.html',
   styleUrls: ['./tutorial.component.scss', './tutorial-navigation.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [SplitResizerHandler],
 })
 export default class Tutorial {

@@ -5,16 +5,8 @@ import {
   ComboboxPopupContainer,
 } from '@angular/aria/combobox';
 import {Listbox, Option} from '@angular/aria/listbox';
-import {
-  afterRenderEffect,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  signal,
-  viewChild,
-  viewChildren,
-} from '@angular/core';
 import {OverlayModule} from '@angular/cdk/overlay';
+import {afterRenderEffect, Component, computed, viewChild, viewChildren} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +21,6 @@ import {OverlayModule} from '@angular/cdk/overlay';
     Option,
     OverlayModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   /** The combobox listbox popup. */

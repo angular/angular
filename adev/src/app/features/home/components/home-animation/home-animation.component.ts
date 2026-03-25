@@ -8,7 +8,6 @@
 
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -19,12 +18,12 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
+import {isIos, shouldReduceMotion, WINDOW} from '@angular/docs';
 import {RouterLink} from '@angular/router';
-import {WINDOW, isIos, shouldReduceMotion} from '@angular/docs';
 
-import {Animation, AnimationCreatorService, AnimationLayerDirective} from '../../animation';
+import {AnimationCreatorService, AnimationLayerDirective} from '../../animation';
 import {AnimationScrollHandler} from '../../animation/plugins/animation-scroll-handler';
-import {generateHomeAnimationDefinition, ANIM_TIMESTEP} from './animation-definition';
+import {ANIM_TIMESTEP, generateHomeAnimationDefinition} from './animation-definition';
 
 export const METEOR_HW_RATIO = 1.42; // Height to width ratio
 export const METEOR_GAP_RATIO = 1.33; // Use 0.7 for WebGL-like field. Renders a lot of elements though.
@@ -58,7 +57,6 @@ type MeteorFieldData = {
   imports: [AnimationLayerDirective, RouterLink],
   templateUrl: './home-animation.component.html',
   styleUrl: './home-animation.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeAnimationComponent {
   private readonly win = inject(WINDOW);

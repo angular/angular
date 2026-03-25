@@ -6,15 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  PLATFORM_ID,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {Component, DestroyRef, PLATFORM_ID, computed, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -27,10 +20,9 @@ import {
   markExternalLinks,
   shouldReduceMotion,
 } from '@angular/docs';
+import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators';
 import {SUB_NAVIGATION_DATA} from '../../../routing/sub-navigation-data';
-import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
-import {isPlatformBrowser} from '@angular/common';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {PAGE_PREFIX} from '../../constants/pages';
 
@@ -41,7 +33,6 @@ export const ANIMATION_DURATION = 500;
   imports: [NavigationList, ClickOutside],
   templateUrl: './secondary-navigation.component.html',
   styleUrls: ['./secondary-navigation.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SecondaryNavigation {
   private readonly destroyRef = inject(DestroyRef);

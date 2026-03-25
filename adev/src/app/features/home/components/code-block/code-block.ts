@@ -7,7 +7,7 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
+import {Component, computed, inject, input} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ThemeManager} from '../../../../core/services/theme-manager.service';
 import {CodeHighligher} from '../../code-highlighting/code-highlighter';
@@ -21,7 +21,6 @@ import {CodeHighligher} from '../../code-highlighting/code-highlighter';
       margin: 0;
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeBlock {
   codeHighlighter = inject(CodeHighligher);

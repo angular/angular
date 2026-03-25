@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {CodeBlock} from '../code-block/code-block';
 
@@ -15,7 +15,6 @@ import {CodeBlock} from '../code-block/code-block';
   imports: [RouterLink, CodeBlock],
   templateUrl: './control-flow-example.html',
   styleUrls: ['./control-flow-example.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControlFlowExample {
   Example = example;

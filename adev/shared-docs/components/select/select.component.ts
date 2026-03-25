@@ -15,7 +15,6 @@ import {
 import {Listbox, Option} from '@angular/aria/listbox';
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -24,8 +23,8 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import {FormValueControl} from '@angular/forms/signals';
 import {FormsModule} from '@angular/forms';
+import {FormValueControl} from '@angular/forms/signals';
 
 type SelectOptionValue = string | number | boolean;
 
@@ -36,7 +35,6 @@ export interface SelectOption {
 
 @Component({
   selector: 'docs-select',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     Combobox,
     ComboboxDialog,

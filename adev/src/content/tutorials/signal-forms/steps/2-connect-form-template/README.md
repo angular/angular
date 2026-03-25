@@ -26,7 +26,6 @@ import { form, FormField } from '@angular/forms/signals';
   templateUrl: './app.html',
   styleUrl: './app.css',
   imports: [FormField],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 ```
 

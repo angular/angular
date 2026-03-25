@@ -8,7 +8,6 @@
 
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -33,7 +32,6 @@ let idCounter = 0;
   host: {
     class: 'docs-tab-group',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabGroup {
   private readonly _renderer = inject(Renderer2);

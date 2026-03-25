@@ -8,16 +8,8 @@
 
 import {Tab, TabContent, TabList, TabPanel, Tabs} from '@angular/aria/tabs';
 import {A11yModule} from '@angular/cdk/a11y';
-import {
-  afterRenderEffect,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
-import {IS_SEARCH_DIALOG_OPEN, IconComponent, TextField} from '@angular/docs';
+import {afterRenderEffect, Component, ElementRef, inject, signal, viewChild} from '@angular/core';
+import {IconComponent, IS_SEARCH_DIALOG_OPEN, TextField} from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {ControlFlowExample} from './components/control-flow/control-flow-example';
 import {DeferrableViewsExample} from './components/deferrable-views-example/deferrable-views-example';
@@ -50,7 +42,6 @@ const FEATURE_TAB = {
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Home {
   private readonly activatedRoute = inject(ActivatedRoute);

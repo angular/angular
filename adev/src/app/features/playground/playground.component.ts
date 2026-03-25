@@ -6,21 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {isPlatformServer, NgComponentOutlet} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DestroyRef,
-  EnvironmentInjector,
-  PLATFORM_ID,
-  Type,
   effect,
+  EnvironmentInjector,
   inject,
   input,
+  PLATFORM_ID,
+  Type,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {IconComponent, PlaygroundTemplate} from '@angular/docs';
 import {forkJoin, switchMap, tap} from 'rxjs';
 
@@ -28,15 +27,14 @@ import {injectAsync} from '../../core/services/inject-async';
 import {injectNodeRuntimeSandbox} from '../../editor/index';
 import type {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
-import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 import {ActivatedRoute, Router} from '@angular/router';
+import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 
 @Component({
   selector: 'adev-playground',
   imports: [NgComponentOutlet, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
   templateUrl: './playground.component.html',
   styleUrls: ['./playground.component.scss', '../tutorial/tutorial-navigation.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaygroundComponent {
   readonly templateId = input<string | undefined>();

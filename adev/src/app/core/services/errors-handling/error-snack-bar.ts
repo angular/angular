@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_SNACK_BAR_DATA, MatSnackBarAction, MatSnackBarRef} from '@angular/material/snack-bar';
 
 export interface ErrorSnackBarData {
@@ -16,7 +16,6 @@ export interface ErrorSnackBarData {
 
 @Component({
   selector: 'error-snack-bar',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     {{ message }}
     <button

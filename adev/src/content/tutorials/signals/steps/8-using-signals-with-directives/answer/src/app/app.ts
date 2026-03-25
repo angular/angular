@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component} from '@angular/core';
 import {HighlightDirective} from './highlight-directive';
 
 @Component({
@@ -16,6 +16,5 @@ import {HighlightDirective} from './highlight-directive';
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {}

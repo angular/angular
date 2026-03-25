@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {DocContent, DocViewer} from '@angular/docs';
 
 @Component({
@@ -14,7 +14,6 @@ import {DocContent, DocViewer} from '@angular/docs';
   imports: [DocViewer],
   templateUrl: './cli-reference-details-page.component.html',
   styleUrls: ['./cli-reference-details-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CliReferenceDetailsPage {
   readonly docContent = input<DocContent | undefined>();

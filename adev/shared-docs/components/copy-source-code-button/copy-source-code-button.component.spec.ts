@@ -8,13 +8,13 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
+import {Clipboard} from '@angular/cdk/clipboard';
+import {Component, signal} from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {
   CONFIRMATION_DISPLAY_TIME_MS,
   CopySourceCodeButton,
 } from './copy-source-code-button.component';
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {By} from '@angular/platform-browser';
-import {Clipboard} from '@angular/cdk/clipboard';
 
 const SUCCESSFULLY_COPY_CLASS_NAME = 'docs-copy-source-code-button-success';
 const FAILED_COPY_CLASS_NAME = 'docs-copy-source-code-button-failed';
@@ -99,7 +99,6 @@ describe('CopySourceCodeButton', () => {
     <button docs-copy-source-code></button>
   `,
   imports: [CopySourceCodeButton],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class CodeSnippetWrapper {
   code = signal('');

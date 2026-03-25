@@ -1,4 +1,4 @@
-import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {CartStore} from './cart-store';
 
 @Component({
@@ -45,7 +45,6 @@ import {CartStore} from './cart-store';
       }
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartDisplay {
   cartStore = inject(CartStore);

@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
+import {NgTemplateOutlet} from '@angular/common';
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -16,14 +17,12 @@ import {
   Injector,
   viewChildren,
 } from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
-import {NgTemplateOutlet} from '@angular/common';
+import {Router, RouterLink} from '@angular/router';
 
-import {SearchHistory} from '../../services';
-import {RelativeLink} from '../../pipes';
 import {SearchItem} from '../../directives';
+import {RelativeLink} from '../../pipes';
+import {SearchHistory} from '../../services';
 
 @Component({
   selector: 'docs-search-history',
@@ -34,7 +33,6 @@ import {SearchItem} from '../../directives';
     '(document:keydown)': 'onKeydown($event)',
     '(document:mousemove)': 'onMouseMove($event)',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchHistoryComponent {
   protected readonly items = viewChildren(SearchItem);

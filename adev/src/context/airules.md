@@ -13,7 +13,6 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 @Component({
   selector: '{{tag-name}}-root',
   templateUrl: '{{tag-name}}.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class {{ClassName}} {
   protected readonly isServerRunning = signal(true);

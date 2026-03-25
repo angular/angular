@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {email, form, FormField, required, submit} from '@angular/forms/signals';
 import {bootstrapApplication} from '@angular/platform-browser';
 
@@ -46,7 +46,6 @@ interface LoginData {
   `,
   styleUrl: 'main.css',
   imports: [FormField],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginApp {
   loginModel = signal<LoginData>({
