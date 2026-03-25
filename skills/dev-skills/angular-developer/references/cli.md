@@ -61,7 +61,7 @@ To proxy API requests during development (e.g., rerouting `/api` to a local Node
 
 ## 4. Building the Application
 
-Compile the application into an output directory (default: `dist/<project-name>/browser`). Modern Angular uses the `@angular-devkit/build-angular:application` builder (esbuild-based).
+Compile the application into an output directory (default: `dist/<project-name>/browser`). Modern Angular uses the `@angular/build:application` builder (esbuild-based).
 
 ```bash
 ng build
@@ -72,7 +72,7 @@ ng build
 
 ## 5. Testing
 
-- **Unit Tests**: Run `ng test` to execute unit tests via the configured test runner (e.g., Karma, Jasmine, or Web Test Runner).
+- **Unit Tests**: Run `ng test` to execute unit tests via the configured test runner (e.g., Karma or Vitest).
 - **End-to-End (E2E)**: Run `ng e2e`. If no E2E framework is configured, the CLI will prompt to install one (Cypress, Playwright, Puppeteer, etc.).
 
 ## 6. Deployment
