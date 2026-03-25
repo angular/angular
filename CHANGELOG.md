@@ -1,3 +1,24 @@
+<a name="21.2.6"></a>
+# 21.2.6 (2026-03-25)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b4ab6ba2e8](https://github.com/angular/angular/commit/b4ab6ba2e84a18309b0bb5dd68311ff1776b1cb4) | fix | avoid redundant image fetch on destroy with auto sizes |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [880a57d4b3](https://github.com/angular/angular/commit/880a57d4b34af5aa27cd5bee11fa218ade6444bb) | fix | prevent shimCssText from adding extra blank lines per CSS comment |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ad0156e056](https://github.com/angular/angular/commit/ad0156e056e60ffebfeb804fda70dce88d9475a8) | fix | fixes a regression with animate.leave and reordering |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73d6b01b47](https://github.com/angular/angular/commit/73d6b01b47bb6762d182f1cd891f8ad4d7f688e1) | fix | inject migration not work in multi-project workspace with option path |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.5"></a>
 # 21.2.5 (2026-03-18)
 ### compiler
