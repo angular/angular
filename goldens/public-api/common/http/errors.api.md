@@ -19,6 +19,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HTTP_ORIGIN_MAP_USED_IN_CLIENT = 2803,
     // (undocumented)
+    HTTP_REQUEST_ON_DESTROYED_INJECTOR = -2824,
+    // (undocumented)
     INTEGRITY_NOT_SUPPORTED_WITH_XHR = 2820,
     // (undocumented)
     INVALID_TIMEOUT_VALUE = 2822,

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Observable} from 'rxjs';
+import type {Observable} from 'rxjs';
 
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
+import type {HttpRequest} from './request';
+import type {HttpEvent} from './response';
 import {FetchBackend} from './fetch';
 import {HttpXhrBackend} from './xhr';
 import {
@@ -18,6 +18,7 @@ import {
   Injectable,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
+  ɵRuntimeError as RuntimeError,
   PendingTasks,
 } from '@angular/core';
 import {finalize} from 'rxjs/operators';
@@ -99,6 +100,19 @@ export class HttpInterceptorHandler implements HttpHandler {
   }
 
   handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
+    if (this.injector.destroyed) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HTTP_REQUEST_ON_DESTROYED_INJECTOR,
+        ngDevMode
+          ? 'An HTTP request was made after the injector was destroyed. ' +
+              'This is likely caused by an HTTP call initiated after Angular ' +
+              'has finished rendering (e.g. inside a setTimeout, Promise, or ' +
+              'an observable that emits after the component/request lifecycle ends). ' +
+              `Request URL: ${initialRequest.url}`
+          : initialRequest.url,
+      );
+    }
+
     if (this.chain === null) {
       const dedupedInterceptorFns = Array.from(
         new Set([
