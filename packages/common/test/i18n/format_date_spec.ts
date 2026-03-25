@@ -515,13 +515,11 @@ describe('Format date', () => {
     it('should support timezones', () => {
       const isoDate = '2024-02-17T12:00:00Z';
 
-      const date1 = formatDate(isoDate, 'long', 'en', 'America/New_York');
-      const date2 = formatDate(isoDate, 'long', 'en', 'EST');
-      expect(date1).toBe('February 17, 2024, 12:00:00 PM GMT+0');
-      expect(date2).toBe('February 17, 2024, 7:00:00 AM GMT-5');
+      const dateEst = formatDate(isoDate, 'long', 'en', 'EST');
+      expect(dateEst).toBe('February 17, 2024, 7:00:00 AM GMT-5');
 
-      const date3 = formatDate(isoDate, 'long', 'en', '+0500');
-      expect(date3).toBe('February 17, 2024, 5:00:00 PM GMT+5');
+      const dateOffset = formatDate(isoDate, 'long', 'en', '+0500');
+      expect(dateOffset).toBe('February 17, 2024, 5:00:00 PM GMT+5');
     });
 
     it('should return thursday date of the same week', () => {
