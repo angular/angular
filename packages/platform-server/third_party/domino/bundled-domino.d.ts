@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+
+declare module 'domino' {
+  export const impl: any;
+}
+
 import domino from 'domino';
 
 export default domino;

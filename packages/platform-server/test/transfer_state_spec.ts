@@ -20,7 +20,7 @@ import {
 import {BrowserModule, withEventReplay, withIncrementalHydration} from '@angular/platform-browser';
 import {renderModule, ServerModule} from '../index';
 import {getHydrationInfoFromTransferState, ssr} from './hydration_utils';
-import domino from '../src/bundled-domino';
+import domino from '../third_party/domino/bundled-domino';
 
 describe('transfer_state', () => {
   const defaultExpectedOutput =

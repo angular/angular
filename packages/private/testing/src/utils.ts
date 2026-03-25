@@ -95,19 +95,20 @@ let savedRequestAnimationFrame: ((callback: FrameRequestCallback) => number) | u
 let savedNode: typeof Node | undefined = undefined;
 let requestAnimationFrameCount = 0;
 let domino:
-  | (typeof import('../../../platform-server/src/bundled-domino'))['default']
+  | (typeof import('../../../platform-server/third_party/domino/bundled-domino'))['default']
   | null
   | undefined = undefined;
 
 async function loadDominoOrNull(): Promise<
-  (typeof import('../../../platform-server/src/bundled-domino'))['default'] | null
+  (typeof import('../../../platform-server/third_party/domino/bundled-domino'))['default'] | null
 > {
   if (domino !== undefined) {
     return domino;
   }
 
   try {
-    return (domino = (await import('../../../platform-server/src/bundled-domino')).default);
+    return (domino = (await import('../../../platform-server/third_party/domino/bundled-domino'))
+      .default);
   } catch {
     return (domino = null);
   }

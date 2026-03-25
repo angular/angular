@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import domino from './bundled-domino';
+import domino from '../../third_party/domino/bundled-domino';
 
 /**
  * Apply the necessary shims to make DOM globals (such as `Element`, `HTMLElement`, etc.) available
