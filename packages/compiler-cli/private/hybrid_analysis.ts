@@ -18,10 +18,11 @@ export type {
   TemplateDiagnostic,
   TcbReferenceMetadata,
   SourceMapping,
+  OutOfBandDiagnosticRecorder,
+  OutOfBadDiagnosticCategory,
 } from '../src/ngtsc/typecheck/api';
 export {DomSchemaChecker, RegistryDomSchemaChecker} from '../src/ngtsc/typecheck/src/dom';
 export {Environment} from '../src/ngtsc/typecheck/src/environment';
-export {OutOfBandDiagnosticRecorder} from '../src/ngtsc/typecheck/src/oob';
 export {TcbGenericContextBehavior} from '../src/ngtsc/typecheck/src/ops/context';
 export {ImportManager} from '../src/ngtsc/translator';
 export type {ReferenceEmitter} from '../src/ngtsc/imports';

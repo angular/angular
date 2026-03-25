@@ -8,8 +8,12 @@
 
 import {BoundTarget, SchemaMetadata} from '@angular/compiler';
 import {DomSchemaChecker} from '../dom';
-import {OutOfBandDiagnosticRecorder} from '../oob';
-import {TypeCheckId, TcbDirectiveMetadata, TcbPipeMetadata} from '../../api';
+import {
+  TypeCheckId,
+  TcbDirectiveMetadata,
+  TcbPipeMetadata,
+  OutOfBandDiagnosticRecorder,
+} from '../../api';
 import {Environment} from '../environment';
 
 /**
@@ -53,7 +57,7 @@ export class Context {
   constructor(
     readonly env: Environment,
     readonly domSchemaChecker: DomSchemaChecker,
-    readonly oobRecorder: OutOfBandDiagnosticRecorder,
+    readonly oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
     readonly id: TypeCheckId,
     readonly boundTarget: BoundTarget<TcbDirectiveMetadata>,
     private pipes: Map<string, TcbPipeMetadata> | null,

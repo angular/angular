@@ -18,7 +18,7 @@ import {
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
+import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {PerfEvent, PerfRecorder} from '../../perf';
@@ -36,13 +36,14 @@ import {
   TypeCheckingConfig,
   TypeCtorMetadata,
   TemplateContext,
+  OutOfBandDiagnosticRecorder,
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
+import {OutOfBandDiagnosticRecorderImpl} from './oob';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
@@ -128,7 +129,7 @@ export interface PendingShimData {
   /**
    * Recorder for out-of-band diagnostics which are raised during generation.
    */
-  oobRecorder: OutOfBandDiagnosticRecorder;
+  oobRecorder: OutOfBandDiagnosticRecorder<TemplateDiagnostic>;
 
   /**
    * The `DomSchemaChecker` in use for this template, which records any schema-related diagnostics.
@@ -144,6 +145,11 @@ export interface PendingShimData {
    * Map of `TypeCheckId` to information collected about the template as it's ingested.
    */
   data: Map<TypeCheckId, TypeCheckData>;
+
+  /**
+   * Diagnostics produced during shim creation.
+   */
+  shimDiagnostics: TemplateDiagnostic[] | null;
 }
 
 /**
@@ -335,7 +341,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       // and inlining would be required.
 
       // Record diagnostics to indicate the issues with this template.
-      shimData.oobRecorder.requiresInlineTcb(id, ref.node);
+      shimData.shimDiagnostics ??= [];
+      shimData.shimDiagnostics.push({
+        ...makeDiagnostic(
+          ErrorCode.INLINE_TCB_REQUIRED,
+          ref.node.name,
+          `This component requires inline template type-checking, which is not supported by the current environment.`,
+        ),
+        sourceFile: ref.node.getSourceFile(),
+        typeCheckId: id,
+      });
 
       // Checking this template would be unsupported, so don't try.
       this.perf.eventCount(PerfEvent.SkipGenerateTcbNoInline);
@@ -516,11 +531,17 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     for (const [sfPath, pendingFileData] of this.fileMap) {
       // For each input file, consider generation operations for each of its shims.
       for (const pendingShimData of pendingFileData.shimData.values()) {
+        const genesisDiagnostics = [
+          ...pendingShimData.domSchemaChecker.diagnostics,
+          ...pendingShimData.oobRecorder.diagnostics,
+        ];
+
+        if (pendingShimData.shimDiagnostics !== null) {
+          genesisDiagnostics.unshift(...pendingShimData.shimDiagnostics);
+        }
+
         this.host.recordShimData(sfPath, {
-          genesisDiagnostics: [
-            ...pendingShimData.domSchemaChecker.diagnostics,
-            ...pendingShimData.oobRecorder.diagnostics,
-          ],
+          genesisDiagnostics,
           hasInlines: pendingFileData.hasInlines,
           path: pendingShimData.file.fileName,
           data: pendingShimData.data,
@@ -579,6 +600,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           this.compilerHost,
         ),
         data: new Map<TypeCheckId, TypeCheckData>(),
+        shimDiagnostics: null,
       });
     }
     return fileData.shimData.get(shimPath)!;
@@ -657,7 +679,7 @@ class InlineTcbOp implements Op {
     readonly config: TypeCheckingConfig,
     readonly reflector: ReflectionHost,
     readonly domSchemaChecker: DomSchemaChecker,
-    readonly oobRecorder: OutOfBandDiagnosticRecorder,
+    readonly oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
   ) {}
 
   /**

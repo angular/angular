@@ -22,9 +22,9 @@ import {
   TmplAstTemplate,
   TmplAstText,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
 import {Context} from './context';
+import {OutOfBadDiagnosticCategory} from '../../api';
 
 /**
  * A `TcbOp` that finds and flags control flow nodes that interfere with content projection.
@@ -39,7 +39,7 @@ import {Context} from './context';
  * flow node didn't exist.
  */
 export class TcbControlFlowContentProjectionOp extends TcbOp {
-  private readonly category: ts.DiagnosticCategory;
+  private readonly category: OutOfBadDiagnosticCategory;
 
   constructor(
     private tcb: Context,
@@ -53,8 +53,8 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
     // this check won't be enabled for `suppress`.
     this.category =
       tcb.env.config.controlFlowPreventingContentProjection === 'error'
-        ? ts.DiagnosticCategory.Error
-        : ts.DiagnosticCategory.Warning;
+        ? OutOfBadDiagnosticCategory.Error
+        : OutOfBadDiagnosticCategory.Warning;
   }
 
   override readonly optional = false;

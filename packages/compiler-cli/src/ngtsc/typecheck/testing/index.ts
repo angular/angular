@@ -85,6 +85,7 @@ import {makeProgram, resolveFromRunfiles} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {
   OptimizeFor,
+  OutOfBandDiagnosticRecorder,
   ProgramTypeCheckAdapter,
   TemplateContext,
   TemplateDiagnostic,
@@ -99,7 +100,6 @@ import {
 } from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
-import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TypeCheckFile} from '../src/type_check_file';
 import {sfExtensionData} from '../../shims';
@@ -1037,7 +1037,7 @@ export class NoopSchemaChecker implements DomSchemaChecker {
   checkHostElementProperty(): void {}
 }
 
-export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
+export class NoopOobRecorder implements OutOfBandDiagnosticRecorder<TemplateDiagnostic> {
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }
@@ -1046,8 +1046,6 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   deferredPipeUsedEagerly(id: TypeCheckId, ast: BindingPipe): void {}
   deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void {}
   duplicateTemplateVar(): void {}
-  requiresInlineTcb(): void {}
-  requiresInlineTypeConstructors(): void {}
   suboptimalTypeInference(): void {}
   splitTwoWayBinding(): void {}
   missingRequiredInputs(): void {}
