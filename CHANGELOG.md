@@ -1,3 +1,58 @@
+<a name="22.0.0-next.5"></a>
+# 22.0.0-next.5 (2026-03-25)
+## Breaking Changes
+### compiler-cli
+- Elements with multiple matching selectors will now throw at compile time.
+### core
+- Component with undefined `changeDetection` property are now `OnPush` by default. Specify `changeDetection: ChangeDetectionStrategy.Eager` to keep the previous behavior.
+### platform-browser
+- Hammer.js integration has been removed. Use your own implementation.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c1312da183](https://github.com/angular/angular/commit/c1312da1832e2b59ce18edae8fae13d3f562d9b0) | fix | avoid redundant image fetch on destroy with auto sizes |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e850643b1b](https://github.com/angular/angular/commit/e850643b1b8dca8cfdc12705be51441197cd987a) | feat | Support comments in html element. |
+| [96be4f429b](https://github.com/angular/angular/commit/96be4f429ba316c75d2d4a39ececcc529ec10943) | fix | abstract emitter producing incorrect code for dynamic imports |
+| [5a712d42d1](https://github.com/angular/angular/commit/5a712d42d161c93f6315d6462543c26c4e4a4490) | fix | prevent shimCssText from adding extra blank lines per CSS comment |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca67828ee2](https://github.com/angular/angular/commit/ca67828ee247bdff46736661e51f43f2ca736a24) | refactor | introduce NG8023 compile-time diagnostic for duplicate selectors |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8bc31a515f](https://github.com/angular/angular/commit/8bc31a515ff6e8edda6ea5786a47ae5a788acd36) | feat | Allow other expression for exhaustive typechecking |
+| [eae8f7e30b](https://github.com/angular/angular/commit/eae8f7e30b9f8bebdcdb535bd86260199c34274b) | feat | Set default Component changeDetection strategy to OnPush |
+| [16adbbf423](https://github.com/angular/angular/commit/16adbbf4234cc67507f578e588a8500fc5d31013) | fix | ensure custom controls resolve transitive host directives |
+| [dfa149dc68](https://github.com/angular/angular/commit/dfa149dc68c83c8d7d765aee435b940a8e89a235) | fix | fixes a regression with animate.leave and reordering |
+| [50e599e73e](https://github.com/angular/angular/commit/50e599e73ec5bb8f483e749d76fff579e33b1670) | fix | lazy-initialize debounced state to prevent computation cycle |
+| [22f8b0a500](https://github.com/angular/angular/commit/22f8b0a500807e69b323378b843465a949e08abf) | fix | resolver function not matching expected type |
+| [5e99ae9f00](https://github.com/angular/angular/commit/5e99ae9f00fb119cac93a19bbf36aee71299cae1) | fix | widen type for directive inputs/outputs |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [74f76d8075](https://github.com/angular/angular/commit/74f76d8075d03b1271aef37b974c9e15f9c7d3af) | feat | add `reloadValidation` to Signal Forms to manually trigger async validation |
+| [24e52d450d](https://github.com/angular/angular/commit/24e52d450d201e3da90bb64f84358f9eccd7877d) | feat | add debounce option to validateAsync and validateHttp |
+| [709f5a390c](https://github.com/angular/angular/commit/709f5a390ca0de04f8066012a5cb36999f2fd4a6) | feat | add FieldState.getError() |
+| [41b1410cb8](https://github.com/angular/angular/commit/41b1410cb8a333a2ce6569483cd10866effc154d) | feat | support binding `number|null` to `<input type="text">` |
+| [0eeb1b5f03](https://github.com/angular/angular/commit/0eeb1b5f03395ea0ddb047790af4cf1440655a07) | fix | allow `FormRoot` to be used without submission options ([#67727](https://github.com/angular/angular/pull/67727)) |
+| [ee8d2098cb](https://github.com/angular/angular/commit/ee8d2098cb3cdce1589c462cd9a66eae490477f9) | fix | change FieldState optional properties to non-optional | undefined |
+| [df8b020299](https://github.com/angular/angular/commit/df8b020299b5e579956578d9137cab93a8065045) | fix | clear native date inputs correctly in signal forms when changed via native UI |
+| [98c5afdb02](https://github.com/angular/angular/commit/98c5afdb02192f99c886fc3fda13ec6f39018f23) | perf | lazily instantiate signal form fields |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a73b4b7c30](https://github.com/angular/angular/commit/a73b4b7c30ae943966ad6deecf5a284cddb1f3fd) | fix | inject migration not work in multi-project workspace with option path |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f99e7ed20f](https://github.com/angular/angular/commit/f99e7ed20f0b1a26fd275fcf5befd589bb4e5d31) | refactor | remove Hammer integration |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.6"></a>
 # 21.2.6 (2026-03-25)
 ### common
