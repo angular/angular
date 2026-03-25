@@ -123,7 +123,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   RESOURCE[IS_ASYNC_VALIDATION_RESOURCE] = true;
 
   metadata(path, RESOURCE, (ctx) => {
-    const node = ctx.stateOf(path) as FieldNode;
+    const node = ctx.stateOf(path) as unknown as FieldNode;
     const validationState = node.validationState;
     if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
       return undefined;

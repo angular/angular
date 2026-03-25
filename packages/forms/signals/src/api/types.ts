@@ -893,6 +893,18 @@ export type FieldContext<
     : RootFieldContext<TValue>;
 
 /**
+ * Maps a PathKind to its corresponding key type in its parent.
+ * - PathKind.Item -> number
+ * - PathKind.Child -> string
+ * - PathKind.Root -> never
+ */
+export type PathKindToKey<T extends PathKind> = T[typeof ɵɵTYPE] extends 'item'
+  ? number
+  : T[typeof ɵɵTYPE] extends 'child' | 'item'
+    ? string
+    : never;
+
+/**
  * The base field context that is available for all fields.
  *
  * @experimental 21.0
@@ -916,12 +928,14 @@ export interface RootFieldContext<TValue> {
   // signature is a deferred conditional. This tautological wrapper mimics the deferred
   // structure so that TypeScript accepts the assignment gracefully.
   /** Gets the state of the field represented by the given path. */
-  stateOf<PControl extends AbstractControl>(
-    p: CompatSchemaPath<PControl>,
-  ): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
-  stateOf<PValue>(
-    p: SchemaPath<PValue, SchemaPathRules>,
-  ): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
+  stateOf<PControl extends AbstractControl, TPathKind extends PathKind>(
+    p: CompatSchemaPath<PControl, TPathKind>,
+  ): [PControl] extends [any]
+    ? ReadonlyCompatFieldState<PControl, PathKindToKey<TPathKind>>
+    : never;
+  stateOf<PValue, TPathKind extends PathKind>(
+    p: SchemaPath<PValue, SchemaPathRules, TPathKind>,
+  ): [PValue] extends [any] ? ReadonlyFieldState<PValue, PathKindToKey<TPathKind>> : never;
   /** Gets the field represented by the given path. */
   fieldTreeOf<PModel>(
     p: SchemaPathTree<PModel>,

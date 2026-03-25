@@ -227,7 +227,7 @@ function wrapWithPredicates<TValue, TReturn>(
   }
   return (arg: FieldContext<any>): TReturn | typeof IGNORED => {
     for (const predicate of predicates) {
-      let predicateField = arg.stateOf(predicate.path) as FieldNode;
+      let predicateField = arg.stateOf(predicate.path) as unknown as FieldNode;
       // Check the depth of the current field vs the depth this predicate is supposed to be
       // evaluated at. If necessary, walk up the field tree to grab the correct context field.
       // We can check the pathKeys as an untracked read since we know the structure of our fields

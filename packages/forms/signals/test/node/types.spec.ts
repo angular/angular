@@ -163,5 +163,17 @@ function typeVerificationOnlyDoNotRunMe() {
         },
       });
     });
+
+    it('should infer precise key type for object children in stateOf', () => {
+      schema<{user: {name: string}}>((p) => {
+        validate(p.user, (ctx) => {
+          const state = ctx.stateOf(p.user.name);
+          const key: string = state.keyInParent(); // Should compile
+          // @ts-expect-error
+          const keyNumber: number = state.keyInParent();
+          return null;
+        });
+      });
+    });
   });
 }

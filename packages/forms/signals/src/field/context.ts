@@ -19,6 +19,8 @@ import {
   CompatSchemaPath,
   CompatFieldState,
   FieldContext,
+  PathKind,
+  PathKindToKey,
   ReadonlyCompatFieldState,
   ReadonlyFieldState,
   ReadonlyFieldTree,
@@ -156,12 +158,14 @@ export class FieldNodeContext implements FieldContext<unknown> {
     return this.resolve<PModel>(p) as any;
   }
 
-  stateOf<PControl extends AbstractControl>(
-    p: CompatSchemaPath<PControl>,
-  ): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
-  stateOf<PValue>(
-    p: SchemaPath<PValue, SchemaPathRules>,
-  ): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
+  stateOf<PControl extends AbstractControl, TPathKind extends PathKind>(
+    p: CompatSchemaPath<PControl, TPathKind>,
+  ): [PControl] extends [any]
+    ? ReadonlyCompatFieldState<PControl, PathKindToKey<TPathKind>>
+    : never;
+  stateOf<PValue, TPathKind extends PathKind>(
+    p: SchemaPath<PValue, SchemaPathRules, TPathKind>,
+  ): [PValue] extends [any] ? ReadonlyFieldState<PValue, PathKindToKey<TPathKind>> : never;
   stateOf<TModel>(p: SchemaPath<TModel, SchemaPathRules> | CompatSchemaPath<any>): any {
     return this.resolve<TModel>(p as any)();
   }
