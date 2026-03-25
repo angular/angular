@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ɵFramework as Framework,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import {Component, ɵFramework as Framework, computed, inject, input} from '@angular/core';
 
 import {
   AcxDirectiveMetadata,
@@ -29,7 +22,6 @@ import {ElementPropertyResolver} from '../../../property-resolver/element-proper
   templateUrl: './component-metadata.component.html',
   styleUrls: ['./component-metadata.component.scss'],
   imports: [DocsRefButtonComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComponentMetadataComponent {
   readonly currentSelectedComponent = input.required<ComponentType>();

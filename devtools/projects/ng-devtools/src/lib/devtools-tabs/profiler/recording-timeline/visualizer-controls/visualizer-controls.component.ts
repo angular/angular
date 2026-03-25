@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input, model} from '@angular/core';
+import {Component, input, model} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 
 import {ProfilerFrame} from '../../../../../../../protocol';
@@ -17,7 +17,6 @@ import {VisualizationMode} from '../shared/visualization-mode';
   templateUrl: './visualizer-controls.component.html',
   styleUrl: './visualizer-controls.component.scss',
   imports: [DecimalPipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisualizerControlsComponent {
   protected readonly record = input.required<ProfilerFrame>();

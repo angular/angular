@@ -6,16 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  input,
-  linkedSignal,
-  output,
-  signal,
-} from '@angular/core';
+import {Component, computed, effect, input, linkedSignal, output, signal} from '@angular/core';
 import {ProfilerFrame} from '../../../../../../protocol';
 import {Observable} from 'rxjs';
 
@@ -39,7 +30,6 @@ import {estimateFrameRate} from './shared/estimate-frame-rate';
     RecordingVisualizerComponent,
     VisualizerControlsComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecordingTimelineComponent {
   readonly stream = input.required<Observable<ProfilerFrame[]>>();

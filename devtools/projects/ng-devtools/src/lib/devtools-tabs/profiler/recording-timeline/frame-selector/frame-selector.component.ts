@@ -13,7 +13,6 @@ import {
 } from '@angular/cdk/scrolling';
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -73,7 +72,6 @@ function framesBoundSignal<T>(source: Signal<ProfilerFrame[]>, defaultValue: T) 
     ButtonComponent,
     DecimalPipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FrameSelectorComponent {
   private readonly tabUpdate = inject(TabUpdate);

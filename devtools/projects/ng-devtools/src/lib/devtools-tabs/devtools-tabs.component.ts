@@ -6,15 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import {Component, computed, inject, input, output, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
@@ -67,7 +59,6 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
     ButtonComponent,
   ],
   providers: [TabUpdate],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsTabsComponent {
   public readonly frameManager = inject(FrameManager);

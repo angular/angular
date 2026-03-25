@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 import {ProfilerFrame} from '../../../../../../../../protocol';
 
 import {BarGraphFormatter, BargraphNode} from '../../record-formatter/bargraph-formatter/index';
@@ -20,7 +20,6 @@ import {SelectedDirective, SelectedEntry} from '../recording-visualizer-types';
   templateUrl: './bargraph-visualizer.component.html',
   styleUrls: ['./bargraph-visualizer.component.scss'],
   imports: [BarChartComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BargraphVisualizerComponent {
   readonly nodeSelect = output<SelectedEntry>();

@@ -14,7 +14,6 @@ import {
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
@@ -45,7 +44,6 @@ const RESIZE_OBSERVER_DEBOUNCE = 250; // ms
   selector: 'ng-directive-forest',
   templateUrl: './directive-forest.component.html',
   styleUrls: ['./directive-forest.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FilterComponent,
     CdkVirtualScrollViewport,

@@ -8,7 +8,6 @@
 
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -78,7 +77,6 @@ const SNAP_ZOOM_SCALE = 0.8;
   host: {
     '[hidden]': 'hidden()',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectorTreeComponent {
   private readonly elementTree = viewChild<InjectorTreeVisualizer>('elementTree');

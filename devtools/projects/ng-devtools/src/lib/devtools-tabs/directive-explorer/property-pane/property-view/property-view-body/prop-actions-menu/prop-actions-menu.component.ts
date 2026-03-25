@@ -9,7 +9,6 @@
 import {
   afterRenderEffect,
   AfterRenderRef,
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -83,7 +82,6 @@ interface AvailableActions {
   templateUrl: './prop-actions-menu.component.html',
   styleUrl: './prop-actions-menu.component.scss',
   imports: [MatTooltip, MatIcon, Menu, MenuContent, MenuItem, MenuTrigger, CdkConnectedOverlay],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropActionsMenuComponent {
   private readonly signalGraph = inject(SignalGraphManager);

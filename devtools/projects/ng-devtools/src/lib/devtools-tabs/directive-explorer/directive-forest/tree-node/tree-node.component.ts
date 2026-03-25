@@ -8,7 +8,6 @@
 
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -39,7 +38,6 @@ export type NodeTextMatch = {
   selector: 'ng-tree-node',
   templateUrl: './tree-node.component.html',
   styleUrls: ['./tree-node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIcon, MatTooltip],
   host: {
     '[style.padding-left]': 'paddingLeft()',

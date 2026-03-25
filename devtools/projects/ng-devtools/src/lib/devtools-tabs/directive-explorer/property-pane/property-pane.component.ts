@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 import {DirectivePosition} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
@@ -28,7 +28,6 @@ import {BlockType} from '../../../shared/utils/control-flow';
     DeferViewComponent,
     ForLoopViewComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyPaneComponent {
   readonly currentSelectedElement = input.required<IndexedNode | null>();

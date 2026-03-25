@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
+import {Component, computed, inject, input, output} from '@angular/core';
 import {DirectivePosition} from '../../../../../../../protocol';
 
 import {ElementPropertyResolver} from '../../property-resolver/element-property-resolver';
@@ -20,7 +20,6 @@ import {DevtoolsSignalGraphNode} from '../../../../shared/signal-graph';
   templateUrl: './property-view.component.html',
   styleUrls: ['./property-view.component.scss'],
   imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewComponent {
   readonly directive = input.required<{name: string}>();
