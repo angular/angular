@@ -406,7 +406,7 @@
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
-    "typescript": "6.0.1-rc"
+    "typescript": "6.0.2"
   },
   "devDependencies": {
     "@types/jasmine": "~6.0.0",
