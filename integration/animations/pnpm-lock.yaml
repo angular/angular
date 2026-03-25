@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@angular/cdk':
-        specifier: 22.0.0-next.1
-        version: 22.0.0-next.1(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
+        specifier: 22.0.0-next.2
+        version: 22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
       '@angular/common':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
@@ -47,10 +47,10 @@ importers:
     devDependencies:
       '@angular-devkit/build-angular':
         specifier: 22.0.0-next.2
-        version: 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(typescript@5.9.3)
+        version: 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(typescript@6.0.2)
       '@angular/build':
         specifier: 22.0.0-next.2
-        version: 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.8)(terser@5.46.0)(tslib@2.8.1)(typescript@5.9.3)
+        version: 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.8)(terser@5.46.0)(tslib@2.8.1)(typescript@6.0.2)
       '@angular/cli':
         specifier: 22.0.0-next.2
         version: 22.0.0-next.2(@types/node@20.19.37)
@@ -74,13 +74,13 @@ importers:
         version: 6.1.0
       puppeteer:
         specifier: 24.39.1
-        version: 24.39.1(typescript@5.9.3)
+        version: 24.39.1(typescript@6.0.2)
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.19.37)(typescript@5.9.3)
+        version: 10.9.2(@types/node@20.19.37)(typescript@6.0.2)
       typescript:
-        specifier: 5.9.3
-        version: 5.9.3
+        specifier: 6.0.2
+        version: 6.0.2
 
 packages:
 
@@ -253,8 +253,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.0.0-next.1':
-    resolution: {integrity: sha512-tSRpCd2udTRe/52fHBLaKmD+nVHtQKtVh5lJuhk1RPmdsCQqn+4wY8d96xS0qdx3Xk+0nTZmQl2LnIqCkPOpfw==}
+  '@angular/cdk@22.0.0-next.2':
+    resolution: {integrity: sha512-X6dPo2s453Tpl3KTF/7cPpxehnFU4XcgdDFfhnDWqxc/CNWdNTAeFfGetFi8hWkBOftvZ6VNrL4w8u0CLOuEBg==}
     peerDependencies:
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
@@ -4261,8 +4261,8 @@ packages:
   typed-query-selector@2.12.1:
     resolution: {integrity: sha512-uzR+FzI8qrUEIu96oaeBJmd9E7CFEiQ3goA5qCVgc4s5llSubcfGHq9yUstZx/k4s9dXHVKsE35YWoFyvEqEHA==}
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.2:
+    resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -4633,13 +4633,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(typescript@5.9.3)':
+  '@angular-devkit/build-angular@22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(typescript@6.0.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.0-next.2
       '@angular-devkit/build-webpack': 0.2200.0-next.2(webpack-dev-server@5.2.3(tslib@2.8.1)(webpack@5.105.4))(webpack@5.105.4(esbuild@0.27.3))
       '@angular-devkit/core': 22.0.0-next.2
-      '@angular/build': 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.8)(terser@5.46.0)(tslib@2.8.1)(typescript@5.9.3)
+      '@angular/build': 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.8)(terser@5.46.0)(tslib@2.8.1)(typescript@6.0.2)
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -4651,7 +4651,7 @@ snapshots:
       '@babel/preset-env': 7.29.0(@babel/core@7.29.0)
       '@babel/runtime': 7.28.6
       '@discoveryjs/json-ext': 1.0.0
-      '@ngtools/webpack': 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@5.9.3)(webpack@5.105.4(esbuild@0.27.3))
+      '@ngtools/webpack': 22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@6.0.2)(webpack@5.105.4(esbuild@0.27.3))
       ansi-colors: 4.1.3
       autoprefixer: 10.4.27(postcss@8.5.8)
       babel-loader: 10.1.1(@babel/core@7.29.0)(webpack@5.105.4(esbuild@0.27.3))
@@ -4673,7 +4673,7 @@ snapshots:
       picomatch: 4.0.3
       piscina: 5.1.4
       postcss: 8.5.8
-      postcss-loader: 8.2.1(postcss@8.5.8)(typescript@5.9.3)(webpack@5.105.4(esbuild@0.27.3))
+      postcss-loader: 8.2.1(postcss@8.5.8)(typescript@6.0.2)(webpack@5.105.4(esbuild@0.27.3))
       resolve-url-loader: 5.0.0
       rxjs: 7.8.2
       sass: 1.98.0
@@ -4684,7 +4684,7 @@ snapshots:
       terser: 5.46.0
       tinyglobby: 0.2.15
       tslib: 2.8.1
-      typescript: 5.9.3
+      typescript: 6.0.2
       webpack: 5.105.4(esbuild@0.27.3)
       webpack-dev-middleware: 7.4.5(tslib@2.8.1)(webpack@5.105.4)
       webpack-dev-server: 5.2.3(tslib@2.8.1)(webpack@5.105.4)
@@ -4746,7 +4746,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.8)(terser@5.46.0)(tslib@2.8.1)(typescript@5.9.3)':
+  '@angular/build@22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.37)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.8)(terser@5.46.0)(tslib@2.8.1)(typescript@6.0.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.0-next.2
@@ -4775,7 +4775,7 @@ snapshots:
       source-map-support: 0.5.21
       tinyglobby: 0.2.15
       tslib: 2.8.1
-      typescript: 5.9.3
+      typescript: 6.0.2
       vite: 7.3.1(@types/node@20.19.37)(jiti@2.6.1)(less@4.6.4)(sass@1.98.0)(terser@5.46.0)
       watchpack: 2.5.1
     optionalDependencies:
@@ -4798,7 +4798,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@22.0.0-next.1(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
+  '@angular/cdk@22.0.0-next.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:in-existing-linked-by-bazel
       '@angular/core': link:in-existing-linked-by-bazel
@@ -6052,10 +6052,10 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@ngtools/webpack@22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@5.9.3)(webpack@5.105.4(esbuild@0.27.3))':
+  '@ngtools/webpack@22.0.0-next.2(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@6.0.2)(webpack@5.105.4(esbuild@0.27.3))':
     dependencies:
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
-      typescript: 5.9.3
+      typescript: 6.0.2
       webpack: 5.105.4(esbuild@0.27.3)
 
   '@noble/hashes@1.4.0': {}
@@ -7108,14 +7108,14 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig@9.0.1(typescript@5.9.3):
+  cosmiconfig@9.0.1(typescript@6.0.2):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
       js-yaml: 4.1.1
       parse-json: 5.2.0
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.2
 
   create-require@1.1.1: {}
 
@@ -8371,9 +8371,9 @@ snapshots:
       pvutils: 1.1.5
       tslib: 2.8.1
 
-  postcss-loader@8.2.1(postcss@8.5.8)(typescript@5.9.3)(webpack@5.105.4(esbuild@0.27.3)):
+  postcss-loader@8.2.1(postcss@8.5.8)(typescript@6.0.2)(webpack@5.105.4(esbuild@0.27.3)):
     dependencies:
-      cosmiconfig: 9.0.1(typescript@5.9.3)
+      cosmiconfig: 9.0.1(typescript@6.0.2)
       jiti: 2.6.1
       postcss: 8.5.8
       semver: 7.7.4
@@ -8475,11 +8475,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@24.39.1(typescript@5.9.3):
+  puppeteer@24.39.1(typescript@6.0.2):
     dependencies:
       '@puppeteer/browsers': 2.13.0
       chromium-bidi: 14.0.0(devtools-protocol@0.0.1581282)
-      cosmiconfig: 9.0.1(typescript@5.9.3)
+      cosmiconfig: 9.0.1(typescript@6.0.2)
       devtools-protocol: 0.0.1581282
       puppeteer-core: 24.39.1
       typed-query-selector: 2.12.1
@@ -9060,7 +9060,7 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  ts-node@10.9.2(@types/node@20.19.37)(typescript@5.9.3):
+  ts-node@10.9.2(@types/node@20.19.37)(typescript@6.0.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.12
@@ -9074,7 +9074,7 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.4
       make-error: 1.3.6
-      typescript: 5.9.3
+      typescript: 6.0.2
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -9109,7 +9109,7 @@ snapshots:
 
   typed-query-selector@2.12.1: {}
 
-  typescript@5.9.3: {}
+  typescript@6.0.2: {}
 
   undici-types@6.21.0: {}
 

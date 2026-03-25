@@ -29,8 +29,8 @@ importers:
         specifier: workspace:*
         version: link:packages/animations
       '@angular/aria':
-        specifier: 22.0.0-next.1
-        version: 22.0.0-next.1(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.0.0-next.2
+        version: 22.0.0-next.2(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/benchpress':
         specifier: 'workspace: *'
         version: link:packages/benchpress
@@ -38,8 +38,8 @@ importers:
         specifier: 22.0.0-next.2
         version: 22.0.0-next.2(7566991a1254688a482b509d7320ece1)
       '@angular/cdk':
-        specifier: 22.0.0-next.1
-        version: 22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.0-next.2
+        version: 22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 22.0.0-next.2
         version: 22.0.0-next.2(@types/node@20.19.37)(chokidar@5.0.0)
@@ -68,8 +68,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 22.0.0-next.1
-        version: 22.0.0-next.1(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.0-next.2
+        version: 22.0.0-next.2(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -209,8 +209,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.3
       domino:
-        specifier: https://github.com/angular/domino.git#1362bcd7402a41da9b1d6fbffed1ac0d72944106
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106'
+        specifier: https://github.com/angular/domino.git#928dffb9d9431b2cd2a73d7b940d1575f221e072
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/928dffb9d9431b2cd2a73d7b940d1575f221e072'
       esbuild:
         specifier: 0.27.4
         version: 0.27.4
@@ -474,14 +474,14 @@ importers:
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/aria':
-        specifier: 22.0.0-next.1
-        version: 22.0.0-next.1(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.0.0-next.2
+        version: 22.0.0-next.2(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 22.0.0-next.2
         version: 22.0.0-next.2(835d3a20fe6878e9f7e79b2f2e555d95)
       '@angular/cdk':
-        specifier: 22.0.0-next.1
-        version: 22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.0-next.2
+        version: 22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 22.0.0-next.2
         version: 22.0.0-next.2(@types/node@24.12.0)(chokidar@5.0.0)
@@ -504,8 +504,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 22.0.0-next.1
-        version: 22.0.0-next.1(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.0-next.2
+        version: 22.0.0-next.2(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -694,7 +694,7 @@ importers:
         version: 11.13.0
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       open-in-idx:
         specifier: 0.1.1
         version: 0.1.1
@@ -1307,8 +1307,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       domino:
-        specifier: https://github.com/angular/domino.git#1362bcd7402a41da9b1d6fbffed1ac0d72944106
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106'
+        specifier: https://github.com/angular/domino.git#928dffb9d9431b2cd2a73d7b940d1575f221e072
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/928dffb9d9431b2cd2a73d7b940d1575f221e072'
       esbuild-plugin-umd-wrapper:
         specifier: 3.0.0
         version: 3.0.0
@@ -1355,8 +1355,8 @@ importers:
   packages/zone.js/test/typings:
     dependencies:
       domino:
-        specifier: https://github.com/angular/domino.git#1362bcd7402a41da9b1d6fbffed1ac0d72944106
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106'
+        specifier: https://github.com/angular/domino.git#928dffb9d9431b2cd2a73d7b940d1575f221e072
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/928dffb9d9431b2cd2a73d7b940d1575f221e072'
       zone.js:
         specifier: workspace:*
         version: link:../..
@@ -1635,10 +1635,10 @@ packages:
     resolution: {integrity: sha512-ZpNi0vzk8VrrXScnDhE/nIdwGkEwlQdONawXfX4stsBOS5hwrKNsoMR1chU198Ucfm5dL4fF5VEXMUGmseCS5w==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@angular/aria@22.0.0-next.1':
-    resolution: {integrity: sha512-DeTuoOOp7ZmIGMW9GimY2Du51rCXOs+BhJ4pVAoKP0RWMfJxr0reXaxF4gWPlxFW/ReRAf+d0hwK+jFh/YOXeA==}
+  '@angular/aria@22.0.0-next.2':
+    resolution: {integrity: sha512-0rc174TdXaqdm0RsuO3DXd0pKZzpGnGJyfA3C1byjnoMbOyorYynEzdkF9G1bzBMdHuTvv3a/GAgwFqy09WA6g==}
     peerDependencies:
-      '@angular/cdk': 22.0.0-next.1
+      '@angular/cdk': 22.0.0-next.2
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
 
   '@angular/build@22.0.0-next.2':
@@ -1687,8 +1687,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.0.0-next.1':
-    resolution: {integrity: sha512-tSRpCd2udTRe/52fHBLaKmD+nVHtQKtVh5lJuhk1RPmdsCQqn+4wY8d96xS0qdx3Xk+0nTZmQl2LnIqCkPOpfw==}
+  '@angular/cdk@22.0.0-next.2':
+    resolution: {integrity: sha512-X6dPo2s453Tpl3KTF/7cPpxehnFU4XcgdDFfhnDWqxc/CNWdNTAeFfGetFi8hWkBOftvZ6VNrL4w8u0CLOuEBg==}
     peerDependencies:
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
@@ -1709,15 +1709,15 @@ packages:
       '@angular/compiler':
         optional: true
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106':
-    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/928dffb9d9431b2cd2a73d7b940d1575f221e072':
+    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/928dffb9d9431b2cd2a73d7b940d1575f221e072}
     version: 2.1.6
     engines: {npm: Please use pnpm instead of NPM to install dependencies, pnpm: 10.31.0, yarn: Please use pnpm instead of Yarn to install dependencies}
 
-  '@angular/material@22.0.0-next.1':
-    resolution: {integrity: sha512-U6JPSFlT2pFDuWv8YZw7rv/toDjBq4Q5xRE8KVcQn2AIXWrjy4GNmeyuYB1fN6Zd8jCDYDrhNkvN33jalz+D2w==}
+  '@angular/material@22.0.0-next.2':
+    resolution: {integrity: sha512-HqTVJNEf2kSmHs8xQBvFbSf/m8ekMMaaBXlVy1lONLfN+Lq+RO6HxP56wF3CY4rwS8CpPr2vQo1IkWtsDH3gVg==}
     peerDependencies:
-      '@angular/cdk': 22.0.0-next.1
+      '@angular/cdk': 22.0.0-next.2
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/forms': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
@@ -13550,9 +13550,9 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/aria@22.0.0-next.1(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
+  '@angular/aria@22.0.0-next.2(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
     dependencies:
-      '@angular/cdk': 22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
@@ -13733,7 +13733,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -13802,11 +13802,11 @@ snapshots:
     optionalDependencies:
       '@angular/compiler': link:packages/compiler
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/1362bcd7402a41da9b1d6fbffed1ac0d72944106': {}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/928dffb9d9431b2cd2a73d7b940d1575f221e072': {}
 
-  '@angular/material@22.0.0-next.1(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/material@22.0.0-next.2(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -23852,9 +23852,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 22.0.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
@@ -26459,7 +26459,7 @@ snapshots:
 
   tsutils@3.21.0(typescript@6.0.2):
     dependencies:
-      tslib: 1.9.0
+      tslib: 1.14.1
       typescript: 6.0.2
 
   tsx@4.21.0:
