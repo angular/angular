@@ -1,5 +1,3 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
-load("@npm//:rollup/package_json.bzl", rollup = "bin")
 load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -11,10 +9,8 @@ ng_project(
             "*.ts",
             "src/**/*.ts",
         ],
-        exclude = ["src/bundled-domino.d.ts"],
     ),
     deps = [
-        ":bundled_domino_lib",
         "//:node_modules/@types/node",
         "//:node_modules/rxjs",
         "//:node_modules/xhr2",
@@ -22,34 +18,7 @@ ng_project(
         "//packages/common/http",
         "//packages/core",
         "//packages/platform-browser",
-    ],
-)
-
-rollup.rollup(
-    name = "bundled_domino",
-    srcs = [
-        "//:node_modules/@rollup/plugin-commonjs",
-        "//:node_modules/domino",
-    ],
-    outs = [
-        "src/bundled-domino.mjs",
-    ],
-    args = [
-        "--format=esm",
-        "--plugin=@rollup/plugin-commonjs",
-        "--input=node_modules/domino/lib/index.js",
-        "--sourcemap=false",
-        "--file=packages/platform-server/src/bundled-domino.mjs",
-    ],
-    progress_message = "Bundling domino",
-    silent_on_success = True,
-)
-
-js_library(
-    name = "bundled_domino_lib",
-    srcs = [
-        "src/bundled-domino.d.ts",
-        ":bundled_domino",
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
     ],
 )
 
@@ -65,11 +34,20 @@ ng_package(
     ],
     externals = [
         "xhr2",
+        "../../third_party/domino/bundled-domino",
+        "../third_party/domino/bundled-domino",
+    ],
+    nested_packages = [
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
     ],
     package = "@angular/platform-server",
     side_effect_entry_points = [
         "@angular/platform-server/init",
     ],
+    substitutions = {
+        # Needed for the FESM files.
+        "\\./(.+)/third_party/domino/bundled-domino": "../third_party/domino/bundled-domino.mjs",
+    },
     tags = [
         "release-with-framework",
     ],

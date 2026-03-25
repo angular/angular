@@ -50,8 +50,8 @@ ts_project(
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-server",
-        "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server/testing",
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
     ],
 )
 
@@ -66,8 +66,8 @@ ts_project(
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/platform-server",
-        "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server/testing",
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
     ],
 )
 

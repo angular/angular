@@ -6,7 +6,7 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/platform-server/init",
-        "//packages/platform-server/init:bundled_domino_lib",
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
     ],
 )
 
