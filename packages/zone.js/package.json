@@ -15,7 +15,7 @@
     "@types/node": "^24.3.0",
     "@types/systemjs": "6.15.4",
     "bluebird": "3.7.2",
-    "domino": "https://github.com/angular/domino.git#1362bcd7402a41da9b1d6fbffed1ac0d72944106",
+    "domino": "https://github.com/angular/domino.git#928dffb9d9431b2cd2a73d7b940d1575f221e072",
     "esbuild-plugin-umd-wrapper": "3.0.0",
     "jest-environment-jsdom": "30.3.0",
     "jest-environment-node": "30.3.0",
