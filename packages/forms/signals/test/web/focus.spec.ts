@@ -78,7 +78,6 @@ describe('FieldState focus behavior', () => {
 
     @Component({
       selector: 'custom-control',
-      host: {'tabindex': '-1'},
       hostDirectives: [{directive: FormField, inputs: ['formField']}],
       template: '<input #input />',
     })
