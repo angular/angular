@@ -48,6 +48,15 @@ describe('URL sanitizer', () => {
       'data:audio/opus;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==',
       'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+      'data:application/octet-stream;base64,dGVzdA==',
+      'data:text/plain,hello',
+      'data:application/pdf;base64,abc',
+      'data:application/json,{"key":"value"}',
+      'data:font/woff2;base64,abc',
+      'data:text/csv,a%2Cb%2Cc',
+      'DATA:IMAGE/PNG;base64,abc',
+      'data:TEXT/PLAIN,hello',
+      'data:text/plain;charset=utf-8,hello world',
       'unknown-scheme:abc',
     ];
     for (const url of validUrls) {
@@ -90,8 +99,7 @@ describe('URL sanitizer', () => {
       'DATA:text/html,<script>alert(1)</script>',
       'data:,<script>alert(1)</script>',
       'data:application/javascript,alert(1)',
-      'data:text/plain,hello',
-      'data:application/pdf;base64,abc',
+      'data:text/javascript,alert(1)',
     ];
     for (const url of dangerousDataUrls) {
       it(`blocks ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));

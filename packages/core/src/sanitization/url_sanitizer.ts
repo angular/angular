@@ -17,9 +17,11 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
  * regular expression matches if:
  * (1) Either a protocol that is not javascript: or vbscript:, and that has
  *     valid characters (alphanumeric or [+-.]).
- *     For data: URIs, only safe media subtypes (image/*, video/*, audio/*)
- *     are allowed. Other data: subtypes (e.g. data:text/html) are blocked
- *     as they can lead to script execution in some environments.
+ *     For data: URIs, only non-executable subtypes are allowed:
+ *     image/*, video/*, audio/*, font/*, application/octet-stream,
+ *     application/pdf, application/json, text/plain, and text/csv.
+ *     Other data: subtypes (e.g. data:text/html, data:text/javascript)
+ *     are blocked as they can lead to script execution.
  * (2) or no protocol.  A protocol must be followed by a colon. The below
  *     allows that by allowing colons only after one of the characters [/?#].
  *     A colon after a hash (#) must be in the fragment.
@@ -45,7 +47,7 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
  * data: URLs entirely, providing an additional layer of defense.
  */
 const SAFE_URL_PATTERN =
-  /^(?!javascript:)(?!vbscript:)(?!data:(?!image\/|video\/|audio\/))(?:[a-z0-9+.-]+:|[^&:\/?#]*(?:[\/?#]|$))/i;
+  /^(?!javascript:)(?!vbscript:)(?!data:(?!image\/|video\/|audio\/|font\/|application\/octet-stream(?=[;,])|application\/pdf(?=[;,])|application\/json(?=[;,])|text\/plain(?=[;,])|text\/csv(?=[;,])))(?:[a-z0-9+.-]+:|[^&:\/?#]*(?:[\/?#]|$))/i;
 export function _sanitizeUrl(url: string): string {
   url = String(url);
   if (url.match(SAFE_URL_PATTERN)) return url;
