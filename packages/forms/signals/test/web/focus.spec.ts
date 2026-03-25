@@ -73,6 +73,40 @@ describe('FieldState focus behavior', () => {
     expect(document.activeElement).toBe(customControl.querySelector('input'));
   });
 
+  it('should delegate focus behavior to a custom control composed with a FormField', async () => {
+    let focusCalled = false;
+
+    @Component({
+      selector: 'custom-control',
+      hostDirectives: [{directive: FormField, inputs: ['formField']}],
+      template: '<input #input />',
+    })
+    class CustomControl {
+      readonly value = model<string>();
+      readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
+      focus() {
+        focusCalled = true;
+        this.input().nativeElement.focus();
+      }
+    }
+
+    @Component({
+      imports: [CustomControl],
+      template: `<custom-control [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal(''));
+    }
+
+    const fixture = await act(() => TestBed.createComponent(TestCmp));
+    const customControl = fixture.nativeElement.firstChild as HTMLInputElement;
+
+    await act(() => fixture.componentInstance.f().focusBoundControl());
+    expect(focusCalled).toBeTrue();
+    expect(document.activeElement).not.toBe(customControl);
+    expect(document.activeElement).toBe(customControl.querySelector('input'));
+  });
+
   it('should directly focus a custom control that has no custom focus logic', async () => {
     @Component({
       selector: 'custom-control',
