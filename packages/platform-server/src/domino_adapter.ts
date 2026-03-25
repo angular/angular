@@ -9,7 +9,7 @@
 import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
 import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
-import domino from './bundled-domino';
+import domino from '../third_party/domino/bundled-domino';
 
 export function setDomTypes() {
   // Make all Domino types available in the global env.
