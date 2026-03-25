@@ -7,7 +7,7 @@
  */
 
 import {NgTemplateOutlet} from '@angular/common';
-import {ChangeDetectionStrategy, Component, inject, input, output} from '@angular/core';
+import {Component, inject, input, output} from '@angular/core';
 import {MatTooltip} from '@angular/material/tooltip';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {NavigationItem} from '../../interfaces/index';
@@ -27,7 +27,6 @@ import {IconComponent} from '../icon/icon.component';
   ],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationList {
   readonly navigationItems = input.required<NavigationItem[]>();

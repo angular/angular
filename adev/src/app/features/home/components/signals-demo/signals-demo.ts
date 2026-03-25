@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, signal} from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {CodeBlock} from '../code-block/code-block';
 
@@ -15,7 +15,6 @@ import {CodeBlock} from '../code-block/code-block';
   imports: [RouterLink, CodeBlock],
   templateUrl: './signals-demo.html',
   styleUrls: ['./signals-demo.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalsDemo {
   tsExample = tsExample;

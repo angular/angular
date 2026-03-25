@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, input, linkedSignal} from '@angular/core';
+import {Component, inject, input, linkedSignal} from '@angular/core';
 import {ExternalLink} from '../../directives';
 import {LOCAL_STORAGE} from '../../providers';
 import {IconComponent} from '../icon/icon.component';
@@ -18,7 +18,6 @@ export const STORAGE_KEY_PREFIX = 'docs-was-closed-top-banner-';
   imports: [ExternalLink, IconComponent],
   templateUrl: './top-level-banner.component.html',
   styleUrl: './top-level-banner.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopLevelBannerComponent {
   private readonly localStorage = inject(LOCAL_STORAGE);

@@ -9,7 +9,6 @@
 import {DOCUMENT, isPlatformBrowser, Location} from '@angular/common';
 import {
   ApplicationRef,
-  ChangeDetectionStrategy,
   Component,
   ComponentRef,
   createComponent,
@@ -38,10 +37,10 @@ import {TableOfContents} from '../../table-of-contents/table-of-contents.compone
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
-import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {CopyLinkButton} from '../../copy-link-anchor/copy-link-anchor.component';
-import {ExampleViewer} from '../example-viewer/example-viewer.component';
+import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {TabGroup} from '../../tab-group/tab-group.component';
+import {ExampleViewer} from '../example-viewer/example-viewer.component';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
@@ -56,7 +55,6 @@ const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/{{BUILD_SCM_
   selector: DOCS_VIEWER_SELECTOR,
   template: '',
   styleUrls: ['docs-viewer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.docs-animate-content]': 'animateContent',

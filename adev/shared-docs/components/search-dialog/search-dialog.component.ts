@@ -8,7 +8,6 @@
 
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -36,7 +35,6 @@ import {TextField} from '../text-field/text-field.component';
 
 @Component({
   selector: 'docs-search-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ClickOutside,
     TextField,

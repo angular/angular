@@ -3,7 +3,6 @@ import {Listbox, Option} from '@angular/aria/listbox';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   signal,
@@ -25,7 +24,6 @@ import {FormsModule} from '@angular/forms';
     OverlayModule,
     FormsModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   /** The combobox listbox popup. */

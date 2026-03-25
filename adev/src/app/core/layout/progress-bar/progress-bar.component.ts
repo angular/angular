@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, PLATFORM_ID, viewChild} from '@angular/core';
 import {isPlatformServer} from '@angular/common';
-import {NgProgressbar, NgProgressRef} from 'ngx-progressbar';
+import {Component, inject, PLATFORM_ID, viewChild} from '@angular/core';
 import {
   NavigationCancel,
   NavigationEnd,
@@ -17,6 +16,7 @@ import {
   NavigationStart,
   Router,
 } from '@angular/router';
+import {NgProgressbar, NgProgressRef} from 'ngx-progressbar';
 import {filter, map, switchMap, take} from 'rxjs/operators';
 
 /** Time to wait after navigation starts before showing the progress bar. This delay allows a small amount of time to skip showing the progress bar when a navigation is effectively immediate. 30ms is approximately the amount of time we can wait before a delay is perceptible.*/
@@ -26,7 +26,6 @@ export const PROGRESS_BAR_DELAY = 30;
   selector: 'adev-progress-bar',
   imports: [NgProgressbar],
   template: `<ng-progress aria-label="Page load progress" />`,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressBarComponent {
   private readonly router = inject(Router);
