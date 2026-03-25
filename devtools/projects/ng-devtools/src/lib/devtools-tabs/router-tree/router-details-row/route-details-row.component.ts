@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output, ChangeDetectionStrategy} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -25,7 +25,6 @@ export type ActionBtnType = 'none' | 'view-source' | 'navigate';
   templateUrl: './route-details-row.component.html',
   styleUrls: ['./route-details-row.component.scss'],
   imports: [NgTemplateOutlet, ButtonComponent, MatIcon, MatTooltip, ObjectTreeExplorerComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouteDetailsRowComponent {
   readonly label = input.required<string>();

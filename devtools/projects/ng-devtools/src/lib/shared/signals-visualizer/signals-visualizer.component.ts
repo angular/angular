@@ -8,7 +8,6 @@
 
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
@@ -40,7 +39,6 @@ import {ButtonComponent} from '../button/button.component';
   templateUrl: './signals-visualizer.component.html',
   styleUrl: './signals-visualizer.component.scss',
   imports: [ButtonComponent, MatIcon],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalsVisualizerComponent {
   protected readonly svgHost = viewChild.required<ElementRef>('host');

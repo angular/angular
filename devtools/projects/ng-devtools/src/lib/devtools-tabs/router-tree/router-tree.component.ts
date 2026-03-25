@@ -7,7 +7,6 @@
  */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
@@ -60,7 +59,6 @@ const RUN_GUARDS_AND_RESOLVERS_OPTIONS: RunGuardsAndResolvers[] = [
     RouteDetailsRowComponent,
     ButtonComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouterTreeComponent {
   private readonly searchInput = viewChild.required<ElementRef>('searchInput');

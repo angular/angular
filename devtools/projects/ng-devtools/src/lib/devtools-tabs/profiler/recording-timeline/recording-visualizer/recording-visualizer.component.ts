@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, input, linkedSignal} from '@angular/core';
+import {Component, computed, input, linkedSignal} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 
 import {ProfilerFrame} from '../../../../../../../protocol';
@@ -34,7 +34,6 @@ import {SplitAreaDirective} from '../../../../shared/split/splitArea.directive';
     ExecutionDetailsComponent,
     DecimalPipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecordingVisualizerComponent {
   readonly visualizationMode = input.required<VisualizationMode>();

@@ -6,15 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  contentChild,
-  effect,
-  input,
-  output,
-  TemplateRef,
-} from '@angular/core';
+import {Component, contentChild, effect, input, output, TemplateRef} from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
 import {DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
@@ -61,7 +53,6 @@ const CHILDREN_INDENT = 14; // px
   selector: 'ng-object-tree-explorer',
   templateUrl: './object-tree-explorer.component.html',
   styleUrl: './object-tree-explorer.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgTemplateOutlet,
     MatTree,

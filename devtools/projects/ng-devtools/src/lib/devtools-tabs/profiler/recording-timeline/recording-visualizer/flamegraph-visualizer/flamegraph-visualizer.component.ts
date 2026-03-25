@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
+import {Component, computed, inject, input, output} from '@angular/core';
 import {NgxFlamegraphModule, FlamegraphColor, RawData} from 'ngx-flamegraph';
 import {ProfilerFrame} from '../../../../../../../../protocol';
 
@@ -25,7 +25,6 @@ import {SelectedDirective, SelectedEntry} from '../recording-visualizer-types';
   templateUrl: './flamegraph-visualizer.component.html',
   styleUrls: ['./flamegraph-visualizer.component.scss'],
   imports: [NgxFlamegraphModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlamegraphVisualizerComponent {
   public themeService = inject(ThemeService);

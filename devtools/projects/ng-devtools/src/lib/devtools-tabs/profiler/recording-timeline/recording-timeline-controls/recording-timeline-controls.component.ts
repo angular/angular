@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, output, signal} from '@angular/core';
+import {Component, output, signal} from '@angular/core';
 import {ButtonComponent} from '../../../../shared/button/button.component';
 
 const FILTER_PLACEHOLDER = 'Filter';
@@ -16,7 +16,6 @@ const FILTER_PLACEHOLDER = 'Filter';
   templateUrl: './recording-timeline-controls.component.html',
   styleUrls: ['./recording-timeline-controls.component.scss'],
   imports: [ButtonComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecordingTimelineControlsComponent {
   protected readonly exportProfile = output<void>();

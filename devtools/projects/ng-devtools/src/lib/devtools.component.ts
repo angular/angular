@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import {Component, computed, inject, OnDestroy, signal} from '@angular/core';
 import {Events, MessageBus} from '../../../protocol';
 import {interval} from 'rxjs';
 
@@ -54,7 +47,6 @@ export const LAST_SUPPORTED_VERSION = 12;
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
   imports: [DevToolsTabsComponent, MatIcon, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsComponent implements OnDestroy {
   protected readonly supportedApis = inject(SUPPORTED_APIS);

@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Component,
-  inject,
-  signal,
-  computed,
-  linkedSignal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import {Component, inject, signal, computed, linkedSignal} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -66,7 +59,6 @@ export const COPY_FEEDBACK_TIMEOUT = 2000;
   ],
   templateUrl: './transfer-state.component.html',
   styleUrls: ['./transfer-state.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferStateComponent {
   private readonly messageBus = inject(MessageBus) as MessageBus<Events>;

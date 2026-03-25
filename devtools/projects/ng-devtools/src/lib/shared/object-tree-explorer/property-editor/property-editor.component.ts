@@ -14,7 +14,6 @@ import {
   output,
   signal,
   viewChild,
-  ChangeDetectionStrategy,
   linkedSignal,
   computed,
 } from '@angular/core';
@@ -42,7 +41,6 @@ const parseValue = (value: EditorResult): EditorResult => {
   selector: 'ng-property-editor',
   styleUrls: ['./property-editor.component.scss'],
   imports: [FormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(click)': 'onClick()',
   },

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 
 import {DebugSignalGraphNode, ElementPosition} from '../../../../../protocol';
@@ -49,7 +49,6 @@ interface ResourceCluster {
   selector: 'ng-signal-details',
   templateUrl: './signal-details.component.html',
   styleUrl: './signal-details.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip, IconComponent],
 })
 export class SignalDetailsComponent {
