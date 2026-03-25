@@ -328,7 +328,7 @@ export class Registration {
 
   private createUsernameResource = (usernameSignal: Signal<string | undefined>) => {
     return rxResource({
-      request: () => usernameSignal(),
+      params: () => usernameSignal(),
       stream: ({request: username}) => this.usernameService.checkUsername(username),
     });
   };
