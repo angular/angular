@@ -219,10 +219,18 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
     if (existingUsage === 0) {
       // Add existing styles to new host
       for (const [style, {elements}] of this.inline) {
-        elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
+        // `removeHost` currently does not actually remove styles when usage drops to zero.
+        // Therefore removing a host to zero and then re-adding to one, could cause Angular
+        // to duplicate the styles on the page. This check makes sure we don't add the styles
+        // more than once.
+        if (!elements.some((e) => e.parentNode === hostNode)) {
+          elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
+        }
       }
       for (const [url, {elements}] of this.external) {
-        elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
+        if (!elements.some((e) => e.parentNode === hostNode)) {
+          elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
+        }
       }
     }
 

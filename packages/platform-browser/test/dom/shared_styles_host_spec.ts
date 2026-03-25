@@ -54,6 +54,20 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).not.toContain('<style>c {};</style>');
     });
 
+    it('should not duplicate styles when removing *all hosts* and then re-adding a pre-existing host', () => {
+      ssh.addHost(someHost);
+      ssh.addStyles(['a {};']);
+      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+
+      // Reproduce undesirable, but known leak.
+      ssh.removeHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+
+      // Should not duplicate.
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+    });
+
     it('should add styles only once to hosts', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
@@ -127,6 +141,20 @@ describe('SharedStylesHost', () => {
       ssh.removeHost(someHost);
       ssh.addStyles([], ['component-3.css']);
       expect(someHost.innerHTML).not.toContain('<link rel="stylesheet" href="component-3.css">');
+    });
+
+    it('should not duplicate styles when removing and re-adding a host', () => {
+      ssh.addStyles([], ['component-1.css']);
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css">');
+
+      // Reproduce undesirable, but known leak.
+      ssh.removeHost(someHost);
+      expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css">');
+
+      // Should not duplicate
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css">');
     });
 
     it('should add styles only once to hosts', () => {
