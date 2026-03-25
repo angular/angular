@@ -524,13 +524,13 @@ describe('Format date', () => {
 
     it('should return thursday date of the same week', () => {
       // Dec. 31st is a Sunday, last day of the last week of 2023
-      expect(getThursdayThisIsoWeek(new Date('2023-12-31'))).toEqual(new Date('2023-12-28'));
+      expect(getThursdayThisIsoWeek(new Date(2023, 11, 31))).toEqual(new Date(2023, 11, 28));
 
       // Dec. 29th is a Thursday
-      expect(getThursdayThisIsoWeek(new Date('2022-12-29'))).toEqual(new Date('2022-12-29'));
+      expect(getThursdayThisIsoWeek(new Date(2022, 11, 29))).toEqual(new Date(2022, 11, 29));
 
       // Jan 01st is a Monday
-      expect(getThursdayThisIsoWeek(new Date('2024-01-01'))).toEqual(new Date('2024-01-04'));
+      expect(getThursdayThisIsoWeek(new Date(2024, 0, 1))).toEqual(new Date(2024, 0, 4));
     });
   });
 });
