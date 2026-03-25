@@ -61,6 +61,7 @@ describe('ControlValueAccessor', () => {
   })
   class CustomControl implements ControlValueAccessor {
     value = '';
+    writeCount = 0;
     disabled = false;
 
     private onChangeFn?: (value: string) => void;
@@ -68,6 +69,7 @@ describe('ControlValueAccessor', () => {
 
     writeValue(newValue: string): void {
       this.value = newValue;
+      this.writeCount++;
     }
 
     registerOnChange(fn: (value: string) => void): void {
@@ -130,6 +132,31 @@ describe('ControlValueAccessor', () => {
       input.dispatchEvent(new Event('input'));
     });
     expect(fixture.componentInstance.f().value()).toBe('typing');
+  });
+
+  it('should not write back to CVA on view change', () => {
+    @Component({
+      imports: [CustomControl, FormField],
+      template: `<custom-control [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('test'));
+      readonly control = viewChild.required(CustomControl);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const control = fixture.componentInstance.control();
+    const input = fixture.nativeElement.querySelector('input');
+
+    expect(control.writeCount).toBe(1); // Initial write
+
+    act(() => {
+      input.value = 'typing';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBe('typing');
+    expect(control.writeCount).toBe(1); // Should still be 1 (No write-back!)
   });
 
   it('should support debounce', async () => {

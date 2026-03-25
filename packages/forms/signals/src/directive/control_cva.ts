@@ -21,16 +21,22 @@ export function cvaControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
 ): () => void {
-  parent.controlValueAccessor!.registerOnChange((value: unknown) =>
-    parent.state().controlValue.set(value as any),
-  );
+  const bindings = createBindings<ControlBindingKey | 'controlValue'>();
+
+  parent.controlValueAccessor!.registerOnChange((value: unknown) => {
+    // Update tracking for 'controlValue' here so that when the effect runs,
+    // `bindingUpdated` sees that the model value matches the last seen view value.
+    // This prevents the framework from writing the same value back to the CVA (CVA loopback).
+    bindings['controlValue'] = value;
+    parent.state().controlValue.set(value as any);
+  });
   parent.controlValueAccessor!.registerOnTouched(() => parent.state().markAsTouched());
   parent.registerAsBinding();
 
-  const bindings = createBindings<ControlBindingKey | 'controlValue'>();
   return () => {
     const fieldState = parent.state();
     const value = fieldState.value();
+
     if (bindingUpdated(bindings, 'controlValue', value)) {
       // We don't know if the interop control has underlying signals, so we must use `untracked` to
       // prevent writing to a signal in a reactive context.
