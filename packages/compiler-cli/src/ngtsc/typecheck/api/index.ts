@@ -12,3 +12,4 @@ export * from './completion';
 export * from './context';
 export * from './scope';
 export * from './symbols';
+export * from './oob';

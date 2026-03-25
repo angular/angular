@@ -11,11 +11,10 @@ import {AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
+import {OutOfBandDiagnosticRecorder, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
 
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {OutOfBandDiagnosticRecorder} from './oob';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
 import {generateTypeCheckBlock} from './type_check_block';
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
@@ -66,7 +65,7 @@ export class TypeCheckFile extends Environment {
     ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
     meta: TypeCheckBlockMetadata,
     domSchemaChecker: DomSchemaChecker,
-    oobRecorder: OutOfBandDiagnosticRecorder,
+    oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
     genericContextBehavior: TcbGenericContextBehavior,
   ): void {
     const fnId = `_tcb${this.nextTcbId++}`;
