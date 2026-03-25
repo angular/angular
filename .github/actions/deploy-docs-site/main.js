@@ -29213,21 +29213,21 @@ var JSONStringify2 = (value, replacer, space) => {
   const denoisedJSON = processedJSON.replace(noiseStringify2, "$1$2$3");
   return denoisedJSON;
 };
-var featureCache = /* @__PURE__ */ new Map();
+var featureCache2 = /* @__PURE__ */ new Map();
 var isContextSourceSupported2 = () => {
   const parseFingerprint = JSON.parse.toString();
-  if (featureCache.has(parseFingerprint)) {
-    return featureCache.get(parseFingerprint);
+  if (featureCache2.has(parseFingerprint)) {
+    return featureCache2.get(parseFingerprint);
   }
   try {
     const result = JSON.parse(
       "1",
       (_, __, context3) => !!context3?.source && context3.source === "1"
     );
-    featureCache.set(parseFingerprint, result);
+    featureCache2.set(parseFingerprint, result);
     return result;
   } catch {
-    featureCache.set(parseFingerprint, false);
+    featureCache2.set(parseFingerprint, false);
     return false;
   }
 };
