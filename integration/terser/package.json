@@ -11,7 +11,7 @@
     "@angular/core": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0",
     "terser": "^5.8.0",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "zone.js": "0.16.1"
   },
   "packageManager": "pnpm@10.32.1"

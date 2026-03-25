@@ -24,7 +24,7 @@
     "@angular/cli": "22.0.0-next.2",
     "@angular/compiler-cli": "workspace:*",
     "jsdom": "^29.0.0",
-    "typescript": "~5.9.2",
+    "typescript": "~6.0.2",
     "vitest": "^4.0.0"
   }
 }

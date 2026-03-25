@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
+    "module": "commonjs",
     "outDir": "../built/e2e",
-    "types": ["jasmine", "jasminewd2"],
+    "types": ["jasmine", "jasminewd2"]
   }
 }
