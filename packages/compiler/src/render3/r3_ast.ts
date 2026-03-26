@@ -128,6 +128,7 @@ export class BoundEvent implements Node {
     public sourceSpan: ParseSourceSpan,
     public handlerSpan: ParseSourceSpan,
     readonly keySpan: ParseSourceSpan,
+    public modifiers: string[] = [],
   ) {}
 
   static fromParsedEvent(event: ParsedEvent) {
@@ -149,6 +150,7 @@ export class BoundEvent implements Node {
       event.sourceSpan,
       event.handlerSpan,
       event.keySpan,
+      event.modifiers,
     );
   }
 

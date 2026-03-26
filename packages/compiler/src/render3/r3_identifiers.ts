@@ -227,6 +227,11 @@ export class Identifiers {
 
   static restoreView: o.ExternalReference = {name: 'ɵɵrestoreView', moduleName: CORE};
 
+  static prevent: o.ExternalReference = {name: 'ɵɵprevent', moduleName: CORE};
+  static key: o.ExternalReference = {name: 'ɵɵkey', moduleName: CORE};
+  static stop: o.ExternalReference = {name: 'ɵɵstop', moduleName: CORE};
+  static debounce: o.ExternalReference = {name: 'ɵɵdebounce', moduleName: CORE};
+
   static pureFunction0: o.ExternalReference = {name: 'ɵɵpureFunction0', moduleName: CORE};
   static pureFunction1: o.ExternalReference = {name: 'ɵɵpureFunction1', moduleName: CORE};
   static pureFunction2: o.ExternalReference = {name: 'ɵɵpureFunction2', moduleName: CORE};

@@ -1,0 +1,15 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should support event listener modifiers",
+      "inputFiles": ["listener_modifiers.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect event listener generation",
+          "files": ["listener_modifiers.js"]
+        }
+      ]
+    }
+  ]
+}

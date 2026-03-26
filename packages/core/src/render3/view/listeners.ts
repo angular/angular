@@ -8,10 +8,22 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
+import {ProfilerEvent} from '../../../primitives/devtools';
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
+import {
+  type EventCallback,
+  stashEventListenerImpl,
+  type WrappedEventCallback,
+} from '../../event_delegation_utils';
+import {assertNotSame} from '../../util/assert';
+import {markViewDirty} from '../instructions/mark_view_dirty';
+import {handleUncaughtError} from '../instructions/shared';
 import type {TNode} from '../interfaces/node';
+import type {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
+import type {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, type LView, type TView} from '../interfaces/view';
+import {profiler} from '../profiler';
 import {
   getComponentLViewByIndex,
   getNativeByTNode,
@@ -19,18 +31,6 @@ import {
   getOrCreateTViewCleanup,
   unwrapRNode,
 } from '../util/view_utils';
-import {profiler} from '../profiler';
-import {ProfilerEvent} from '../../../primitives/devtools';
-import {markViewDirty} from '../instructions/mark_view_dirty';
-import type {RElement} from '../interfaces/renderer_dom';
-import type {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
-import {assertNotSame} from '../../util/assert';
-import {handleUncaughtError} from '../instructions/shared';
-import {
-  type EventCallback,
-  stashEventListenerImpl,
-  type WrappedEventCallback,
-} from '../../event_delegation_utils';
 
 /**
  * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
@@ -46,28 +46,45 @@ export function wrapListener(
   tNode: TNode,
   lView: LView,
   listenerFn: EventCallback,
+  modifiers?: ((fn: any) => any)[],
 ): WrappedEventCallback {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
-  return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
-    // In order to be backwards compatible with View Engine, events on component host nodes
-    // must also mark the component view itself dirty (i.e. the view that it owns).
-    const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
-    markViewDirty(startView, NotificationSource.Listener);
+  const coreFn = function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
+    const execute = () => {
+      // In order to be backwards compatible with View Engine, events on component host nodes
+      // must also mark the component view itself dirty (i.e. the view that it owns).
+      const startView = isComponentHost(tNode)
+        ? getComponentLViewByIndex(tNode.index, lView)
+        : lView;
+      markViewDirty(startView, NotificationSource.Listener);
 
-    const context = lView[CONTEXT];
-    let result = executeListenerWithErrorHandling(lView, context, listenerFn, event);
-    // A just-invoked listener function might have coalesced listeners so we need to check for
-    // their presence and invoke as needed.
-    let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
-    while (nextListenerFn) {
-      // We should prevent default if any of the listeners explicitly return false
-      result = executeListenerWithErrorHandling(lView, context, nextListenerFn, event) && result;
-      nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
-    }
+      const context = lView[CONTEXT];
+      let result = executeListenerWithErrorHandling(lView, context, listenerFn, event);
+      // A just-invoked listener function might have coalesced listeners so we need to check for
+      // their presence and invoke as needed.
+      let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
+      while (nextListenerFn) {
+        // We should prevent default if any of the listeners explicitly return false
+        result = executeListenerWithErrorHandling(lView, context, nextListenerFn, event) && result;
+        nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
+      }
 
-    return result;
+      return result;
+    };
+
+    return execute();
   } as WrappedEventCallback;
+
+  if (modifiers) {
+    let currentFn = coreFn;
+    for (const modifier of modifiers) {
+      currentFn = modifier(currentFn);
+    }
+    return currentFn as WrappedEventCallback;
+  }
+
+  return coreFn;
 }
 
 function executeListenerWithErrorHandling(
@@ -114,6 +131,7 @@ export function listenToDomEvent(
   eventName: string,
   originalListener: EventCallback,
   wrappedListener: WrappedEventCallback,
+  hasModifiers = false,
 ): boolean {
   ngDevMode &&
     assertNotSame(
@@ -144,7 +162,9 @@ export function listenToDomEvent(
   // Also, we don't have to search for existing listeners if there are no directives
   // matching on a given node as we can't register multiple event handlers for the same event in
   // a template (this would mean having duplicate attributes).
-  if (!eventTargetResolver && isTNodeDirectiveHost) {
+  // Finally, we also skip coalescing for events with modifiers as they have to be registered
+  // separately to work properly.
+  if (!eventTargetResolver && isTNodeDirectiveHost && !hasModifiers) {
     existingListener = findExistingListener(tView, lView, eventName, tNode.index);
   }
   if (existingListener !== null) {

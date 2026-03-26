@@ -7,8 +7,8 @@
  */
 
 import * as o from '../../../../output/output_ast';
-import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 import {
   TemplateCompilationMode,
@@ -315,13 +315,14 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           unit.job.mode === TemplateCompilationMode.DomOnly &&
             !op.hostListener &&
             !op.isLegacyAnimationListener
-            ? ng.domListener(op.name, listenerFn, eventTargetResolver, op.sourceSpan)
+            ? ng.domListener(op.name, listenerFn, eventTargetResolver, op.sourceSpan, op.modifiers)
             : ng.listener(
                 op.name,
                 listenerFn,
                 eventTargetResolver,
                 op.hostListener && op.isLegacyAnimationListener,
                 op.sourceSpan,
+                op.modifiers,
               ),
         );
         break;
@@ -332,6 +333,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.name,
             reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, true),
             op.sourceSpan,
+            op.modifiers,
           ),
         );
         break;

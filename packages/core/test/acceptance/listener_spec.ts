@@ -7,7 +7,9 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
 import {
+  ChangeDetectionStrategy,
   Component,
   Directive,
   ErrorHandler,
@@ -22,10 +24,8 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-  ChangeDetectionStrategy,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('event listeners', () => {
   beforeEach(() => {
@@ -317,6 +317,58 @@ describe('event listeners', () => {
       myComp.handlerReturnValue = false;
       button.click();
       expect(myComp.event!.preventDefault).toHaveBeenCalled();
+    });
+
+    it('event listener should prevent default', () => {
+      @Component({
+        template: `<button (click.prevent)="onClick($event)">Click</button>`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyComp {
+        onClick(e: any) {
+          expect(e.defaultPrevented).toBeTrue();
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+
+      button.click();
+    });
+  });
+
+  describe('stop propagation', () => {
+    it('should call stop propagation when a handler returns false', () => {
+      @Component({
+        template: `
+          <div (click)="onDivClick($event)">
+            <button (click.stop)="onButtonClick($event)">Click</button>
+          </div>
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyComp {
+        handlerReturnValue: boolean | undefined;
+        buttonEvent: Event | undefined;
+        divEvent: Event | undefined;
+
+        onButtonClick(e: any) {}
+        onDivClick(e: any) {}
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const clickListener = spyOn(fixture.componentInstance, 'onDivClick').and.callThrough();
+
+      const myComp = fixture.componentInstance;
+      const button = fixture.nativeElement.querySelector('button');
+
+      myComp.handlerReturnValue = undefined;
+      button.click();
+      expect(clickListener).not.toHaveBeenCalled();
     });
   });
 

@@ -356,6 +356,30 @@ export class DebugElement extends DebugNode {
     const node = this.nativeNode as any;
     const invokedListeners: Function[] = [];
 
+    if (eventName === 'keyup' || eventName === 'keydown') {
+      eventObj ??= {};
+
+      // In the case we receive some key event with modifiers (e.g. `keydown.control.shift.enter`),
+      // we need to parse the event name and create an appropriate event object with the modifiers
+      // This is necessary when the `KeyEventsPlugin` isn't loaded and the modifiers are handled at the ivy instruction level
+    } else if (eventName.startsWith('keyup') || eventName.startsWith('keydown')) {
+      // The event that is listen to is only `keyup` or `keydown`,
+      // Not the full event name with the key combination (e.g. `keyup.enter`).
+      const splited = eventName.split('.');
+      const domEventName = splited[0];
+      const key = splited.at(-1);
+      const altKey = splited.includes('alt');
+      const ctrlKey = splited.includes('control');
+      const metaKey = splited.includes('meta');
+      const shiftKey = splited.includes('shift');
+      if (!eventObj) {
+        eventObj = new KeyboardEvent(domEventName, {key, altKey, ctrlKey, metaKey, shiftKey});
+      } else if (eventObj && typeof eventObj === 'object') {
+        Object.assign(eventObj, {key, altKey, ctrlKey, metaKey, shiftKey});
+      }
+      eventName = domEventName;
+    }
+
     this.listeners.forEach((listener) => {
       if (listener.name === eventName) {
         const callback = listener.callback;
