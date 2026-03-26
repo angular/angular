@@ -32,6 +32,7 @@ export {
   NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
 } from './metadata/ng_module_def';
 export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
+export {ɵForeignViewRef, ɵcreateAndInsertForeignView} from './render3/foreign_view';
 export {inferTagNameFromDefinition as ɵinferTagNameFromDefinition} from './render3/component_ref';
 export {getLContext as ɵgetLContext} from './render3/context_discovery';
 export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
