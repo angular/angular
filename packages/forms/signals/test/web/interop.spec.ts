@@ -132,6 +132,55 @@ describe('ControlValueAccessor', () => {
     expect(fixture.componentInstance.f().value()).toBe('typing');
   });
 
+  it('propagates parse errors from CVA to field', () => {
+    const parseErrors = signal<ReadonlyArray<{readonly kind: string}>>([]);
+
+    @Component({
+      selector: 'custom-control-with-errors',
+      template: `<input [value]="value" (input)="onInput($event.target.value)" />`,
+      providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControlWithErrors, multi: true}],
+    })
+    class CustomControlWithErrors implements ControlValueAccessor {
+      value = '';
+      parseErrors = parseErrors;
+
+      private onChangeFn?: (value: string) => void;
+
+      writeValue(newValue: string): void {
+        this.value = newValue;
+      }
+
+      registerOnChange(fn: (value: string) => void): void {
+        this.onChangeFn = fn;
+      }
+
+      registerOnTouched(fn: () => void): void {}
+
+      onInput(newValue: string) {
+        this.value = newValue;
+        this.onChangeFn?.(newValue);
+      }
+    }
+
+    @Component({
+      imports: [CustomControlWithErrors, FormField],
+      template: `<custom-control-with-errors [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('test'));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const field = fixture.componentInstance.f;
+
+    expect(field().errors()).toEqual([]);
+
+    act(() => parseErrors.set([{kind: 'custom-parse'}]));
+    expect(field().errors()).toEqual([
+      {kind: 'custom-parse', fieldTree: field, formField: jasmine.any(Object) as any},
+    ]);
+  });
+
   it('should support debounce', async () => {
     const {promise, resolve} = promiseWithResolvers<void>();
 

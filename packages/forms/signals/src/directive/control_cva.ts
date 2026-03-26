@@ -25,6 +25,11 @@ export function cvaControlCreate(
     parent.state().controlValue.set(value as any),
   );
   parent.controlValueAccessor!.registerOnTouched(() => parent.state().markAsTouched());
+
+  if (parent.controlValueAccessor!.parseErrors) {
+    parent.parseErrorsSource.set(parent.controlValueAccessor!.parseErrors);
+  }
+
   parent.registerAsBinding();
 
   const bindings = createBindings<ControlBindingKey | 'controlValue'>();

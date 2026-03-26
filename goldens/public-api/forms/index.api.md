@@ -17,6 +17,7 @@ import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Renderer2 } from '@angular/core';
+import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Version } from '@angular/core';
 import { ɵControlDirectiveHost } from '@angular/core';
@@ -245,6 +246,9 @@ export abstract class ControlEvent<T = any> {
 
 // @public
 export interface ControlValueAccessor {
+    readonly parseErrors?: Signal<ReadonlyArray<{
+        readonly kind: string;
+    }>> | undefined;
     registerOnChange(fn: any): void;
     registerOnTouched(fn: any): void;
     setDisabledState?(isDisabled: boolean): void;

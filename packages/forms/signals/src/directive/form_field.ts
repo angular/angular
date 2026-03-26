@@ -155,7 +155,8 @@ export class FormField<T> {
   private readonly config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   private readonly validityMonitor = inject(InputValidityMonitor);
 
-  private readonly parseErrorsSource = signal<
+  /** @internal */
+  readonly parseErrorsSource = signal<
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >(undefined);
 

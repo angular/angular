@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, ElementRef, InjectionToken, Renderer2} from '@angular/core';
+import {Directive, ElementRef, InjectionToken, Renderer2, type Signal} from '@angular/core';
 
 /**
  * @description
@@ -21,6 +21,21 @@ import {Directive, ElementRef, InjectionToken, Renderer2} from '@angular/core';
  * @publicApi
  */
 export interface ControlValueAccessor {
+  /**
+   * @description
+   * Exposes parse errors when a UI control is used via Signal Forms.
+   * Parse errors occur when a user enters a value into a UI control (e.g., a non-date string in a date picker)
+   * that cannot be parsed into the target model type.
+   *
+   * @usageNotes
+   * ### Expose parse errors
+   *
+   * ```ts
+   * readonly parseErrors = signal<ReadonlyArray<{readonly kind: string}>>([]);
+   * ```
+   */
+  readonly parseErrors?: Signal<ReadonlyArray<{readonly kind: string}>> | undefined;
+
   /**
    * @description
    * Writes a new value to the element.
