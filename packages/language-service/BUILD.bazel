@@ -1,5 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//tools:defaults.bzl", "npm_package", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "extract_types", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -70,6 +70,11 @@ esbuild(
     deps = [":private"],
 )
 
+extract_types(
+    name = "private_type_definitions",
+    deps = [":private"],
+)
+
 npm_package(
     srcs = [
         "index.d.ts",
@@ -80,7 +85,7 @@ npm_package(
         ":factory_bundle",
         ":factory_lib_types",
         ":private_bundle",
-        ":private_types",
+        ":private_type_definitions",
         "//packages/language-service/bundles:language-service.js",
     ],
     package = "@angular/language-service",
