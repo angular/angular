@@ -37,3 +37,8 @@ export {
   type HostListenerDecorator,
   type HostBindingDecorator,
 } from '../src/ngtsc/typecheck/src/host_bindings';
+export {
+  findFirstMatchingNode,
+  ExpressionIdentifier,
+  hasExpressionIdentifier,
+} from '../src/ngtsc/typecheck/src/comments';
