@@ -410,20 +410,14 @@ interface TcbNodesInfoForTemplate {
  *
  */
 export function getTcbNodesOfTemplateAtPosition(
-  typeCheckInfo: TypeCheckInfo,
+  templateNodes: TmplAstNode[],
   position: number,
-  compiler: NgCompiler,
+  tcb: tss.Node,
 ): TcbNodesInfoForTemplate | null {
-  const target = getTargetAtPosition(typeCheckInfo.nodes, position);
+  const target = getTargetAtPosition(templateNodes, position);
   if (target === null) {
     return null;
   }
-
-  const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
-  if (tcb === null) {
-    return null;
-  }
-
   const tcbNodes: (tss.Node | null)[] = [];
   if (target.context.kind === TargetNodeKind.RawExpression) {
     const targetNode = target.context.node;
