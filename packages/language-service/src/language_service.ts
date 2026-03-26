@@ -758,10 +758,15 @@ export class LanguageService {
           return undefined;
         }
 
+        const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
+        if (tcb === null) {
+          return undefined;
+        }
+
         const selectionNodesInfo = getTcbNodesOfTemplateAtPosition(
-          typeCheckInfo,
+          typeCheckInfo.nodes,
           position,
-          compiler,
+          tcb,
         );
         if (selectionNodesInfo === null) {
           return undefined;
