@@ -37,11 +37,12 @@ import {
   TypeCtorMetadata,
   TemplateContext,
   OutOfBandDiagnosticRecorder,
+  DomSchemaChecker,
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
-import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
+import {RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorderImpl} from './oob';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
@@ -134,7 +135,7 @@ export interface PendingShimData {
   /**
    * The `DomSchemaChecker` in use for this template, which records any schema-related diagnostics.
    */
-  domSchemaChecker: DomSchemaChecker;
+  domSchemaChecker: DomSchemaChecker<TemplateDiagnostic>;
 
   /**
    * Shim file in the process of being generated.
@@ -678,7 +679,7 @@ class InlineTcbOp implements Op {
     readonly meta: TypeCheckBlockMetadata,
     readonly config: TypeCheckingConfig,
     readonly reflector: ReflectionHost,
-    readonly domSchemaChecker: DomSchemaChecker,
+    readonly domSchemaChecker: DomSchemaChecker<unknown>,
     readonly oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
   ) {}
 
