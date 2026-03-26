@@ -11492,6 +11492,30 @@ runInEachFileSystem((os: string) => {
           `The pipe 'TestPipe' appears in 'imports', but is not standalone`,
         );
       });
+
+      it('should not recurse when a non-standalone component is both declared and imported', () => {
+        env.write(
+          '/test.ts',
+          `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({standalone: false, template: ''})
+            export class TestComp {}
+
+            @NgModule({
+              declarations: [TestComp],
+              imports: [TestComp],
+            })
+            export class TestModule {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `The component 'TestComp' appears in 'imports', but is not standalone`,
+        );
+      });
     });
   });
 
