@@ -65,6 +65,7 @@ npm_package(
         "**/*.map",
         "node_modules/@angular/language-service/private_bundle.js",
         "node_modules/@angular/language-service/private.d.ts",
+        "node_modules/@angular/language-service/src/**/*.d.ts",
     ],
     include_srcs_packages = [
         "**",
