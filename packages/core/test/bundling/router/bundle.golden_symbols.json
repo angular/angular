@@ -409,6 +409,7 @@
       "angularZoneInstanceIdProperty",
       "appendChild",
       "applyContainer",
+      "applyForeignNodes",
       "applyNodes",
       "applyProjectionRecursive",
       "applyRootElementTransform",

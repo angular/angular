@@ -12,7 +12,7 @@ import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/containe
 import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
 import {isLContainer} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW, TView, TViewType} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getProjectionNodes} from './node_manipulation';
 import {getLViewParent, unwrapRNode} from './util/view_utils';
@@ -24,6 +24,21 @@ export function collectNativeNodes(
   result: any[],
   isProjection: boolean = false,
 ): any[] {
+  if (tView.type === TViewType.Foreign) {
+    const headTNode = tView.firstChild!;
+    const tailTNode = headTNode.next!;
+    const head = unwrapRNode(lView[headTNode.index]);
+    const tail = unwrapRNode(lView[tailTNode.index]);
+
+    let current: RNode | null = head;
+    while (current !== null) {
+      result.push(current);
+      if (current === tail) break;
+      current = current.nextSibling;
+    }
+    return result;
+  }
+
   while (tNode !== null) {
     // Let declarations don't have corresponding DOM nodes so we skip over them.
     if (tNode.type === TNodeType.LetDeclaration) {
