@@ -7,12 +7,12 @@
  */
 
 import {BoundTarget, SchemaMetadata} from '@angular/compiler';
-import {DomSchemaChecker} from '../dom';
 import {
   TypeCheckId,
   TcbDirectiveMetadata,
   TcbPipeMetadata,
   OutOfBandDiagnosticRecorder,
+  DomSchemaChecker,
 } from '../../api';
 import {Environment} from '../environment';
 
@@ -56,7 +56,7 @@ export class Context {
 
   constructor(
     readonly env: Environment,
-    readonly domSchemaChecker: DomSchemaChecker,
+    readonly domSchemaChecker: DomSchemaChecker<unknown>,
     readonly oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
     readonly id: TypeCheckId,
     readonly boundTarget: BoundTarget<TcbDirectiveMetadata>,

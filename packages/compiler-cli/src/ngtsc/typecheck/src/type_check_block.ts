@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {OutOfBandDiagnosticRecorder, TcbComponentMetadata, TcbTypeCheckBlockMetadata} from '../api';
-import {DomSchemaChecker} from './dom';
+import {
+  DomSchemaChecker,
+  OutOfBandDiagnosticRecorder,
+  TcbComponentMetadata,
+  TcbTypeCheckBlockMetadata,
+} from '../api';
 import {Environment} from './environment';
 import {createHostBindingsBlockGuard} from './host_bindings';
 import {Context} from './ops/context';
@@ -43,7 +47,7 @@ export function generateTypeCheckBlock(
   component: TcbComponentMetadata,
   name: string,
   meta: TcbTypeCheckBlockMetadata,
-  domSchemaChecker: DomSchemaChecker,
+  domSchemaChecker: DomSchemaChecker<unknown>,
   oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
 ): string {
   const tcb = new Context(

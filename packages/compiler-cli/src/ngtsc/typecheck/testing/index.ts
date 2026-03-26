@@ -99,12 +99,12 @@ import {
   TypeCheckingConfig,
 } from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
-import {DomSchemaChecker} from '../src/dom';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TypeCheckFile} from '../src/type_check_file';
 import {sfExtensionData} from '../../shims';
 import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
 import {TcbGenericContextBehavior} from '../src/ops/context';
+import {DomSchemaChecker} from '../api/schema';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -1027,7 +1027,7 @@ function parseInputOutputMappingArray(values: string[]) {
   );
 }
 
-export class NoopSchemaChecker implements DomSchemaChecker {
+export class NoopSchemaChecker implements DomSchemaChecker<TemplateDiagnostic> {
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return [];
   }

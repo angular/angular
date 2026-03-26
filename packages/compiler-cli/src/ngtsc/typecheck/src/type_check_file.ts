@@ -11,9 +11,13 @@ import {AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {OutOfBandDiagnosticRecorder, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
+import {
+  DomSchemaChecker,
+  OutOfBandDiagnosticRecorder,
+  TypeCheckBlockMetadata,
+  TypeCheckingConfig,
+} from '../api';
 
-import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
 import {generateTypeCheckBlock} from './type_check_block';
@@ -64,7 +68,7 @@ export class TypeCheckFile extends Environment {
   addTypeCheckBlock(
     ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
     meta: TypeCheckBlockMetadata,
-    domSchemaChecker: DomSchemaChecker,
+    domSchemaChecker: DomSchemaChecker<unknown>,
     oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
     genericContextBehavior: TcbGenericContextBehavior,
   ): void {
