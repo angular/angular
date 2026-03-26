@@ -64,7 +64,6 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
         userSelected = output<string>();
         ```
 * **`computed()` for Derived State:** Use the `computed()` function from `@angular/core` for derived state based on signals.
-* **`ChangeDetectionStrategy.OnPush`:** Always set `changeDetection: ChangeDetectionStrategy.OnPush` in the `@Component` decorator for performance benefits by reducing unnecessary change detection cycles.
 * **Inline Templates:** Prefer inline templates (template: `...`) for small components to keep related code together. For larger templates, use external HTML files.
 * **Reactive Forms:** Prefer Reactive forms over Template-driven forms for complex forms, validation, and dynamic controls due to their explicit, immutable, and synchronous nature.
 * **No `ngClass` / `NgClass`:** Do not use the `ngClass` directive. Instead, use native `class` bindings for conditional styling.

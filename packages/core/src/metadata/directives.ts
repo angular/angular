@@ -548,7 +548,9 @@ export interface Component extends Directive {
    * which is responsible for propagating the component's bindings.
    * The strategy is one of:
    * - `ChangeDetectionStrategy#OnPush` sets the strategy to `CheckOnce` (on demand).
-   * - `ChangeDetectionStrategy#Default` sets the strategy to `CheckAlways`.
+   * - `ChangeDetectionStrategy#Eager` sets the strategy to `CheckAlways`.
+   *
+   * NOTE: OnPush is enabled by default.
    */
   changeDetection?: ChangeDetectionStrategy;
 

@@ -21,6 +21,8 @@ export enum ChangeDetectionStrategy {
    * until reactivated by setting the strategy to `Default` (`CheckAlways`).
    * Change detection can still be explicitly invoked.
    * This strategy applies to all child directives and cannot be overridden.
+   *
+   * NOTE: OnPush is enabled by default.
    */
   OnPush = 0,
 
