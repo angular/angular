@@ -356,9 +356,6 @@ importers:
       '@inquirer/prompts':
         specifier: ^8.0.0
         version: 8.3.2(@types/node@20.19.37)
-      '@nginfra/angular-linking':
-        specifier: ^1.0.10
-        version: 1.0.10(@angular/compiler-cli@packages+compiler-cli)
       '@octokit/graphql':
         specifier: ^9.0.0
         version: 9.0.3
@@ -1833,10 +1830,6 @@ packages:
 
   '@babel/compat-data@7.29.0':
     resolution: {integrity: sha512-T1NCJqT/j9+cn8fvkt7jtwbLBfLC/1y1c7NtCeXFRgzGTsafi68MRv8yzkYSapBnFA6L3U2VSc02ciDzoAJhJg==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/core@7.26.10':
-    resolution: {integrity: sha512-vMqyb7XCDMPvJFFOaT9kxtiRh42GwlZEg1/uIgtZshS5a/8OaduUfCi7kynKgc3Tw/6Uo2D+db9qBttghhmxwQ==}
     engines: {node: '>=6.9.0'}
 
   '@babel/core@7.29.0':
@@ -4047,11 +4040,6 @@ packages:
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
 
-  '@nginfra/angular-linking@1.0.10':
-    resolution: {integrity: sha512-31zx+PCN8tBlC0FYUuCxS4uVPJLAlBhi4UVp6QgoQG44RsOHKTmcRORMVSJdPLRgRuCJkY45kj+PE3AxsgiUKA==}
-    peerDependencies:
-      '@angular/compiler-cli': '*'
-
   '@ngtools/webpack@22.0.0-next.2':
     resolution: {integrity: sha512-2LizJlHgAUpNNPYpbFWRZVqCRXlYDZ6g+52Ba03E8Z5KMixTyPgen1Brgjv7e8C2LOiUWqLYakVi6x9D0MEVsg==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
@@ -5308,9 +5296,6 @@ packages:
 
   '@types/node@20.19.37':
     resolution: {integrity: sha512-8kzdPJ3FsNsVIurqBs7oodNnCEVbni9yUEkaHbgptDACOPW04jimGagZ51E6+lXUwJjgnBw+hyko/lkFWCldqw==}
-
-  '@types/node@22.19.15':
-    resolution: {integrity: sha512-F0R/h2+dsy5wJAUe3tAU6oqa2qbWY5TpNfL/RGmo1y38hiyO1w3x2jPtt76wmuaJI4DQnOBu21cNXQ2STIUUWg==}
 
   '@types/node@24.12.0':
     resolution: {integrity: sha512-GYDxsZi3ChgmckRT9HPU0WEhKLP08ev/Yfcq2AstjrDASOYCSXeyjDsHg4v5t4jOj7cyDX3vmprafKlWIG9MXQ==}
@@ -11046,7 +11031,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -12141,10 +12125,6 @@ packages:
   tinyexec@1.0.4:
     resolution: {integrity: sha512-u9r3uZC0bdpGOXtlxUIdwf9pkmvhqJdrVCH9fapQtgy/OeTTMZ1nqH7agtvEfmGui6e1XxjcdrlxvxJvc3sMqw==}
     engines: {node: '>=18'}
-
-  tinyglobby@0.2.12:
-    resolution: {integrity: sha512-qkf4trmKSIiMTs/E63cxH+ojC2unam7rJ0WrauAzpT3ECNTxGRMlaXxVbfxMUC/w0LaYk6jQ4y/nGR9uBO3tww==}
-    engines: {node: '>=12.0.0'}
 
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
@@ -14050,26 +14030,6 @@ snapshots:
 
   '@babel/compat-data@7.29.0': {}
 
-  '@babel/core@7.26.10':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@babel/code-frame': 7.29.0
-      '@babel/generator': 7.29.1
-      '@babel/helper-compilation-targets': 7.28.6
-      '@babel/helper-module-transforms': 7.28.6(@babel/core@7.26.10)
-      '@babel/helpers': 7.29.2
-      '@babel/parser': 7.29.2
-      '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0
-      '@babel/types': 7.29.0
-      convert-source-map: 2.0.0
-      debug: 4.4.3(supports-color@10.2.2)
-      gensync: 1.0.0-beta.2
-      json5: 2.2.3
-      semver: 6.3.1
-    transitivePeerDependencies:
-      - supports-color
-
   '@babel/core@7.29.0':
     dependencies:
       '@babel/code-frame': 7.29.0
@@ -14158,15 +14118,6 @@ snapshots:
     dependencies:
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
-    transitivePeerDependencies:
-      - supports-color
-
-  '@babel/helper-module-transforms@7.28.6(@babel/core@7.26.10)':
-    dependencies:
-      '@babel/core': 7.26.10
-      '@babel/helper-module-imports': 7.28.6
-      '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -16709,17 +16660,6 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@nginfra/angular-linking@1.0.10(@angular/compiler-cli@packages+compiler-cli)':
-    dependencies:
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.26.10
-      '@types/babel__core': 7.20.5
-      '@types/node': 22.19.15
-      tinyglobby: 0.2.12
-      typescript: 6.0.2
-    transitivePeerDependencies:
-      - supports-color
-
   '@ngtools/webpack@22.0.0-next.2(@angular/compiler-cli@packages+compiler-cli)(typescript@6.0.2)(webpack@5.105.4(esbuild@0.27.3))':
     dependencies:
       '@angular/compiler-cli': link:packages/compiler-cli
@@ -17993,10 +17933,6 @@ snapshots:
   '@types/mime@1.3.5': {}
 
   '@types/node@20.19.37':
-    dependencies:
-      undici-types: 6.21.0
-
-  '@types/node@22.19.15':
     dependencies:
       undici-types: 6.21.0
 
@@ -26263,11 +26199,6 @@ snapshots:
   tinybench@2.9.0: {}
 
   tinyexec@1.0.4: {}
-
-  tinyglobby@0.2.12:
-    dependencies:
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
 
   tinyglobby@0.2.15:
     dependencies:
