@@ -86,7 +86,7 @@ import {cancelLeavingNodes, reusedNodes, trackLeavingNodes} from '../animation/u
 import {Injector} from '../di';
 import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
 
-const enum WalkTNodeTreeAction {
+export const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
   Create = 0,
 
@@ -871,7 +871,7 @@ function applyNodes(
  * @param parentRElement parent DOM element for insertion (Removal does not need it).
  * @param beforeNode Before which node the insertions should happen.
  */
-function applyView(
+export function applyView(
   tView: TView,
   lView: LView,
   renderer: Renderer,
@@ -879,7 +879,7 @@ function applyView(
   parentRElement: null,
   beforeNode: null,
 ): void;
-function applyView(
+export function applyView(
   tView: TView,
   lView: LView,
   renderer: Renderer,
@@ -887,7 +887,7 @@ function applyView(
   parentRElement: RElement | null,
   beforeNode: RNode | null,
 ): void;
-function applyView(
+export function applyView(
   tView: TView,
   lView: LView,
   renderer: Renderer,
@@ -895,7 +895,54 @@ function applyView(
   parentRElement: RElement | null,
   beforeNode: RNode | null,
 ): void {
-  applyNodes(renderer, action, tView.firstChild, lView, parentRElement, beforeNode, false);
+  if (tView.type === TViewType.Foreign) {
+    applyForeignNodes(renderer, action, lView, parentRElement, beforeNode);
+  } else {
+    applyNodes(renderer, action, tView.firstChild, lView, parentRElement, beforeNode, false);
+  }
+}
+
+function applyForeignNodes(
+  renderer: Renderer,
+  action: WalkTNodeTreeAction,
+  lView: LView,
+  parent: RElement | null,
+  beforeNode: RNode | null,
+) {
+  const tView = lView[TVIEW];
+  const headTNode = tView.firstChild!;
+  const tailTNode = headTNode.next!;
+  const head = unwrapRNode(lView[headTNode.index]);
+  const tail = unwrapRNode(lView[tailTNode.index]);
+
+  const fragmentSlotIndex = tailTNode.index + 1;
+  let fragment = lView[fragmentSlotIndex] as any;
+
+  if (action === WalkTNodeTreeAction.Insert || action === WalkTNodeTreeAction.Create) {
+    if (parent !== null) {
+      if (fragment && fragment.hasChildNodes()) {
+        nativeInsertBefore(renderer, parent, fragment, beforeNode, true);
+      } else {
+        nativeInsertBefore(renderer, parent, head!, beforeNode, true);
+        nativeInsertBefore(renderer, parent, tail!, beforeNode, true);
+      }
+    }
+  } else if (action === WalkTNodeTreeAction.Detach) {
+    if (!fragment) {
+      fragment = document.createDocumentFragment();
+      lView[fragmentSlotIndex] = fragment;
+    }
+    if (head && head.parentNode === fragment) {
+      return;
+    }
+    let current: RNode | null = head;
+    while (current !== null) {
+      const next: RNode | null = current.nextSibling;
+      fragment.appendChild(current);
+      if (current === tail) break;
+      current = next;
+    }
+  }
 }
 
 /**

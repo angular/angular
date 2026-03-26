@@ -599,6 +599,11 @@ export const enum TViewType {
    * can have zero or more `Embedded` `TView`s.
    */
   Embedded = 2,
+
+  /**
+   * Foreign `TView` associated with a range of nodes between `head` and `tail` comment nodes.
+   */
+  Foreign = 3,
 }
 
 /**
