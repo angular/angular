@@ -76,6 +76,14 @@ Anything exported from this file is made public when your library is imported in
 
 Your library should supply documentation \(typically a README file\) for installation and maintenance.
 
+### Secondary entrypoints
+
+Secondary entrypoints let consumers import focused APIs from the same package. For example, a library might expose its primary entrypoint as `my-lib` and a testing entrypoint as `my-lib/testing`.
+
+Each secondary entrypoint lives in its own directory and should define its public API in a dedicated `public-api.ts` file. When you build the library, Angular Package Format resolves these entrypoints as additional subpaths in the published package.
+
+For more details, see [Entrypoints and code splitting](tools/libraries/angular-package-format#entrypoints-and-code-splitting) and [Resolution of secondary entry points](tools/libraries/angular-package-format#resolution-of-secondary-entry-points).
+
 ## Refactoring parts of an application into a library
 
 To make your solution reusable, you need to adjust it so that it does not depend on application-specific code.
