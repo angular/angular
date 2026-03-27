@@ -34,7 +34,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
   action: (
     field: FieldTree<TRootModel & TSubmittedModel>,
     detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
-  ) => Promise<TreeValidationResult>;
+  ) => TreeValidationResult | PromiseLike<TreeValidationResult>;
   /**
    * Function to run when attempting to submit the form data but validation is failing.
    *
