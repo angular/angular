@@ -26,9 +26,7 @@ const provideHttpClient = 'provideHttpClient';
 
 const WITH_FETCH = 'withFetch';
 const WITH_XHR = 'withXhr';
-const CORE_PACKAGE = '@angular/core';
 const HTTP_PACKAGE = '@angular/common/http';
-const PROVIDE_HTTP_CLIENT = 'provideHttpClient';
 
 export interface CompilationUnitData {
   replacements: Replacement[];
@@ -41,8 +39,11 @@ export interface MigrationConfig {
   shouldMigrate?: (containingFile: ProjectFile) => boolean;
 }
 
-const provideHttpClientIdentifier = ts.factory.createIdentifier('provideHttpClient');
-
+/**
+ * Prior to v22, provideHttpClient() had a Xhr backend by default. In v22, the default was switched to a Fetch backend.
+ * This migration adds the withXhr() option to any provideHttpClient() calls that do not already have either withFetch() or withXhr() specified,
+ * to preserve the Xhr backend behavior.
+ */
 export class XhrBackendMigration extends TsurgeFunnelMigration<
   CompilationUnitData,
   CompilationUnitData
@@ -107,19 +108,6 @@ export class XhrBackendMigration extends TsurgeFunnelMigration<
             exportSymbolName: WITH_XHR,
             requestedFile: sourceFile,
           });
-        } else if (withFetchNode) {
-          const isLastArg = node.arguments[node.arguments.length - 1] === withFetchNode;
-          replacements.push(
-            new Replacement(
-              projectFile(sourceFile, info),
-              new TextUpdate({
-                position: withFetchNode.getStart(),
-                end: isLastArg ? withFetchNode.getEnd() : withFetchNode.getEnd() + 2, // +2 to remove the comma and space, could be improved
-                toInsert: '',
-              }),
-            ),
-          );
-          importManager.removeImport(sourceFile, 'withFetch', HTTP_PACKAGE);
         }
       };
       sourceFile.forEachChild(walk);
