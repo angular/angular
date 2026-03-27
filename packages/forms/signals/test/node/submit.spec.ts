@@ -48,6 +48,21 @@ describe('submit', () => {
     expect(f.first().errors()).toEqual([requiredError({fieldTree: f.first})]);
   });
 
+  it('supports PromiseLike return in submit action', async () => {
+      const data = signal({first: 'John'});
+      const f = form(data);
+
+      const promiseLike = {
+        then: (resolve: any) => resolve(undefined),
+      };
+    
+      const result = await submit(f, {
+        action: () => promiseLike as PromiseLike<any>,
+      });
+
+      expect(result).toBe(true);
+    });
+
   describe('while pending', () => {
     it('should not block', async () => {
       const data = signal('');
