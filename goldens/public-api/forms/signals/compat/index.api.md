@@ -5,15 +5,12 @@
 ```ts
 
 import { AbstractControl } from '@angular/forms';
-import { ControlValueAccessor } from '@angular/forms';
 import { EventEmitter } from '@angular/core';
 import { FormControlState } from '@angular/forms';
 import { FormControlStatus } from '@angular/forms';
 import * as i0 from '@angular/core';
 import { Injector } from '@angular/core';
 import { Signal } from '@angular/core';
-import { ValidationErrors } from '@angular/forms';
-import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 
 // @public

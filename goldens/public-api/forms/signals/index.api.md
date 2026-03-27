@@ -5,9 +5,7 @@
 ```ts
 
 import { AbstractControl } from '@angular/forms';
-import { ControlValueAccessor } from '@angular/forms';
 import { DebounceTimer } from '@angular/core';
-import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -21,8 +19,6 @@ import { Provider } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
-import { ValidationErrors } from '@angular/forms';
-import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 
 // @public
@@ -175,7 +171,6 @@ export class FormField<T> {
     readonly field: i0.InputSignal<Field<T>>;
     focus(options?: FocusOptions): void;
     readonly injector: Injector;
-    protected get interopNgControl(): InteropNgControl;
     registerAsBinding(bindingOptions?: FormFieldBindingOptions): void;
     readonly state: Signal<FieldState<T, string | number>>;
     // (undocumented)
