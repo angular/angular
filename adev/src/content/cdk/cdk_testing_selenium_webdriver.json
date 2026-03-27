@@ -1142,8 +1142,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts",
-        "startLine": 35,
-        "endLine": 38
+        "startLine": 34,
+        "endLine": 37
       }
     },
     {
@@ -1194,8 +1194,8 @@
       "rawComment": "/** Waits for angular to be ready after the page load. */",
       "source": {
         "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts",
-        "startLine": 65,
-        "endLine": 68
+        "startLine": 66,
+        "endLine": 69
       }
     },
     {
@@ -1635,8 +1635,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts",
-        "startLine": 71,
-        "endLine": 150
+        "startLine": 72,
+        "endLine": 151
       }
     }
   ],
