@@ -42,5 +42,12 @@ runInEachFileSystem(() => {
       expect(fn('en', 'relative/path')).toEqual(absoluteFrom('/output/en/relative/path'));
       expect(fn('fr', 'relative/path')).toEqual(absoluteFrom('/output/fr/relative/path'));
     });
+
+    it('should throw if the locale contains path traversal characters', () => {
+      const fn = getOutputPathFn(fs, absoluteFrom('/output/{{LOCALE}}'));
+      expect(() => fn('../escaped', 'relative/path')).toThrowError(/Invalid Locale/);
+      expect(() => fn('foo/bar', 'relative/path')).toThrowError(/Invalid Locale/);
+      expect(() => fn('foo\\bar', 'relative/path')).toThrowError(/Invalid Locale/);
+    });
   });
 });
