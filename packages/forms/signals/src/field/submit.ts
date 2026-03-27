@@ -44,7 +44,9 @@ export class FieldSubmitState {
       (this.node.structure.parent?.submitting() ?? false);
 
     if (isSubmitting && this.selfSubmitting()) {
-      this.clearSubmissionErrors();
+      untracked(() => {
+        this.clearSubmissionErrors();
+      });
     }
 
     return isSubmitting;
