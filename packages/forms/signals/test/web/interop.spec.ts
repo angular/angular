@@ -10,6 +10,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   Directive,
+  forwardRef,
   inject,
   input,
   provideZonelessChangeDetection,
@@ -19,11 +20,15 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
+  AbstractControl,
   ControlValueAccessor,
   DefaultValueAccessor,
+  NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   NgControl,
   ReactiveFormsModule,
+  ValidationErrors,
+  Validator,
 } from '@angular/forms';
 import {
   debounce,
@@ -163,6 +168,141 @@ describe('ControlValueAccessor', () => {
 
     expect(fixture.componentInstance.f().value()).toBe('typing');
     expect(control.writeCount).toBe(1); // Should still be 1 (No write-back!)
+  });
+
+  it('propagates parse errors from legacy NG_VALIDATORS to field', () => {
+    const legacyErrors = signal<ValidationErrors | null>(null);
+
+    @Component({
+      selector: 'legacy-control-with-validators',
+      template: `<input [value]="value" (input)="onInput($event.target.value)" />`,
+      providers: [
+        {provide: NG_VALUE_ACCESSOR, useExisting: LegacyControlWithValidators, multi: true},
+        {provide: NG_VALIDATORS, useExisting: LegacyControlWithValidators, multi: true},
+      ],
+    })
+    class LegacyControlWithValidators implements ControlValueAccessor, Validator {
+      value = '';
+
+      private onChangeFn?: (value: string) => void;
+
+      writeValue(newValue: string): void {
+        this.value = newValue;
+      }
+
+      registerOnChange(fn: (value: string) => void): void {
+        this.onChangeFn = fn;
+      }
+
+      registerOnTouched(fn: () => void): void {}
+
+      validate(control: AbstractControl): ValidationErrors | null {
+        return legacyErrors();
+      }
+
+      onInput(newValue: string) {
+        this.value = newValue;
+        this.onChangeFn?.(newValue);
+      }
+    }
+
+    @Component({
+      imports: [LegacyControlWithValidators, FormField],
+      template: `<legacy-control-with-validators [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('test'));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const field = fixture.componentInstance.f;
+
+    expect(field().errors()).toEqual([]);
+
+    act(() => legacyErrors.set({'legacy-parse': {text: 'bad'}}));
+    expect(field().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'legacy-parse',
+        context: {text: 'bad'},
+      }),
+    ]);
+  });
+
+  it('should re-evaluate parse errors when registerOnValidatorChange is called', () => {
+    const legacyErrors = signal<ValidationErrors | null>(null);
+    let validatorComponent: any = null;
+
+    @Component({
+      selector: 'legacy-control-with-on-validator-change',
+      template: `<input [value]="value" (input)="onInput($event.target.value)" />`,
+      providers: [
+        {
+          provide: NG_VALUE_ACCESSOR,
+          useExisting: forwardRef(() => LegacyControlWithOnValidatorChange),
+          multi: true,
+        },
+        {
+          provide: NG_VALIDATORS,
+          useExisting: forwardRef(() => LegacyControlWithOnValidatorChange),
+          multi: true,
+        },
+      ],
+    })
+    class LegacyControlWithOnValidatorChange implements ControlValueAccessor, Validator {
+      value = '';
+      private onChangeFn?: (value: string | null) => void;
+      validatorOnChange?: () => void;
+
+      constructor() {
+        validatorComponent = this;
+      }
+
+      writeValue(newValue: string): void {
+        this.value = newValue;
+      }
+
+      registerOnChange(fn: (value: string | null) => void): void {
+        this.onChangeFn = fn;
+      }
+
+      registerOnTouched(fn: () => void): void {}
+
+      validate(control: AbstractControl): ValidationErrors | null {
+        return legacyErrors();
+      }
+
+      registerOnValidatorChange(fn: () => void): void {
+        this.validatorOnChange = fn;
+      }
+
+      onInput(newValue: string) {
+        this.value = newValue;
+        this.onChangeFn?.(null); // Keep value null
+      }
+    }
+
+    @Component({
+      imports: [LegacyControlWithOnValidatorChange, FormField],
+      template: `<legacy-control-with-on-validator-change [formField]="f" />`,
+    })
+    class TestCmp {
+      f = form<string | null>(signal(null));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const field = fixture.componentInstance.f;
+
+    expect(field().errors()).toEqual([]);
+
+    act(() => legacyErrors.set({'legacy-parse': {text: 'bad'}}));
+    act(() => validatorComponent.validatorOnChange?.()); // Force recalculation!
+
+    expect(field().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'legacy-parse',
+        context: {text: 'bad'},
+      }),
+    ]);
   });
 
   it('should support debounce', async () => {
@@ -399,7 +539,7 @@ describe('ControlValueAccessor', () => {
   });
 
   it('should reflect latest written value in NgControl.value when debounce is active', () => {
-    let ngControlValueInsideCva: any = null;
+    let ngControlValueInsideCva: string | null = null;
 
     @Component({
       selector: 'custom-control-with-debounce',
@@ -454,9 +594,9 @@ describe('ControlValueAccessor', () => {
     act(() => cvaInstance.onInput('updated'));
 
     // NgControl.value should be 'updated' inside onInput!
-    expect(ngControlValueInsideCva).toBe('updated');
+    expect(ngControlValueInsideCva as unknown as string).toBe('updated');
 
-    // But the field value should still be 'initial' if it haven't been flushed yet!
+    // But the field value should still be 'initial' if it hasn't been flushed yet!
     expect(field().value()).toBe('initial');
   });
 

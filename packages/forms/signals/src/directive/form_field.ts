@@ -27,6 +27,7 @@ import {
 } from '@angular/core';
 import {
   type ControlValueAccessor,
+  NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   NgControl,
   ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS,
@@ -156,7 +157,8 @@ export class FormField<T> {
   private readonly config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   private readonly validityMonitor = inject(InputValidityMonitor);
 
-  private readonly parseErrorsSource = signal<
+  /** @internal */
+  readonly parseErrorsSource = signal<
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >(undefined);
 
@@ -164,7 +166,8 @@ export class FormField<T> {
   private _interopNgControl: InteropNgControl | undefined;
 
   /** Lazily instantiates a fake `NgControl` for this form field. */
-  protected get interopNgControl(): InteropNgControl {
+  /** @internal */
+  get interopNgControl(): InteropNgControl {
     return (this._interopNgControl ??= new InteropNgControl(this.state));
   }
 
