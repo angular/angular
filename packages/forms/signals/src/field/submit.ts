@@ -23,6 +23,10 @@ export class FieldSubmitState {
   /** Submission errors that are associated with this field. */
   readonly submissionErrors: WritableSignal<readonly ValidationError.WithFieldTree[]>;
 
+  clearSubmissionErrors() {
+    this.submissionErrors.set([]);
+  }
+
   constructor(private readonly node: FieldNode) {
     this.submissionErrors = linkedSignal({
       source: this.node.structure.value,
@@ -35,6 +39,14 @@ export class FieldSubmitState {
    * Either because the field was submitted directly, or because a parent field was submitted.
    */
   readonly submitting: Signal<boolean> = computed(() => {
-    return this.selfSubmitting() || (this.node.structure.parent?.submitting() ?? false);
+    const isSubmitting =
+      this.selfSubmitting() ||
+      (this.node.structure.parent?.submitting() ?? false);
+
+    if (isSubmitting && this.selfSubmitting()) {
+      this.clearSubmissionErrors();
+    }
+
+    return isSubmitting;
   });
 }
