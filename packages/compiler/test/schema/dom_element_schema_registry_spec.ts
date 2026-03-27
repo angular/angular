@@ -156,10 +156,16 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
 
     // SVG animate and set attributes
-    expect(registry.securityContext('animate', 'to', false)).toBe(SecurityContext.URL);
-    expect(registry.securityContext('animate', 'from', false)).toBe(SecurityContext.URL);
-    expect(registry.securityContext('animate', 'values', false)).toBe(SecurityContext.URL);
-    expect(registry.securityContext('set', 'to', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('animate', 'to', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'from', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'values', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('set', 'to', false)).toBe(SecurityContext.ATTRIBUTE_NO_BINDING);
   });
 
   it('should detect properties on namespaced elements', () => {
