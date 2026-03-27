@@ -7,8 +7,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
+import {UrlSerializer} from '@angular/router';
 import {AdevUrlSerializer} from './adev-url-serializer';
-import {UrlSerializer} from '../../../../../../packages/router';
 
 describe('AdevUrlSerializer', () => {
   let serializer: UrlSerializer;
@@ -28,9 +28,9 @@ describe('AdevUrlSerializer', () => {
 
   it('should decode encoded forward slash (%2F)', () => {
     // Uppercase hex
-    expect(serializer.parse('page%2Fabout').toString()).toBe('page/about');
+    expect(serializer.parse('page%2Fabout').toString()).toBe('/page/about');
 
     // Lowercase hex
-    expect(serializer.parse('page%2fabout').toString()).toBe('page/about');
+    expect(serializer.parse('page%2fabout').toString()).toBe('/page/about');
   });
 });
