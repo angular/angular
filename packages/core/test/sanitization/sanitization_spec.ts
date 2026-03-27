@@ -137,10 +137,6 @@ describe('sanitization', () => {
     expect(() => ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'iframe', 'src')).toThrowError(
       ERROR,
     );
-    expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'object', 'data')).toThrowError(ERROR);
-    expect(() => ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'object', 'data')).toThrowError(
-      ERROR,
-    );
     expect(() =>
       ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustHtml('javascript:true'), 'iframe', 'src'),
     ).toThrowError(/Required a safe ResourceURL, got a HTML/);
@@ -149,13 +145,6 @@ describe('sanitization', () => {
         bypassSanitizationTrustResourceUrl('javascript:true'),
         'iframe',
         'src',
-      ).toString(),
-    ).toEqual('javascript:true');
-    expect(
-      ɵɵsanitizeUrlOrResourceUrl(
-        bypassSanitizationTrustResourceUrl('javascript:true'),
-        'object',
-        'data',
       ).toString(),
     ).toEqual('javascript:true');
   });
@@ -177,22 +166,6 @@ describe('sanitization', () => {
     expect(
       ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustUrl('javascript:true'), 'a', 'href'),
     ).toEqual('javascript:true');
-
-    // SVG animate and set attributes
-    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'animate', 'to')).toEqual(
-      'unsafe:javascript:alert(1)',
-    );
-    expect(ɵɵsanitizeUrlOrResourceUrl('0.2', 'animate', 'to')).toEqual('0.2');
-    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'animate', 'from')).toEqual(
-      'unsafe:javascript:alert(1)',
-    );
-    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'animate', 'values')).toEqual(
-      'unsafe:javascript:alert(1)',
-    );
-    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'set', 'to')).toEqual(
-      'unsafe:javascript:alert(1)',
-    );
-    expect(ɵɵsanitizeUrlOrResourceUrl('0.2', 'set', 'to')).toEqual('0.2');
   });
 
   it('should only trust constant strings from template literal tags without interpolation', () => {

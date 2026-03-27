@@ -215,14 +215,14 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
 
 // Define sets outside the function for O(1) lookups and memory efficiency
 const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined> = {
-  embed: {src: true},
-  frame: {src: true},
-  iframe: {src: true},
-  media: {src: true},
-  script: {src: true, href: true, 'xlink:href': true},
-  base: {href: true},
-  link: {href: true},
-  object: {data: true, codebase: true},
+  'embed': {'src': true},
+  'frame': {'src': true},
+  'iframe': {'src': true},
+  'media': {'src': true},
+  'script': {'src': true, 'href': true, 'xlink:href': true},
+  'base': {'href': true},
+  'link': {'href': true},
+  'object': {'data': true, 'codebase': true},
 };
 
 /**
@@ -283,22 +283,35 @@ function getSanitizer(): Sanitizer | null {
 }
 
 /**
+ * Set of attributes that are sensitive and should be sanitized.
+ */
+const SECURITY_SENSITIVE_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(['href', 'xlink:href']);
+
+/**
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-const SECURITY_SENSITIVE_ELEMENTS: Record<string, Record<string, true | undefined> | undefined> = {
-  iframe: {
-    sandbox: true,
-    allow: true,
-    allowfullscreen: true,
-    referrerpolicy: true,
-    csp: true,
-    fetchpriority: true,
+const SECURITY_SENSITIVE_ELEMENTS: Record<
+  string,
+  Record<string, true | undefined | ReadonlySet<string>> | undefined
+> = {
+  'iframe': {
+    'sandbox': true,
+    'allow': true,
+    'allowfullscreen': true,
+    'referrerpolicy': true,
+    'csp': true,
+    'fetchpriority': true,
   },
-  animate: {attributename: true},
-  set: {attributename: true},
-  animatemotion: {attributename: true},
-  animatetransform: {attributename: true},
+  'animate': {
+    'attributename': true,
+    'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+    'values': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+    'from': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+  },
+  'set': {'attributename': true, 'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES},
+  'animatemotion': {'attributename': true},
+  'animatetransform': {'attributename': true},
 };
 
 /**
@@ -315,7 +328,8 @@ export function ɵɵvalidateAttribute(
 ): unknown {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
-  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.[lowerCaseAttrName]) {
+  const validationConfig = SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.[lowerCaseAttrName];
+  if (!validationConfig) {
     return value;
   }
 
@@ -328,6 +342,26 @@ export function ɵɵvalidateAttribute(
   if (lowerCaseTagName === 'iframe') {
     const element = getNativeByTNode(tNode, lView) as RElement;
     enforceIframeSecurity(element as HTMLIFrameElement);
+  }
+
+  if (typeof validationConfig !== 'boolean') {
+    const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
+    const attributeNameValue = element.getAttribute('attributeName');
+
+    if (attributeNameValue && validationConfig.has(attributeNameValue.toLowerCase())) {
+      const errorMessage =
+        ngDevMode &&
+        `Angular has detected that the \`${attributeName}\` was applied ` +
+          `as a binding to the <${tagName}> element${getTemplateLocationDetails(lView)}. ` +
+          `For security reasons, the \`${attributeName}\` can be set on the <${tagName}> element ` +
+          `as a static attribute only when the "attributeName" is set to \'${attributeNameValue}\'. \n` +
+          `To fix this, switch the \`${attributeNameValue}\` binding to a static attribute ` +
+          `in a template or in host bindings section.`;
+
+      throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
+    }
+
+    return value;
   }
 
   const errorMessage =
