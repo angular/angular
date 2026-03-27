@@ -225,10 +225,12 @@ const HREF_RESOURCE_TAGS = new Set(['base', 'link', 'script']);
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
+  if (prop.indexOf(':') > -1) {
+    prop = prop.split(':').pop()!;
+  }
   const isResource =
     (prop === 'src' && SRC_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'href' && HREF_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'xlink:href' && tag === 'script');
+    (prop === 'href' && (HREF_RESOURCE_TAGS.has(tag) || tag === 'script'));
 
   return isResource ? ɵɵsanitizeResourceUrl : ɵɵsanitizeUrl;
 }

@@ -442,6 +442,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     if (isAttribute) {
       // NB: For security purposes, use the mapped property name, not the attribute name.
       propName = this.getMappedPropName(propName);
+      if (propName.indexOf(':') > -1) {
+        propName = propName.split(':').pop()!;
+      }
     }
 
     // Make sure comparisons are case insensitive, so that case differences between attribute and

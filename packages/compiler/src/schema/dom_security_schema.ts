@@ -105,6 +105,11 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'none|href',
       'none|xlink:href',
 
+      'use|href',
+      'use|xlink:href',
+
+      '*|xml:base',
+
       // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
       'img|src',
       'video|src',
