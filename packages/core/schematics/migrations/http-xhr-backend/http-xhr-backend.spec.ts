@@ -59,7 +59,7 @@ describe('http fetch backend migration', () => {
     expect(actual).toMatch(/import \{.*withXhr.*\}/);
   });
 
-  it('should update provideHttpClient to remove withFetch', async () => {
+  it('should not update provideHttpClient to remove withFetch', async () => {
     const {fs} = await runTsurgeMigration(new XhrBackendMigration(), [
       {
         name: absoluteFrom('/index.ts'),
@@ -77,30 +77,9 @@ describe('http fetch backend migration', () => {
 
     const actual = fs.readFile(absoluteFrom('/index.ts'));
     expect(actual).toContain(
-      'provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({}))',
+      'provideHttpClient(withFetch(), withInterceptorsFromDi(), withXsrfConfiguration({}))',
     );
-    expect(actual).not.toContain('withFetch');
-  });
-
-  it('should update provideHttpClient to remove withFetch as only arg', async () => {
-    const {fs} = await runTsurgeMigration(new XhrBackendMigration(), [
-      {
-        name: absoluteFrom('/index.ts'),
-        isProgramRootFile: true,
-        contents: `
-        import {AppConfig} from '@angular/core';
-        import {provideHttpClient, withFetch, withInterceptorsFromDi, withXsrfConfiguration} from '@angular/common/http';
-
-        const config: AppConfig = [
-          provideHttpClient(withFetch()),
-        ]
-          `,
-      },
-    ]);
-
-    const actual = fs.readFile(absoluteFrom('/index.ts'));
-    expect(actual).toContain('provideHttpClient()');
-    expect(actual).not.toContain('withFetch');
+    expect(actual).toContain('withFetch');
   });
 
   it('should not update provideHttpClient if withXhr is already present', async () => {
