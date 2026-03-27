@@ -314,13 +314,60 @@ describe('ServiceWorker library', () => {
       });
     });
 
+    describe('typedMessages', () => {
+      it('receives typed push messages', () => {
+        interface MyPayload {
+          title: string;
+          count: number;
+        }
+        const sendMessage = (data: MyPayload) => mock.sendMessage({type: 'PUSH', data});
+
+        const received: MyPayload[] = [];
+        push.typedMessages<MyPayload>().subscribe((msg) => received.push(msg));
+
+        sendMessage({title: 'hello', count: 1});
+        sendMessage({title: 'world', count: 2});
+
+        expect(received).toEqual([
+          {title: 'hello', count: 1},
+          {title: 'world', count: 2},
+        ]);
+      });
+
+      it('ignores non-PUSH messages', () => {
+        const received: unknown[] = [];
+        push.typedMessages<unknown>().subscribe((msg) => received.push(msg));
+
+        mock.sendMessage({type: 'PUSH', data: 'a'});
+        mock.sendMessage({type: 'NOT_PUSH', data: 'b'});
+        mock.sendMessage({type: 'PUSH', data: 'c'});
+
+        expect(received).toEqual(['a', 'c']);
+      });
+
+      it('each call returns an independent observable', () => {
+        const first: unknown[] = [];
+        const second: unknown[] = [];
+
+        push.typedMessages<string>().subscribe((msg) => first.push(msg));
+        push.typedMessages<number>().subscribe((msg) => second.push(msg));
+
+        mock.sendMessage({type: 'PUSH', data: 'x'});
+
+        expect(first).toEqual(['x']);
+        expect(second).toEqual(['x']);
+      });
+    });
+
     describe('messages', () => {
       it('receives push messages', () => {
         const sendMessage = (type: string, message: string) =>
           mock.sendMessage({type, data: {message}});
 
         const receivedMessages: string[] = [];
-        push.messages.subscribe((msg: any) => receivedMessages.push(msg.message));
+        push
+          .typedMessages<{message: string}>()
+          .subscribe((msg) => receivedMessages.push(msg.message));
 
         sendMessage('PUSH', 'this was a push message');
         sendMessage('NOTPUSH', 'this was not a push message');
@@ -366,6 +413,38 @@ describe('ServiceWorker library', () => {
         sendMessage('NOTIFICATION_CLOSE', 'empty_string');
 
         expect(receivedMessages).toEqual(['empty_string']);
+      });
+    });
+
+    describe('pushSubscriptionChanges', () => {
+      it('receives push subscription change messages', () => {
+        const sendMessage = (
+          type: string,
+          data: {
+            oldSubscription: PushSubscription | null;
+            newSubscription: PushSubscription | null;
+          },
+        ) => mock.sendMessage({type, data});
+
+        const received: Array<{
+          oldSubscription: PushSubscription | null;
+          newSubscription: PushSubscription | null;
+        }> = [];
+        push.pushSubscriptionChanges.subscribe((msg) => received.push(msg));
+
+        const fakeOld = {endpoint: 'old'} as unknown as PushSubscription;
+        const fakeNew = {endpoint: 'new'} as unknown as PushSubscription;
+
+        sendMessage('PUSH_SUBSCRIPTION_CHANGE', {
+          oldSubscription: fakeOld,
+          newSubscription: fakeNew,
+        });
+        sendMessage('NOT_PUSH_SUBSCRIPTION_CHANGE', {oldSubscription: null, newSubscription: null});
+        sendMessage('PUSH_SUBSCRIPTION_CHANGE', {oldSubscription: fakeNew, newSubscription: null});
+
+        expect(received.length).toBe(2);
+        expect(received[0]).toEqual({oldSubscription: fakeOld, newSubscription: fakeNew});
+        expect(received[1]).toEqual({oldSubscription: fakeNew, newSubscription: null});
       });
     });
 

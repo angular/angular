@@ -8,6 +8,10 @@
 
 export {
   NoNewVersionDetectedEvent,
+  NotificationClickEvent,
+  NotificationCloseEvent,
+  PushEvent,
+  PushSubscriptionChangeEvent,
   UnrecoverableStateEvent,
   VersionDetectedEvent,
   VersionEvent,

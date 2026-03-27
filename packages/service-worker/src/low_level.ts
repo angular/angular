@@ -104,9 +104,42 @@ export interface UnrecoverableStateEvent {
 /**
  * An event emitted when a `PushEvent` is received by the service worker.
  */
-export interface PushEvent {
+export interface PushEvent<T = any> {
   type: 'PUSH';
-  data: any;
+  data: T;
+}
+
+/**
+ * An event emitted when the user clicks on a notification.
+ */
+export interface NotificationClickEvent {
+  type: 'NOTIFICATION_CLICK';
+  data: {
+    action: string;
+    notification: NotificationOptions & {title: string};
+  };
+}
+
+/**
+ * An event emitted when the user closes a notification.
+ */
+export interface NotificationCloseEvent {
+  type: 'NOTIFICATION_CLOSE';
+  data: {
+    action: string;
+    notification: NotificationOptions & {title: string};
+  };
+}
+
+/**
+ * An event emitted when the push subscription changes (e.g. due to expiration or key rotation).
+ */
+export interface PushSubscriptionChangeEvent {
+  type: 'PUSH_SUBSCRIPTION_CHANGE';
+  data: {
+    oldSubscription: PushSubscription | null;
+    newSubscription: PushSubscription | null;
+  };
 }
 
 export type IncomingEvent = UnrecoverableStateEvent | VersionEvent;

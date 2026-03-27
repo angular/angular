@@ -11,7 +11,14 @@ import {NEVER, Observable, Subject} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
+import {
+  ERR_SW_NOT_SUPPORTED,
+  NgswCommChannel,
+  NotificationClickEvent,
+  NotificationCloseEvent,
+  PushEvent,
+  PushSubscriptionChangeEvent,
+} from './low_level';
 
 /**
  * Subscribe and listen to
@@ -47,7 +54,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  *     "actions": NotificationAction[],
  *     "badge": USVString,
  *     "body": DOMString,
- *     "data": any,
+ *     "data": unknown,
  *     "dir": "auto"|"ltr"|"rtl",
  *     "icon": USVString,
  *     "image": USVString,
@@ -99,6 +106,21 @@ export class SwPush {
    * Emits the payloads of the received push notification messages.
    */
   readonly messages: Observable<object>;
+
+  /**
+   * Returns an observable that emits push notification payloads cast to the provided type `T`.
+   * Use this when you know the shape of your push notification data and want type-safe access
+   * without casting at every subscription site.
+   *
+   * @usageNotes
+   * ```ts
+   * interface MyPushPayload { title: string; body: string; }
+   * swPush.typedMessages<MyPushPayload>().subscribe(({title, body}) => { ... });
+   * ```
+   */
+  typedMessages<T>(): Observable<T> {
+    return this.messages as Observable<T>;
+  }
 
   /**
    * Emits the payloads of the received push notification messages as well as the action the user
@@ -189,16 +211,16 @@ export class SwPush {
     this.messages = this.sw.eventsOfType<PushEvent>('PUSH').pipe(map((message) => message.data));
 
     this.notificationClicks = this.sw
-      .eventsOfType('NOTIFICATION_CLICK')
-      .pipe(map((message: any) => message.data));
+      .eventsOfType<NotificationClickEvent>('NOTIFICATION_CLICK')
+      .pipe(map((message) => message.data));
 
     this.notificationCloses = this.sw
-      .eventsOfType('NOTIFICATION_CLOSE')
-      .pipe(map((message: any) => message.data));
+      .eventsOfType<NotificationCloseEvent>('NOTIFICATION_CLOSE')
+      .pipe(map((message) => message.data));
 
     this.pushSubscriptionChanges = this.sw
-      .eventsOfType('PUSH_SUBSCRIPTION_CHANGE')
-      .pipe(map((message: any) => message.data));
+      .eventsOfType<PushSubscriptionChangeEvent>('PUSH_SUBSCRIPTION_CHANGE')
+      .pipe(map((message) => message.data));
 
     this.pushManager = this.sw.registration.pipe(
       map(
