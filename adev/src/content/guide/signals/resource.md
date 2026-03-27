@@ -151,20 +151,19 @@ You can create new resources from snapshots using `resourceFromSnapshots`. This 
 import {linkedSignal, resourceFromSnapshots, Resource, ResourceSnapshot} from '@angular/core';
 
 function withPreviousValue<T>(input: Resource<T>): Resource<T> {
+  const router = inject(Router);
   const derived = linkedSignal<ResourceSnapshot<T>, ResourceSnapshot<T>>({
     source: input.snapshot,
     computation: (snap, previous) => {
-      if (snap.status === 'loading' && previous && previous.value.status !== 'error') {
-        // When the input resource enters loading state, we keep the value
+      if ((snap.status === 'loading' || !!router.currentNavigation()) && previous && previous.value.status !== 'error') {
+        // When the input resource enters loading state or while navigating, we keep the value
         // from its previous state, if any.
-        return {status: 'loading' as const, value: previous.value.value};
+        return { status: 'loading' as const, value: previous.value.value };
       }
-
       // Otherwise we simply forward the state of the input resource.
       return snap;
     },
   });
-
   return resourceFromSnapshots(derived);
 }
 
