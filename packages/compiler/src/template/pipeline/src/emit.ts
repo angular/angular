@@ -39,6 +39,7 @@ import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
 import {collapseEmptyInstructions} from './phases/empty_elements';
 import {expandSafeReads} from './phases/expand_safe_reads';
 import {extractI18nMessages} from './phases/extract_i18n_messages';
+import {resolveEventModifiers} from './phases/event_modifiers';
 import {generateAdvance} from './phases/generate_advance';
 import {generateLocalLetReferences} from './phases/generate_local_let_references';
 import {generateProjectionDefs} from './phases/generate_projection_def';
@@ -132,6 +133,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateVariables},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
+  {kind: Kind.Both, fn: resolveEventModifiers},
   {kind: Kind.Both, fn: resolveDollarEvent},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Tmpl, fn: removeIllegalLetReferences},
