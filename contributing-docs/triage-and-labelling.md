@@ -9,7 +9,7 @@ The owner of the component is then responsible for the detailed / component-leve
 ### Areas
 
 The caretaker should be able to determine the _area_ for incoming issues.
-Most areas generally corresponds to a specific directory or set of directories in this repo. Some
+Most areas generally correspond to a specific directory or set of directories in this repo. Some
 areas are more cross-cutting (e.g. for performance or security). Apply all labels that make sense
 for an issue. Each `area: ` label on GitHub should have a description of what it's for.
 
