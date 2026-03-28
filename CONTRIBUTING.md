@@ -71,7 +71,7 @@ You can file new issues by selecting from our [new issue templates](https://gith
 
 ### <a name="pr-quality"></a> Contribution Quality
 
-We strongly value open source contribution and pull requests from community contributors. Please note that every pull request is reviewed and merged by an actual person on the team, which does take time and effort. That is time and effort that does take away from other valuable work. With that in mind we have an minimum set of expectations that are required of any community contribution pull request that is opened.
+We strongly value open source contribution and pull requests from community contributors. Please note that every pull request is reviewed and merged by an actual person on the team, which does take time and effort. That is time and effort that does take away from other valuable work. With that in mind we have a minimum set of expectations that are required of any community contribution pull request that is opened.
 
 1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
    - You don't want to duplicate existing efforts.
@@ -238,7 +238,7 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 - For corporations, we'll need you to
   [print, sign and one of scan+email, fax or mail the form][corporate-cla].
 
-If you have more than one GitHub accounts, or multiple email addresses associated with a single GitHub account, you must sign the CLA using the primary email address of the GitHub account used to author Git commits and send pull requests.
+If you have more than one GitHub account, or multiple email addresses associated with a single GitHub account, you must sign the CLA using the primary email address of the GitHub account used to author Git commits and send pull requests.
 
 The following documents can help you sort out issues with GitHub accounts and multiple email addresses:
 

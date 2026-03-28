@@ -94,7 +94,7 @@ For example:
 
   So, in effect, the `<a>` element may be in the component's template, or in any of its projected or child content.
 
-- With `:host ::ng-deep p a`, both the `<a>` and `<p>` elements must be decendants of the component's host element.
+- With `:host ::ng-deep p a`, both the `<a>` and `<p>` elements must be descendants of the component's host element.
 
   They can come from the component's template or the views of its child components, but not elsewhere in the app.
 
