@@ -78,11 +78,32 @@ Your library should supply documentation \(typically a README file\) for install
 
 ### Secondary entrypoints
 
-Secondary entrypoints let consumers import focused APIs from the same package. For example, a library might expose its primary entrypoint as `my-lib` and a testing entrypoint as `my-lib/testing`.
+To create a secondary entrypoint, add a new directory under your library project and give it its own `ng-package.json` and `src/public-api.ts`.
 
-Each secondary entrypoint lives in its own directory and should define its public API in a dedicated `public-api.ts` file. When you build the library, Angular Package Format resolves these entrypoints as additional subpaths in the published package.
+For example, a `testing` secondary entrypoint could look like this:
 
-For more details, see [Entrypoints and code splitting](tools/libraries/angular-package-format#entrypoints-and-code-splitting) and [Resolution of secondary entry points](tools/libraries/angular-package-format#resolution-of-secondary-entry-points).
+```text
+projects/my-lib/
+  ng-package.json
+  src/public-api.ts
+  testing/
+    ng-package.json
+    src/public-api.ts
+```
+
+In the secondary entrypoint directory, configure `ng-package.json` to use `src/public-api.ts` as its entry file:
+
+```json
+{
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}
+```
+
+After building the library, consumers can import from the secondary entrypoint using a subpath such as `my-lib/testing`.
+
+For more details on how secondary entrypoints are resolved and why you might use them, see [Entrypoints and code splitting](tools/libraries/angular-package-format#entrypoints-and-code-splitting) and [Resolution of secondary entry points](tools/libraries/angular-package-format#resolution-of-secondary-entry-points).
 
 ## Refactoring parts of an application into a library
 
