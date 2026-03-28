@@ -19,6 +19,8 @@ import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {TypingsLoader} from '../typings-loader.service';
 
 import {FileAndContentRecord} from '@angular/docs';
+import {DomSanitizer} from '@angular/platform-browser';
+import {NodeRuntimeState} from '../node-runtime-state.service';
 import {CODE_EDITOR_EXTENSIONS} from './constants/code-editor-extensions';
 import {LANGUAGES} from './constants/code-editor-languages';
 import {getAutocompleteExtension} from './extensions/autocomplete';
@@ -26,10 +28,9 @@ import {getDiagnosticsExtension} from './extensions/diagnostics';
 import {getTooltipExtension} from './extensions/tooltip';
 import {DiagnosticsState} from './services/diagnostics-state.service';
 import {TsVfsWorkerActions} from './workers/enums/actions';
+import {TYPESCRIPT_VFS_WORKER_FACTORY} from './workers/factory-provider';
 import {CodeChangeRequest} from './workers/interfaces/code-change-request';
 import {ActionMessage} from './workers/interfaces/message';
-import {NodeRuntimeState} from '../node-runtime-state.service';
-import {TYPESCRIPT_VFS_WORKER_FACTORY} from './workers/factory-provider';
 
 export interface EditorFile {
   filename: string;
@@ -81,6 +82,7 @@ export class CodeMirrorEditor {
   private readonly typingsLoader = inject(TypingsLoader);
   private readonly destroyRef = inject(DestroyRef);
   private readonly diagnosticsState = inject(DiagnosticsState);
+  private readonly domSanitizer = inject(DomSanitizer);
   private readonly tsVfsWorkerFactory = inject(TYPESCRIPT_VFS_WORKER_FACTORY);
   private tsVfsWorker: Worker | null = null;
 
@@ -448,7 +450,12 @@ export class CodeMirrorEditor {
           this.sendRequestToTsVfs,
           this.diagnosticsState,
         ),
-        getTooltipExtension(this.eventManager$, this.currentFile, this.sendRequestToTsVfs),
+        getTooltipExtension(
+          this.eventManager$,
+          this.currentFile,
+          this.sendRequestToTsVfs,
+          this.domSanitizer,
+        ),
       ];
     }
 
