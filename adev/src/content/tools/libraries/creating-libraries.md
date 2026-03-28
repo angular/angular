@@ -76,11 +76,15 @@ Anything exported from this file is made public when your library is imported in
 
 Your library should supply documentation \(typically a README file\) for installation and maintenance.
 
-### Secondary entrypoints
+### Creating secondary entrypoints
 
-To create a secondary entrypoint, add a new directory under your library project and give it its own `ng-package.json` and `src/public-api.ts`.
+A secondary entrypoint lets consumers import a distinct subset of your library, for example `my-lib/testing`, without pulling in the entire library bundle.
 
-For example, a `testing` secondary entrypoint could look like this:
+To create one, follow these steps:
+
+**1. Create the entrypoint directory and files**
+
+Add a subdirectory under your library project with its own `ng-package.json` and `src/public-api.ts`:
 
 ```text
 projects/my-lib/
@@ -91,7 +95,9 @@ projects/my-lib/
     src/public-api.ts
 ```
 
-In the secondary entrypoint directory, configure `ng-package.json` to use `src/public-api.ts` as its entry file:
+**2. Configure `ng-package.json`**
+
+In the secondary entrypoint directory, set `entryFile` to point to its public API:
 
 ```json
 {
@@ -101,9 +107,32 @@ In the secondary entrypoint directory, configure `ng-package.json` to use `src/p
 }
 ```
 
-After building the library, consumers can import from the secondary entrypoint using a subpath such as `my-lib/testing`.
+**3. Export symbols from the public API**
 
-For more details on how secondary entrypoints are resolved and why you might use them, see [Entrypoints and code splitting](tools/libraries/angular-package-format#entrypoints-and-code-splitting) and [Resolution of secondary entry points](tools/libraries/angular-package-format#resolution-of-secondary-entry-points).
+In `testing/src/public-api.ts`, export the symbols you want consumers to access from this entrypoint:
+
+```typescript
+export { MockMyLibService } from './mock-my-lib.service';
+export { MyLibHarness } from './my-lib.harness';
+```
+
+**4. Build the library**
+
+Build with the Angular CLI as usual — ng-packagr automatically discovers and compiles all secondary entrypoints:
+
+```shell
+ng build my-lib
+```
+
+**5. Use the secondary entrypoint in consuming applications**
+
+After building, consumers import from the secondary entrypoint using its subpath:
+
+```typescript
+import { MockMyLibService } from 'my-lib/testing';
+```
+
+For more details on how secondary entrypoints are resolved and when to use them, see [Entrypoints and code splitting](tools/libraries/angular-package-format#entrypoints-and-code-splitting) and [Resolution of secondary entry points](tools/libraries/angular-package-format#resolution-of-secondary-entry-points).
 
 ## Refactoring parts of an application into a library
 
