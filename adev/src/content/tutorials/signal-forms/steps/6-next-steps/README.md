@@ -22,10 +22,10 @@ Ready to learn more? Here are recommended next steps:
 - **[Form Models Guide](guide/forms/signals/models)** - Deep dive into form models and data management
 - **[Validation Guide](guide/forms/signals/validation)** - Comprehensive validation reference
 - **[Field State Management Guide](guide/forms/signals/field-state-management)** - Advanced state patterns
-- **[Custom Controls Guide](guide/forms/signals/custom-controls)** - Building reusable form components -->
+- **[Custom Controls Guide](guide/forms/signals/custom-controls)** - Building reusable form components
 
 ## Keep learning
 
-Remember: Signal Forms is experimental, so check the [official documentation](guide/forms/signals/overview) for updates to the API.
+IMPORTANT: Signal Forms is experimental, so check the [official documentation](guide/forms/signals/overview) for updates to the API.
 
 Happy coding!
