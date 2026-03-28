@@ -130,7 +130,7 @@ The following list discusses all the `browser` builder options that will need to
 - `resourcesOutputPath` should be removed, this is now always `media`.
 - `vendorChunk` should be removed, as this was a performance optimization which is no longer needed.
 - `commonChunk` should be removed, as this was a performance optimization which is no longer needed.
-- `deployUrl` should be removed and is not supported. Prefer [`<base href>`](guide/routing/common-router-tasks) instead. See [deployment documentation](tools/cli/deployment#--deploy-url) for more information.
+- `deployUrl` should be removed and is not supported. Prefer [`<base href>`](guide/routing/router-reference#base-href) instead. See [deployment documentation](tools/cli/deployment#--deploy-url) for more information.
 - `ngswConfigPath` should be renamed to `serviceWorker`.
 
 If the application is not using SSR currently, this should be the final step to allow `ng build` to function.
