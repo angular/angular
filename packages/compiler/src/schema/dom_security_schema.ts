@@ -108,6 +108,23 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
       'img|src',
       'video|src',
+
+      // SVG animation value attributes — these carry the actual payload written to the animated
+      // attribute. When attributeName="href", the animation value becomes a navigable URL.
+      // Without URL sanitization, javascript: URIs in these attributes execute on click.
+      'animate|to',
+      'animate|from',
+      'animate|values',
+      'animate|by',
+      'set|to',
+      'animateMotion|to',
+      'animateMotion|from',
+      'animateMotion|values',
+      'animateMotion|by',
+      'animateTransform|to',
+      'animateTransform|from',
+      'animateTransform|values',
+      'animateTransform|by',
     ]);
 
     registerContext(SecurityContext.RESOURCE_URL, [
