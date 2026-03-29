@@ -646,9 +646,9 @@ export class SymbolBuilder {
     return {
       tsType: nodeValueSymbol.tsType,
       tsSymbol: nodeValueSymbol.tsSymbol,
-      initializerLocation: nodeValueSymbol.tcbLocation,
       kind: SymbolKind.Variable,
       declaration: variable,
+      initializerLocation: nodeValueSymbol.tcbLocation,
       localVarLocation: {
         tcbPath: this.tcbPath,
         isShimFile: this.tcbIsShim,
@@ -727,7 +727,7 @@ export class SymbolBuilder {
       return null;
     }
 
-    const nodeValueSymbol = this.getSymbolOfTsNode(node.initializer!);
+    const nodeValueSymbol = this.getSymbolOfTsNode(node.name);
 
     if (nodeValueSymbol === null) {
       return null;
@@ -736,7 +736,6 @@ export class SymbolBuilder {
     return {
       tsType: nodeValueSymbol.tsType,
       tsSymbol: nodeValueSymbol.tsSymbol,
-      initializerLocation: nodeValueSymbol.tcbLocation,
       kind: SymbolKind.LetDeclaration,
       declaration: decl,
       localVarLocation: {

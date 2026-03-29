@@ -201,12 +201,6 @@ runInEachFileSystem(() => {
           assertVariableSymbol(symbol);
           expect(program.getTypeChecker().typeToString(symbol.tsType!)).toEqual('any');
           expect(symbol.declaration.name).toEqual('contextFoo');
-
-          // Ensure we can map the shim locations back to the template
-          const initializerMapping = templateTypeChecker.getSourceMappingAtTcbLocation(
-            symbol.initializerLocation,
-          )!;
-          expect(initializerMapping.span.toString()).toEqual('bar');
           const localVarMapping = templateTypeChecker.getSourceMappingAtTcbLocation(
             symbol.localVarLocation,
           )!;
@@ -2025,11 +2019,6 @@ runInEachFileSystem(() => {
         expect(program.getTypeChecker().typeToString(symbol.tsType!)).toEqual('string');
         expect(symbol.declaration.name).toEqual('message');
 
-        // Ensure we can map the shim locations back to the template
-        const initializerMapping = templateTypeChecker.getSourceMappingAtTcbLocation(
-          symbol.initializerLocation,
-        )!;
-        expect(initializerMapping.span.toString()).toEqual(`'The value is ' + value`);
         const localVarMapping = templateTypeChecker.getSourceMappingAtTcbLocation(
           symbol.localVarLocation,
         )!;

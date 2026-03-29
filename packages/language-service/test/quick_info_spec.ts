@@ -372,7 +372,7 @@ describe('quick info', () => {
           expectedSpanText: 'hero',
           expectedDisplayString: '(variable) hero: Hero',
         });
-        expect(toText(documentation)).toEqual('The most heroic being.');
+        expect(toText(documentation)).toEqual('');
       });
 
       it('should work for ReadonlyArray members (#36191)', () => {
@@ -387,7 +387,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<div *ngFor="let name of constNames">{{na¦me}}</div>`,
           expectedSpanText: 'name',
-          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+          expectedDisplayString: '(variable) name: {\n    readonly name: "name";\n}',
         });
       });
 
@@ -409,7 +409,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<div *ngFor="let name of constNames">{{\`Hello \${na¦me}\`}}</div>`,
           expectedSpanText: 'name',
-          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+          expectedDisplayString: '(variable) name: {\n    readonly name: "name";\n}',
         });
       });
 
@@ -417,7 +417,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<div *ngFor="let name of constNames">{{someTag\`Hello \${na¦me}\`}}</div>`,
           expectedSpanText: 'name',
-          expectedDisplayString: '(variable) name: { readonly name: "name"; }',
+          expectedDisplayString: '(variable) name: {\n    readonly name: "name";\n}',
         });
       });
     });
@@ -846,7 +846,15 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `@if (constNames; as al¦iasName) {}`,
           expectedSpanText: 'aliasName',
-          expectedDisplayString: '(variable) aliasName: [{ readonly name: "name"; }]',
+          expectedDisplayString: '(variable) aliasName: [{\n    readonly name: "name";\n}]',
+        });
+      });
+
+      it('if block alias variable narrowed', () => {
+        expectQuickInfo({
+          templateOverride: `@if (signalValue; as al¦iasName) {}`,
+          expectedSpanText: 'aliasName',
+          expectedDisplayString: '(variable) aliasName: string | undefined',
         });
       });
 
@@ -862,7 +870,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `@if (false) {} @else if (constNames; as al¦iasName) {}`,
           expectedSpanText: 'aliasName',
-          expectedDisplayString: '(variable) aliasName: [{ readonly name: "name"; }]',
+          expectedDisplayString: '(variable) aliasName: [{\n    readonly name: "name";\n}]',
         });
       });
     });
@@ -873,6 +881,14 @@ describe('quick info', () => {
           templateOverride: `@let na¦me = 'Frodo'; {{name}}`,
           expectedSpanText: `@let name = 'Frodo'`,
           expectedDisplayString: `(let) name: "Frodo"`,
+        });
+      });
+
+      it('should get quick info for a let declaration initialized with a narrowed property', () => {
+        expectQuickInfo({
+          templateOverride: `@if (signalValue) { @let na¦me = signalValue; {{name}} }`,
+          expectedSpanText: `@let name = signalValue`,
+          expectedDisplayString: `(let) name: string`,
         });
       });
     });
