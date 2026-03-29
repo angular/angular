@@ -58,11 +58,11 @@
           (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
           [disabled]="!canRevealAnswer()"
           class="docs-reveal-answer-button adev-reveal-desktop-button docs-primary-btn"
-          [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
-          [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
+          [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer (compare your code with the expected solution)'"
+          [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer (compare your code with the expected solution)'"
           [class.adev-reset-answer-button]="answerRevealed()"
         >
-          {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
+          {{ answerRevealed() ? 'Reset' : 'Reveal Answer (compare your code with the expected solution)' }}
         </button>
       }
 
@@ -112,11 +112,11 @@
             (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
             [disabled]="!canRevealAnswer()"
             class="docs-reveal-answer-button adev-reveal-mobile-button docs-primary-btn"
-            [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
-            [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
+            [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer (compare your code with the expected solution)'"
+            [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer (compare your code with the expected solution)'"
             [class.adev-reset-answer-button]="answerRevealed()"
           >
-            {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
+            {{ answerRevealed() ? 'Reset' : 'Reveal Answer (compare your code with the expected solution)' }}
           </button>
         }
       </div>
