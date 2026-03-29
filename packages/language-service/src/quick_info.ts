@@ -148,21 +148,24 @@ export class QuickInfoBuilder {
     );
   }
 
-  private getQuickInfoForVariableSymbol(symbol: VariableSymbol): ts.QuickInfo {
-    const info = this.getQuickInfoFromTypeDefAtLocation(symbol.initializerLocation);
-    return createQuickInfo(
-      symbol.declaration.name,
-      DisplayInfoKind.VARIABLE,
-      getTextSpanOfNode(this.node),
-      undefined /* containerName */,
-      this.typeChecker.typeToString(symbol.tsType),
-      info?.documentation,
-      info?.tags,
-    );
+  private getQuickInfoForVariableSymbol(symbol: VariableSymbol): ts.QuickInfo | undefined {
+    const quickInfo = this.getQuickInfoAtTcbLocation(symbol.localVarLocation);
+    if (quickInfo === undefined || quickInfo.displayParts === undefined) {
+      return quickInfo;
+    }
+
+    for (const part of quickInfo.displayParts) {
+      if (part.kind === 'localName') {
+        part.text = symbol.declaration.name;
+        break;
+      }
+    }
+
+    return updateQuickInfoKind(quickInfo, DisplayInfoKind.VARIABLE);
   }
 
   private getQuickInfoForLetDeclarationSymbol(symbol: LetDeclarationSymbol): ts.QuickInfo {
-    const info = this.getQuickInfoFromTypeDefAtLocation(symbol.initializerLocation);
+    const info = this.getQuickInfoAtTcbLocation(symbol.localVarLocation);
     return createQuickInfo(
       symbol.declaration.name,
       DisplayInfoKind.LET,

@@ -172,7 +172,7 @@ export class DefinitionBuilder {
             });
           }
         }
-        if (symbol.kind === SymbolKind.Variable || symbol.kind === SymbolKind.LetDeclaration) {
+        if (symbol.kind === SymbolKind.Variable) {
           definitions.push(
             ...this.getDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}),
           );
@@ -281,7 +281,7 @@ export class DefinitionBuilder {
         case SymbolKind.Variable:
         case SymbolKind.LetDeclaration: {
           definitions.push(
-            ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}),
+            ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.localVarLocation}),
           );
           break;
         }

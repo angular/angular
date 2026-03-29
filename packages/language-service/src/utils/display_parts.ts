@@ -80,7 +80,7 @@ export function getSymbolDisplayInfo(
   const quickInfo =
     symbol.kind === SymbolKind.Reference
       ? getQuickInfoFromTypeDefAtLocation(tsLS, symbol.targetLocation)
-      : getQuickInfoFromTypeDefAtLocation(tsLS, symbol.initializerLocation);
+      : getQuickInfoFromTypeDefAtLocation(tsLS, symbol.localVarLocation);
   return {
     kind,
     displayParts,
