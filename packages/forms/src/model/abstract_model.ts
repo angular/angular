@@ -653,7 +653,7 @@ export abstract class AbstractControl<
    * false otherwise.
    */
   get pending(): boolean {
-    return this.status == PENDING;
+    return this.status === PENDING;
   }
 
   /**
