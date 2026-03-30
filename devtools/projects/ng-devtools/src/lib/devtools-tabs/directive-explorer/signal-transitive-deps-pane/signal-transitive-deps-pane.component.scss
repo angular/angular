@@ -1,21 +1,26 @@
 :host {
   display: block;
 
+  h3 {
+    position: absolute;
+    width: 100%;
+    top: 0.5rem;
+    margin: 0;
+    text-align: center;
+    z-index: 1;
+  }
+
+  button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+  }
+
   ng-signal-details {
     position: absolute;
     bottom: 0.5rem;
     right: 0.5rem;
-  }
-
-  .no-signals {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .close {

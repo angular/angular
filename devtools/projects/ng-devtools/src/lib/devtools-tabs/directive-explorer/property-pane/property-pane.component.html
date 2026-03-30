@@ -15,6 +15,7 @@
             (inspect)="inspect.emit($event)"
             (viewSource)="viewSource.emit(directive.name)"
             (showSignalGraph)="showSignalGraph.emit($event)"
+            (showSignalTransitiveDeps)="showSignalTransitiveDeps.emit($event)"
             [directive]="directive"
           />
         }

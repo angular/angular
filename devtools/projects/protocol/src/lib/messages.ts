@@ -55,9 +55,22 @@ export interface DebugSignalGraph {
   edges: DebugSignalGraphEdge[];
 }
 
+/** Describes the position of a signal node in its host signal graph. */
 export interface SignalNodePosition {
-  element: ElementPosition;
+  /**
+   * Used for determining the host signal graph:
+   * - Use `ElementPosition` when you are operating with a component signal graph.
+   * - Use `DebugSignalGraphNode` when you are operating with a transtive deps signal graph.
+   */
+  locator: ElementPosition | DebugSignalGraphNode;
+
+  /** Signal node. */
   signalId: string;
+}
+
+// Narrowed-down type
+export interface ComponentSignalNodePosition extends SignalNodePosition {
+  locator: ElementPosition;
 }
 
 export interface DirectiveType {
@@ -386,6 +399,7 @@ export interface SupportedApis {
   signals: boolean;
   transferState: boolean;
   signalPropertiesInspection: boolean;
+  transitiveSignalDepsInspection: boolean;
 }
 
 export type TransferStateValue =
@@ -414,9 +428,11 @@ export interface Events {
 
   getSignalGraph: (query: ElementPosition) => void;
   latestSignalGraph: (graph: DebugSignalGraph | null) => void;
+  getSignalTransitiveDependencies: (signalNodes: DebugSignalGraphNode[]) => void;
+  signalTransitiveDependencies: (graph: DebugSignalGraph | null) => void;
 
   getSignalNestedProperties: (position: SignalNodePosition, path: string[]) => void;
-  signalNestedProperties: (position: SignalNodePosition, data: Properties, path: string[]) => void;
+  signalNestedProperties: (data: Properties, path: string[]) => void;
 
   getNestedProperties: (position: DirectivePosition, path: string[]) => void;
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;

@@ -17,8 +17,6 @@ import {Signal, isSignal} from '../reactivity/api';
 import {applyChanges} from './change_detection_utils';
 import {getControlFlowBlocks} from './control_flow';
 import {
-  AngularComponentDebugMetadata,
-  AngularDirectiveDebugMetadata,
   DirectiveDebugMetadata,
   Listener,
   getComponent,
@@ -37,7 +35,7 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from './injector_discovery_utils';
-import {DebugSignalGraph, getSignalGraph} from './signal_debug';
+import {DebugSignalGraph, DebugSignalGraphNode, getSignalGraph} from './signal_debug';
 
 import {enableProfiling} from '../debug/chrome_dev_tools_performance';
 import {getTransferState} from './transfer_state_utils';
@@ -91,7 +89,9 @@ interface NonCoreGlobalUtils {
  * Angular. This allows fast iteration on new global utils and only applies Angular's long-lived
  * versioning constraint when we are ready to accept it.
  */
-interface InternalCoreGlobalUtils {}
+interface InternalCoreGlobalUtils {
+  ɵgetSignalTransitiveDependencies(signalNodesIds: string[]): DebugSignalGraph;
+}
 
 /**
  * The set of external (meaning outside google3) global utils implemented by `@angular/core`.

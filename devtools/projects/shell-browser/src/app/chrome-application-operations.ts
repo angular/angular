@@ -12,7 +12,7 @@
 import {Platform} from '@angular/cdk/platform';
 import {inject} from '@angular/core';
 import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from '../../../ng-devtools';
-import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../protocol';
+import {ComponentSignalNodePosition, DirectivePosition, ElementPosition} from '../../../protocol';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
   platform = inject(Platform);
@@ -42,7 +42,7 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     this.runInInspectedWindow(inspect, target);
   }
 
-  override inspectSignal(position: SignalNodePosition, target: Frame): void {
+  override inspectSignal(position: ComponentSignalNodePosition, target: Frame): void {
     const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition('${JSON.stringify(
       position,
     )}'))`;

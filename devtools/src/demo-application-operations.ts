@@ -8,7 +8,11 @@
 
 import {inject} from '@angular/core';
 import {ApplicationOperations} from '../projects/ng-devtools';
-import {DirectivePosition, ElementPosition, SignalNodePosition} from '../projects/protocol';
+import {
+  ComponentSignalNodePosition,
+  DirectivePosition,
+  ElementPosition,
+} from '../projects/protocol';
 import {LOCAL_STORAGE} from './local-storage';
 
 const STORAGE_KEY = 'ng-dt-storage-sim';
@@ -31,7 +35,7 @@ export class DemoApplicationOperations extends ApplicationOperations {
     return;
   }
 
-  override inspectSignal(position: SignalNodePosition): void {
+  override inspectSignal(position: ComponentSignalNodePosition): void {
     console.warn('inspectSignal() is not implemented because the demo app runs in an Iframe');
     return;
   }

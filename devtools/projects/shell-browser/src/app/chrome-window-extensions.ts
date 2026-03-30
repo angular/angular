@@ -14,7 +14,7 @@ import {
   queryDirectiveForest,
 } from '../../../ng-devtools-backend/src/lib/component-tree/component-tree';
 
-import {ElementPosition, SignalNodePosition} from '../../../protocol';
+import {ComponentSignalNodePosition, ElementPosition, SignalNodePosition} from '../../../protocol';
 import {ngDebugClient} from '../../../ng-devtools-backend/src/lib/ng-debug-api/ng-debug-api';
 
 export const initializeExtendedWindowOperations = () => {
@@ -68,10 +68,10 @@ const chromeWindowExtensions = {
   },
   findSignalNodeByPosition: (args: any): any => {
     const ng = ngDebugClient();
-    const {element, signalId} = JSON.parse(args) as SignalNodePosition;
-    const node = queryDirectiveForest(element, buildDirectiveForest());
+    const {locator, signalId} = JSON.parse(args) as ComponentSignalNodePosition;
+    const node = queryDirectiveForest(locator, buildDirectiveForest());
     if (node === null) {
-      console.error(`Cannot find element associated with node ${element}`);
+      console.error(`Cannot find element associated with node ${locator}`);
       return undefined;
     }
     const injector = node.injector ?? getInjectorFromElementNode(node.nativeElement!);
