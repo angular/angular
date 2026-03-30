@@ -15,6 +15,20 @@
     </button>
   }
 
+  @if (availableActions.transitiveDeps) {
+    @let upstreamBtnTooltip = `Show '${node().prop.name}' upstream dependencies`;
+
+    <button
+      class="prop-action-btn show-signal"
+      type="button"
+      [matTooltip]="upstreamBtnTooltip"
+      [aria-label]="upstreamBtnTooltip"
+      (click)="showSigTransitiveDeps($event)"
+    >
+      <mat-icon>graph_3</mat-icon>
+    </button>
+  }
+
   @if (availableActions.logToConsole) {
     @let tooltip = "Log '" + node().prop.name + "' to console";
 
@@ -70,6 +84,18 @@
           >
             <mat-icon>graph_2</mat-icon>
             <span>Show in signal graph</span>
+          </button>
+        }
+
+        @if (availableActions.transitiveDeps) {
+          <button
+            ngMenuItem
+            value="upstream-deps"
+            class="ng-ctx-menu-item"
+            (click)="showSigTransitiveDeps($event)"
+          >
+            <mat-icon>graph_3</mat-icon>
+            <span>Show transitive dependencies</span>
           </button>
         }
 

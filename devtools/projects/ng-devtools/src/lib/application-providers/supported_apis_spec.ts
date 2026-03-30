@@ -31,6 +31,7 @@ describe('SUPPORTED_APIS', () => {
       signalPropertiesInspection: false,
       signalWatch: true,
       transferState: true,
+      transitiveSignalDepsInspection: false,
     });
 
     expect(supportedApis()).toEqual({
@@ -41,6 +42,7 @@ describe('SUPPORTED_APIS', () => {
       signalPropertiesInspection: false,
       signalWatch: true,
       transferState: true,
+      transitiveSignalDepsInspection: false,
     });
   });
 
@@ -53,6 +55,7 @@ describe('SUPPORTED_APIS', () => {
       signalPropertiesInspection: true,
       signalWatch: true,
       transferState: true,
+      transitiveSignalDepsInspection: true,
     });
 
     expect(() => {
@@ -64,6 +67,7 @@ describe('SUPPORTED_APIS', () => {
         signalPropertiesInspection: true,
         signalWatch: true,
         transferState: true,
+        transitiveSignalDepsInspection: true,
       });
     }).toThrowError();
   });

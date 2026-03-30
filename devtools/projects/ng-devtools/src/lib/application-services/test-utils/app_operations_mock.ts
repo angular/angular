@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../../../protocol';
+import {
+  ComponentSignalNodePosition,
+  DirectivePosition,
+  ElementPosition,
+} from '../../../../../protocol';
 import {Frame} from '../../application-environment';
 import {ApplicationOperations} from '../../application-operations';
 import {SETTINGS_STORE_KEY} from '../settings_store';
@@ -54,25 +58,25 @@ export class AppOperationsMock extends ApplicationOperations {
     throw new Error('Method not implemented.');
   }
 
-  override inspectSignal(position: SignalNodePosition, target: Frame): void {
+  override inspectSignal(position: ComponentSignalNodePosition, target: Frame): void {
     throw new Error('Method not implemented.');
   }
 
   override async setSignalBreakpoint(
-    position: SignalNodePosition,
+    position: ComponentSignalNodePosition,
     target: Frame,
   ): Promise<boolean> {
     return true;
   }
 
   override async removeSignalBreakpoint(
-    position: SignalNodePosition,
+    position: ComponentSignalNodePosition,
     target: Frame,
   ): Promise<boolean> {
     return true;
   }
 
-  override async getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]> {
+  override async getActiveSignalBreakpoints(target: Frame): Promise<ComponentSignalNodePosition[]> {
     return [];
   }
 
