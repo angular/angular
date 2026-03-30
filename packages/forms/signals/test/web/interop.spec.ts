@@ -398,6 +398,68 @@ describe('ControlValueAccessor', () => {
     expect(customControlInstance.writeCount).toBe(2); // 1 initial + 1 update
   });
 
+  it('should reflect latest written value in NgControl.value when debounce is active', () => {
+    let ngControlValueInsideCva: any = null;
+
+    @Component({
+      selector: 'custom-control-with-debounce',
+      template: `<input [value]="value" (input)="onInput($event.target.value)" />`,
+    })
+    class CustomControlWithDebounce implements ControlValueAccessor {
+      ngControl = inject(NgControl);
+      value = '';
+      private onChangeFn?: (value: string) => void;
+
+      constructor() {
+        this.ngControl.valueAccessor = this;
+      }
+
+      writeValue(newValue: string): void {
+        this.value = newValue;
+      }
+
+      registerOnChange(fn: (value: string) => void): void {
+        this.onChangeFn = fn;
+      }
+
+      registerOnTouched(fn: () => void): void {}
+
+      onInput(newValue: string) {
+        this.value = newValue;
+        this.onChangeFn?.(newValue);
+        ngControlValueInsideCva = this.ngControl.value;
+      }
+    }
+
+    @Component({
+      imports: [CustomControlWithDebounce, FormField],
+      template: `<custom-control-with-debounce [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('initial'), (p) => {
+        debounce(p, 'blur');
+      });
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const field = fixture.componentInstance.f;
+
+    expect(field().value()).toBe('initial');
+
+    const debugEl = fixture.debugElement.query(
+      (el) => el.componentInstance instanceof CustomControlWithDebounce,
+    );
+    const cvaInstance = debugEl.componentInstance;
+
+    act(() => cvaInstance.onInput('updated'));
+
+    // NgControl.value should be 'updated' inside onInput!
+    expect(ngControlValueInsideCva).toBe('updated');
+
+    // But the field value should still be 'initial' if it haven't been flushed yet!
+    expect(field().value()).toBe('initial');
+  });
+
   describe('properties', () => {
     describe('disabled', () => {
       it('should bind to directive input', () => {

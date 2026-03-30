@@ -66,7 +66,8 @@ export class InteropNgControl implements CombinedControl {
   readonly control: AbstractControl<any, any> = this as unknown as AbstractControl<any, any>;
 
   get value(): any {
-    return this.field().value();
+    // CVA controls are not aware of user debouncing and will expect `NgControl.value` to reflect their latest writes.
+    return this.field().controlValue();
   }
 
   get valid(): boolean {
