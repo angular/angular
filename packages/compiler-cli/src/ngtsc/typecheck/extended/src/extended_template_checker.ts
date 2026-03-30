@@ -31,8 +31,9 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
       ExtendedTemplateDiagnosticName
     >[],
     options: NgCompilerOptions,
+    program: ts.Program | null = null,
   ) {
-    this.partialCtx = {templateTypeChecker, typeChecker};
+    this.partialCtx = {templateTypeChecker, typeChecker, program};
     this.templateChecks = new Map<TemplateCheck<ErrorCode>, ts.DiagnosticCategory>();
 
     for (const factory of templateCheckFactories) {

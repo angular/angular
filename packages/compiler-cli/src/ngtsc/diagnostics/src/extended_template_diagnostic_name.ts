@@ -21,6 +21,7 @@ export enum ExtendedTemplateDiagnosticName {
   OPTIONAL_CHAIN_NOT_NULLABLE = 'optionalChainNotNullable',
   MISSING_CONTROL_FLOW_DIRECTIVE = 'missingControlFlowDirective',
   MISSING_STRUCTURAL_DIRECTIVE = 'missingStructuralDirective',
+  MISSING_ATTRIBUTE_DIRECTIVE = 'missingAttributeDirective',
   TEXT_ATTRIBUTE_NOT_BINDING = 'textAttributeNotBinding',
   UNINVOKED_FUNCTION_IN_EVENT_BINDING = 'uninvokedFunctionInEventBinding',
   MISSING_NGFOROF_LET = 'missingNgForOfLet',

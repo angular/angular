@@ -1678,6 +1678,7 @@ export class NgCompiler {
             checker,
             ALL_DIAGNOSTIC_FACTORIES,
             this.options,
+            this.currentProgram,
           )
         : null;
 

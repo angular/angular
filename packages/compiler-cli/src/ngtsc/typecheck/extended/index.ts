@@ -11,6 +11,7 @@ import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../diagnostics';
 import {TemplateCheckFactory} from './api';
 import {factory as interpolatedSignalNotInvoked} from './checks/interpolated_signal_not_invoked';
 import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_box';
+import {factory as missingAttributeDirectiveFactory} from './checks/missing_attribute_directive';
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive';
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
 import {factory as missingStructuralDirectiveFactory} from './checks/missing_structural_directive';
@@ -35,6 +36,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   invalidBananaInBoxFactory,
   nullishCoalescingNotNullableFactory,
   optionalChainNotNullableFactory,
+  missingAttributeDirectiveFactory,
   missingControlFlowDirectiveFactory,
   textAttributeNotBindingFactory,
   missingNgForOfLetFactory,

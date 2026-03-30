@@ -39,6 +39,11 @@ export interface TemplateCheck<Code extends ErrorCode> {
  * The TemplateContext provided to a Template Check to get diagnostic information.
  */
 export interface TemplateContext<Code extends ErrorCode> {
+  /**
+   * The current TypeScript program being analyzed.
+   */
+  program: ts.Program | null;
+
   /** Interface that provides information about template nodes. */
   templateTypeChecker: TemplateTypeChecker;
 
@@ -80,9 +85,9 @@ export interface TemplateCheckFactory<
 /**
  * This abstract class provides a base implementation for the run method.
  */
-export abstract class TemplateCheckWithVisitor<Code extends ErrorCode>
-  implements TemplateCheck<Code>
-{
+export abstract class TemplateCheckWithVisitor<
+  Code extends ErrorCode,
+> implements TemplateCheck<Code> {
   abstract code: Code;
 
   /**

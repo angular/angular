@@ -654,6 +654,17 @@ export enum ErrorCode {
   FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION = 8118,
 
   /**
+   * An attribute or event binding can match a directive selector, but the directive isn't in scope.
+   *
+   * For example:
+   * ```html
+   * <button cv-button></button>
+   * <button (foo)="onFoo()"></button>
+   * ```
+   */
+  MISSING_ATTRIBUTE_DIRECTIVE = 8119,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

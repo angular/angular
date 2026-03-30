@@ -15,6 +15,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",
     // (undocumented)
+    MISSING_ATTRIBUTE_DIRECTIVE = "missingAttributeDirective",
+    // (undocumented)
     MISSING_CONTROL_FLOW_DIRECTIVE = "missingControlFlowDirective",
     // (undocumented)
     MISSING_NGFOROF_LET = "missingNgForOfLet",
