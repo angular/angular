@@ -11,7 +11,12 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {DataSource} from '@angular/cdk/collections';
 
-import {ElementPosition, MessageBus, PropType} from '../../../../../../protocol';
+import {
+  DebugSignalGraphNode,
+  ElementPosition,
+  MessageBus,
+  PropType,
+} from '../../../../../../protocol';
 import {DevtoolsSignalNode} from '../../signal-graph';
 import {arrayifyProps, SignalDataSource} from './signal-data-source';
 import {ObjectTreeExplorerComponent} from '../../object-tree-explorer/object-tree-explorer.component';
@@ -27,7 +32,7 @@ export class SignalValueTreeComponent {
   private readonly messageBus = inject(MessageBus);
 
   protected readonly node = input.required<DevtoolsSignalNode>();
-  protected readonly element = input.required<ElementPosition>();
+  protected readonly locator = input.required<ElementPosition | DebugSignalGraphNode>();
 
   protected readonly treeControl = computed<FlatTreeControl<FlatNode>>(() => {
     return new FlatTreeControl(
@@ -58,7 +63,7 @@ export class SignalValueTreeComponent {
         },
       ),
       this.treeControl(),
-      {element: this.element(), signalId: node.id},
+      {locator: this.locator(), signalId: node.id},
       this.messageBus,
     );
   });

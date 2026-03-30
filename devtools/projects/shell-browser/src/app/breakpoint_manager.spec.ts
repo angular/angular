@@ -8,7 +8,7 @@
 
 /// <reference types="chrome"/>
 
-import {SignalNodePosition} from '../../../protocol';
+import {ComponentSignalNodePosition} from '../../../protocol';
 import {BreakpointManager} from './breakpoint_manager';
 import {FakeChromeDebugger} from './fake_chrome_debugger';
 
@@ -37,8 +37,8 @@ describe('BreakpointManager', () => {
   let mockRuntime: any;
   let runtimeMessageListeners: Function[] = [];
 
-  const validPosition: SignalNodePosition = {
-    element: [0, 1],
+  const validPosition: ComponentSignalNodePosition = {
+    locator: [0, 1],
     signalId: 's1',
   };
 

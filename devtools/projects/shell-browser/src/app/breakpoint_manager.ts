@@ -8,7 +8,7 @@
 
 /// <reference types="chrome"/>
 
-import {SignalNodePosition} from '../../../protocol';
+import {ComponentSignalNodePosition, SignalNodePosition} from '../../../protocol';
 import {stringifyAndEscape} from './comm-utils';
 
 /**
@@ -48,17 +48,17 @@ interface ScriptParsedParams {
   url: string;
 }
 
-function serializePosition(position: SignalNodePosition): string {
-  return `${position.element.join('/')}#${position.signalId}`;
+function serializePosition(position: ComponentSignalNodePosition): string {
+  return `${position.locator.join('/')}#${position.signalId}`;
 }
 
-function isValidPosition(position: unknown): position is SignalNodePosition {
+function isValidPosition(position: unknown): position is ComponentSignalNodePosition {
   return (
     typeof position === 'object' &&
     position !== null &&
-    Array.isArray((position as SignalNodePosition).element) &&
-    (position as SignalNodePosition).element.every((idx) => typeof idx === 'number') &&
-    typeof (position as SignalNodePosition).signalId === 'string'
+    Array.isArray((position as ComponentSignalNodePosition).locator) &&
+    (position as ComponentSignalNodePosition).locator.every((idx) => typeof idx === 'number') &&
+    typeof (position as ComponentSignalNodePosition).signalId === 'string'
   );
 }
 

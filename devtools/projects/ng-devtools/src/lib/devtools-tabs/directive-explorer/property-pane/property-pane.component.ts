@@ -17,6 +17,7 @@ import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 import {DevtoolsSignalGraphNode} from '../../../shared/signal-graph';
 import {BlockType} from '../../../shared/utils/control-flow';
+import {SignalTransitiveDepsEvent} from '../signal-transitive-deps-pane/types';
 
 @Component({
   selector: 'ng-property-pane',
@@ -35,6 +36,7 @@ export class PropertyPaneComponent {
   readonly viewSource = output<string>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly showSignalGraph = output<DevtoolsSignalGraphNode | null>();
+  readonly showSignalTransitiveDeps = output<SignalTransitiveDepsEvent>();
 
   readonly BlockType = BlockType;
 

@@ -27,6 +27,7 @@ describe('supported-apis', () => {
         'signalWatch',
         'signals',
         'transferState',
+        'transitiveSignalDepsInspection',
       ]);
       expect(Object.values(supported).every((value) => value === false)).toBeTrue();
     });
@@ -43,6 +44,7 @@ describe('supported-apis', () => {
       expect(supported.signalPropertiesInspection).toBeFalse();
       expect(supported.signalWatch).toBeFalse();
       expect(supported.transferState).toBeFalse();
+      expect(supported.transitiveSignalDepsInspection).toBeFalse();
     });
 
     it('should only report signalWatch when toggleWatchSignal API is available', () => {
@@ -57,6 +59,7 @@ describe('supported-apis', () => {
       expect(supported.routes).toBeFalse();
       expect(supported.signalPropertiesInspection).toBeFalse();
       expect(supported.transferState).toBeFalse();
+      expect(supported.transitiveSignalDepsInspection).toBeFalse();
     });
   });
 });

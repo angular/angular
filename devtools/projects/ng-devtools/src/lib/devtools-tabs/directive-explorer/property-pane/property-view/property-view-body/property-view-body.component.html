@@ -37,6 +37,7 @@
                   [node]="node"
                   [controller]="controller()"
                   (showSignalGraph)="showSignalGraph.emit($event)"
+                  (showSignalTransitiveDeps)="showSignalTransitiveDeps.emit($event)"
                 />
               </ng-template>
             </ng-object-tree-explorer>
