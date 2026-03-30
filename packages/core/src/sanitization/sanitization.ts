@@ -215,14 +215,14 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
 
 // Define sets outside the function for O(1) lookups and memory efficiency
 const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined> = {
-  embed: {src: true},
-  frame: {src: true},
-  iframe: {src: true},
-  media: {src: true},
-  script: {src: true, href: true, 'xlink:href': true},
-  base: {href: true},
-  link: {href: true},
-  object: {data: true, codebase: true},
+  'embed': {'src': true},
+  'frame': {'src': true},
+  'iframe': {'src': true},
+  'media': {'src': true},
+  'script': {'src': true, 'href': true, 'xlink:href': true},
+  'base': {'href': true},
+  'link': {'href': true},
+  'object': {'data': true, 'codebase': true},
 };
 
 /**
@@ -295,23 +295,23 @@ const SECURITY_SENSITIVE_ELEMENTS: Record<
   string,
   Record<string, true | undefined | ReadonlySet<string>> | undefined
 > = {
-  iframe: {
-    sandbox: true,
-    allow: true,
-    allowfullscreen: true,
-    referrerpolicy: true,
-    csp: true,
-    fetchpriority: true,
+  'iframe': {
+    'sandbox': true,
+    'allow': true,
+    'allowfullscreen': true,
+    'referrerpolicy': true,
+    'csp': true,
+    'fetchpriority': true,
   },
-  animate: {
-    attributename: true,
-    to: SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
-    values: SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
-    from: SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+  'animate': {
+    'attributename': true,
+    'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+    'values': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
+    'from': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
   },
-  set: {attributename: true, to: SECURITY_SENSITIVE_ATTRIBUTE_NAMES},
-  animatemotion: {attributename: true},
-  animatetransform: {attributename: true},
+  'set': {'attributename': true, 'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES},
+  'animatemotion': {'attributename': true},
+  'animatetransform': {'attributename': true},
 };
 
 /**

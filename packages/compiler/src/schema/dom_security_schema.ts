@@ -126,10 +126,13 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     ]);
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts
-    // Unknown is the internal tag name for unknown elements example used for host-bindings.
+    // The `unknown` elements refer to cases when we need to validate the input/binding in a directive (host bindings)
+    // and the directive can be applied to multiple different elements (with different tag names). In this case we generate
+    // a special instruction that an attribute might potentially be security-sensitive and defer the actual security check
+    // to runtime, when we apply that directive to a concrete elements, thus we can check the combination of tag+attribute
+    // against the set that requires sanitization.
     // These are unsafe as `attributeName` can be `href` or `xlink:href`
     // See: http://b/463880509#comment7
-
     registerContext(SecurityContext.ATTRIBUTE_NO_BINDING, [
       'animate|attributeName',
       'animate|values',
