@@ -1385,6 +1385,48 @@ import {envIsSupported} from '../testing/utils';
       server.assertSawRequestFor('/some/url');
     });
 
+    it('bypasses the ServiceWorker on CSP violation report requests', async () => {
+      // NOTE:
+      // Requests that bypass the SW are not handled at all in the mock implementation of `scope`,
+      // therefore no requests reach the server.
+
+      // CSP violation report (application/csp-report)
+      await makeRequest(scope, '/csp-report-endpoint', undefined, {
+        method: 'POST',
+        headers: {'content-type': 'application/csp-report'},
+      });
+      server.assertNoRequestFor('/csp-report-endpoint');
+
+      // Reporting API report (application/reports+json)
+      await makeRequest(scope, '/reporting-endpoint', undefined, {
+        method: 'POST',
+        headers: {'content-type': 'application/reports+json'},
+      });
+      server.assertNoRequestFor('/reporting-endpoint');
+
+      // CSP report with charset parameter should also be bypassed
+      await makeRequest(scope, '/csp-report-endpoint', undefined, {
+        method: 'POST',
+        headers: {'content-type': 'application/csp-report; charset=utf-8'},
+      });
+      server.assertNoRequestFor('/csp-report-endpoint');
+
+      // GET request with CSP report content type should NOT be bypassed (not a real CSP report)
+      await makeRequest(scope, '/foo.txt', undefined, {
+        headers: {'content-type': 'application/csp-report'},
+      });
+      server.assertSawRequestFor('/foo.txt');
+
+      server.clearRequests();
+
+      // POST request with a different content type should NOT be bypassed
+      await makeRequest(scope, '/api/endpoint', undefined, {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+      });
+      server.assertSawRequestFor('/api/endpoint');
+    });
+
     it('unregisters when manifest 404s', async () => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;

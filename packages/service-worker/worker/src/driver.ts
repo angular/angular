@@ -241,6 +241,21 @@ export class Driver implements Debuggable, UpdateSource {
       return;
     }
 
+    // CSP violation reports and Reporting API reports are POST requests that should not be
+    // intercepted by the ServiceWorker. The browser sends these autonomously and handling them
+    // in the SW can cause errors (e.g. due to CORS restrictions or redirect mode mismatches).
+    // Let such requests pass through to the network directly.
+    // See https://github.com/angular/angular/issues/31477 for more details.
+    const contentType = req.headers.get('content-type');
+    if (
+      req.method === 'POST' &&
+      contentType != null &&
+      (contentType.startsWith('application/csp-report') ||
+        contentType.startsWith('application/reports+json'))
+    ) {
+      return;
+    }
+
     // The only thing that is served unconditionally is the debug page.
     if (requestUrlObj.path === this.ngswStatePath) {
       // Allow the debugger to handle the request, but don't affect SW state in any other way.
