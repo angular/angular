@@ -1,0 +1,28 @@
+@let data = this.data();
+@let graph = this.graph();
+
+@if (data && graph) {
+  <h3 class="title">{{ data.signalNode.label }} {{ direction() }}</h3>
+
+  <ng-signals-visualizer
+    #visualizer
+    [graph]="graph"
+    [selectedNodeId]="selectedNodeId()"
+    [focusedSelectedNodeId]="data.signalNode.id"
+    (nodeClick)="onNodeClick($event)"
+    (clusterCollapse)="detailsVisible.set(false)"
+  />
+
+  @let node = selectedNode();
+  @if (node && detailsVisible()) {
+    <ng-signal-details
+      [node]="node"
+      [graph]="graph"
+      (gotoSource)="gotoSource($event)"
+      (expandCluster)="expandCluster($event)"
+      (close)="detailsVisible.set(false)"
+    />
+  }
+}
+
+<button (click)="close.emit()">Close</button>

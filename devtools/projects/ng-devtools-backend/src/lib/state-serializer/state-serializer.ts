@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ContainerType, Descriptor, NestedProp, PropType} from '../../../../protocol';
+import {ɵDebugSignalGraphNode as InternalDebugSignalGraphNode} from '@angular/core';
+import {
+  ContainerType,
+  DebugSignalGraphNode,
+  Descriptor,
+  NestedProp,
+  PropType,
+} from '../../../../protocol';
 
 import {isSignal, unwrapSignal} from '../utils';
 
@@ -151,6 +158,17 @@ export function deeplySerializeSelectedProperties(
     }
   });
   return result;
+}
+
+export function serializeSignalNode(node: InternalDebugSignalGraphNode): DebugSignalGraphNode {
+  return {
+    id: node.id,
+    kind: node.kind,
+    label: node.label,
+    epoch: node.epoch,
+    preview: serializeValue(node.value),
+    debuggable: !!node.debuggableFn,
+  };
 }
 
 function getContainerType(instance: unknown): ContainerType {

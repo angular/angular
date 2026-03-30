@@ -387,6 +387,7 @@ export interface SupportedApis {
   signals: boolean;
   transferState: boolean;
   signalPropertiesInspection: boolean;
+  transitiveSignalDepsInspection: boolean;
 }
 
 export type TransferStateValue =
@@ -415,6 +416,8 @@ export interface Events {
 
   getSignalGraph: (query: ElementPosition) => void;
   latestSignalGraph: (graph: DebugSignalGraph | null) => void;
+  getSignalTransitiveDependencies: (signalNodes: DebugSignalGraphNode[]) => void;
+  signalTransitiveDependencies: (graph: DebugSignalGraph | null) => void;
 
   getSignalNestedProperties: (position: SignalNodePosition, path: string[]) => void;
   signalNestedProperties: (position: SignalNodePosition, data: Properties, path: string[]) => void;

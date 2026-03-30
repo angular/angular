@@ -34,7 +34,7 @@
       class="action-btn"
       btnType="secondary"
       (click)="highlightDeps.emit({node, direction: 'down'})"
-      matTooltip="Highlight downstream dependents path"
+      matTooltip="Highlight local downstream dependents path"
     >
       <ng-icon name="graph_downstream" />
     </button>
@@ -44,7 +44,7 @@
       class="action-btn"
       btnType="secondary"
       (click)="highlightDeps.emit({node, direction: 'up'})"
-      matTooltip="Highlight upstream dependencies path"
+      matTooltip="Highlight local upstream dependencies path"
     >
       <ng-icon name="graph_upstream" />
     </button>
@@ -108,15 +108,17 @@
   }
 </dl>
 
+@let element = this.element();
 @let isPreviewable =
   isSignalNode &&
+  element &&
   (node.kind === 'signal' ||
     node.kind === 'computed' ||
     node.kind === 'linkedSignal' ||
     node.kind === 'childSignalProp');
 
-@if (isPreviewable || resourceCluster()) {
+@if (isPreviewable || (resourceCluster() && element)) {
   @if (previewableNode(); as previewableNode) {
-    <ng-signal-value-tree [node]="previewableNode" [element]="element()" />
+    <ng-signal-value-tree [node]="previewableNode" [element]="element" />
   }
 }

@@ -1,0 +1,37 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "signal-transitive-deps-pane_styles",
+    src = "signal-transitive-deps-pane.component.scss",
+)
+
+ng_project(
+    name = "signal-transitive-deps-pane",
+    srcs = [
+        "signal-transitive-deps-pane.component.ts",
+    ],
+    angular_assets = [
+        "signal-transitive-deps-pane.component.html",
+        ":signal-transitive-deps-pane_styles",
+    ],
+    deps = [
+        ":types",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-details",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
+        "//devtools/projects/ng-devtools/src/lib/shared/signals-visualizer",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ng_project(
+    name = "types",
+    srcs = ["types.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
+    ],
+)

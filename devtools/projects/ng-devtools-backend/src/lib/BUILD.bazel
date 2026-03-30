@@ -175,6 +175,7 @@ ts_project(
         ":router_tree",
         ":set_console_reference",
         ":utils",
+        "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
