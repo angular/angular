@@ -226,6 +226,18 @@ export class SharedStylesHost implements OnDestroy {
 
   removeHost(hostNode: Node): void {
     this.hosts.delete(hostNode);
+
+    for (const record of [...this.inline.values(), ...this.external.values()]) {
+      const remaining: Array<HTMLStyleElement | HTMLLinkElement> = [];
+      for (const element of record.elements) {
+        if (element.parentNode === hostNode) {
+          element.remove();
+        } else {
+          remaining.push(element);
+        }
+      }
+      record.elements = remaining;
+    }
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {
