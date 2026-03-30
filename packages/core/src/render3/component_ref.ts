@@ -76,7 +76,7 @@ import {ProfilerEvent} from '../../primitives/devtools';
 import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
-import {getComponentLViewByIndex, getTNode} from './util/view_utils';
+import {getComponentLViewByIndex, getTNode, storeLViewOnDestroy} from './util/view_utils';
 import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
@@ -84,6 +84,12 @@ import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynami
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
 import {TracingService} from '../application/tracing';
 import {getComponentName} from '../internal/get_closest_component_name';
+import {SHARED_STYLES_HOST} from './interfaces/shared_styles_host';
+import {DOCUMENT} from '../document';
+import {getDocument} from './interfaces/document';
+
+const shadowRootSupported = typeof ShadowRoot !== 'undefined';
+const documentSupported = typeof Document !== 'undefined';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -318,6 +324,14 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
       : createHostElement(cmpDef, hostRenderer);
+
+    const sharedStylesHost = rootViewInjector.get(SHARED_STYLES_HOST, null);
+    const styleHost = getStyleHost(
+      hostElement,
+      () => rootViewInjector.get(DOCUMENT, null) ?? getDocument(),
+    );
+    if (sharedStylesHost) sharedStylesHost.addHost(styleHost);
+
     const hasInputBindings =
       componentBindings?.some(isInputBinding) ||
       directives?.some((d) => typeof d !== 'function' && d.bindings.some(isInputBinding));
@@ -335,6 +349,20 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       null,
       retrieveHydrationInfo(hostElement, rootViewInjector, true /* isRootView */),
     );
+
+    // Since we don't reference count host usage, calling `removeHost` is potentially
+    // breaking since other root components on the page might rely on it (ex. a dialog,
+    // multiple `ApplicationRef.prototype.bootstrap` calls, etc.).
+    //
+    // Instead we only remove shadow roots, under the assumption that a shadow root will
+    // only contain one Angular root component. This is true for MicA, but not in general.
+    // Styles in the document light DOM are effectively leaked, since we can't easily
+    // assume no other components exist on the page outside this one root.
+    if (sharedStylesHost && shadowRootSupported && styleHost instanceof ShadowRoot) {
+      storeLViewOnDestroy(rootLView, () => {
+        sharedStylesHost.removeHost(styleHost);
+      });
+    }
 
     rootLView[HEADER_OFFSET] = hostElement;
 
@@ -480,6 +508,20 @@ function createRootTView(
   );
 
   return rootTView;
+}
+
+function getStyleHost(node: RNode, doc: () => Document): Node {
+  const rootNode = node.getRootNode?.();
+
+  if (documentSupported && rootNode instanceof Document) {
+    return rootNode.head; // Connected to document.
+  } else if (!rootNode) {
+    return doc().head; // `getRootNode` not supported, Node.js use case.
+  } else if (shadowRootSupported && rootNode instanceof ShadowRoot) {
+    return rootNode; // Shadow root
+  } else {
+    return doc().head; // Disconnected element, use fallback document.
+  }
 }
 
 function getRootTViewTemplate(
