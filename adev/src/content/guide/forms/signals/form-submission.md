@@ -9,9 +9,9 @@ Signal Forms provides a `submit()` function that helps you manage the form submi
 The `submit()` function runs through a specific sequence:
 
 1. **Mark interactive fields as touched** — This surfaces any validation errors that were hidden because the user hadn't interacted with the field yet. Hidden, disabled, and readonly fields are skipped.
-2. **Check validation** — If any validation rules have failed, submission stops and the `action` function does not run.
-3. **Run the action** — The `action` function executes with the form's current value.
-4. **Handle the result** — If the action returns errors, they are routed to their target fields. If it returns nothing, the submission is treated as successful.
+1. **Check validation** — If any validation rules have failed, submission stops and the `action` function does not run.
+1. **Run the action** — The `action` function executes with the form's current value.
+1. **Handle the result** — If the action returns errors, they are routed to their target fields. If it returns nothing, the submission is treated as successful.
 
 The `submit()` function returns a `Promise<boolean>` that resolves to `true` when the action completes without errors, and `false` when validation fails or the action returns errors.
 
@@ -21,17 +21,17 @@ The most common way to use the `submit()` function is through the `FormRoot` dir
 
 The `FormRoot` directive handles three things automatically when bound to a `<form>` element:
 
-1. **Sets `novalidate`** — Disables the browser's built-in validation so Signal Forms manages validation instead
-2. **Prevents default** — Stops the browser from navigating on form submission
-3. **Calls `submit()`** — Triggers the submission flow when the user submits the form
+1. **Sets [`novalidate`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#novalidate)** — Disables the browser's built-in validation so Signal Forms manages validation instead
+1. **Prevents default** — Stops the browser from navigating on form submission
+1. **Calls `submit()`** — Triggers the submission flow when the user submits the form
 
-NOTE: The `FormRoot` directive sets `novalidate` automatically. You do not need to add it manually when using `FormRoot`.
+NOTE: The `FormRoot` directive sets the `novalidate` attribute on the `form` element automatically. You do not need to add it manually when using `FormRoot`.
 
 `FormRoot` handles the submission event, but you still need to tell it _what to do_ with the form data. That requires three things:
 
 1. Bind your form to the `FormRoot` directive
-2. Pass a `submission` option to the `form()` function
-3. Define an `action` function within the `submission` option that manages the submitted data
+1. Pass a `submission` option to the `form()` function
+1. Define an `action` function within the `submission` option that manages the submitted data
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
