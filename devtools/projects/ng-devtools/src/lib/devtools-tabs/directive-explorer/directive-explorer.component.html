@@ -38,12 +38,25 @@
           />
         }
       </as-split-area>
-      @if (signalsOpen() && signalGraph.element()) {
+      @if (signalPaneOpen()) {
         <as-split-area [size]="signalGraphSplitSize()">
-          <ng-signal-graph-pane
-            [externallySelectedNodeId]="externallySelectedSignalNodeId()"
-            (close)="signalsOpen.set(false)"
-          />
+          <div class="signal-pane-cont">
+            <!-- Note: Order matters. Signal panes are stacked on top of each other (position: absolute) -->
+            @if (signalGraphPaneOpen() && signalGraph.element()) {
+              <ng-signal-graph-pane
+                [externallySelectedNodeId]="externallySelectedSignalNodeId()"
+                (close)="signalGraphPaneOpen.set(false)"
+              />
+            }
+            @if (signalTransitiveDepsPaneOpen()) {
+              <ng-signal-transitive-deps-pane
+                [data]="signalTransitiveDepsData()"
+                (close)="
+                  signalTransitiveDepsPaneOpen.set(false); signalTransitiveDepsData.set(null)
+                "
+              />
+            }
+          </div>
         </as-split-area>
       }
     </as-split>
@@ -54,6 +67,7 @@
         <ng-property-pane
           [currentSelectedElement]="currentSelectedElement"
           (showSignalGraph)="showSignalGraph($event)"
+          (showSignalTransitiveDeps)="showSignalTransitiveDeps($event)"
           (inspect)="inspect($event)"
           (viewSource)="viewSource($event)"
         />

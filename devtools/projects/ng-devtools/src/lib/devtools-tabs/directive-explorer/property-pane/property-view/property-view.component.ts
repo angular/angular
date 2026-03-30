@@ -14,6 +14,7 @@ import {PropertyViewBodyComponent} from './property-view-body/property-view-body
 import {PropertyViewHeaderComponent} from './property-view-header/property-view-header.component';
 import {FlatNode} from '../../../../shared/object-tree-explorer/object-tree-types';
 import {DevtoolsSignalGraphNode} from '../../../../shared/signal-graph';
+import {SignalTransitiveDepsEvent} from '../../signal-transitive-deps-pane/types';
 
 @Component({
   selector: 'ng-property-view',
@@ -27,6 +28,7 @@ export class PropertyViewComponent {
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();
   readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
+  readonly showSignalTransitiveDeps = output<SignalTransitiveDepsEvent>();
 
   handleLogInstance(): void {
     const controller = this.controller();

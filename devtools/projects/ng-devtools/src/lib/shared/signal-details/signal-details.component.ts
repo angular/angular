@@ -52,9 +52,14 @@ interface ResourceCluster {
   imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip, IconComponent],
 })
 export class SignalDetailsComponent {
+  /** Signal node to show details for. */
   protected readonly node = input.required<DevtoolsSignalGraphNode>();
+
+  /** Node's host signal graph. */
   protected readonly graph = input.required<DevtoolsSignalGraph>();
-  protected readonly element = input.required<ElementPosition>();
+
+  /** Signal node host element. Required for value preview. */
+  protected readonly element = input<ElementPosition>();
 
   protected readonly gotoSource = output<DevtoolsSignalGraphNode>();
   protected readonly expandCluster = output<string>();

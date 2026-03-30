@@ -289,6 +289,11 @@ export {
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
   GlobalDevModeUtils as ɵGlobalDevModeUtils,
 } from './render3/util/global_utils';
+export {
+  DebugSignalGraph as ɵDebugSignalGraph,
+  DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
+  DebugSignalGraphNode as ɵDebugSignalGraphNode,
+} from './render3/util/signal_debug';
 export {getTransferState as ɵgetTransferState} from './render3/util/transfer_state_utils';
 export {
   isViewDirty as ɵisViewDirty,

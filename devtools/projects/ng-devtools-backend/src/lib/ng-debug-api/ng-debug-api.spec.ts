@@ -13,6 +13,7 @@ import {
   ngDebugRoutesApiIsSupported,
   ngDebugSignalGraphApiIsSupported,
   ngDebugSignalPropertiesInspectionApiIsSupported,
+  ngDebugSignalTransitiveDepsInspectionApiIsSupported,
   ngDebugTransferStateApiIsSupported,
 } from './ng-debug-api';
 import {Framework} from '../component-tree/core-enums';
@@ -190,6 +191,26 @@ describe('ng-debug-api', () => {
 
       (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
       expect(ngDebugSignalPropertiesInspectionApiIsSupported()).toBeFalse();
+    });
+  });
+
+  describe('ngDebugSignalTransitiveDepsInspectionApiIsSupported', () => {
+    beforeEach(() => mockRoot());
+
+    it('should support transitive signal dependencies inspection API', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.Wiz);
+      (globalThis as any).ng.ɵgetTransferState = () => {};
+      expect(ngDebugSignalTransitiveDepsInspectionApiIsSupported()).toBeTrue();
+    });
+
+    it('should NOT support transitive signal dependencies inspection API', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.Angular);
+      (globalThis as any).ng.ɵgetTransitiveDependencies = undefined;
+      expect(ngDebugSignalTransitiveDepsInspectionApiIsSupported()).toBeFalse();
+
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
+      (globalThis as any).ng.ɵgetTransitiveDependencies = undefined;
+      expect(ngDebugSignalTransitiveDepsInspectionApiIsSupported()).toBeFalse();
     });
   });
 });

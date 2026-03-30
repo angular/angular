@@ -9,6 +9,7 @@ ng_project(
         exclude = ["*.spec.ts"],
     ),
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib:utils",
         "//devtools/projects/protocol",
     ],

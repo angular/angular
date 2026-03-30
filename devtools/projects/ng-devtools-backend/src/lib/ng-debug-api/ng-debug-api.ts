@@ -108,3 +108,9 @@ export function ngDebugSignalPropertiesInspectionApiIsSupported(): boolean {
     })
   );
 }
+
+export function ngDebugSignalTransitiveDepsInspectionApiIsSupported(): boolean {
+  // const ng = ngDebugClient();
+  // return ngDebugApiIsSupported(ng, 'ɵgetTransitiveDependencies');
+  return true;
+}
