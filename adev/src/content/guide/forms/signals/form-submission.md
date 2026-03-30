@@ -295,9 +295,9 @@ export class Contact {
 }
 ```
 
-## Handling side effects after submission
+## Handling side effects
 
-The `submit()` function returns a `Promise<boolean>`, which you can use to trigger side effects based on whether the submission succeeded or failed.
+The `submit()` function returns a `Promise<boolean>` — `true` when the action completes without errors, `false` when validation fails or the action returns errors. Use this to trigger side effects like navigation or notifications.
 
 ```ts
 async onSave() {
@@ -314,7 +314,35 @@ async onSave() {
 }
 ```
 
-Side effects like navigation, toast notifications, or resetting the form belong _after_ the `await` — not inside the `action` function. The `action` is for communicating with the server and returning errors. Everything else happens in the calling code.
+When the action produces data that a side effect needs, such as a server-generated ID, handle the side effect inside the action:
+
+```ts
+async onSave() {
+  await submit(this.contactForm, async (field) => {
+    const contact = await createContact(field().value());
+    this.router.navigate(['/confirmation', contact.id]);
+  });
+}
+```
+
+When using `FormRoot`, side effects also go inside the `action` since `FormRoot` calls `submit()` internally:
+
+```ts
+submission: {
+  action: async (field) => {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      body: JSON.stringify(field().value()),
+    });
+
+    if (!response.ok) {
+      return {kind: 'serverError', message: 'Failed to submit form'};
+    }
+
+    this.router.navigate(['/confirmation']);
+  },
+}
+```
 
 ## Next steps
 
