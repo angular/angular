@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DiagnosticCategoryLabel} from '../../../../../core/api';
 import ts from 'typescript';
+import {DiagnosticCategoryLabel} from '../../../../../core/api';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
@@ -98,7 +98,7 @@ runInEachFileSystem(() => {
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE));
       expect(diags[0].messageText).toContain(`the '?.' operator can be safely removed`);
-      expect(getSourceCodeForDiagnostic(diags[0])).toBe(`var1?.['bar']`);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe(`'bar'`);
     });
 
     it('should produce optional chain warning for method call', () => {

@@ -1444,11 +1444,9 @@ describe('type check blocks', () => {
 
       it('should use undefined for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain(
-          '(0 as any ? (0 as any ? (((this).a))!.method : undefined)!() : undefined)',
-        );
-        expect(block).toContain('(0 as any ? (((this).a))!.b : undefined)');
-        expect(block).toContain('(0 as any ? (((this).a))![0] : undefined)');
+        expect(block).toContain('(0 as any ? (((this).a))?.method!() : undefined)');
+        expect(block).toContain('((((this).a))?.b)');
+        expect(block).toContain('((((this).a))?.[0])');
         expect(block).toContain('(0 as any ? (((((this).a)).optionalMethod))!() : undefined)');
       });
       it("should use an 'any' type for safe navigation operations when disabled", () => {
@@ -1468,13 +1466,11 @@ describe('type check blocks', () => {
       const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}} {{a.method()?.[0]}} {{a.method()?.otherMethod?.()}}`;
       it('should check the presence of a property/method on the receiver when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('(0 as any ? ((((this).a)).method())!.b : undefined)');
+        expect(block).toContain('(((((this).a)).method())?.b)');
+        expect(block).toContain('(0 as any ? ((this).a())?.method!() : undefined)');
+        expect(block).toContain('(((((this).a)).method())?.[0])');
         expect(block).toContain(
-          '(0 as any ? (0 as any ? ((this).a())!.method : undefined)!() : undefined)',
-        );
-        expect(block).toContain('(0 as any ? ((((this).a)).method())![0] : undefined)');
-        expect(block).toContain(
-          '(0 as any ? ((0 as any ? ((((this).a)).method())!.otherMethod : undefined))!() : undefined)',
+          '(0 as any ? (((((this).a)).method())?.otherMethod)!() : undefined)',
         );
       });
       it('should not check the presence of a property/method on the receiver when disabled', () => {
