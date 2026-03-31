@@ -86,7 +86,7 @@ describe('Observable.fromEvent', () => {
       const clickEvent = document.createEvent('Event');
       clickEvent.initEvent('click', false, false);
 
-      const subscriper: any = subscriptionZone.run(() => {
+      const subscriber: any = subscriptionZone.run(() => {
         return observable1.subscribe(
           (result: any) => {
             expect(Zone.current.name).toEqual(subscriptionZone.name);
@@ -104,7 +104,7 @@ describe('Observable.fromEvent', () => {
 
       triggerZone.run(() => {
         button.dispatchEvent(clickEvent);
-        subscriper.complete();
+        subscriber.complete();
       });
       expect(log).toEqual(['addListener', clickEvent, 'completed', 'removeListener']);
     }),
