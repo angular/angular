@@ -71,12 +71,9 @@ export class Contact {
     {
       submission: {
         action: async (field) => {
-          const response = await fetch('/api/contact', {
-            method: 'POST',
-            body: JSON.stringify(field().value()),
-          });
+          const result = await saveContact(field().value());
 
-          if (!response.ok) {
+          if (!result.ok) {
             return {kind: 'serverError', message: 'Failed to submit form'};
           }
         },
@@ -116,12 +113,9 @@ By default, errors returned from the `action` are assigned to the submitted fiel
 
 ```ts
 action: async (field) => {
-  const response = await fetch('/api/contact', {
-    method: 'POST',
-    body: JSON.stringify(field().value()),
-  });
+  const result = await saveContact(field().value());
 
-  if (!response.ok) {
+  if (!result.ok) {
     return {kind: 'serverError', message: 'Failed to submit form'};
   }
 };
@@ -133,14 +127,10 @@ When you want to route an error to a specific field, include a `fieldTree` prope
 
 ```ts
 action: async (field) => {
-  const response = await fetch('/api/contact', {
-    method: 'POST',
-    body: JSON.stringify(field().value()),
-  });
+  const result = await saveContact(field().value());
 
-  if (!response.ok) {
-    const body = await response.json();
-    return {kind: 'taken', message: body.message, fieldTree: field.email};
+  if (!result.ok) {
+    return {kind: 'taken', message: result.message, fieldTree: field.email};
   }
 };
 ```
@@ -151,14 +141,10 @@ When you want to report errors on multiple fields, return an array:
 
 ```ts
 action: async (field) => {
-  const response = await fetch('/api/register', {
-    method: 'POST',
-    body: JSON.stringify(field().value()),
-  });
+  const result = await registerUser(field().value());
 
-  if (!response.ok) {
-    const body = await response.json();
-    return body.errors.map((err: {field: string; message: string}) => ({
+  if (!result.ok) {
+    return result.errors.map((err: {field: string; message: string}) => ({
       kind: 'serverError',
       message: err.message,
       fieldTree: field[err.field as keyof typeof field],
@@ -189,10 +175,7 @@ contactForm = form(
   {
     submission: {
       action: async (field) => {
-        await fetch('/api/contact', {
-          method: 'POST',
-          body: JSON.stringify(field().value()),
-        });
+        await saveContact(field().value());
       },
       onInvalid: (field) => {
         const firstError = field().errorSummary()[0];
@@ -225,10 +208,7 @@ contactForm = form(
   {
     submission: {
       action: async (field) => {
-        await fetch('/api/contact', {
-          method: 'POST',
-          body: JSON.stringify(field().value()),
-        });
+        await saveContact(field().value());
       },
       ignoreValidators: 'none',
     },
@@ -278,12 +258,9 @@ export class Contact {
     // When calling `submit()` directly, you pass the action as the second argument
     // instead of configuring it in `FormOptions`.
     const success = await submit(this.contactForm, async (field) => {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        body: JSON.stringify(field().value()),
-      });
+      const result = await saveContact(field().value());
 
-      if (!response.ok) {
+      if (!result.ok) {
         return {kind: 'serverError', message: 'Failed to save'};
       }
     });
@@ -302,14 +279,11 @@ The `submit()` function returns a `Promise<boolean>` — `true` when the action 
 ```ts
 async onSave() {
   const success = await submit(this.contactForm, async (field) => {
-    await fetch('/api/contact', {
-      method: 'POST',
-      body: JSON.stringify(field().value()),
-    });
+    await saveContact(field().value());
   });
 
   if (success) {
-    this.router.navigate(['/confirmation']);
+    await this.router.navigate(['/confirmation']);
   }
 }
 ```
@@ -320,7 +294,7 @@ When the action produces data that a side effect needs, such as a server-generat
 async onSave() {
   await submit(this.contactForm, async (field) => {
     const contact = await createContact(field().value());
-    this.router.navigate(['/confirmation', contact.id]);
+    await this.router.navigate(['/confirmation', contact.id]);
   });
 }
 ```
@@ -330,16 +304,13 @@ When using `FormRoot`, side effects also go inside the `action` since `FormRoot`
 ```ts
 submission: {
   action: async (field) => {
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      body: JSON.stringify(field().value()),
-    });
+    const result = await saveContact(field().value());
 
-    if (!response.ok) {
+    if (!result.ok) {
       return {kind: 'serverError', message: 'Failed to submit form'};
     }
 
-    this.router.navigate(['/confirmation']);
+    await this.router.navigate(['/confirmation']);
   },
 }
 ```
