@@ -9,6 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
+import {timeout} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 import {
   ApplicationRef,
@@ -1510,7 +1511,7 @@ describe('change detection', () => {
           fixture.detectChanges();
 
           fixture.componentInstance.state = 'new';
-          await new Promise<void>((resolve) => setTimeout(resolve, 10));
+          await timeout(10);
 
           expect(error!.code).toEqual(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED);
         });
@@ -1539,7 +1540,7 @@ describe('change detection', () => {
           // markForCheck schedules change detection
           fixture.componentInstance.changeDetectorRef.markForCheck();
           // wait beyond the exhaustive check interval
-          await new Promise<void>((resolve) => setTimeout(resolve, 1));
+          await timeout(1);
 
           expect(error).toBeUndefined();
         });

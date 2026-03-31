@@ -37,6 +37,7 @@ import {TestBed} from '../../testing';
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {EnvironmentInjector, Injectable} from '../../src/di';
+import {timeout} from '@angular/private/testing';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef = createComponent(component, {
@@ -1330,7 +1331,7 @@ describe('after render hooks', () => {
         counter = counter;
         async ngOnInit() {
           // push the render hook to a time outside of change detection
-          await new Promise<void>((resolve) => setTimeout(resolve));
+          await timeout();
           afterNextRender(
             () => {
               counter.set(1);
