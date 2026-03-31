@@ -90,7 +90,7 @@ describe('CSS Value Parser Utils', () => {
       expect(output).toEqual('translate(42px)');
     });
 
-    it('should stringify a transform value with a function with multiple paramters', () => {
+    it('should stringify a transform value with a function with multiple parameters', () => {
       const output = stringifyParsedValue({
         type: 'transform',
         values: new Map([
