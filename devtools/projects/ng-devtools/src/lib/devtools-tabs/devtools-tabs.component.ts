@@ -34,6 +34,7 @@ import {TabUpdate} from './tab-update/index';
 import {Settings} from '../application-services/settings';
 import {SUPPORTED_APIS} from '../application-providers/supported_apis';
 import {ButtonComponent} from '../shared/button/button.component';
+import {APP_DATA} from '../application-providers/app_data';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
@@ -68,8 +69,8 @@ export class DevToolsTabsComponent {
   protected readonly settings = inject(Settings);
   protected readonly applicationEnvironment = inject(ApplicationEnvironment);
   protected readonly supportedApis = inject(SUPPORTED_APIS);
+  protected readonly appData = inject(APP_DATA);
 
-  protected readonly isHydrationEnabled = input(false);
   readonly frameSelected = output<Frame>();
 
   readonly inspectorRunning = signal(false);
@@ -108,15 +109,6 @@ export class DevToolsTabsComponent {
     (window.chrome?.devtools as any)?.performance?.onProfilingStarted,
   );
   protected readonly TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
-
-  protected readonly angularVersion = input<string | undefined>();
-  readonly majorAngularVersion = computed(() => {
-    const version = this.angularVersion();
-    if (!version) {
-      return -1;
-    }
-    return parseInt(version.toString().split('.')[0], 10);
-  });
 
   protected readonly extensionVersion = signal('dev-build');
 

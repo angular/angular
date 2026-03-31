@@ -12,7 +12,7 @@
 // for Trusted Types, which we reinstantiate.
 export enum ChangeDetectionStrategy {
   OnPush = 0,
-  Default = 1,
+  Eager = 1,
 }
 
 export enum AcxChangeDetectionStrategy {

@@ -10,7 +10,12 @@ import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {DevToolsNode, ControlFlowBlock, HydrationStatus} from '../../../../../../../protocol';
+import {
+  DevToolsNode,
+  ControlFlowBlock,
+  HydrationStatus,
+  ChangeDetection,
+} from '../../../../../../../protocol';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -29,7 +34,7 @@ export interface FlatNode {
   newItem?: boolean;
   hydration: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
-  onPush?: boolean;
+  changeDetection?: ChangeDetection;
   hasNativeElement: boolean;
 }
 
@@ -104,7 +109,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         level,
         hydration: node.hydration,
         controlFlowBlock: node.controlFlowBlock,
-        onPush: node.onPush,
+        changeDetection: node.changeDetection,
         hasNativeElement: node.hasNativeElement,
       };
       this._nodeToFlat.set(node, flatNode);

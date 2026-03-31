@@ -26,6 +26,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {FlatNode} from '../component-data-source';
 import {getDirectivesArrayString, getFullNodeNameString} from '../directive-forest-utils';
 import {BlockType} from '../../../../shared/utils/control-flow';
+import {APP_DATA} from '../../../../application-providers/app_data';
 
 const PADDING_LEFT_STEP = 15; // px
 
@@ -53,6 +54,7 @@ export type NodeTextMatch = {
 export class TreeNodeComponent {
   private readonly renderer = inject(Renderer2);
   private readonly doc = inject(DOCUMENT);
+  private readonly appData = inject(APP_DATA);
 
   protected readonly BlockType = BlockType;
 
@@ -77,6 +79,22 @@ export class TreeNodeComponent {
     return cmp && cmp.isElement;
   });
   protected readonly directivesArrayString = computed(() => getDirectivesArrayString(this.node()));
+
+  protected readonly changeDetection = computed(() => {
+    const cd = this.node().changeDetection;
+    const majorVer = this.appData().majorVersion;
+
+    if (cd === 'acx-on-push' || (0 < majorVer && majorVer < 22 && cd === 'ng-on-push')) {
+      return 'OnPush';
+    }
+
+    if ((majorVer >= 22 || majorVer === 0) && cd === 'ng-eager') {
+      return 'Eager';
+    }
+
+    return undefined;
+  });
+
   private readonly nodeNameString = computed(() => getFullNodeNameString(this.node()));
 
   private matchedText: HTMLElement | null = null;
