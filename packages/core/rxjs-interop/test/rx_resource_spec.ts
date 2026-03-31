@@ -8,6 +8,7 @@
 
 import {of, Observable, BehaviorSubject, throwError} from 'rxjs';
 import {TestBed} from '../../testing';
+import {timeout} from '@angular/private/testing';
 import {ApplicationRef, Injector, signal} from '../../src/core';
 import {rxResource} from '../src';
 
@@ -117,6 +118,6 @@ describe('rxResource()', () => {
 
 async function waitFor(fn: () => boolean): Promise<void> {
   while (!fn()) {
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    await timeout(1);
   }
 }
