@@ -1034,6 +1034,74 @@ describe('@defer', () => {
       expect(reportedErrors[0].message).toContain(`(used in the 'MyCmp' component template)`);
     });
 
+    it('should include detailed failure info in the error message when no `@error` block is defined', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'NestedCmp',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'simple-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when isVisible) {
+            <nested-cmp />
+          } @loading {
+            Loading...
+          } @placeholder {
+            Placeholder
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      const failedReason = new Error('Failed to load module X');
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [new Promise((_, reject) => setTimeout(() => reject(failedReason), 0))];
+        },
+      };
+
+      const reportedErrors: Error[] = [];
+      TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
+        providers: [
+          {
+            provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+            useValue: deferDepsInterceptor,
+          },
+          {
+            provide: ErrorHandler,
+            useClass: class extends ErrorHandler {
+              override handleError(error: Error) {
+                reportedErrors.push(error);
+              }
+            },
+          },
+        ],
+      });
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(reportedErrors.length).toBe(1);
+      const errorMsg = reportedErrors[0].message;
+      expect(errorMsg).toContain('NG0750');
+      expect(errorMsg).toContain('Angular tried to invoke the following dependency function');
+      expect(errorMsg).toContain('Failed to load module X');
+    });
+
     it('should not render `@error` block if loaded component has errors', async () => {
       @Component({
         selector: 'cmp-with-error',
