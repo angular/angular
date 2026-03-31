@@ -32,6 +32,7 @@ import {
 import {provideCheckNoChangesConfig} from '../../src/change_detection/provide_check_no_changes_config';
 import {ComponentFixture, TestBed} from '../../testing';
 import {expect} from '@angular/private/testing/matchers';
+import {timeout} from '@angular/private/testing';
 import {of} from 'rxjs';
 
 describe('change detection for transplanted views', () => {
@@ -1185,7 +1186,7 @@ describe('change detection for transplanted views', () => {
     const fixture = TestBed.createComponent(Root);
     TestBed.inject(ApplicationRef).attachView(fixture.componentRef.hostView);
     // wait the 1 tick for exhaustive check to trigger
-    await new Promise((r) => setTimeout(r, 1));
+    await timeout(1);
     expect(errorSpy).not.toHaveBeenCalled();
   });
 });
