@@ -81,7 +81,7 @@ export function i18nIcuMsg(message: string, placeholders: Placeholder[], options
  * - The third (optional) items is the id of the message that this placeholder references.
  *   This is used for matching ICU placeholders to ICU messages.
  */
-export type Placeholder = [name: string, indentifier: string, associatedId: string];
+export type Placeholder = [name: string, identifier: string, associatedId: string];
 
 /**
  * Describes message metadata object.

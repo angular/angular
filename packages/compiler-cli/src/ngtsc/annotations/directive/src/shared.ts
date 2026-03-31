@@ -2108,7 +2108,7 @@ function extractHostDirectives(
             throw new FatalDiagnosticError(
               ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
               hostReference.node,
-              `In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead`,
+              `In experimental declaration-only emission mode, host directive cannot use indirect external identifiers. Use a direct external identifier instead`,
             );
           }
         } else {

@@ -1461,7 +1461,7 @@ export abstract class AbstractControl<
     if (this._asyncValidationSubscription) {
       this._asyncValidationSubscription.unsubscribe();
 
-      // we're cancelling the validator subscribtion, we keep if it should have emitted
+      // we're cancelling the validator subscription, we keep if it should have emitted
       // because we want to emit eventually if it was required at least once.
       const shouldHaveEmitted =
         (this._hasOwnPendingAsyncValidator?.emitEvent ||

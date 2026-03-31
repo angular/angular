@@ -32,7 +32,7 @@ import {
 } from './util';
 
 /**
- * Function that can be used to prcess the dependencies that
+ * Function that can be used to process the dependencies that
  * are going to be added to the imports of a declaration.
  */
 export type DeclarationImportsRemapper = (imports: PotentialImport[]) => PotentialImport[];

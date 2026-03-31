@@ -56,7 +56,7 @@ function createStyleElement(style: string, doc: Document): HTMLStyleElement {
  * Searches a DOM document's head element for style elements with a matching application
  * identifier attribute (`ng-app-id`) to the provide identifier and adds usage records for each.
  * @param doc An HTML DOM document instance.
- * @param appId A string containing an Angular application identifer.
+ * @param appId A string containing an Angular application identifier.
  * @param inline A Map object for tracking inline (defined via `styles` in component decorator) style usage.
  * @param external A Map object for tracking external (defined via `styleUrls` in component decorator) style usage.
  */

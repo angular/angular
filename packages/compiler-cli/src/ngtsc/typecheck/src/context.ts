@@ -684,7 +684,7 @@ class InlineTcbOp implements Op {
   ) {}
 
   /**
-   * Type check blocks are inserted immediately after the end of the directve class.
+   * Type check blocks are inserted immediately after the end of the directive class.
    */
   get splitPoint(): number {
     return this.ref.node.end + 1;
