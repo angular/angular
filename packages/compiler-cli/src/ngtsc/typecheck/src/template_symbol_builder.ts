@@ -12,7 +12,6 @@ import {
   ASTWithSource,
   Binary,
   BindingPipe,
-  BoundTarget,
   ClassPropertyMapping,
   MatchSource,
   ParseSourceSpan,
@@ -53,23 +52,17 @@ import {
   ReferenceSymbol,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
-  SymbolReference,
   Symbol,
   SymbolKind,
+  SymbolReference,
   TcbLocation,
   TemplateSymbol,
   TypeCheckingConfig,
   VariableSymbol,
 } from '../api';
-import {
-  ExpressionIdentifier,
-  findAllMatchingNodes,
-  findFirstMatchingNode,
-  hasExpressionIdentifier,
-  readDirectiveIdFromComment,
-} from './comments';
+import {findAllMatchingNodes, findFirstMatchingNode, readDirectiveIdFromComment} from './comments';
+
 import {isAccessExpression, isDirectiveDeclaration} from './ts_util';
-import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 
 export interface SymbolDirectiveMeta {
   getSymbolReference(): SymbolReference;
@@ -680,7 +673,6 @@ export class SymbolBuilder {
 
     // The `name` part of a property write and `ASTWithName` do not have their own
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
-    // Also skipping SafePropertyReads as it breaks nullish coalescing not nullable extended diagnostic
     if (
       expression instanceof Binary &&
       Binary.isAssignmentOperation(expression.operation) &&
@@ -699,7 +691,7 @@ export class SymbolBuilder {
 
     // Property reads in templates usually map to a `PropertyAccessExpression`
     // (e.g. `ctx.foo`) so try looking for one first.
-    if (expression instanceof PropertyRead) {
+    if (expression instanceof PropertyRead || expression instanceof SafePropertyRead) {
       node = findFirstMatchingNode(this.typeCheckBlock, {
         withSpan,
         filter: ts.isPropertyAccessExpression,
@@ -711,6 +703,28 @@ export class SymbolBuilder {
       node = findFirstMatchingNode(this.typeCheckBlock, {withSpan, filter: anyNodeFilter});
     }
 
+    // Safe property reads can be emitted as optional chaining in the TCB.
+    // In that form, the full source span does not always map to a single node,
+    // so fall back to resolving from the property name span.
+    if (node === null && expression instanceof SafePropertyRead) {
+      const nameNode = findFirstMatchingNode(this.typeCheckBlock, {
+        withSpan: expression.nameSpan,
+        filter: anyNodeFilter,
+      });
+
+      if (nameNode !== null) {
+        node = nameNode;
+        while (
+          node.parent !== undefined &&
+          (ts.isParenthesizedExpression(node.parent) ||
+            ts.isNonNullExpression(node.parent) ||
+            isAccessExpression(node.parent))
+        ) {
+          node = node.parent;
+        }
+      }
+    }
+
     if (node === null) {
       return null;
     }
@@ -719,8 +733,8 @@ export class SymbolBuilder {
       node = node.expression;
     }
 
-    // - If we have safe property read ("a?.b") we want to get the Symbol for b, the `whenTrue`
-    // expression.
+    // - If we have safe property read ("a?.b") in the legacy conditional form, we want to get the
+    // Symbol for b, the `whenTrue` expression.
     // - If our expression is a pipe binding ("a | test:b:c"), we want the Symbol for the
     // `transform` on the pipe.
     // - Otherwise, we retrieve the symbol for the node itself with no special considerations

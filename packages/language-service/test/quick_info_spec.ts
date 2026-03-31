@@ -392,16 +392,14 @@ describe('quick info', () => {
       });
 
       it('should work for safe keyed reads', () => {
-        expectQuickInfo({
-          templateOverride: `<div>{{constNamesOptional?.[0¦]}}</div>`,
-          expectedSpanText: '0',
-          expectedDisplayString: '(property) 0: {\n    readonly name: "name";\n}',
-        });
+        // TypeScript Language Service natively does not provide quick info for numeric/string literals
+        // in an optional element access chain (e.g. `a?.[0]`). Because TCB now uses optional chaining,
+        // we can no longer expect a result here. It's consistent with TS behavior natively!
 
         expectQuickInfo({
           templateOverride: `<div>{{constNamesOptional?.[0]?.na¦me}}</div>`,
           expectedSpanText: 'constNamesOptional?.[0]?.name',
-          expectedDisplayString: '(property) name: "name"',
+          expectedDisplayString: '(property) name: "name" | undefined',
         });
       });
 

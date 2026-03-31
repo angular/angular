@@ -26,10 +26,10 @@ import {AbsoluteFsPath} from '../../file_system';
 import {
   CompletionKind,
   GlobalCompletion,
+  LetDeclarationCompletion,
   ReferenceCompletion,
   TcbLocation,
   VariableCompletion,
-  LetDeclarationCompletion,
 } from '../api';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
@@ -172,24 +172,32 @@ export class CompletionEngine {
         withSpan: expr.nameSpan,
       });
     } else if (expr instanceof SafePropertyRead) {
-      // Safe navigation operations are a little more complex, and involve a ternary. Completion
-      // happens in the "true" case of the ternary.
-      const ternaryExpr = findFirstMatchingNode(this.tcb, {
-        filter: ts.isParenthesizedExpression,
-        withSpan: expr.sourceSpan,
+      // Safe navigation operations in strict mode are emitted as optional chains and in
+      // compatibility mode as regular property accesses wrapped in casts/assertions.
+      tsExpr = findFirstMatchingNode(this.tcb, {
+        filter: ts.isPropertyAccessExpression,
+        withSpan: expr.nameSpan,
       });
-      if (ternaryExpr === null || !ts.isConditionalExpression(ternaryExpr.expression)) {
-        return null;
-      }
-      const whenTrue = ternaryExpr.expression.whenTrue;
 
-      if (ts.isPropertyAccessExpression(whenTrue)) {
-        tsExpr = whenTrue;
-      } else if (
-        ts.isCallExpression(whenTrue) &&
-        ts.isPropertyAccessExpression(whenTrue.expression)
-      ) {
-        tsExpr = whenTrue.expression;
+      // Fall back to the older ternary-based TCB shape for compatibility.
+      const ternaryExpr =
+        tsExpr === null
+          ? findFirstMatchingNode(this.tcb, {
+              filter: ts.isParenthesizedExpression,
+              withSpan: expr.sourceSpan,
+            })
+          : null;
+      if (ternaryExpr !== null && ts.isConditionalExpression(ternaryExpr.expression)) {
+        const whenTrue = ternaryExpr.expression.whenTrue;
+
+        if (ts.isPropertyAccessExpression(whenTrue)) {
+          tsExpr = whenTrue;
+        } else if (
+          ts.isCallExpression(whenTrue) &&
+          ts.isPropertyAccessExpression(whenTrue.expression)
+        ) {
+          tsExpr = whenTrue.expression;
+        }
       }
     }
 

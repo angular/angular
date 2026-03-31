@@ -1049,6 +1049,39 @@ runInEachFileSystem(() => {
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
+
+      it('should narrow the type of safe navigation expressions in an if guard when enabled', () => {
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+          strictNullInputTypes: true,
+          strictSafeNavigationTypes: true,
+        });
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '@if (user?.isMember) { {{user.isMember}} }',
+            standalone: false,
+          })
+          class TestCmp {
+            user?: {isMember: boolean};
+          }
+
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('strictOutputEventTypes', () => {

@@ -39,8 +39,8 @@ import {
   Unary,
   VoidExpression,
 } from '@angular/compiler';
-import {quoteAndEscape, TcbExpr} from './ops/codegen';
 import {TypeCheckingConfig} from '../api';
+import {quoteAndEscape, TcbExpr} from './ops/codegen';
 
 /**
  * Convert an `AST` to a `TcbExpr` directly, without going through an intermediate `Expression`
@@ -258,11 +258,9 @@ class TcbExprTranslator implements AstVisitor {
 
     // The form of safe property reads depends on whether strictness is in use.
     if (this.config.strictSafeNavigationTypes) {
-      // Basically, the return here is either the type of the complete expression with a null-safe
-      // property read, or `undefined`. So a ternary is used to create an "or" type:
-      // "a?.b" becomes (0 as any ? a!.b : undefined)
-      // The type of this expression is (typeof a!.b) | undefined, which is exactly as desired.
-      node = new TcbExpr(`(0 as any ? ${receiver.print()}!.${name.print()} : undefined)`);
+      // Use native optional chaining so TypeScript can keep control-flow information for
+      // narrowing in guard expressions.
+      node = new TcbExpr(`${receiver.print()}?.${name.print()}`);
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // Emulate a View Engine bug where 'any' is inferred for the left-hand side of the safe
       // navigation operation. With this bug, the type of the left-hand side is regarded as any.
@@ -286,11 +284,9 @@ class TcbExprTranslator implements AstVisitor {
 
     // The form of safe property reads depends on whether strictness is in use.
     if (this.config.strictSafeNavigationTypes) {
-      // "a?.[...]" becomes (0 as any ? a![...] : undefined)
-      const elementAccess = new TcbExpr(`${receiver.print()}![${key.print()}]`).addParseSpanInfo(
-        ast.sourceSpan,
-      );
-      node = new TcbExpr(`(0 as any ? ${elementAccess.print()} : undefined)`);
+      // Use native optional chaining so TypeScript can keep control-flow information for
+      // narrowing in guard expressions.
+      node = new TcbExpr(`${receiver.print()}?.[${key.print()}]`);
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // "a?.[...]" becomes (a as any)[...]
       node = new TcbExpr(`(${receiver.print()} as any)[${key.print()}]`);
@@ -436,7 +432,8 @@ class TcbExprTranslator implements AstVisitor {
     const args = argNodes.map((node) => node.print()).join(', ');
 
     if (this.config.strictSafeNavigationTypes) {
-      // (0 as any ? a!.method(...) : undefined)
+      // Use optional chaining for property access, then assert non-null before calling.
+      // (0 as any ? expr!() : undefined)
       return new TcbExpr(`(0 as any ? ${expr}!(${args}) : undefined)`);
     }
 

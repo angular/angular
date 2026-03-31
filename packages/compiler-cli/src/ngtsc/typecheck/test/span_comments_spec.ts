@@ -140,22 +140,20 @@ describe('type check blocks diagnostics', () => {
 
     it('should annotate safe property access', () => {
       const TEMPLATE = `{{ a?.b }}`;
-      expect(tcbWithSpans(TEMPLATE)).toContain(
-        '(0 as any ? (((this).a /*3,4*/) /*3,4*/)!.b /*6,7*/ : undefined) /*3,7*/',
-      );
+      expect(tcbWithSpans(TEMPLATE)).toContain('((((this).a /*3,4*/) /*3,4*/)?.b /*6,7*/ /*3,7*/');
     });
 
     it('should annotate safe method calls', () => {
       const TEMPLATE = `{{ a?.method(b) }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '((0 as any ? (0 as any ? (((this).a /*3,4*/) /*3,4*/)!.method /*6,12*/ : undefined) /*3,12*/!(((this).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/)',
+        '((0 as any ? (((this).a /*3,4*/) /*3,4*/)?.method /*6,12*/ /*3,12*/!(((this).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/)',
       );
     });
 
     it('should annotate safe keyed reads', () => {
       const TEMPLATE = `{{ a?.[0] }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '(0 as any ? (((this).a /*3,4*/) /*3,4*/)![0 /*7,8*/] /*3,9*/ : undefined) /*3,9*/',
+        '((((this).a /*3,4*/) /*3,4*/)?.[0 /*7,8*/] /*3,9*/)',
       );
     });
 
