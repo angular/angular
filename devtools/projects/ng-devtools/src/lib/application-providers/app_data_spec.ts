@@ -16,16 +16,8 @@ describe('APP_DATA', () => {
     appData = TestBed.inject(APP_DATA);
   });
 
-  it('should have defaults', () => {
-    expect(appData()).toEqual({
-      fullVersion: undefined,
-      majorVersion: -1,
-      minorVersion: -1,
-      patchVersion: -1,
-      devMode: false,
-      hydration: false,
-      ivy: false,
-    });
+  it('should throw an error if not initialized', () => {
+    expect(() => appData()).toThrowError('DevTools APP_DATA is not initialized.');
   });
 
   it('should set the app data', () => {
@@ -62,7 +54,7 @@ describe('APP_DATA', () => {
         ivy: true,
         version: '1.2.3',
       });
-    }).toThrowError();
+    }).toThrowError('App data signal is already set.');
   });
 
   it('should gracefully handle an undefined version', () => {
@@ -75,9 +67,28 @@ describe('APP_DATA', () => {
 
     expect(appData()).toEqual({
       fullVersion: undefined,
-      majorVersion: -1,
-      minorVersion: -1,
-      patchVersion: -1,
+      majorVersion: 0,
+      minorVersion: 0,
+      patchVersion: 0,
+      devMode: true,
+      hydration: false,
+      ivy: true,
+    });
+  });
+
+  it('should gracefully handle an incomplete version', () => {
+    appData.init({
+      devMode: true,
+      hydration: false,
+      ivy: true,
+      version: '1.2',
+    });
+
+    expect(appData()).toEqual({
+      fullVersion: '1.2',
+      majorVersion: 1,
+      minorVersion: 2,
+      patchVersion: 0,
       devMode: true,
       hydration: false,
       ivy: true,

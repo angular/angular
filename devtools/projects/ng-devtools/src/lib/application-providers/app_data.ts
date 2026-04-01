@@ -38,18 +38,17 @@ export const APP_DATA = new InjectionToken<AppDataSignal>('APP_DATA', {
   providedIn: 'root',
   factory: () => {
     let isSet = false;
-    const data = signal<AppData>({
-      devMode: false,
-      hydration: false,
-      fullVersion: undefined,
-      majorVersion: -1,
-      minorVersion: -1,
-      patchVersion: -1,
-      ivy: false,
-    });
+    const data = signal<AppData | undefined>(undefined);
     const dataReadonlySignal = data.asReadonly();
 
-    const readonlyData = () => dataReadonlySignal();
+    const readonlyData = () => {
+      const data = dataReadonlySignal();
+      if (!data) {
+        throw new Error('DevTools APP_DATA is not initialized.');
+      }
+      return data;
+    };
+
     readonlyData.init = (appData: ConfigurableAppData) => {
       if (isSet) {
         throw new Error('App data signal is already set.');
@@ -61,9 +60,9 @@ export const APP_DATA = new InjectionToken<AppDataSignal>('APP_DATA', {
         hydration: appData.hydration,
         ivy: appData.ivy,
         fullVersion: appData.version,
-        majorVersion: versions[0] ?? -1,
-        minorVersion: versions[1] ?? -1,
-        patchVersion: versions[2] ?? -1,
+        majorVersion: versions[0] ?? 0,
+        minorVersion: versions[1] ?? 0,
+        patchVersion: versions[2] ?? 0,
       });
       isSet = true;
     };

@@ -26,6 +26,7 @@ import {
 
 import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
 import {ElementPropertyResolver} from '../../../property-resolver/element-property-resolver';
+import {APP_DATA} from '../../../../../application-providers/app_data';
 
 // Legacy `Native` (gone since v11) is no longer required since the minimal supported version is v12.
 const ANGULAR_VIEW_ENCAPSULATION: {[key in AngularViewEncapsulation]: string} = {
@@ -38,6 +39,12 @@ const ANGULAR_VIEW_ENCAPSULATION: {[key in AngularViewEncapsulation]: string} = 
 const ACX_VIEW_ENCAPSULATION: {[key in AcxViewEncapsulation]: string} = {
   [AcxViewEncapsulation.Emulated]: 'Emulated',
   [AcxViewEncapsulation.None]: 'None',
+};
+
+// Legacy support (i.e. pre-v21.2)
+const ANGULAR_PRE_V21_2_CHANGE_DETECTION: {[key in AngularChangeDetectionStrategy]: string} = {
+  [AngularChangeDetectionStrategy.Default]: 'Default', // Deprecated as of v21.2+
+  [AngularChangeDetectionStrategy.OnPush]: 'OnPush',
 };
 
 const ANGULAR_CHANGE_DETECTION: {[key in AngularChangeDetectionStrategy]: string} = {
@@ -58,6 +65,7 @@ const ACX_CHANGE_DETECTION: {[key in AcxChangeDetectionStrategy]: string} = {
 })
 export class ComponentMetadataComponent {
   private readonly nestedProps = inject(ElementPropertyResolver);
+  private readonly appData = inject(APP_DATA);
 
   protected readonly currentSelectedComponent = input.required<ComponentType>();
 
@@ -95,7 +103,14 @@ export class ComponentMetadataComponent {
 
     switch (metadata.framework) {
       case Framework.Angular:
-        return ANGULAR_CHANGE_DETECTION[changeDetection as AngularChangeDetectionStrategy];
+        const {majorVersion, minorVersion} = this.appData();
+
+        // Show legacy `Default` for pre-v21.2
+        const isPre21_2 =
+          (0 < majorVersion && majorVersion < 21) || (majorVersion === 21 && minorVersion < 2);
+        const ngCdMap = isPre21_2 ? ANGULAR_PRE_V21_2_CHANGE_DETECTION : ANGULAR_CHANGE_DETECTION;
+
+        return ngCdMap[changeDetection as AngularChangeDetectionStrategy];
       case Framework.ACX:
         return ACX_CHANGE_DETECTION[changeDetection as AcxChangeDetectionStrategy];
       default:

@@ -1,13 +1,13 @@
 <hr />
 <ul>
   @if (viewEncapsulation()) {
-    <li>
+    <li class="encapsulation">
       View Encapsulation: <span class="meta-data">{{ viewEncapsulation() }}</span>
       <ng-docs-ref-button docs="view-encapsulation" />
     </li>
   }
   @if (changeDetectionStrategy()) {
-    <li>
+    <li class="change-detection">
       Change Detection Strategy: <span class="meta-data">{{ changeDetectionStrategy() }}</span>
       <ng-docs-ref-button docs="change-detection" />
     </li>

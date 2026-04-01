@@ -217,11 +217,7 @@ describe('TreeNodeComponent', () => {
   });
 
   describe('Change Detection labels', () => {
-    async function verifyCdLabel(
-      cdStrategy: ChangeDetection,
-      majorVersion: number,
-      label: string | null,
-    ) {
+    async function getCdLabel(cdStrategy: ChangeDetection, majorVersion: number) {
       let onPush = fixture.debugElement.query(By.css('.change-detection'));
       expect(onPush).toBeFalsy();
 
@@ -237,35 +233,35 @@ describe('TreeNodeComponent', () => {
 
       onPush = fixture.debugElement.query(By.css('.change-detection'));
 
-      if (label) {
-        expect(onPush.nativeElement.textContent).toEqual(label);
-      } else {
-        expect(onPush).toBeFalsy();
-      }
+      return onPush ? onPush.nativeElement.textContent : null;
     }
 
     it('should render "OnPush" label, if ACX', async () => {
-      await verifyCdLabel('acx-on-push', 0, 'OnPush');
+      expect(await getCdLabel('acx-on-push', 0)).toBe('OnPush');
     });
 
     it('should NOT render "Default" label, if ACX', async () => {
-      await verifyCdLabel('acx-default', 0, null);
+      expect(await getCdLabel('acx-default', 0)).toBe(null);
     });
 
     it('should render "OnPush" label, if Angular pre-v22', async () => {
-      await verifyCdLabel('ng-on-push', 21, 'OnPush');
+      expect(await getCdLabel('ng-on-push', 21)).toBe('OnPush');
     });
 
     it('should NOT render "Default"/"Eager" label, if Angular pre-v22', async () => {
-      await verifyCdLabel('ng-eager', 21, null);
+      expect(await getCdLabel('ng-eager', 21)).toBe(null);
     });
 
-    it('should render "Eager" label, if Angular v22+', async () => {
-      await verifyCdLabel('ng-eager', 22, 'Eager');
+    it('should render "Eager" label, if Angular v22+ or v0 (dev)', async () => {
+      expect(await getCdLabel('ng-eager', 22)).toBe('Eager');
     });
 
     it('should NOT render "OnPush" label, if Angular v22+', async () => {
-      await verifyCdLabel('ng-on-push', 22, null);
+      expect(await getCdLabel('ng-on-push', 22)).toBe(null);
+    });
+
+    it('should render "Eager" label, if Angular v0 (dev)', async () => {
+      expect(await getCdLabel('ng-eager', 0)).toBe('Eager');
     });
   });
 });

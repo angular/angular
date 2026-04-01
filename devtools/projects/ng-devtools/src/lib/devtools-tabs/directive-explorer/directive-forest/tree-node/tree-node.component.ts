@@ -84,10 +84,14 @@ export class TreeNodeComponent {
     const cd = this.node().changeDetection;
     const majorVer = this.appData().majorVersion;
 
+    // Based on the client app framework and version, we show the non-default
+    // change detection strategy:
+    // - Show "OnPush" or ACX
+    // - Show "OnPush" for Angular pre-v22
+    // - Show "Eager" for Angular v22+ (or v0)
     if (cd === 'acx-on-push' || (0 < majorVer && majorVer < 22 && cd === 'ng-on-push')) {
       return 'OnPush';
     }
-
     if ((majorVer >= 22 || majorVer === 0) && cd === 'ng-eager') {
       return 'Eager';
     }
