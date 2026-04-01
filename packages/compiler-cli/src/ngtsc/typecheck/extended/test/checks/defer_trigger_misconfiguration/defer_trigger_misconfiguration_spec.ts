@@ -180,5 +180,33 @@ runInEachFileSystem(() => {
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
     });
+
+    it('should emit when prefetch trigger is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch on viewport(ref)) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should emit when prefetch timer is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch on timer(500ms)) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should emit when prefetch idle is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch on idle(500)) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should emit when prefetch when is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch when true) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
   });
 });
