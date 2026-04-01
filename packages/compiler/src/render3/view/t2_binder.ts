@@ -55,8 +55,10 @@ import {
 import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
 import {
   BoundTarget,
+  ConflictingHostDirectiveBinding,
   DirectiveMeta,
   DirectiveOwner,
+  MatchSource,
   ReferenceTarget,
   ScopedNode,
   Target,
@@ -65,6 +67,7 @@ import {
 } from './t2_api';
 import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
+import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../../property_mapping';
 
 /**
  * Computes a difference between full list (first argument) and
@@ -133,6 +136,7 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
           return false;
         },
       },
+      matchSource: MatchSource.Selector,
     } as unknown as DirectiveMeta;
     matcher.addSelectables(CssSelector.parse(selector), [fakeDirective]);
   }
@@ -189,6 +193,10 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     const usedPipes = new Set<string>();
     const eagerPipes = new Set<string>();
     const deferBlocks: DeferBlockScopes = [];
+    const conflictingHostDirectiveBindings = new Map<
+      DirectiveOwner,
+      ConflictingHostDirectiveBinding<DirectiveT>[]
+    >();
 
     if (target.template) {
       // First, parse the template into a `Scope` structure. This operation captures the syntactic
@@ -211,6 +219,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         missingDirectives,
         bindings,
         references,
+        conflictingHostDirectiveBindings,
       );
 
       // Finally, run the TemplateBinder to bind references, variables, and other entities within the
@@ -257,6 +266,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
       usedPipes,
       eagerPipes,
       deferBlocks,
+      conflictingHostDirectiveBindings,
     );
   }
 }
@@ -511,6 +521,10 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     private missingDirectives: Set<string>,
     private bindings: BindingsMap<DirectiveT>,
     private references: ReferenceMap<DirectiveT>,
+    private conflictingHostDirectiveBindings: Map<
+      DirectiveOwner,
+      ConflictingHostDirectiveBinding<DirectiveT>[]
+    >,
   ) {}
 
   /**
@@ -533,6 +547,10 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     missingDirectives: Set<string>,
     bindings: BindingsMap<DirectiveT>,
     references: ReferenceMap<DirectiveT>,
+    conflictingHostDirectiveBindings: Map<
+      DirectiveOwner,
+      ConflictingHostDirectiveBinding<DirectiveT>[]
+    >,
   ): void {
     const matcher = new DirectiveBinder(
       directiveMatcher,
@@ -541,6 +559,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
       missingDirectives,
       bindings,
       references,
+      conflictingHostDirectiveBindings,
     );
     matcher.ingest(template);
   }
@@ -663,12 +682,124 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     node.children.forEach((child) => child.visit(this));
   }
 
-  private trackMatchedDirectives(node: DirectiveOwner, directives: DirectiveT[]): void {
-    if (directives.length > 0) {
+  private trackMatchedDirectives(node: DirectiveOwner, matchedDirectives: DirectiveT[]) {
+    if (matchedDirectives.length > 0) {
+      const directives = this.dedupeAndMergeDirectives(node, matchedDirectives);
       this.directives.set(node, directives);
       if (!this.isInDeferBlock) {
         this.eagerDirectives.push(...directives);
       }
+    }
+  }
+
+  private dedupeAndMergeDirectives(node: DirectiveOwner, matches: DirectiveT[]): DirectiveT[] {
+    if (matches.length === 0 || matches.every((dir) => dir.matchSource === MatchSource.Selector)) {
+      return matches;
+    }
+
+    const selectorMatches = new Set<string>();
+    const hostDirectives = new Map<string, DirectiveT[]>();
+    const mergedHostDirectives = new Map<string, DirectiveT>();
+
+    for (const dir of matches) {
+      if (dir.matchSource === MatchSource.Selector) {
+        selectorMatches.add(dir.ref.key);
+      } else {
+        if (!hostDirectives.has(dir.ref.key)) {
+          hostDirectives.set(dir.ref.key, []);
+        }
+        hostDirectives.get(dir.ref.key)!.push(dir);
+      }
+    }
+
+    for (const [key, directives] of hostDirectives.entries()) {
+      // Filter out host directives that also matched through the template.
+      if (selectorMatches.has(key)) {
+        continue;
+      }
+
+      if (directives.length === 1) {
+        // Based on the prior loop, we should always have at least one directive.
+        mergedHostDirectives.set(key, directives[0]);
+        continue;
+      }
+
+      const inputs: Record<ClassPropertyName, InputOrOutput> = {};
+      const outputs: Record<ClassPropertyName, InputOrOutput> = {};
+
+      // Merge the bindings for all duplicate host directives.
+      for (const dir of directives) {
+        this.mergeMapping(node, dir, 'input', inputs, dir.inputs);
+        this.mergeMapping(node, dir, 'output', outputs, dir.outputs);
+      }
+
+      mergedHostDirectives.set(key, {
+        ...directives[0],
+        inputs: ClassPropertyMapping.fromMappedObject(inputs),
+        outputs: ClassPropertyMapping.fromMappedObject(outputs),
+      });
+    }
+
+    return matches.reduce((result, dir) => {
+      if (dir.matchSource === MatchSource.Selector) {
+        result.push(dir);
+      } else if (mergedHostDirectives.has(dir.ref.key)) {
+        result.push(mergedHostDirectives.get(dir.ref.key)!);
+        mergedHostDirectives.delete(dir.ref.key);
+      }
+      return result;
+    }, [] as DirectiveT[]);
+  }
+
+  private mergeMapping(
+    node: DirectiveOwner,
+    directive: DirectiveT,
+    kind: 'input' | 'output',
+    accumulator: Record<ClassPropertyName, InputOrOutput>,
+    bindings: ClassPropertyMapping,
+  ) {
+    for (const binding of bindings) {
+      const existing = accumulator[binding.classPropertyName];
+
+      // Untracked binding, track it.
+      if (!existing) {
+        accumulator[binding.classPropertyName] = binding;
+        continue;
+      }
+
+      // If the binding is already tracked, but is equivalent to the existing binding, we can keep it.
+      if (
+        existing.bindingPropertyName === binding.bindingPropertyName &&
+        existing.classPropertyName === binding.classPropertyName &&
+        existing.isSignal === binding.isSignal
+      ) {
+        continue;
+      }
+
+      // Otherwise track the binding as conflicting so it can be reported later.
+      if (!this.conflictingHostDirectiveBindings.has(node)) {
+        this.conflictingHostDirectiveBindings.set(node, []);
+      }
+
+      const conflictsForNode = this.conflictingHostDirectiveBindings.get(node)!;
+      let conflict = conflictsForNode.find(
+        (current) =>
+          current.directive.ref.key === directive.ref.key &&
+          current.kind === kind &&
+          current.classPropertyName === binding.classPropertyName,
+      );
+
+      if (!conflict) {
+        conflict = {
+          directive,
+          kind,
+          classPropertyName: existing.classPropertyName,
+          conflictingAliases: new Set([existing.bindingPropertyName]),
+        };
+        conflictsForNode.push(conflict);
+      }
+
+      conflict.conflictingAliases.add(binding.bindingPropertyName);
     }
   }
 
@@ -1062,6 +1193,10 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     private usedPipes: Set<string>,
     private eagerPipes: Set<string>,
     rawDeferred: DeferBlockScopes,
+    private conflictingHostDirectiveBindings: Map<
+      DirectiveOwner,
+      ConflictingHostDirectiveBinding<DirectiveT>[]
+    >,
   ) {
     this.deferredBlocks = rawDeferred.map((current) => current[0]);
     this.deferredScopes = new Map(rawDeferred);
@@ -1209,6 +1344,12 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
 
   referencedDirectiveExists(name: string): boolean {
     return !this.missingDirectives.has(name);
+  }
+
+  getConflictingHostDirectiveBindings(
+    node: DirectiveOwner,
+  ): ConflictingHostDirectiveBinding<DirectiveT>[] | null {
+    return this.conflictingHostDirectiveBindings.get(node) || null;
   }
 
   /**

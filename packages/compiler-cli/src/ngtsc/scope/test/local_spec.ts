@@ -10,11 +10,9 @@ import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
 import {
-  ClassPropertyMapping,
   CompoundMetadataRegistry,
   DirectiveMeta,
   LocalMetadataRegistry,
-  MatchSource,
   MetadataRegistry,
   MetaKind,
   PipeMeta,
@@ -23,6 +21,7 @@ import {ClassDeclaration} from '../../reflection';
 import {LocalModuleScope, ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
 import {LocalModuleScopeRegistry} from '../src/local';
+import {ClassPropertyMapping, MatchSource} from '@angular/compiler';
 
 function registerFakeRefs(registry: MetadataRegistry): {
   [name: string]: Reference<ClassDeclaration>;
