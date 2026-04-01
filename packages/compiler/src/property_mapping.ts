@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InputOutputPropertySet} from '@angular/compiler';
-
 /**
  * The name of a class property that backs an input or output declared by a directive or component.
  *
@@ -53,9 +51,7 @@ export interface InputOrOutput {
  * Allows bidirectional querying of the mapping - looking up all inputs/outputs with a given
  * property name, or mapping from a specific class property to its binding property name.
  */
-export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput>
-  implements InputOutputPropertySet
-{
+export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> {
   /**
    * Mapping from class property names to the single `InputOrOutput` for that class property.
    */

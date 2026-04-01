@@ -18,12 +18,12 @@ import {
   R3TemplateDependencyMetadata,
   SchemaMetadata,
   TmplAstDeferredBlock,
+  ClassPropertyMapping,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
 import {
-  ClassPropertyMapping,
   DirectiveResources,
   DirectiveTypeCheckMeta,
   HostDirectiveMeta,

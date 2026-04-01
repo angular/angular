@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import ts from 'typescript';
+import {ClassPropertyMapping} from '@angular/compiler';
 
 import {
   absoluteFrom,
@@ -23,7 +24,7 @@ import {
   Reference,
   ReferenceEmitter,
 } from '../../imports';
-import {ClassPropertyMapping, InputMapping} from '../../metadata';
+import {InputMapping} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver, UpdateMode} from '../../program_driver';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';

@@ -29,8 +29,9 @@ import {
   TmplAstElement,
   TmplAstTemplate,
   WrappedNodeExpr,
+  ClassPropertyMapping,
 } from '@angular/compiler';
-import {ClassPropertyMapping, InputMapping} from '../../metadata';
+import {InputMapping} from '../../metadata';
 import {requiresInlineTypeCtor} from './type_constructor';
 import {tempPrint} from './ops/codegen';
 import {generateTcbTypeParameters} from './tcb_util';
