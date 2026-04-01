@@ -74,7 +74,7 @@ const chromeWindowExtensions = {
       console.error(`Cannot find element associated with node ${element}`);
       return undefined;
     }
-    const injector = getInjectorFromElementNode(node.nativeElement!);
+    const injector = node.injector ?? getInjectorFromElementNode(node.nativeElement!);
     if (!injector) {
       return;
     }
