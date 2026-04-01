@@ -244,4 +244,22 @@ export interface OutOfBandDiagnosticRecorder<T> {
     element: TmplAstElement,
     componentNames: string[],
   ): void;
+
+  /**
+   * Reports that a host directive input/output has been exposed under multiple names.
+   * @param id Type checking ID of the template in which the host directive was used.
+   * @param node Node on which the host directive was used.
+   * @param directiveName Name of the host directive.
+   * @param kind Type of the conflicting binding.
+   * @param classPropertyName Name of the class member that declares the input/output.
+   * @param aliases Aliases under which the binding is exposed.
+   */
+  conflictingHostDirectiveBinding(
+    id: TypeCheckId,
+    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    directiveName: string,
+    kind: 'input' | 'output',
+    classPropertyName: string,
+    aliases: string[],
+  ): void;
 }

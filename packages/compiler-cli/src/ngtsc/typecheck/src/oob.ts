@@ -347,33 +347,11 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       isComponent ? 'component' : 'directive'
     } ${directiveName} must be specified.`;
 
-    let span: ParseSourceSpan;
-    let name: string | null;
-
-    if (element instanceof TmplAstElement || element instanceof TmplAstDirective) {
-      name = element.name;
-    } else if (element instanceof TmplAstComponent) {
-      name = element.componentName;
-    } else {
-      name = null;
-    }
-
-    if (name === null) {
-      span = element.startSourceSpan;
-    } else {
-      // Only highlight the tag name since highlighting the entire start tag can be noisy.
-      const start = element.startSourceSpan.start.moveBy(1);
-      const end = element.startSourceSpan.end.moveBy(
-        start.offset + name.length - element.startSourceSpan.end.offset,
-      );
-      span = new ParseSourceSpan(start, end);
-    }
-
     this._diagnostics.push(
       makeTemplateDiagnostic(
         id,
         this.resolver.getTemplateSourceMapping(id),
-        span,
+        this.getTagNameSpan(element),
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.MISSING_REQUIRED_INPUTS),
         message,
@@ -693,6 +671,59 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         `Multiple components match node with tagname ${element.name}: ${names}.`,
       ),
     );
+  }
+
+  conflictingHostDirectiveBinding(
+    id: TypeCheckId,
+    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    directiveName: string,
+    kind: 'input' | 'output',
+    classPropertyName: string,
+    aliases: string[],
+  ): void {
+    const message =
+      `${kind === 'input' ? 'Input' : 'Output'} declared in ${directiveName}.${classPropertyName} ` +
+      `is exposed under the following conflicting names: ${aliases.map((a) => `"${a}"`).join(', ')}. ` +
+      `An ${kind} can only be exposed under a single name.`;
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        this.getTagNameSpan(node),
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.CONFLICTING_HOST_DIRECTIVE_BINDING),
+        message,
+      ),
+    );
+  }
+
+  private getTagNameSpan(
+    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+  ) {
+    let span: ParseSourceSpan;
+    let name: string | null;
+
+    if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
+      name = node.name;
+    } else if (node instanceof TmplAstComponent) {
+      name = node.componentName;
+    } else {
+      name = null;
+    }
+
+    if (name === null) {
+      span = node.startSourceSpan;
+    } else {
+      // Only highlight the tag name since highlighting the entire start tag can be noisy.
+      const start = node.startSourceSpan.start.moveBy(1);
+      const end = node.startSourceSpan.end.moveBy(
+        start.offset + name.length - node.startSourceSpan.end.offset,
+      );
+      span = new ParseSourceSpan(start, end);
+    }
+
+    return span;
   }
 }
 

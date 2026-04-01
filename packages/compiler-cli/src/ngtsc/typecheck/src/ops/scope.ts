@@ -579,6 +579,8 @@ export class Scope {
       return;
     }
 
+    this.reportConflictingBindings(node);
+
     if (node instanceof TmplAstElement) {
       const isDeferred = this.tcb.boundTarget.isDeferred(node);
       if (!isDeferred && directives.some((dirMeta) => dirMeta.isExplicitlyDeferred)) {
@@ -687,6 +689,8 @@ export class Scope {
       }
       this.directiveOpMap.set(node, dirMap);
     }
+
+    this.reportConflictingBindings(node);
 
     // In selectorless all directive inputs have to be claimed.
     if (node instanceof TmplAstDirective) {
@@ -1041,6 +1045,25 @@ export class Scope {
         scope.tcb.id,
         scope.letDeclOpMap.get(node.name)!.node,
       );
+    }
+  }
+
+  private reportConflictingBindings(
+    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+  ): void {
+    const conflictingBindings = this.tcb.boundTarget.getConflictingHostDirectiveBindings(node);
+
+    if (conflictingBindings !== null) {
+      for (const binding of conflictingBindings) {
+        this.tcb.oobRecorder.conflictingHostDirectiveBinding(
+          this.tcb.id,
+          node,
+          binding.directive.name,
+          binding.kind,
+          binding.classPropertyName,
+          Array.from(binding.conflictingAliases),
+        );
+      }
     }
   }
 }

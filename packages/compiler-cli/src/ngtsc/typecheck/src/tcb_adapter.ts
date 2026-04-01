@@ -30,6 +30,7 @@ import {
   TmplAstTemplate,
   WrappedNodeExpr,
   ClassPropertyMapping,
+  ConflictingHostDirectiveBinding,
 } from '@angular/compiler';
 import {InputMapping} from '../../metadata';
 import {requiresInlineTypeCtor} from './type_constructor';
@@ -176,6 +177,10 @@ export function adaptTypeCheckBlockMetadata(
     getEntitiesInScope: (node) => meta.boundTarget.getEntitiesInScope(node),
     getEagerlyUsedPipes: () => meta.boundTarget.getEagerlyUsedPipes(),
     getDeferBlocks: () => meta.boundTarget.getDeferBlocks(),
+    getConflictingHostDirectiveBindings: (node) =>
+      meta.boundTarget.getConflictingHostDirectiveBindings(node) as
+        | ConflictingHostDirectiveBinding<TcbDirectiveMetadata>[]
+        | null,
   };
 
   const pipes = new Map<string, TcbPipeMetadata>();

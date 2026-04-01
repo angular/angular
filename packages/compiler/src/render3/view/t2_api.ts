@@ -59,6 +59,18 @@ export type TemplateEntity = Reference | Variable | LetDeclaration;
 /** Nodes that can have directives applied to them. */
 export type DirectiveOwner = Element | Template | Component | Directive | HostElement;
 
+/** Information about a host directive binding that was exposed under conflicting aliases. */
+export interface ConflictingHostDirectiveBinding<DirectiveT> {
+  /** Metadata of the directive that the binding belongs to. */
+  directive: DirectiveT;
+  /** Name of the class member that the binding would write into. */
+  classPropertyName: string;
+  /** Aliases that caused the conflict. */
+  conflictingAliases: Set<string>;
+  /** Type of the binding. */
+  kind: 'input' | 'output';
+}
+
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
  * analyzing Angular templates, extracting semantic info, and ultimately producing a template
@@ -295,4 +307,12 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * @param name Name of the component/directive.
    */
   referencedDirectiveExists(name: string): boolean;
+
+  /**
+   * Returns any cases of conflicting host bindings that were detected during directive matching.
+   * @param node Node for which to look up the conflicting bindings.
+   */
+  getConflictingHostDirectiveBindings(
+    node: DirectiveOwner,
+  ): ConflictingHostDirectiveBinding<DirectiveT>[] | null;
 }

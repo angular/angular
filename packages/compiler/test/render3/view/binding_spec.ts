@@ -1316,4 +1316,284 @@ describe('t2 binding', () => {
       expect(res.referencedDirectiveExists('MissingComp')).toBe(false);
     });
   });
+
+  describe('directive de-duplication', () => {
+    function formatMatches(matches: DirectiveMeta[]): string[] {
+      return matches.map((dir) => `${dir.name}:${MatchSource[dir.matchSource]}`);
+    }
+
+    it('should give precedence to the template-matched directive over a host-directive-based match', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: '[dir]',
+        matchSource: MatchSource.HostDirective,
+      });
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        {
+          ...hostDir,
+          matchSource: MatchSource.Selector,
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        makeDirectiveMeta({name: 'Dir', selector: '[dir]'}),
+        hostDir,
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const directives = res.getDirectivesOfNode(element)!;
+
+      expect(formatMatches(directives)).toEqual(['HostDir:Selector', 'Dir:Selector']);
+    });
+
+    it('should de-duplicate directives that match multiple times as host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [oneDir, hostDir]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [twoDir, hostDir]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const directives = res.getDirectivesOfNode(element)!;
+
+      expect(formatMatches(directives)).toEqual([
+        'OneDir:Selector',
+        'HostDir:HostDirective',
+        'TwoDir:Selector',
+      ]);
+    });
+
+    it('should merge the `inputs` of duplicated host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({two: 'twoAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.inputs.toDirectMappedObject()).toEqual({
+        one: 'one',
+        two: 'twoAlias',
+      });
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
+    });
+
+    it('should merge the `outputs` of duplicated host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({two: 'twoAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.outputs.toDirectMappedObject()).toEqual({
+        one: 'one',
+        two: 'twoAlias',
+      });
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
+    });
+
+    it('should capture conflicting input bindings in host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+      const conflict = res.getConflictingHostDirectiveBindings(element)![0];
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.inputs.toDirectMappedObject()).toEqual({one: 'one'});
+      expect(conflict.kind).toBe('input');
+      expect(conflict.classPropertyName).toBe('one');
+      expect(Array.from(conflict.conflictingAliases)).toEqual(['one', 'oneAlias']);
+    });
+
+    it('should not capture conflicting input bindings if they are equivalent', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          inputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.inputs.toDirectMappedObject()).toEqual({one: 'oneAlias'});
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
+    });
+
+    it('should capture conflicting output bindings in host directives', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'one'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+      const conflict = res.getConflictingHostDirectiveBindings(element)![0];
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.outputs.toDirectMappedObject()).toEqual({one: 'one'});
+      expect(conflict.kind).toBe('output');
+      expect(conflict.classPropertyName).toBe('one');
+      expect(Array.from(conflict.conflictingAliases)).toEqual(['one', 'oneAlias']);
+    });
+
+    it('should not capture conflicting output bindings if they are equivalent', () => {
+      const matcher = new SelectorMatcher();
+      const hostDir = makeDirectiveMeta({
+        name: 'HostDir',
+        selector: null,
+        matchSource: MatchSource.HostDirective,
+      });
+      const oneDir = makeDirectiveMeta({name: 'OneDir', selector: '[dir]'});
+      const twoDir = makeDirectiveMeta({name: 'TwoDir', selector: '[dir]'});
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        oneDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [
+        twoDir,
+        {
+          ...hostDir,
+          outputs: ClassPropertyMapping.fromMappedObject({one: 'oneAlias'}),
+        },
+      ]);
+
+      const template = parseTemplate('<div dir></div>', '', {});
+      const binder = new R3TargetBinder(matcher);
+      const res = binder.bind({template: template.nodes});
+      const element = template.nodes[0] as a.Element;
+      const mergedHost = res.getDirectivesOfNode(element)?.find((d) => d.name === 'HostDir')!;
+
+      expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
+      expect(mergedHost.outputs.toDirectMappedObject()).toEqual({one: 'oneAlias'});
+      expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
+    });
+  });
 });

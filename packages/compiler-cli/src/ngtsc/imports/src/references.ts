@@ -82,7 +82,9 @@ export class Reference<T extends ts.Node = ts.Node> {
     if (sourceFile) {
       this.key = `${sourceFile.fileName}#${node.getStart()}`;
     } else {
-      this.key = `${this.bestGuessOwningModule?.specifier}#${id?.text}#${id?.getStart()}#${id?.getEnd()}`;
+      // `getStart` will throw if there's no source file.
+      const position = id && id.getSourceFile() ? id.getStart() : null;
+      this.key = `${this.bestGuessOwningModule?.specifier}#${id?.text}#${position}`;
     }
   }
 
