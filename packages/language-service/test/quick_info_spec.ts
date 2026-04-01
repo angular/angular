@@ -770,7 +770,7 @@ describe('quick info', () => {
 
           it('prefetch (when)', () => {
             expectQuickInfo({
-              templateOverride: `@defer (prefet¦ch when title) { }`,
+              templateOverride: `@defer (on idle; prefet¦ch when title) { }`,
               expectedSpanText: 'prefetch',
               expectedDisplayString: '(keyword) prefetch',
             });
@@ -794,7 +794,7 @@ describe('quick info', () => {
 
           it('prefetch (on)', () => {
             expectQuickInfo({
-              templateOverride: `@defer (prefet¦ch on immediate) { }`,
+              templateOverride: `@defer (on idle; prefet¦ch on immediate) { }`,
               expectedSpanText: 'prefetch',
               expectedDisplayString: '(keyword) prefetch',
             });

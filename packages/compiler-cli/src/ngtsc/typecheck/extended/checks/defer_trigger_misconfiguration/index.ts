@@ -135,6 +135,19 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
       }
     }
 
+    // `prefetch` without an explicit main trigger defaults the main trigger to `idle`,
+    if (mains.length === 0 && prefetches.length > 0) {
+      const msg =
+        `Define a main trigger when using 'prefetch' triggers. ` +
+        `Without an explicit main trigger, @defer defaults to 'idle' and prefetch may have no effect.`;
+      diags.push(
+        ctx.makeTemplateDiagnostic(
+          node.sourceSpan,
+          formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+        ),
+      );
+    }
+
     // If there is exactly one main and at least one prefetch, compare them.
     if (mains.length === 1 && prefetches.length > 0) {
       const main = mains[0];
