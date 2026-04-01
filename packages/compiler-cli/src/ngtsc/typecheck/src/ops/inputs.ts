@@ -8,7 +8,9 @@
 
 import {
   AST,
+  BindingPropertyName,
   BindingType,
+  ClassPropertyName,
   R3Identifiers,
   TmplAstBoundAttribute,
   TmplAstComponent,
@@ -21,7 +23,6 @@ import type {Scope} from './scope';
 import {TcbDirectiveMetadata} from '../../api';
 import {TcbOp} from './base';
 import {declareVariable, quoteAndEscape, TcbExpr} from './codegen';
-import {BindingPropertyName, ClassPropertyName} from '../../../metadata';
 import {REGISTRY} from '../dom';
 import {tcbExpression, unwrapWritableSignal} from './expression';
 import {

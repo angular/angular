@@ -9,6 +9,7 @@
 import {
   AST,
   BindingPipe,
+  ClassPropertyMapping,
   CssSelector,
   MatchSource,
   ParseSourceFile,
@@ -55,7 +56,6 @@ import {
 } from '../../imports';
 import {NOOP_INCREMENTAL_BUILD, NoopIncrementalBuildStrategy} from '../../incremental';
 import {
-  ClassPropertyMapping,
   CompoundMetadataReader,
   DecoratorInputTransform,
   DirectiveMeta,

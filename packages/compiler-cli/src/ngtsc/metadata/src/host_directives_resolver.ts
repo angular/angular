@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MatchSource} from '@angular/compiler';
+import {ClassPropertyMapping, InputOrOutput, MatchSource} from '@angular/compiler';
 import {DirectiveMeta, InputMapping, MetadataReader} from '../../metadata/src/api';
 import {ClassDeclaration} from '../../reflection';
-import {ClassPropertyMapping, InputOrOutput} from '../src/property_mapping';
 
 import {flattenInheritedDirectiveMetadata} from './inheritance';
 import {isHostDirectiveMetaForGlobalMode} from './util';
