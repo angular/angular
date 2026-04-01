@@ -52,6 +52,7 @@ export {publishFacade} from './jit_compiler_facade';
 export * from './ml_parser/ast';
 export * from './ml_parser/html_parser';
 export * from './ml_parser/html_tags';
+export * from './property_mapping';
 export {LexerRange} from './ml_parser/lexer';
 export {ParseTreeResult, TreeError} from './ml_parser/parser';
 export * from './ml_parser/tags';

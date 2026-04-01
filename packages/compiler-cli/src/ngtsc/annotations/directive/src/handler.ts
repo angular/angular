@@ -7,6 +7,7 @@
  */
 
 import {
+  ClassPropertyMapping,
   compileClassMetadata,
   compileDeclareClassMetadata,
   compileDeclareDirectiveFromMetadata,
@@ -28,7 +29,6 @@ import {
   SemanticDepGraphUpdater,
 } from '../../../incremental/semantic_graph';
 import {
-  ClassPropertyMapping,
   DirectiveResources,
   DirectiveTypeCheckMeta,
   extractDirectiveTypeCheckMeta,

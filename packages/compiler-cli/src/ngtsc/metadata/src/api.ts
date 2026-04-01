@@ -12,13 +12,14 @@ import {
   SchemaMetadata,
   ExternalReference,
   MatchSource,
+  ClassPropertyName,
+  InputOrOutput,
+  ClassPropertyMapping,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
-
-import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from './property_mapping';
 
 /**
  * Metadata collected for an `NgModule`.

@@ -30,6 +30,8 @@ import {
   ArrowFunctionExpr,
   WrappedNodeExpr,
   literal,
+  ClassPropertyMapping,
+  InputOrOutput,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -42,11 +44,9 @@ import {
   ReferenceEmitter,
 } from '../../../imports';
 import {
-  ClassPropertyMapping,
   DecoratorInputTransform,
   HostDirectiveMeta,
   InputMapping,
-  InputOrOutput,
   isHostDirectiveMetaForGlobalMode,
   Resource,
 } from '../../../metadata';

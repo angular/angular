@@ -8,7 +8,6 @@
 
 import {
   DirectiveOwner,
-  ExternalExpr,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
@@ -34,7 +33,6 @@ import {
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {TcbDirectiveMetadata} from '../../api';
@@ -60,13 +58,10 @@ import {
   TcbNativeFieldOp,
   TcbNativeRadioButtonFieldOp,
 } from './signal_forms';
-import {ImportFlags, Reference, ReferenceEmitKind} from '../../../imports';
-import {ClassDeclaration} from '../../../reflection';
 import {
   TcbGenericDirectiveTypeWithAnyParamsOp,
   TcbNonGenericDirectiveTypeOp,
 } from './directive_type';
-import {requiresInlineTypeCtor} from '../type_constructor';
 import {TcbDirectiveCtorOp} from './directive_constructor';
 import {TcbControlFlowContentProjectionOp} from './content_projection';
 import {TcbComponentNodeOp} from './selectorless';

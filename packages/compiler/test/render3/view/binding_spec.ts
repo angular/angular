@@ -8,119 +8,83 @@
 
 import * as e from '../../../src/expression_parser/ast';
 import * as a from '../../../src/render3/r3_ast';
-import {DirectiveMeta, InputOutputPropertySet, MatchSource} from '../../../src/render3/view/t2_api';
+import {DirectiveMeta, MatchSource} from '../../../src/render3/view/t2_api';
+import {ClassPropertyMapping} from '../../../src/property_mapping';
 import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate, ParseTemplateOptions} from '../../../src/render3/view/template';
 import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../../src/directive_matching';
 
 import {findExpression} from './util';
 
-/**
- * A `InputOutputPropertySet` which only uses an identity mapping for fields and properties.
- */
-class IdentityInputMapping implements InputOutputPropertySet {
-  private names: Set<string>;
-
-  constructor(names: string[]) {
-    this.names = new Set(names);
-  }
-
-  hasBindingPropertyName(propertyName: string): boolean {
-    return this.names.has(propertyName);
-  }
+function makeDirectiveMeta(config: {
+  name: string;
+  selector: string | null;
+  inputs?: Record<string, string>;
+  outputs?: Record<string, string>;
+  exportAs?: string[];
+  isComponent?: boolean;
+  isStructural?: boolean;
+  matchSource?: MatchSource;
+}): DirectiveMeta {
+  return {
+    name: config.name,
+    exportAs: config.exportAs ?? null,
+    inputs: ClassPropertyMapping.fromMappedObject(config.inputs || {}),
+    outputs: ClassPropertyMapping.fromMappedObject(config.outputs || {}),
+    isComponent: !!config.isComponent,
+    isStructural: !!config.isStructural,
+    selector: config.selector,
+    animationTriggerNames: null,
+    ngContentSelectors: null,
+    preserveWhitespaces: false,
+    matchSource: config.matchSource ?? MatchSource.Selector,
+  };
 }
 
 function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
   const matcher = new SelectorMatcher<DirectiveMeta[]>();
   matcher.addSelectables(CssSelector.parse('[ngFor][ngForOf]'), [
-    {
+    makeDirectiveMeta({
       name: 'NgFor',
-      exportAs: null,
-      inputs: new IdentityInputMapping(['ngForOf']),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: true,
+      inputs: {ngForOf: 'ngForOf'},
       selector: '[ngFor][ngForOf]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      matchSource: MatchSource.Selector,
-    },
+      isStructural: true,
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[dir]'), [
-    {
+    makeDirectiveMeta({
       name: 'Dir',
       exportAs: ['dir'],
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: false,
       selector: '[dir]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      matchSource: MatchSource.Selector,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[hasOutput]'), [
-    {
+    makeDirectiveMeta({
       name: 'HasOutput',
-      exportAs: null,
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping(['outputBinding']),
-      isComponent: false,
-      isStructural: false,
+      outputs: {outputBinding: 'outputBinding'},
       selector: '[hasOutput]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      matchSource: MatchSource.Selector,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[hasInput]'), [
-    {
+    makeDirectiveMeta({
       name: 'HasInput',
-      exportAs: null,
-      inputs: new IdentityInputMapping(['inputBinding']),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: false,
+      inputs: {inputBinding: 'inputBinding'},
       selector: '[hasInput]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      matchSource: MatchSource.Selector,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('[sameSelectorAsInput]'), [
-    {
+    makeDirectiveMeta({
       name: 'SameSelectorAsInput',
-      exportAs: null,
-      inputs: new IdentityInputMapping(['sameSelectorAsInput']),
-      outputs: new IdentityInputMapping([]),
-      isComponent: false,
-      isStructural: false,
+      inputs: {sameSelectorAsInput: 'sameSelectorAsInput'},
       selector: '[sameSelectorAsInput]',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      matchSource: MatchSource.Selector,
-    },
+    }),
   ]);
   matcher.addSelectables(CssSelector.parse('comp'), [
-    {
+    makeDirectiveMeta({
       name: 'Comp',
-      exportAs: null,
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping([]),
       isComponent: true,
-      isStructural: false,
       selector: 'comp',
-      animationTriggerNames: null,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      matchSource: MatchSource.Selector,
-    },
+    }),
   ]);
 
   const simpleDirectives = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -128,19 +92,11 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
   for (const dir of [...simpleDirectives, ...deferBlockDirectives]) {
     const name = dir[0].toUpperCase() + dir.slice(1).toLowerCase();
     matcher.addSelectables(CssSelector.parse(`[${dir}]`), [
-      {
+      makeDirectiveMeta({
         name: `Dir${name}`,
-        exportAs: null,
-        inputs: new IdentityInputMapping([]),
-        outputs: new IdentityInputMapping([]),
-        isComponent: false,
         isStructural: true,
         selector: `[${dir}]`,
-        animationTriggerNames: null,
-        ngContentSelectors: null,
-        preserveWhitespaces: false,
-        matchSource: MatchSource.Selector,
-      },
+      }),
     ]);
   }
 
@@ -278,19 +234,10 @@ describe('t2 binding', () => {
     const template = parseTemplate('<svg><text dir>SVG</text></svg>', '', {});
     const matcher = new SelectorMatcher<DirectiveMeta[]>();
     matcher.addSelectables(CssSelector.parse('text[dir]'), [
-      {
+      makeDirectiveMeta({
         name: 'Dir',
-        exportAs: null,
-        inputs: new IdentityInputMapping([]),
-        outputs: new IdentityInputMapping([]),
-        isComponent: false,
-        isStructural: false,
         selector: 'text[dir]',
-        animationTriggerNames: null,
-        ngContentSelectors: null,
-        preserveWhitespaces: false,
-        matchSource: MatchSource.Selector,
-      },
+      }),
     ]);
     const binder = new R3TargetBinder(matcher);
     const res = binder.bind({template: template.nodes});
@@ -1037,18 +984,6 @@ describe('t2 binding', () => {
 
   describe('selectorless', () => {
     const options: ParseTemplateOptions = {enableSelectorless: true};
-    const baseMeta = {
-      selector: null,
-      inputs: new IdentityInputMapping([]),
-      outputs: new IdentityInputMapping([]),
-      exportAs: null,
-      isStructural: false,
-      ngContentSelectors: null,
-      preserveWhitespaces: false,
-      animationTriggerNames: null,
-      isComponent: false,
-      matchSource: MatchSource.Selector,
-    };
 
     function makeSelectorlessMatcher(
       directives: (DirectiveMeta | {root: DirectiveMeta; additionalDirectives: DirectiveMeta[]})[],
@@ -1073,26 +1008,21 @@ describe('t2 binding', () => {
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
           {
-            root: {
-              ...baseMeta,
+            root: makeDirectiveMeta({
               name: 'MyComp',
+              selector: null,
               isComponent: true,
-            },
-            additionalDirectives: [
-              {
-                ...baseMeta,
-                name: 'MyHostDir',
-              },
-            ],
+            }),
+            additionalDirectives: [makeDirectiveMeta({name: 'MyHostDir', selector: null})],
           },
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'Dir',
-          },
-          {
-            ...baseMeta,
+            selector: null,
+          }),
+          makeDirectiveMeta({
             name: 'OtherDir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1104,27 +1034,27 @@ describe('t2 binding', () => {
       const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'MyComp',
+            selector: null,
             isComponent: true,
-          },
+          }),
           {
-            root: {
-              ...baseMeta,
+            root: makeDirectiveMeta({
               name: 'Dir',
-            },
+              selector: null,
+            }),
             additionalDirectives: [
-              {
-                ...baseMeta,
+              makeDirectiveMeta({
                 name: 'HostDir',
-              },
+                selector: null,
+              }),
             ],
           },
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'OtherDir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1137,14 +1067,14 @@ describe('t2 binding', () => {
       const template = parseTemplate('<div @Dir @OtherDir></div>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'Dir',
-          },
-          {
-            ...baseMeta,
+            selector: null,
+          }),
+          makeDirectiveMeta({
             name: 'OtherDir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1156,11 +1086,11 @@ describe('t2 binding', () => {
       const template = parseTemplate('<MyComp #foo/>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'MyComp',
+            selector: null,
             isComponent: true,
-          },
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1175,10 +1105,10 @@ describe('t2 binding', () => {
       const template = parseTemplate('<div @Dir(#foo)></div>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'Dir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1209,13 +1139,13 @@ describe('t2 binding', () => {
       );
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'MyComp',
+            selector: null,
             isComponent: true,
-            inputs: new IdentityInputMapping(['input', 'static']),
-            outputs: new IdentityInputMapping(['output']),
-          },
+            inputs: {input: 'input', static: 'static'},
+            outputs: {output: 'output'},
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1241,12 +1171,12 @@ describe('t2 binding', () => {
       );
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'Dir',
-            inputs: new IdentityInputMapping(['input', 'static']),
-            outputs: new IdentityInputMapping(['output']),
-          },
+            selector: null,
+            inputs: {input: 'input', static: 'static'},
+            outputs: {output: 'output'},
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1267,23 +1197,23 @@ describe('t2 binding', () => {
       const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'MyComp',
+            selector: null,
             isComponent: true,
-          },
-          {
-            ...baseMeta,
+          }),
+          makeDirectiveMeta({
             name: 'Dir',
-          },
-          {
-            ...baseMeta,
+            selector: null,
+          }),
+          makeDirectiveMeta({
             name: 'OtherDir',
-          },
-          {
-            ...baseMeta,
+            selector: null,
+          }),
+          makeDirectiveMeta({
             name: 'UnusedDir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1299,19 +1229,19 @@ describe('t2 binding', () => {
       const template = parseTemplate('@defer {<MyComp @Dir @OtherDir/>}', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'MyComp',
+            selector: null,
             isComponent: true,
-          },
-          {
-            ...baseMeta,
+          }),
+          makeDirectiveMeta({
             name: 'Dir',
-          },
-          {
-            ...baseMeta,
+            selector: null,
+          }),
+          makeDirectiveMeta({
             name: 'OtherDir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1339,19 +1269,19 @@ describe('t2 binding', () => {
       );
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'MyComp',
+            selector: null,
             isComponent: true,
-          },
-          {
-            ...baseMeta,
+          }),
+          makeDirectiveMeta({
             name: 'Dir',
-          },
-          {
-            ...baseMeta,
+            selector: null,
+          }),
+          makeDirectiveMeta({
             name: 'UnusedDir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
@@ -1363,15 +1293,15 @@ describe('t2 binding', () => {
       const template = parseTemplate('<MyComp @MissingDir/><MissingComp @Dir/>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
-          {
-            ...baseMeta,
+          makeDirectiveMeta({
             name: 'MyComp',
+            selector: null,
             isComponent: true,
-          },
-          {
-            ...baseMeta,
+          }),
+          makeDirectiveMeta({
             name: 'Dir',
-          },
+            selector: null,
+          }),
         ]),
       );
       const res = binder.bind({template: template.nodes});
