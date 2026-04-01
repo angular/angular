@@ -252,7 +252,7 @@ export function triggerResourceLoading(
 
       if (tDetails.errorTmplIndex === null) {
         const templateLocation = ngDevMode ? getTemplateLocationDetails(lView) : '';
-        let errorMsg: string | false = false;
+        let errorMsg = '';
 
         if (ngDevMode) {
           errorMsg =
@@ -260,13 +260,20 @@ export function triggerResourceLoading(
             `but no \`@error\` block was configured${templateLocation}. ` +
             'Consider using the `@error` block to render an error state.';
 
-          const depsFnStr = tDetails.dependencyResolverFn?.toString() ?? 'unknown';
-          const errorReason = failedReason ? failedReason.message : 'Unknown';
-          errorMsg +=
-            `\n\nAngular tried to invoke the following dependency function (compiler-generated):\n` +
-            `\`\`\`\n${depsFnStr}\n\`\`\`\n` +
-            `but it resulted in the following error:\n\n` +
-            `${errorReason}`;
+          const depsFn = tDetails.dependencyResolverFn;
+          const errorReason = failedReason?.message;
+
+          if (depsFn) {
+            errorMsg +=
+              `\n\nAngular tried to invoke the following dependency function (compiler-generated):\n` +
+              `\`\`\`\n${depsFn.toString()}\n\`\`\``;
+          }
+
+          if (errorReason) {
+            errorMsg += depsFn
+              ? `\n\nbut it resulted in the following error:\n\n${errorReason}`
+              : `\n\nThe loading resulted in the following error:\n\n${errorReason}`;
+          }
         }
 
         const error = new RuntimeError(RuntimeErrorCode.DEFER_LOADING_FAILED, errorMsg);
