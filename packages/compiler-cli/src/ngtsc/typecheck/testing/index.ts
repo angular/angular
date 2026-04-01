@@ -10,6 +10,7 @@ import {
   AST,
   BindingPipe,
   CssSelector,
+  MatchSource,
   ParseSourceFile,
   parseTemplate,
   ParseTemplateOptions,
@@ -60,7 +61,6 @@ import {
   DirectiveMeta,
   HostDirectivesResolver,
   InputMapping,
-  MatchSource,
   MetadataReaderWithIndex,
   MetaKind,
   NgModuleIndex,
@@ -913,6 +913,7 @@ function getDirectiveMetaFromDeclaration(
     isExplicitlyDeferred: false,
     imports: decl.imports,
     rawImports: null,
+    matchSource: MatchSource.Selector,
     hostDirectives:
       decl.hostDirectives === undefined
         ? null

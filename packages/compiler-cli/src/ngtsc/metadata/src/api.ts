@@ -11,6 +11,7 @@ import {
   Expression,
   SchemaMetadata,
   ExternalReference,
+  MatchSource,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -132,17 +133,6 @@ export enum MetaKind {
   Directive,
   Pipe,
   NgModule,
-}
-
-/**
- * Possible ways that a directive can be matched.
- */
-export enum MatchSource {
-  /** The directive was matched by its selector. */
-  Selector,
-
-  /** The directive was applied as a host directive. */
-  HostDirective,
 }
 
 /** Metadata for a single input mapping. */

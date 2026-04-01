@@ -111,6 +111,7 @@ export function adaptTypeCheckBlockMetadata(
       stringLiteralInputFields: dir.stringLiteralInputFields,
       undeclaredInputFields: dir.undeclaredInputFields,
       publicMethods: dir.publicMethods,
+      matchSource: dir.matchSource,
 
       ref: extractRef(dir.ref as Reference<ClassDeclaration>),
       isGeneric: dir.isGeneric,
