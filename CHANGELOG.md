@@ -1,3 +1,30 @@
+<a name="21.2.7"></a>
+# 21.2.7 (2026-04-01)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fea25d1a60](https://github.com/angular/angular/commit/fea25d1a60ecaba1599d9cd9b8df27109ed195c5) | fix | register SVG animation attributes in URL security context ([#67797](https://github.com/angular/angular/pull/67797)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bba5ed8e64](https://github.com/angular/angular/commit/bba5ed8e643b9c3f680e7e539c3d744ad6905e59) | fix | prevent recursive scope checks for invalid NgModule imports |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d04ddd73df](https://github.com/angular/angular/commit/d04ddd73dfc03f420afbdde964c5119f338af135) | fix | prevent binding unsafe attributes on SVG animation elements ([#67797](https://github.com/angular/angular/pull/67797)) |
+| [8fd896e99a](https://github.com/angular/angular/commit/8fd896e99a13855c6569f29efe7e578c301e13ee) | fix | resolve component import by exact specifier in route lazy-loading schematic |
+| [b682c62873](https://github.com/angular/angular/commit/b682c628731b86a4884e50abb2f5fa73ac0ad057) | fix | treat `object[data]` as resource URL context ([#67797](https://github.com/angular/angular/pull/67797)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3c41e74fdd](https://github.com/angular/angular/commit/3c41e74fdd279f683156b654699a9312a850add0) | fix | validate locale in getOutputPathFn to prevent path traversal |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0960592d3d](https://github.com/angular/angular/commit/0960592d3d4fad110d5598144fda9f2488520826) | fix | pass outlet context to split to fix empty path named outlets |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-next.5"></a>
 # 22.0.0-next.5 (2026-03-25)
 ## Breaking Changes
