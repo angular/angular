@@ -95,6 +95,7 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     {
       language: 'typescript',
       apiEntries: getSymbolsAsApiEntries(),
+      removeWhitespace: false,
     },
   );
 
