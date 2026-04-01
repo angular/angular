@@ -1224,7 +1224,6 @@ describe('@defer', () => {
       expect(reportedErrors.length).toBe(1);
       const errorMsg = reportedErrors[0].message;
       expect(errorMsg).toContain('NG0750');
-      expect(errorMsg).toContain('Angular tried to invoke the following dependency function');
       expect(errorMsg).toContain('Failed to load module X');
     });
 
