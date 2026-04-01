@@ -142,6 +142,7 @@ describe('indexForest', () => {
             changeDetection: 'ng-on-push',
             controlFlowBlock: null,
             hasNativeElement: true,
+            injector: undefined,
           },
           {
             element: 'Child1_2',
@@ -158,11 +159,13 @@ describe('indexForest', () => {
             changeDetection: 'ng-on-push',
 
             hasNativeElement: true,
+            injector: undefined,
           },
         ],
         controlFlowBlock: null,
         changeDetection: 'ng-on-push',
         hasNativeElement: true,
+        injector: undefined,
       },
       {
         element: 'Parent2',
@@ -186,6 +189,7 @@ describe('indexForest', () => {
             changeDetection: 'ng-eager',
             controlFlowBlock: null,
             hasNativeElement: true,
+            injector: undefined,
           },
           {
             element: 'Child2_2',
@@ -206,11 +210,13 @@ describe('indexForest', () => {
             changeDetection: 'ng-eager',
             controlFlowBlock: null,
             hasNativeElement: true,
+            injector: undefined,
           },
         ],
         changeDetection: 'ng-eager',
         controlFlowBlock: null,
         hasNativeElement: true,
+        injector: undefined,
       },
     ]);
   });
