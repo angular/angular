@@ -9,6 +9,7 @@
 import {
   AST,
   BindingType,
+  ClassPropertyName,
   LiteralArray,
   LiteralMap,
   ParseSourceSpan,
@@ -20,10 +21,7 @@ import {
   TmplAstTemplate,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {TcbDirectiveMetadata} from '../../api';
-import {ClassPropertyName} from '../../../metadata';
-import {Reference} from '../../../imports';
 import {Context} from './context';
 import {TcbExpr} from './codegen';
 

@@ -7,6 +7,7 @@
  */
 
 import {AST} from '../../expression_parser/ast';
+import {ClassPropertyMapping} from '../../property_mapping';
 import {
   BoundAttribute,
   BoundEvent,
@@ -79,16 +80,6 @@ export interface Target<DirectiveT> {
 }
 
 /**
- * A data structure which can indicate whether a given property name is present or not.
- *
- * This is used to represent the set of inputs or outputs present on a directive, and allows the
- * binder to query for the presence of a mapping for property names.
- */
-export interface InputOutputPropertySet {
-  hasBindingPropertyName(propertyName: string): boolean;
-}
-
-/**
  * A data structure which captures the animation trigger names that are statically resolvable
  * and whether some names could not be statically evaluated.
  */
@@ -120,14 +111,14 @@ export interface DirectiveMeta {
    *
    * Goes from property names to field names.
    */
-  inputs: InputOutputPropertySet;
+  inputs: ClassPropertyMapping;
 
   /**
    * Set of outputs which this directive claims.
    *
    * Goes from property names to field names.
    */
-  outputs: InputOutputPropertySet;
+  outputs: ClassPropertyMapping;
 
   /**
    * Name under which the directive is exported, if any (exportAs in Angular).

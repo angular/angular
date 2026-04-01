@@ -9,7 +9,10 @@
 import {
   AbsoluteSourceSpan,
   BoundTarget,
+  ClassPropertyMapping,
+  ClassPropertyName,
   DirectiveMeta,
+  InputOrOutput,
   LegacyAnimationTriggerNames,
   MatchSource,
   ParseSourceSpan,
@@ -20,12 +23,9 @@ import ts from 'typescript';
 import {ErrorCode} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {
-  ClassPropertyMapping,
-  ClassPropertyName,
   DirectiveTypeCheckMeta,
   HostDirectiveMeta,
   InputMapping,
-  InputOrOutput,
   PipeMeta,
   TemplateGuardMeta,
 } from '../../metadata';

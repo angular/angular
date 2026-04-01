@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MatchSource} from '@angular/compiler';
+import {ClassPropertyMapping, MatchSource} from '@angular/compiler';
 import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
@@ -27,7 +27,6 @@ import {
   NgModuleMeta,
   PipeMeta,
 } from './api';
-import {ClassPropertyMapping} from './property_mapping';
 import {
   extractDirectiveTypeCheckMeta,
   extractReferencesFromType,
