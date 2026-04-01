@@ -8,7 +8,7 @@
 
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
 import {createMetadataKey, metadata, MIN} from '../metadata';
-import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 import {validate} from './validate';
 import {minError} from './validation_errors';
 
@@ -29,10 +29,7 @@ import {minError} from './validation_errors';
  * @category validation
  * @experimental 21.0.0
  */
-export function min<
-  TValue extends number | string | null,
-  TPathKind extends PathKind = PathKind.Root,
->(
+export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   minValue: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
@@ -42,16 +39,15 @@ export function min<
   );
   metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value === null || Number.isNaN(value)) {
       return undefined;
     }
     const min = ctx.state.metadata(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
-    const value = ctx.value();
-    const numValue = !value && value !== 0 ? NaN : Number(value); // Treat `''` and `null` as `NaN`
-    if (numValue < min) {
+    if (value < min) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {

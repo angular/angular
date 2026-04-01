@@ -8,7 +8,7 @@
 
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
 import {createMetadataKey, MAX, metadata} from '../metadata';
-import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 import {validate} from './validate';
 import {maxError} from './validation_errors';
 
@@ -29,26 +29,25 @@ import {maxError} from './validation_errors';
  * @category validation
  * @experimental 21.0.0
  */
-export function max<TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<number | string | null, SchemaPathRules.Supported, TPathKind>,
-  maxValue: number | LogicFn<number | string | null, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<number | string | null, TPathKind>,
+export function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  maxValue: number | LogicFn<TValue, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const MAX_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
     typeof maxValue === 'number' ? maxValue : maxValue(ctx),
   );
   metadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value === null || Number.isNaN(value)) {
       return undefined;
     }
     const max = ctx.state.metadata(MAX_MEMO)!();
     if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }
-    const value = ctx.value();
-    const numValue = !value && value !== 0 ? NaN : Number(value); // Treat `''` and `null` as `NaN`
-    if (numValue > max) {
+    if (value > max) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {

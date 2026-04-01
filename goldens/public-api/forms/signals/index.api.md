@@ -300,7 +300,7 @@ export interface MarkAsTouchedOptions {
 export const MAX: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
 
 // @public
-export function max<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<number | string | null, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<number | string | null, number | undefined, TPathKind>, config?: BaseValidatorConfig<number | string | null, TPathKind>): void;
+export function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export const MAX_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
@@ -379,7 +379,7 @@ export type MetadataSetterType<TKey> = TKey extends MetadataKey<any, infer TWrit
 export const MIN: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
 
 // @public
-export function min<TValue extends number | string | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export const MIN_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
