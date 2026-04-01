@@ -59,10 +59,16 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
   const memberName = member.name;
   const displayName = member.displayName;
   const returnType = getMemberType(member);
+  const label = displayName ?? memberName;
+
   return (
     <div id={memberName} className={REFERENCE_MEMBER_CARD}>
       <header className={REFERENCE_MEMBER_CARD_HEADER}>
-        <h3>{displayName ?? memberName}</h3>
+        <h3>
+          <a class="docs-anchor" href={'#' + memberName}>
+            {label}
+          </a>
+        </h3>
         {isClassMethodEntry(member) && member.signatures.length > 1 ? (
           <span>{member.signatures.length} overloads</span>
         ) : returnType ? (

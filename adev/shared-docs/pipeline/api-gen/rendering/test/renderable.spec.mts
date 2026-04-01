@@ -7,8 +7,10 @@
  */
 
 import {readFile} from 'fs/promises';
+import {JSDOM} from 'jsdom';
 import {DocEntryRenderable} from '../entities/renderables.mjs';
 import {getRenderable} from '../processing.mjs';
+import {renderEntry} from '../rendering.mjs';
 import {setSymbols} from '../symbol-context.mjs';
 import {resolve} from 'path';
 import {initHighlighter} from '../../../shared/shiki.mjs';
@@ -59,5 +61,22 @@ describe('renderable', () => {
     expect(linkedSignal!.developerPreview).toEqual({version: undefined});
     expect(linkedSignal!.experimental).toBe(undefined);
     expect(linkedSignal!.stable).toBe(undefined);
+  });
+
+  it('should render docs-anchor links in class member card headers', () => {
+    const viewRef = entries.get('ViewRef')!;
+    expect(viewRef).toBeDefined();
+
+    const html = renderEntry(viewRef);
+    const fragment = JSDOM.fragment(html);
+
+    const memberCards = fragment.querySelectorAll('.docs-reference-member-card');
+    expect(memberCards.length).toBeGreaterThan(0);
+
+    for (const card of Array.from(memberCards)) {
+      const id = card.getAttribute('id')!;
+      const anchor = card.querySelector('h3 a.docs-anchor') as HTMLAnchorElement;
+      expect(anchor.getAttribute('href')).toBe(`#${id}`);
+    }
   });
 });
