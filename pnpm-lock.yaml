@@ -336,8 +336,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdbe118e59f59b1ee00ff77a5ccf8c5328248d03
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdbe118e59f59b1ee00ff77a5ccf8c5328248d03(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#75f81023305e3635e811207ee620db884e61d725
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -1792,9 +1792,9 @@ packages:
       '@angular/platform-browser': ^21.0.0 || ^22.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdbe118e59f59b1ee00ff77a5ccf8c5328248d03':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdbe118e59f59b1ee00ff77a5ccf8c5328248d03}
-    version: 0.0.0-d69b99aeae90df28c37c57176a69995b3b60df1b
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725}
+    version: 0.0.0-a3baba2402ef0efd781913544a5bbc13a51a1bc8
     hasBin: true
 
   '@angular/ssr@21.2.6':
@@ -14185,7 +14185,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdbe118e59f59b1ee00ff77a5ccf8c5328248d03(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))':
     dependencies:
       '@actions/core': 3.0.0
       '@conventional-changelog/git-client': 2.6.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
