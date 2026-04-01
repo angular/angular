@@ -16,6 +16,8 @@ import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../../src/di
 
 import {findExpression} from './util';
 
+let keyCounter = 0;
+
 function makeDirectiveMeta(config: {
   name: string;
   selector: string | null;
@@ -28,6 +30,9 @@ function makeDirectiveMeta(config: {
 }): DirectiveMeta {
   return {
     name: config.name,
+    ref: {
+      key: `${config.name}#${keyCounter++}`,
+    },
     exportAs: config.exportAs ?? null,
     inputs: ClassPropertyMapping.fromMappedObject(config.inputs || {}),
     outputs: ClassPropertyMapping.fromMappedObject(config.outputs || {}),

@@ -98,6 +98,14 @@ export interface DirectiveMeta {
    */
   name: string;
 
+  /** Reference to the directive declaration site. */
+  ref: {
+    /** Key that uniquely identifies the reference. */
+    key: string;
+
+    // Normally we have some more fields here depending on where the reference originated from.
+  };
+
   /** The selector for the directive or `null` if there isn't one. */
   selector: string | null;
 
