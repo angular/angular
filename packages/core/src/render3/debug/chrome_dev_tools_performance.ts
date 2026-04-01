@@ -43,6 +43,9 @@ declare global {
       trackName?: string,
       trackGroup?: string,
       color?: DevToolsColor,
+      // Experimental: 7th argument for user-supplied detail data rendered in the DevTools performance panel.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Console/timeStamp_static#browser_compatibility
+      // Requires: chrome://flags/#enable-devtools-deep-link-via-extensibility-api
       detail?: object,
     ): void;
   }
