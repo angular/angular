@@ -12,6 +12,7 @@ import {
   R3TargetBinder,
   SelectorMatcher,
   TmplAstElement,
+  MatchSource,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -137,6 +138,7 @@ runInEachFileSystem(() => {
         animationTriggerNames: null,
         ngContentSelectors: null,
         preserveWhitespaces: false,
+        matchSource: MatchSource.Selector,
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), [dirMeta]);
 

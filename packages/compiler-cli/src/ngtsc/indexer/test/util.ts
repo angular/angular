@@ -10,6 +10,7 @@ import {
   BoundTarget,
   CssSelector,
   DirectiveMatcher,
+  MatchSource,
   parseTemplate,
   ParseTemplateOptions,
   R3TargetBinder,
@@ -69,6 +70,7 @@ export function getBoundTemplate(
     animationTriggerNames: null,
     ngContentSelectors: null,
     preserveWhitespaces: false,
+    matchSource: MatchSource.Selector,
   }));
 
   let matcher: DirectiveMatcher<ComponentMeta>;

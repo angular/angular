@@ -42,6 +42,7 @@ import {
   ViewEncapsulation,
   DirectiveMatcher,
   SelectorlessMatcher,
+  MatchSource,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -73,7 +74,6 @@ import {
   DirectiveMeta,
   extractDirectiveTypeCheckMeta,
   HostDirectivesResolver,
-  MatchSource,
   MetadataReader,
   MetadataRegistry,
   MetaKind,

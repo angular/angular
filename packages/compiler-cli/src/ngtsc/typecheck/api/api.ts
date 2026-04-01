@@ -11,6 +11,7 @@ import {
   BoundTarget,
   DirectiveMeta,
   LegacyAnimationTriggerNames,
+  MatchSource,
   ParseSourceSpan,
   SchemaMetadata,
 } from '@angular/compiler';
@@ -88,6 +89,7 @@ export interface TcbDirectiveMetadata {
   isExplicitlyDeferred: boolean;
   preserveWhitespaces: boolean;
   exportAs: string[] | null;
+  matchSource: MatchSource;
 
   /** Type parameters of the directive, if available. */
   typeParameters: TcbTypeParameter[] | null;
