@@ -132,6 +132,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   hydration: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
   changeDetection?: ChangeDetection;
+  injector?: Injector;
 }
 
 export interface SerializedInjector {
