@@ -1,3 +1,34 @@
+<a name="22.0.0-next.6"></a>
+# 22.0.0-next.6 (2026-04-01)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [08d36599d7](https://github.com/angular/angular/commit/08d36599d724d6b3dbe2c9891c32f783bef4e157) | fix | register SVG animation attributes in URL security context ([#67797](https://github.com/angular/angular/pull/67797)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fcd0bb0db8](https://github.com/angular/angular/commit/fcd0bb0db83576ef0bc13c5c32f158d95efbedd5) | fix | prevent recursive scope checks for invalid NgModule imports |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e84e35cdd6](https://github.com/angular/angular/commit/e84e35cdd60696d8670421189e4aa02c1db583a6) | fix | prevent binding unsafe attributes on SVG animation elements ([#67797](https://github.com/angular/angular/pull/67797)) |
+| [8fa6617352](https://github.com/angular/angular/commit/8fa66173523bb275d33de4bd43ce23947812922e) | fix | resolve component import by exact specifier in route lazy-loading schematic |
+| [028e1d3ce0](https://github.com/angular/angular/commit/028e1d3ce0ed3a33d3b7730a51b549a5cf013b29) | fix | treat `object[data]` as resource URL context ([#67797](https://github.com/angular/angular/pull/67797)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7871093822](https://github.com/angular/angular/commit/78710938225d2c29c6e3666e431c2952bb5560db) | fix | validate locale in getOutputPathFn to prevent path traversal |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [682aaf943f](https://github.com/angular/angular/commit/682aaf943fea3d99f9f834b0bad4d165b4b28071) | feat | add strictTemplates to tsconfig during ng update |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [daa9b2a9d6](https://github.com/angular/angular/commit/daa9b2a9d67557ae9246559f74396f43b240581c) | fix | pass outlet context to split to fix empty path named outlets |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.7"></a>
 # 21.2.7 (2026-04-01)
 ### compiler
