@@ -14,8 +14,9 @@ import {
   TcbReferenceMetadata,
   TcbInputMapping,
   TcbPipeMetadata,
-  TypeCheckableDirectiveMeta,
   TcbTypeParameter,
+  TcbReferenceKey,
+  TypeCheckableDirectiveMeta,
 } from '../api';
 import {Environment} from './environment';
 import {ImportFlags, ReferenceEmitKind, Reference} from '../../imports';
@@ -279,19 +280,28 @@ function extractReferenceMetadata(
     isLocal = false;
   }
 
-  const refMeta: TcbReferenceMetadata = {
+  const nodeName = ref.node?.name as ts.Identifier | undefined;
+  const nodeNameSpan = nodeName
+    ? new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd())
+    : undefined;
+  const nodeFilePath = nodeName?.getSourceFile().fileName;
+  let key: TcbReferenceKey;
+
+  if (nodeFilePath !== undefined && nodeNameSpan !== undefined) {
+    key = `${nodeFilePath}#${nodeNameSpan.start}` as TcbReferenceKey;
+  } else {
+    key = (moduleName ? `${moduleName}#${name}` : name) as TcbReferenceKey;
+  }
+
+  return {
     name,
     moduleName,
     isLocal,
     unexportedDiagnostic,
-  };
-  const nodeName = ref.node?.name;
-  if (nodeName) {
-    refMeta.nodeNameSpan = new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd());
-    refMeta.nodeFilePath = nodeName.getSourceFile().fileName;
-  }
-
-  return refMeta;
+    nodeNameSpan,
+    nodeFilePath,
+    key,
+  } satisfies TcbReferenceMetadata;
 }
 
 function extractNameFromExpr(node: ts.Node): string | null {
