@@ -173,6 +173,7 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     nativeElement: node.nativeElement,
     hydration: node.hydration,
     controlFlowBlock: node.controlFlowBlock,
+    injector: node.injector,
   } as IndexedNode;
 };
 

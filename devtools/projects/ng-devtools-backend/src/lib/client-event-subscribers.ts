@@ -651,7 +651,7 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
     return;
   }
 
-  const injector = getInjectorFromElementNode(node.nativeElement!);
+  const injector = node.injector ?? getInjectorFromElementNode(node.nativeElement!);
 
   if (!injector) {
     messageBus.emit('latestSignalGraph', [null]);
