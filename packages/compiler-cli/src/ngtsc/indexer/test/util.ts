@@ -10,6 +10,7 @@ import {
   BoundTarget,
   CssSelector,
   DirectiveMatcher,
+  MatchSource,
   parseTemplate,
   ParseTemplateOptions,
   R3TargetBinder,
@@ -20,7 +21,10 @@ import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
+<<<<<<< HEAD
 import {ClassPropertyMapping} from '../../metadata';
+=======
+>>>>>>> 773161ec0f (fixup! refactor(compiler): move matchSource into base metadata)
 import {ClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ComponentMeta} from '../src/context';
@@ -69,6 +73,7 @@ export function getBoundTemplate(
     animationTriggerNames: null,
     ngContentSelectors: null,
     preserveWhitespaces: false,
+    matchSource: MatchSource.Selector,
   }));
 
   let matcher: DirectiveMatcher<ComponentMeta>;

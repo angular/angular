@@ -8,7 +8,7 @@
 
 import * as e from '../../../src/expression_parser/ast';
 import * as a from '../../../src/render3/r3_ast';
-import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
+import {DirectiveMeta, InputOutputPropertySet, MatchSource} from '../../../src/render3/view/t2_api';
 import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate, ParseTemplateOptions} from '../../../src/render3/view/template';
 import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../../src/directive_matching';
@@ -44,6 +44,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
       animationTriggerNames: null,
       ngContentSelectors: null,
       preserveWhitespaces: false,
+      matchSource: MatchSource.Selector,
     },
   ]);
   matcher.addSelectables(CssSelector.parse('[dir]'), [
@@ -58,6 +59,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
       animationTriggerNames: null,
       ngContentSelectors: null,
       preserveWhitespaces: false,
+      matchSource: MatchSource.Selector,
     },
   ]);
   matcher.addSelectables(CssSelector.parse('[hasOutput]'), [
@@ -72,6 +74,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
       animationTriggerNames: null,
       ngContentSelectors: null,
       preserveWhitespaces: false,
+      matchSource: MatchSource.Selector,
     },
   ]);
   matcher.addSelectables(CssSelector.parse('[hasInput]'), [
@@ -86,6 +89,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
       animationTriggerNames: null,
       ngContentSelectors: null,
       preserveWhitespaces: false,
+      matchSource: MatchSource.Selector,
     },
   ]);
   matcher.addSelectables(CssSelector.parse('[sameSelectorAsInput]'), [
@@ -100,6 +104,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
       animationTriggerNames: null,
       ngContentSelectors: null,
       preserveWhitespaces: false,
+      matchSource: MatchSource.Selector,
     },
   ]);
   matcher.addSelectables(CssSelector.parse('comp'), [
@@ -114,6 +119,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
       animationTriggerNames: null,
       ngContentSelectors: null,
       preserveWhitespaces: false,
+      matchSource: MatchSource.Selector,
     },
   ]);
 
@@ -133,6 +139,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta[]> {
         animationTriggerNames: null,
         ngContentSelectors: null,
         preserveWhitespaces: false,
+        matchSource: MatchSource.Selector,
       },
     ]);
   }
@@ -282,6 +289,7 @@ describe('t2 binding', () => {
         animationTriggerNames: null,
         ngContentSelectors: null,
         preserveWhitespaces: false,
+        matchSource: MatchSource.Selector,
       },
     ]);
     const binder = new R3TargetBinder(matcher);
@@ -1039,6 +1047,7 @@ describe('t2 binding', () => {
       preserveWhitespaces: false,
       animationTriggerNames: null,
       isComponent: false,
+      matchSource: MatchSource.Selector,
     };
 
     function makeSelectorlessMatcher(

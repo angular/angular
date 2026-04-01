@@ -156,6 +156,20 @@ export interface DirectiveMeta {
    * Only includes the legacy animation names.
    */
   animationTriggerNames: LegacyAnimationTriggerNames | null;
+
+  /** Tracks how the directive was matched. */
+  matchSource: MatchSource;
+}
+
+/**
+ * Possible ways that a directive can be matched.
+ */
+export enum MatchSource {
+  /** The directive was matched by its selector. */
+  Selector,
+
+  /** The directive was applied as a host directive. */
+  HostDirective,
 }
 
 /**
