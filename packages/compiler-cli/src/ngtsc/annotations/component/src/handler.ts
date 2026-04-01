@@ -42,6 +42,7 @@ import {
   ViewEncapsulation,
   DirectiveMatcher,
   SelectorlessMatcher,
+  MatchSource,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -73,7 +74,6 @@ import {
   DirectiveMeta,
   extractDirectiveTypeCheckMeta,
   HostDirectivesResolver,
-  MatchSource,
   MetadataReader,
   MetadataRegistry,
   MetaKind,
@@ -231,10 +231,12 @@ const isUsedPipe = (decl: AnyUsedType): decl is UsedPipe =>
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler
-  implements
-    DecoratorHandler<Decorator, ComponentAnalysisData, ComponentSymbol, ComponentResolutionData>
-{
+export class ComponentDecoratorHandler implements DecoratorHandler<
+  Decorator,
+  ComponentAnalysisData,
+  ComponentSymbol,
+  ComponentResolutionData
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,

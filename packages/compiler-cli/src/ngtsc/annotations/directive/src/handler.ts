@@ -14,6 +14,7 @@ import {
   ConstantPool,
   FactoryTarget,
   makeBindingParser,
+  MatchSource,
   R3ClassMetadata,
   R3DirectiveMetadata,
   R3TargetBinder,
@@ -33,7 +34,6 @@ import {
   extractDirectiveTypeCheckMeta,
   HostDirectiveMeta,
   InputMapping,
-  MatchSource,
   MetadataReader,
   MetadataRegistry,
   MetaKind,
@@ -132,9 +132,12 @@ export interface DirectiveHandlerData {
   resources: DirectiveResources;
 }
 
-export class DirectiveDecoratorHandler
-  implements DecoratorHandler<Decorator | null, DirectiveHandlerData, DirectiveSymbol, unknown>
-{
+export class DirectiveDecoratorHandler implements DecoratorHandler<
+  Decorator | null,
+  DirectiveHandlerData,
+  DirectiveSymbol,
+  unknown
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
