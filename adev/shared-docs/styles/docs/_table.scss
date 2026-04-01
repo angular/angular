@@ -35,6 +35,9 @@
         vertical-align: top;
         min-width: 10ch;
       }
+      td:has(code) {
+        min-width: 8ch;
+      }
       &:not(:last-child) {
         border-block-end: 1px solid var(--senary-contrast);
       }
