@@ -14,7 +14,7 @@ import {
   CanActivateChildFn,
   CanActivateFn,
   CanMatchFn,
-	PartialMatchRouteSnapshot,
+  PartialMatchRouteSnapshot,
   provideRouter,
   ResolveFn,
   Route,
