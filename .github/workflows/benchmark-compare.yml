@@ -34,7 +34,7 @@ jobs:
           repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
           # Checkout the pull request and assume it being trusted given we've checked
           # that the action was triggered by a team member.
-          ref: ${{steps.comment-branch.outputs.head_ref}}
+          ref: ${{steps.comment-branch.outputs.head_sha}}
 
       - run: pnpm install --frozen-lockfile
 
