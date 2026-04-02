@@ -948,6 +948,7 @@
       "noop",
       "noop2",
       "noop3",
+      "normalizeBootstrapOptions",
       "normalizeQueryParams",
       "normalizeQueryParams2",
       "notFoundValueOrThrow",

@@ -587,6 +587,7 @@
       "noSideEffects",
       "noop",
       "noop2",
+      "normalizeBootstrapOptions",
       "notFoundValueOrThrow",
       "observable",
       "onEnter",

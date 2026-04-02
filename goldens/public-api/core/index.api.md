@@ -133,7 +133,13 @@ export class ApplicationModule {
 export class ApplicationRef {
     constructor();
     attachView(viewRef: ViewRef): void;
-    bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+    bootstrap<C>(component: Type<C>, options?: {
+        hostElement?: Element | string;
+        directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+        bindings?: Binding[];
+    }): ComponentRef<C>;
+    // (undocumented)
+    bootstrap<C>(component: Type<C>, hostElement?: Element | string): ComponentRef<C>;
     readonly components: ComponentRef<any>[];
     readonly componentTypes: Type<any>[];
     destroy(): void;

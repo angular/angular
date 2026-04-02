@@ -713,6 +713,7 @@
       "noop2",
       "normalizeAnimationEntry",
       "normalizeAnimationOptions",
+      "normalizeBootstrapOptions",
       "normalizeKeyframes",
       "normalizeKeyframes",
       "normalizeParams",

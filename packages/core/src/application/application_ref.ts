@@ -37,6 +37,7 @@ import {RendererFactory2} from '../render/api';
 import {AfterRenderManager} from '../render3/after_render/manager';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/def_getters';
+import type {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
@@ -375,7 +376,7 @@ export class ApplicationRef {
    *
    * When bootstrapping a component, Angular mounts it onto a target DOM element
    * and kicks off automatic change detection. The target DOM element can be
-   * provided using the `rootSelectorOrNode` argument.
+   * provided using the `hostElement` argument.
    *
    * If the target DOM element is not provided, Angular tries to find one on a page
    * using the `selector` of the component that is being bootstrapped
@@ -403,7 +404,16 @@ export class ApplicationRef {
    *
    * {@example core/ts/platform/platform.ts region='domNode'}
    */
-  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+  bootstrap<C>(
+    component: Type<C>,
+    options?: {
+      hostElement?: Element | string;
+      directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+      bindings?: Binding[];
+    },
+  ): ComponentRef<C>;
+
+  bootstrap<C>(component: Type<C>, hostElement?: Element | string): ComponentRef<C>;
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -414,7 +424,7 @@ export class ApplicationRef {
    *
    * When bootstrapping a component, Angular mounts it onto a target DOM element
    * and kicks off automatic change detection. The target DOM element can be
-   * provided using the `rootSelectorOrNode` argument.
+   * provided using the `hostElement` argument.
    *
    * If the target DOM element is not provided, Angular tries to find one on a page
    * using the `selector` of the component that is being bootstrapped
@@ -448,7 +458,15 @@ export class ApplicationRef {
 
   private bootstrapImpl<C>(
     component: Type<C>,
-    rootSelectorOrNode?: string | any,
+    hostElementOrOptions?:
+      | Element
+      | string
+      | undefined
+      | {
+          hostElement?: Element | string | undefined;
+          directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+          bindings?: Binding[];
+        },
     injector: Injector = Injector.NULL,
   ): ComponentRef<C> {
     const ngZone = this._injector.get(NgZone);
@@ -479,8 +497,16 @@ export class ApplicationRef {
       const ngModule = isBoundToModule(componentFactory)
         ? undefined
         : this._injector.get(NgModuleRef);
-      const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
-      const compRef = componentFactory.create(injector, [], selectorOrNode, ngModule);
+      const {hostElement, directives, bindings} = normalizeBootstrapOptions(hostElementOrOptions);
+      const selectorOrNode = hostElement || componentFactory.selector;
+      const compRef = componentFactory.create(
+        injector,
+        [],
+        selectorOrNode,
+        ngModule,
+        directives,
+        bindings,
+      );
       const nativeElement = compRef.location.nativeElement;
       const testability = compRef.injector.get(TESTABILITY, null);
       testability?.registerApplication(nativeElement);
@@ -801,6 +827,32 @@ export class ApplicationRef {
   get viewCount() {
     return this._views.length;
   }
+}
+
+function normalizeBootstrapOptions(
+  hostElementOrOptions:
+    | Element
+    | string
+    | undefined
+    | {
+        hostElement?: Element | string | undefined;
+        directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+        bindings?: Binding[];
+      },
+): {
+  hostElement?: Element | string | undefined;
+  directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+  bindings?: Binding[];
+} {
+  if (
+    hostElementOrOptions === undefined ||
+    typeof hostElementOrOptions === 'string' ||
+    hostElementOrOptions instanceof Element
+  ) {
+    return {hostElement: hostElementOrOptions};
+  }
+
+  return hostElementOrOptions;
 }
 
 function warnIfDestroyed(destroyed: boolean): void {

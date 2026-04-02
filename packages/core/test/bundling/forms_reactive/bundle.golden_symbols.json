@@ -860,6 +860,7 @@
       "noSideEffects",
       "noop",
       "noop2",
+      "normalizeBootstrapOptions",
       "normalizeSuffix",
       "normalizeValidators",
       "notFoundValueOrThrow",
