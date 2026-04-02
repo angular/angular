@@ -162,7 +162,7 @@ export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSche
 export const FORM_FIELD: InjectionToken<FormField<unknown>>;
 
 // @public
-export interface FormCheckboxControl extends FormUiControl {
+export interface FormCheckboxControl extends FormUiControl<boolean> {
     readonly checked: ModelSignal<boolean>;
     readonly value?: undefined;
 }
@@ -230,7 +230,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 }
 
 // @public
-export interface FormUiControl<TValue = unknown> {
+export interface FormUiControl<TValue> {
     readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
@@ -371,8 +371,8 @@ export interface MetadataReducer<TAcc, TItem> {
 // @public (undocumented)
 export const MetadataReducer: {
     readonly list: <TItem>() => MetadataReducer<TItem[], TItem | undefined>;
-    readonly min: <T extends number | Date = number>() => MetadataReducer<T | undefined, T | undefined>;
-    readonly max: <T extends number | Date = number>() => MetadataReducer<T | undefined, T | undefined>;
+    readonly min: <T extends number | Date>() => MetadataReducer<T | undefined, T | undefined>;
+    readonly max: <T extends number | Date>() => MetadataReducer<T | undefined, T | undefined>;
     readonly or: () => MetadataReducer<boolean, boolean>;
     readonly and: () => MetadataReducer<boolean, boolean>;
     readonly override: typeof override;

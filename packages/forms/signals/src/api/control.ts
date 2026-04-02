@@ -17,7 +17,7 @@ import type {DisabledReason, LimitValue} from './types';
  * @category control
  * @experimental 21.0.0
  */
-export interface FormUiControl<TValue = unknown> {
+export interface FormUiControl<TValue> {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
@@ -130,7 +130,7 @@ export interface FormUiControl<TValue = unknown> {
 // However, we don't want to add it as an actual `extends` clause to avoid confusing users.
 type Check<T extends true> = T;
 type FormUiControlImplementsFormFieldBindingOptions = Check<
-  FormUiControl extends FormFieldBindingOptions ? true : false
+  FormUiControl<unknown> extends FormFieldBindingOptions ? true : false
 >;
 
 /**
@@ -176,7 +176,7 @@ export interface FormValueControl<TValue> extends FormUiControl<TValue> {
  * @experimental 21.0.0
  */
 // TODO: should we make this generic extends `boolean | null` so people can use `null` for parse error?
-export interface FormCheckboxControl extends FormUiControl {
+export interface FormCheckboxControl extends FormUiControl<boolean> {
   /**
    * The checked is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive, *must* provide a `model()` that will be kept in sync with the

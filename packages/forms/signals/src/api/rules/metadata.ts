@@ -67,7 +67,7 @@ export const MetadataReducer = {
   },
 
   /** Creates a reducer that accumulates the min of its individual item values. */
-  min<T extends number | Date = number>(): MetadataReducer<T | undefined, T | undefined> {
+  min<T extends number | Date>(): MetadataReducer<T | undefined, T | undefined> {
     return {
       reduce: (prev, next) => {
         if (prev === undefined || next === undefined) {
@@ -80,7 +80,7 @@ export const MetadataReducer = {
   },
 
   /** Creates a reducer that accumulates a the max of its individual item values. */
-  max<T extends number | Date = number>(): MetadataReducer<T | undefined, T | undefined> {
+  max<T extends number | Date>(): MetadataReducer<T | undefined, T | undefined> {
     return {
       reduce: (prev, next) => {
         if (prev === undefined || next === undefined) {
