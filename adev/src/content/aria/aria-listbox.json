@@ -259,7 +259,7 @@
           "jsdocTags": []
         },
         {
-          "name": "values",
+          "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [],
@@ -540,7 +540,7 @@
       "@angular/aria/listbox"
     ],
     [
-      "Listbox.values",
+      "Listbox.value",
       "@angular/aria/listbox"
     ],
     [

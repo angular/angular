@@ -155,7 +155,7 @@
           "isRequiredInput": false
         },
         {
-          "name": "values",
+          "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
@@ -165,9 +165,9 @@
           ],
           "description": "The values of the selected widgets within the toolbar.",
           "jsdocTags": [],
-          "inputAlias": "values",
+          "inputAlias": "value",
           "isRequiredInput": false,
-          "outputAlias": "valuesChange"
+          "outputAlias": "valueChange"
         }
       ],
       "generics": [
@@ -503,7 +503,7 @@
       "@angular/aria/toolbar"
     ],
     [
-      "Toolbar.values",
+      "Toolbar.value",
       "@angular/aria/toolbar"
     ],
     [

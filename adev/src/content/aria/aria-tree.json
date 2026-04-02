@@ -497,7 +497,7 @@
           "jsdocTags": []
         },
         {
-          "name": "values",
+          "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
@@ -821,7 +821,7 @@
       "@angular/aria/tree"
     ],
     [
-      "Tree.values",
+      "Tree.value",
       "@angular/aria/tree"
     ],
     [
