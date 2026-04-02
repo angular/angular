@@ -224,7 +224,7 @@ describe('ControlValueAccessor', () => {
       jasmine.objectContaining({
         kind: 'legacy-parse',
         context: {text: 'bad'},
-      }) as any,
+      }),
     ]);
   });
 
@@ -301,7 +301,7 @@ describe('ControlValueAccessor', () => {
       jasmine.objectContaining({
         kind: 'legacy-parse',
         context: {text: 'bad'},
-      }) as any,
+      }),
     ]);
   });
 
@@ -539,7 +539,7 @@ describe('ControlValueAccessor', () => {
   });
 
   it('should reflect latest written value in NgControl.value when debounce is active', () => {
-    let ngControlValueInsideCva: any = null;
+    let ngControlValueInsideCva: string | null = null;
 
     @Component({
       selector: 'custom-control-with-debounce',
@@ -594,9 +594,9 @@ describe('ControlValueAccessor', () => {
     act(() => cvaInstance.onInput('updated'));
 
     // NgControl.value should be 'updated' inside onInput!
-    expect(ngControlValueInsideCva).toBe('updated');
+    expect(ngControlValueInsideCva as unknown as string).toBe('updated');
 
-    // But the field value should still be 'initial' if it haven't been flushed yet!
+    // But the field value should still be 'initial' if it hasn't been flushed yet!
     expect(field().value()).toBe('initial');
   });
 

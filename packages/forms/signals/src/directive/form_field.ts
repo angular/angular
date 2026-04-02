@@ -30,8 +30,6 @@ import {
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   NgControl,
-  type Validator,
-  type ValidatorFn,
   ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS,
   ɵselectValueAccessor as selectValueAccessor,
 } from '@angular/forms';
@@ -155,8 +153,6 @@ export class FormField<T> {
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
   private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
-
-  /** Any `Validator` or `ValidatorFn` instances provided on the host element. */
 
   private readonly config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   private readonly validityMonitor = inject(InputValidityMonitor);

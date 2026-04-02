@@ -10,6 +10,7 @@ import {
   computed,
   signal,
   untracked,
+  type Signal,
   type WritableSignal,
   type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
@@ -69,7 +70,12 @@ export function cvaControlCreate(
       const errors = mergedValidator ? mergedValidator(parent.interopNgControl.control) : null;
       return reactiveErrorsToSignalErrors(errors, parent.interopNgControl.control);
     });
-    parent.parseErrorsSource.set(parseErrors as any);
+    // We must cast here because `CompatValidationError` claims to have `fieldTree` statically (to
+    // satisfy `ValidationState` elsewhere), but at construction it is created without it and acts as
+    // `WithoutFieldTree` initially.
+    parent.parseErrorsSource.set(
+      parseErrors as unknown as Signal<readonly ValidationError.WithoutFieldTree[]>,
+    );
   }
 
   parent.registerAsBinding();
