@@ -67,26 +67,26 @@ export const MetadataReducer = {
   },
 
   /** Creates a reducer that accumulates the min of its individual item values. */
-  min(): MetadataReducer<number | undefined, number | undefined> {
+  min<T extends number | Date>(): MetadataReducer<T | undefined, T | undefined> {
     return {
-      reduce: (acc, item) => {
-        if (acc === undefined || item === undefined) {
-          return acc ?? item;
+      reduce: (prev, next) => {
+        if (prev === undefined || next === undefined) {
+          return prev ?? next;
         }
-        return Math.min(acc, item);
+        return prev < next ? prev : next;
       },
       getInitial: () => undefined,
     };
   },
 
   /** Creates a reducer that accumulates a the max of its individual item values. */
-  max(): MetadataReducer<number | undefined, number | undefined> {
+  max<T extends number | Date>(): MetadataReducer<T | undefined, T | undefined> {
     return {
       reduce: (prev, next) => {
         if (prev === undefined || next === undefined) {
           return prev ?? next;
         }
-        return Math.max(prev, next);
+        return prev > next ? prev : next;
       },
       getInitial: () => undefined,
     };
@@ -259,10 +259,10 @@ export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMe
  * @experimental 21.0.0
  */
 export const MIN: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.max());
+  Signal<number | Date | undefined>,
+  number | Date | undefined,
+  number | Date | undefined
+> = createMetadataKey(MetadataReducer.max<number | Date>());
 
 /**
  * A {@link MetadataKey} representing the max value of the field.
@@ -271,10 +271,10 @@ export const MIN: MetadataKey<
  * @experimental 21.0.0
  */
 export const MAX: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.min());
+  Signal<number | Date | undefined>,
+  number | Date | undefined,
+  number | Date | undefined
+> = createMetadataKey(MetadataReducer.min<number | Date>());
 
 /**
  * A {@link MetadataKey} representing the min length of the field.

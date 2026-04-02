@@ -9,7 +9,7 @@
 import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
 import type {FormFieldBindingOptions} from '../directive/form_field';
 import type {ValidationError, WithOptionalFieldTree} from './rules/validation/validation_errors';
-import type {DisabledReason} from './types';
+import type {DisabledReason, LimitValue} from './types';
 
 /**
  * The base set of properties shared by all form control contracts.
@@ -17,7 +17,7 @@ import type {DisabledReason} from './types';
  * @category control
  * @experimental 21.0.0
  */
-export interface FormUiControl {
+export interface FormUiControl<TValue> {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
@@ -82,8 +82,8 @@ export interface FormUiControl {
    * automatically bind the min value from the bound field to this input.
    */
   readonly min?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+    | InputSignal<LimitValue<TValue> | undefined>
+    | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
   /**
    * An input to receive the min length for the field. If implemented, the `Field` directive will
    * automatically bind the min length from the bound field to this input.
@@ -96,8 +96,8 @@ export interface FormUiControl {
    * automatically bind the max value from the bound field to this input.
    */
   readonly max?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+    | InputSignal<LimitValue<TValue> | undefined>
+    | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
   /**
    * An input to receive the max length for the field. If implemented, the `Field` directive will
    * automatically bind the max length from the bound field to this input.
@@ -130,7 +130,7 @@ export interface FormUiControl {
 // However, we don't want to add it as an actual `extends` clause to avoid confusing users.
 type Check<T extends true> = T;
 type FormUiControlImplementsFormFieldBindingOptions = Check<
-  FormUiControl extends FormFieldBindingOptions ? true : false
+  FormUiControl<unknown> extends FormFieldBindingOptions ? true : false
 >;
 
 /**
@@ -146,7 +146,7 @@ type FormUiControlImplementsFormFieldBindingOptions = Check<
  * @category control
  * @experimental 21.0.0
  */
-export interface FormValueControl<TValue> extends FormUiControl {
+export interface FormValueControl<TValue> extends FormUiControl<TValue> {
   /**
    * The value is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive via this contract, *must* provide a `model()` that will be kept in
@@ -176,7 +176,7 @@ export interface FormValueControl<TValue> extends FormUiControl {
  * @experimental 21.0.0
  */
 // TODO: should we make this generic extends `boolean | null` so people can use `null` for parse error?
-export interface FormCheckboxControl extends FormUiControl {
+export interface FormCheckboxControl extends FormUiControl<boolean> {
   /**
    * The checked is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive, *must* provide a `model()` that will be kept in sync with the

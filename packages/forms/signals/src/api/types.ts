@@ -79,6 +79,20 @@ export interface MarkAsTouchedOptions {
 export type OneOrMany<T> = T | readonly T[];
 
 /**
+ * A type that represents the allowed type for `min` and `max` limits based on the value type.
+ * - If `T` is `Date`, the limit must be a `Date`.
+ * - If `T` is a `number`, the limit must be a `number`.
+ * - Otherwise, it defaults to `number | Date`.
+ *
+ * @experimental 21.0
+ */
+export type LimitValue<T> = [T] extends [Date]
+  ? Date
+  : [T] extends [number]
+    ? number
+    : number | Date;
+
+/**
  * The kind of `FieldPath` (`Root`, `Child` of another `FieldPath`, or `Item` in a `FieldPath` array)
  *
  * @experimental 21.0
@@ -346,7 +360,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
    *
    * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
    */
-  readonly max: Signal<number | undefined> | undefined;
+  readonly max: Signal<LimitValue<TValue> | undefined> | undefined;
 
   /**
    * A signal indicating the field's maximum string length, if applicable.
@@ -360,7 +374,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
    *
    * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
    */
-  readonly min: Signal<number | undefined> | undefined;
+  readonly min: Signal<LimitValue<TValue> | undefined> | undefined;
 
   /**
    * A signal indicating the field's minimum string length, if applicable.

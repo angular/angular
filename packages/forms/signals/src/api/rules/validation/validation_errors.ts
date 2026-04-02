@@ -78,7 +78,7 @@ export function requiredError(
  * @experimental 21.0.0
  */
 export function minError(
-  min: number,
+  min: number | Date,
   options: WithFieldTree<ValidationErrorOptions>,
 ): MinValidationError;
 /**
@@ -90,11 +90,11 @@ export function minError(
  * @experimental 21.0.0
  */
 export function minError(
-  min: number,
+  min: number | Date,
   options?: ValidationErrorOptions,
 ): WithoutFieldTree<MinValidationError>;
 export function minError(
-  min: number,
+  min: number | Date,
   options?: ValidationErrorOptions,
 ): WithOptionalFieldTree<MinValidationError> {
   return new MinValidationError(min, options);
@@ -109,7 +109,7 @@ export function minError(
  * @experimental 21.0.0
  */
 export function maxError(
-  max: number,
+  max: number | Date,
   options: WithFieldTree<ValidationErrorOptions>,
 ): MaxValidationError;
 /**
@@ -121,11 +121,11 @@ export function maxError(
  * @experimental 21.0.0
  */
 export function maxError(
-  max: number,
+  max: number | Date,
   options?: ValidationErrorOptions,
 ): WithoutFieldTree<MaxValidationError>;
 export function maxError(
-  max: number,
+  max: number | Date,
   options?: ValidationErrorOptions,
 ): WithOptionalFieldTree<MaxValidationError> {
   return new MaxValidationError(max, options);
@@ -363,7 +363,7 @@ export class MinValidationError extends BaseNgValidationError {
   override readonly kind = 'min';
 
   constructor(
-    readonly min: number,
+    readonly min: number | Date,
     options?: ValidationErrorOptions,
   ) {
     super(options);
@@ -380,7 +380,7 @@ export class MaxValidationError extends BaseNgValidationError {
   override readonly kind = 'max';
 
   constructor(
-    readonly max: number,
+    readonly max: number | Date,
     options?: ValidationErrorOptions,
   ) {
     super(options);

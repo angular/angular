@@ -8,14 +8,14 @@
 
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
 import {createMetadataKey, metadata, MIN} from '../metadata';
-import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 import {validate} from './validate';
 import {minError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the value to be greater than or equal to
  * the given `minValue`.
- * This function can only be called on number paths.
+ * This function can only be called on number or date paths.
  * In addition to binding a validator, this function adds `MIN` property to the field.
  *
  * @param path Path of the field to validate
@@ -29,29 +29,38 @@ import {minError} from './validation_errors';
  * @category validation
  * @experimental 21.0.0
  */
-export function min<
-  TValue extends number | string | null,
-  TPathKind extends PathKind = PathKind.Root,
->(
+export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   minValue: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
+): void;
+export function min<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  minValue: Date | LogicFn<TValue, Date | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
+): void;
+export function min<
+  TValue extends number | Date | null,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  minValue: number | Date | LogicFn<TValue, number | Date | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
-    typeof minValue === 'number' ? minValue : minValue(ctx),
+  const MIN_MEMO = metadata(path, createMetadataKey<number | Date | undefined>(), (ctx) =>
+    typeof minValue === 'function' ? minValue(ctx) : minValue,
   );
   metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value === null || Number.isNaN(value)) {
       return undefined;
     }
     const min = ctx.state.metadata(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
-    const value = ctx.value();
-    const numValue = !value && value !== 0 ? NaN : Number(value); // Treat `''` and `null` as `NaN`
-    if (numValue < min) {
+    if (value < min) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {

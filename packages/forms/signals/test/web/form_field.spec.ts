@@ -2381,6 +2381,85 @@ describe('field directive', () => {
         expect(element.max).toBe('5');
       });
 
+      it('should validate max on native text input', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="text" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal<number | null>(5), (p) => {
+            max(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        act(() => {
+          element.value = '15';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
+        const component = fixture.componentInstance;
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+      });
+
+      it('should ignore empty input for max validation', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="text" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal<number | null>(5), (p) => {
+            max(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        act(() => {
+          element.value = '';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
+        const component = fixture.componentInstance;
+        expect(component.f().value()).toBeNull();
+        expect(component.f().errors()).toEqual([]);
+      });
+
+      it('should validate max on native date input', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(new Date('2026-04-06')), (p) => {
+            max(p, new Date('2026-04-05'));
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        await fixture.whenStable();
+        const component = fixture.componentInstance;
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+
+        act(() => {
+          element.value = '2026-04-04';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
+        expect(component.f().errors()).toEqual([]);
+      });
+
       it('should bind to a custom control host directive', () => {
         @Directive()
         class CustomControlDir implements FormValueControl<number> {
@@ -2631,6 +2710,85 @@ describe('field directive', () => {
 
         act(() => fixture.componentInstance.min.set(5));
         expect(element.min).toBe('5');
+      });
+
+      it('should validate min on native text input', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="text" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal<number | null>(15), (p) => {
+            min(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        act(() => {
+          element.value = '5';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
+        const component = fixture.componentInstance;
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
+      });
+
+      it('should ignore empty input for min validation', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="text" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal<number | null>(15), (p) => {
+            min(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        act(() => {
+          element.value = '';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
+        const component = fixture.componentInstance;
+        expect(component.f().value()).toBeNull();
+        expect(component.f().errors()).toEqual([]);
+      });
+
+      it('should validate min on native date input', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(new Date('2026-04-02')), (p) => {
+            min(p, new Date('2026-04-05'));
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        await fixture.whenStable();
+        const component = fixture.componentInstance;
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
+
+        act(() => {
+          element.value = '2026-04-06';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
+        expect(component.f().errors()).toEqual([]);
       });
 
       it('should bind to a custom control host directive', () => {
@@ -3596,8 +3754,8 @@ describe('field directive', () => {
         readonly pending = input(false);
         readonly dirty = input(false);
         readonly touched = input(false);
-        readonly min = input<number | undefined>(1);
-        readonly max = input<number | undefined>(1_0000);
+        readonly min = input<number | Date | undefined>(1);
+        readonly max = input<number | Date | undefined>(1_0000);
         readonly minLength = input<number | undefined>(1);
         readonly maxLength = input<number | undefined>(5);
       }
