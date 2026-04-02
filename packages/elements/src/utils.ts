@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
+import {ɵComponentFactoryResolver as ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
 /**
  * Provide methods for scheduling the execution of a callback.
