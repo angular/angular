@@ -1,12 +1,12 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
-$ver-dropdown-width: 200px;
+$ver-dropdown-width: clamp(165px, 20vw, 200px);
 
 :host {
   display: flex;
   flex-flow: column;
   align-items: center;
-  padding: var(--layout-padding) 0px;
+  padding: var(--layout-padding);
   container: update-guide-page / inline-size;
 
   .docs-viewer {
