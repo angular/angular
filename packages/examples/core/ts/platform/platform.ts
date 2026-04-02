@@ -74,7 +74,7 @@ export class AppModuleThree implements DoBootstrap {
   // #docregion domNode
   ngDoBootstrap(appRef: ApplicationRef) {
     const element = document.querySelector('#root-element');
-    appRef.bootstrap(ComponentFour, element);
+    appRef.bootstrap(ComponentFour, element!);
   }
   // #enddocregion domNode
 }

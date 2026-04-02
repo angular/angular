@@ -21,8 +21,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  Directive,
   EnvironmentInjector,
   Injector,
+  Input,
+  inputBinding,
   LOCALE_ID,
   NgModule,
   NgZone,
@@ -213,6 +216,38 @@ describe('bootstrap', () => {
         const comp = ref.bootstrap(ZoneComp);
         expect(comp.instance.inNgZone).toBeTrue();
       }));
+
+      it('supports passing bootstrap options object', inject(
+        [ApplicationRef],
+        (ref: ApplicationRef) => {
+          @Directive({
+            host: {'[attr.data-dir]': 'value'},
+          })
+          class HostDir {
+            @Input()
+            value = 'unset';
+          }
+
+          @Component({
+            selector: 'bootstrap-app',
+            template: `{{ name }}`,
+          })
+          class StandaloneBootComp {
+            @Input()
+            name = 'default';
+          }
+
+          createRootEl('custom-selector');
+          const comp = ref.bootstrap(StandaloneBootComp, {
+            hostElement: 'custom-selector',
+            directives: [{type: HostDir, bindings: [inputBinding('value', () => 'bound')]}],
+            bindings: [inputBinding('name', () => 'hello from binding')],
+          });
+
+          expect(comp.location.nativeElement.getAttribute('data-dir')).toBe('bound');
+          expect(comp.location.nativeElement.textContent.trim()).toBe('hello from binding');
+        },
+      ));
     });
 
     describe('bootstrapImpl', () => {
@@ -236,7 +271,7 @@ describe('bootstrap', () => {
         const appRef = ref as unknown as {bootstrapImpl: ApplicationRef['bootstrapImpl']};
         const compRef = appRef.bootstrapImpl(
           InjectingComponent,
-          /* rootSelectorOrNode */ undefined,
+          /* hostElement */ undefined,
           injector,
         );
         expect(compRef.instance.myService).toBe(myService);
