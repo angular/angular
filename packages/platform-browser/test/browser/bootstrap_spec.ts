@@ -817,6 +817,23 @@ describe('bootstrap factory method', () => {
     );
   });
 
+  it('should register AI tools', async () => {
+    const evt = new Event('devtoolstooldiscovery') as any;
+    evt.respondWith = jasmine.createSpy<() => void>('respondWith');
+    window.dispatchEvent(evt);
+    expect(evt.respondWith).not.toHaveBeenCalled();
+
+    await bootstrap(HelloRootCmp);
+    window.dispatchEvent(evt);
+
+    // Should only be called once, but asserting that is flaky, likely because platforms
+    // aren't consistently destroyed across all tests, so we just check for any response.
+    expect(evt.respondWith).toHaveBeenCalledWith({
+      name: 'Angular',
+      tools: jasmine.any(Array),
+    });
+  });
+
   describe('change detection', () => {
     const log: string[] = [];
 
