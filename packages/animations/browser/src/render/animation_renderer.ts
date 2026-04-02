@@ -46,7 +46,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
       if (!renderer) {
         // Ensure that the renderer is removed from the cache on destroy
         // since it may contain references to detached DOM nodes.
-        const onRendererDestroy = () => cache.delete(delegate);
+        const onRendererDestroy = cache.delete.bind(cache, delegate);
         renderer = new BaseAnimationRenderer(
           EMPTY_NAMESPACE_ID,
           delegate,
