@@ -11,19 +11,19 @@ import type {} from 'zone.js';
 
 import {
   ApplicationRef,
-  ComponentFactory,
-  ComponentFactoryResolver,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ɵComponentFactory as ComponentFactory,
+  ɵComponentFactoryResolver as ComponentFactoryResolver,
   ComponentRef,
   EventEmitter,
   Injector,
-  NgZone,
-  Type,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
-  ɵNotificationSource as NotificationSource,
-  ɵViewRef as ViewRef,
   ɵisViewDirty as isViewDirty,
   ɵmarkForRefresh as markForRefresh,
+  NgZone,
+  ɵNotificationSource as NotificationSource,
   OutputRef,
+  Type,
+  ɵViewRef as ViewRef,
 } from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
 import {switchMap} from 'rxjs/operators';

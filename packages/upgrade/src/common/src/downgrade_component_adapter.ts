@@ -9,19 +9,19 @@
 import {
   ApplicationRef,
   ChangeDetectorRef,
-  ComponentFactory,
+  ɵComponentFactory as ComponentFactory,
   ComponentRef,
   type EventEmitter,
   Injector,
+  type ɵInputSignalNode as InputSignalNode,
   OnChanges,
+  type OutputEmitterRef,
+  ɵSIGNAL as SIGNAL,
   SimpleChange,
   SimpleChanges,
   StaticProvider,
   Testability,
   TestabilityRegistry,
-  type OutputEmitterRef,
-  type ɵInputSignalNode as InputSignalNode,
-  ɵSIGNAL as SIGNAL,
 } from '@angular/core';
 
 import {

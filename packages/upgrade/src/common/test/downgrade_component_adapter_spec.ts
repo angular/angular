@@ -8,7 +8,7 @@
 import {
   Compiler,
   Component,
-  ComponentFactory,
+  ɵComponentFactory as ComponentFactory,
   Injector,
   NgModule,
   TestabilityRegistry,
