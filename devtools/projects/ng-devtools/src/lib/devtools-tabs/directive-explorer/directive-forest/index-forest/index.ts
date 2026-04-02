@@ -28,11 +28,11 @@ const indexTree = (
     position,
     element: node.element,
     component: node.component,
-    directives: node.directives.map((d, i) => ({name: d.name, id: d.id})),
+    directives: node.directives.map((d) => ({name: d.name, id: d.id})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     hydration: node.hydration,
     controlFlowBlock: node.controlFlowBlock,
-    onPush: node.onPush,
+    changeDetection: node.changeDetection,
     hasNativeElement: (node as any).hasNativeElement,
   };
 };

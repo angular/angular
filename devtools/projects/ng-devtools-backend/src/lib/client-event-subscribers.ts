@@ -42,7 +42,7 @@ import {
   idToInjector,
   injectorsSeen,
   isElementInjector,
-  isOnPushDirective,
+  getDirectiveCdStrategy,
   logValue,
   nodeInjectorToResolutionPath,
   queryDirectiveForest,
@@ -439,7 +439,7 @@ const prepareForestForSerialization = (
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
       controlFlowBlock: node.controlFlowBlock,
-      onPush: node.component ? isOnPushDirective(node.component) : false,
+      changeDetection: node.component ? getDirectiveCdStrategy(node.component) : undefined,
 
       // native elements are not serializable
       hasNativeElement: !!node.nativeElement,

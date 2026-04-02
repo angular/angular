@@ -18,12 +18,13 @@ import {IndexedNode} from './directive-forest/index-forest';
 import SpyObj = jasmine.SpyObj;
 import {By} from '@angular/platform-browser';
 import {FrameManager} from '../../application-services/frame_manager';
-import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input, signal} from '@angular/core';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {PropertyPaneComponent} from './property-pane/property-pane.component';
 import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {FlatNode} from '../../shared/object-tree-explorer/object-tree-types';
+import {APP_DATA, AppData} from '../../application-providers/app_data';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -62,53 +63,72 @@ class MockPropertyTabComponent {
   readonly viewSource = output<string>();
 }
 
-describe('DirectiveExplorerComponent', () => {
-  let messageBusMock: SpyObj<any>;
-  let fixture: ComponentFixture<DirectiveExplorerComponent>;
-  let comp: DirectiveExplorerComponent;
-  let applicationOperationsSpy: SpyObj<ApplicationOperations>;
+async function configureTestingModule(appData?: Partial<AppData>) {
+  TestBed.resetTestingModule();
+
   let contentScriptConnected = (frameId: number, name: string, url: string) => {};
   let frameConnected = (frameId: number) => {};
 
-  beforeEach(async () => {
-    applicationOperationsSpy = jasmine.createSpyObj<ApplicationOperations>('_appOperations', [
+  const applicationOperationsSpy: SpyObj<ApplicationOperations> =
+    jasmine.createSpyObj<ApplicationOperations>('_appOperations', [
       'viewSource',
       'selectDomElement',
       'inspect',
     ]);
 
-    messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
+  const messageBusMock: SpyObj<any> = jasmine.createSpyObj('messageBus', [
+    'on',
+    'once',
+    'emit',
+    'destroy',
+  ]);
 
-    messageBusMock.on.and.callFake((topic: string, cb: Function) => {
-      if (topic === 'contentScriptConnected') {
-        contentScriptConnected = cb as (frameId: number, name: string, url: string) => void;
-      }
-      if (topic === 'frameConnected') {
-        frameConnected = cb as (frameId: number) => void;
-      }
-    });
-    messageBusMock.emit.and.callFake((topic: string, args: any[]) => {
-      if (topic === 'enableFrameConnection') {
-        frameConnected(args[0]);
-      }
-    });
+  messageBusMock.on.and.callFake((topic: string, cb: Function) => {
+    if (topic === 'contentScriptConnected') {
+      contentScriptConnected = cb as (frameId: number, name: string, url: string) => void;
+    }
+    if (topic === 'frameConnected') {
+      frameConnected = cb as (frameId: number) => void;
+    }
+  });
+  messageBusMock.emit.and.callFake((topic: string, args: any[]) => {
+    if (topic === 'enableFrameConnection') {
+      frameConnected(args[0]);
+    }
+  });
 
-    TestBed.configureTestingModule({
-      providers: [
-        {provide: ApplicationOperations, useValue: applicationOperationsSpy},
-        {provide: MessageBus, useValue: messageBusMock},
-        {
-          provide: ElementPropertyResolver,
-          useValue: new ElementPropertyResolver(messageBusMock),
-        },
-        {provide: FrameManager, useFactory: () => FrameManager.initialize(123)},
-      ],
-    }).overrideComponent(DirectiveExplorerComponent, {
-      add: {schemas: [CUSTOM_ELEMENTS_SCHEMA]},
-      remove: {imports: [DirectiveForestComponent]},
-    });
+  TestBed.configureTestingModule({
+    providers: [
+      {provide: ApplicationOperations, useValue: applicationOperationsSpy},
+      {provide: MessageBus, useValue: messageBusMock},
+      {
+        provide: ElementPropertyResolver,
+        useValue: new ElementPropertyResolver(messageBusMock),
+      },
+      {provide: FrameManager, useFactory: () => FrameManager.initialize(123)},
+      {
+        provide: APP_DATA,
+        useFactory: () =>
+          signal<AppData>({
+            devMode: true,
+            ivy: true,
+            hydration: false,
+            fullVersion: '0.0.0',
+            majorVersion: 0,
+            minorVersion: 0,
+            patchVersion: 0,
+            ...appData,
+          }),
+      },
+    ],
+  }).overrideComponent(DirectiveExplorerComponent, {
+    add: {schemas: [CUSTOM_ELEMENTS_SCHEMA]},
+    remove: {imports: [DirectiveForestComponent]},
+  });
 
-    fixture = TestBed.overrideComponent(DirectiveExplorerComponent, {
+  const fixture: ComponentFixture<DirectiveExplorerComponent> = TestBed.overrideComponent(
+    DirectiveExplorerComponent,
+    {
       remove: {
         imports: [DirectiveForestComponent, BreadcrumbsComponent, PropertyPaneComponent],
         providers: [SignalGraphManager],
@@ -125,12 +145,36 @@ describe('DirectiveExplorerComponent', () => {
           },
         ],
       },
-    }).createComponent(DirectiveExplorerComponent);
-    comp = fixture.componentInstance;
+    },
+  ).createComponent(DirectiveExplorerComponent);
+  let comp: DirectiveExplorerComponent = fixture.componentInstance;
 
-    TestBed.inject(FrameManager);
-    comp = fixture.componentInstance;
-    await fixture.whenStable();
+  comp = fixture.componentInstance;
+  await fixture.whenStable();
+
+  return {
+    contentScriptConnected,
+    frameConnected,
+    messageBusMock,
+    applicationOperationsSpy,
+    fixture,
+    comp,
+  };
+}
+
+describe('DirectiveExplorerComponent', () => {
+  let messageBusMock: SpyObj<any>;
+  let comp: DirectiveExplorerComponent;
+  let applicationOperationsSpy: SpyObj<ApplicationOperations>;
+  let contentScriptConnected: (frameId: number, name: string, url: string) => void;
+
+  beforeEach(async () => {
+    const module = await configureTestingModule();
+
+    messageBusMock = module.messageBusMock;
+    applicationOperationsSpy = module.applicationOperationsSpy;
+    contentScriptConnected = module.contentScriptConnected;
+    comp = module.comp;
   });
 
   it('should create instance from class', () => {
@@ -209,15 +253,13 @@ describe('DirectiveExplorerComponent', () => {
     });
 
     it('should show hydration checkbox toggle', async () => {
-      fixture.componentRef.setInput('isHydrationEnabled', true);
-      await fixture.whenStable();
-      const toggle = fixture.debugElement.query(By.css('#show-hydration-overlays'));
+      let module = await configureTestingModule({hydration: true});
+      let toggle = module.fixture.debugElement.query(By.css('#show-hydration-overlays'));
       expect(toggle).toBeTruthy();
 
-      fixture.componentRef.setInput('isHydrationEnabled', false);
-      await fixture.whenStable();
-      const toggle2 = fixture.debugElement.query(By.css('#show-hydration-overlays'));
-      expect(toggle2).toBeFalsy();
+      module = await configureTestingModule({hydration: false});
+      toggle = module.fixture.debugElement.query(By.css('#show-hydration-overlays'));
+      expect(toggle).toBeFalsy();
     });
   });
 

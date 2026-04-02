@@ -30,10 +30,19 @@ ng_project(
     ],
 )
 
+ng_project(
+    name = "app_data",
+    srcs = ["app_data.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)
+
 ts_test_library(
     name = "test_application_providers_lib",
     srcs = glob(["*_spec.ts"]),
     deps = [
+        ":app_data",
         ":supported_apis",
         "//:node_modules/@angular/core",
     ],

@@ -27,8 +27,8 @@
     }
   </div>
 
-  @if (node().onPush) {
-    <span class="trait">OnPush</span>
+  @if (changeDetection()) {
+    <span class="trait change-detection">{{ changeDetection() }}</span>
   }
 
   @let block = node().controlFlowBlock;

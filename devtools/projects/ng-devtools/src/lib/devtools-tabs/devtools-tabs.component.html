@@ -80,7 +80,6 @@
       <ng-directive-explorer
         [hidden]="!componentsVisible"
         [showCommentNodes]="showCommentNodes()"
-        [isHydrationEnabled]="isHydrationEnabled()"
         (toggleInspector)="toggleInspector()"
       />
 
@@ -153,8 +152,8 @@
 <mat-menu #info="matMenu">
   <p mat-menu-item class="version-label">
     Angular version:
-    @if (majorAngularVersion() > 12 || majorAngularVersion() === 0) {
-      {{ angularVersion() }}
+    @if (appData().majorVersion > 12 || appData().majorVersion === 0) {
+      {{ appData().fullVersion }}
     } @else {
       <span
         matTooltip="
@@ -162,7 +161,7 @@
           older versions of Angular, but it is not officially supported.
         "
       >
-        {{ angularVersion() }} (unsupported)
+        {{ appData().fullVersion }} (unsupported)
       </span>
     }
   </p>

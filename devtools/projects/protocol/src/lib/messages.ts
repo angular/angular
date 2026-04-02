@@ -7,7 +7,9 @@
  */
 
 import {
+  ɵAcxChangeDetectionStrategy as AcxChangeDetectionStrategy,
   ɵAcxViewEncapsulation as AcxViewEncapsulation,
+  ChangeDetectionStrategy as AngularChangeDetectionStrategy,
   ViewEncapsulation as AngularViewEncapsulation,
   ɵFramework as Framework,
   InjectionToken,
@@ -116,6 +118,8 @@ export interface ForLoopBlock extends ControlFlowBlock {
   trackExpression: string;
 }
 
+export type ChangeDetection = 'ng-on-push' | 'ng-eager' | 'acx-on-push' | 'acx-default';
+
 // TODO: refactor to remove nativeElement as it is not serializable
 // and only really exists on the ng-devtools-backend
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
@@ -127,7 +131,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
-  onPush?: boolean;
+  changeDetection?: ChangeDetection;
 }
 
 export interface SerializedInjector {
@@ -205,7 +209,7 @@ export interface AngularDirectiveMetadata extends BaseDirectiveMetadata {
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
   encapsulation?: AngularViewEncapsulation;
-  onPush?: boolean;
+  changeDetection?: AngularChangeDetectionStrategy;
   dependencies?: SerializedInjectedService[];
 }
 
@@ -215,7 +219,7 @@ export interface AcxDirectiveMetadata extends BaseDirectiveMetadata {
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
   encapsulation?: AcxViewEncapsulation;
-  onPush?: boolean;
+  changeDetection?: AcxChangeDetectionStrategy;
 }
 
 /** Directive metadata specific to Wiz. */

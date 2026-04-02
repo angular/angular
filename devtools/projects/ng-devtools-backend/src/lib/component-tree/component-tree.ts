@@ -20,6 +20,7 @@ import type {
   ɵProviderRecord as ProviderRecord,
 } from '@angular/core';
 import {
+  ChangeDetection,
   ComponentExplorerViewQuery,
   DirectiveMetadata,
   DirectivePosition,
@@ -225,7 +226,7 @@ const enum DirectiveMetadataKey {
   INPUTS = 'inputs',
   OUTPUTS = 'outputs',
   ENCAPSULATION = 'encapsulation',
-  ON_PUSH = 'onPush',
+  CHANGE_DETECTION = 'changeDetection',
 }
 
 // Gets directive metadata. For newer versions of Angular (v12+) it uses
@@ -246,7 +247,7 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
           inputs: meta.inputs,
           outputs: meta.outputs,
           encapsulation: meta.encapsulation,
-          onPush: meta.changeDetection === ChangeDetectionStrategy.OnPush,
+          changeDetection: meta.changeDetection,
         };
       }
       case Framework.ACX: {
@@ -257,7 +258,7 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
           inputs: meta.inputs,
           outputs: meta.outputs,
           encapsulation: meta.encapsulation,
-          onPush: meta.changeDetection === AcxChangeDetectionStrategy.OnPush,
+          changeDetection: meta.changeDetection,
         };
       }
       case Framework.Wiz: {
@@ -288,19 +289,33 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
     inputs: safelyGrabMetadata(DirectiveMetadataKey.INPUTS),
     outputs: safelyGrabMetadata(DirectiveMetadataKey.OUTPUTS),
     encapsulation: safelyGrabMetadata(DirectiveMetadataKey.ENCAPSULATION),
-    onPush: safelyGrabMetadata(DirectiveMetadataKey.ON_PUSH),
+    changeDetection: safelyGrabMetadata(DirectiveMetadataKey.CHANGE_DETECTION),
   };
 };
 
-export function isOnPushDirective(dir: any): boolean {
+export function getDirectiveCdStrategy(dir: any): ChangeDetection | undefined {
   const metadata = getDirectiveMetadata(dir.instance);
+
   switch (metadata.framework) {
     case Framework.Angular:
-      return Boolean(metadata.onPush);
+      switch (metadata.changeDetection) {
+        case ChangeDetectionStrategy.OnPush:
+          return 'ng-on-push';
+        case ChangeDetectionStrategy.Eager:
+          return 'ng-eager';
+      }
+
     case Framework.ACX:
-      return Boolean(metadata.onPush);
+      switch (metadata.changeDetection) {
+        case AcxChangeDetectionStrategy.Default:
+          return 'acx-default';
+        case AcxChangeDetectionStrategy.OnPush:
+          return 'acx-on-push';
+      }
+
     case Framework.Wiz:
-      return false;
+      return undefined;
+
     default:
       throw new Error(`Unknown framework: "${(metadata as {framework: string}).framework}".`);
   }

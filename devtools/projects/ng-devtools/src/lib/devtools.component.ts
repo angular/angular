@@ -19,6 +19,7 @@ import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {SUPPORTED_APIS} from './application-providers/supported_apis';
+import {APP_DATA} from './application-providers/app_data';
 
 const DETECT_ANGULAR_ATTEMPTS = 20;
 
@@ -50,26 +51,18 @@ export const LAST_SUPPORTED_VERSION = 12;
 })
 export class DevToolsComponent implements OnDestroy {
   protected readonly supportedApis = inject(SUPPORTED_APIS);
+  protected readonly appData = inject(APP_DATA);
+
+  readonly angularStatus = signal(AngularStatus.UNKNOWN);
 
   readonly AngularStatus = AngularStatus;
-  readonly angularStatus = signal(AngularStatus.UNKNOWN);
-  readonly angularVersion = signal<string | undefined>(undefined);
-  readonly angularIsInDevMode = signal(true);
-  readonly hydration = signal(false);
-  readonly ivy = signal<boolean | undefined>(undefined);
-
   readonly LAST_SUPPORTED_VERSION = LAST_SUPPORTED_VERSION;
 
   readonly supportedVersion = computed(() => {
-    const version = this.angularVersion();
-    if (!version) {
-      return false;
-    }
-    const majorVersion = parseInt(version.toString().split('.')[0], 10);
-
+    const {majorVersion, ivy} = this.appData();
     // Check that major version is either greater or equal to the last supported version
     // or that the major version is 0 for the (0.0.0-PLACEHOLDER) dev build case.
-    return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && this.ivy();
+    return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && ivy;
   });
 
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
@@ -89,11 +82,13 @@ export class DevToolsComponent implements OnDestroy {
 
     this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
       this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
-      this.angularVersion.set(version);
-      this.angularIsInDevMode.set(devMode);
-      this.ivy.set(ivy);
+      this.appData.init({
+        version,
+        devMode,
+        ivy,
+        hydration,
+      });
       this._interval$.unsubscribe();
-      this.hydration.set(hydration);
 
       if (supportedApis) {
         this.supportedApis.init(supportedApis);

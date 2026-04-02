@@ -54,6 +54,7 @@ import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
 import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../../shared/signal-graph';
+import {APP_DATA} from '../../application-providers/app_data';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -101,7 +102,6 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
 })
 export class DirectiveExplorerComponent {
   readonly showCommentNodes = input(false);
-  readonly isHydrationEnabled = input(false);
   readonly toggleInspector = output<void>();
 
   readonly directiveForest = viewChild.required(DirectiveForestComponent);
@@ -125,6 +125,7 @@ export class DirectiveExplorerComponent {
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly _propResolver = inject(ElementPropertyResolver);
   private readonly _frameManager = inject(FrameManager);
+  protected readonly appData = inject(APP_DATA);
 
   private readonly platform = inject(Platform);
   private readonly snackBar = inject(MatSnackBar);
