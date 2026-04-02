@@ -496,7 +496,7 @@
           "jsdocTags": []
         },
         {
-          "name": "values",
+          "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
@@ -506,9 +506,9 @@
           ],
           "description": "The values of the currently selected menu items.",
           "jsdocTags": [],
-          "inputAlias": "values",
+          "inputAlias": "value",
           "isRequiredInput": false,
-          "outputAlias": "valuesChange"
+          "outputAlias": "valueChange"
         },
         {
           "name": "wrap",
@@ -998,7 +998,7 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuBar.values",
+      "MenuBar.value",
       "@angular/aria/menu"
     ],
     [
