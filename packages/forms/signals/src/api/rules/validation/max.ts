@@ -15,7 +15,7 @@ import {maxError} from './validation_errors';
 /**
  * Binds a validator to the given path that requires the value to be less than or equal to the
  * given `maxValue`.
- * This function can only be called on number paths.
+ * This function can only be called on number or date paths.
  * In addition to binding a validator, this function adds `MAX` property to the field.
  *
  * @param path Path of the field to validate
@@ -33,9 +33,22 @@ export function max<TValue extends number | null, TPathKind extends PathKind = P
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   maxValue: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
+): void;
+export function max<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  maxValue: Date | LogicFn<TValue, Date | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
+): void;
+export function max<
+  TValue extends number | Date | null,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  maxValue: number | Date | LogicFn<TValue, number | Date | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
-    typeof maxValue === 'number' ? maxValue : maxValue(ctx),
+  const MAX_MEMO = metadata(path, createMetadataKey<number | Date | undefined>(), (ctx) =>
+    typeof maxValue === 'function' ? maxValue(ctx) : maxValue,
   );
   metadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
   validate(path, (ctx) => {

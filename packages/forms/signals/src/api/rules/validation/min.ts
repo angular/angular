@@ -15,7 +15,7 @@ import {minError} from './validation_errors';
 /**
  * Binds a validator to the given path that requires the value to be greater than or equal to
  * the given `minValue`.
- * This function can only be called on number paths.
+ * This function can only be called on number or date paths.
  * In addition to binding a validator, this function adds `MIN` property to the field.
  *
  * @param path Path of the field to validate
@@ -33,9 +33,22 @@ export function min<TValue extends number | null, TPathKind extends PathKind = P
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   minValue: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
+): void;
+export function min<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  minValue: Date | LogicFn<TValue, Date | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
+): void;
+export function min<
+  TValue extends number | Date | null,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  minValue: number | Date | LogicFn<TValue, number | Date | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
-    typeof minValue === 'number' ? minValue : minValue(ctx),
+  const MIN_MEMO = metadata(path, createMetadataKey<number | Date | undefined>(), (ctx) =>
+    typeof minValue === 'function' ? minValue(ctx) : minValue,
   );
   metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {

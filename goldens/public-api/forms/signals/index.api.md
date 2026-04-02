@@ -230,7 +230,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 }
 
 // @public
-export interface FormUiControl {
+export interface FormUiControl<TValue = unknown> {
     readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
@@ -238,9 +238,9 @@ export interface FormUiControl {
     focus?(options?: FocusOptions): void;
     readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly max?: InputSignal<LimitValue<TValue> | undefined> | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
     readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly min?: InputSignal<LimitValue<TValue> | undefined> | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
     readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
     readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
     readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
@@ -252,7 +252,7 @@ export interface FormUiControl {
 }
 
 // @public
-export interface FormValueControl<TValue> extends FormUiControl {
+export interface FormValueControl<TValue> extends FormUiControl<TValue> {
     readonly checked?: undefined;
     readonly value: ModelSignal<TValue>;
 }
@@ -286,6 +286,9 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
 export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number] : T[keyof T];
 
 // @public
+export type LimitValue<T> = [T] extends [Date] ? Date : [T] extends [number] ? number : number | Date;
+
+// @public
 export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (ctx: FieldContext<TValue, TPathKind>) => TReturn;
 
 // @public
@@ -297,19 +300,22 @@ export interface MarkAsTouchedOptions {
 }
 
 // @public
-export const MAX: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MAX: MetadataKey<Signal<number | Date | undefined>, number | Date | undefined, number | Date | undefined>;
 
 // @public
 export function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+
+// @public (undocumented)
+export function max<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export const MAX_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
 
 // @public
-export function maxError(max: number, options: WithFieldTree<ValidationErrorOptions>): MaxValidationError;
+export function maxError(max: number | Date, options: WithFieldTree<ValidationErrorOptions>): MaxValidationError;
 
 // @public
-export function maxError(max: number, options?: ValidationErrorOptions): WithoutFieldTree<MaxValidationError>;
+export function maxError(max: number | Date, options?: ValidationErrorOptions): WithoutFieldTree<MaxValidationError>;
 
 // @public
 export function maxLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
@@ -331,11 +337,11 @@ export class MaxLengthValidationError extends BaseNgValidationError {
 
 // @public
 export class MaxValidationError extends BaseNgValidationError {
-    constructor(max: number, options?: ValidationErrorOptions);
+    constructor(max: number | Date, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "max";
     // (undocumented)
-    readonly max: number;
+    readonly max: number | Date;
 }
 
 // @public
@@ -365,8 +371,8 @@ export interface MetadataReducer<TAcc, TItem> {
 // @public (undocumented)
 export const MetadataReducer: {
     readonly list: <TItem>() => MetadataReducer<TItem[], TItem | undefined>;
-    readonly min: () => MetadataReducer<number | undefined, number | undefined>;
-    readonly max: () => MetadataReducer<number | undefined, number | undefined>;
+    readonly min: <T extends number | Date = number>() => MetadataReducer<T | undefined, T | undefined>;
+    readonly max: <T extends number | Date = number>() => MetadataReducer<T | undefined, T | undefined>;
     readonly or: () => MetadataReducer<boolean, boolean>;
     readonly and: () => MetadataReducer<boolean, boolean>;
     readonly override: typeof override;
@@ -376,19 +382,22 @@ export const MetadataReducer: {
 export type MetadataSetterType<TKey> = TKey extends MetadataKey<any, infer TWrite, any> ? TWrite : never;
 
 // @public
-export const MIN: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MIN: MetadataKey<Signal<number | Date | undefined>, number | Date | undefined, number | Date | undefined>;
 
 // @public
 export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+
+// @public (undocumented)
+export function min<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export const MIN_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
 
 // @public
-export function minError(min: number, options: WithFieldTree<ValidationErrorOptions>): MinValidationError;
+export function minError(min: number | Date, options: WithFieldTree<ValidationErrorOptions>): MinValidationError;
 
 // @public
-export function minError(min: number, options?: ValidationErrorOptions): WithoutFieldTree<MinValidationError>;
+export function minError(min: number | Date, options?: ValidationErrorOptions): WithoutFieldTree<MinValidationError>;
 
 // @public
 export function minLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
@@ -410,11 +419,11 @@ export class MinLengthValidationError extends BaseNgValidationError {
 
 // @public
 export class MinValidationError extends BaseNgValidationError {
-    constructor(min: number, options?: ValidationErrorOptions);
+    constructor(min: number | Date, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "min";
     // (undocumented)
-    readonly min: number;
+    readonly min: number | Date;
 }
 
 // @public
@@ -513,10 +522,10 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
-    readonly max: Signal<number | undefined> | undefined;
+    readonly max: Signal<LimitValue<TValue> | undefined> | undefined;
     readonly maxLength: Signal<number | undefined> | undefined;
     metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
-    readonly min: Signal<number | undefined> | undefined;
+    readonly min: Signal<LimitValue<TValue> | undefined> | undefined;
     readonly minLength: Signal<number | undefined> | undefined;
     readonly name: Signal<string>;
     readonly pattern: Signal<readonly RegExp[]>;
