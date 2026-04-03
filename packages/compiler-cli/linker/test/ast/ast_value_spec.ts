@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {WrappedNodeExpr} from '@angular/compiler';
-import {TypeScriptAstFactory} from '../../../src/ngtsc/translator';
 import ts from 'typescript';
+import {TypeScriptAstFactory} from '../../../src/ngtsc/translator';
 
 import {AstHost} from '../../src/ast/ast_host';
 import {AstObject, AstValue} from '../../src/ast/ast_value';
@@ -208,10 +208,7 @@ describe('AstValue', () => {
     });
 
     it('should return the name of a property access', () => {
-      const propertyAccess = factory.createPropertyAccess(
-        factory.createIdentifier('Foo'),
-        factory.createIdentifier('Bar'),
-      );
+      const propertyAccess = factory.createPropertyAccess(factory.createIdentifier('Foo'), 'Bar');
       expect(createAstValue(propertyAccess).getSymbolName()).toEqual('Bar');
     });
 

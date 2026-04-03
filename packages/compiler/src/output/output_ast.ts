@@ -219,12 +219,17 @@ export abstract class Expression {
 
   abstract clone(): Expression;
 
-  prop(name: string, sourceSpan?: ParseSourceSpan | null): ReadPropExpr {
-    return new ReadPropExpr(this, name, null, sourceSpan);
+  prop(name: string, sourceSpan?: ParseSourceSpan | null, safe: boolean = false): ReadPropExpr {
+    return new ReadPropExpr(this, name, null, sourceSpan, undefined, safe);
   }
 
-  key(index: Expression, type?: Type | null, sourceSpan?: ParseSourceSpan | null): ReadKeyExpr {
-    return new ReadKeyExpr(this, index, type, sourceSpan);
+  key(
+    index: Expression,
+    type?: Type | null,
+    sourceSpan?: ParseSourceSpan | null,
+    safe: boolean = false,
+  ): ReadKeyExpr {
+    return new ReadKeyExpr(this, index, type, sourceSpan, undefined, safe);
   }
 
   callFn(
@@ -232,8 +237,9 @@ export abstract class Expression {
     sourceSpan?: ParseSourceSpan | null,
     pure?: boolean,
     leadingComments?: LeadingComment[],
+    safe: boolean = false,
   ): InvokeFunctionExpr {
-    return new InvokeFunctionExpr(this, params, null, sourceSpan, pure, leadingComments);
+    return new InvokeFunctionExpr(this, params, null, sourceSpan, pure, leadingComments, safe);
   }
 
   instantiate(
@@ -442,6 +448,7 @@ export class InvokeFunctionExpr extends Expression {
     sourceSpan?: ParseSourceSpan | null,
     public pure = false,
     leadingComments?: LeadingComment[],
+    public safe: boolean = false,
   ) {
     super(type, sourceSpan, leadingComments);
   }
@@ -475,6 +482,8 @@ export class InvokeFunctionExpr extends Expression {
       this.type,
       this.sourceSpan,
       this.pure,
+      this.leadingComments,
+      this.safe,
     );
   }
 }
@@ -1255,6 +1264,7 @@ export class ReadPropExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     leadingComments?: LeadingComment[],
+    public safe: boolean = false,
   ) {
     super(type, sourceSpan, leadingComments);
   }
@@ -1289,7 +1299,14 @@ export class ReadPropExpr extends Expression {
   }
 
   override clone(): ReadPropExpr {
-    return new ReadPropExpr(this.receiver.clone(), this.name, this.type, this.sourceSpan);
+    return new ReadPropExpr(
+      this.receiver.clone(),
+      this.name,
+      this.type,
+      this.sourceSpan,
+      this.leadingComments,
+      this.safe,
+    );
   }
 }
 
@@ -1300,6 +1317,7 @@ export class ReadKeyExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     leadingComments?: LeadingComment[],
+    public safe: boolean = false,
   ) {
     super(type, sourceSpan, leadingComments);
   }
@@ -1331,7 +1349,14 @@ export class ReadKeyExpr extends Expression {
   }
 
   override clone(): ReadKeyExpr {
-    return new ReadKeyExpr(this.receiver.clone(), this.index.clone(), this.type, this.sourceSpan);
+    return new ReadKeyExpr(
+      this.receiver.clone(),
+      this.index.clone(),
+      this.type,
+      this.sourceSpan,
+      this.leadingComments,
+      this.safe,
+    );
   }
 }
 

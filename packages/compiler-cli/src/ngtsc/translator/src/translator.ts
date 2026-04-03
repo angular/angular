@@ -163,6 +163,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
           ast.fn.visitExpression(this, context),
           ast.args.map((arg) => arg.visitExpression(this, context)),
           ast.pure,
+          ast.safe,
         ),
         ast.sourceSpan,
       ),
@@ -475,7 +476,11 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
 
   visitReadPropExpr(ast: o.ReadPropExpr, context: Context): TExpression {
     return this.attachComments(
-      this.factory.createPropertyAccess(ast.receiver.visitExpression(this, context), ast.name),
+      this.factory.createPropertyAccess(
+        ast.receiver.visitExpression(this, context),
+        ast.name,
+        ast.safe,
+      ),
       ast.leadingComments,
     );
   }
@@ -485,6 +490,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
       this.factory.createElementAccess(
         ast.receiver.visitExpression(this, context),
         ast.index.visitExpression(this, context),
+        ast.safe,
       ),
       ast.leadingComments,
     );

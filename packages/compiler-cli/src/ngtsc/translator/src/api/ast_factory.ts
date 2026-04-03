@@ -65,7 +65,12 @@ export interface AstFactory<TStatement, TExpression, TType> {
    * @param args the arguments to be passed to the call.
    * @param pure whether to mark the call as pure (having no side-effects).
    */
-  createCallExpression(callee: TExpression, args: TExpression[], pure: boolean): TExpression;
+  createCallExpression(
+    callee: TExpression,
+    args: TExpression[],
+    pure: boolean,
+    safe?: boolean,
+  ): TExpression;
 
   /**
    * Create a ternary expression (e.g. `testExpr ? trueExpr : falseExpr`).
@@ -86,7 +91,7 @@ export interface AstFactory<TStatement, TExpression, TType> {
    * @param expression an expression that evaluates to the object to be accessed.
    * @param element an expression that evaluates to the element on the object.
    */
-  createElementAccess(expression: TExpression, element: TExpression): TExpression;
+  createElementAccess(expression: TExpression, element: TExpression, safe?: boolean): TExpression;
 
   /**
    * Create a statement that is simply executing the given `expression` (e.g. `x = 10;`).
@@ -199,7 +204,7 @@ export interface AstFactory<TStatement, TExpression, TType> {
    * @param expression an expression that evaluates to the object to be accessed.
    * @param propertyName the name of the property to access.
    */
-  createPropertyAccess(expression: TExpression, propertyName: string): TExpression;
+  createPropertyAccess(expression: TExpression, propertyName: string, safe?: boolean): TExpression;
 
   /**
    * Create a return statement (e.g `return expr;`).

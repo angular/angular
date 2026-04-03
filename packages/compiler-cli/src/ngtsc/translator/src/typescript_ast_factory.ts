@@ -121,8 +121,20 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     return ts.factory.createBlock(body);
   }
 
-  createCallExpression(callee: ts.Expression, args: ts.Expression[], pure: boolean): ts.Expression {
-    const call = ts.factory.createCallExpression(callee, undefined, args);
+  createCallExpression(
+    callee: ts.Expression,
+    args: ts.Expression[],
+    pure: boolean,
+    safe: boolean = false,
+  ): ts.Expression {
+    const call = safe
+      ? ts.factory.createCallChain(
+          callee,
+          ts.factory.createToken(ts.SyntaxKind.QuestionDotToken),
+          undefined,
+          args,
+        )
+      : ts.factory.createCallExpression(callee, undefined, args);
     if (pure) {
       ts.addSyntheticLeadingComment(
         call,
@@ -148,7 +160,19 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     );
   }
 
-  createElementAccess = ts.factory.createElementAccessExpression;
+  createElementAccess(
+    expression: ts.Expression,
+    element: ts.Expression,
+    safe: boolean = false,
+  ): ts.Expression {
+    return safe
+      ? ts.factory.createElementAccessChain(
+          expression,
+          ts.factory.createToken(ts.SyntaxKind.QuestionDotToken),
+          element,
+        )
+      : ts.factory.createElementAccessExpression(expression, element);
+  }
 
   createExpressionStatement = ts.factory.createExpressionStatement;
 
@@ -273,7 +297,19 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createParenthesizedExpression = ts.factory.createParenthesizedExpression;
 
-  createPropertyAccess = ts.factory.createPropertyAccessExpression;
+  createPropertyAccess(
+    expression: ts.Expression,
+    propertyName: string,
+    safe: boolean = false,
+  ): ts.Expression {
+    return safe
+      ? ts.factory.createPropertyAccessChain(
+          expression,
+          ts.factory.createToken(ts.SyntaxKind.QuestionDotToken),
+          propertyName,
+        )
+      : ts.factory.createPropertyAccessExpression(expression, propertyName);
+  }
 
   createSpreadElement = ts.factory.createSpreadElement;
 
