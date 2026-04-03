@@ -153,5 +153,6 @@ describe('NavigationList', () => {
 class FakeNavigationListState {
   isOpened = signal(true);
   activeNavigationItem = signal(navigationItems.at(1));
+  crossCategoryOrigin = signal<NavigationItem | undefined>(undefined);
   toggleItem(item: NavigationItem) {}
 }

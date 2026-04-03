@@ -660,6 +660,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/routing/testing',
             contentPath: 'guide/routing/testing',
             status: 'new',
+            isCrossReferenced: true,
           },
           {
             label: 'Debugging tests',
@@ -863,6 +864,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Route transition animations',
             path: 'guide/routing/route-transition-animations',
             contentPath: 'guide/routing/route-transition-animations',
+            isCrossReferenced: true,
           },
         ],
       },

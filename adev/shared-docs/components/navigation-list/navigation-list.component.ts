@@ -39,6 +39,7 @@ export class NavigationList {
   readonly linkClicked = output<void>();
 
   private readonly navigationState = inject(NavigationState);
+  private readonly crossCategoryOrigin = this.navigationState.crossCategoryOrigin;
 
   readonly activeItem = this.navigationState.activeNavigationItem;
 
@@ -50,10 +51,19 @@ export class NavigationList {
     ) {
       return;
     }
+    const prevParentItem = this.crossCategoryOrigin();
+    if (prevParentItem) {
+      this.crossCategoryOrigin.set(undefined);
+      this.navigationState.toggleItem(prevParentItem);
+      return;
+    }
     this.navigationState.toggleItem(item);
   }
 
-  emitClickOnLink(): void {
+  emitClickOnLink(item: NavigationItem): void {
+    if (item.isCrossReferenced) {
+      this.crossCategoryOrigin.set(item.parent);
+    }
     this.linkClicked.emit();
   }
 
