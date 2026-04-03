@@ -96,3 +96,11 @@ Once you've finished that update, you will need to force push using `git push [o
 ```
 Please rebase and squash your commits. To do this, make sure to `git fetch upstream` to get the latest changes from the angular repository. Then in your branch run `git rebase upstream/main -i` to do an interactive rebase. This should allow you to fixup or drop any unnecessary commits. After you finish the rebase, force push using `git push [origin name] [branch name] --force`.
 ```
+
+## Angular: Spam
+
+Woah, looks like you've opened a lot issues/PRs recently. While we appreciate contributions from the community, triaging and reviewing a large influx of content in a short time period takes time away from other ongoing projects. As a result, we're closing these issues/PRs to maintain the team's focus.
+
+Note that this is not necessarily a rejection of the goals or direction of any of these contributions in particular, so much as a reflection of the team's current capacity and priorities.
+
+You are welcome to open a smaller subset of issues/PRs in accordance with [our policy](/contributing-docs/spam.md) focused on the most important and impactful contributions and we will do our best to prioritize a response as soon as possible.
