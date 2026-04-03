@@ -9,7 +9,8 @@
 import {HttpClient} from '../src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
-import {provideHttpClient} from '../src/provider';
+import {provideHttpClient, withNoXsrfProtection} from '../src/provider';
+import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
 import {TestBed} from '@angular/core/testing';
 import {toArray} from 'rxjs/operators';
 
@@ -18,7 +19,11 @@ describe('HttpClient', () => {
   let backend: HttpTestingController;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(withNoXsrfProtection()),
+        provideHttpClientTesting(),
+        ɵprovideFakePlatformNavigation(),
+      ],
     });
     client = TestBed.inject(HttpClient);
     backend = TestBed.inject(HttpTestingController);
