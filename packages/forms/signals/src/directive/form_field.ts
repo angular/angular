@@ -30,6 +30,7 @@ import {
   NG_VALUE_ACCESSOR,
   NgControl,
   ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS,
+  ɵselectValueAccessor as selectValueAccessor,
 } from '@angular/forms';
 import {type ValidationError} from '../api/rules';
 import type {Field, FieldState} from '../api/types';
@@ -193,7 +194,18 @@ export class FormField<T> {
    * @internal
    */
   get controlValueAccessor(): ControlValueAccessor | undefined {
-    return this.controlValueAccessors?.[0] ?? this.interopNgControl?.valueAccessor ?? undefined;
+    if (!this.controlValueAccessors || this.controlValueAccessors.length === 0) {
+      return this.interopNgControl?.valueAccessor ?? undefined;
+    }
+
+    // Rely on the exact logic in `@angular/forms` to pick the accessors with correct priority,
+    // passing our fake `InteropNgControl` to fulfill its first parameter requirement.
+    return (
+      selectValueAccessor(
+        this.interopNgControl as unknown as NgControl,
+        this.controlValueAccessors,
+      ) ?? undefined
+    );
   }
 
   /**
