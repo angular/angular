@@ -44,7 +44,7 @@
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=5.9 <6.1"
+    "typescript": ">=6.0 <6.1"
   },
   "peerDependenciesMeta": {
     "typescript": {
