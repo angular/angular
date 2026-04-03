@@ -144,7 +144,9 @@ export class QuickInfoBuilder {
       DisplayInfoKind.ELEMENT,
       getTextSpanOfNode(templateNode),
       undefined /* containerName */,
-      this.typeChecker.typeToString(symbol.tsType),
+      this.typeChecker.typeToString(
+        this.compiler.getTemplateTypeChecker().getTypeOfSymbol(symbol)!,
+      ),
     );
   }
 
@@ -171,7 +173,9 @@ export class QuickInfoBuilder {
       DisplayInfoKind.LET,
       getTextSpanOfNode(this.node),
       undefined /* containerName */,
-      this.typeChecker.typeToString(symbol.tsType),
+      this.typeChecker.typeToString(
+        this.compiler.getTemplateTypeChecker().getTypeOfSymbol(symbol)!,
+      ),
       info?.documentation,
       info?.tags,
     );
@@ -184,21 +188,25 @@ export class QuickInfoBuilder {
       DisplayInfoKind.REFERENCE,
       getTextSpanOfNode(this.node),
       undefined /* containerName */,
-      this.typeChecker.typeToString(symbol.tsType),
+      this.typeChecker.typeToString(
+        this.compiler.getTemplateTypeChecker().getTypeOfSymbol(symbol)!,
+      ),
       info?.documentation,
       info?.tags,
     );
   }
 
   private getQuickInfoForPipeSymbol(symbol: PipeSymbol): ts.QuickInfo | undefined {
-    if (symbol.tsSymbol !== null) {
+    if (this.compiler.getTemplateTypeChecker().getTsSymbolOfSymbol(symbol) !== null) {
       const quickInfo = this.getQuickInfoAtTcbLocation(symbol.tcbLocation);
       return quickInfo === undefined
         ? undefined
         : updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
     } else {
       return createQuickInfo(
-        this.typeChecker.typeToString(symbol.classSymbol.tsType),
+        this.typeChecker.typeToString(
+          this.compiler.getTemplateTypeChecker().getTypeOfSymbol(symbol.classSymbol)!,
+        ),
         DisplayInfoKind.PIPE,
         getTextSpanOfNode(this.node),
       );
@@ -229,12 +237,17 @@ export class QuickInfoBuilder {
     const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
     const info = this.getQuickInfoFromTypeDefAtLocation(dir.tcbLocation);
     let containerName: string | undefined;
-    if (ts.isClassDeclaration(dir.tsSymbol.valueDeclaration) && dir.ngModule !== null) {
+    const tsSymbol = this.compiler.getTemplateTypeChecker().getTsSymbolOfSymbol(dir);
+    if (
+      tsSymbol?.valueDeclaration &&
+      ts.isClassDeclaration(tsSymbol.valueDeclaration) &&
+      dir.ngModule !== null
+    ) {
       containerName = dir.ngModule.name.getText();
     }
 
     return createQuickInfo(
-      this.typeChecker.typeToString(dir.tsType),
+      this.typeChecker.typeToString(this.compiler.getTemplateTypeChecker().getTypeOfSymbol(dir)!),
       kind,
       getTextSpanOfNode(this.node),
       containerName,
@@ -254,7 +267,9 @@ export class QuickInfoBuilder {
     const info = this.getQuickInfoFromTypeDefAtLocation(symbol.tcbLocation);
 
     return createQuickInfo(
-      this.typeChecker.typeToString(symbol.tsType),
+      this.typeChecker.typeToString(
+        this.compiler.getTemplateTypeChecker().getTypeOfSymbol(symbol)!,
+      ),
       kind,
       getTextSpanOfNode(this.node),
       undefined,

@@ -340,14 +340,19 @@ export class TemplateExpressionReferenceVisitor<
     }
 
     const symbol = this.templateTypeChecker.getSymbolOfNode(ast, this.componentClass);
-    if (symbol?.kind !== SymbolKind.Expression || symbol.tsSymbol === null) {
+    if (symbol?.kind !== SymbolKind.Expression) {
+      return false;
+    }
+
+    const tsSymbol = this.templateTypeChecker.getTsSymbolOfSymbol(symbol);
+    if (tsSymbol === null) {
       return false;
     }
 
     // Dangerous: Type checking symbol retrieval is a totally different `ts.Program`,
     // than the one where we analyzed `knownInputs`.
     // --> Find the input via its input id.
-    const targetInput = this.knownFields.attemptRetrieveDescriptorFromSymbol(symbol.tsSymbol);
+    const targetInput = this.knownFields.attemptRetrieveDescriptorFromSymbol(tsSymbol);
 
     if (targetInput === null) {
       return false;

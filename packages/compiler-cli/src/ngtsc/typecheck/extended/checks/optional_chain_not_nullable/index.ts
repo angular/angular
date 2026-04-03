@@ -62,8 +62,8 @@ class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.O
     if (symbolLeft === null || symbolLeft.kind !== SymbolKind.Expression) {
       return [];
     }
-    const typeLeft = symbolLeft.tsType;
-    if (typeLeft.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
+    const typeLeft = ctx.templateTypeChecker.getTypeOfSymbol(symbolLeft);
+    if (!typeLeft || typeLeft.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
       // We should not make assumptions about the any and unknown types; using a nullish coalescing
       // operator is acceptable for those.
       return [];

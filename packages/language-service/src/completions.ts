@@ -426,7 +426,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       ) {
         const symbol = this.templateTypeChecker.getSymbolOfNode(this.node.receiver, this.component);
         if (symbol?.kind === SymbolKind.Expression) {
-          const type = symbol.tsType;
+          const type = this.templateTypeChecker.getTypeOfSymbol(symbol)!;
           const nonNullableType = this.typeChecker.getNonNullableType(type);
           if (type !== nonNullableType && replacementSpan !== undefined) {
             // Shift the start location back one so it includes the `.` of the property access.
@@ -660,6 +660,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         this.tsLS,
         this.typeChecker,
         symbol,
+        this.templateTypeChecker,
       );
       return {
         kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
@@ -706,10 +707,10 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         node,
         this.component,
       ) as TemplateDeclarationSymbol | null;
-      if (symbol === null || symbol.tsSymbol === null) {
+      if (symbol === null || this.templateTypeChecker.getTsSymbolOfSymbol(symbol) === null) {
         return undefined;
       }
-      return symbol.tsSymbol;
+      return this.templateTypeChecker.getTsSymbolOfSymbol(symbol)!;
     } else {
       return this.tsLS.getCompletionEntrySymbol(
         componentContext.tcbPath,
@@ -772,7 +773,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       ) {
         directiveCompletionDetailMap.set(tag, {
           fileName: directive.ref.node.getSourceFile().fileName,
-          entryName: directive.tsSymbol.name,
+          entryName: directive.ref.node.name!.text,
           pos: directive.ref.node.getStart(),
           attrKind: null,
 
@@ -895,7 +896,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
 
     const directive = tagMap.get(entryName)!;
-    return directive?.tsSymbol;
+    const decl = directive.ref.node;
+    return decl.name ? this.typeChecker.getSymbolAtLocation(decl.name) : undefined;
   }
 
   private isAnimationCompletion(): this is ElementAnimationCompletionBuilder {
@@ -1119,7 +1121,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       ) {
         directiveCompletionDetailMap.set(key, {
           fileName: completion.directive.ref.node.getSourceFile().fileName,
-          entryName: completion.directive.tsSymbol.name,
+          entryName: completion.directive.ref.node.name!.text,
           pos: completion.directive.ref.node.getStart(),
           attrKind: completion.kind,
 
@@ -1293,7 +1295,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
           this.typeChecker,
           propertySymbol,
           kind,
-          directive.tsSymbol.name,
+          directive.ref.node.name!.text,
         );
         if (info === null) {
           break;

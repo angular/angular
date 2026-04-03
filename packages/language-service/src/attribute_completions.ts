@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CssSelector, SelectorMatcher, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
+import {
+  CssSelector,
+  MatchSource,
+  SelectorMatcher,
+  TmplAstElement,
+  TmplAstTemplate,
+} from '@angular/compiler';
 import {
   ElementSymbol,
   PotentialDirective,
@@ -225,8 +231,8 @@ export function buildAttributeCompletionTable(
     // An `ElementSymbol` was available. This means inputs and outputs for directives on the
     // element can be added to the completion table.
     for (const dirSymbol of symbol.directives) {
-      const directive = dirSymbol.tsSymbol.valueDeclaration;
-      if (!ts.isClassDeclaration(directive)) {
+      const directive = checker.getTsSymbolOfSymbol(dirSymbol)?.valueDeclaration;
+      if (!directive || !ts.isClassDeclaration(directive)) {
         continue;
       }
       presentDirectives.add(directive);
@@ -239,7 +245,7 @@ export function buildAttributeCompletionTable(
       for (const {classPropertyName, bindingPropertyName} of meta.inputs) {
         let propertyName: string;
 
-        if (dirSymbol.isHostDirective) {
+        if (dirSymbol.matchSource === MatchSource.HostDirective) {
           if (!dirSymbol.exposedInputs?.hasOwnProperty(bindingPropertyName)) {
             continue;
           }
@@ -264,7 +270,7 @@ export function buildAttributeCompletionTable(
       for (const {classPropertyName, bindingPropertyName} of meta.outputs) {
         let propertyName: string;
 
-        if (dirSymbol.isHostDirective) {
+        if (dirSymbol.matchSource === MatchSource.HostDirective) {
           if (!dirSymbol.exposedOutputs?.hasOwnProperty(bindingPropertyName)) {
             continue;
           }
@@ -296,7 +302,7 @@ export function buildAttributeCompletionTable(
     const elementSelector = makeElementSelector(element);
 
     for (const currentDir of potentialDirectives) {
-      const directive = currentDir.tsSymbol.valueDeclaration;
+      const directive = currentDir.ref.node;
       // Skip directives that are present on the element.
       if (!ts.isClassDeclaration(directive) || presentDirectives.has(directive)) {
         continue;
@@ -610,16 +616,16 @@ export function getAttributeCompletionSymbol(
       return null;
     case AttributeCompletionKind.DirectiveAttribute:
     case AttributeCompletionKind.StructuralDirectiveAttribute:
-      return directive?.tsSymbol ?? null;
+      return directive ? (checker.getSymbolAtLocation(directive.ref.node.name) ?? null) : null;
     case AttributeCompletionKind.DirectiveInput:
     case AttributeCompletionKind.DirectiveOutput:
       if (directive === null || classPropertyName === null) {
         return null;
       }
 
-      return (
-        checker.getDeclaredTypeOfSymbol(directive.tsSymbol).getProperty(classPropertyName) ?? null
-      );
+      const dirSymbol = checker.getSymbolAtLocation(directive.ref.node.name);
+      if (!dirSymbol) return null;
+      return checker.getDeclaredTypeOfSymbol(dirSymbol).getProperty(classPropertyName) ?? null;
   }
 }
 

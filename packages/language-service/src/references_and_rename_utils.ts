@@ -124,7 +124,7 @@ export function getTargetDetailsAtTemplatePosition(
       case SymbolKind.Element: {
         const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
         details.push({
-          typescriptLocations: getPositionsForDirectives(matches),
+          typescriptLocations: getPositionsForDirectives(matches, templateTypeChecker),
           templateTarget,
           symbol,
         });
@@ -143,7 +143,7 @@ export function getTargetDetailsAtTemplatePosition(
           symbol.host.directives,
         );
         details.push({
-          typescriptLocations: getPositionsForDirectives(directives),
+          typescriptLocations: getPositionsForDirectives(directives, templateTypeChecker),
           templateTarget,
           symbol,
         });
@@ -224,7 +224,7 @@ export function getTargetDetailsAtTemplatePosition(
       }
       case SymbolKind.SelectorlessDirective:
       case SymbolKind.SelectorlessComponent:
-        const dirPosition = getPositionForDirective(symbol);
+        const dirPosition = getPositionForDirective(symbol, templateTypeChecker);
         if (dirPosition !== null) {
           details.push({
             typescriptLocations: [dirPosition],
@@ -242,10 +242,13 @@ export function getTargetDetailsAtTemplatePosition(
 /**
  * Given a set of `DirectiveSymbol`s, finds the equivalent `FilePosition` of the class declaration.
  */
-function getPositionsForDirectives(directives: Set<DirectiveSymbol>): FilePosition[] {
+function getPositionsForDirectives(
+  directives: Set<DirectiveSymbol>,
+  ttc: import('@angular/compiler-cli/src/ngtsc/typecheck/api').TemplateTypeChecker,
+): FilePosition[] {
   const allDirectives: FilePosition[] = [];
   for (const dir of directives.values()) {
-    const position = getPositionForDirective(dir);
+    const position = getPositionForDirective(dir, ttc);
     if (position !== null) {
       allDirectives.push(position);
     }
@@ -256,8 +259,9 @@ function getPositionsForDirectives(directives: Set<DirectiveSymbol>): FilePositi
 /** Gets the `FilePosition` for a single directive symbol. */
 function getPositionForDirective(
   directive: DirectiveSymbol | SelectorlessComponentSymbol | SelectorlessDirectiveSymbol,
+  ttc: import('@angular/compiler-cli/src/ngtsc/typecheck/api').TemplateTypeChecker,
 ): FilePosition | null {
-  const declaration = directive.tsSymbol?.valueDeclaration;
+  const declaration = ttc.getTsSymbolOfSymbol(directive)?.valueDeclaration;
 
   if (
     declaration !== undefined &&

@@ -45,6 +45,8 @@ import {
   TsCompletionEntryInfo,
 } from './scope';
 import {
+  BindingSymbol,
+  ClassSymbol,
   ElementSymbol,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
@@ -177,6 +179,17 @@ export interface TemplateTypeChecker {
     component: ts.ClassDeclaration,
   ): SelectorlessDirectiveSymbol | null;
   getSymbolOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): Symbol | null;
+
+  /**
+   * Translates a symbol's TCB location to its corresponding ts.Type using the program's type checker.
+   * This is used by compiler checks that need semantic type information from a positional symbol.
+   */
+  getTypeOfSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): ts.Type | null;
+
+  /**
+   * Translates a symbol's TCB location to its corresponding ts.Symbol using the program's type checker.
+   */
+  getTsSymbolOfSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): ts.Symbol | null;
 
   /**
    * Get "global" `Completion`s in the given context.

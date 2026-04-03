@@ -129,7 +129,7 @@ export class DefinitionBuilder {
         // taken to the directive or HTML class.
         return this.getTypeDefinitionsForTemplateInstance(symbol, node);
       case SymbolKind.Pipe: {
-        if (symbol.tsSymbol !== null) {
+        if (this.ttc.getTsSymbolOfSymbol(symbol) !== null) {
           return this.getDefinitionsForSymbols(symbol);
         } else {
           // If there is no `ts.Symbol` for the pipe transform, we want to return the
@@ -171,11 +171,6 @@ export class DefinitionBuilder {
               fileName: mapping.templateUrl,
             });
           }
-        }
-        if (symbol.kind === SymbolKind.Variable) {
-          definitions.push(
-            ...this.getDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}),
-          );
         }
         return definitions;
       }
@@ -261,7 +256,7 @@ export class DefinitionBuilder {
           break;
         }
         case SymbolKind.Pipe: {
-          if (symbol.tsSymbol !== null) {
+          if (this.ttc.getTsSymbolOfSymbol(symbol) !== null) {
             definitions.push(...this.getTypeDefinitionsForSymbols(symbol));
           } else {
             // If there is no `ts.Symbol` for the pipe transform, we want to return the
