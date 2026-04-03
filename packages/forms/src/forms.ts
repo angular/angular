@@ -48,7 +48,11 @@ export {
   SelectMultipleControlValueAccessor,
   ɵNgSelectMultipleOption,
 } from './directives/select_multiple_control_value_accessor';
-export {SetDisabledStateOption, ɵFORM_FIELD_PARSE_ERRORS} from './directives/shared';
+export {
+  selectValueAccessor as ɵselectValueAccessor,
+  SetDisabledStateOption,
+  ɵFORM_FIELD_PARSE_ERRORS,
+} from './directives/shared';
 export {
   AsyncValidator,
   AsyncValidatorFn,

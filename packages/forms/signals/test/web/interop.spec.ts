@@ -18,7 +18,13 @@ import {
   viewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  DefaultValueAccessor,
+  NG_VALUE_ACCESSOR,
+  NgControl,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import {
   debounce,
   disabled,
@@ -371,6 +377,25 @@ describe('ControlValueAccessor', () => {
     expect(() => fixture.detectChanges()).not.toThrowError(/NG0600/);
 
     expect(() => fixture.componentInstance.disabled.set(true)).not.toThrowError(/NG0600/);
+  });
+
+  it('should pick custom CVA over default CVA when both are present', () => {
+    @Component({
+      selector: 'app-root',
+      // Import ReactiveFormsModule to provide the non-standalone DefaultValueAccessor directive.
+      // The selector for DefaultValueAccessor matches `[ngDefaultControl]`.
+      imports: [FormField, CustomControl, ReactiveFormsModule],
+      template: `<custom-control [formField]="f" ngDefaultControl />`,
+    })
+    class App {
+      f = form<string>(signal(''));
+    }
+
+    const fixture = act(() => TestBed.createComponent(App));
+    const customControlInstance = fixture.debugElement.children[0].injector.get(CustomControl);
+
+    act(() => fixture.componentInstance.f().value.set('updated'));
+    expect(customControlInstance.writeCount).toBe(2); // 1 initial + 1 update
   });
 
   describe('properties', () => {
