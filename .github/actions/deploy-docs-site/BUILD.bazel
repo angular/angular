@@ -11,7 +11,6 @@ esbuild_checked_in(
     config = "esbuild.conf.js",
     entry_point = ":lib/main.mts",
     external = [
-        "undici",
         "pnpapi",
     ],
     metafile = False,
