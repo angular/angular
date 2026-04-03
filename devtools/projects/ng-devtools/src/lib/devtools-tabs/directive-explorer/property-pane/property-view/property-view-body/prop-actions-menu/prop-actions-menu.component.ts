@@ -150,7 +150,7 @@ export class PropActionsMenuComponent {
     e.stopPropagation();
 
     const node = this.node();
-    this.controller().logValue();
+    this.controller().logValue(node);
     this.snackBar.open(`Logged value of '${node.prop.name}' to the console`, 'Dismiss', {
       duration: 2000,
       horizontalPosition: 'left',
