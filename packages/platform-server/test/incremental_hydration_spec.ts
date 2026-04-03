@@ -29,6 +29,7 @@ import {
 } from '@angular/core';
 
 import {
+  DOCUMENT,
   isPlatformServer,
   Location,
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
@@ -2131,6 +2132,12 @@ describe('platform-server partial hydration integration', () => {
   });
 
   describe('control flow', () => {
+    let pollingInterval: ReturnType<typeof setInterval>;
+
+    afterEach(() => {
+      if (pollingInterval !== undefined) clearInterval(pollingInterval);
+    });
+
     it('should support hydration for all items in a for loop', async () => {
       @Component({
         selector: 'app',
@@ -2164,13 +2171,31 @@ describe('platform-server partial hydration integration', () => {
           this.value.set('end');
         }
         registry = inject(DEHYDRATED_BLOCK_REGISTRY);
+        private readonly doc = inject(DOCUMENT);
 
         constructor() {
           // TODO: Understand why this is needed to get the full rendering of the HTML
           // Without it, bindings aren't properly rendered in SSR and the test fails.
           // There was no issue with the zone based scheduler.
-          const remove = inject(PendingTasks).add();
-          setTimeout(() => remove(), 10);
+          const pendingTasks = inject(PendingTasks);
+          pendingTasks.run(
+            () =>
+              new Promise<void>((resolve) => {
+                pollingInterval = setInterval(() => {
+                  const el = this.doc.getElementById('item-1');
+                  if (el && el.textContent?.includes('defer block 1 rendered')) {
+                    clearInterval(pollingInterval);
+                    resolve();
+                  }
+                }, 10);
+
+                // Fallback timeout to prevent indefinite hanging
+                setTimeout(() => {
+                  clearInterval(pollingInterval);
+                  resolve();
+                }, 1000);
+              }),
+          );
         }
       }
 
