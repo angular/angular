@@ -446,29 +446,22 @@ export class SymbolBuilder {
     });
     const bindings: BindingSymbol[] = [];
     for (const node of nodes) {
-      if (!isAccessExpression(node.left)) {
+      if (!isAccessExpression(node.left) && !ts.isIdentifier(node.left)) {
         continue;
       }
 
-      const signalInputAssignment = unwrapSignalInputWriteTAccessor(node.left);
-      let fieldAccessExpr: ts.PropertyAccessExpression | ts.ElementAccessExpression;
-      // Signal inputs need special treatment because they are generated with an extra keyed
-      // access. E.g. `_t1.prop[WriteT_ACCESSOR_SYMBOL]`. Observations:
-      //   - The keyed access for the write type needs to be resolved for the "input type".
-      //   - The definition symbol of the input should be the input class member, and not the
-      //     internal write accessor. Symbol should resolve `_t1.prop`.
+      const signalInputAssignment = isAccessExpression(node.left)
+        ? unwrapSignalInputWriteTAccessor(node.left)
+        : null;
+      let fieldAccessExpr: ts.PropertyAccessExpression | ts.ElementAccessExpression | ts.Identifier;
       let tcbLocation: TcbLocation;
-      if (signalInputAssignment !== null) {
-        // Note: If the field expression for the input binding refers to just an identifier,
-        // then we are handling the case of a temporary variable being used for the input field.
-        // This is the case with `honorAccessModifiersForInputBindings = false` and in those cases
-        // we cannot resolve the owning directive, similar to how we guard above with `isAccessExpression`.
-        if (ts.isIdentifier(signalInputAssignment.fieldExpr)) {
-          continue;
-        }
 
+      if (signalInputAssignment !== null) {
         fieldAccessExpr = signalInputAssignment.fieldExpr;
         tcbLocation = this.getTcbLocationForNode(fieldAccessExpr);
+      } else if (ts.isIdentifier(node.left)) {
+        fieldAccessExpr = node.left;
+        tcbLocation = this.getTcbLocationForNode(node.left);
       } else {
         fieldAccessExpr = node.left;
         tcbLocation = this.getTcbLocationForNode(fieldAccessExpr);
@@ -498,13 +491,15 @@ export class SymbolBuilder {
   }
 
   private getDirectiveSymbolForAccessExpression(
-    fieldAccessExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression,
+    fieldAccessExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression | ts.Identifier,
     meta: SymbolDirectiveMeta,
   ): DirectiveSymbol | null {
     return {
       ref: meta.getSymbolReference(),
       kind: SymbolKind.Directive,
-      tcbLocation: this.getTcbLocationForNode(fieldAccessExpr.expression),
+      tcbLocation: ts.isIdentifier(fieldAccessExpr)
+        ? this.getTcbLocationForNode(fieldAccessExpr)
+        : this.getTcbLocationForNode(fieldAccessExpr.expression),
       isComponent: meta.isComponent,
       isStructural: meta.isStructural,
       selector: meta.selector,
@@ -927,4 +922,18 @@ function extractNameFromTypeNode(node: ts.Node): string | null {
     if (ts.isIdentifier(typeName)) return typeName.text;
   }
   return null;
+}
+
+/**
+ * Extracts the type node from a TCB variable declaration, handling both direct types
+ * and types specified in an `as` expression in the initializer.
+ */
+function getTcbVariableType(declaration: ts.VariableDeclaration): ts.TypeNode | undefined {
+  if (declaration.type) {
+    return declaration.type;
+  }
+  if (declaration.initializer && ts.isAsExpression(declaration.initializer)) {
+    return declaration.initializer.type;
+  }
+  return undefined;
 }

@@ -127,8 +127,101 @@ export class QuickInfoBuilder {
     const kind =
       symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
 
-    const quickInfo = this.getQuickInfoAtTcbLocation(symbol.bindings[0].tcbLocation);
-    return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
+    const binding = symbol.bindings[0];
+    const tcbQuickInfo = this.getQuickInfoAtTcbLocation(binding.tcbLocation);
+
+    const program = this.tsLS.getProgram();
+    if (program && binding.target && binding.target.kind === SymbolKind.Directive) {
+      const tcbFile = program.getSourceFile(binding.tcbLocation.tcbPath);
+      if (tcbFile) {
+        const node = findNodeAtPosition(tcbFile, binding.tcbLocation.positionInFile);
+        let propertyName: string | undefined;
+
+        if (node) {
+          if (ts.isIdentifier(node)) {
+            const varName = node.text;
+            const declaration = findVariableDeclaration(tcbFile, varName);
+            if (declaration) {
+              const typeNode = getTcbVariableType(declaration);
+              if (typeNode && ts.isTypeQueryNode(typeNode)) {
+                const exprName = typeNode.exprName;
+                let propName: string | undefined;
+                if (ts.isQualifiedName(exprName)) {
+                  propName = exprName.right.text;
+                } else if (ts.isIdentifier(exprName)) {
+                  propName = exprName.text;
+                }
+                if (propName && propName.startsWith('ngAcceptInputType_')) {
+                  propertyName = propName.substring('ngAcceptInputType_'.length);
+                }
+              }
+            }
+          }
+
+          if (!propertyName) {
+            let curr: ts.Node | undefined = node;
+            while (
+              curr &&
+              !ts.isPropertyAccessExpression(curr) &&
+              !ts.isElementAccessExpression(curr)
+            ) {
+              curr = curr.parent;
+            }
+            if (curr) {
+              if (ts.isPropertyAccessExpression(curr)) {
+                propertyName = curr.name.text;
+              } else if (
+                ts.isElementAccessExpression(curr) &&
+                ts.isStringLiteral(curr.argumentExpression)
+              ) {
+                propertyName = curr.argumentExpression.text;
+              }
+            }
+          }
+
+          if (!propertyName && 'name' in this.node && typeof this.node.name === 'string') {
+            propertyName = this.node.name;
+          }
+        }
+
+        if (propertyName) {
+          // Check if TCB quick info is valid and contains the property name!
+          if (tcbQuickInfo && tcbQuickInfo.displayParts) {
+            const containsProp = tcbQuickInfo.displayParts.some((p) => p.text === propertyName);
+            const isTemp = tcbQuickInfo.displayParts.some((p) => p.text.startsWith('_t'));
+
+            if (containsProp && !isTemp) {
+              const textSpan = getTextSpanOfNode(this.node);
+              return updateQuickInfoKind({...tcbQuickInfo, textSpan}, kind);
+            }
+          }
+
+          // Fallback to class property lookup!
+          const classDecl = binding.target.ref.node;
+          if (ts.isClassDeclaration(classDecl)) {
+            const member = classDecl.members.find(
+              (m: ts.ClassElement) =>
+                m.name && ts.isIdentifier(m.name) && m.name.text === propertyName,
+            );
+            if (member && member.name) {
+              const fileName = classDecl.getSourceFile().fileName;
+              const position = member.name.getStart();
+              const declInfo = this.tsLS.getQuickInfoAtPosition(fileName, position);
+              if (declInfo) {
+                if (declInfo.displayParts) {
+                  declInfo.displayParts = filterAliasImports(declInfo.displayParts);
+                }
+                const textSpan = getTextSpanOfNode(this.node);
+                return updateQuickInfoKind({...declInfo, textSpan}, kind);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Ultimate fallback to TCB QuickInfo!
+    return tcbQuickInfo === undefined ? undefined : updateQuickInfoKind(tcbQuickInfo, kind);
   }
 
   private getQuickInfoForElementSymbol(symbol: ElementSymbol): ts.QuickInfo {
@@ -330,4 +423,37 @@ function updateQuickInfoKind(quickInfo: ts.QuickInfo, kind: DisplayInfoKind): ts
 
 function displayPartsEqual(a: {text: string; kind: string}, b: {text: string; kind: string}) {
   return a.text === b.text && a.kind === b.kind;
+}
+
+function findNodeAtPosition(sourceFile: ts.SourceFile, position: number): ts.Node | undefined {
+  function find(node: ts.Node): ts.Node | undefined {
+    if (position >= node.getStart() && position <= node.getEnd()) {
+      return ts.forEachChild(node, find) || node;
+    }
+    return undefined;
+  }
+  return find(sourceFile);
+}
+
+function getTcbVariableType(declaration: ts.VariableDeclaration): ts.TypeNode | undefined {
+  if (declaration.type) {
+    return declaration.type;
+  }
+  if (declaration.initializer && ts.isAsExpression(declaration.initializer)) {
+    return declaration.initializer.type;
+  }
+  return undefined;
+}
+
+function findVariableDeclaration(
+  sourceFile: ts.SourceFile,
+  name: string,
+): ts.VariableDeclaration | undefined {
+  function find(node: ts.Node): ts.VariableDeclaration | undefined {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === name) {
+      return node;
+    }
+    return ts.forEachChild(node, find);
+  }
+  return find(sourceFile);
 }
