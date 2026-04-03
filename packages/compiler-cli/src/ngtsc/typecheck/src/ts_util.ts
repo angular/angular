@@ -27,7 +27,8 @@ export function isDirectiveDeclaration(node: ts.Node): node is ts.TypeNode | ts.
   return (
     (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
     ts.isVariableDeclaration(node.parent) &&
-    hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.DIRECTIVE)
+    (hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.DIRECTIVE) ||
+      hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.HOST_DIRECTIVE))
   );
 }
 

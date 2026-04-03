@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveOwner, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
+import {DirectiveOwner, MatchSource, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbOp} from './base';
@@ -59,8 +59,12 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
       span = this.node.startSourceSpan || this.node.sourceSpan;
     }
 
+    const identifier =
+      this.dir.matchSource === MatchSource.HostDirective
+        ? ExpressionIdentifier.HOST_DIRECTIVE
+        : ExpressionIdentifier.DIRECTIVE;
     const id = new TcbExpr(this.tcb.allocateId())
-      .addExpressionIdentifier(ExpressionIdentifier.DIRECTIVE)
+      .addExpressionIdentifier(identifier)
       .addParseSpanInfo(span);
     this.scope.addStatement(declareVariable(id, type));
     return id;
