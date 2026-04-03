@@ -336,8 +336,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#75f81023305e3635e811207ee620db884e61d725
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#6ad9d06fa01e41fdf5262093ddd37667fffbf17b
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6ad9d06fa01e41fdf5262093ddd37667fffbf17b(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -1792,9 +1792,9 @@ packages:
       '@angular/platform-browser': ^21.0.0 || ^22.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725}
-    version: 0.0.0-a3baba2402ef0efd781913544a5bbc13a51a1bc8
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6ad9d06fa01e41fdf5262093ddd37667fffbf17b':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6ad9d06fa01e41fdf5262093ddd37667fffbf17b}
+    version: 0.0.0-ef76470f93f00da7e3cdc737d8280d29b9c9b2f2
     hasBin: true
 
   '@angular/ssr@21.2.6':
@@ -3288,8 +3288,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@1.47.0':
-    resolution: {integrity: sha512-0VV7AaXm5rQu3oRHNZNEubRAOL2lv5u+YA72eWnDwcOx3B1jFRbvtgL4drRHlocRHOnludvr3xmbQGbR+/RQAQ==}
+  '@google/genai@1.48.0':
+    resolution: {integrity: sha512-plonYK4ML2PrxsRD9SeqmFt76eREWkQdPCglOA6aYDzL1AAbE+7PUnT54SvpWGfws13L0AZEqGSpL7+1IPnTxQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.2
@@ -10072,6 +10072,10 @@ packages:
     resolution: {integrity: sha512-oRjTw/97aTBN0RHbYCdtF1MQfvusSIBQM0IZEgzl6426+8jSC0nF1a/GmnVLpfB9yyr6g6FTqWqiZVbxrtaCIg==}
     engines: {node: 18 || 20 || >=22}
 
+  minimatch@10.2.5:
+    resolution: {integrity: sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==}
+    engines: {node: 18 || 20 || >=22}
+
   minimatch@3.1.5:
     resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
 
@@ -14185,12 +14189,12 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75f81023305e3635e811207ee620db884e61d725(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6ad9d06fa01e41fdf5262093ddd37667fffbf17b(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))':
     dependencies:
       '@actions/core': 3.0.0
       '@conventional-changelog/git-client': 2.6.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 1.47.0(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
+      '@google/genai': 1.48.0(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
       '@inquirer/prompts': 8.3.2(@types/node@24.12.0)
       '@inquirer/type': 4.0.4(@types/node@24.12.0)
       '@octokit/auth-app': 8.2.0
@@ -14228,7 +14232,7 @@ snapshots:
       jasmine-core: 6.1.0
       jasmine-reporters: 2.5.2
       jsonc-parser: 3.3.1
-      minimatch: 10.2.4
+      minimatch: 10.2.5
       multimatch: 8.0.0
       nock: 14.0.11
       semver: 7.7.4
@@ -16043,7 +16047,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@1.47.0(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
+  '@google/genai@1.48.0(@modelcontextprotocol/sdk@1.28.0(zod@4.3.6))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
     dependencies:
       google-auth-library: 10.6.2(supports-color@10.2.2)
       p-retry: 4.6.2
@@ -24573,6 +24577,10 @@ snapshots:
     dependencies:
       brace-expansion: 5.0.5
 
+  minimatch@10.2.5:
+    dependencies:
+      brace-expansion: 5.0.5
+
   minimatch@3.1.5:
     dependencies:
       brace-expansion: 1.1.13
@@ -24721,7 +24729,7 @@ snapshots:
     dependencies:
       array-differ: 4.0.0
       array-union: 3.0.1
-      minimatch: 10.2.4
+      minimatch: 10.2.5
 
   mute-stdout@2.0.0: {}
 
