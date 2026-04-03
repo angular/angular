@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveOwner, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
+import {DirectiveOwner, MatchSource, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
 import {TcbOp} from './base';
 import {quoteAndEscape, TcbExpr} from './codegen';
 import {Context} from './context';
@@ -74,7 +74,11 @@ export class TcbDirectiveCtorOp extends TcbOp {
       }
     }
 
-    id.addExpressionIdentifier(ExpressionIdentifier.DIRECTIVE).addParseSpanInfo(span);
+    const identifier =
+      this.dir.matchSource === MatchSource.HostDirective
+        ? ExpressionIdentifier.HOST_DIRECTIVE
+        : ExpressionIdentifier.DIRECTIVE;
+    id.addExpressionIdentifier(identifier).addParseSpanInfo(span);
 
     for (const attr of boundAttrs) {
       // Skip text attributes if configured to do so.
