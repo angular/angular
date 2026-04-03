@@ -14,6 +14,7 @@ import {
   Symbol,
   SymbolKind,
   TcbLocation,
+  TemplateTypeChecker,
   VariableSymbol,
 } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
@@ -57,6 +58,7 @@ export function getSymbolDisplayInfo(
   tsLS: ts.LanguageService,
   typeChecker: ts.TypeChecker,
   symbol: ReferenceSymbol | VariableSymbol | LetDeclarationSymbol,
+  templateTypeChecker: TemplateTypeChecker,
 ): DisplayInfo {
   let kind: DisplayInfoKind;
   if (symbol.kind === SymbolKind.Reference) {
@@ -75,7 +77,7 @@ export function getSymbolDisplayInfo(
     symbol.declaration.name,
     kind,
     /* containerName */ undefined,
-    typeChecker.typeToString(symbol.tsType),
+    typeChecker.typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
   );
   const quickInfo =
     symbol.kind === SymbolKind.Reference
@@ -164,7 +166,7 @@ export function getDirectiveDisplayInfo(
   dir: PotentialDirective,
 ): DisplayInfo {
   const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
-  const decl = dir.tsSymbol.declarations.find(ts.isClassDeclaration);
+  const decl = dir.ref.node;
   if (decl === undefined || decl.name === undefined) {
     return {
       kind,
@@ -185,7 +187,7 @@ export function getDirectiveDisplayInfo(
   }
 
   const displayParts = createDisplayParts(
-    dir.tsSymbol.name,
+    decl.name.text,
     kind,
     dir.ngModule?.name?.text,
     undefined,

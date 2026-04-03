@@ -431,12 +431,18 @@ export function getInlayHintsForTemplate(
           const symbol = ttc.getSymbolOfNode(itemVar, typeCheckInfo.declaration);
           if (symbol && symbol.kind === SymbolKind.Variable) {
             const varSymbol = symbol as VariableSymbol;
-            const typeStr = formatType(varSymbol.tsType);
+            const typeStr = formatType(ttc.getTypeOfSymbol(varSymbol)!);
             // Skip hint if type matches variable name (like TypeScript does)
             if (shouldShowVariableTypeHint(typeStr, itemVar.name)) {
               // Position after the variable name
               hints.push(
-                createTypeHint(itemVar.keySpan.end.offset, varSymbol.tsType, typeStr, false, true),
+                createTypeHint(
+                  itemVar.keySpan.end.offset,
+                  ttc.getTypeOfSymbol(varSymbol)!,
+                  typeStr,
+                  false,
+                  true,
+                ),
               );
             }
           }
@@ -461,13 +467,13 @@ export function getInlayHintsForTemplate(
             const symbol = ttc.getSymbolOfNode(contextVar, typeCheckInfo.declaration);
             if (symbol && symbol.kind === SymbolKind.Variable) {
               const varSymbol = symbol as VariableSymbol;
-              const typeStr = formatType(varSymbol.tsType);
+              const typeStr = formatType(ttc.getTypeOfSymbol(varSymbol)!);
               // Skip hint if type matches variable name (like TypeScript does)
               if (shouldShowVariableTypeHint(typeStr, contextVar.name)) {
                 hints.push(
                   createTypeHint(
                     contextVar.keySpan.end.offset,
-                    varSymbol.tsType,
+                    ttc.getTypeOfSymbol(varSymbol)!,
                     typeStr,
                     false,
                     true,
@@ -502,11 +508,17 @@ export function getInlayHintsForTemplate(
           const symbol = ttc.getSymbolOfNode(aliasVar, typeCheckInfo.declaration);
           if (symbol && symbol.kind === SymbolKind.Variable) {
             const varSymbol = symbol as VariableSymbol;
-            const typeStr = formatType(varSymbol.tsType);
+            const typeStr = formatType(ttc.getTypeOfSymbol(varSymbol)!);
             // Skip hint if type matches variable name (like TypeScript does)
             if (shouldShowVariableTypeHint(typeStr, aliasVar.name)) {
               hints.push(
-                createTypeHint(aliasVar.keySpan.end.offset, varSymbol.tsType, typeStr, false, true),
+                createTypeHint(
+                  aliasVar.keySpan.end.offset,
+                  ttc.getTypeOfSymbol(varSymbol)!,
+                  typeStr,
+                  false,
+                  true,
+                ),
               );
             }
           }
@@ -599,11 +611,17 @@ export function getInlayHintsForTemplate(
         const symbol = ttc.getSymbolOfNode(variable, typeCheckInfo.declaration);
         if (symbol && symbol.kind === SymbolKind.Variable) {
           const varSymbol = symbol as VariableSymbol;
-          const typeStr = formatType(varSymbol.tsType);
+          const typeStr = formatType(ttc.getTypeOfSymbol(varSymbol)!);
           // Skip hint if type matches variable name (like TypeScript does)
           if (shouldShowVariableTypeHint(typeStr, variable.name)) {
             hints.push(
-              createTypeHint(variable.keySpan.end.offset, varSymbol.tsType, typeStr, false, true),
+              createTypeHint(
+                variable.keySpan.end.offset,
+                ttc.getTypeOfSymbol(varSymbol)!,
+                typeStr,
+                false,
+                true,
+              ),
             );
           }
         }
@@ -620,11 +638,17 @@ export function getInlayHintsForTemplate(
         const symbol = ttc.getSymbolOfNode(decl, typeCheckInfo.declaration);
         if (symbol && symbol.kind === SymbolKind.LetDeclaration) {
           const letSymbol = symbol as LetDeclarationSymbol;
-          const typeStr = formatType(letSymbol.tsType);
+          const typeStr = formatType(ttc.getTypeOfSymbol(letSymbol)!);
           // Skip hint if type matches variable name (like TypeScript does)
           if (shouldShowVariableTypeHint(typeStr, decl.name)) {
             hints.push(
-              createTypeHint(decl.nameSpan.end.offset, letSymbol.tsType, typeStr, false, true),
+              createTypeHint(
+                decl.nameSpan.end.offset,
+                ttc.getTypeOfSymbol(letSymbol)!,
+                typeStr,
+                false,
+                true,
+              ),
             );
           }
         }
@@ -641,11 +665,17 @@ export function getInlayHintsForTemplate(
         const symbol = ttc.getSymbolOfNode(reference, typeCheckInfo.declaration);
         if (symbol && symbol.kind === SymbolKind.Reference) {
           const refSymbol = symbol as ReferenceSymbol;
-          const typeStr = formatType(refSymbol.tsType);
+          const typeStr = formatType(ttc.getTypeOfSymbol(refSymbol)!);
           // Skip hint if type matches variable name (like TypeScript does)
           if (shouldShowVariableTypeHint(typeStr, reference.name)) {
             hints.push(
-              createTypeHint(reference.keySpan.end.offset, refSymbol.tsType, typeStr, false, true),
+              createTypeHint(
+                reference.keySpan.end.offset,
+                ttc.getTypeOfSymbol(refSymbol)!,
+                typeStr,
+                false,
+                true,
+              ),
             );
           }
         }
@@ -723,11 +753,14 @@ export function getInlayHintsForTemplate(
               if (inputSymbol.bindings.length > 0) {
                 const binding = inputSymbol.bindings[0];
                 // Unwrap InputSignal<T>, InputSignalWithTransform<T, _>, or ModelSignal<T>
-                const unwrappedType = unwrapAngularType(binding.tsType);
+                const unwrappedType = unwrapAngularType(ttc.getTypeOfSymbol(binding)!);
                 const typeStr = formatType(unwrappedType);
 
                 // Check if this is a required input (for visual indicator)
-                const isRequired = isRequiredInput(binding.tsSymbol, typeChecker);
+                const isRequired = isRequiredInput(
+                  ttc.getTsSymbolOfSymbol(binding) ?? undefined,
+                  typeChecker,
+                );
                 const requiredSuffix = getRequiredIndicator(
                   isRequired,
                   mergedConfig.requiredInputIndicator,
@@ -763,7 +796,12 @@ export function getInlayHintsForTemplate(
             // DOM property binding - check if we should show it
             if (propertyConfig.nativeProperties) {
               const domSymbol = symbol as DomBindingSymbol;
-              const propTypeResult = getDomPropertyType(attribute.name, domSymbol, typeChecker);
+              const propTypeResult = getDomPropertyType(
+                attribute.name,
+                domSymbol,
+                typeChecker,
+                ttc,
+              );
               if (propTypeResult) {
                 hints.push(
                   createTypeHint(
@@ -810,11 +848,14 @@ export function getInlayHintsForTemplate(
             if (inputSymbol.bindings.length > 0) {
               const binding = inputSymbol.bindings[0];
               // Unwrap InputSignal<T>, InputSignalWithTransform<T, _>, or ModelSignal<T>
-              const unwrappedType = unwrapAngularType(binding.tsType);
+              const unwrappedType = unwrapAngularType(ttc.getTypeOfSymbol(binding)!);
               const typeStr = formatType(unwrappedType);
 
               // Check if this is a required input (for visual indicator)
-              const isRequired = isRequiredInput(binding.tsSymbol, typeChecker);
+              const isRequired = isRequiredInput(
+                ttc.getTsSymbolOfSymbol(binding) ?? undefined,
+                typeChecker,
+              );
               const requiredSuffix = getRequiredIndicator(
                 isRequired,
                 mergedConfig.requiredInputIndicator,
@@ -849,8 +890,8 @@ export function getInlayHintsForTemplate(
           if (symbol && symbol.kind === SymbolKind.Expression) {
             const exprSymbol =
               symbol as import('@angular/compiler-cli/src/ngtsc/typecheck/api/symbols').ExpressionSymbol;
-            const typeStr = formatType(exprSymbol.tsType);
-            hints.push(createTypeHint(sourceSpan.end, exprSymbol.tsType, typeStr));
+            const typeStr = formatType(ttc.getTypeOfSymbol(exprSymbol)!);
+            hints.push(createTypeHint(sourceSpan.end, ttc.getTypeOfSymbol(exprSymbol)!, typeStr));
           }
         }
       }
@@ -872,8 +913,8 @@ export function getInlayHintsForTemplate(
             if (symbol && symbol.kind === SymbolKind.Expression) {
               const exprSymbol =
                 symbol as import('@angular/compiler-cli/src/ngtsc/typecheck/api/symbols').ExpressionSymbol;
-              const typeStr = formatType(exprSymbol.tsType);
-              hints.push(createTypeHint(sourceSpan.end, exprSymbol.tsType, typeStr));
+              const typeStr = formatType(ttc.getTypeOfSymbol(exprSymbol)!);
+              hints.push(createTypeHint(sourceSpan.end, ttc.getTypeOfSymbol(exprSymbol)!, typeStr));
             }
           }
         }
@@ -889,8 +930,8 @@ export function getInlayHintsForTemplate(
             if (symbol && symbol.kind === SymbolKind.Expression) {
               const exprSymbol =
                 symbol as import('@angular/compiler-cli/src/ngtsc/typecheck/api/symbols').ExpressionSymbol;
-              const typeStr = formatType(exprSymbol.tsType);
-              hints.push(createTypeHint(sourceSpan.end, exprSymbol.tsType, typeStr));
+              const typeStr = formatType(ttc.getTypeOfSymbol(exprSymbol)!);
+              hints.push(createTypeHint(sourceSpan.end, ttc.getTypeOfSymbol(exprSymbol)!, typeStr));
             }
           }
         }
@@ -906,8 +947,8 @@ export function getInlayHintsForTemplate(
             if (symbol && symbol.kind === SymbolKind.Expression) {
               const exprSymbol =
                 symbol as import('@angular/compiler-cli/src/ngtsc/typecheck/api/symbols').ExpressionSymbol;
-              const typeStr = formatType(exprSymbol.tsType);
-              hints.push(createTypeHint(sourceSpan.end, exprSymbol.tsType, typeStr));
+              const typeStr = formatType(ttc.getTypeOfSymbol(exprSymbol)!);
+              hints.push(createTypeHint(sourceSpan.end, ttc.getTypeOfSymbol(exprSymbol)!, typeStr));
             }
           }
         }
@@ -977,7 +1018,9 @@ export function getInlayHintsForTemplate(
           const pipeSymbol = symbol as PipeSymbol;
 
           // Get the transform method's signature from the pipe class
-          const transformMethod = pipeSymbol.classSymbol.tsType.getProperty('transform');
+          const transformMethod = ttc
+            .getTypeOfSymbol(pipeSymbol.classSymbol)!
+            .getProperty('transform');
           if (transformMethod) {
             const transformType = this.typeChecker.getTypeOfSymbolAtLocation(
               transformMethod,
@@ -1086,7 +1129,7 @@ export function getInlayHintsForTemplate(
               );
             } else {
               // Last resort fallback: use pipeSymbol.tsType's call signatures
-              const tsType = pipeSymbol.tsType;
+              const tsType = ttc.getTypeOfSymbol(pipeSymbol)!;
               const callSignatures = tsType.getCallSignatures();
               if (callSignatures.length > 0) {
                 const returnType = callSignatures[0].getReturnType();
@@ -1176,7 +1219,7 @@ export function getInlayHintsForTemplate(
         if (!receiverSymbol || receiverSymbol.kind !== SymbolKind.Expression) return;
 
         const exprSymbol = receiverSymbol as ExpressionSymbol;
-        const receiverType = exprSymbol.tsType;
+        const receiverType = ttc.getTypeOfSymbol(exprSymbol)!;
 
         // Get call signatures from the receiver type
         const signatures = this.typeChecker.getSignaturesOfType(
@@ -1215,7 +1258,7 @@ export function getInlayHintsForTemplate(
             this.typeCheckInfo.declaration,
           );
           if (spreadSymbol && spreadSymbol.kind === SymbolKind.Expression) {
-            const spreadType = (spreadSymbol as ExpressionSymbol).tsType;
+            const spreadType = ttc.getTypeOfSymbol(spreadSymbol as ExpressionSymbol)!;
             // Check if it's a tuple type
             if (this.typeChecker.isTupleType(spreadType)) {
               // Get the tuple's fixed length (number of required elements)
@@ -1654,7 +1697,7 @@ export function getInlayHintsForTemplate(
       );
 
       if (isDirectiveOrComponentOutput && outputSymbol.bindings.length > 0) {
-        const bindingType = outputSymbol.bindings[0].tsType;
+        const bindingType = ttc.getTypeOfSymbol(outputSymbol.bindings[0])!;
         const resolvedType = unwrapAngularType(bindingType);
         return {
           typeStr: typeChecker.typeToString(resolvedType),
@@ -1746,8 +1789,8 @@ export function getInlayHintsForTemplate(
           if (symbol && symbol.kind === SymbolKind.Expression) {
             const exprSymbol = symbol as ExpressionSymbol;
             eventResult = {
-              typeStr: typeChecker.typeToString(exprSymbol.tsType),
-              tsType: exprSymbol.tsType,
+              typeStr: typeChecker.typeToString(ttc.getTypeOfSymbol(exprSymbol)!),
+              tsType: ttc.getTypeOfSymbol(exprSymbol)!,
             };
           }
         }
@@ -1807,7 +1850,7 @@ export function getInlayHintsForTemplate(
             const symbol = ttc.getSymbolOfNode(binding, typeCheckInfo.declaration);
             if (symbol && symbol.kind === SymbolKind.DomBinding) {
               const domSymbol = symbol as DomBindingSymbol;
-              const propTypeResult = getDomPropertyType(binding.name, domSymbol, typeChecker);
+              const propTypeResult = getDomPropertyType(binding.name, domSymbol, typeChecker, ttc);
               if (propTypeResult) {
                 hints.push(
                   createTypeHint(
@@ -2021,6 +2064,7 @@ function getDomPropertyType(
   bindingName: string,
   domSymbol: DomBindingSymbol,
   typeChecker: ts.TypeChecker,
+  ttc: TemplateTypeChecker,
 ): DomPropertyTypeResult | null {
   // Skip style/class/attr bindings - Angular doesn't type-check these yet
   // See: packages/compiler-cli/src/ngtsc/typecheck/src/ops/inputs.ts
@@ -2036,7 +2080,7 @@ function getDomPropertyType(
   // For regular DOM properties, look up the type on the element
   if (domSymbol.host.kind === SymbolKind.Element) {
     const elementSymbol = domSymbol.host as ElementSymbol;
-    const elementType = elementSymbol.tsType;
+    const elementType = ttc.getTypeOfSymbol(elementSymbol)!;
 
     // Get the property from the element type
     const property = elementType.getProperty(bindingName);

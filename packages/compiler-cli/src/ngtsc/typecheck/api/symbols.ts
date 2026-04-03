@@ -7,6 +7,7 @@
  */
 
 import {
+  MatchSource,
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
@@ -80,20 +81,20 @@ export interface TcbLocation {
 
   /** The location in the file where node appears. */
   positionInFile: number;
+
+  /** The end position in the TCB file. Used to correctly resolve AST expressions. */
+  endInFile?: number;
 }
 
 /**
  * A generic representation of some node in a template.
  */
 export interface TsNodeSymbolInfo {
-  /** The `ts.Type` of the template node. */
-  tsType: ts.Type;
-
-  /** The `ts.Symbol` for the template node */
-  tsSymbol: ts.Symbol | null;
-
   /** The position of the most relevant part of the template node. */
   tcbLocation: TcbLocation;
+
+  /** The position of the expression used to determine the type. */
+  tcbTypeLocation?: TcbLocation;
 }
 
 /**
@@ -102,28 +103,16 @@ export interface TsNodeSymbolInfo {
 export interface ExpressionSymbol {
   kind: SymbolKind.Expression;
 
-  /** The `ts.Type` of the expression AST. */
-  tsType: ts.Type;
-
-  /**
-   * The `ts.Symbol` of the entity. This could be `null`, for example `AST` expression
-   * `{{foo.bar + foo.baz}}` does not have a `ts.Symbol` but `foo.bar` and `foo.baz` both do.
-   */
-  tsSymbol: ts.Symbol | null;
-
   /** The position of the most relevant part of the expression. */
   tcbLocation: TcbLocation;
+
+  /** The position of the expression used to determine the type. */
+  tcbTypeLocation?: TcbLocation;
 }
 
 /** Represents either an input or output binding in a template. */
 export interface BindingSymbol {
   kind: SymbolKind.Binding;
-
-  /** The `ts.Type` of the class member on the directive that is the target of the binding. */
-  tsType: ts.Type;
-
-  /** The `ts.Symbol` of the class member on the directive that is the target of the binding. */
-  tsSymbol: ts.Symbol;
 
   /**
    * The `DirectiveSymbol` or `ElementSymbol` for the Directive, Component, or `HTMLElement` with
@@ -133,6 +122,9 @@ export interface BindingSymbol {
 
   /** The location in the shim file where the field access for the binding appears. */
   tcbLocation: TcbLocation;
+
+  /** The position of the expression used to determine the type. */
+  tcbTypeLocation?: TcbLocation;
 }
 
 /**
@@ -160,24 +152,6 @@ export interface OutputBindingSymbol {
  */
 export interface ReferenceSymbol {
   kind: SymbolKind.Reference;
-
-  /**
-   * The `ts.Type` of the Reference value.
-   *
-   * `TmplAstTemplate` - The type of the `TemplateRef`
-   * `TmplAstElement` - The `ts.Type` for the `HTMLElement`.
-   * Directive - The `ts.Type` for the class declaration.
-   */
-  tsType: ts.Type;
-
-  /**
-   * The `ts.Symbol` for the Reference value.
-   *
-   * `TmplAstTemplate` - A `TemplateRef` symbol.
-   * `TmplAstElement` - The symbol for the `HTMLElement`.
-   * Directive - The symbol for the class declaration of the directive.
-   */
-  tsSymbol: ts.Symbol;
 
   /**
    * Depending on the type of the reference, this is one of the following:
@@ -220,20 +194,6 @@ export interface VariableSymbol {
   kind: SymbolKind.Variable;
 
   /**
-   * The `ts.Type` of the entity.
-   *
-   * This will be `any` if there is no `ngTemplateContextGuard`.
-   */
-  tsType: ts.Type;
-
-  /**
-   * The `ts.Symbol` for the context variable.
-   *
-   * This will be `null` if there is no `ngTemplateContextGuard`.
-   */
-  tsSymbol: ts.Symbol | null;
-
-  /**
    * The node in the `TemplateAst` where the variable is declared. That is, the node for the `let-`
    * node in the template.
    */
@@ -244,10 +204,7 @@ export interface VariableSymbol {
    */
   localVarLocation: TcbLocation;
 
-  /**
-   * The location in the shim file for the initializer node of the variable that represents the
-   * template variable.
-   */
+  /** The location in the shim file for the initializer node of the variable that represents the template variable. */
   initializerLocation: TcbLocation;
 }
 
@@ -257,16 +214,6 @@ export interface VariableSymbol {
 export interface LetDeclarationSymbol {
   kind: SymbolKind.LetDeclaration;
 
-  /** The `ts.Type` of the entity. */
-  tsType: ts.Type;
-
-  /**
-   * The `ts.Symbol` for the declaration.
-   *
-   * This will be `null` if the symbol could not be resolved using the type checker.
-   */
-  tsSymbol: ts.Symbol | null;
-
   /** The node in the `TemplateAst` where the `@let` is declared.  */
   declaration: TmplAstLetDeclaration;
 
@@ -274,6 +221,9 @@ export interface LetDeclarationSymbol {
    * The location in the shim file for the identifier of the `@let` declaration.
    */
   localVarLocation: TcbLocation;
+
+  /** The location in the shim file of the `@let` declaration's initializer expression. */
+  initializerLocation: TcbLocation;
 }
 
 /**
@@ -281,12 +231,6 @@ export interface LetDeclarationSymbol {
  */
 export interface ElementSymbol {
   kind: SymbolKind.Element;
-
-  /** The `ts.Type` for the `HTMLElement`. */
-  tsType: ts.Type;
-
-  /** The `ts.Symbol` for the `HTMLElement`. */
-  tsSymbol: ts.Symbol | null;
 
   /** A list of directives applied to the element. */
   directives: DirectiveSymbol[];
@@ -310,12 +254,6 @@ export interface TemplateSymbol {
 export interface SelectorlessComponentSymbol {
   kind: SymbolKind.SelectorlessComponent;
 
-  /** The `ts.Type` for the component class. */
-  tsType: ts.Type;
-
-  /** The `ts.Symbol` for the component class. */
-  tsSymbol: ts.Symbol | null;
-
   /**
    * Includes the component class itself and any host directives
    * that may have been applied as a side-effect of it.
@@ -332,12 +270,6 @@ export interface SelectorlessComponentSymbol {
 /** A representation of a selectorless directive reference in a template. */
 export interface SelectorlessDirectiveSymbol {
   kind: SymbolKind.SelectorlessDirective;
-
-  /** The `ts.Type` for the directive class. */
-  tsType: ts.Type;
-
-  /** The `ts.Symbol` for the directive class. */
-  tsSymbol: ts.Symbol | null;
 
   /**
    * Includes the directive class itself and any host directives
@@ -356,9 +288,6 @@ export interface SelectorlessDirectiveSymbol {
 interface DirectiveSymbolBase extends PotentialDirective {
   kind: SymbolKind.Directive;
 
-  /** The `ts.Type` for the class declaration. */
-  tsType: ts.Type;
-
   /** The location in the shim file for the variable that holds the type of the directive. */
   tcbLocation: TcbLocation;
 }
@@ -368,9 +297,9 @@ interface DirectiveSymbolBase extends PotentialDirective {
  * template.
  */
 export type DirectiveSymbol =
-  | (DirectiveSymbolBase & {isHostDirective: false})
+  | (DirectiveSymbolBase & {matchSource: MatchSource.Selector})
   | (DirectiveSymbolBase & {
-      isHostDirective: true;
+      matchSource: MatchSource.HostDirective;
       exposedInputs: Record<string, string> | null;
       exposedOutputs: Record<string, string> | null;
     });
@@ -393,15 +322,6 @@ export interface DomBindingSymbol {
 export interface PipeSymbol {
   kind: SymbolKind.Pipe;
 
-  /** The `ts.Type` of the transform node. */
-  tsType: ts.Type;
-
-  /**
-   * The `ts.Symbol` for the transform call. This could be `null` when `checkTypeOfPipes` is set to
-   * `false` because the transform call would be of the form `(_pipe1 as any).transform()`
-   */
-  tsSymbol: ts.Symbol | null;
-
   /** The position of the transform call in the template. */
   tcbLocation: TcbLocation;
 
@@ -411,12 +331,6 @@ export interface PipeSymbol {
 
 /** Represents an instance of a class found in the TCB, i.e. `var _pipe1: MyPipe = null!; */
 export interface ClassSymbol {
-  /** The `ts.Type` of class. */
-  tsType: ts.Type;
-
-  /** The `ts.Symbol` for class. */
-  tsSymbol: SymbolWithValueDeclaration;
-
   /** The position for the variable declaration for the class instance. */
   tcbLocation: TcbLocation;
 }

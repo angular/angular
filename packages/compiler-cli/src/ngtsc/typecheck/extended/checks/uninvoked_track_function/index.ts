@@ -57,22 +57,21 @@ class UninvokedTrackFunctionCheck extends TemplateCheckWithVisitor<ErrorCode.UNI
 
     const symbol = ctx.templateTypeChecker.getSymbolOfNode(node.trackBy.ast, component);
 
-    if (
-      symbol !== null &&
-      symbol.kind === SymbolKind.Expression &&
-      symbol.tsType.getCallSignatures()?.length > 0
-    ) {
-      const fullExpressionText = generateStringFromExpression(
-        node.trackBy.ast,
-        node.trackBy.source || '',
-      );
+    if (symbol !== null && symbol.kind === SymbolKind.Expression) {
+      const type = ctx.templateTypeChecker.getTypeOfSymbol(symbol);
+      if (type && type.getCallSignatures()?.length > 0) {
+        const fullExpressionText = generateStringFromExpression(
+          node.trackBy.ast,
+          node.trackBy.source || '',
+        );
 
-      const errorString = formatExtendedError(
-        ErrorCode.UNINVOKED_TRACK_FUNCTION,
-        `The track function in the @for block should be invoked: ${fullExpressionText}(/* arguments */)`,
-      );
+        const errorString = formatExtendedError(
+          ErrorCode.UNINVOKED_TRACK_FUNCTION,
+          `The track function in the @for block should be invoked: ${fullExpressionText}(/* arguments */)`,
+        );
 
-      return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
+        return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
+      }
     }
 
     return [];
