@@ -208,7 +208,7 @@ class _Visitor implements html.Visitor {
       if (!this._inI18nBlock) {
         if (isOpening) {
           // deprecated from v5 you should use <ng-container i18n> instead of i18n comments
-          if (!i18nCommentsWarned && <any>console && <any>console.warn) {
+          if (!i18nCommentsWarned && typeof console?.warn === 'function') {
             i18nCommentsWarned = true;
             const details = comment.sourceSpan.details ? `, ${comment.sourceSpan.details}` : '';
             // TODO(ocombe): use a log service once there is a public one available
@@ -674,8 +674,7 @@ function _isClosingComment(n: html.Node): boolean {
 function _getI18nAttr(p: html.Element | html.Component): html.Attribute | null {
   return (
     (p.attrs.find((attr) => attr instanceof html.Attribute && attr.name === _I18N_ATTR) as
-      | html.Attribute
-      | undefined) || null
+      html.Attribute | undefined) || null
   );
 }
 

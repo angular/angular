@@ -61,9 +61,7 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
 }
 
 export type R3FactoryMetadata =
-  | R3ConstructorFactoryMetadata
-  | R3DelegatedFnOrClassMetadata
-  | R3ExpressionFactoryMetadata;
+  R3ConstructorFactoryMetadata | R3DelegatedFnOrClassMetadata | R3ExpressionFactoryMetadata;
 
 export interface R3DependencyMetadata {
   /**
@@ -321,13 +319,13 @@ function createCtorDepType(dep: R3DependencyMetadata): o.LiteralMapExpr | null {
 export function isDelegatedFactoryMetadata(
   meta: R3FactoryMetadata,
 ): meta is R3DelegatedFnOrClassMetadata {
-  return (meta as any).delegateType !== undefined;
+  return (meta as R3DelegatedFnOrClassMetadata).delegateType !== undefined;
 }
 
 export function isExpressionFactoryMetadata(
   meta: R3FactoryMetadata,
 ): meta is R3ExpressionFactoryMetadata {
-  return (meta as any).expression !== undefined;
+  return (meta as R3ExpressionFactoryMetadata).expression !== undefined;
 }
 
 function getInjectFn(target: FactoryTarget): o.ExternalReference {
