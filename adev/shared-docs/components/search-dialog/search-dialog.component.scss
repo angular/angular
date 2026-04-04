@@ -46,6 +46,7 @@ dialog {
 
       .docs-search-result-icon {
         display: inline-block;
+        flex-shrink: 0;
 
         i {
           display: flex;
@@ -91,7 +92,20 @@ dialog {
 
       &__label {
         font-weight: 600;
-        flex-wrap: wrap;
+
+        &__text {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: baseline;
+          gap: 0.25rem 0.5rem;
+          flex: 1;
+          min-width: 0;
+          overflow-wrap: break-word;
+
+          > * {
+            min-width: 0;
+          }
+        }
 
         &__package {
           font-size: 0.75rem;
