@@ -13,6 +13,8 @@ import {setSymbols} from '../symbol-context.mjs';
 import {resolve} from 'path';
 import {initHighlighter} from '../../../shared/shiki.mjs';
 import {setHighlighterInstance} from '../shiki/shiki.mjs';
+import {renderEntry} from '../rendering.mjs';
+import {JSDOM} from 'jsdom';
 
 // Note: The tests will probably break if the schema of the api extraction changes.
 // All entries in the fake-entries are extracted from Angular's api.
@@ -59,5 +61,22 @@ describe('renderable', () => {
     expect(linkedSignal!.developerPreview).toEqual({version: undefined});
     expect(linkedSignal!.experimental).toBe(undefined);
     expect(linkedSignal!.stable).toBe(undefined);
+  });
+
+  it('should render docs-anchor links in class member card headers', () => {
+    const viewRef = entries.get('ViewRef')!;
+    expect(viewRef).toBeDefined();
+
+    const html = renderEntry(viewRef);
+    const fragment = JSDOM.fragment(html);
+
+    const memberCards = fragment.querySelectorAll('.docs-reference-member-card');
+    expect(memberCards.length).toBeGreaterThan(0);
+
+    for (const card of Array.from(memberCards)) {
+      const id = card.getAttribute('id')!;
+      const anchor = card.querySelector('h3 a.docs-anchor') as HTMLAnchorElement;
+      expect(anchor.getAttribute('href')).toBe(`#${id}`);
+    }
   });
 });

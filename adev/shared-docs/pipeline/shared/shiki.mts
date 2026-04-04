@@ -42,6 +42,7 @@ export function codeToHtml(
     apiEntries?: ApiEntries;
     language?: string;
     highlight?: Set<number>;
+    removeWhitespace?: boolean;
   },
 ): string {
   const html = highlighter.codeToHtml(code, {
@@ -53,7 +54,7 @@ export function codeToHtml(
     cssVariablePrefix: '--shiki-',
     defaultColor: false,
     transformers: [
-      removeWhitespaceTransformer(),
+      ...(config.removeWhitespace ? [removeWhitespaceTransformer()] : []),
       highlightTransformer(config.highlight),
       linkApiEntriesTransformer(config.apiEntries),
     ],
