@@ -27,14 +27,16 @@
                     </i>
                   </span>
 
-                  <!-- Page title -->
-                  <span [innerHtml]="result.labelHtml"></span>
-                  @if (result.package) {
-                    <span
-                      [innerHTML]="result.package"
-                      class="docs-search-result__label__package"
-                    ></span>
-                  }
+                  <!-- Page title and package badge -->
+                  <span class="docs-search-result__label__text">
+                    <span [innerHtml]="result.labelHtml"></span>
+                    @if (result.package) {
+                      <span
+                        [innerHTML]="result.package"
+                        class="docs-search-result__label__package"
+                      ></span>
+                    }
+                  </span>
                 </p>
 
                 @if (result.subLabelHtml) {
