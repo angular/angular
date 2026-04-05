@@ -773,16 +773,23 @@ function populateDehydratedViewsInLContainerImpl(
   const currentRNode: RNode | null = getSegmentHead(hydrationInfo, noOffsetIndex);
 
   const serializedViews = hydrationInfo.data[CONTAINERS]?.[noOffsetIndex];
-  ngDevMode &&
-    assertDefined(
-      serializedViews,
-      'Unexpected state: no hydration info available for a given TNode, ' +
-        'which represents a view container.',
-    );
+  if (serializedViews === undefined) {
+    ngDevMode &&
+      console.warn(
+        'Unexpected state: no hydration info available for a given TNode, ' +
+          'which represents a view container.',
+      );
+
+    // This ViewContainerRef was created for an element through a query
+    // (for example `viewChild(..., {read: ViewContainerRef})`) and there
+    // is no corresponding serialized container data in hydration metadata.
+    // Fall back to creation mode and insert an anchor on demand.
+    return false;
+  }
 
   const [commentNode, dehydratedViews] = locateDehydratedViewsInContainer(
     currentRNode!,
-    serializedViews!,
+    serializedViews,
   );
 
   if (ngDevMode) {
