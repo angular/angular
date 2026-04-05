@@ -55,9 +55,7 @@ const cliReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter((r) => r.path?.startsWith(`${PAGE_PREFIX.CLI}/`)),
   {
     loadComponent: () =>
-      import(
-        '../features/references/cli-reference-details-page/cli-reference-details-page.component'
-      ),
+      import('../features/references/cli-reference-details-page/cli-reference-details-page.component'),
     data: commonReferenceRouteData,
   },
 ).map((route) => ({
@@ -147,6 +145,11 @@ export const routes: Route[] = [
         path: PAGE_PREFIX.PLAYGROUND,
         loadComponent: () => import('../features/playground/playground.component'),
         data: {...commonTutorialRouteData, label: 'Playground'},
+      },
+      {
+        path: PAGE_PREFIX.RANDOM,
+        loadComponent: () => import('../features/random/random'),
+        data: {label: 'Random topic'},
       },
       ...SUB_NAVIGATION_ROUTES,
       ...API_REFERENCE_ROUTES,

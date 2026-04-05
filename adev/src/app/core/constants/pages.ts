@@ -14,6 +14,7 @@ export const DEFAULT_PAGES = {
   TUTORIALS: 'tutorials',
   PLAYGROUND: 'playground',
   UPDATE: 'update-guide',
+  RANDOM: 'random',
 } as const;
 
 export const PAGE_PREFIX = {
@@ -25,4 +26,5 @@ export const PAGE_PREFIX = {
   REFERENCE: 'reference',
   TUTORIALS: 'tutorials',
   UPDATE: 'update-guide',
+  RANDOM: 'random',
 } as const;
