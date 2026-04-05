@@ -269,3 +269,7 @@ To learn more about Signal Forms and how it works, check out the in-depth guides
 - [Form models](guide/forms/signals/models) - Creating and managing form data with signals
 - [Field state management](guide/forms/signals/field-state-management) - Working with validation state, interaction tracking, and field visibility
 - [Validation](guide/forms/signals/validation) - Built-in validators, custom validation rules, and async validation
+
+<docs-pill-row>
+  <docs-pill title="Modular design with dependency injection" href="essentials/dependency-injection" />
+</docs-pill-row>
