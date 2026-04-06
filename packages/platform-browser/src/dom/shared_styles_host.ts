@@ -204,6 +204,8 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
   }
 
   addHost(hostNode: Node): void {
+    if (this.hosts.has(hostNode)) return;
+
     this.hosts.add(hostNode);
 
     // Add existing styles to new host

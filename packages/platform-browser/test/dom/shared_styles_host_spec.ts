@@ -73,6 +73,14 @@ describe('SharedStylesHost', () => {
       expect(doc.head.innerHTML).toContain('<style ng-style-reused="">a {};</style>');
       expect(doc.head.innerHTML).not.toContain('ng-app-id');
     });
+
+    it('should not duplicate styles when the same host is added multiple times', () => {
+      ssh.addStyles(['a {};']);
+      ssh.addHost(doc.head);
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('style')).toHaveSize(1);
+    });
   });
 
   describe('external', () => {
@@ -140,6 +148,14 @@ describe('SharedStylesHost', () => {
         '<link rel="stylesheet" href="component-1.css" ng-style-reused="">',
       );
       expect(doc.head.innerHTML).not.toContain('ng-app-id');
+    });
+
+    it('should not duplicate styles when the same host is added multiple times', () => {
+      ssh.addStyles([], ['component-1.css']);
+      ssh.addHost(doc.head);
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('link')).toHaveSize(1);
     });
   });
 
