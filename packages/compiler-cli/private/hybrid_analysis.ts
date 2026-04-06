@@ -42,3 +42,4 @@ export {
   ExpressionIdentifier,
   hasExpressionIdentifier,
 } from '../src/ngtsc/typecheck/src/comments';
+export {SymbolBuilder} from '../src/ngtsc/typecheck/src/template_symbol_builder';
