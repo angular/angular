@@ -8,7 +8,7 @@
 
 import {
   Component,
-  ComponentFactoryResolver,
+  ɵComponentFactoryResolver as ComponentFactoryResolver,
   destroyPlatform,
   EventEmitter,
   Input,
