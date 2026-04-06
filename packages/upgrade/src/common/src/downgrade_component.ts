@@ -6,13 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ɵComponentFactory as ComponentFactory,
-  ɵComponentFactoryResolver as ComponentFactoryResolver,
-  Injector,
-  NgZone,
-  Type,
-} from '@angular/core';
+import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from '@angular/core';
 
 import {
   IAnnotatedFunction,

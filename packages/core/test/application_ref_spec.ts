@@ -19,9 +19,11 @@ import {
   APP_BOOTSTRAP_LISTENER,
   APP_INITIALIZER,
   ChangeDetectionStrategy,
+  Compiler,
   Component,
   DestroyRef,
   EnvironmentInjector,
+  InjectionToken,
   Injector,
   LOCALE_ID,
   NgModule,
@@ -113,6 +115,62 @@ describe('bootstrap', () => {
     }
     return MyModule;
   }
+
+  it('should bootstrap a component from a child module', waitForAsync(
+    inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+      @Component({
+        selector: 'bootstrap-app',
+        template: '',
+        standalone: false,
+      })
+      class SomeComponent {}
+
+      const helloToken = new InjectionToken<string>('hello');
+
+      @NgModule({
+        providers: [{provide: helloToken, useValue: 'component'}],
+        declarations: [SomeComponent],
+      })
+      class SomeModule {}
+
+      createRootEl();
+      const modFactory = compiler.compileModuleSync(SomeModule);
+      const module = modFactory.create(TestBed.inject(Injector));
+      const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
+      const component = app.bootstrap(cmpFactory);
+
+      // The component should see the child module providers
+      expect(component.injector.get(helloToken)).toEqual('component');
+    }),
+  ));
+
+  it('should bootstrap a component with a custom selector', waitForAsync(
+    inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+      @Component({
+        selector: 'bootstrap-app',
+        template: '',
+        standalone: false,
+      })
+      class SomeComponent {}
+
+      const helloToken = new InjectionToken<string>('hello');
+
+      @NgModule({
+        providers: [{provide: helloToken, useValue: 'component'}],
+        declarations: [SomeComponent],
+      })
+      class SomeModule {}
+
+      createRootEl('custom-selector');
+      const modFactory = compiler.compileModuleSync(SomeModule);
+      const module = modFactory.create(TestBed.inject(Injector));
+      const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
+      const component = app.bootstrap(cmpFactory, 'custom-selector');
+
+      // The component should see the child module providers
+      expect(component.injector.get(helloToken)).toEqual('component');
+    }),
+  ));
 
   describe('ApplicationRef', () => {
     beforeEach(async () => {

@@ -543,6 +543,7 @@
       "isSubscriber",
       "isSubscription",
       "isTemplateNode",
+      "isType",
       "isTypeProvider",
       "isValidLink",
       "isValueProvider",
