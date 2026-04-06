@@ -864,7 +864,6 @@
       "isSubscriber",
       "isSubscription",
       "isTemplateNode",
-      "isType",
       "isTypeProvider",
       "isUrlTree",
       "isValidLink",

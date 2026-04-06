@@ -18,7 +18,6 @@ import {
   Attribute,
   Compiler,
   Component,
-  ComponentFactory,
   ComponentRef,
   ContentChildren,
   createComponent,
@@ -1127,14 +1126,13 @@ describe('integration tests', function () {
             imports: [RootModule],
           }).createComponent(RootComp);
           const compiler = TestBed.inject(Compiler);
-          const myCompFactory = <ComponentFactory<MyComp>>(
-            compiler.compileModuleAndAllComponentsSync(MyModule).componentFactories[0]
-          );
+          const myCompFactory =
+            compiler.compileModuleAndAllComponentsSync(MyModule).componentFactories[0];
 
           // Note: the ComponentFactory was created directly via the compiler, i.e. it
           // does not have an association to an NgModuleRef.
           // -> expect the providers of the module that the view container belongs to.
-          const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
+          const compRef = myCompFactory.create(compFixture.componentInstance.vc.injector);
           expect(compRef.instance.someToken).toBe('someRootValue');
         });
 
@@ -1222,7 +1220,7 @@ describe('integration tests', function () {
           // Note: MyComp was declared as entryComponent in MyModule,
           // and we don't pass an explicit ModuleRef to the createComponent call.
           // -> expect the providers of MyModule!
-          const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
+          const compRef = myCompFactory.create(compFixture.componentInstance.vc.injector);
           expect(compRef.instance.someToken).toBe('someValue');
         });
       });
