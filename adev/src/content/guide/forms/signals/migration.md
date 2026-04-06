@@ -235,13 +235,79 @@ export class UserProfile {
 }
 ```
 
-The `SignalFormControl` synchronizes values and validation status bi-directionally:
+The `SignalFormControl` synchronizes values bi-directionally between the **Signal Forms** system and the **Reactive Forms** system:
 
-- **Signal -> Control**: Changing `email.set(...)` updates `emailControl.value` and the parent `form.value`.
-- **Control -> Signal**: Typing in the input (updating `emailControl`) updates the `email` signal.
-- **Validation**: Schema validators (like `required`) propagate errors to `emailControl.errors`.
+- **Signal -> Reactive**: Updating the value via Signal Forms updates the Reactive Form control immediately.
 
-### Disabling/Enabling control.
+```typescript
+// Signal Forms update
+this.emailControl.fieldTree().value.set('new@example.com');
+
+// Reactive Forms reflects the change
+console.log(this.form.value); // {email: 'new@example.com'}
+```
+
+- **Reactive -> Signal**: Updating the value via the parent `FormGroup` updates the Signal Forms state.
+
+```typescript
+// Reactive Forms update
+this.form.patchValue({email: 'other@example.com'});
+
+// Signal Forms reflects the change
+console.log(this.emailControl.fieldTree().value()); // 'other@example.com'
+```
+
+### Binding `SignalFormControl`
+
+To use `SignalFormControl` in a `FormGroup`, pass it as a control and bind it in the template using `.fieldTree`:
+
+```typescript
+readonly emailControl = new SignalFormControl('', (p) => { required(p); });
+
+readonly form = new FormGroup({
+  name: new FormControl('Alice'),
+  email: this.emailControl,
+});
+```
+
+```angular-html {prefer}
+<form [formGroup]="form">
+  <!-- Standard control -->
+  <input formControlName="name" />
+
+  <!-- Signal control -->
+  <input [formField]="emailControl.fieldTree" />
+</form>
+```
+
+```angular-html {avoid}
+<!-- Avoid: Using formControlName or [formControl] for SignalFormControl -->
+<input formControlName="email" />
+<input [formControl]="emailControl" />
+```
+
+### Why `SignalFormControl` takes a value instead of a signal
+
+In standard Signal Forms, you create a form by passing a signal: `form(mySignal)`.
+
+However, `SignalFormControl` takes a **raw value** (like a string or object) as its first argument:
+
+```typescript
+// Takes a raw value, not a signal
+const userControl = new SignalFormControl({
+  email: 'pirojok@example.com',
+});
+```
+
+`SignalFormControl` creates the signal internally to intercept writes and trigger the **synchronous updates** expected by Reactive Forms.
+
+You can still access the internal signal via `.sourceValue`:
+
+```typescript
+const value = userControl.sourceValue();
+```
+
+### Disabling/Enabling control
 
 Imperative APIs for changing the enabled/disabled state (like `enable()`, `disable()`) are intentionally not supported
 in `SignalFormControl`. This is because the state of the control should be derived from the signal state and rules.
@@ -383,6 +449,3 @@ bootstrapApplication(App, {
   ],
 });
 ```
-
-<!-- TODO: include some high level usage comment about how people should mostly interact with this via the signal forms API exposed on .fieldTree, not via the reactive forms methods. -->
-<!-- TODO: Elaborate on why the value taken is not a signal. -->
