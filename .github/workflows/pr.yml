@@ -81,7 +81,7 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run stress test for router bootstrap
-        run: pnpm bazel test //packages/router/test:test --test_filter="bootstrap" --runs_per_test=100
+        run: pnpm bazel test //packages/router/test:test --runs_per_test=100
       - name: Run CI tests for framework
         run: pnpm test:ci
         env:
