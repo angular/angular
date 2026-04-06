@@ -80,6 +80,8 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/configure-remote@616a50d0b747031b7ea052733adf3771fa6cace9
       - name: Install node modules
         run: pnpm install --frozen-lockfile
+      - name: Run stress test for router bootstrap
+        run: pnpm bazel test //packages/router/test:test --test_filter="bootstrap" --runs_per_test=100
       - name: Run CI tests for framework
         run: pnpm test:ci
         env:
