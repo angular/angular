@@ -10,13 +10,13 @@ import '../util/ng_hmr_mode';
 import '../util/ng_jit_mode';
 import '../util/ng_server_mode';
 
-import {type Observable, Subject, type Subscription} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {
-  getActiveConsumer,
   setActiveConsumer,
+  getActiveConsumer,
   setThrowInvalidWriteToSignalError,
 } from '../../primitives/signals';
+import {type Observable, Subject, type Subscription} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
@@ -25,8 +25,8 @@ import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
-import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -44,10 +44,10 @@ import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {NgZone} from '../zone/ng_zone';
 
-import {ProfilerEvent} from '../../primitives/devtools';
 import {profiler} from '../render3/profiler';
-import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
+import {ProfilerEvent} from '../../primitives/devtools';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
+import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
 
@@ -441,13 +441,61 @@ export class ApplicationRef {
    * While in this example, we are providing reference to a DOM node.
    *
    * {@example core/ts/platform/platform.ts region='domNode'}
+   *
+   * @deprecated Passing Component factories as the `Application.bootstrap` function argument is
+   *     deprecated. Pass Component Types instead.
    */
-  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C> {
-    return this.bootstrapImpl(component, rootSelectorOrNode);
+  bootstrap<C>(
+    componentFactory: ComponentFactory<C>,
+    rootSelectorOrNode?: string | any,
+  ): ComponentRef<C>;
+
+  /**
+   * Bootstrap a component onto the element identified by its selector or, optionally, to a
+   * specified element.
+   *
+   * @usageNotes
+   * ### Bootstrap process
+   *
+   * When bootstrapping a component, Angular mounts it onto a target DOM element
+   * and kicks off automatic change detection. The target DOM element can be
+   * provided using the `rootSelectorOrNode` argument.
+   *
+   * If the target DOM element is not provided, Angular tries to find one on a page
+   * using the `selector` of the component that is being bootstrapped
+   * (first matched element is used).
+   *
+   * ### Example
+   *
+   * Generally, we define the component to bootstrap in the `bootstrap` array of `NgModule`,
+   * but it requires us to know the component while writing the application code.
+   *
+   * Imagine a situation where we have to wait for an API call to decide about the component to
+   * bootstrap. We can use the `ngDoBootstrap` hook of the `NgModule` and call this method to
+   * dynamically bootstrap a component.
+   *
+   * {@example core/ts/platform/platform.ts region='componentSelector'}
+   *
+   * Optionally, a component can be mounted onto a DOM element that does not match the
+   * selector of the bootstrapped component.
+   *
+   * In the following example, we are providing a CSS selector to match the target element.
+   *
+   * {@example core/ts/platform/platform.ts region='cssSelector'}
+   *
+   * While in this example, we are providing reference to a DOM node.
+   *
+   * {@example core/ts/platform/platform.ts region='domNode'}
+   */
+  bootstrap<C>(
+    componentOrFactory: ComponentFactory<C> | Type<C>,
+    rootSelectorOrNode?: string | any,
+  ): ComponentRef<C> {
+    return this.bootstrapImpl(componentOrFactory, rootSelectorOrNode);
   }
 
   private bootstrapImpl<C>(
-    component: Type<C>,
+    componentOrFactory: ComponentFactory<C> | Type<C>,
     rootSelectorOrNode?: string | any,
     injector: Injector = Injector.NULL,
   ): ComponentRef<C> {
@@ -456,12 +504,13 @@ export class ApplicationRef {
       profiler(ProfilerEvent.BootstrapComponentStart);
 
       (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
+      const isComponentFactory = componentOrFactory instanceof ComponentFactory;
       const initStatus = this._injector.get(ApplicationInitStatus);
 
       if (!initStatus.done) {
         let errorMessage = '';
         if (typeof ngDevMode === 'undefined' || ngDevMode) {
-          const standalone = isStandalone(component);
+          const standalone = !isComponentFactory && isStandalone(componentOrFactory);
           errorMessage =
             'Cannot bootstrap as there are still asynchronous initializers running.' +
             (standalone
@@ -471,8 +520,13 @@ export class ApplicationRef {
         throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
       }
 
-      const resolver = this._injector.get(ComponentFactoryResolver);
-      const componentFactory = resolver.resolveComponentFactory(component)!;
+      let componentFactory: ComponentFactory<C>;
+      if (isComponentFactory) {
+        componentFactory = componentOrFactory;
+      } else {
+        const resolver = this._injector.get(ComponentFactoryResolver);
+        componentFactory = resolver.resolveComponentFactory(componentOrFactory)!;
+      }
       this.componentTypes.push(componentFactory.componentType);
 
       // Create a factory associated with the current module if it's not bound to some other

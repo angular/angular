@@ -11,6 +11,7 @@ import {
   ChangeDetectionStrategy,
   Compiler,
   Component,
+  ComponentFactoryResolver,
   CUSTOM_ELEMENTS_SCHEMA,
   Directive,
   Inject,
@@ -523,6 +524,16 @@ describe('public testing API', () => {
     });
 
     describe('overriding providers', () => {
+      describe('in core', () => {
+        it('ComponentFactoryResolver', () => {
+          const componentFactoryMock = jasmine.createSpyObj('componentFactory', [
+            'resolveComponentFactory',
+          ]);
+          TestBed.overrideProvider(ComponentFactoryResolver, {useValue: componentFactoryMock});
+          expect(TestBed.inject(ComponentFactoryResolver)).toEqual(componentFactoryMock);
+        });
+      });
+
       describe('in NgModules', () => {
         it('should support useValue', () => {
           TestBed.configureTestingModule({
