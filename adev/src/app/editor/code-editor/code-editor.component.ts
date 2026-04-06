@@ -32,7 +32,6 @@ import {IconComponent} from '@angular/docs';
 import {MatTooltip} from '@angular/material/tooltip';
 import {DownloadManager} from '../download-manager.service';
 import {LoadingStep} from '../enums/loading-steps';
-import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
 import {NodeRuntimeState} from '../node-runtime-state.service';
 import {StackBlitzOpener} from '../stackblitz-opener.service';
@@ -79,7 +78,6 @@ export class CodeEditor {
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
   private readonly stackblitzOpener = inject(StackBlitzOpener);
-  private readonly firebaseStudioLauncher = inject(FirebaseStudioLauncher);
   private readonly title = inject(Title);
   private readonly location = inject(Location);
   private readonly environmentInjector = inject(EnvironmentInjector);
@@ -187,10 +185,6 @@ export class CodeEditor {
       window.removeEventListener('openFileAtLocation', handleCustomEvent);
       window.removeEventListener('message', handlePostMessage);
     });
-  }
-
-  protected openCurrentSolutionInFirebaseStudio(): void {
-    this.firebaseStudioLauncher.openCurrentSolutionInFirebaseStudio();
   }
 
   protected async openCurrentCodeInStackBlitz(): Promise<void> {
