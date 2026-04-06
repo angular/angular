@@ -21,6 +21,7 @@ export {
   type OutOfBandDiagnosticRecorder,
   type DomSchemaChecker,
   OutOfBadDiagnosticCategory,
+  SymbolKind,
 } from '../src/ngtsc/typecheck/api';
 export {RegistryDomSchemaChecker} from '../src/ngtsc/typecheck/src/dom';
 export {Environment} from '../src/ngtsc/typecheck/src/environment';
