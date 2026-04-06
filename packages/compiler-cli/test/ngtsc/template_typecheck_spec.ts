@@ -4924,7 +4924,7 @@ suppress
 
           @Component({
             template: \`
-              @defer (prefetch when isVisible() || does_not_exist) {Hello}
+              @defer (on idle; prefetch when isVisible() || does_not_exist) {Hello}
             \`,
           })
           export class Main {
@@ -4949,7 +4949,7 @@ suppress
 
           @Component({
             template: \`
-              @defer (hydrate when isVisible() || does_not_exist) {Hello}
+              @defer (on idle; hydrate when isVisible() || does_not_exist) {Hello}
             \`,
           })
           export class Main {
@@ -4993,7 +4993,7 @@ suppress
           import {Component, signal} from '@angular/core';
 
           @Component({
-            template: \`@defer (prefetch when flag) {Hello}\`,
+            template: \`@defer (on idle; prefetch when flag) {Hello}\`,
           })
           export class Main {
             flag = signal(false);
