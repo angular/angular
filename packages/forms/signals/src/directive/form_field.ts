@@ -39,6 +39,7 @@ import {InteropNgControl} from '../controls/interop_ng_control';
 import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
+import {shallowArrayEquals} from '../util/array';
 import {bindingUpdated, type ControlBindingKey, createBindings} from './bindings';
 import {customControlCreate} from './control_custom';
 import {cvaControlCreate} from './control_cva';
@@ -182,10 +183,12 @@ export class FormField<T> {
   );
 
   /** Errors associated with this form field. */
-  readonly errors = computed(() =>
-    this.state()
-      .errors()
-      .filter((err) => !err.formField || err.formField === this),
+  readonly errors = computed(
+    () =>
+      this.state()
+        .errors()
+        .filter((err) => !err.formField || err.formField === this),
+    {equal: shallowArrayEquals},
   );
 
   /** Whether this `FormField` has been registered as a binding on its associated `FieldState`. */
