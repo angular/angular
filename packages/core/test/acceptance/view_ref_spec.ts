@@ -164,4 +164,29 @@ describe('ViewRef', () => {
     componentRef.hostView.destroy();
     expect(viewRef.destroyed).toBe(true);
   });
+
+  it('should be safe to call `destroy` multiple times', () => {
+    let ngOnDestroyCount = 0;
+
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class App {
+      ngOnDestroy() {
+        ngOnDestroyCount++;
+      }
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Simulate double-destroy scenario (e.g., framework teardown racing with manual teardown like CDK Portal)
+    expect(() => {
+      fixture.componentRef.destroy();
+      fixture.componentRef.destroy();
+    }).not.toThrow();
+
+    expect(ngOnDestroyCount).toBe(1);
+  });
 });

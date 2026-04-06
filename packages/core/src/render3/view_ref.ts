@@ -102,6 +102,8 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRef {
   }
 
   destroy(): void {
+    if (this.destroyed) return;
+
     if (this._appRef) {
       this._appRef.detachView(this);
     } else if (this._attachedToViewContainer) {
