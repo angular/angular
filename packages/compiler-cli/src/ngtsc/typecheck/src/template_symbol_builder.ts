@@ -831,6 +831,10 @@ export class SymbolBuilder {
       return node.argumentExpression.getStart();
     } else if (ts.isCallExpression(node)) {
       return this.getTcbPositionForNode(node.expression);
+    } else if (ts.isAsExpression(node)) {
+      return this.getTcbPositionForNode(node.expression);
+    } else if (ts.isNonNullExpression(node)) {
+      return this.getTcbPositionForNode(node.expression);
     } else {
       return node.getStart();
     }
