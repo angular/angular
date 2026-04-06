@@ -483,19 +483,6 @@
       }
     },
     {
-      "name": "CDK_DROP_LIST_GROUP",
-      "type": "any",
-      "entryType": "constant",
-      "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\n * alternative token to the actual `CdkDropListGroup` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
-      "description": "Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\nalternative token to the actual `CdkDropListGroup` class which could cause unnecessary\nretention of the class and its directive metadata.",
-      "jsdocTags": [],
-      "source": {
-        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
-        "startLine": 16,
-        "endLine": 18
-      }
-    },
-    {
       "name": "CdkDragRelease",
       "entryType": "interface",
       "members": [
@@ -534,6 +521,19 @@
       }
     },
     {
+      "name": "CDK_DROP_LIST_GROUP",
+      "type": "any",
+      "entryType": "constant",
+      "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\n * alternative token to the actual `CdkDropListGroup` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
+      "description": "Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\nalternative token to the actual `CdkDropListGroup` class which could cause unnecessary\nretention of the class and its directive metadata.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
+        "startLine": 17,
+        "endLine": 19
+      }
+    },
+    {
       "name": "CDK_DRAG_PLACEHOLDER",
       "type": "any",
       "entryType": "constant",
@@ -557,70 +557,6 @@
         "filePath": "/src/cdk/drag-drop/directives/drag-preview.ts",
         "startLine": 25,
         "endLine": 25
-      }
-    },
-    {
-      "name": "CdkDropListGroup",
-      "isAbstract": false,
-      "entryType": "undecorated_class",
-      "members": [
-        {
-          "name": "disabled",
-          "type": "boolean",
-          "memberType": "property",
-          "memberTags": [],
-          "description": "Whether starting a dragging sequence from inside this group is disabled.",
-          "jsdocTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        }
-      ],
-      "generics": [
-        {
-          "name": "T"
-        }
-      ],
-      "description": "Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\nelements that are placed inside a `cdkDropListGroup` will be connected to each other\nautomatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\nfrom `cdkDropList`.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\n * elements that are placed inside a `cdkDropListGroup` will be connected to each other\n * automatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\n * from `cdkDropList`.\n */",
-      "implements": [
-        "OnDestroy"
-      ],
-      "source": {
-        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
-        "startLine": 26,
-        "endLine": 42
       }
     },
     {
@@ -704,6 +640,70 @@
         "filePath": "/src/cdk/drag-drop/directives/drag-placeholder.ts",
         "startLine": 23,
         "endLine": 44
+      }
+    },
+    {
+      "name": "CdkDropListGroup",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether starting a dragging sequence from inside this group is disabled.",
+          "jsdocTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "T"
+        }
+      ],
+      "description": "Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\nelements that are placed inside a `cdkDropListGroup` will be connected to each other\nautomatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\nfrom `cdkDropList`.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\n * elements that are placed inside a `cdkDropListGroup` will be connected to each other\n * automatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\n * from `cdkDropList`.\n */",
+      "implements": [
+        "OnDestroy"
+      ],
+      "source": {
+        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
+        "startLine": 27,
+        "endLine": 43
       }
     },
     {
@@ -6294,11 +6294,11 @@
       "@angular/core"
     ],
     [
-      "OnDestroy",
+      "Input",
       "@angular/core"
     ],
     [
-      "Input",
+      "OnDestroy",
       "@angular/core"
     ],
     [
@@ -6422,11 +6422,11 @@
       "@angular/cdk/drag-drop"
     ],
     [
-      "CDK_DROP_LIST_GROUP",
+      "CdkDragRelease",
       "@angular/cdk/drag-drop"
     ],
     [
-      "CdkDragRelease",
+      "CDK_DROP_LIST_GROUP",
       "@angular/cdk/drag-drop"
     ],
     [
@@ -6438,11 +6438,11 @@
       "@angular/cdk/drag-drop"
     ],
     [
-      "CdkDropListGroup",
+      "CdkDragPlaceholder",
       "@angular/cdk/drag-drop"
     ],
     [
-      "CdkDragPlaceholder",
+      "CdkDropListGroup",
       "@angular/cdk/drag-drop"
     ],
     [
@@ -6594,10 +6594,6 @@
       "@angular/cdk/drag-drop"
     ],
     [
-      "CDK_DROP_LIST_GROUP",
-      "@angular/cdk/drag-drop"
-    ],
-    [
       "CdkDragRelease",
       "@angular/cdk/drag-drop"
     ],
@@ -6610,23 +6606,15 @@
       "@angular/cdk/drag-drop"
     ],
     [
+      "CDK_DROP_LIST_GROUP",
+      "@angular/cdk/drag-drop"
+    ],
+    [
       "CDK_DRAG_PLACEHOLDER",
       "@angular/cdk/drag-drop"
     ],
     [
       "CDK_DRAG_PREVIEW",
-      "@angular/cdk/drag-drop"
-    ],
-    [
-      "CdkDropListGroup",
-      "@angular/cdk/drag-drop"
-    ],
-    [
-      "CdkDropListGroup.disabled",
-      "@angular/cdk/drag-drop"
-    ],
-    [
-      "CdkDropListGroup.ngOnDestroy",
       "@angular/cdk/drag-drop"
     ],
     [
@@ -6643,6 +6631,18 @@
     ],
     [
       "CdkDragPlaceholder.ngOnDestroy",
+      "@angular/cdk/drag-drop"
+    ],
+    [
+      "CdkDropListGroup",
+      "@angular/cdk/drag-drop"
+    ],
+    [
+      "CdkDropListGroup.disabled",
+      "@angular/cdk/drag-drop"
+    ],
+    [
+      "CdkDropListGroup.ngOnDestroy",
       "@angular/cdk/drag-drop"
     ],
     [
