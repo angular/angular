@@ -514,38 +514,42 @@ function createHostBindingsFunction(
   return emitHostBindingFunction(hostJob);
 }
 
-const HOST_REG_EXP = /^(?:\[([^\]]+)\])|(?:\(([^\)]+)\))$/;
-// Represents the groups in the above regex.
-const enum HostBindingGroup {
-  // group 1: "prop" from "[prop]", or "attr.role" from "[attr.role]", or @anim from [@anim]
-  Binding = 1,
-
-  // group 2: "event" from "(event)"
-  Event = 2,
-}
-
 // Defines Host Bindings structure that contains attributes, listeners, and properties,
 // parsed from the `host` object defined for a Type.
 export interface ParsedHostBindings {
-  attributes: {[key: string]: o.Expression};
-  listeners: {[key: string]: string};
-  properties: {[key: string]: string};
+  attributes: Record<string, o.Expression>;
+  listeners: Record<string, string>;
+  properties: Record<string, string>;
   specialAttributes: {styleAttr?: string; classAttr?: string};
 }
 
 export function parseHostBindings(host: {
   [key: string]: string | o.Expression;
 }): ParsedHostBindings {
-  const attributes: {[key: string]: o.Expression} = {};
-  const listeners: {[key: string]: string} = {};
-  const properties: {[key: string]: string} = {};
+  const attributes: Record<string, o.Expression> = {};
+  const listeners: Record<string, string> = {};
+  const properties: Record<string, string> = {};
   const specialAttributes: {styleAttr?: string; classAttr?: string} = {};
 
   for (const key of Object.keys(host)) {
     const value = host[key];
-    const matches = key.match(HOST_REG_EXP);
 
-    if (matches === null) {
+    if (key.startsWith('(') && key.endsWith(')')) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Event binding must be string`);
+      }
+      listeners[key.slice(1, -1)] = value;
+    } else if (key.startsWith('[') && key.endsWith(']')) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Property binding must be string`);
+      }
+      // synthetic properties (the ones that have a `@` as a prefix)
+      // are still treated the same as regular properties. Therefore
+      // there is no point in storing them in a separate map.
+      properties[key.slice(1, -1)] = value;
+    } else {
       switch (key) {
         case 'class':
           if (typeof value !== 'string') {
@@ -568,21 +572,6 @@ export function parseHostBindings(host: {
             attributes[key] = value;
           }
       }
-    } else if (matches[HostBindingGroup.Binding] != null) {
-      if (typeof value !== 'string') {
-        // TODO(alxhub): make this a diagnostic.
-        throw new Error(`Property binding must be string`);
-      }
-      // synthetic properties (the ones that have a `@` as a prefix)
-      // are still treated the same as regular properties. Therefore
-      // there is no point in storing them in a separate map.
-      properties[matches[HostBindingGroup.Binding]] = value;
-    } else if (matches[HostBindingGroup.Event] != null) {
-      if (typeof value !== 'string') {
-        // TODO(alxhub): make this a diagnostic.
-        throw new Error(`Event binding must be string`);
-      }
-      listeners[matches[HostBindingGroup.Event]] = value;
     }
   }
 
