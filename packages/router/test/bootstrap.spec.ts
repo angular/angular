@@ -577,18 +577,10 @@ describe('bootstrap', () => {
       const ngModuleRef = await platformBrowser().bootstrapModule(TestModule);
       ngModuleRef.destroy();
 
-      expect(window.addEventListener).toHaveBeenCalledTimes(2);
-
-      expect(window.addEventListener).toHaveBeenCalledWith(
-        'popstate',
-        jasmine.any(Function),
-        jasmine.any(Boolean),
-      );
-      expect(window.addEventListener).toHaveBeenCalledWith(
-        'hashchange',
-        jasmine.any(Function),
-        jasmine.any(Boolean),
-      );
+      const calls = (window.addEventListener as jasmine.Spy<typeof window.addEventListener>).calls
+        .all()
+        .map((c) => c.args[0]);
+      expect(calls).toEqual(['popstate', 'hashchange']);
 
       expect(window.removeEventListener).toHaveBeenCalledWith('popstate', jasmine.any(Function));
       expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
