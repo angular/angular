@@ -28,6 +28,7 @@ import {
   ParseTemplateOptions,
   TmplAstComponent,
   MatchSource,
+  SafePropertyRead,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -841,6 +842,38 @@ runInEachFileSystem(() => {
               .getTypeChecker()
               .typeToString(templateTypeChecker.getTypeOfSymbol(keyedReadSymbol)!),
           ).toEqual('string');
+        });
+
+        it('safe property reads with as any (failure case)', () => {
+          const fileName = absoluteFrom('/main.ts');
+          const templateString = `<div [inputA]="route?.data?.icon"></div>`;
+          const {templateTypeChecker, program} = setup(
+            [
+              {
+                fileName,
+                templates: {'Cmp': templateString},
+                source: `
+                interface Route {
+                  data: { icon: string; };
+                }
+                export class Cmp { route?: Route; }
+              `,
+              },
+            ],
+            {strictSafeNavigationTypes: false},
+          );
+          const sf = getSourceFileOrError(program, fileName);
+          const cmp = getClass(sf, 'Cmp');
+          const nodes = getAstElements(templateTypeChecker, cmp);
+          const ast = (nodes[0].inputs[0].value as ASTWithSource).ast as PropertyRead;
+          const dataRead = ast.receiver as SafePropertyRead;
+          const dataSymbol = templateTypeChecker.getSymbolOfNode(dataRead, cmp)!;
+          assertExpressionSymbol(dataSymbol);
+          expect(
+            program
+              .getTypeChecker()
+              .symbolToString(templateTypeChecker.getTsSymbolOfSymbol(dataSymbol)!),
+          ).toEqual('data');
         });
 
         it('ternary expressions', () => {
