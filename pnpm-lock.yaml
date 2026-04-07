@@ -1004,6 +1004,10 @@ importers:
       zone.js:
         specifier: ~0.15.0 || ~0.16.0
         version: 0.16.1
+    devDependencies:
+      '@mcp-b/webmcp-types':
+        specifier: ^2.2.0
+        version: 2.2.0
 
   packages/core/test/bundling:
     dependencies:
@@ -3830,6 +3834,9 @@ packages:
 
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
+
+  '@mcp-b/webmcp-types@2.2.0':
+    resolution: {integrity: sha512-1/UYAwQKBkqRgK18GkbGR4m6Cn9vz6Qy6pTL5LIIinUOhR5dMLaNl/blH/tJT+nJleMmgDoFZWGAmmr+fAz2PQ==}
 
   '@mermaid-js/parser@1.1.0':
     resolution: {integrity: sha512-gxK9ZX2+Fex5zu8LhRQoMeMPEHbc73UKZ0FQ54YrQtUxE1VVhMwzeNtKRPAu5aXks4FasbMe4xB4bWrmq6Jlxw==}
@@ -15827,6 +15834,8 @@ snapshots:
     optional: true
 
   '@marijn/find-cluster-break@1.0.2': {}
+
+  '@mcp-b/webmcp-types@2.2.0': {}
 
   '@mermaid-js/parser@1.1.0':
     dependencies:

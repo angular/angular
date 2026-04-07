@@ -1,8 +1,11 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "ts_config", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(name = "node_modules")
 
 # This generates the `src/i18n/locale_en.ts` file through the `generate-locales` tool. Since
 # the base locale file is checked-in for Google3, it is additionally stored in a golden location.
@@ -61,10 +64,20 @@ ng_package(
         ":event_dispatch_contract_binary",
         "//packages/core/resources",
     ],
+    externals = [
+        # Don't bundle vendored `@mcp-b/webmcp-types` dependency.
+        "../third_party/@mcp-b/webmcp-types",
+        "../../third_party/@mcp-b/webmcp-types",
+    ],
     nested_packages = [
         "//packages/core/schematics:npm_package",
+        "//packages/core/third_party/@mcp-b/webmcp-types",
     ],
     package = "@angular/core",
+    substitutions = {
+        # Link `@mcp-b/webmcp-types` to the vendored package.
+        "\\./third_party/@mcp-b/webmcp-types": "../third_party/@mcp-b/webmcp-types/index.js",
+    },
     tags = [
         "release-with-framework",
     ],
