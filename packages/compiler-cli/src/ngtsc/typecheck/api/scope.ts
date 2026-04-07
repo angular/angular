@@ -56,10 +56,20 @@ export interface TsCompletionEntryInfo {
 }
 
 /**
+ * A reference to a symbol in a source file, without holding heavy AST nodes.
+ */
+export interface SymbolReference {
+  filePath: string;
+  position: number;
+  name: string;
+  moduleSpecifier?: string;
+}
+
+/**
  * Metadata on a directive which is available in a template.
  */
 export interface PotentialDirective {
-  ref: Reference<ClassDeclaration>;
+  ref: SymbolReference;
 
   /**
    * The module which declares the directive.
@@ -99,7 +109,7 @@ export interface PotentialDirective {
  * Metadata for a pipe which is available in a template.
  */
 export interface PotentialPipe {
-  ref: Reference<ClassDeclaration>;
+  ref: SymbolReference;
 
   /**
    * Name of the pipe.

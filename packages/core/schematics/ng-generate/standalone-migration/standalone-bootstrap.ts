@@ -121,6 +121,7 @@ export function toStandaloneBootstrap(
       allDeclarations,
       tracker,
       templateTypeChecker,
+      program.getTsProgram(),
       declarationImportRemapper,
     );
   }
