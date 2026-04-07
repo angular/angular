@@ -24,6 +24,7 @@ import ts from 'typescript';
 
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './utils/display_parts';
 import {makeElementSelector} from './utils';
+import {getClassDeclarationFromSymbolReference} from './utils/ts_utils';
 
 /**
  * Differentiates different kinds of `AttributeCompletion`s.
@@ -231,7 +232,8 @@ export function buildAttributeCompletionTable(
     // An `ElementSymbol` was available. This means inputs and outputs for directives on the
     // element can be added to the completion table.
     for (const dirSymbol of symbol.directives) {
-      const directive = checker.getTsSymbolOfSymbol(dirSymbol)?.valueDeclaration;
+      const directive = getClassDeclarationFromSymbolReference(ls, dirSymbol.ref);
+
       if (!directive || !ts.isClassDeclaration(directive)) {
         continue;
       }
@@ -302,9 +304,10 @@ export function buildAttributeCompletionTable(
     const elementSelector = makeElementSelector(element);
 
     for (const currentDir of potentialDirectives) {
-      const directive = currentDir.ref.node;
+      const directive = getClassDeclarationFromSymbolReference(ls, currentDir.ref);
+
       // Skip directives that are present on the element.
-      if (!ts.isClassDeclaration(directive) || presentDirectives.has(directive)) {
+      if (!directive || !ts.isClassDeclaration(directive) || presentDirectives.has(directive)) {
         continue;
       }
 
@@ -603,11 +606,23 @@ export function addAttributeCompletionEntries(
   }
 }
 
+function getDirectiveSymbol(
+  directive: PotentialDirective,
+  checker: ts.TypeChecker,
+  ls?: ts.LanguageService,
+): ts.Symbol | null {
+  if (!ls) return null;
+  const classDecl = getClassDeclarationFromSymbolReference(ls, directive.ref);
+  if (!classDecl || !classDecl.name) return null;
+  return checker.getSymbolAtLocation(classDecl.name) ?? null;
+}
+
 export function getAttributeCompletionSymbol(
   attrKind: AttributeCompletionKind,
   directive: PotentialDirective | null,
   classPropertyName: string | null,
   checker: ts.TypeChecker,
+  ls?: ts.LanguageService,
 ): ts.Symbol | null {
   switch (attrKind) {
     case AttributeCompletionKind.DomAttribute:
@@ -616,14 +631,14 @@ export function getAttributeCompletionSymbol(
       return null;
     case AttributeCompletionKind.DirectiveAttribute:
     case AttributeCompletionKind.StructuralDirectiveAttribute:
-      return directive ? (checker.getSymbolAtLocation(directive.ref.node.name) ?? null) : null;
+      return directive ? getDirectiveSymbol(directive, checker, ls) : null;
     case AttributeCompletionKind.DirectiveInput:
     case AttributeCompletionKind.DirectiveOutput:
       if (directive === null || classPropertyName === null) {
         return null;
       }
 
-      const dirSymbol = checker.getSymbolAtLocation(directive.ref.node.name);
+      const dirSymbol = getDirectiveSymbol(directive, checker, ls);
       if (!dirSymbol) return null;
       return checker.getDeclaredTypeOfSymbol(dirSymbol).getProperty(classPropertyName) ?? null;
   }
