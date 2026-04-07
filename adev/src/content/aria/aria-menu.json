@@ -615,7 +615,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-bar.ts",
         "startLine": 56,
-        "endLine": 141
+        "endLine": 139
       }
     },
     {
@@ -792,7 +792,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 58,
-        "endLine": 194
+        "endLine": 188
       }
     }
   ],
