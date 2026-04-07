@@ -224,16 +224,18 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  get max(): Signal<number | Date | undefined> | undefined {
-    return this.metadata(MAX);
+  get max(): Signal<{} | undefined> | undefined {
+    const maxKey = this.metadata(MAX)?.();
+    return maxKey ? this.metadata(maxKey) : undefined;
   }
 
   get maxLength(): Signal<number | undefined> | undefined {
     return this.metadata(MAX_LENGTH);
   }
 
-  get min(): Signal<number | Date | undefined> | undefined {
-    return this.metadata(MIN);
+  get min(): Signal<{} | undefined> | undefined {
+    const minKey = this.metadata(MIN)?.();
+    return minKey ? this.metadata(minKey) : undefined;
   }
 
   get minLength(): Signal<number | undefined> | undefined {

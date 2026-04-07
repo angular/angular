@@ -81,6 +81,9 @@ export type CompatSchemaPath<TControl extends AbstractControl, TPathKind extends
 };
 
 // @public
+export function createLimitSelectionKey(): LimitSelectionKey;
+
+// @public
 export function createManagedMetadataKey<TRead, TWrite>(create: (state: FieldState<unknown>, data: Signal<TWrite | undefined>) => TRead): MetadataKey<TRead, TWrite, TWrite | undefined>;
 
 // @public
@@ -238,9 +241,9 @@ export interface FormUiControl<TValue> {
     focus?(options?: FocusOptions): void;
     readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly max?: InputSignal<LimitValue<TValue> | undefined> | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
+    readonly max?: InputSignal<NonNullable<TValue> | undefined> | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
     readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly min?: InputSignal<LimitValue<TValue> | undefined> | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
+    readonly min?: InputSignal<NonNullable<TValue> | undefined> | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
     readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
     readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
     readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
@@ -286,7 +289,12 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
 export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number] : T[keyof T];
 
 // @public
-export type LimitValue<T> = [T] extends [Date] ? Date : [T] extends [number] ? number : number | Date;
+export type LimitKey<TLimit> = MetadataKey<Signal<TLimit | undefined>, TLimit | undefined, TLimit | undefined>;
+
+// @public
+export type LimitSelectionKey = MetadataKey<Signal<LimitKey<any> | undefined>, LimitKey<any>, LimitKey<any> | undefined> & {
+    [LIMIT_SELECTION_KEY]: true;
+};
 
 // @public
 export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (ctx: FieldContext<TValue, TPathKind>) => TReturn;
@@ -300,22 +308,43 @@ export interface MarkAsTouchedOptions {
 }
 
 // @public
-export const MAX: MetadataKey<Signal<number | Date | undefined>, number | Date | undefined, number | Date | undefined>;
+export const MAX: LimitSelectionKey;
 
 // @public
 export function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
-// @public (undocumented)
-export function max<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+// @public
+export const MAX_DATE: LimitKey<Date>;
 
 // @public
-export const MAX_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MAX_LENGTH: LimitKey<number>;
 
 // @public
-export function maxError(max: number | Date, options: WithFieldTree<ValidationErrorOptions>): MaxValidationError;
+export const MAX_NUMBER: LimitKey<number>;
 
 // @public
-export function maxError(max: number | Date, options?: ValidationErrorOptions): WithoutFieldTree<MaxValidationError>;
+export function maxDate<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxDateValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+
+// @public
+export function maxDateError(maxDate: Date, options: WithFieldTree<ValidationErrorOptions>): MaxDateValidationError;
+
+// @public
+export function maxDateError(maxDate: Date, options?: ValidationErrorOptions): WithoutFieldTree<MaxDateValidationError>;
+
+// @public
+export class MaxDateValidationError extends BaseNgValidationError {
+    constructor(maxDate: Date, options?: ValidationErrorOptions);
+    // (undocumented)
+    readonly kind = "maxDate";
+    // (undocumented)
+    readonly maxDate: Date;
+}
+
+// @public
+export function maxError(max: number, options: WithFieldTree<ValidationErrorOptions>): MaxValidationError;
+
+// @public
+export function maxError(max: number, options?: ValidationErrorOptions): WithoutFieldTree<MaxValidationError>;
 
 // @public
 export function maxLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
@@ -337,11 +366,11 @@ export class MaxLengthValidationError extends BaseNgValidationError {
 
 // @public
 export class MaxValidationError extends BaseNgValidationError {
-    constructor(max: number | Date, options?: ValidationErrorOptions);
+    constructor(max: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "max";
     // (undocumented)
-    readonly max: number | Date;
+    readonly max: number;
 }
 
 // @public
@@ -351,7 +380,7 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
 export type MaybeSchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> = (TModel & undefined) | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
 
 // @public
-export function metadata<TValue, TKey extends MetadataKey<any, any, any>, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, key: TKey, logic: NoInfer<LogicFn<TValue, MetadataSetterType<TKey>, TPathKind>>): TKey;
+export function metadata<TValue, TKey extends MetadataKey<any, any, any>, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, key: TKey, logic: NoInfer<LogicFn<TValue, TKey extends LimitSelectionKey ? LimitKey<TValue> : MetadataSetterType<TKey>, TPathKind>>): TKey;
 
 // @public
 export class MetadataKey<TRead, TWrite, TAcc> {
@@ -371,8 +400,8 @@ export interface MetadataReducer<TAcc, TItem> {
 // @public (undocumented)
 export const MetadataReducer: {
     readonly list: <TItem>() => MetadataReducer<TItem[], TItem | undefined>;
-    readonly min: <T extends number | Date>() => MetadataReducer<T | undefined, T | undefined>;
-    readonly max: <T extends number | Date>() => MetadataReducer<T | undefined, T | undefined>;
+    readonly min: <T extends Date | number>() => MetadataReducer<T | undefined, T | undefined>;
+    readonly max: <T extends Date | number>() => MetadataReducer<T | undefined, T | undefined>;
     readonly or: () => MetadataReducer<boolean, boolean>;
     readonly and: () => MetadataReducer<boolean, boolean>;
     readonly override: typeof override;
@@ -382,22 +411,43 @@ export const MetadataReducer: {
 export type MetadataSetterType<TKey> = TKey extends MetadataKey<any, infer TWrite, any> ? TWrite : never;
 
 // @public
-export const MIN: MetadataKey<Signal<number | Date | undefined>, number | Date | undefined, number | Date | undefined>;
+export const MIN: LimitSelectionKey;
 
 // @public
 export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
-// @public (undocumented)
-export function min<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+// @public
+export const MIN_DATE: LimitKey<Date>;
 
 // @public
-export const MIN_LENGTH: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
+export const MIN_LENGTH: LimitKey<number>;
 
 // @public
-export function minError(min: number | Date, options: WithFieldTree<ValidationErrorOptions>): MinValidationError;
+export const MIN_NUMBER: LimitKey<number>;
 
 // @public
-export function minError(min: number | Date, options?: ValidationErrorOptions): WithoutFieldTree<MinValidationError>;
+export function minDate<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minDateValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+
+// @public
+export function minDateError(minDate: Date, options: WithFieldTree<ValidationErrorOptions>): MinDateValidationError;
+
+// @public
+export function minDateError(minDate: Date, options?: ValidationErrorOptions): WithoutFieldTree<MinDateValidationError>;
+
+// @public
+export class MinDateValidationError extends BaseNgValidationError {
+    constructor(minDate: Date, options?: ValidationErrorOptions);
+    // (undocumented)
+    readonly kind = "minDate";
+    // (undocumented)
+    readonly minDate: Date;
+}
+
+// @public
+export function minError(min: number, options: WithFieldTree<ValidationErrorOptions>): MinValidationError;
+
+// @public
+export function minError(min: number, options?: ValidationErrorOptions): WithoutFieldTree<MinValidationError>;
 
 // @public
 export function minLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
@@ -419,11 +469,11 @@ export class MinLengthValidationError extends BaseNgValidationError {
 
 // @public
 export class MinValidationError extends BaseNgValidationError {
-    constructor(min: number | Date, options?: ValidationErrorOptions);
+    constructor(min: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "min";
     // (undocumented)
-    readonly min: number | Date;
+    readonly min: number;
 }
 
 // @public
@@ -436,7 +486,7 @@ export class NativeInputParseError extends BaseNgValidationError {
 export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)
-export type NgValidationError = RequiredValidationError | MinValidationError | MaxValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError | NativeInputParseError;
+export type NgValidationError = RequiredValidationError | MinValidationError | MinDateValidationError | MaxValidationError | MaxDateValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError | NativeInputParseError;
 
 // @public
 export type OneOrMany<T> = T | readonly T[];
@@ -522,10 +572,10 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
-    readonly max: Signal<LimitValue<TValue> | undefined> | undefined;
+    readonly max: Signal<NonNullable<TValue> | undefined> | undefined;
     readonly maxLength: Signal<number | undefined> | undefined;
     metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
-    readonly min: Signal<LimitValue<TValue> | undefined> | undefined;
+    readonly min: Signal<NonNullable<TValue> | undefined> | undefined;
     readonly minLength: Signal<number | undefined> | undefined;
     readonly name: Signal<string>;
     readonly pattern: Signal<readonly RegExp[]>;

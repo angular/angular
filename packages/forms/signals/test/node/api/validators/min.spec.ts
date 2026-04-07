@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, min, minError} from '../../../../public_api';
+import {form, min, minDate, minError} from '../../../../public_api';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {
@@ -309,65 +309,6 @@ describe('min validator', () => {
       expect(f.age().errors()).toEqual([minError(5, {fieldTree: f.age})]);
       f.name().value.set('other cat');
       expect(f.age().errors()).toEqual([]);
-    });
-  });
-
-  describe('Date values', () => {
-    it('returns min error when the date is smaller', () => {
-      const today = new Date('2026-04-01');
-      const yesterday = new Date('2026-03-31');
-      const model = signal(yesterday);
-      const f = form(
-        model,
-        (p) => {
-          min(p, today);
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      expect(f().errors()).toEqual([minError(today, {fieldTree: f})]);
-    });
-
-    it('returns no error when the date is equal', () => {
-      const today = new Date('2026-04-01');
-      const model = signal(today);
-      const f = form(
-        model,
-        (p) => {
-          min(p, today);
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      expect(f().errors()).toEqual([]);
-    });
-
-    it('returns no error when the date is larger', () => {
-      const today = new Date('2026-04-01');
-      const tomorrow = new Date('2026-04-02');
-      const model = signal(tomorrow);
-      const f = form(
-        model,
-        (p) => {
-          min(p, today);
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      expect(f().errors()).toEqual([]);
-    });
-
-    it('handles invalid dates', () => {
-      const model = signal(new Date('invalid'));
-      const f = form(
-        model,
-        (p) => {
-          min(p, new Date('2026-04-01'));
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      expect(f().errors()).toEqual([]);
     });
   });
 });

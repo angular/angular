@@ -9,7 +9,7 @@
 import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
 import type {FormFieldBindingOptions} from '../directive/form_field';
 import type {ValidationError, WithOptionalFieldTree} from './rules/validation/validation_errors';
-import type {DisabledReason, LimitValue} from './types';
+import type {DisabledReason} from './types';
 
 /**
  * The base set of properties shared by all form control contracts.
@@ -82,8 +82,8 @@ export interface FormUiControl<TValue> {
    * automatically bind the min value from the bound field to this input.
    */
   readonly min?:
-    | InputSignal<LimitValue<TValue> | undefined>
-    | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
+    | InputSignal<NonNullable<TValue> | undefined>
+    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the min length for the field. If implemented, the `Field` directive will
    * automatically bind the min length from the bound field to this input.
@@ -96,8 +96,8 @@ export interface FormUiControl<TValue> {
    * automatically bind the max value from the bound field to this input.
    */
   readonly max?:
-    | InputSignal<LimitValue<TValue> | undefined>
-    | InputSignalWithTransform<LimitValue<TValue> | undefined, unknown>;
+    | InputSignal<NonNullable<TValue> | undefined>
+    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the max length for the field. If implemented, the `Field` directive will
    * automatically bind the max length from the bound field to this input.

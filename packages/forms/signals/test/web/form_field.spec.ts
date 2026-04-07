@@ -50,8 +50,10 @@ import {
   FormField,
   hidden,
   max,
+  maxDate,
   maxLength,
   min,
+  minDate,
   minLength,
   pattern,
   provideSignalFormsConfig,
@@ -2439,7 +2441,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(new Date('2026-04-06')), (p) => {
-            max(p, new Date('2026-04-05'));
+            maxDate(p, new Date('2026-04-05'));
           });
         }
 
@@ -2448,7 +2450,7 @@ describe('field directive', () => {
 
         await fixture.whenStable();
         const component = fixture.componentInstance;
-        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'maxDate'})]);
 
         act(() => {
           element.value = '2026-04-04';
@@ -2770,7 +2772,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(new Date('2026-04-02')), (p) => {
-            min(p, new Date('2026-04-05'));
+            minDate(p, new Date('2026-04-05'));
           });
         }
 
@@ -2779,7 +2781,7 @@ describe('field directive', () => {
 
         await fixture.whenStable();
         const component = fixture.componentInstance;
-        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'minDate'})]);
 
         act(() => {
           element.value = '2026-04-06';
@@ -3754,8 +3756,8 @@ describe('field directive', () => {
         readonly pending = input(false);
         readonly dirty = input(false);
         readonly touched = input(false);
-        readonly min = input<number | Date | undefined>(1);
-        readonly max = input<number | Date | undefined>(1_0000);
+        readonly min = input<string | undefined>('1');
+        readonly max = input<string | undefined>('10000');
         readonly minLength = input<number | undefined>(1);
         readonly maxLength = input<number | undefined>(5);
       }
