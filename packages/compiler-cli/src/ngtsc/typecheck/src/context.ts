@@ -8,6 +8,7 @@
 
 import {
   BoundTarget,
+  DirectiveMeta,
   ParseError,
   ParseSourceFile,
   R3TargetBinder,
@@ -80,7 +81,7 @@ export interface ShimTypeCheckingData {
 /**
  * Data tracked for each class processed by the type-checking system.
  */
-export interface TypeCheckData {
+export interface TypeCheckData<D extends DirectiveMeta = TypeCheckableDirectiveMeta> {
   /**
    * Template nodes for which the TCB was generated.
    */
@@ -90,7 +91,7 @@ export interface TypeCheckData {
    * `BoundTarget` which was used to generate the TCB, and contains bindings for the associated
    * template nodes.
    */
-  boundTarget: BoundTarget<TypeCheckableDirectiveMeta>;
+  boundTarget: BoundTarget<D>;
 
   /**
    * Errors found while parsing the template, which have been converted to diagnostics.
