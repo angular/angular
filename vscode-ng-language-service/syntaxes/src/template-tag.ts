@@ -18,13 +18,8 @@ export const TemplateTag: GrammarDefinition = {
     {include: '#eventBinding'},
     {include: '#templateBinding'},
     {include: '#standardAttribute'},
-    {include: '#other'},
   ],
   repository: {
-    other: {
-      match: /\s+/,
-      name: 'template.tag.ng',
-    },
     standardAttribute: {
       begin: /([-_a-zA-Z0-9.$:]+)(=)(["'])/,
       beginCaptures: {
