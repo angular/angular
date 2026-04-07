@@ -8,6 +8,7 @@
 
 import {DOCUMENT} from '../../index';
 import {
+  CSP_NONCE,
   EnvironmentInjector,
   Inject,
   inject,
@@ -94,6 +95,7 @@ export class JsonpClientBackend implements HttpBackend {
    * A resolved promise that can be used to schedule microtasks in the event handlers.
    */
   private readonly resolvedPromise = Promise.resolve();
+  private readonly nonce = inject(CSP_NONCE, {optional: true});
 
   constructor(
     private callbackMap: JsonpCallbackContext,
@@ -148,6 +150,12 @@ export class JsonpClientBackend implements HttpBackend {
       // Construct the <script> tag and point it at the URL.
       const node = this.document.createElement('script');
       node.src = url;
+
+      // Set the nonce for Content Security Policy compatibility. Without this,
+      // JSONP requests will be blocked by strict-dynamic CSP policies.
+      if (this.nonce) {
+        node.setAttribute('nonce', this.nonce);
+      }
 
       // A JSONP request requires waiting for multiple callbacks. These variables
       // are closed over and track state across those callbacks.
