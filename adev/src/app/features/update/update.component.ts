@@ -107,7 +107,7 @@ export default class UpdateComponent {
   ];
   protected from = this.versions.find((version) => version.name === '20.0')!;
   protected to = this.versions.find((version) => version.name === '21.0')!;
-  protected futureVersion = 2100;
+  protected futureVersion = 2200;
 
   protected readonly steps: Step[] = RECOMMENDATIONS;
 
