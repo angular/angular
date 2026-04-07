@@ -500,6 +500,14 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Cross-field logic',
             path: 'guide/forms/signals/cross-field-logic',
             contentPath: 'guide/forms/signals/cross-field-logic',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Schemas',
+            path: 'guide/forms/signals/schemas',
+            contentPath: 'guide/forms/signals/schemas',
+            category: 'Signal Forms',
             status: 'new',
           },
           {
