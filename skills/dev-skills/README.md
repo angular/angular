@@ -6,6 +6,18 @@ The Angular skills are designed to help coding agents create applications aligne
 
 - **`angular-developer`**: Generates Angular code and provides architectural guidance. Useful for creating components, services, or obtaining best practices on reactivity (signals, linkedSignal, resource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling, testing, or CLI tooling.
 - **`angular-new-app`**: Creates a new Angular app using the Angular CLI. Provides important guidelines for effectively setting up and structuring a modern Angular application.
+- **`angular-component`**: Standalone components, signal inputs/outputs, OnPush change detection, host bindings, content projection, and lifecycle hooks.
+- **`angular-signals`**: Signal-based reactive state with `signal()`, `computed()`, `linkedSignal()`, `effect()`, and RxJS interop.
+- **`angular-forms`**: Reactive Forms, Signal Forms (experimental), and template-driven forms with typed controls and validation.
+- **`angular-routing`**: Lazy loading, functional guards, resolvers, signal-based route parameters, and View Transitions API.
+- **`angular-http`**: Data fetching with `httpResource()`, `resource()`, `rxResource()`, HttpClient, and functional interceptors.
+- **`angular-di`**: Dependency injection with `inject()`, injection tokens, provider scopes, and hierarchical injectors.
+- **`angular-ssr`**: Server-side rendering, hydration strategies, prerendering, and browser-only API handling.
+- **`angular-testing`**: Unit/integration testing with Vitest or Jasmine, TestBed, component harnesses, and accessibility testing.
+- **`angular-tooling`**: Angular CLI usage, code generation, builds, Tailwind CSS v4 setup, and MCP server configuration.
+- **`angular-directives`**: Custom attribute and structural directives, host directives, and the directive composition API.
+- **`angular-performance`**: OnPush change detection, lazy loading, `@defer`, bundle optimization, and virtual scrolling.
+- **`angular-aria`**: Headless accessible components using `@angular/aria` (Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid).
 
 ## Contributions
 
