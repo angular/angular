@@ -117,6 +117,7 @@ export function pruneNgModules(
     tracker,
     typeChecker,
     templateTypeChecker,
+    tsProgram,
     declarationImportRemapper,
   );
 
@@ -271,6 +272,7 @@ function replaceInComponentImportsArray(
   tracker: ChangeTracker,
   typeChecker: ts.TypeChecker,
   templateTypeChecker: TemplateTypeChecker,
+  program: ts.Program,
   importRemapper?: DeclarationImportsRemapper,
 ) {
   for (const [array, toReplace] of componentImportArrays.getEntries()) {
@@ -282,7 +284,7 @@ function replaceInComponentImportsArray(
 
     const replacements = new UniqueItemTracker<ts.Node, Reference<NamedClassDeclaration>>();
     const usedImports = new Set(
-      findTemplateDependencies(closestClass, templateTypeChecker).map((ref) => ref.node),
+      findTemplateDependencies(closestClass, templateTypeChecker, program).map((ref) => ref.node),
     );
     const nodesToRemove = new Set<ts.Node>();
 

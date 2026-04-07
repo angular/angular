@@ -12,11 +12,15 @@ import {
   ASTWithSource,
   Binary,
   BindingPipe,
+  BoundTarget,
+  ClassPropertyMapping,
   MatchSource,
   ParseSourceSpan,
   PropertyRead,
   R3Identifiers,
+  ReferenceTarget,
   SafePropertyRead,
+  TemplateEntity,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -32,12 +36,10 @@ import {
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {Reference} from '../../imports';
 import {HostDirectiveMeta, isHostDirectiveMetaForGlobalMode} from '../../metadata';
 
 import {ClassDeclaration} from '../../reflection';
-import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
-import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
+import {isAssignment} from '../../util/src/typescript';
 import {
   BindingSymbol,
   DirectiveSymbol,
@@ -51,16 +53,14 @@ import {
   ReferenceSymbol,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
+  SymbolReference,
   Symbol,
   SymbolKind,
   TcbLocation,
   TemplateSymbol,
-  TsNodeSymbolInfo,
-  TypeCheckableDirectiveMeta,
   TypeCheckingConfig,
   VariableSymbol,
 } from '../api';
-
 import {
   ExpressionIdentifier,
   findAllMatchingNodes,
@@ -68,9 +68,30 @@ import {
   hasExpressionIdentifier,
   readDirectiveIdFromComment,
 } from './comments';
-import {TypeCheckData} from './context';
 import {isAccessExpression, isDirectiveDeclaration} from './ts_util';
 import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
+
+export interface SymbolDirectiveMeta {
+  getSymbolReference(): SymbolReference;
+  getNgModule(): ClassDeclaration | null;
+  getReferenceTargetNode(): ts.ClassDeclaration | null;
+  matchSource: MatchSource;
+  isComponent: boolean;
+  selector: string | null;
+  isStructural: boolean;
+  inputs: ClassPropertyMapping;
+  outputs: ClassPropertyMapping;
+  hostDirectives?: HostDirectiveMeta[] | null;
+}
+
+export interface SymbolBoundTarget {
+  getDirectivesOfNode(node: TmplAstNode): SymbolDirectiveMeta[] | null;
+  getConsumerOfBinding(
+    binding: TmplAstBoundAttribute | TmplAstBoundEvent | TmplAstTextAttribute,
+  ): SymbolDirectiveMeta | TmplAstElement | TmplAstTemplate | null;
+  getReferenceTarget(ref: TmplAstReference): ReferenceTarget<SymbolDirectiveMeta> | null;
+  getExpressionTarget(expr: AST): TemplateEntity | null;
+}
 
 /**
  * Generates and caches `Symbol`s for various template structures for a given component.
@@ -85,8 +106,7 @@ export class SymbolBuilder {
     private readonly tcbPath: AbsoluteFsPath,
     private readonly tcbIsShim: boolean,
     private readonly typeCheckBlock: ts.Node,
-    private readonly typeCheckData: TypeCheckData,
-    private readonly componentScopeReader: ComponentScopeReader,
+    private readonly boundTarget: SymbolBoundTarget,
     private readonly typeCheckingConfig: TypeCheckingConfig,
   ) {}
 
@@ -208,8 +228,7 @@ export class SymbolBuilder {
     templateNode: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
   ): DirectiveSymbol[] {
     const elementSourceSpan = templateNode.startSourceSpan ?? templateNode.sourceSpan;
-    const boundDirectives = this.typeCheckData.boundTarget.getDirectivesOfNode(templateNode) ?? [];
-
+    const boundDirectives = this.boundTarget.getDirectivesOfNode(templateNode) ?? [];
     let symbols = this.getDirectiveSymbolsForDirectives(boundDirectives, elementSourceSpan);
 
     // 'getDirectivesOfNode' will not return the directives intended for an element
@@ -224,8 +243,7 @@ export class SymbolBuilder {
           templateNode instanceof TmplAstTemplate &&
           sourceSpanEqual(firstChild.sourceSpan, templateNode.sourceSpan);
         if (isMicrosyntaxTemplate) {
-          const firstChildDirectives =
-            this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
+          const firstChildDirectives = this.boundTarget.getDirectivesOfNode(firstChild);
           if (firstChildDirectives !== null) {
             const childSymbols = this.getDirectiveSymbolsForDirectives(
               firstChildDirectives,
@@ -233,7 +251,11 @@ export class SymbolBuilder {
             );
             // Merge symbols, avoiding duplicates
             for (const symbol of childSymbols) {
-              if (!symbols.some((s) => s.ref.node === symbol.ref.node)) {
+              if (
+                !symbols.some(
+                  (s) => s.ref.name === symbol.ref.name && s.ref.filePath === symbol.ref.filePath,
+                )
+              ) {
                 symbols.push(symbol);
               }
             }
@@ -246,7 +268,7 @@ export class SymbolBuilder {
   }
 
   private getDirectiveSymbolsForDirectives(
-    boundDirectives: TypeCheckableDirectiveMeta[],
+    boundDirectives: SymbolDirectiveMeta[],
     span: ParseSourceSpan,
   ): DirectiveSymbol[] {
     const nodes = findAllMatchingNodes(this.typeCheckBlock, {
@@ -254,19 +276,20 @@ export class SymbolBuilder {
       filter: isDirectiveDeclaration,
     });
 
-    const hostDirectiveMap = new Map<ts.Node, HostDirectiveMeta>();
+    const hostDirectiveMap = new Map<string, HostDirectiveMeta>();
     for (const d of boundDirectives) {
       if (d.hostDirectives) {
         for (const hd of d.hostDirectives) {
           if (isHostDirectiveMetaForGlobalMode(hd)) {
-            hostDirectiveMap.set(hd.directive.node, hd);
+            const key = `${hd.directive.node.getSourceFile().fileName}#${hd.directive.node.name.text}`;
+            hostDirectiveMap.set(key, hd);
           }
         }
       }
     }
 
     const symbols: DirectiveSymbol[] = [];
-    const seenDirectives = new Set<ts.ClassDeclaration>();
+    const seenDirectives = new Set<string>();
     const sf = this.typeCheckBlock.getSourceFile();
 
     for (const node of nodes) {
@@ -275,19 +298,20 @@ export class SymbolBuilder {
       const meta = boundDirectives[id];
       if (!meta) continue;
 
-      const declaration = meta.ref.node as unknown as ts.ClassDeclaration;
+      const ref = meta.getSymbolReference();
+      const refKey = `${ref.filePath}#${ref.name}`;
 
-      if (!seenDirectives.has(declaration)) {
-        const ref = new Reference<ClassDeclaration>(declaration as ClassDeclaration);
-
-        const hostMeta = hostDirectiveMap.get(declaration);
+      if (!seenDirectives.has(refKey)) {
+        const ref = meta.getSymbolReference();
+        const key = `${ref.filePath}#${ref.name}`;
+        const hostMeta = hostDirectiveMap.get(key) || null;
         const directiveSymbol: DirectiveSymbol = hostMeta
           ? {
               tcbLocation: this.getTcbLocationForNode(node),
               ref,
               selector: meta.selector,
               isComponent: meta.isComponent,
-              ngModule: this.getDirectiveModule(declaration),
+              ngModule: meta.getNgModule(),
               kind: SymbolKind.Directive,
               isStructural: meta.isStructural,
               isInScope: true,
@@ -301,7 +325,7 @@ export class SymbolBuilder {
               ref,
               selector: meta.selector,
               isComponent: meta.isComponent,
-              ngModule: this.getDirectiveModule(declaration),
+              ngModule: meta.getNgModule(),
               kind: SymbolKind.Directive,
               isStructural: meta.isStructural,
               isInScope: true,
@@ -310,23 +334,15 @@ export class SymbolBuilder {
             };
 
         symbols.push(directiveSymbol);
-        seenDirectives.add(declaration);
+        seenDirectives.add(refKey);
       }
     }
 
     return symbols;
   }
 
-  private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration | null {
-    const scope = this.componentScopeReader.getScopeForComponent(declaration as ClassDeclaration);
-    if (scope === null || scope.kind !== ComponentScopeKind.NgModule) {
-      return null;
-    }
-    return scope.ngModule;
-  }
-
   private getSymbolOfBoundEvent(eventBinding: TmplAstBoundEvent): OutputBindingSymbol | null {
-    const consumer = this.typeCheckData.boundTarget.getConsumerOfBinding(eventBinding);
+    const consumer = this.boundTarget.getConsumerOfBinding(eventBinding);
     if (consumer === null) {
       return null;
     }
@@ -415,7 +431,7 @@ export class SymbolBuilder {
   private getSymbolOfInputBinding(
     binding: TmplAstBoundAttribute | TmplAstTextAttribute,
   ): InputBindingSymbol | DomBindingSymbol | null {
-    const consumer = this.typeCheckData.boundTarget.getConsumerOfBinding(binding);
+    const consumer = this.boundTarget.getConsumerOfBinding(binding);
     if (consumer === null) {
       return null;
     }
@@ -490,18 +506,16 @@ export class SymbolBuilder {
 
   private getDirectiveSymbolForAccessExpression(
     fieldAccessExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression,
-    meta: TypeCheckableDirectiveMeta,
+    meta: SymbolDirectiveMeta,
   ): DirectiveSymbol | null {
-    const ngModule = this.getDirectiveModule(meta.ref.node as unknown as ts.ClassDeclaration);
-
     return {
-      ref: meta.ref,
+      ref: meta.getSymbolReference(),
       kind: SymbolKind.Directive,
       tcbLocation: this.getTcbLocationForNode(fieldAccessExpr.expression),
       isComponent: meta.isComponent,
       isStructural: meta.isStructural,
       selector: meta.selector,
-      ngModule,
+      ngModule: meta.getNgModule(),
       matchSource: MatchSource.Selector,
       isInScope: true, // TODO: this should always be in scope in this context, right?
       tsCompletionEntryInfos: null,
@@ -537,7 +551,7 @@ export class SymbolBuilder {
   }
 
   private getSymbolOfReference(ref: TmplAstReference): ReferenceSymbol | null {
-    const target = this.typeCheckData.boundTarget.getReferenceTarget(ref);
+    const target = this.boundTarget.getReferenceTarget(ref);
     if (target === null) {
       return null;
     }
@@ -590,14 +604,15 @@ export class SymbolBuilder {
         referenceVarLocation: referenceVarTcbLocation,
       };
     } else {
-      if (!ts.isClassDeclaration(target.directive.ref.node)) {
+      const targetNode = target.directive.getReferenceTargetNode();
+      if (targetNode === null) {
         return null;
       }
 
       return {
         kind: SymbolKind.Reference,
         declaration: ref,
-        target: target.directive.ref.node,
+        target: targetNode,
         targetLocation,
         referenceVarLocation: referenceVarTcbLocation,
       };
@@ -641,7 +656,7 @@ export class SymbolBuilder {
         tcbLocation: this.getTcbLocationForNode(pipeVariableNode),
         isPipeClassSymbol: true,
       },
-    } as any;
+    };
   }
 
   private getSymbolOfTemplateExpression(
@@ -651,9 +666,14 @@ export class SymbolBuilder {
       expression = expression.ast;
     }
 
-    const expressionTarget = this.typeCheckData.boundTarget.getExpressionTarget(expression);
+    const expressionTarget = this.boundTarget.getExpressionTarget(expression);
     if (expressionTarget !== null) {
-      return this.getSymbol(expressionTarget);
+      return this.getSymbol(expressionTarget) as
+        | VariableSymbol
+        | ReferenceSymbol
+        | ExpressionSymbol
+        | LetDeclarationSymbol
+        | null;
     }
 
     let withSpan = expression.sourceSpan;

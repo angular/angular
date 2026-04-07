@@ -20,6 +20,7 @@ export {
   type SourceMapping,
   type OutOfBandDiagnosticRecorder,
   type DomSchemaChecker,
+  type SymbolReference,
   OutOfBadDiagnosticCategory,
   SymbolKind,
 } from '../src/ngtsc/typecheck/api';
@@ -43,4 +44,8 @@ export {
   ExpressionIdentifier,
   hasExpressionIdentifier,
 } from '../src/ngtsc/typecheck/src/comments';
-export {SymbolBuilder} from '../src/ngtsc/typecheck/src/template_symbol_builder';
+export {
+  SymbolBuilder,
+  SymbolBoundTarget,
+  SymbolDirectiveMeta,
+} from '../src/ngtsc/typecheck/src/template_symbol_builder';

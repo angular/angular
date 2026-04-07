@@ -8,19 +8,26 @@
 
 import {
   AST,
+  BoundTarget,
   CssSelector,
   DomElementSchemaRegistry,
   ExternalExpr,
   LiteralPrimitive,
   ParseSourceSpan,
   PropertyRead,
+  ReferenceTarget,
   SafePropertyRead,
+  ScopedNode,
+  Target,
   TemplateEntity,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
   TmplAstHostElement,
   TmplAstNode,
+  TmplAstReference,
   TmplAstTemplate,
   TmplAstTextAttribute,
   WrappedNodeExpr,
@@ -86,6 +93,7 @@ import {
   SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
+  SymbolReference,
   TcbLocation,
   TemplateDiagnostic,
   TemplateSymbol,
@@ -108,8 +116,108 @@ import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
-import {SymbolBuilder} from './template_symbol_builder';
+import {SymbolBuilder, SymbolDirectiveMeta, SymbolBoundTarget} from './template_symbol_builder';
 import {findAllMatchingNodes} from './comments';
+
+export class TypeCheckableDirectiveMetaAdapter implements SymbolDirectiveMeta {
+  constructor(
+    private meta: TypeCheckableDirectiveMeta,
+    private componentScopeReader: ComponentScopeReader,
+  ) {}
+
+  getSymbolReference(): SymbolReference {
+    return {
+      filePath: this.meta.ref.node.getSourceFile().fileName,
+      position: this.meta.ref.node.name.getStart(),
+      name: this.meta.ref.node.name.text,
+      moduleSpecifier: this.meta.ref.bestGuessOwningModule?.specifier,
+    };
+  }
+
+  getNgModule(): ClassDeclaration | null {
+    if (ts.isClassDeclaration(this.meta.ref.node)) {
+      const scope = this.componentScopeReader.getScopeForComponent(this.meta.ref.node);
+      if (scope === null || scope.kind !== ComponentScopeKind.NgModule) {
+        return null;
+      }
+      return scope.ngModule;
+    }
+    return null;
+  }
+
+  getReferenceTargetNode(): ts.ClassDeclaration | null {
+    return ts.isClassDeclaration(this.meta.ref.node) ? this.meta.ref.node : null;
+  }
+
+  get selector() {
+    return this.meta.selector;
+  }
+  get isComponent() {
+    return this.meta.isComponent;
+  }
+  get inputs() {
+    return this.meta.inputs;
+  }
+  get outputs() {
+    return this.meta.outputs;
+  }
+  get isStructural() {
+    return this.meta.isStructural;
+  }
+  get hostDirectives() {
+    return this.meta.hostDirectives;
+  }
+  get matchSource() {
+    return this.meta.matchSource;
+  }
+}
+
+export class BoundTargetAdapter implements SymbolBoundTarget {
+  constructor(
+    private delegate: BoundTarget<TypeCheckableDirectiveMeta>,
+    private componentScopeReader: ComponentScopeReader,
+  ) {}
+
+  getDirectivesOfNode(node: TmplAstNode): SymbolDirectiveMeta[] | null {
+    const dirs = this.delegate.getDirectivesOfNode(node as TmplAstElement | TmplAstTemplate);
+    return dirs
+      ? dirs.map((d) => new TypeCheckableDirectiveMetaAdapter(d, this.componentScopeReader))
+      : null;
+  }
+
+  getReferenceTarget(ref: TmplAstReference): ReferenceTarget<SymbolDirectiveMeta> | null {
+    const target = this.delegate.getReferenceTarget(ref);
+    if (target === null) return null;
+    if ('directive' in target) {
+      return {
+        directive: new TypeCheckableDirectiveMetaAdapter(
+          target.directive,
+          this.componentScopeReader,
+        ),
+        node: target.node,
+      };
+    }
+    return target;
+  }
+
+  getConsumerOfBinding(
+    binding: TmplAstBoundAttribute | TmplAstBoundEvent | TmplAstTextAttribute,
+  ): SymbolDirectiveMeta | TmplAstElement | TmplAstTemplate | null {
+    const consumer = this.delegate.getConsumerOfBinding(binding);
+    if (consumer === null) return null;
+    if (typeof consumer === 'object' && 'ref' in consumer) {
+      return new TypeCheckableDirectiveMetaAdapter(
+        consumer as TypeCheckableDirectiveMeta,
+        this.componentScopeReader,
+      );
+    }
+    return consumer;
+  }
+
+  getExpressionTarget(expr: AST) {
+    return this.delegate.getExpressionTarget(expr);
+  }
+}
 
 function getTcbLocationForSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): TcbLocation | null {
   if ('tcbLocation' in symbol && symbol.tcbLocation !== undefined) {
@@ -255,21 +363,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
 
-    if (
-      'kind' in symbol &&
-      (symbol.kind === SymbolKind.Directive ||
-        symbol.kind === SymbolKind.SelectorlessDirective ||
-        symbol.kind === SymbolKind.SelectorlessComponent)
-    ) {
-      const refNode = (symbol as any).ref?.node;
-      if (refNode) {
-        const tsSymbol = typeChecker.getSymbolAtLocation(refNode.name ?? refNode);
-        if (tsSymbol) return tsSymbol;
-      }
-    }
-
     if ('kind' in symbol && symbol.kind === SymbolKind.Reference) {
-      if ((symbol.target as any).kind && ts.isClassDeclaration(symbol.target as ts.Node)) {
+      if (ts.isClassDeclaration(symbol.target as ts.Node)) {
         const targetNode = symbol.target as ts.ClassDeclaration;
         const tsSymbol = typeChecker.getSymbolAtLocation(targetNode.name ?? targetNode);
         if (tsSymbol) return tsSymbol;
@@ -281,7 +376,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       // which will get the symbol of the local variable (e.g. _t4).
     }
 
-    if ('isPipeClassSymbol' in symbol && (symbol as any).isPipeClassSymbol) {
+    if ('isPipeClassSymbol' in symbol && symbol.isPipeClassSymbol) {
       const type = typeChecker.getTypeAtLocation(node);
       if (type && type.getSymbol()) return type.getSymbol() || null;
     }
@@ -955,8 +1050,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       tcbPath,
       tcbIsShim,
       tcb,
-      data,
-      this.componentScopeReader,
+      new BoundTargetAdapter(data.boundTarget, this.componentScopeReader),
       this.config,
     );
     this.symbolBuilderCache.set(component, builder);
@@ -971,6 +1065,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return engine.getGlobalTsContext();
   }
 
+  private getRefKey(ref: Reference<ClassDeclaration> | SymbolReference): string {
+    if ('filePath' in ref) {
+      return `${ref.filePath}#${ref.position}`;
+    } else {
+      return `${ref.node.getSourceFile().fileName}#${ref.node.name!.getStart()}`;
+    }
+  }
+
   getPotentialTemplateDirectives(
     component: ts.ClassDeclaration,
     tsLs: ts.LanguageService,
@@ -983,14 +1085,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return [];
     }
 
-    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
+    const resultingDirectives = new Map<string, PotentialDirective>();
     const directivesInScope = this.getTemplateDirectiveInScope(component);
     const directiveInGlobal = this.getElementsInGlobal(component, tsLs, options);
     for (const directive of [...directivesInScope, ...directiveInGlobal]) {
-      if (resultingDirectives.has(directive.ref.node)) {
+      const key = this.getRefKey(directive.ref);
+      if (resultingDirectives.has(key)) {
         continue;
       }
-      resultingDirectives.set(directive.ref.node, directive);
+      resultingDirectives.set(key, directive);
     }
     return Array.from(resultingDirectives.values());
   }
@@ -1005,20 +1108,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     // Very similar to the above `getPotentialTemplateDirectives`, but on pipes.
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
-    const resultingPipes = new Map<ClassDeclaration<DeclarationNode>, PotentialPipe>();
+    const resultingPipes = new Map<string, PotentialPipe>();
     if (scope !== null) {
       const inScopePipes = this.getScopeData(component, scope)?.pipes ?? [];
       for (const p of inScopePipes) {
-        resultingPipes.set(p.ref.node, p);
+        resultingPipes.set(this.getRefKey(p.ref), p);
       }
     }
     for (const pipeClass of this.localMetaReader.getKnown(MetaKind.Pipe)) {
       const pipeMeta = this.metaReader.getPipeMetadata(new Reference(pipeClass));
       if (pipeMeta === null) continue;
-      if (resultingPipes.has(pipeClass)) continue;
+      if (resultingPipes.has(this.getRefKey(new Reference(pipeClass)))) continue;
       const withScope = this.scopeDataOfPipeMeta(typeChecker, pipeMeta);
       if (withScope === null) continue;
-      resultingPipes.set(pipeClass, {...withScope, isInScope: false});
+      resultingPipes.set(this.getRefKey(withScope.ref), {...withScope, isInScope: false});
     }
     return Array.from(resultingPipes.values());
   }
@@ -1045,7 +1148,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getTemplateDirectiveInScope(component: ts.ClassDeclaration): PotentialDirective[] {
-    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
+    const resultingDirectives = new Map<string, PotentialDirective>();
 
     const scope = this.getComponentScope(component);
 
@@ -1058,7 +1161,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       const inScopeDirectives = this.getScopeData(component, scope)?.directives ?? [];
       // First, all in scope directives can be used.
       for (const d of inScopeDirectives) {
-        resultingDirectives.set(d.ref.node, d);
+        resultingDirectives.set(this.getRefKey(d.ref), d);
       }
     }
 
@@ -1073,12 +1176,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       if (directiveClass.getSourceFile().fileName !== currentComponentFileName) {
         continue;
       }
-      const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(directiveClass));
+      const ref = new Reference(directiveClass);
+      const directiveMeta = this.metaReader.getDirectiveMetadata(ref);
       if (directiveMeta === null) continue;
-      if (resultingDirectives.has(directiveClass)) continue;
+      const key = this.getRefKey(ref);
+      if (resultingDirectives.has(key)) continue;
       const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);
       if (withScope === null) continue;
-      resultingDirectives.set(directiveClass, {...withScope, isInScope: false});
+      resultingDirectives.set(key, {...withScope, isInScope: false});
     }
 
     return Array.from(resultingDirectives.values());
@@ -1548,7 +1653,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     return {
-      ref: dep.ref,
+      ref: {
+        filePath: dep.ref.node.getSourceFile().fileName,
+        position: dep.ref.node.name!.getStart(),
+        name: dep.ref.node.name!.text,
+        moduleSpecifier: dep.ref.bestGuessOwningModule?.specifier,
+      },
       isComponent: dep.isComponent,
       isStructural: dep.isStructural,
       selector: dep.selector,
@@ -1561,12 +1671,16 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     typeChecker: ts.TypeChecker,
     dep: PipeMeta,
   ): Omit<PotentialPipe, 'isInScope'> | null {
-    const tsSymbol = typeChecker.getSymbolAtLocation(dep.ref.node.name);
-    if (tsSymbol === undefined) {
+    if (!dep.ref.node.name) {
       return null;
     }
     return {
-      ref: dep.ref,
+      ref: {
+        filePath: dep.ref.node.getSourceFile().fileName,
+        position: dep.ref.node.name!.getStart(),
+        name: dep.ref.node.name!.text,
+        moduleSpecifier: dep.ref.bestGuessOwningModule?.specifier,
+      },
       name: dep.name,
       tsCompletionEntryInfos: null,
     };
