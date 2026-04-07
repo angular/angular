@@ -1,6 +1,8 @@
 // Card Grid
 
 @mixin docs-card() {
+  $compact-breakpoint: 550px;
+
   .docs-card-container-wrapper {
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
@@ -15,6 +17,11 @@
       h2 {
         padding: 2.5rem 1rem 2.5rem 2.5rem;
         min-width: 350px;
+
+        @container docs-content (max-width: $compact-breakpoint) {
+          min-width: auto;
+          padding: 1.5rem;
+        }
       }
 
       .theme-fill-bg {
@@ -57,7 +64,11 @@
       svg {
         fill-opacity: 1;
 
-        @container header (max-width: 550px) {
+        @container header (max-width: $compact-breakpoint) {
+          display: none;
+        }
+
+        @container docs-content (max-width: $compact-breakpoint) {
           display: none;
         }
 
@@ -70,6 +81,11 @@
     .docs-card-container-content {
       margin: 1rem;
       padding: 1.5rem;
+
+      @container docs-content (max-width: $compact-breakpoint) {
+        margin: 0.5rem;
+        padding: 0.75rem;
+      }
 
       .docs-card {
         margin: 0;
@@ -252,7 +268,7 @@
     .docs-nav-card-svg {
       width: 350px;
 
-      @container header (max-width: 550px) {
+      @container header (max-width: $compact-breakpoint) {
         display: none;
       }
     }
