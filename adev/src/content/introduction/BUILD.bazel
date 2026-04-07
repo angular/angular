@@ -1,0 +1,40 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "introduction",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/icons:cli.svg",
+        "//adev/src/assets/icons:components.svg",
+        "//adev/src/assets/icons:dev-tools.svg",
+        "//adev/src/assets/icons:di.svg",
+        "//adev/src/assets/icons:docs.svg",
+        "//adev/src/assets/icons:forms.svg",
+        "//adev/src/assets/icons:language-service.svg",
+        "//adev/src/assets/icons:ng-update.svg",
+        "//adev/src/assets/icons:routing.svg",
+        "//adev/src/assets/icons:signals.svg",
+        "//adev/src/assets/icons:ssr.svg",
+        "//adev/src/assets/icons:star.svg",
+        "//adev/src/assets/icons:tutorials.svg",
+        "//adev/src/assets/images:browser-bolt.svg",
+        "//adev/src/assets/images:community.svg",
+        "//adev/src/assets/images:globe.svg",
+        "//adev/src/assets/images:learn-angular-browser.svg",
+        "//adev/src/assets/images:learn-angular-browser-bw.svg",
+        "//adev/src/assets/images:open-source.svg",
+        "//adev/src/assets/images:rocket.svg",
+        "//adev/src/assets/images:servers.svg",
+        "//adev/src/assets/images:what_is_angular.svg",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = ["//adev/src/content/introduction/essentials:guide_files"] + glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

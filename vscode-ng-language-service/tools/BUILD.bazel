@@ -1,0 +1,13 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+
+js_binary(
+    name = "vsix_contents_goldens",
+    data = ["//vscode-ng-language-service:node_modules/@vscode/vsce"],
+    entry_point = ":vsix_contents_goldens.mjs",
+    # vsce requires npm on the PATH; we can get this from the Bazel rules_nodejs but it is not
+    # included by default in rules_js binary rules so we include it here explicitly
+    include_npm = True,
+    visibility = [
+        "//vscode-ng-language-service:__pkg__",
+    ],
+)

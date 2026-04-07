@@ -1,0 +1,15 @@
+<div class="listbox-container">
+  <div ngListbox value="Option 1">
+    @for (option of options; track option) {
+      <div ngOption [value]="option">
+        <span class="example-option-text">{{ option }}</span>
+        <span
+          class="example-option-check material-symbols-outlined"
+          translate="no"
+          aria-hidden="true"
+          >check</span
+        >
+      </div>
+    }
+  </div>
+</div>

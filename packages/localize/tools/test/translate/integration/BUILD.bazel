@@ -1,0 +1,28 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/localize/tools",
+        "//packages/localize/tools/test/helpers",
+    ],
+)
+
+jasmine_test(
+    name = "integration",
+    data = [
+        ":test_lib",
+        "//:node_modules/tinyglobby",
+        "//:node_modules/yargs",
+        "//packages/localize/tools/test/translate/integration/locales",
+        "//packages/localize/tools/test/translate/integration/test_files",
+    ],
+)

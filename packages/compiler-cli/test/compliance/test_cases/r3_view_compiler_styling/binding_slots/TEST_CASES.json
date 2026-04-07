@@ -1,0 +1,47 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should count only non-style and non-class host bindings on Components",
+      "inputFiles": [
+        "component_host_binding_slots.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "component_host_binding_slots.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should count only non-style and non-class host bindings on Directives",
+      "inputFiles": [
+        "directive_host_binding_slots.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "directive_host_binding_slots.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate the correct amount of host bindings when styling is present",
+      "inputFiles": [
+        "host_binding_slots.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "host_binding_slots.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

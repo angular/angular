@@ -1,0 +1,35 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides", "generate_tutorial")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+generate_guides(
+    name = "signals-guides",
+    srcs = glob(
+        [
+            "**/*.md",
+        ],
+        exclude = [
+            "**/node_modules/**/*.md",
+        ],
+    ),
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        ["**/*"],
+        exclude = ["**/*.md"],
+    ),
+)
+
+generate_tutorial(
+    name = "signals",
+    tutorial_srcs = ":files",
+)

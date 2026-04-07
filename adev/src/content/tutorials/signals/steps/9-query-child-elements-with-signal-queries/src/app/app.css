@@ -1,0 +1,127 @@
+/* ProductCard Component Styles */
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  background: #f9f9f9;
+}
+
+.price {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.description {
+  color: #666;
+  margin: 8px 0;
+}
+
+.actions {
+  margin-top: 12px;
+}
+
+.details {
+  margin-top: 12px;
+  padding: 8px;
+  background: #e8f5e8;
+  border-radius: 4px;
+}
+
+.product-card button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+  margin-right: 8px;
+}
+
+.product-card button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* CartSummary Component Styles */
+.cart-summary {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f0f8ff;
+}
+
+.cart-summary .actions {
+  margin-top: 12px;
+}
+
+.cart-summary button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+  margin-right: 8px;
+}
+
+.cart-summary button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* App Component Styles */
+.shopping-app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.controls {
+  margin: 20px 0;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.cart-section {
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.cart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantity {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.shopping-app button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+  margin-right: 8px;
+}
+
+.shopping-app button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

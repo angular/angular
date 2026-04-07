@@ -1,0 +1,38 @@
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.items .item {
+  transition-property: opacity, transform;
+  transition-duration: 500ms;
+
+  @starting-style {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+
+.items .item.fade {
+  animation: fade-out 500ms;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--primary-contrast, black);
+  color: var(--primary-contrast, black);
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+}

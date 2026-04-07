@@ -1,0 +1,181 @@
+"""Rules/toolchains for angular with Bazel."""
+
+module(
+    name = "angular",
+)
+
+bazel_dep(name = "rules_pkg", version = "1.2.0")
+bazel_dep(name = "rules_nodejs", version = "6.7.3")
+bazel_dep(name = "aspect_rules_ts", version = "3.8.7")
+bazel_dep(name = "aspect_rules_js", version = "3.0.3")
+bazel_dep(name = "aspect_rules_esbuild", version = "0.25.1")
+bazel_dep(name = "aspect_rules_jasmine", version = "2.0.4")
+bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+bazel_dep(name = "bazel_lib", version = "3.2.2")
+bazel_dep(name = "tar.bzl", version = "0.9.0")
+bazel_dep(name = "yq.bzl", version = "0.3.5")
+bazel_dep(name = "rules_angular")
+git_override(
+    module_name = "rules_angular",
+    commit = "19a4a8fb4d6f035b5506ca21bbbd309ab5f5e729",
+    remote = "https://github.com/angular/rules_angular.git",
+)
+
+bazel_dep(name = "devinfra")
+git_override(
+    module_name = "devinfra",
+    commit = "55af1f65dbeb0fe6a3de1d1134bd0dd8bc5e60cc",
+    remote = "https://github.com/angular/dev-infra.git",
+)
+
+bazel_dep(name = "rules_sass")
+git_override(
+    module_name = "rules_sass",
+    commit = "13918bec49cd183a591e3781d1d08044b4aa9f61",
+    remote = "https://github.com/angular/rules_sass.git",
+)
+
+bazel_dep(name = "rules_browsers")
+git_override(
+    module_name = "rules_browsers",
+    commit = "46029652792eac7bb51b6abd04503af296db70ea",
+    remote = "https://github.com/angular/rules_browsers.git",
+)
+
+yq = use_extension("@yq.bzl//yq:extensions.bzl", "yq")
+use_repo(yq, "yq_toolchains")
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+node.toolchain(
+    node_repositories = {
+        "22.22.2-darwin_arm64": ("node-v22.22.2-darwin-arm64.tar.gz", "node-v22.22.2-darwin-arm64", "db4b275b83736df67533529a18cc55de2549a8329ace6c7bcc68f8d22d3c9000"),
+        "22.22.2-darwin_amd64": ("node-v22.22.2-darwin-x64.tar.gz", "node-v22.22.2-darwin-x64", "12a6abb9c2902cf48a21120da13f87fde1ed1b71a13330712949e8db818708ba"),
+        "22.22.2-linux_arm64": ("node-v22.22.2-linux-arm64.tar.xz", "node-v22.22.2-linux-arm64", "e9e1930fd321a470e29bb68f30318bf58e3ecb4acb4f1533fb19c58328a091fe"),
+        "22.22.2-linux_ppc64le": ("node-v22.22.2-linux-ppc64le.tar.xz", "node-v22.22.2-linux-ppc64le", "14045b5a5030d35ca0030fb7e870bd11a651eb9b57323ebc0021e8d78ac6bac9"),
+        "22.22.2-linux_s390x": ("node-v22.22.2-linux-s390x.tar.xz", "node-v22.22.2-linux-s390x", "9e4a07c291b8949289c6ea8ee61b1d14666a4810feae776a8d1eb1f57e03a2fb"),
+        "22.22.2-linux_amd64": ("node-v22.22.2-linux-x64.tar.xz", "node-v22.22.2-linux-x64", "88fd1ce767091fd8d4a99fdb2356e98c819f93f3b1f8663853a2dee9b438068a"),
+        "22.22.2-windows_amd64": ("node-v22.22.2-win-x64.zip", "node-v22.22.2-win-x64", "7c93e9d92bf68c07182b471aa187e35ee6cd08ef0f24ab060dfff605fcc1c57c"),
+    },
+    node_version = "22.22.2",
+)
+use_repo(node, "nodejs_toolchains")
+use_repo(node, "nodejs_darwin_amd64")
+use_repo(node, "nodejs_darwin_arm64")
+use_repo(node, "nodejs_linux_amd64")
+use_repo(node, "nodejs_linux_arm64")
+use_repo(node, "nodejs_linux_ppc64le")
+use_repo(node, "nodejs_linux_s390x")
+use_repo(node, "nodejs_windows_amd64")
+
+pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
+pnpm.pnpm(
+    name = "pnpm",
+    pnpm_version = "10.32.1",
+    pnpm_version_integrity = "sha512-pwaTjw6JrBRWtlY+q07fHR+vM2jRGR/FxZeQ6W3JGORFarLmfWE94QQ9LoyB+HMD5rQNT/7KnfFe8a1Wc0jyvg==",
+)
+use_repo(pnpm, "pnpm")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "npm",
+    data = [
+        "//:.pnpmfile.cjs",
+        "//:package.json",
+        "//:pnpm-workspace.yaml",
+        "//adev:package.json",
+        "//adev/shared-docs:package.json",
+        "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//integration:package.json",
+        "//modules:package.json",
+        "//packages/animations:package.json",
+        "//packages/benchpress:package.json",
+        "//packages/common:package.json",
+        "//packages/compiler:package.json",
+        "//packages/compiler-cli:package.json",
+        "//packages/compiler-cli/linker/babel/test:package.json",
+        "//packages/core:package.json",
+        "//packages/core/test/bundling:package.json",
+        "//packages/elements:package.json",
+        "//packages/forms:package.json",
+        "//packages/language-service:package.json",
+        "//packages/localize:package.json",
+        "//packages/platform-browser:package.json",
+        "//packages/platform-browser-dynamic:package.json",
+        "//packages/platform-server:package.json",
+        "//packages/router:package.json",
+        "//packages/service-worker:package.json",
+        "//packages/upgrade:package.json",
+        "//tools/bazel/rules_angular_store:package.json",
+        "//vscode-ng-language-service/integration/project:package.json",
+    ],
+    npmrc = "//:.npmrc",
+    pnpm_lock = "//:pnpm-lock.yaml",
+)
+use_repo(npm, "npm")
+
+rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
+rules_ts_ext.deps(
+    name = "angular_npm_typescript",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/6.0.2 | jq -r '.dist.integrity'
+    ts_integrity = "sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==",
+    ts_version = "6.0.2",
+)
+use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
+
+# TODO: Figure out how to make ng_project update whenever the packages/core::pkg target changes.
+rules_angular = use_extension("@rules_angular//setup:extensions.bzl", "rules_angular")
+
+use_repo_rule("@rules_angular//setup:repositories.bzl", "configurable_deps_repo")(
+    name = "rules_angular_configurable_deps",
+    angular_compiler_cli = "@angular//:node_modules/@angular/compiler-cli",
+    typescript = "@angular//:node_modules/typescript",
+)
+
+override_repo(rules_angular, "rules_angular_configurable_deps")
+
+register_toolchains(
+    "@devinfra//bazel/git-toolchain:git_linux_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_x86_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_arm64_toolchain",
+    "@devinfra//bazel/git-toolchain:git_windows_toolchain",
+)
+
+CLDR_VERSION = "47"
+
+cldr_json_data = use_repo_rule("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_json_data_repository")
+
+cldr_json_data(
+    name = "cldr_json_data",
+    urls = {
+        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (CLDR_VERSION, CLDR_VERSION): "bbb9a9aac2dfc534bd18288678a5984023d11d22f712f3c33425f3214bd1def6",
+    },
+)
+
+cldr_xml_data = use_repo_rule("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_xml_data_repository")
+
+cldr_xml_data(
+    name = "cldr_xml_data",
+    urls = {
+        "https://github.com/unicode-org/cldr/releases/download/release-%s/core.zip" % CLDR_VERSION: "d5ee2abac64158c04884a722f8ef4830ea22b6c74aac20185be2838db8eda788",
+    },
+)
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Fetch sauce connect (tool to open Saucelabs tunnel for Saucelabs browser tests)
+http_archive(
+    name = "sauce_connect_linux_amd64",
+    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
+    sha256 = "26b9c3630f441b47854b6032f7eca6f1d88d3f62e50ee44c27015d71a5155c36",
+    strip_prefix = "sc-4.8.2-linux",
+    url = "https://saucelabs.com/downloads/sc-4.8.2-linux.tar.gz",
+)
+
+http_archive(
+    name = "sauce_connect_mac",
+    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
+    sha256 = "28277ce81ef9ab84f5b87b526258920a8ead44789a5034346e872629bbf38089",
+    strip_prefix = "sc-4.8.2-osx",
+    url = "https://saucelabs.com/downloads/sc-4.8.2-osx.zip",
+)

@@ -1,0 +1,37 @@
+@let comp = currentSelectedElement().component;
+@if (comp) {
+  <mat-accordion class="property-tab-header">
+    <mat-expansion-panel [hideToggle]="true" [expanded]="expanded()" disabled>
+      <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
+        <mat-panel-title>
+          <div class="node-header">
+            <button
+              class="component-name"
+              (click)="expanded.set(!expanded())"
+              [class.expanded]="expanded()"
+            >
+              <span>{{ comp.name }}</span>
+              <mat-icon> keyboard_arrow_down </mat-icon>
+            </button>
+            @if (signalGraphEnabled()) {
+              <button
+                ng-button
+                type="button"
+                class="signal-btn"
+                size="compact"
+                (click)="showSignalGraph.emit()"
+              >
+                Show Signal Graph
+              </button>
+            }
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-component-metadata [currentSelectedComponent]="comp"></ng-component-metadata>
+    </mat-expansion-panel>
+  </mat-accordion>
+} @else {
+  <div class="node-header">
+    <div class="non-component-name">{{ currentSelectedElement().element }}</div>
+  </div>
+}

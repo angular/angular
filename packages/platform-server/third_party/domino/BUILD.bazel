@@ -1,0 +1,53 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm//:rollup/package_json.bzl", rollup = "bin")
+
+package(default_visibility = ["//visibility:private"])
+
+rollup.rollup(
+    name = "bundled_domino",
+    srcs = [
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/domino",
+    ],
+    outs = [
+        "bundled-domino.mjs",
+        "bundled-domino.mjs.map",
+    ],
+    args = [
+        "--format=esm",
+        "--plugin=@rollup/plugin-commonjs",
+        "--input=node_modules/domino/lib/index.js",
+        "--sourcemap=true",
+        "--file=packages/platform-server/third_party/domino/bundled-domino.mjs",
+    ],
+    progress_message = "Bundling domino",
+    silent_on_success = True,
+)
+
+genrule(
+    name = "bundled_domino_license",
+    srcs = [
+        "//:node_modules/domino/dir",
+    ],
+    outs = ["LICENSE"],
+    cmd = """
+        cp "$(location //:node_modules/domino/dir)/LICENSE" $@
+    """,
+)
+
+js_library(
+    name = "bundled_domino_lib",
+    srcs = [
+        "bundled-domino.d.ts",
+        ":bundled_domino",
+        ":bundled_domino_license",
+    ],
+    visibility = [
+        "//packages/platform-server:__subpackages__",
+        "//packages/private/testing:__pkg__",
+        "//tools/testing:__pkg__",
+    ],
+    deps = [
+        "//:node_modules/domino",
+    ],
+)

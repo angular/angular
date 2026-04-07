@@ -1,0 +1,32 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "home_styles",
+    src = "todo.component.scss",
+)
+
+ng_project(
+    name = "home",
+    srcs = [
+        "home.routes.ts",
+        "sample.pipe.ts",
+        "todo.component.ts",
+        "todo.ts",
+        "todos.component.ts",
+        "todos.pipe.ts",
+        "todos.service.ts",
+        "tooltip.directive.ts",
+    ],
+    angular_assets = [
+        "todos.component.html",
+        "todo.component.html",
+        ":home_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
+    ],
+)

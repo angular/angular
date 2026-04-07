@@ -1,0 +1,126 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+.adev-nav-item {
+  color: var(--quaternary-contrast);
+  position: relative;
+  width: 6.875rem;
+
+  @include mq.for-phone-only {
+    width: 5.05rem;
+  }
+
+  @include mq.for-tablet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    width: 2px;
+
+    // TODO: Make this gradient if the page is currently active, and black if child page active
+    background-color: var(--primary-contrast);
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    @include mq.for-tablet {
+      width: auto;
+      top: auto;
+      right: 0;
+      height: 2px;
+    }
+  }
+
+  &:not(.adev-nav-item--logo) {
+    @include mq.for-tablet {
+      a,
+      .adev-nav-button {
+        gap: 0.25rem;
+      }
+    }
+  }
+
+  .adev-nav-button {
+    width: 100%;
+    font-weight: 500;
+  }
+
+  a,
+  .adev-nav-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block: 1.25rem;
+    text-decoration: none;
+    fill: var(--quaternary-contrast);
+    color: inherit;
+    cursor: pointer;
+    transition: fill 0.3s ease;
+
+    @include mq.for-tablet {
+      flex-direction: row;
+    }
+  }
+
+  &__label {
+    margin: 0;
+    font-size: 0.813; // 13px
+    color: inherit;
+
+    abbr {
+      font-size: 0.688; // 11px
+    }
+  }
+
+  i {
+    color: var(--quaternary-contrast);
+    transition: color 0.3s ease;
+  }
+
+  span,
+  abbr {
+    transition: color 0.3s ease;
+  }
+
+  &:hover {
+    a,
+    .adev-nav-button {
+      fill: var(--primary-contrast);
+    }
+    span,
+    abbr {
+      color: var(--primary-contrast);
+    }
+    i {
+      color: var(--primary-contrast);
+    }
+  }
+
+  &--active {
+    &::before {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    &:not(.adev-nav-item--logo) {
+      path {
+        fill: var(--primary-contrast);
+      }
+    }
+    span,
+    abbr,
+    i {
+      color: var(--primary-contrast);
+    }
+  }
+}

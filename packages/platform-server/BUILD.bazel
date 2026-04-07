@@ -1,0 +1,95 @@
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "platform-server",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/rxjs",
+        "//:node_modules/xhr2",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":platform-server",
+    tsconfig = "//packages:tsconfig_build",
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    externals = [
+        "xhr2",
+        "../../third_party/domino/bundled-domino",
+        "../third_party/domino/bundled-domino",
+    ],
+    nested_packages = [
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
+    ],
+    package = "@angular/platform-server",
+    side_effect_entry_points = [
+        "@angular/platform-server/init",
+    ],
+    substitutions = {
+        # Needed for the FESM files.
+        "\\./(.+)/third_party/domino/bundled-domino": "../third_party/domino/bundled-domino.mjs",
+    },
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+    ],
+    deps = [
+        ":platform-server",
+        "//packages/platform-server/init",
+        "//packages/platform-server/testing",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "platform-server_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/platform-server",
+    npm_package = "packages/platform-server/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-server_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-server",
+)

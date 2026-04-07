@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  font-family: var(--inter-font);
+  display: flex;;
+  justify-content: center;
+}
+
+[ngTabs] {
+  overflow: hidden;
+  width: 600px;
+  height: 200px;
+  border-radius: 0.5rem;
+  background-color: color-mix(in srgb, var(--bright-blue) 5%, transparent);
+  display: flex;
+}
+
+[ngTabList] {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  position: relative;
+  border-right: 1px solid color-mix(in srgb, var(--primary-contrast) 20%, transparent);
+}
+
+[ngTab] {
+  flex: 1;
+  outline: none;
+  width: 80px;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--primary-contrast) 60%, transparent);
+  display: grid;
+  place-items: center;
+}
+
+[ngTab]:focus {
+  outline-offset: -8px;
+  border-radius: 0.7rem;
+  outline: 2px solid var(--bright-blue);
+}
+
+[ngTab]:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+[ngTab][aria-selected='true'] {
+  color: var(--bright-blue);
+}
+
+.bottom-border {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: calc(100% / 3);
+  background-color: var(--bright-blue);
+  transition: all 0.2s ease-in-out;
+  transform: translateY(0%);
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+[ngTab]:nth-child(1)[aria-selected='true'] ~ .bottom-border {
+  transform: translateY(0%);
+}
+[ngTab]:nth-child(2)[aria-selected='true'] ~ .bottom-border {
+  transform: translateY(100%);
+}
+[ngTab]:nth-child(3)[aria-selected='true'] ~ .bottom-border {
+  transform: translateY(200%);
+}
+
+.sliding-window {
+  height: 300%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease-in-out;
+  flex: 1;
+}
+
+[ngTabList]:has([ngTab]:nth-child(1)[aria-selected='true']) ~ .sliding-window {
+  transform: translateY(0%);
+}
+[ngTabList]:has([ngTab]:nth-child(2)[aria-selected='true']) ~ .sliding-window {
+  transform: translateY(-33.333%);
+}
+[ngTabList]:has([ngTab]:nth-child(3)[aria-selected='true']) ~ .sliding-window {
+  transform: translateY(-66.666%);
+}
+
+[ngTabPanel] {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  flex: 1;
+}
+
+[ngTabPanel]:focus {
+  outline-offset: -4px;
+  border-radius: 0.5rem;
+  outline: 2px solid var(--bright-blue);
+}

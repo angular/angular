@@ -1,0 +1,14 @@
+<label [attr.for]="buttonId()">
+  <span class="docs-label">{{ label() }}</span>
+  <div class="docs-toggle">
+    <input
+      type="checkbox"
+      [id]="buttonId()"
+      role="switch"
+      (click)="toggle()"
+      [class.docs-toggle-active]="checked()"
+      [checked]="checked()"
+    />
+    <span class="docs-slider"></span>
+  </div>
+</label>

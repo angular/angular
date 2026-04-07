@@ -1,0 +1,27 @@
+$gutter-border: 1px solid var(--senary-contrast) !important;
+
+as-split {
+  ::ng-deep .as-split-gutter {
+    flex-basis: 5px !important;
+    background-color: inherit !important;
+    position: relative;
+  }
+
+  &.as-horizontal.docs-editor {
+    ::ng-deep .as-split-gutter {
+      border-inline: $gutter-border;
+    }
+  }
+
+  &.as-vertical.docs-editor {
+    ::ng-deep .as-split-gutter {
+      border-block-start: $gutter-border;
+    }
+  }
+
+  &.as-vertical.docs-right-side {
+    ::ng-deep .as-split-gutter {
+      border-block-start: $gutter-border;
+    }
+  }
+}

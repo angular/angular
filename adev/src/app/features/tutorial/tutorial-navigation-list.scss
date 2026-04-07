@@ -1,0 +1,93 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+:host {
+  display: flex;
+  min-width: var(--secondary-nav-width);
+  list-style: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  padding-block: 1.5rem;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+
+  height: max-content;
+  max-height: calc(var(--fixed-content-height) - var(--layout-padding) - 67px);
+  padding-block-start: 1rem;
+  padding-block-end: 0;
+  @container tutorial-content (max-width: 430px) {
+    max-height: calc(var(--fixed-content-height) - var(--layout-padding) - 105px);
+  }
+
+  @include mq.for-tablet-landscape-down {
+    max-height: calc(var(--fixed-content-height) - var(--layout-padding) - 167px);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--senary-contrast);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    background-color: var(--septenary-contrast);
+
+    @include mq.for-tablet-landscape-down {
+      background-color: var(--quinary-contrast);
+    }
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--quinary-contrast);
+  }
+
+  > .docs-faceted-list {
+    border: 0;
+  }
+}
+
+.docs-faceted-list-item-text {
+  max-width: calc(100% - 1rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  line-height: 1.4rem;
+  letter-spacing: -0.00875rem;
+  padding: 0.5rem;
+  padding-inline-start: 1rem;
+  text-align: left;
+}
+
+// Add padding-bottom to last item in the list
+.docs-navigation-list {
+  width: 100%;
+
+  li:last-of-type {
+    ul:last-of-type {
+      li:last-of-type {
+        padding-block-end: 1rem;
+      }
+    }
+  }
+  &:first-child {
+    margin-inline-start: 1rem;
+  }
+}

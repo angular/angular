@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig-build.json",
+  "angularCompilerOptions": {
+    "_isAngularCoreCompilation": true,
+  }
+}

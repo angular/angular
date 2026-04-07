@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  font-size: 0.8rem;
+  font-family: var(--inter-font);
+}
+
+[ngListbox] {
+  gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+[ngOption] {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  border-radius: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  color: var(--hot-pink);
+  border: 1px solid var(--hot-pink);
+  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
+}
+
+[ngOption]:focus {
+  outline: 2px solid var(--hot-pink);
+  outline-offset: 2px;
+}
+
+[ngOption]:hover {
+  background-color: color-mix(in srgb, var(--hot-pink) 15%, transparent);
+}
+
+[ngOption][aria-selected='true'] {
+  color: var(--page-background);
+  background-color: var(--hot-pink);
+}
+
+.check-icon {
+  width: 0;
+  font-size: 1.25rem;
+  overflow: hidden;
+  transition:
+    width 0.2s ease-in-out,
+    padding-right 0.2s ease-in-out;
+}
+
+[ngOption][aria-selected='true'] .check-icon {
+  width: 1.5rem;
+  padding-right: 0.2rem;
+}

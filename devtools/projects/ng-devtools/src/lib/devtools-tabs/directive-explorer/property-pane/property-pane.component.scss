@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .body {
+    height: 100%;
+    overflow-y: auto;
+
+    .explorer-panel {
+      background: var(--senary-contrast);
+      padding: 0.5rem;
+      min-height: 100%;
+      box-sizing: border-box;
+    }
+
+    .dehydrated-component {
+      padding: 0.75rem;
+    }
+  }
+}

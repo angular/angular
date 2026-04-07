@@ -1,0 +1,13 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "environments",
+    srcs = [
+        "environment.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/platform-browser",
+    ],
+)

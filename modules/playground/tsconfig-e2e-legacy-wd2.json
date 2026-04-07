@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig-e2e.json",
+  "compilerOptions": {
+    "types": ["node", "jasminewd2"]
+  }
+}

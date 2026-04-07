@@ -1,0 +1,56 @@
+@use '../../../styles/typography';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .recorder-controls {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--color-separator);
+
+    button {
+      $icon-size: 18px;
+      margin: 0.625rem;
+      color: var(--secondary-contrast);
+      height: $icon-size;
+
+      &.recording-button {
+        color: var(--dynamic-red-01);
+      }
+
+      mat-icon {
+        width: $icon-size;
+        height: $icon-size;
+        font-size: $icon-size;
+      }
+    }
+
+    .instructions {
+      @extend %body-01;
+      padding-block: 0.7rem;
+      margin: 0;
+
+      input {
+        margin-top: 0.5rem;
+        cursor: pointer;
+      }
+    }
+
+    mat-progress-bar {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+    }
+  }
+
+  .recording {
+    flex: 1;
+    overflow: hidden;
+  }
+}

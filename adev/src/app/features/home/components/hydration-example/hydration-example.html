@@ -1,0 +1,216 @@
+<div class="header">Hydration</div>
+<div class="description">
+  Hydration is the process that restores the server-side rendered application on the client
+
+  <p>
+    This demo showcases Angular's hydration strategies, allowing you to simulate network latency and
+    observe how different components hydrate based on their configured triggers.
+  </p>
+</div>
+
+<div class="demo-container">
+  <div class="max-width-wrapper">
+    <div class="main-layout">
+      <!-- Controls & Logs -->
+      <div class="sidebar">
+        <div class="card config-card">
+          <h3 class="sidebar-title font-mono">
+            <docs-icon>schedule</docs-icon>
+            Simulation Config
+          </h3>
+
+          <div class="config-controls">
+            <div class="control-group">
+              <div class="label-row">
+                <label>Network Latency</label>
+                <span class="latency-value font-mono">{{ latency() }}ms</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="4000"
+                step="100"
+                [value]="latency()"
+                (input)="updateLatency($event)"
+                class="range-input"
+              />
+            </div>
+
+            <button
+              (click)="resetSimulation()"
+              [disabled]="isSimulationRunning()"
+              class="btn-reset"
+            >
+              <docs-icon>refresh</docs-icon>
+              Reset Lifecycle
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal Log -->
+        <div class="terminal">
+          <h3 class="terminal-title font-mono">Hydration Engine Log</h3>
+          <div class="terminal-body font-mono custom-scrollbar">
+            @for (evt of eventQueue(); track $index) {
+              <div class="log-entry animate-in">
+                <span class="log-index">0{{ $index + 1 }}</span>
+                <span class="log-tag">event:</span>
+                <span class="log-msg">{{ evt }}</span>
+              </div>
+            }
+            @if (eventQueue().length === 0) {
+              <div class="log-placeholder">Awaiting app bootstrap...</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulator Stage -->
+      <div class="simulator-stage">
+        <div class="browser-window">
+          <!-- Browser UI -->
+          <div class="browser-header">
+            <div class="window-controls">
+              <div class="dot-win"></div>
+              <div class="dot-win"></div>
+              <div class="dot-win"></div>
+            </div>
+            <div class="address-bar font-mono">
+              <docs-icon>lock</docs-icon>
+              angular.dev/hydration-strategies
+            </div>
+          </div>
+
+          <!-- Viewport Content -->
+          <div class="viewport">
+            @if (currentState() === 'Server-Side Rendering...') {
+              <div class="ssr-overlay animate-fade">
+                <div class="ssr-spinner">
+                  <div class="spinner-outer"></div>
+                  <div class="spinner-inner"></div>
+                </div>
+                <p class="ssr-title">Generating SSR Markup...</p>
+              </div>
+            }
+
+            <div class="viewport-flex">
+              <div class="viewport-header">
+                <div class="header-text">
+                  <h4 class="viewport-title">Component Strategies</h4>
+                  <p class="viewport-subtitle">Mixing eager and deferred hydration triggers.</p>
+                </div>
+                <div class="viewport-stats">
+                  <div class="stats-label">Main App</div>
+                  <div class="stats-value font-tabular">{{ progress() }}%</div>
+                </div>
+              </div>
+
+              <div class="component-grid">
+                @for (card of [card1(), card2(), card3(), card4()]; track $index) {
+                  <div
+                    (click)="handleCardClick(card.id)"
+                    class="component-card transition-all"
+                    [class]="{
+                      'interactive': isInteractive() || card.strategy === 'on-interaction',
+                      'static': !isInteractive() && card.strategy !== 'on-interaction',
+                      'active-card': card.clickCount > 0,
+                      'dashed-border': !card.isHydrated,
+                    }"
+                  >
+                    <div class="card-top">
+                      <div
+                        class="icon-box transition-all"
+                        [class]="card.isHydrated ? 'icon-hydrated' : 'icon-static'"
+                      >
+                        @if (card.isHydrating) {
+                          <div class="loading-spinner"></div>
+                        } @else {
+                          <docs-icon>water_drop</docs-icon>
+                        }
+                      </div>
+                      @if (card.clickCount > 0) {
+                        <div class="click-badge font-tabular animate-zoom">
+                          <span class="badge-label">CLICKS:</span> {{ card.clickCount }}
+                        </div>
+                      }
+                    </div>
+
+                    <div class="card-body">
+                      <h5 class="card-title">{{ card.title }}</h5>
+                      <p class="card-desc">{{ card.description }}</p>
+                    </div>
+
+                    <div class="card-footer">
+                      @if (card.isHydrating) {
+                        <div class="tag tag-deferred animate-slide-in">
+                          <span class="tag-dot spin"></span>
+                          Hydrating...
+                        </div>
+                      } @else if (!card.isHydrated) {
+                        <div class="tag tag-deferred">
+                          <span class="tag-dot pulse"></span>
+                          Static
+                        </div>
+                      } @else {
+                        <div class="tag tag-hydrated animate-slide-in">
+                          <span class="tag-dot"></span>
+                          Hydrated
+                        </div>
+                      }
+                    </div>
+
+                    @if (card.syntax) {
+                      <div
+                        class="syntax-badge font-mono"
+                        [class]="card.isHydrated ? 'syntax-inactive' : 'syntax-active'"
+                      >
+                        {{ card.syntax }}
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Lifecycle Progress -->
+          <div class="lifecycle-progress-bar">
+            <div class="progress-fill transition-all" [style.width.%]="progress()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Explanatory Feature Cards -->
+    <div class="explainer-grid">
+      <div class="explainer-item">
+        <h5 class="explainer-title"><span class="dot-red"></span> Eager Hydration</h5>
+        <p class="explainer-text">
+          Essential components (like navigation or top-fold content) hydrate as soon as the main
+          application bundle is ready.
+        </p>
+      </div>
+      <div class="explainer-item">
+        <h5 class="explainer-title"><span class="dot-violet"></span> Incremental Hydration</h5>
+        <p class="explainer-text">
+          Use hydration triggers like <code>on interaction</code> or <code>on timer</code> to delay
+          JS execution for non-critical elements.
+        </p>
+      </div>
+      <div class="explainer-item">
+        <h5 class="explainer-title"><span class="dot-green"></span> Event Replay</h5>
+        <p class="explainer-text">
+          User clicks are never lost. Angular records events during the "Static" phase and
+          re-dispatches them once hydrated.
+        </p>
+      </div>
+    </div>
+  </div>
+  <button
+    class="docs-primary-btn"
+    [attr.text]="'Learn more about hydration'"
+    routerLink="/guide/hydration"
+  >
+    Learn more about hydration
+  </button>
+</div>

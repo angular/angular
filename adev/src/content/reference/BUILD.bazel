@@ -1,0 +1,27 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "reference",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:roadmap.svg",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]) + [
+        "//adev/src/content/reference/concepts:guide_files",
+        "//adev/src/content/reference/configs:guide_files",
+        "//adev/src/content/reference/errors:guide_files",
+        "//adev/src/content/reference/errors:route-nav-items",
+        "//adev/src/content/reference/extended-diagnostics:guide_files",
+        "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+        "//adev/src/content/reference/migrations:guide_files",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

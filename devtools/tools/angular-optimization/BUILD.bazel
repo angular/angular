@@ -1,0 +1,23 @@
+load("//devtools/tools:defaults.bzl", "copy_to_bin", "js_library")
+
+package(default_visibility = ["//visibility:public"])
+
+copy_to_bin(
+    name = "js_lib_files",
+    srcs = [
+        "ensure-no-linker-decl.mjs",
+        "esbuild-plugin.d.ts",
+        "esbuild-plugin.mjs",
+    ],
+)
+
+js_library(
+    name = "js_lib",
+    srcs = [":js_lib_files"],
+    deps = [
+        "//:node_modules/@angular/build",
+        "//:node_modules/@babel/core",
+        "//:node_modules/@babel/plugin-transform-async-generator-functions",
+        "//packages/compiler-cli",
+    ],
+)

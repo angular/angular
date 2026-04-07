@@ -1,0 +1,30 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:private"])
+
+ts_project(
+    name = "testing",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = ["//adev/shared-docs:__subpackages__"],
+    deps = [
+        ":lib",
+    ],
+)
+
+ts_project(
+    name = "lib",
+    srcs = glob(
+        ["*.ts"],
+        exclude = [
+            "index.ts",
+        ],
+    ),
+    tsconfig = "//adev/shared-docs:tsconfig_test",
+    deps = [
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@types/jasmine",
+        "//adev:node_modules/@webcontainer/api",
+    ],
+)

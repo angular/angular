@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en-GB">
+  <file id="ngi18n" original="ng.template" xml:space="preserve">
+    <unit id="12345678901234567890">
+      <notes>
+        <note category="location">test.js:1</note>
+      </notes>
+      <segment>
+        <source>Hello</source>
+      </segment>
+    </unit>
+    <unit id="custom-id">
+      <notes>
+        <note category="location">test.js:2</note>
+      </notes>
+      <segment>
+        <source>Custom id message</source>
+      </segment>
+    </unit>
+    <unit id="1234567890123456789012345678901234567890">
+      <notes>
+        <note category="location">test.js:3</note>
+      </notes>
+      <segment>
+        <source>Goodbye</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>
