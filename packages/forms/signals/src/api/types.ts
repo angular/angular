@@ -346,7 +346,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
    *
    * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
    */
-  readonly max: Signal<number | undefined> | undefined;
+  readonly max: Signal<NonNullable<TValue> | undefined> | undefined;
 
   /**
    * A signal indicating the field's maximum string length, if applicable.
@@ -360,7 +360,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
    *
    * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
    */
-  readonly min: Signal<number | undefined> | undefined;
+  readonly min: Signal<NonNullable<TValue> | undefined> | undefined;
 
   /**
    * A signal indicating the field's minimum string length, if applicable.

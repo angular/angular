@@ -8,8 +8,10 @@
 
 export * from './email';
 export * from './max';
+export * from './max_date';
 export * from './max_length';
 export * from './min';
+export * from './min_date';
 export * from './min_length';
 export * from './pattern';
 export * from './required';

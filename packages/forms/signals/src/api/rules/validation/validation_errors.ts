@@ -101,6 +101,37 @@ export function minError(
 }
 
 /**
+ * Create a minDate error associated with the target field
+ * @param minDate The min date constraint
+ * @param options The validation error options
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export function minDateError(
+  minDate: Date,
+  options: WithFieldTree<ValidationErrorOptions>,
+): MinDateValidationError;
+/**
+ * Create a minDate error
+ * @param minDate The min date constraint
+ * @param options The optional validation error options
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export function minDateError(
+  minDate: Date,
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<MinDateValidationError>;
+export function minDateError(
+  minDate: Date,
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<MinDateValidationError> {
+  return new MinDateValidationError(minDate, options);
+}
+
+/**
  * Create a max value error associated with the target field
  * @param max The max value constraint
  * @param options The validation error options
@@ -129,6 +160,37 @@ export function maxError(
   options?: ValidationErrorOptions,
 ): WithOptionalFieldTree<MaxValidationError> {
   return new MaxValidationError(max, options);
+}
+
+/**
+ * Create a maxDate error associated with the target field
+ * @param maxDate The max date constraint
+ * @param options The validation error options
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export function maxDateError(
+  maxDate: Date,
+  options: WithFieldTree<ValidationErrorOptions>,
+): MaxDateValidationError;
+/**
+ * Create a maxDate error
+ * @param maxDate The max date constraint
+ * @param options The optional validation error options
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export function maxDateError(
+  maxDate: Date,
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<MaxDateValidationError>;
+export function maxDateError(
+  maxDate: Date,
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<MaxDateValidationError> {
+  return new MaxDateValidationError(maxDate, options);
 }
 
 /**
@@ -371,6 +433,23 @@ export class MinValidationError extends BaseNgValidationError {
 }
 
 /**
+ * An error used to indicate that a date value is earlier than the minimum allowed.
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export class MinDateValidationError extends BaseNgValidationError {
+  override readonly kind = 'minDate';
+
+  constructor(
+    readonly minDate: Date,
+    options?: ValidationErrorOptions,
+  ) {
+    super(options);
+  }
+}
+
+/**
  * An error used to indicate that a value is higher than the maximum allowed.
  *
  * @category validation
@@ -381,6 +460,23 @@ export class MaxValidationError extends BaseNgValidationError {
 
   constructor(
     readonly max: number,
+    options?: ValidationErrorOptions,
+  ) {
+    super(options);
+  }
+}
+
+/**
+ * An error used to indicate that a date value is later than the maximum allowed.
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export class MaxDateValidationError extends BaseNgValidationError {
+  override readonly kind = 'maxDate';
+
+  constructor(
+    readonly maxDate: Date,
     options?: ValidationErrorOptions,
   ) {
     super(options);
@@ -487,7 +583,9 @@ export const NgValidationError: abstract new () => NgValidationError = BaseNgVal
 export type NgValidationError =
   | RequiredValidationError
   | MinValidationError
+  | MinDateValidationError
   | MaxValidationError
+  | MaxDateValidationError
   | MinLengthValidationError
   | MaxLengthValidationError
   | PatternValidationError

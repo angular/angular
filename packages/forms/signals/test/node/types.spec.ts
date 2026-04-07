@@ -8,8 +8,17 @@
 
 import {signal, WritableSignal} from '@angular/core';
 import {
+  createMetadataKey,
   FieldTree,
   form,
+  LimitKey,
+  MIN,
+  MIN_DATE,
+  MIN_NUMBER,
+  MAX,
+  MAX_DATE,
+  MAX_NUMBER,
+  metadata,
   provideSignalFormsConfig,
   ReadonlyFieldState,
   required,
@@ -161,6 +170,61 @@ function typeVerificationOnlyDoNotRunMe() {
             return true;
           },
         },
+      });
+    });
+
+    describe('metadata', () => {
+      it('should prevent assigning a number limit to a Date field', () => {
+        interface EventBooking {
+          date: Date;
+        }
+
+        schema<EventBooking>((p) => {
+          metadata(p.date, MIN, () => MIN_DATE);
+          metadata(
+            p.date,
+            MIN,
+            // @ts-expect-error
+            () => MIN_NUMBER,
+          );
+        });
+      });
+
+      it('should prevent assigning a Date limit to a number field', () => {
+        interface PriceConstraint {
+          amount: number;
+        }
+
+        schema<PriceConstraint>((p) => {
+          metadata(p.amount, MAX, () => MAX_NUMBER);
+          metadata(
+            p.amount,
+            MAX,
+            // @ts-expect-error
+            () => MAX_DATE,
+          );
+        });
+      });
+
+      it('should not interpret a MetadataKey as a LimitSelectionKey', () => {
+        interface EventBooking {
+          date: Date;
+        }
+
+        // Structurally this key *looks* like a `LimitSelectionKey`, but it's not created by
+        // `createLimitSelectionKey()`, so it doesn't satisfy the `LimitSelectionKey` constraint in
+        // `metadata()`. Therefore, type checking enforces that assignments are based on the key
+        // type, rather than the field value type.
+        const key = createMetadataKey<LimitKey<number>>();
+        schema<EventBooking>((p) => {
+          metadata(p.date, key, () => MIN_NUMBER);
+          metadata(
+            p.date,
+            key,
+            // @ts-expect-error
+            () => MAX_DATE,
+          );
+        });
       });
     });
   });

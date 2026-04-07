@@ -50,8 +50,10 @@ import {
   FormField,
   hidden,
   max,
+  maxDate,
   maxLength,
   min,
+  minDate,
   minLength,
   pattern,
   provideSignalFormsConfig,
@@ -2432,6 +2434,34 @@ describe('field directive', () => {
         expect(component.f().errors()).toEqual([]);
       });
 
+      it('should validate max on native date input', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(new Date('2026-04-06')), (p) => {
+            maxDate(p, new Date('2026-04-05'));
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        await fixture.whenStable();
+        const component = fixture.componentInstance;
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'maxDate'})]);
+
+        act(() => {
+          element.value = '2026-04-04';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
+        expect(component.f().errors()).toEqual([]);
+      });
+
       it('should bind to a custom control host directive', () => {
         @Directive()
         class CustomControlDir implements FormValueControl<number> {
@@ -2751,6 +2781,34 @@ describe('field directive', () => {
 
         const component = fixture.componentInstance;
         expect(component.f().value()).toBeNull();
+        expect(component.f().errors()).toEqual([]);
+      });
+
+      it('should validate min on native date input', async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(new Date('2026-04-02')), (p) => {
+            minDate(p, new Date('2026-04-05'));
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        await fixture.whenStable();
+        const component = fixture.componentInstance;
+        expect(component.f().errors()).toEqual([jasmine.objectContaining({kind: 'minDate'})]);
+
+        act(() => {
+          element.value = '2026-04-06';
+          element.dispatchEvent(new Event('input'));
+        });
+
+        await fixture.whenStable();
+
         expect(component.f().errors()).toEqual([]);
       });
 
@@ -3735,8 +3793,6 @@ describe('field directive', () => {
         readonly pending = input(false);
         readonly dirty = input(false);
         readonly touched = input(false);
-        readonly min = input<number | undefined>(1);
-        readonly max = input<number | undefined>(1_0000);
         readonly minLength = input<number | undefined>(1);
         readonly maxLength = input<number | undefined>(5);
       }
