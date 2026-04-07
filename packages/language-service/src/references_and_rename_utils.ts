@@ -117,9 +117,25 @@ export function getTargetDetailsAtTemplatePosition(
     const templateTarget = node;
     switch (symbol.kind) {
       case SymbolKind.Directive:
-      case SymbolKind.Template:
+        // If the symbol is a Directive and the target is an attribute, it means the attribute
+        // matched a directive selector. We need to handle this to support finding references
+        // for directives matching an attribute (e.g. `<div dir></div>`).
+        if (
+          templateTarget instanceof TmplAstTextAttribute ||
+          templateTarget instanceof TmplAstBoundAttribute
+        ) {
+          const pos = getPositionForDirective(symbol, templateTypeChecker);
+          details.push({
+            typescriptLocations: pos ? [pos] : [],
+            templateTarget,
+            symbol,
+          });
+          break;
+        }
         // References to elements, templates, and directives will be through template references
         // (#ref). They shouldn't be used directly for a Language Service reference request.
+        break;
+      case SymbolKind.Template:
         break;
       case SymbolKind.Element: {
         const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);

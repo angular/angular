@@ -603,8 +603,9 @@ export class Scope {
     }
 
     const dirMap = new Map<TcbDirectiveMetadata, number>();
-    for (const dir of directives) {
-      this.appendDirectiveInputs(dir, node, dirMap, directives);
+    for (let i = 0; i < directives.length; i++) {
+      const dir = directives[i];
+      this.appendDirectiveInputs(dir, node, dirMap, directives, i);
     }
     this.directiveOpMap.set(node, dirMap);
 
@@ -680,8 +681,9 @@ export class Scope {
 
     if (directives !== null && directives.length > 0) {
       const dirMap = new Map<TcbDirectiveMetadata, number>();
-      for (const dir of directives) {
-        this.appendDirectiveInputs(dir, node, dirMap, directives);
+      for (let i = 0; i < directives.length; i++) {
+        const dir = directives[i];
+        this.appendDirectiveInputs(dir, node, dirMap, directives, i);
 
         for (const propertyName of dir.inputs.propertyNames) {
           claimedInputs.add(propertyName);
@@ -750,11 +752,12 @@ export class Scope {
     node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
     dirMap: Map<TcbDirectiveMetadata, number>,
     allDirectiveMatches: TcbDirectiveMetadata[],
+    directiveIndex?: number,
   ): void {
     const nodeIsFormControl = isFormControl(allDirectiveMatches);
     const customFormControlType = nodeIsFormControl ? getCustomFieldDirectiveType(dir) : null;
 
-    const directiveOp = this.getDirectiveOp(dir, node, customFormControlType);
+    const directiveOp = this.getDirectiveOp(dir, node, customFormControlType, directiveIndex);
     const dirIndex = this.opQueue.push(directiveOp) - 1;
     dirMap.set(dir, dirIndex);
 
@@ -779,21 +782,22 @@ export class Scope {
     dir: TcbDirectiveMetadata,
     node: DirectiveOwner,
     customFieldType: CustomFormControlType | null,
+    directiveIndex?: number,
   ): TcbOp {
     if (!dir.isGeneric) {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
-      return new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
+      return new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir, directiveIndex);
     } else if (!dir.requiresInlineTypeCtor || this.tcb.env.config.useInlineTypeConstructors) {
       // For generic directives, we use a type constructor to infer types. If a directive requires
       // an inline type constructor, then inlining must be available to use the
       // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.
-      return new TcbDirectiveCtorOp(this.tcb, this, node, dir, customFieldType);
+      return new TcbDirectiveCtorOp(this.tcb, this, node, dir, customFieldType, directiveIndex);
     }
 
     // If inlining is not available, then we give up on inferring the generic params, and use
     // `any` type for the directive's generic parameters.
-    return new TcbGenericDirectiveTypeWithAnyParamsOp(this.tcb, this, node, dir);
+    return new TcbGenericDirectiveTypeWithAnyParamsOp(this.tcb, this, node, dir, directiveIndex);
   }
 
   private appendSelectorlessDirectives(

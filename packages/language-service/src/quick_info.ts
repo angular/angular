@@ -111,8 +111,9 @@ export class QuickInfoBuilder {
       case SymbolKind.SelectorlessDirective:
         return this.getQuickInfoForSelectorlessSymbol(symbol);
       case SymbolKind.Expression:
-      case SymbolKind.Directive:
         return this.getQuickInfoAtTcbLocation(symbol.tcbLocation);
+      case SymbolKind.Directive:
+        return this.getQuickInfoForDirectiveSymbol(symbol);
     }
   }
 

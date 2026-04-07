@@ -182,7 +182,39 @@ export function hasExpressionIdentifier(
         return false;
       }
       const commentText = sourceFile.text.substring(pos + 2, end - 2);
-      return commentText === `${CommentTriviaType.EXPRESSION_TYPE_IDENTIFIER}:${identifier}`;
+      const prefix = `${CommentTriviaType.EXPRESSION_TYPE_IDENTIFIER}:${identifier}`;
+      return commentText === prefix || commentText.startsWith(prefix + ':');
     }) || false
   );
+}
+
+export function readDirectiveIdFromComment(
+  sourceFile: ts.SourceFile,
+  node: ts.Node,
+): number | null {
+  let id: number | null = null;
+  ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
+    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+      return;
+    }
+    const commentText = sourceFile.text.substring(pos + 2, end - 2);
+    const prefix = `${CommentTriviaType.EXPRESSION_TYPE_IDENTIFIER}:${ExpressionIdentifier.DIRECTIVE}:`;
+    const hostPrefix = `${CommentTriviaType.EXPRESSION_TYPE_IDENTIFIER}:${ExpressionIdentifier.HOST_DIRECTIVE}:`;
+
+    let matchedPrefix: string | null = null;
+    if (commentText.startsWith(prefix)) {
+      matchedPrefix = prefix;
+    } else if (commentText.startsWith(hostPrefix)) {
+      matchedPrefix = hostPrefix;
+    }
+
+    if (matchedPrefix !== null) {
+      const idStr = commentText.substring(matchedPrefix.length);
+      const parsed = parseInt(idStr, 10);
+      if (!isNaN(parsed)) {
+        id = parsed;
+      }
+    }
+  });
+  return id;
 }

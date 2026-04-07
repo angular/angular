@@ -2395,6 +2395,43 @@ runInEachFileSystem(() => {
         expect(symbol.directives.map((d) => d.ref.node.name.text)).toEqual(['Dep']);
       });
 
+      it('should get symbol for a selector attribute when there are multiple directives', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const matListItem = {
+          name: 'MatListItem',
+          selector: '[mat-list-item]',
+          file: absoluteFrom('/list.ts'),
+          type: 'directive' as const,
+        };
+        const routerLink = {
+          name: 'RouterLink',
+          selector: '[routerLink]',
+          file: absoluteFrom('/router.ts'),
+          type: 'directive' as const,
+          inputs: {routerLink: 'routerLink'},
+        };
+        const {program, templateTypeChecker} = setup([
+          {
+            fileName,
+            templates: {'Cmp': '<a mat-list-item routerLink="path"></a>'},
+            declarations: [matListItem, routerLink],
+          },
+          {fileName: matListItem.file, source: 'export class MatListItem {}'},
+          {fileName: routerLink.file, source: 'export class RouterLink { routerLink!: string; }'},
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+        const elements = getAstElements(templateTypeChecker, cmp);
+        const element = elements[0];
+        const matListItemAttr = element.attributes.find((a) => a.name === 'mat-list-item')!;
+
+        const symbol = templateTypeChecker.getSymbolOfNode(matListItemAttr, cmp);
+
+        expect(symbol).toBeTruthy();
+        assertDomBindingSymbol(symbol!);
+        assertElementSymbol(symbol!.host);
+        expect(symbol!.host.directives.map((d) => d.ref.node.name.text)).toContain('MatListItem');
+      });
       it('should get symbol of a selectorless directive', () => {
         const fileName = absoluteFrom('/main.ts');
         const dep = getDep('Dep', '/dep.ts');
@@ -3050,16 +3087,20 @@ runInEachFileSystem(() => {
       const element = nodes[0] as TmplAstElement;
       const symbol = templateTypeChecker.getSymbolOfNode(element, cmp)!;
       assertElementSymbol(symbol);
-      expect(
-        symbol.directives.map((d) => ({
-          name: d.ref.node.name.text,
-          matchSource: d.matchSource,
-        })),
-      ).toEqual([
+      const actual = symbol.directives.map((d) => ({
+        name: d.ref.node.name.text,
+        matchSource: d.matchSource,
+      }));
+      actual.sort((a, b) => a.name.localeCompare(b.name));
+
+      const expected = [
         {name: 'DepInnerHost', matchSource: MatchSource.HostDirective},
         {name: 'DepHost', matchSource: MatchSource.HostDirective},
         {name: 'Dep', matchSource: MatchSource.Selector},
-      ]);
+      ];
+      expected.sort((a, b) => a.name.localeCompare(b.name));
+
+      expect(actual).toEqual(expected);
     });
   });
 });

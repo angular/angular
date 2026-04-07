@@ -84,8 +84,8 @@ export class TcbExpr {
    * Tags the expression with an identifier.
    * @param identifier Identifier to apply to the expression.
    */
-  addExpressionIdentifier(identifier: ExpressionIdentifier): this {
-    this.identifierComment = `${CommentTriviaType.EXPRESSION_TYPE_IDENTIFIER}:${identifier}`;
+  addExpressionIdentifier(identifier: ExpressionIdentifier, id?: number): this {
+    this.identifierComment = `${CommentTriviaType.EXPRESSION_TYPE_IDENTIFIER}:${identifier}${id !== undefined ? `:${id}` : ''}`;
     return this;
   }
 
