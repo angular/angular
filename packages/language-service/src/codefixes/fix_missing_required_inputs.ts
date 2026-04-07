@@ -74,8 +74,8 @@ export const fixMissingRequiredInput: CodeActionMeta = {
     const codeActions: ts.CodeFixAction[] = [];
 
     for (const dirSymbol of symbol.directives) {
-      const directive = dirSymbol.tsSymbol.valueDeclaration;
-      if (!ts.isClassDeclaration(directive)) {
+      const directive = ttc.getTsSymbolOfSymbol(dirSymbol)?.valueDeclaration;
+      if (!directive || !ts.isClassDeclaration(directive)) {
         continue;
       }
 
@@ -100,7 +100,10 @@ export const fixMissingRequiredInput: CodeActionMeta = {
           continue;
         }
         const typeCheck = compiler.getCurrentProgram().getTypeChecker();
-        const memberSymbol = typeCheck.getPropertyOfType(dirSymbol.tsType, input.classPropertyName);
+        const memberSymbol = typeCheck.getPropertyOfType(
+          ttc.getTypeOfSymbol(dirSymbol)!,
+          input.classPropertyName,
+        );
         if (memberSymbol === undefined) {
           continue;
         }

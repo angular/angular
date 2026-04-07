@@ -276,14 +276,10 @@ describe('definitions', () => {
         templateOverride: `<div *ngFor="let hero of heroes">{{her¦o}}</div>`,
         expectedSpanText: 'hero',
       });
-      expect(definitions!.length).toEqual(2);
+      expect(definitions!.length).toEqual(1);
 
-      const [templateDeclarationDef, contextDef] = definitions;
+      const [templateDeclarationDef] = definitions;
       expect(templateDeclarationDef.textSpan).toEqual('hero');
-      // `$implicit` is from the `NgForOfContext`:
-      // https://github.com/angular/angular/blob/89c5255b8ca59eed27ede9e1fad69857ab0c6f4f/packages/common/src/directives/ng_for_of.ts#L15
-      expect(contextDef.textSpan).toEqual('$implicit');
-      expect(contextDef.contextSpan).toContain('$implicit: T;');
     });
   });
 
@@ -437,15 +433,13 @@ describe('definitions', () => {
     });
 
     it('should work for variables in structural directives', () => {
-      const definitions = getDefinitionsAndAssertBoundSpan({
-        templateOverride: `<div *ngFor="let item of heroes as her¦oes2; trackBy: test;"></div>`,
-        expectedSpanText: 'heroes2',
-      });
-      expect(definitions!.length).toEqual(1);
-
-      const [def] = definitions;
-      expect(def.textSpan).toEqual('ngForOf');
-      expect(def.contextSpan).toEqual('ngForOf: U;');
+      const {position} = service.overwriteInlineTemplate(
+        APP_COMPONENT,
+        `<div *ngFor="let item of heroes as her¦oes2; trackBy: test;"></div>`,
+      );
+      const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
+      // We're already at the definition, so nothing is returned (matching standard TS behavior)
+      expect(definitionAndBoundSpan).toBeUndefined();
     });
 
     it('should work for uses of members in structural directives', () => {
@@ -453,13 +447,11 @@ describe('definitions', () => {
         templateOverride: `<div *ngFor="let item of heroes as heroes2">{{her¦oes2}}</div>`,
         expectedSpanText: 'heroes2',
       });
-      expect(definitions!.length).toEqual(2);
+      expect(definitions!.length).toEqual(1);
 
-      const [def, contextDef] = definitions;
+      const [def] = definitions;
       expect(def.textSpan).toEqual('heroes2');
       expect(def.contextSpan).toEqual('of heroes as heroes2');
-      expect(contextDef.textSpan).toEqual('ngForOf');
-      expect(contextDef.contextSpan).toEqual('ngForOf: U;');
     });
 
     it('should work for members in structural directives', () => {

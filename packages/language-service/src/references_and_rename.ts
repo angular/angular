@@ -383,9 +383,14 @@ export class RenameBuilder {
     for (const targetDetails of allTargetDetails) {
       for (const location of targetDetails.typescriptLocations) {
         if (targetDetails.symbol.kind === SymbolKind.Pipe) {
-          const meta = this.compiler.getMeta(
-            targetDetails.symbol.classSymbol.tsSymbol.valueDeclaration,
-          );
+          const classSymbol = this.ttc.getTsSymbolOfSymbol(targetDetails.symbol.classSymbol);
+          if (
+            !classSymbol?.valueDeclaration ||
+            !ts.isClassDeclaration(classSymbol.valueDeclaration)
+          ) {
+            return null;
+          }
+          const meta = this.compiler.getMeta(classSymbol.valueDeclaration);
           if (meta === null || meta.kind !== MetaKind.Pipe) {
             return null;
           }
@@ -398,7 +403,7 @@ export class RenameBuilder {
           targetDetails.symbol.kind === SymbolKind.SelectorlessComponent ||
           targetDetails.symbol.kind === SymbolKind.SelectorlessDirective
         ) {
-          const tsSymbol = targetDetails.symbol.tsSymbol;
+          const tsSymbol = this.ttc.getTsSymbolOfSymbol(targetDetails.symbol);
           const meta =
             tsSymbol === null || tsSymbol.valueDeclaration === undefined
               ? null
