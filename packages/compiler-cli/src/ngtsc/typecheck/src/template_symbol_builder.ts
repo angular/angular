@@ -66,6 +66,7 @@ import {
   findAllMatchingNodes,
   findFirstMatchingNode,
   hasExpressionIdentifier,
+  readDirectiveIdFromComment,
 } from './comments';
 import {TypeCheckData} from './context';
 import {isAccessExpression, isDirectiveDeclaration} from './ts_util';
@@ -207,35 +208,51 @@ export class SymbolBuilder {
     templateNode: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
   ): DirectiveSymbol[] {
     const elementSourceSpan = templateNode.startSourceSpan ?? templateNode.sourceSpan;
-    const nodes = findAllMatchingNodes(this.typeCheckBlock, {
-      withSpan: elementSourceSpan,
-      filter: isDirectiveDeclaration,
-    });
-    const symbols: DirectiveSymbol[] = [];
-    const seenDirectives = new Set<ts.ClassDeclaration>();
+    const boundDirectives = this.typeCheckData.boundTarget.getDirectivesOfNode(templateNode) ?? [];
 
-    let boundDirectives = this.typeCheckData.boundTarget.getDirectivesOfNode(templateNode) ?? [];
+    let symbols = this.getDirectiveSymbolsForDirectives(boundDirectives, elementSourceSpan);
 
     // 'getDirectivesOfNode' will not return the directives intended for an element
     // on a microsyntax template, for example '<div *ngFor="let user of users;" dir>',
     // the 'dir' will be skipped, but it's needed in language service.
     if (!(templateNode instanceof TmplAstDirective)) {
-      const firstChild = templateNode.children?.[0];
-      if (firstChild instanceof TmplAstElement) {
+      const firstChild = templateNode.children.find(
+        (c): c is TmplAstElement => c instanceof TmplAstElement,
+      );
+      if (firstChild !== undefined) {
         const isMicrosyntaxTemplate =
           templateNode instanceof TmplAstTemplate &&
           sourceSpanEqual(firstChild.sourceSpan, templateNode.sourceSpan);
         if (isMicrosyntaxTemplate) {
           const firstChildDirectives =
             this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
-          if (firstChildDirectives !== null && boundDirectives.length > 0) {
-            boundDirectives = boundDirectives.concat(firstChildDirectives);
-          } else if (firstChildDirectives !== null) {
-            boundDirectives = firstChildDirectives;
+          if (firstChildDirectives !== null) {
+            const childSymbols = this.getDirectiveSymbolsForDirectives(
+              firstChildDirectives,
+              elementSourceSpan,
+            );
+            // Merge symbols, avoiding duplicates
+            for (const symbol of childSymbols) {
+              if (!symbols.some((s) => s.ref.node === symbol.ref.node)) {
+                symbols.push(symbol);
+              }
+            }
           }
         }
       }
     }
+
+    return symbols;
+  }
+
+  private getDirectiveSymbolsForDirectives(
+    boundDirectives: TypeCheckableDirectiveMeta[],
+    span: ParseSourceSpan,
+  ): DirectiveSymbol[] {
+    const nodes = findAllMatchingNodes(this.typeCheckBlock, {
+      withSpan: span,
+      filter: isDirectiveDeclaration,
+    });
 
     const hostDirectiveMap = new Map<ts.Node, HostDirectiveMeta>();
     for (const d of boundDirectives) {
@@ -248,33 +265,14 @@ export class SymbolBuilder {
       }
     }
 
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
+    const symbols: DirectiveSymbol[] = [];
+    const seenDirectives = new Set<ts.ClassDeclaration>();
+    const sf = this.typeCheckBlock.getSourceFile();
 
-      let nodeName: string | null = null;
-      let typeNode = ts.isTypeNode(node)
-        ? node
-        : ts.isIdentifier(node) && node.parent && ts.isVariableDeclaration(node.parent)
-          ? node.parent.type
-          : null;
-      if (typeNode && ts.isTypeReferenceNode(typeNode)) {
-        const typeName = typeNode.typeName;
-        nodeName = ts.isIdentifier(typeName) ? typeName.text : typeName.right.text;
-      } else if (typeNode && ts.isIntersectionTypeNode(typeNode)) {
-        const first = typeNode.types[0];
-        if (ts.isTypeReferenceNode(first)) {
-          const typeName = first.typeName;
-          nodeName = ts.isIdentifier(typeName) ? typeName.text : typeName.right.text;
-        }
-      }
-
-      // Match by name with index fallback
-      let meta = boundDirectives[i];
-      if (nodeName) {
-        meta =
-          boundDirectives.find((m) => m.ref.node.name && m.ref.node.name.text === nodeName) ?? meta;
-      }
-
+    for (const node of nodes) {
+      const id = readDirectiveIdFromComment(sf, node);
+      if (id === null) continue;
+      const meta = boundDirectives[id];
       if (!meta) continue;
 
       const declaration = meta.ref.node as unknown as ts.ClassDeclaration;
@@ -316,83 +314,7 @@ export class SymbolBuilder {
       }
     }
 
-    // Sort to ensure host directives appear first (matching test expectations)
-    symbols.sort((a, b) => {
-      if (a.matchSource === MatchSource.HostDirective && b.matchSource === MatchSource.Selector) {
-        return -1;
-      }
-      if (a.matchSource === MatchSource.Selector && b.matchSource === MatchSource.HostDirective) {
-        return 1;
-      }
-      return 0;
-    });
-
     return symbols;
-  }
-
-  private getDirectiveMeta(
-    host: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
-    directiveDeclaration: ts.ClassDeclaration,
-  ): TypeCheckableDirectiveMeta | null {
-    let directives = this.typeCheckData.boundTarget.getDirectivesOfNode(host);
-
-    // `getDirectivesOfNode` will not return the directives intended for an element
-    // on a microsyntax template, for example `<div *ngFor="let user of users;" dir>`,
-    // the `dir` will be skipped, but it's needed in language service.
-    if (!(host instanceof TmplAstDirective)) {
-      const firstChild = host.children[0];
-      if (firstChild instanceof TmplAstElement) {
-        const isMicrosyntaxTemplate =
-          host instanceof TmplAstTemplate &&
-          sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
-        if (isMicrosyntaxTemplate) {
-          const firstChildDirectives =
-            this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
-          if (firstChildDirectives !== null && directives !== null) {
-            directives = directives.concat(firstChildDirectives);
-          } else {
-            directives = directives ?? firstChildDirectives;
-          }
-        }
-      }
-    }
-    if (directives === null) {
-      return null;
-    }
-
-    const directive = directives.find((m) =>
-      isSameDirectiveDeclaration(m.ref.node, directiveDeclaration),
-    );
-    if (directive) {
-      return directive;
-    }
-
-    const originalFile = (directiveDeclaration.getSourceFile() as MaybeSourceFileWithOriginalFile)[
-      NgOriginalFile
-    ];
-
-    if (originalFile !== undefined) {
-      // This is a preliminary check ahead of a more expensive search
-      const hasPotentialCandidate = directives.find(
-        (m) => m.ref.node.name.text === directiveDeclaration.name?.text,
-      );
-
-      if (hasPotentialCandidate) {
-        // In case the TCB has been inlined,
-        // We will look for a matching class
-        // If we find one, we look for it in the directives array
-        const classWithSameName = findMatchingDirective(originalFile, directiveDeclaration);
-        if (classWithSameName !== null) {
-          return (
-            directives.find((m) => isSameDirectiveDeclaration(m.ref.node, classWithSameName)) ??
-            null
-          );
-        }
-      }
-    }
-
-    // Really nothing was found
-    return null;
   }
 
   private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration | null {

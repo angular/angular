@@ -37,6 +37,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
     private node: DirectiveOwner,
     private dir: TcbDirectiveMetadata,
     private customFormControlType: CustomFormControlType | null,
+    private directiveIndex?: number,
   ) {
     super();
   }
@@ -78,7 +79,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
       this.dir.matchSource === MatchSource.HostDirective
         ? ExpressionIdentifier.HOST_DIRECTIVE
         : ExpressionIdentifier.DIRECTIVE;
-    id.addExpressionIdentifier(identifier).addParseSpanInfo(span);
+    id.addExpressionIdentifier(identifier, this.directiveIndex).addParseSpanInfo(span);
 
     for (const attr of boundAttrs) {
       // Skip text attributes if configured to do so.

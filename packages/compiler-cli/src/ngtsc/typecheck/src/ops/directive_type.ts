@@ -24,6 +24,7 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
     protected scope: Scope,
     protected node: DirectiveOwner,
     protected dir: TcbDirectiveMetadata,
+    protected directiveIndex?: number,
   ) {
     super();
   }
@@ -64,7 +65,7 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
         ? ExpressionIdentifier.HOST_DIRECTIVE
         : ExpressionIdentifier.DIRECTIVE;
     const id = new TcbExpr(this.tcb.allocateId())
-      .addExpressionIdentifier(identifier)
+      .addExpressionIdentifier(identifier, this.directiveIndex)
       .addParseSpanInfo(span);
     this.scope.addStatement(declareVariable(id, type));
     return id;
