@@ -62,11 +62,6 @@ export interface PotentialDirective {
   ref: Reference<ClassDeclaration>;
 
   /**
-   * The `ts.Symbol` for the directive class.
-   */
-  tsSymbol: SymbolWithValueDeclaration;
-
-  /**
    * The module which declares the directive.
    */
   ngModule: ClassDeclaration | null;
@@ -105,11 +100,6 @@ export interface PotentialDirective {
  */
 export interface PotentialPipe {
   ref: Reference<ClassDeclaration>;
-
-  /**
-   * The `ts.Symbol` for the pipe class.
-   */
-  tsSymbol: ts.Symbol;
 
   /**
    * Name of the pipe.

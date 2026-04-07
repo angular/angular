@@ -66,6 +66,8 @@ import {
   isSymbolWithValueDeclaration,
 } from '../../util/src/typescript';
 import {
+  BindingSymbol,
+  ClassSymbol,
   DirectiveModuleExportDetails,
   ElementSymbol,
   FullSourceMapping,
@@ -83,6 +85,7 @@ import {
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
   Symbol,
+  SymbolKind,
   TcbLocation,
   TemplateDiagnostic,
   TemplateSymbol,
@@ -107,6 +110,28 @@ import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
 import {findAllMatchingNodes} from './comments';
+
+function getTcbLocationForSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): TcbLocation | null {
+  if ('tcbLocation' in symbol && symbol.tcbLocation !== undefined) {
+    return symbol.tcbLocation as TcbLocation;
+  }
+
+  if (!('kind' in symbol)) {
+    return null;
+  }
+
+  // For symbols that don't have a direct tcbLocation, we map to the appropriate location
+  // that historically provided the ts.Symbol or ts.Type properties.
+  switch (symbol.kind) {
+    case SymbolKind.Reference:
+      return symbol.targetLocation;
+    case SymbolKind.Variable:
+    case SymbolKind.LetDeclaration:
+      return symbol.initializerLocation;
+    default:
+      return null;
+  }
+}
 
 const REGISTRY = new DomElementSchemaRegistry();
 /**
@@ -172,6 +197,123 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry,
     private readonly perf: PerfRecorder,
   ) {}
+
+  getTypeOfSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): ts.Type | null {
+    const location =
+      'tcbTypeLocation' in symbol && symbol.tcbTypeLocation !== undefined
+        ? (symbol.tcbTypeLocation as TcbLocation)
+        : 'kind' in symbol &&
+            (symbol.kind === SymbolKind.Variable || symbol.kind === SymbolKind.LetDeclaration)
+          ? symbol.localVarLocation
+          : getTcbLocationForSymbol(symbol);
+    if (!location) {
+      return null;
+    }
+    const sf = this.programDriver.getProgram().getSourceFile(location.tcbPath);
+    if (!sf) {
+      return null;
+    }
+    let node: ts.Node = getTokenAtPosition(sf, location.positionInFile);
+    let bestMatch = node;
+
+    if (location.endInFile !== undefined) {
+      while (node && node.getEnd() <= location.endInFile) {
+        if (node.getStart() >= location.positionInFile) {
+          bestMatch = node;
+        }
+        node = node.parent;
+      }
+    }
+    node = bestMatch;
+    return this.programDriver.getProgram().getTypeChecker().getTypeAtLocation(node);
+  }
+
+  getTsSymbolOfSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): ts.Symbol | null {
+    const location = getTcbLocationForSymbol(symbol);
+    if (!location) {
+      return null;
+    }
+    const sf = this.programDriver.getProgram().getSourceFile(location.tcbPath);
+    if (!sf) {
+      return null;
+    }
+    let node: ts.Node = getTokenAtPosition(sf, location.positionInFile);
+    let bestMatch = node;
+    if (location.endInFile !== undefined) {
+      while (node && node.getEnd() <= location.endInFile) {
+        if (node.getStart() >= location.positionInFile) {
+          bestMatch = node;
+        }
+        if (node.getEnd() === location.endInFile && node.getStart() === location.positionInFile) {
+          bestMatch = node;
+          break;
+        }
+        node = node.parent;
+      }
+    }
+    node = bestMatch;
+
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+
+    if (
+      'kind' in symbol &&
+      (symbol.kind === SymbolKind.Directive ||
+        symbol.kind === SymbolKind.SelectorlessDirective ||
+        symbol.kind === SymbolKind.SelectorlessComponent)
+    ) {
+      const refNode = (symbol as any).ref?.node;
+      if (refNode) {
+        const tsSymbol = typeChecker.getSymbolAtLocation(refNode.name ?? refNode);
+        if (tsSymbol) return tsSymbol;
+      }
+    }
+
+    if ('kind' in symbol && symbol.kind === SymbolKind.Reference) {
+      if ((symbol.target as any).kind && ts.isClassDeclaration(symbol.target as ts.Node)) {
+        const targetNode = symbol.target as ts.ClassDeclaration;
+        const tsSymbol = typeChecker.getSymbolAtLocation(targetNode.name ?? targetNode);
+        if (tsSymbol) return tsSymbol;
+      }
+      if (ts.isCallExpression(node)) {
+        return null;
+      }
+      // For other Reference targets (like Template), we just use the default fallback below
+      // which will get the symbol of the local variable (e.g. _t4).
+    }
+
+    if ('isPipeClassSymbol' in symbol && (symbol as any).isPipeClassSymbol) {
+      const type = typeChecker.getTypeAtLocation(node);
+      if (type && type.getSymbol()) return type.getSymbol() || null;
+    }
+
+    let tsSymbol: ts.Symbol | undefined;
+    if (ts.isPropertyAccessExpression(node)) {
+      tsSymbol = typeChecker.getSymbolAtLocation(node.name);
+    } else if (ts.isCallExpression(node)) {
+      tsSymbol = typeChecker.getSymbolAtLocation(node.expression);
+    } else if (ts.isElementAccessExpression(node) && ts.isStringLiteral(node.argumentExpression)) {
+      const type = typeChecker.getTypeAtLocation(node.expression);
+      tsSymbol = typeChecker.getPropertyOfType(type, node.argumentExpression.text);
+    } else {
+      tsSymbol = typeChecker.getSymbolAtLocation(node);
+    }
+
+    if (tsSymbol !== undefined && tsSymbol.name.startsWith('_t')) {
+      // For synthetic variables like `_t1`, we do not want to return the synthetic declaration symbol itself.
+      // Instead, we fall back to its alias/type symbol.
+      let type = typeChecker.getTypeAtLocation(node);
+      tsSymbol = type.aliasSymbol ?? type.symbol;
+    }
+
+    if (tsSymbol === undefined && ts.isIdentifier(node) && node.text.startsWith('_t')) {
+      // For synthetic variables like `_t1` where getSymbolAtLocation fails, fall back to alias/type symbol.
+      let type = typeChecker.getTypeAtLocation(node);
+      tsSymbol = type.aliasSymbol ?? type.symbol;
+    }
+
+    // Fall back to the type's symbol.
+    return tsSymbol ?? typeChecker.getTypeAtLocation(node).symbol ?? null;
+  }
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
     const {data} = this.getLatestComponentState(component, optimizeFor);
@@ -815,7 +957,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       tcb,
       data,
       this.componentScopeReader,
-      () => this.programDriver.getProgram().getTypeChecker(),
+      this.config,
     );
     this.symbolBuilderCache.set(component, builder);
     return builder;
@@ -1410,7 +1552,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       isComponent: dep.isComponent,
       isStructural: dep.isStructural,
       selector: dep.selector,
-      tsSymbol,
       ngModule,
       tsCompletionEntryInfos: null,
     };
@@ -1427,7 +1568,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return {
       ref: dep.ref,
       name: dep.name,
-      tsSymbol,
       tsCompletionEntryInfos: null,
     };
   }

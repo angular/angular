@@ -168,9 +168,12 @@ function buildDiagnosticForSignal(
   node: PropertyRead,
   component: ts.ClassDeclaration,
 ): Array<NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>> {
-  // check for `{{ mySignal }}`
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
-  if (symbol !== null && symbol.kind === SymbolKind.Expression && isSignalReference(symbol)) {
+  if (
+    symbol !== null &&
+    symbol.kind === SymbolKind.Expression &&
+    isSignalReference(symbol, ctx.templateTypeChecker)
+  ) {
     const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
       symbol.tcbLocation,
     )!;
@@ -192,11 +195,19 @@ function buildDiagnosticForSignal(
   if (!isFunctionInstanceProperty(node.name) && !isSignalInstanceProperty(node.name)) {
     return [];
   }
+
+  // If the receiver is not a PropertyRead, it means it's not a simple property access
+  // (e.g., it could be a MethodCall like `mySignal().set`). In that case, we assume
+  // it was invoked and skip the warning.
+  if (!(node.receiver instanceof PropertyRead)) {
+    return [];
+  }
+
   const symbolOfReceiver = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
   if (
     symbolOfReceiver !== null &&
     symbolOfReceiver.kind === SymbolKind.Expression &&
-    isSignalReference(symbolOfReceiver)
+    isSignalReference(symbolOfReceiver, ctx.templateTypeChecker)
   ) {
     const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
       symbolOfReceiver.tcbLocation,
