@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {
   AfterViewInit,
   Component,
+  ChangeDetectionStrategy,
   ContentChild,
   ContentChildren,
   Directive,
