@@ -251,14 +251,16 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, context: Context): ts.TypeNode {
     const node: ts.Node = ast.node;
     if (ts.isEntityName(node)) {
-      return ts.factory.createTypeReferenceNode(node, /* typeArguments */ undefined);
+      return ts.factory.createTypeReferenceNode(node);
     } else if (ts.isTypeNode(node)) {
       return node;
     } else if (ts.isLiteralExpression(node)) {
       return ts.factory.createLiteralTypeNode(node);
+    } else if (ts.isTypeParameterDeclaration(node)) {
+      return ts.factory.createTypeReferenceNode(node.name);
     } else {
       throw new Error(
-        `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]}`,
+        `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]} in ${node.getSourceFile()?.fileName}`,
       );
     }
   }

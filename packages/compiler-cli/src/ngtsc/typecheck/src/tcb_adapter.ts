@@ -125,7 +125,11 @@ export function adaptTypeCheckBlockMetadata(
       ...adaptGenerics(
         dir.ref.node as ClassDeclaration<ts.ClassDeclaration>,
         env,
-        TcbGenericContextBehavior.UseEmitter,
+        // The directive that we're processing is its own dependency
+        // so we should the same generic context behavior.
+        extractRef(dir.ref).key === extractRef(ref).key
+          ? genericContextBehavior
+          : TcbGenericContextBehavior.UseEmitter,
       ),
     };
 
@@ -209,13 +213,7 @@ export function adaptTypeCheckBlockMetadata(
     },
     component: {
       ref: extractRef(ref as Reference<ClassDeclaration>),
-      ...adaptGenerics(
-        ref.node,
-        env,
-        env.config.useContextGenericType
-          ? genericContextBehavior
-          : TcbGenericContextBehavior.FallbackToAny,
-      ),
+      ...adaptGenerics(ref.node, env, genericContextBehavior),
     },
   };
 }
@@ -232,6 +230,10 @@ function adaptGenerics(
   let typeArguments: string[] | null;
 
   if (node.typeParameters !== undefined && node.typeParameters.length > 0) {
+    if (!env.config.useContextGenericType) {
+      genericContextBehavior = TcbGenericContextBehavior.FallbackToAny;
+    }
+
     switch (genericContextBehavior) {
       case TcbGenericContextBehavior.UseEmitter:
         const emitter = new TypeParameterEmitter(node.typeParameters, env.reflector);

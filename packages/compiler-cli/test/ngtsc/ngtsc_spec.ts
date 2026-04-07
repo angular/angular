@@ -10814,10 +10814,12 @@ runInEachFileSystem((os: string) => {
       expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
     });
 
-    it('should compile a component with a complex generic', () => {
-      env.write(
-        'test.ts',
-        `
+    [true, false].forEach((strictTemplates) => {
+      it(`[strictTemplates: ${strictTemplates}] should compile a component with a complex generic`, () => {
+        env.tsconfig({strictTemplates});
+        env.write(
+          'test.ts',
+          `
           import {Component} from '@angular/core';
 
           @Component({
@@ -10829,10 +10831,37 @@ runInEachFileSystem((os: string) => {
             TOptions extends { [K in keyof T]?: T[K] } = object
           > {}
         `,
-      );
+        );
 
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(0);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      // See #67704.
+      it(`[strictTemplates: ${strictTemplates}] should compile a directive with a generic that has type parameters`, () => {
+        env.tsconfig({strictTemplates});
+        env.write(
+          'test.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            type Foo<T> = {prop: T};
+
+            @Directive({
+              host: {
+                '[class.some-class]': 'foo || bar' // Only necessary to enable type checking.
+              },
+            })
+            export class TestDir<T, U = T extends Foo<infer V> ? V : never> {
+              foo?: T;
+              bar?: U;
+            }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('InjectorDef emit optimizations for standalone', () => {
