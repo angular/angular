@@ -133,6 +133,10 @@ bundle_entrypoints = [
         "can-match-snapshot-required",
         "packages/core/schematics/migrations/can-match-snapshot-required/index.js",
     ],
+    [
+        "incremental-hydration",
+        "packages/core/schematics/migrations/incremental-hydration/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -147,6 +151,7 @@ rollup.rollup(
         "//packages/core/schematics/migrations/can-match-snapshot-required",
         "//packages/core/schematics/migrations/change-detection-eager",
         "//packages/core/schematics/migrations/http-xhr-backend",
+        "//packages/core/schematics/migrations/incremental-hydration",
         "//packages/core/schematics/migrations/strict-template",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/common-to-standalone-migration",

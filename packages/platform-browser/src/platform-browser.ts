@@ -29,6 +29,7 @@ export {
   withHttpTransferCacheOptions,
   withI18nSupport,
   withIncrementalHydration,
+  withNoIncrementalHydration,
   withNoHttpTransferCache,
 } from './hydration';
 export {

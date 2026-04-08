@@ -41,6 +41,7 @@ import {
   provideClientHydration,
   withEventReplay,
   withIncrementalHydration,
+  withNoIncrementalHydration,
 } from '@angular/platform-browser';
 import {provideRouter, RouterLink, RouterOutlet, Routes} from '@angular/router';
 import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
@@ -2998,7 +2999,7 @@ describe('platform-server partial hydration integration', () => {
   });
 
   describe('misconfiguration', () => {
-    it('should log a warning when `withIncrementalHydration()` is missing in SSR setup', async () => {
+    it('should log a warning when incremental hydration is disabled in SSR setup', async () => {
       @Component({
         selector: 'app',
         template: `
@@ -3012,8 +3013,8 @@ describe('platform-server partial hydration integration', () => {
       const appId = 'custom-app-id';
       const providers = [{provide: APP_ID, useValue: appId}];
 
-      // Empty list, `withIncrementalHydration()` is not included intentionally.
-      const hydrationFeatures = () => [];
+      // Explicitly disabled using withNoIncrementalHydration()
+      const hydrationFeatures = () => [withNoIncrementalHydration()];
       const consoleSpy = spyOn(console, 'warn');
       resetIncrementalHydrationEnabledWarnedForTests();
 
@@ -3022,7 +3023,7 @@ describe('platform-server partial hydration integration', () => {
       expect(consoleSpy).toHaveBeenCalledWith(jasmine.stringMatching('NG0508'));
     });
 
-    it('should log a warning when `withIncrementalHydration()` is missing in hydration setup', async () => {
+    it('should log a warning when incremental hydration is disabled in hydration setup', async () => {
       @Component({
         selector: 'app',
         template: `
@@ -3051,8 +3052,8 @@ describe('platform-server partial hydration integration', () => {
       const doc = getDocument();
       await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
         envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-        // Empty list, `withIncrementalHydration()` is not included intentionally.
-        hydrationFeatures: () => [],
+        // Explicitly disabled using withNoIncrementalHydration()
+        hydrationFeatures: () => [withNoIncrementalHydration()],
       });
 
       expect(consoleSpy).toHaveBeenCalledTimes(1);

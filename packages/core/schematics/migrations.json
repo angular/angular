@@ -19,6 +19,11 @@
       "version": "22.0.0",
       "description": "Adds the required third argument to canMatch callsites.",
       "factory": "./bundles/can-match-snapshot-required.cjs#migrate"
+    },
+    "incremental-hydration": {
+      "version": "22.0.0",
+      "description": "Adds withNoIncrementalHydration() opt out to provideClientHydration() when incremental hydration is not enabled to retain pre-v22 behavior-.",
+      "factory": "./bundles/incremental-hydration.cjs#migrate"
     }
   }
 }
