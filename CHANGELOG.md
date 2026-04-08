@@ -1,3 +1,60 @@
+<a name="22.0.0-next.7"></a>
+# 22.0.0-next.7 (2026-04-08)
+## Breaking Changes
+### core
+- The second arguement of appRef.bootstrap does not accept `any` anymore. Make sure the element you pass is not nullable.
+- * TypeScript versions older than 6.0 are no longer supported.
+- `ComponentFactoryResolver` and `ComponentFactory` are no longer available. Pass the component class directly to APIs that previously required a factory, such as `ViewContainerRef.createComponent` or use the standalone `createComponentFunction`.
+- `ComponentFactoryResolver` and `ComponentFactory` are no longer available. Pass the component class directly to APIs that previously required a factory, such as `ViewContainerRef.createComponent` or use the standalone `createComponent` function.
+### platform-browser
+- This removes styles when they appear to no longer be used by an associated `host`. However other DOM on the page may still be affected by those styles if not leveraging `ViewEncapsulation.Emulated` or if those styles are used by elements outside of Angular, potentially causing other DOM to appear unstyled.
+### router
+- The `currentSnapshot` parameter in `CanMatchFn` and the `canMatch` method of the `CanMatch` interface is now required. While this was already the behavior of the Router at runtime, existing class implementations of `CanMatch` must now include the third argument to satisfy the interface.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2ce0e98f79](https://github.com/angular/angular/commit/2ce0e98f79a02ddc550d00580e8e232cfed3bfb2) | fix | handle nested brackets in host object bindings |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7f9450219f](https://github.com/angular/angular/commit/7f9450219f5c30d1ce0a90061864e8c844c8807c) | feat | Adds warning for prefetch without main defer trigger |
+| [ab061a7610](https://github.com/angular/angular/commit/ab061a7610bfcc5aad15fdc2d812085ae3e8d9b1) | fix | error for type parameter declarations |
+| [9218140348](https://github.com/angular/angular/commit/9218140348cb2e3ad301c1e7f37db4b0cdad4f9d) | fix | resolve TCB mapping failure for safe property reads with as any |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a0aa8304cd](https://github.com/angular/angular/commit/a0aa8304cd78a58a990c3b648e41f6888b50b1b3) | feat | bootstrap via `ApplicationRef` with config |
+| [9c55fcb3e6](https://github.com/angular/angular/commit/9c55fcb3e65ffcde32d7ac438ea40a69ffc2b3b6) | feat | de-duplicate host directives |
+| [8fe025f514](https://github.com/angular/angular/commit/8fe025f5149d7eb460e784a5a17bb467f85b9080) | feat | drop support for TypeScript 5.9 |
+| [77f1ca08e4](https://github.com/angular/angular/commit/77f1ca08e4aa1d1ddd1a8062c602eac0d1044d5a) | fix | handle missing serialized container hydration data |
+| [a24179e125](https://github.com/angular/angular/commit/a24179e125147b2b608a291e8f93da79668f68ec) | fix | remove obsolete iOS cursor pointer hack in event delegation |
+| [9d76ac8229](https://github.com/angular/angular/commit/9d76ac82290e047f1481fb38bd95233e951a77de) | refactor | remove ComponentFactoryResolver & ComponentFactory from the api surface |
+| [b1f5181ffd](https://github.com/angular/angular/commit/b1f5181ffd8e9906affd486d9e2f655eb144f175) | refactor | remove ComponentFactoryResolver & ComponentFactory from the api surface"" |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de56d74da3](https://github.com/angular/angular/commit/de56d74da39178308b81a2d94c8eb4488cb0cbab) | fix | align FormField CVA selection priority with standard forms |
+| [394ad0c2a2](https://github.com/angular/angular/commit/394ad0c2a26eec8a8f7136b1b7971420b30a117e) | fix | allow late-bound input types for signals forms |
+| [2e9aeea0fe](https://github.com/angular/angular/commit/2e9aeea0fed1a2eae261b95cb1479519d0428b83) | fix | deduplicate writeValue calls in CVA interop |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75ac120493](https://github.com/angular/angular/commit/75ac1204936dcf1f5646ec918732bee9ade22f99) | fix | get quick info at local var location to align with TS semantics and support type narrowing |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8216d34976](https://github.com/angular/angular/commit/8216d349768687ed0cf9ef6e1d737e7db9c9e28b) | feat | Add migration for CanMatchFn snapshot parameter ([#67452](https://github.com/angular/angular/pull/67452)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d45b7a91f9](https://github.com/angular/angular/commit/d45b7a91f961ee40e3ea0f0ae837bf543bddb520) | fix | remove unused styles when associated `host` is dropped |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [579440170b](https://github.com/angular/angular/commit/579440170b372f8348cf3e5b5ce9f9f430093947) | fix | make currentSnapshot required in CanMatchFn ([#67452](https://github.com/angular/angular/pull/67452)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.8"></a>
 # 21.2.8 (2026-04-08)
 ### compiler
