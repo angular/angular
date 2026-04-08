@@ -57,11 +57,11 @@ You can apply a reusable schema to a specific path in a form by using the `apply
 ```ts
 import {apply} from '@angular/forms/signals';
 
-const profileForm = form(this.profileModel, (schemaPath) => {
+profileForm = form(this.profileModel, (schemaPath) => {
   apply(schemaPath.name, nameSchema);
 });
 
-const registrationForm = form(this.registrationModel, (schemaPath) => {
+registrationForm = form(this.registrationModel, (schemaPath) => {
   apply(schemaPath.name, nameSchema);
 });
 ```
@@ -74,7 +74,7 @@ A nested schema must use the scoped path object it receives. You cannot keep usi
 
 ```ts
 // Inline schema function
-const profileForm = form(this.profileModel, (schemaPath) => {
+profileForm = form(this.profileModel, (schemaPath) => {
   required(schemaPath.age);
 
   apply(schemaPath.name, (name) => {
@@ -86,7 +86,7 @@ const profileForm = form(this.profileModel, (schemaPath) => {
 
 ```ts
 // Reusable schema object
-const profileForm = form(this.profileModel, (schemaPath) => {
+profileForm = form(this.profileModel, (schemaPath) => {
   required(schemaPath.age);
   apply(schemaPath.name, nameSchema);
 });
@@ -97,7 +97,7 @@ const profileForm = form(this.profileModel, (schemaPath) => {
 For forms with multiple levels of nesting, you can call `apply()` inside another `apply()`. Each level scopes the schema function to that part of the tree:
 
 ```ts
-const orderForm = form(this.orderModel, (schemaPath) => {
+orderForm = form(this.orderModel, (schemaPath) => {
   apply(schemaPath.billing, (billing) => {
     required(billing.method);
 
@@ -119,8 +119,8 @@ Some rules should only apply under certain conditions. For example, a zip code f
 The `applyWhen()` function applies a schema conditionally based on reactive state. It accepts three arguments:
 
 1. A path to apply the schema to
-2. A reactive logic function that returns `true` when the schema should be active
-3. A schema or schema function containing the conditional rules
+1. A reactive logic function that returns `true` when the schema should be active
+1. A schema or schema function containing the conditional rules
 
 ```ts
 import {form, applyWhen, required, pattern} from '@angular/forms/signals';
@@ -180,17 +180,19 @@ This pattern keeps validation logic modular — each country's address rules liv
 
 The `applyWhenValue()` function simplifies conditions that only need to check the field's value. Instead of receiving a `FieldContext`, the condition function receives the field's raw value directly.
 
-```ts
-// applyWhen — logic function receives FieldContext
+```ts {header: "applyWhen — logic function receives FieldContext"}
 applyWhen(schemaPath.payment, ({value}) => value().type === 'credit-card', creditCardSchema);
+```
 
-// applyWhenValue — condition function receives the value directly
+```ts {header: "applyWhenValue — condition receives the value directly"}
 applyWhenValue(schemaPath.payment, (payment) => payment.type === 'credit-card', creditCardSchema);
 ```
 
 The main advantage of `applyWhenValue()` is TypeScript type guard support. When the condition function is a type guard, the schema's type parameter narrows to the guarded type. This is especially useful for discriminated unions, where each variant has different fields that need different rules.
 
 ```ts
+import {form, applyWhenValue, required} from '@angular/forms/signals';
+
 interface CreditCard {
   type: 'credit-card';
   cardNumber: string;
@@ -275,3 +277,11 @@ invoiceForm = form(this.invoiceModel, (schemaPath) => {
 ```
 
 TIP: For more on validating array items, including custom error messages per field, see the [Validation guide](guide/forms/signals/validation).
+
+## Next steps
+
+To learn more about Signal Forms, check out these related guides:
+
+- [Adding form logic](guide/forms/signals/form-logic) - Learn how to add conditional logic, dynamic behavior, and metadata to your forms
+- [Validation](guide/forms/signals/validation) - Learn about validation rules and error handling
+- [Form submission](guide/forms/signals/form-submission) - Learn how to submit forms and handle async operations
