@@ -11,7 +11,7 @@ import {ParseSourceSpan} from '../parse_util';
 import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
 
-const SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
+const SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r/g;
 const LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 const INDENT_WITH = '  ';
 

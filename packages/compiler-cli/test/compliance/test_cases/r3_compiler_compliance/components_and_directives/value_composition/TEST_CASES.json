@@ -326,6 +326,16 @@
           "files": ["call_rest.js"]
         }
       ]
+    },
+    {
+      "description": "should support dollar escape in template",
+      "inputFiles": ["dollar_escape.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid dollar escape",
+          "files": ["dollar_escape.js"]
+        }
+      ]
     }
   ]
 }
