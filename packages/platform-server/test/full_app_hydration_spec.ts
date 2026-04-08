@@ -93,12 +93,24 @@ import {
 } from './hydration_utils';
 
 describe('platform-server full application hydration integration', () => {
+  const originalWindow = globalThis.window;
+
+  beforeAll(async () => {
+    globalThis.window = globalThis as unknown as Window & typeof globalThis;
+    await import('../../core/primitives/event-dispatch/contract_bundle_min.js' as string);
+  });
+
+  afterAll(() => {
+    globalThis.window = originalWindow;
+  });
+
   beforeEach(() => {
     resetNgDevModeCounters();
   });
 
   afterEach(() => {
     destroyPlatform();
+    window._ejsas = {};
   });
 
   describe('hydration', () => {

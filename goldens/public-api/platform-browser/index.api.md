@@ -116,7 +116,9 @@ export enum HydrationFeatureKind {
     // (undocumented)
     IncrementalHydration = 4,
     // (undocumented)
-    NoHttpTransferCache = 0
+    NoHttpTransferCache = 0,
+    // (undocumented)
+    NoIncrementalHydration = 5
 }
 
 // @public
@@ -214,6 +216,9 @@ export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKin
 
 // @public
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;
+
+// @public
+export function withNoIncrementalHydration(): HydrationFeature<HydrationFeatureKind.NoIncrementalHydration>;
 
 // (No @packageDocumentation comment for this package)
 

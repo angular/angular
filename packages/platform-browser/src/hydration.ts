@@ -38,6 +38,7 @@ export enum HydrationFeatureKind {
   I18nSupport,
   EventReplay,
   IncrementalHydration,
+  NoIncrementalHydration,
 }
 
 /**
@@ -145,6 +146,16 @@ export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKin
 }
 
 /**
+ * Disables support for incremental hydration (which is enabled by default).
+ *
+ * @publicApi 22.0
+ * @see {@link provideClientHydration}
+ */
+export function withNoIncrementalHydration(): HydrationFeature<HydrationFeatureKind.NoIncrementalHydration> {
+  return hydrationFeature(HydrationFeatureKind.NoIncrementalHydration);
+}
+
+/**
  * Returns an `ENVIRONMENT_INITIALIZER` token setup with a function
  * that verifies whether enabledBlocking initial navigation is used in an application
  * and logs a warning in a console if it's not compatible with hydration.
@@ -240,16 +251,22 @@ export function provideClientHydration(
     HydrationFeatureKind.HttpTransferCacheOptions,
   );
 
-  if (
-    typeof ngDevMode !== 'undefined' &&
-    ngDevMode &&
-    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) &&
-    hasHttpTransferCacheOptions
-  ) {
-    throw new RuntimeError(
-      RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
-      'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
-    );
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    if (featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) && hasHttpTransferCacheOptions) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
+        'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
+      );
+    }
+    if (
+      featuresKind.has(HydrationFeatureKind.IncrementalHydration) &&
+      featuresKind.has(HydrationFeatureKind.NoIncrementalHydration)
+    ) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
+        'Configuration error: found both withIncrementalHydration() and withNoIncrementalHydration() in the same call to provideClientHydration(), which is a contradiction.',
+      );
+    }
   }
 
   return makeEnvironmentProviders([
@@ -261,6 +278,9 @@ export function provideClientHydration(
     featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
       ? []
       : ɵwithHttpTransferCache({}),
+    featuresKind.has(HydrationFeatureKind.NoIncrementalHydration)
+      ? []
+      : ɵwithIncrementalHydration(),
     providers,
   ]);
 }

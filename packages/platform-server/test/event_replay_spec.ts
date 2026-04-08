@@ -24,6 +24,7 @@ import {
   bootstrapApplication,
   provideClientHydration,
   withEventReplay,
+  withNoIncrementalHydration,
 } from '@angular/platform-browser';
 
 import {EventPhase} from '@angular/core/primitives/event-dispatch';
@@ -662,7 +663,9 @@ describe('event replay', () => {
         onClick() {}
       }
 
-      const html = await ssr(SimpleComponent, {});
+      const html = await ssr(SimpleComponent, {
+        hydrationFeatures: () => [withNoIncrementalHydration()],
+      });
       const ssrContents = getAppContents(html);
 
       // Expect that there are no JSAction artifacts in the HTML
