@@ -10,7 +10,10 @@ import {
   AST,
   ASTWithSource,
   BindingType,
+  Conditional,
   Interpolation,
+  NonNullAssert,
+  ParenthesizedExpression,
   PrefixNot,
   PropertyRead,
   TmplAstBoundAttribute,
@@ -120,7 +123,11 @@ function checkBoundAttribute(
   }
 
   // otherwise, we check if the node is
-  const nodeAst = isPropertyReadNodeAst(node);
+  if (node.value instanceof ASTWithSource === false) {
+    return [];
+  }
+  const propertyReads = getPropertyReads(node.value.ast);
+
   if (
     // a bound property like `[prop]="mySignal"`
     (node.type === BindingType.Property ||
@@ -134,25 +141,45 @@ function checkBoundAttribute(
       node.type === BindingType.Animation ||
       // or an animation binding like `[@myAnimation]="mySignal"`
       node.type === BindingType.LegacyAnimation) &&
-    nodeAst
+    propertyReads.length > 0
   ) {
-    return buildDiagnosticForSignal(ctx, nodeAst, component);
+    return propertyReads.flatMap((nodeAst) => buildDiagnosticForSignal(ctx, nodeAst, component));
   }
 
   return [];
 }
 
-function isPropertyReadNodeAst(node: TmplAstBoundAttribute): PropertyRead | undefined {
-  if (node.value instanceof ASTWithSource === false) {
-    return undefined;
+function getPropertyReads(ast: AST): PropertyRead[] {
+  // Handle unary negation, such as `!mySignal`.
+  if (ast instanceof PrefixNot) {
+    return ast.expression instanceof PropertyRead ? [ast.expression] : [];
   }
-  if (node.value.ast instanceof PrefixNot && node.value.ast.expression instanceof PropertyRead) {
-    return node.value.ast.expression;
+
+  // Handle direct reads, such as `mySignal`.
+  if (ast instanceof PropertyRead) {
+    return [ast];
   }
-  if (node.value.ast instanceof PropertyRead) {
-    return node.value.ast;
+
+  // Handle ternary expressions, such as `flag ? mySignal : otherSignal`.
+  if (ast instanceof Conditional) {
+    return [
+      ...getPropertyReads(ast.condition),
+      ...getPropertyReads(ast.trueExp),
+      ...getPropertyReads(ast.falseExp),
+    ];
   }
-  return undefined;
+
+  // Handle parenthesized expressions, such as `(mySignal)`.
+  if (ast instanceof ParenthesizedExpression) {
+    return getPropertyReads(ast.expression);
+  }
+
+  // Handle non-null assertions, such as `mySignal!`.
+  if (ast instanceof NonNullAssert) {
+    return getPropertyReads(ast.expression);
+  }
+
+  return [];
 }
 
 function isFunctionInstanceProperty(name: string): boolean {
