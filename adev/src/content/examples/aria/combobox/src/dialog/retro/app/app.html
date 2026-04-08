@@ -22,7 +22,7 @@
         </div>
 
         <ng-template ngComboboxPopupContainer>
-          <div ngListbox [(values)]="selectedCountries">
+          <div ngListbox [(value)]="selectedCountries">
             @for (option of options(); track option) {
               <div ngOption [value]="option" [label]="option">
                 <span>{{ option }}</span>

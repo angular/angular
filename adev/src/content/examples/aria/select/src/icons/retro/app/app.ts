@@ -34,14 +34,14 @@ export class App {
 
   /** The icon that is displayed in the combobox. */
   displayIcon = computed(() => {
-    const values = this.listbox()?.values() || [];
+    const values = this.listbox()?.value() || [];
     const label = this.labels.find((label) => label.value === values[0]);
     return label ? label.icon : '';
   });
 
   /** The string that is displayed in the combobox. */
   displayValue = computed(() => {
-    const values = this.listbox()?.values() || [];
+    const values = this.listbox()?.value() || [];
     return values.length ? values[0] : 'Select a label';
   });
 

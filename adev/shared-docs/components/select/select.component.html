@@ -36,7 +36,7 @@
             <div class="docs-select-no-results">No results found</div>
           }
 
-          <div ngListbox [(values)]="selectedValues" class="docs-select-listbox">
+          <div ngListbox [(value)]="selectedValues" class="docs-select-listbox">
             @for (option of filteredOptions(); track option.value) {
               <div
                 ngOption
