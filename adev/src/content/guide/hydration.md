@@ -61,6 +61,17 @@ While running an application in dev mode, you can confirm hydration is enabled b
 
 You can also use [Angular DevTools browser extension](tools/devtools) to see hydration status of components on a page. Angular DevTools also allows to enable an overlay to indicate which parts of the page were hydrated. If there is a hydration mismatch error - DevTools would also highlight a component that caused the error.
 
+### Verify hydration in E2E tests
+
+During hydration, Angular annotates component host elements with an `ngh` attribute that contains hydration metadata. After hydration finishes, Angular removes these attributes.
+
+In end-to-end tests, you can wait for hydration to complete by asserting that there are no `[ngh]` attributes left in the DOM. For example, in Playwright:
+
+```typescript
+// Ensure hydration is finished
+await expect(app.locator('[ngh]')).toHaveCount(0);
+```
+
 ## Capturing and replaying events
 
 When an application is rendered on the server, it is visible in a browser as soon as produced HTML loads. Users may assume that they can interact with the page, but event listeners are not attached until hydration completes. Starting from v18, you can enable the Event Replay feature that allows to capture all events that happen before hydration and replay those events once hydration has completed. You can enable it using the `withEventReplay()` function, for example:
