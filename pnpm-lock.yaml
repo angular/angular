@@ -681,8 +681,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(jasmine-core@6.1.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)))(karma@6.4.4(bufferutil@4.1.0))
       marked:
-        specifier: 17.0.5
-        version: 17.0.5
+        specifier: 18.0.0
+        version: 18.0.0
       mermaid:
         specifier: 11.14.0
         version: 11.14.0
@@ -784,8 +784,8 @@ importers:
         specifier: ~29.0.0
         version: 29.0.1
       marked:
-        specifier: ~17.0.0
-        version: 17.0.5
+        specifier: ~18.0.0
+        version: 18.0.0
       mermaid:
         specifier: ^11.0.0
         version: 11.13.0
@@ -9899,8 +9899,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marked@17.0.5:
-    resolution: {integrity: sha512-6hLvc0/JEbRjRgzI6wnT2P1XuM1/RrrDEX0kPt0N7jGm1133g6X7DlxFasUIx+72aKAr904GTxhSLDrd5DIlZg==}
+  marked@18.0.0:
+    resolution: {integrity: sha512-2e7Qiv/HJSXj8rDEpgTvGKsP8yYtI9xXHKDnrftrmnrJPaFNM7VRb2YCzWaX4BP1iCJ/XPduzDJZMFoqTCcIMA==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -23557,7 +23557,7 @@ snapshots:
 
   marked@16.4.2: {}
 
-  marked@17.0.5: {}
+  marked@18.0.0: {}
 
   marky@1.3.0: {}
 
