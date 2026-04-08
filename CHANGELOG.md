@@ -1,3 +1,25 @@
+<a name="21.2.8"></a>
+# 21.2.8 (2026-04-08)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e40d378f3e](https://github.com/angular/angular/commit/e40d378f3e3e7e57a45c8fbd9565ee06a3a6a13f) | fix | handle nested brackets in host object bindings |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c6781071f](https://github.com/angular/angular/commit/2c6781071f52d6378a002fba6611bb283fbb2fde) | fix | error for type parameter declarations |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [82192deda9](https://github.com/angular/angular/commit/82192deda9c07113835e6c85af3f2c8c8218cda0) | fix | handle missing serialized container hydration data |
+| [057cc6d09d](https://github.com/angular/angular/commit/057cc6d09d234f401a810cfdd3ad14127652b88b) | fix | remove obsolete iOS cursor pointer hack in event delegation |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7797671257](https://github.com/angular/angular/commit/7797671257350665e8b3ceb2bc6a0201829dd338) | fix | get quick info at local var location to align with TS semantics and support type narrowing |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-next.6"></a>
 # 22.0.0-next.6 (2026-04-01)
 ### compiler
