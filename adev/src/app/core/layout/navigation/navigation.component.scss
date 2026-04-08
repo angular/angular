@@ -94,6 +94,7 @@
     width: 100%;
     padding-inline: calc(var(--layout-padding) - 1.25rem);
     height: auto;
+    scrollbar-width: none;
     padding-block: 0;
   }
 
@@ -169,6 +170,7 @@
 
     @include mq.for-tablet {
       flex-direction: row;
+      padding-block-start: 0;
     }
 
     // version dropdown button
@@ -233,7 +235,9 @@
 
     @include mq.for-tablet {
       flex-direction: row !important;
+      align-items: center;
       margin-inline-end: 1.25rem;
+      margin-top: 0.25rem;
       gap: 0.75rem;
     }
 

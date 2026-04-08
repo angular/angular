@@ -28,8 +28,12 @@
   left: calc(var(--layout-padding) + var(--primary-nav-width));
   z-index: 1;
 
-  @include mq.for-tablet-down {
-    justify-content: flex-start;
+  @include mq.for-tablet-landscape-down {
+    justify-content: center;
+    margin-top: 4rem;
+  }
+
+  @include mq.for-phone-only {
     margin-top: 1rem;
   }
 }
@@ -187,7 +191,7 @@ section {
   }
 
   .search-field {
-    @include mq.for-tablet-down() {
+    @include mq.for-tablet-landscape-down() {
       display: none;
     }
   }
