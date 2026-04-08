@@ -363,7 +363,8 @@
           "source.ts"
         ],
         "embeddedLanguages": {
-          "template.tag.ng": "angular-tag-comment"
+          "template.tag.ng": "angular-tag-comment",
+          "template.tag.leading-space": "angular-tag-comment"
         }
       },
       {

@@ -10,30 +10,19 @@ import {GrammarDefinition} from './types';
 
 export const TemplateTag: GrammarDefinition = {
   scopeName: 'template.tag.ng',
-  injectionSelector: 'L:text.html#meta.tag -comment',
+  injectionSelector: 'L:text.html#meta.tag -comment -string',
   patterns: [
     {include: '#inlineComments'},
+    {include: '#leadingSpace'},
     {include: '#twoWayBinding'},
     {include: '#propertyBinding'},
     {include: '#eventBinding'},
     {include: '#templateBinding'},
-    {include: '#standardAttribute'},
   ],
   repository: {
-    standardAttribute: {
-      begin: /([-_a-zA-Z0-9.$:]+)(=)(["'])/,
-      beginCaptures: {
-        1: {name: 'entity.other.attribute-name.html'},
-        2: {name: 'punctuation.separator.key-value.html'},
-        3: {name: 'string.quoted.html punctuation.definition.string.begin.html'},
-      },
-      // @ts-ignore
-      end: /\3/,
-      endCaptures: {
-        0: {name: 'string.quoted.html punctuation.definition.string.end.html'},
-      },
-      name: 'meta.attribute.standard.html',
-      patterns: [{include: 'expression.ng'}],
+    leadingSpace: {
+      match: /^\s+/,
+      name: 'template.tag.leading-space',
     },
     propertyBinding: {
       begin: /(\[\s*@?(?:[-_a-zA-Z0-9.$]+|\[[^\[\]]*]|\([^()]*\))*%?\s*])(=)(["'])/,
