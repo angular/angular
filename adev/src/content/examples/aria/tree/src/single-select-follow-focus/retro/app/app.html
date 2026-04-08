@@ -23,7 +23,7 @@
   </div>
 
   <div class="tree-view">
-    <ul ngTree #tree="ngTree" class="retro-tree" selectionMode="follow" [(values)]="selected">
+    <ul ngTree #tree="ngTree" class="retro-tree" selectionMode="follow" [(value)]="selected">
       <ng-template
         [ngTemplateOutlet]="treeNodes"
         [ngTemplateOutletContext]="{nodes: nodes, parent: tree}"

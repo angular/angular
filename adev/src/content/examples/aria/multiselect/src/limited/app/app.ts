@@ -34,7 +34,7 @@ export class App {
 
   /** The string that is displayed in the combobox. */
   displayValue = computed(() => {
-    const values = this.listbox()?.values() || [];
+    const values = this.listbox()?.value() || [];
     if (values.length === 0) {
       return 'Select 2 labels';
     }
@@ -73,7 +73,7 @@ export class App {
   }
 
   isOptionDisabled(value: string) {
-    const values = this.listbox()?.values();
+    const values = this.listbox()?.value();
 
     if (!values || values.length < 2) {
       return false;

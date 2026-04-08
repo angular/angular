@@ -26,7 +26,7 @@
             <div class="no-results">No results found</div>
           }
 
-          <div ngListbox [(values)]="selectedCountries">
+          <div ngListbox [(value)]="selectedCountries">
             @for (option of options(); track option) {
               <div ngOption [value]="option" [label]="option">
                 <span class="option-label">{{ option }}</span>

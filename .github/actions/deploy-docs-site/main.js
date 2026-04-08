@@ -50913,6 +50913,54 @@ var types = (
     return types2;
   }()
 );
+async function invokeWithRetry(fn, retries = 3, delay = 1e3) {
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      return await fn();
+    } catch (e) {
+      attempt++;
+      if (attempt >= retries) {
+        throw e;
+      }
+      if (isGithubApiError(e) && e.status < 500) {
+        throw e;
+      }
+      if (e instanceof GraphqlResponseError2) {
+        if (!e.errors) {
+          throw e;
+        }
+        if (e.errors.every((err) => ["NOT_FOUND", "FORBIDDEN", "BAD_USER_INPUT", "UNAUTHENTICATED"].includes(err.type))) {
+          throw e;
+        }
+      }
+      Log.warn(`GitHub API call failed (attempt ${attempt}/${retries}). Retrying in ${delay}ms...`);
+      await new Promise((resolve22) => setTimeout(resolve22, delay));
+    }
+  }
+  throw new Error("Unreachable");
+}
+function createRetryProxy(target) {
+  return new Proxy(target, {
+    get(targetObj, prop, receiver) {
+      const value = Reflect.get(targetObj, prop, receiver);
+      if (typeof value === "function") {
+        return new Proxy(value, {
+          apply(targetFn, thisArg, argArray) {
+            return invokeWithRetry(() => targetFn.apply(targetObj, argArray));
+          }
+        });
+      }
+      if (typeof value === "object" && value !== null) {
+        return createRetryProxy(value);
+      }
+      return value;
+    },
+    apply(targetFn, thisArg, argArray) {
+      return invokeWithRetry(() => targetFn.apply(thisArg, argArray));
+    }
+  });
+}
 var GithubClient = class {
   constructor(_octokitOptions) {
     this._octokitOptions = _octokitOptions;
@@ -50925,18 +50973,18 @@ var GithubClient = class {
       },
       ...this._octokitOptions
     });
-    this.pulls = this._octokit.pulls;
-    this.orgs = this._octokit.orgs;
-    this.repos = this._octokit.repos;
-    this.issues = this._octokit.issues;
-    this.git = this._octokit.git;
-    this.rateLimit = this._octokit.rateLimit;
-    this.teams = this._octokit.teams;
-    this.search = this._octokit.search;
-    this.rest = this._octokit.rest;
-    this.paginate = this._octokit.paginate;
-    this.checks = this._octokit.checks;
-    this.users = this._octokit.users;
+    this.pulls = createRetryProxy(this._octokit.pulls);
+    this.orgs = createRetryProxy(this._octokit.orgs);
+    this.repos = createRetryProxy(this._octokit.repos);
+    this.issues = createRetryProxy(this._octokit.issues);
+    this.git = createRetryProxy(this._octokit.git);
+    this.rateLimit = createRetryProxy(this._octokit.rateLimit);
+    this.teams = createRetryProxy(this._octokit.teams);
+    this.search = createRetryProxy(this._octokit.search);
+    this.rest = createRetryProxy(this._octokit.rest);
+    this.paginate = createRetryProxy(this._octokit.paginate);
+    this.checks = createRetryProxy(this._octokit.checks);
+    this.users = createRetryProxy(this._octokit.users);
   }
 };
 var AuthenticatedGithubClient = class extends GithubClient {
@@ -50948,9 +50996,14 @@ var AuthenticatedGithubClient = class extends GithubClient {
     });
   }
   async graphql(queryObject, params2 = {}) {
-    return await this._graphql(query(queryObject).toString(), params2);
+    return invokeWithRetry(async () => {
+      return await this._graphql(query(queryObject).toString(), params2);
+    });
   }
 };
+function isGithubApiError(obj) {
+  return obj instanceof Error && obj.constructor.name === "RequestError" && obj.request !== void 0;
+}
 function isDryRun() {
   return process.env["DRY_RUN"] !== void 0;
 }
@@ -51920,7 +51973,7 @@ tmp/lib/tmp.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-U2HAQOXA.mjs:
+@angular/ng-dev/bundles/chunk-TUTTLTAK.mjs:
   (*! Bundled license information:
   
   @octokit/request-error/dist-src/index.js:

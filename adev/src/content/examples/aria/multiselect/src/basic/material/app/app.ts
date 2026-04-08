@@ -34,7 +34,7 @@ export class App {
 
   /** The string that is displayed in the combobox. */
   displayValue = computed(() => {
-    const values = this.listbox()?.values() || [];
+    const values = this.listbox()?.value() || [];
     if (values.length === 0) {
       return 'Select a label';
     }
