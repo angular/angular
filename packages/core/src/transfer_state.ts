@@ -142,7 +142,8 @@ export class TransferState {
 
     // Escape script tag to avoid break out of <script> tag in serialized output.
     // Encoding of `<` is the same behaviour as G3 script_builders.
-    return JSON.stringify(this.store).replace(/</g, '\\u003C');
+    // Encoding of `/` prevents crawlers from incorrectly indexing relative URLs in inline JSON.
+    return JSON.stringify(this.store).replace(/</g, '\\u003C').replace(/\//g, '\\u002F');
   }
 }
 
