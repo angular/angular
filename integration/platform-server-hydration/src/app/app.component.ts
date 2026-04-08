@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject, ApplicationRef} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 
 @Component({
@@ -13,4 +13,11 @@ export class AppComponent {
   onClick = () => {
     document.querySelector('#divElement')!.textContent = 'click triggered.';
   };
+  constructor() {
+    const appRef = inject(ApplicationRef);
+    if (typeof window !== 'undefined') {
+      (window as unknown as {hydrationCompleteSignal: () => boolean}).hydrationCompleteSignal =
+        appRef.isHydrationComplete;
+    }
+  }
 }

@@ -305,6 +305,7 @@ export function withDomHydration(): EnvironmentProviders {
                 }
 
                 cleanupDehydratedViews(appRef);
+                appRef._isHydrationComplete.set(true);
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                   countBlocksSkippedByHydration(appRef.injector);
                   printHydrationStats(appRef.injector);

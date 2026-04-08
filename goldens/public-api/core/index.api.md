@@ -146,6 +146,7 @@ export class ApplicationRef {
     get destroyed(): boolean;
     detachView(viewRef: ViewRef): void;
     get injector(): EnvironmentInjector;
+    get isHydrationComplete(): Signal<boolean>;
     get isStable(): Observable<boolean>;
     onDestroy(callback: () => void): VoidFunction;
     tick(): void;

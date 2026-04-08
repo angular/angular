@@ -3058,5 +3058,34 @@ describe('platform-server partial hydration integration', () => {
       expect(consoleSpy).toHaveBeenCalledTimes(1);
       expect(consoleSpy).toHaveBeenCalledWith(jasmine.stringMatching('NG0508'));
     });
+
+    it('should transition isHydrationComplete signal perfectly across initial and incremental hydration passes', async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          <main>
+            @defer (on immediate; hydrate on immediate) {
+              <div>Immediate defer block rendered!</div>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {}
+
+      const providers = [{provide: APP_ID, useValue: 'test-app'}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      resetTViewsFor(SimpleComponent);
+
+      const doc = getDocument();
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        hydrationFeatures,
+      });
+
+      await appRef.whenStable();
+      expect(appRef.isHydrationComplete()).toBeTrue();
+    });
   });
 });

@@ -27,4 +27,10 @@ describe('App E2E Tests', () => {
 
     expect(await divElement.getText()).toContain('click triggered');
   });
+
+  it('should correctly reflect isHydrationComplete state', async () => {
+    await bootstrapClientApp();
+    const isComplete = await browser.executeScript('return window.hydrationCompleteSignal()');
+    expect(isComplete).toBe(true);
+  });
 });

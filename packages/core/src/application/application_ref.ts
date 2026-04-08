@@ -17,6 +17,8 @@ import {
   setActiveConsumer,
   setThrowInvalidWriteToSignalError,
 } from '../../primitives/signals';
+import {signal} from '../render3/reactivity/signal';
+import type {Signal} from '../render3/reactivity/api';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
@@ -50,6 +52,7 @@ import {profiler} from '../render3/profiler';
 import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {ApplicationInitStatus} from './application_init';
+import {IS_HYDRATION_DOM_REUSE_ENABLED} from '../hydration/tokens';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
 
 /**
@@ -332,6 +335,30 @@ export class ApplicationRef {
   public get isStable(): Observable<boolean> {
     // This is a getter because it might be invoked after the application has been destroyed.
     return this.internalPendingTask.hasPendingTasksObservable.pipe(map((pending) => !pending));
+  }
+
+  /** @internal */
+  readonly _isHydrationComplete = signal(false);
+
+  /**
+   * A Signal that indicates whether the application hydration (both initial load and incremental defer blocks) is fully complete.
+   *
+   * If client hydration is completely disabled for the application, this signal will always return `false`.
+   */
+  public get isHydrationComplete(): Signal<boolean> {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      const isHydrationEnabled = this._injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false);
+      if (!isHydrationEnabled) {
+        const console = this._injector.get(Console);
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.READING_IS_HYDRATION_COMPLETE_WHEN_DISABLED,
+            'Reading `isHydrationComplete` when client hydration is not enabled in the application.',
+          ),
+        );
+      }
+    }
+    return this._isHydrationComplete.asReadonly();
   }
 
   constructor() {

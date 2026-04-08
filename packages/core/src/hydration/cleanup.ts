@@ -159,5 +159,6 @@ export function cleanupHydratedDeferBlocks(
     registry.cleanup(hydratedBlocks);
     cleanupLContainer(deferBlock.lContainer);
     cleanupDehydratedViews(appRef);
+    appRef._isHydrationComplete.set(true);
   }
 }

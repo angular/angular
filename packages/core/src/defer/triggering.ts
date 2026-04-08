@@ -410,6 +410,8 @@ export async function triggerHydrationFromBlockName(
   const {parentBlockPromise, hydrationQueue} = getParentBlockHydrationQueue(blockName, injector);
   if (hydrationQueue.length === 0) return;
 
+  injector.get(ApplicationRef)._isHydrationComplete.set(false);
+
   // It's possible that the hydrationQueue topmost item is actually in the process of hydrating and has
   // a promise already. In that case, we don't want to destroy that promise and queue it again.
   if (parentBlockPromise !== null) {

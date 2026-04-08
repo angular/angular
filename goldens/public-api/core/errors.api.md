@@ -158,6 +158,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PROVIDER_NOT_FOUND = -201,
     // (undocumented)
+    READING_IS_HYDRATION_COMPLETE_WHEN_DISABLED = 509,
+    // (undocumented)
     RECURSIVE_APPLICATION_REF_TICK = 101,
     // (undocumented)
     RENDERER_NOT_FOUND = 407,
