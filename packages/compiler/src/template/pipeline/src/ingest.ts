@@ -63,6 +63,7 @@ export function ingestComponent(
   allDeferrableDepsFn: o.ReadVarExpr | null,
   relativeTemplatePath: string | null,
   enableDebugLocations: boolean,
+  legacyOptionalChaining: boolean = false,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -74,6 +75,7 @@ export function ingestComponent(
     allDeferrableDepsFn,
     relativeTemplatePath,
     enableDebugLocations,
+    legacyOptionalChaining,
   );
   ingestNodes(job.root, template);
   return job;
@@ -85,6 +87,7 @@ export interface HostBindingInput {
   properties: e.ParsedProperty[] | null;
   attributes: {[key: string]: o.Expression};
   events: e.ParsedEvent[] | null;
+  legacyOptionalChaining?: boolean;
 }
 
 /**
@@ -100,6 +103,7 @@ export function ingestHostBinding(
     input.componentName,
     constantPool,
     TemplateCompilationMode.DomOnly,
+    input.legacyOptionalChaining,
   );
   for (const property of input.properties ?? []) {
     let bindingKind = ir.BindingKind.Property;

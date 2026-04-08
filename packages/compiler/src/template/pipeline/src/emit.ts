@@ -9,8 +9,8 @@
 
 import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
-import * as ir from '../ir';
 import {CONTEXT_NAME, RENDER_FLAGS} from '../../../render3/view/util';
+import * as ir from '../ir';
 
 import {
   CompilationJob,
@@ -30,6 +30,7 @@ import {chain} from './phases/chaining';
 import {collapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
 import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
+import {specializeControlProperties} from './phases/control_directives';
 import {convertAnimations} from './phases/convert_animations';
 import {convertI18nBindings} from './phases/convert_i18n_bindings';
 import {createI18nContexts} from './phases/create_i18n_contexts';
@@ -40,6 +41,7 @@ import {collapseEmptyInstructions} from './phases/empty_elements';
 import {expandSafeReads} from './phases/expand_safe_reads';
 import {extractI18nMessages} from './phases/extract_i18n_messages';
 import {generateAdvance} from './phases/generate_advance';
+import {generateArrowFunctions} from './phases/generate_arrow_functions';
 import {generateLocalLetReferences} from './phases/generate_local_let_references';
 import {generateProjectionDefs} from './phases/generate_projection_def';
 import {generateVariables} from './phases/generate_variables';
@@ -53,6 +55,7 @@ import {nameFunctionsAndVariables} from './phases/naming';
 import {mergeNextContextExpressions} from './phases/next_context_merging';
 import {generateNgContainerOps} from './phases/ng_container';
 import {disableBindings} from './phases/nonbindable';
+import {removeNullCasts} from './phases/null_cast';
 import {orderOps} from './phases/ordering';
 import {parseExtractedStyles} from './phases/parse_extracted_styles';
 import {removeContentSelectors} from './phases/phase_remove_content_selectors';
@@ -86,8 +89,6 @@ import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set'
 import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
-import {generateArrowFunctions} from './phases/generate_arrow_functions';
-import {specializeControlProperties} from './phases/control_directives';
 
 type Phase =
   | {
@@ -132,6 +133,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateVariables},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
+  {kind: Kind.Both, fn: removeNullCasts},
   {kind: Kind.Both, fn: resolveDollarEvent},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Tmpl, fn: removeIllegalLetReferences},

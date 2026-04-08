@@ -149,6 +149,11 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    * Additional directives applied to the directive host.
    */
   hostDirectives?: R3DeclareHostDirectiveMetadata[];
+
+  /**
+   * Whether null should be used instead of undefined for optional chaining. Defaults to false.
+   */
+  legacyOptionalChaining?: boolean;
 }
 
 /**

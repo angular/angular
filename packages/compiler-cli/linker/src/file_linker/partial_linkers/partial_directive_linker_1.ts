@@ -11,7 +11,6 @@ import {
   ForwardRefHandling,
   LegacyInputPartialMapping,
   makeBindingParser,
-  outputAst as o,
   ParseLocation,
   ParseSourceFile,
   ParseSourceSpan,
@@ -26,13 +25,19 @@ import {
   R3QueryMetadata,
 } from '@angular/compiler';
 
+import semver from 'semver';
 import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, getDefaultStandaloneValue, wrapReference} from './util';
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/src/types';
+import {LinkedDefinition, PartialLinker} from './partial_linker';
+import {
+  extractForwardRef,
+  getDefaultStandaloneValue,
+  PLACEHOLDER_VERSION,
+  wrapReference,
+} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
@@ -62,6 +67,7 @@ export function toR3DirectiveMeta<TExpression>(
   sourceUrl: AbsoluteFsPath,
   version: string,
 ): R3DirectiveMetadata {
+  const {major} = new semver.SemVer(version);
   const typeExpr = metaObj.getValue('type');
   const typeName = typeExpr.getSymbolName();
   if (typeName === null) {
@@ -107,6 +113,7 @@ export function toR3DirectiveMeta<TExpression>(
     hostDirectives: metaObj.has('hostDirectives')
       ? toHostDirectivesMetadata(metaObj.getValue('hostDirectives'))
       : null,
+    legacyOptionalChaining: major < 22 && version !== PLACEHOLDER_VERSION,
   };
 }
 

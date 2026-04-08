@@ -1095,6 +1095,7 @@ export class NgCompiler {
         // Pipes are checked in View Engine so there is no strictness flag.
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: strictTemplates,
+        legacyOptionalChaining: this.options.legacyOptionalChaining ?? false,
         useContextGenericType: strictTemplates,
         strictLiteralTypes: true,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
@@ -1128,6 +1129,7 @@ export class NgCompiler {
         checkTypeOfNonDomReferences: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
+        legacyOptionalChaining: this.options.legacyOptionalChaining ?? false,
         useContextGenericType: false,
         strictLiteralTypes: false,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
@@ -1534,6 +1536,7 @@ export class NgCompiler {
         typeCheckHostBindings,
         this.enableSelectorless,
         this.emitDeclarationOnly,
+        this.options.legacyOptionalChaining ?? false,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1563,6 +1566,7 @@ export class NgCompiler {
         this.usePoisonedData,
         typeCheckHostBindings,
         this.emitDeclarationOnly,
+        this.options.legacyOptionalChaining ?? false,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)

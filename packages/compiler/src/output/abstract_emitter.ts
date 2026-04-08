@@ -293,9 +293,9 @@ export abstract class AbstractEmitterVisitor
     if (shouldParenthesize) {
       ctx.print(expr.fn, ')');
     }
-    ctx.print(expr, `(`);
+    ctx.print(expr, expr.isOptional ? '?.(' : '(');
     this.visitAllExpressions(expr.args, ctx, ',');
-    ctx.print(expr, `)`);
+    ctx.print(expr, ')');
   }
 
   visitTaggedTemplateLiteralExpr(
@@ -508,14 +508,14 @@ export abstract class AbstractEmitterVisitor
   visitReadPropExpr(ast: o.ReadPropExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
     ast.receiver.visitExpression(this, ctx);
-    ctx.print(ast, `.`);
+    ctx.print(ast, ast.isOptional ? `?.` : `.`);
     ctx.print(ast, ast.name);
   }
 
   visitReadKeyExpr(ast: o.ReadKeyExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
     ast.receiver.visitExpression(this, ctx);
-    ctx.print(ast, `[`);
+    ctx.print(ast, ast.isOptional ? `?.[` : `[`);
     ast.index.visitExpression(this, ctx);
     ctx.print(ast, `]`);
   }

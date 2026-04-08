@@ -28,7 +28,7 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {flatten} from '../../util/array_utils';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../def_getters';
+import {getComponentDef, getDirectiveDef, getPipeDef} from '../def_getters';
 import {depsTracker} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
@@ -154,6 +154,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           // dependency might be a directive dependency.
           hasDirectiveDependencies:
             !baseMeta.isStandalone || (metadata.imports != null && metadata.imports.length > 0),
+          legacyOptionalChaining: false, // fallback to false in JIT
         };
 
         compilationDepth++;
@@ -376,6 +377,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
 
   return {
     name: type.name,
+    legacyOptionalChaining: false,
     type: type,
     selector: metadata.selector !== undefined ? metadata.selector : null,
     host: metadata.host || EMPTY_OBJ,

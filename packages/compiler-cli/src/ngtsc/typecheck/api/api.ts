@@ -13,14 +13,13 @@ import {
   DirectiveMeta,
   ParseSourceSpan,
   SchemaMetadata,
-  TcbInputMapping,
   TypeCheckId,
 } from '@angular/compiler';
+import ts from 'typescript';
 import {ErrorCode} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {DirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-import ts from 'typescript';
 
 /**
  * Extension of `DirectiveMeta` that includes additional information required to type-check the

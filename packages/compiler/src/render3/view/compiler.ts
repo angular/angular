@@ -79,6 +79,7 @@ function baseDirectiveFields(
       meta.selector || '',
       meta.name,
       definitionMap,
+      meta.legacyOptionalChaining,
     ),
   );
 
@@ -225,6 +226,7 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
     getTemplateSourceLocationsEnabled(),
+    meta.legacyOptionalChaining,
   );
 
   // Then the IR is transformed to prepare it for code generation.
@@ -350,6 +352,12 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   if (meta.isSignal) {
     typeParams.push(o.expressionType(o.literal(meta.isSignal)));
   }
+  if (meta.legacyOptionalChaining) {
+    if (!meta.isSignal) {
+      typeParams.push(o.expressionType(o.literal(false)));
+    }
+    typeParams.push(o.expressionType(o.literal(meta.legacyOptionalChaining)));
+  }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -464,6 +472,7 @@ function createHostBindingsFunction(
   selector: string,
   name: string,
   definitionMap: DefinitionMap,
+  legacyOptionalChaining: boolean,
 ): o.Expression | null {
   const bindings = bindingParser.createBoundHostProperties(
     hostBindingsMetadata.properties,
@@ -498,6 +507,7 @@ function createHostBindingsFunction(
       properties: bindings,
       events: eventBindings,
       attributes: hostBindingsMetadata.attributes,
+      legacyOptionalChaining,
     },
     bindingParser,
     constantPool,

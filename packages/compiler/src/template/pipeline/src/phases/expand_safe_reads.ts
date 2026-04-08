@@ -24,10 +24,39 @@ interface SafeTransformContext {
 export function expandSafeReads(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
+      ir.transformExpressionsInOp(op, removeNulls, ir.VisitorContextFlag.None);
       ir.transformExpressionsInOp(op, (e) => safeTransform(e, {job}), ir.VisitorContextFlag.None);
       ir.transformExpressionsInOp(op, ternaryTransform, ir.VisitorContextFlag.None);
     }
   }
+}
+
+function removeNulls(e: o.Expression): o.Expression {
+  if (
+    e instanceof o.InvokeFunctionExpr &&
+    e.fn instanceof ir.LexicalReadExpr &&
+    e.fn.name === '$safeNavigationMigration'
+  ) {
+    if (e.args.length !== 1) {
+      throw new Error(
+        'The $safeNavigationMigration builtin function expects exactly one argument.',
+      );
+    }
+
+    // The argument structure inside $safeNavigationMigration will use `null` safe navigation semantics
+    const arg = e.args[0];
+    ir.transformExpressionsInExpression(
+      arg,
+      (child) => {
+        (child as any)._useNull = true;
+        return child;
+      },
+      ir.VisitorContextFlag.None,
+    );
+
+    return arg;
+  }
+  return e;
 }
 
 // A lookup set of all the expression kinds that require a temporary variable to be generated.
@@ -184,6 +213,20 @@ function deepestSafeTernary(e: o.Expression): ir.SafeTernaryExpr | null {
 // TODO: When strict compatibility with TemplateDefinitionBuilder is not required, we can use `&&`
 // instead to save some code size.
 function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression {
+  const useNullSemantics = (ctx.job as any).legacyOptionalChaining || (e as any)._useNull;
+  if (!useNullSemantics) {
+    if (e instanceof ir.SafePropertyReadExpr) {
+      return new o.ReadPropExpr(e.receiver, e.name, null, e.sourceSpan, [], true);
+    }
+    if (e instanceof ir.SafeKeyedReadExpr) {
+      return new o.ReadKeyExpr(e.receiver, e.index, null, e.sourceSpan, [], true);
+    }
+    if (e instanceof ir.SafeInvokeFunctionExpr) {
+      return new o.InvokeFunctionExpr(e.receiver, e.args, null, e.sourceSpan, false, [], true);
+    }
+    return e;
+  }
+
   if (!isAccessExpression(e)) {
     return e;
   }

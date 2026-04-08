@@ -7,12 +7,12 @@
  */
 import {
   CssSelector,
-  DirectiveMeta as T2DirectiveMeta,
+  MatchSource,
   parseTemplate,
   R3TargetBinder,
   SelectorMatcher,
+  DirectiveMeta as T2DirectiveMeta,
   TmplAstElement,
-  MatchSource,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -243,6 +243,7 @@ runInEachFileSystem(() => {
       /* usePoisonedData */ false,
       /* typeCheckHostBindings */ true,
       /* emitDeclarationOnly */ false,
+      /* legacyOptionalChaining */ false,
     );
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);
