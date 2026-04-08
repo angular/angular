@@ -284,4 +284,4 @@ To learn more about Signal Forms, check out these related guides:
 
 - [Adding form logic](guide/forms/signals/form-logic) - Learn how to add conditional logic, dynamic behavior, and metadata to your forms
 - [Validation](guide/forms/signals/validation) - Learn about validation rules and error handling
-- [Form submission](guide/forms/signals/form-submission) - Learn how to submit forms and handle async operations
+- [Async operations](guide/forms/signals/async-operations) - Learn how to handle form submission and async validation
