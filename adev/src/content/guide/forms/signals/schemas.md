@@ -52,7 +52,7 @@ TIP: If rules only appear in one place, an inline schema function works just as 
 
 ### Using the schema with `apply()`
 
-You can apply a reusable schema to a specific path in a form by using the `apply()` function, which will be covered in more depth in the next section:
+You can apply a reusable schema to a specific path in a form by using the `apply()` function. When you call `apply()`, the schema receives a scoped path that only sees the fields within that sub-path:
 
 ```ts
 import {apply} from '@angular/forms/signals';
@@ -66,49 +66,7 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 });
 ```
 
-## Apply schemas to sub-paths with `apply()`
-
-The `apply()` function attaches a schema to a specific part of the form. You pass an inline schema function or `Schema` object created with `schema()` that receives a `SchemaPathTree` scoped to that sub-path. In other words, it only sees the fields within that specific part of the form.
-
-A nested schema must use the scoped path object it receives. You cannot keep using the outer `schemaPath` inside `apply()` or `applyWhen()` callbacks to define inner rules.
-
-```ts
-// Inline schema function
-profileForm = form(this.profileModel, (schemaPath) => {
-  required(schemaPath.age);
-
-  apply(schemaPath.name, (name) => {
-    required(name.first);
-    required(name.last);
-  });
-});
-```
-
-```ts
-// Reusable schema object
-profileForm = form(this.profileModel, (schemaPath) => {
-  required(schemaPath.age);
-  apply(schemaPath.name, nameSchema);
-});
-```
-
-### Nesting `apply()` for deeply nested structures
-
-For forms with multiple levels of nesting, you can call `apply()` inside another `apply()`. Each level scopes the schema function to that part of the tree:
-
-```ts
-orderForm = form(this.orderModel, (schemaPath) => {
-  apply(schemaPath.billing, (billing) => {
-    required(billing.method);
-
-    apply(billing.address, (address) => {
-      required(address.street);
-      required(address.city);
-      required(address.zip);
-    });
-  });
-});
-```
+For deeply nested forms, you may be tempted to use `apply()` to reach nested fields, but that's not necessary. Just use dot notation (such as `schemaPath.billing.address.street`) to access the field you want.
 
 ## Conditional schemas with `applyWhen()`
 
