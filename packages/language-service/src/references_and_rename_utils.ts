@@ -40,7 +40,7 @@ import {
 import {
   ExpressionIdentifier,
   hasExpressionIdentifier,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
+} from '@angular/compiler-cli/private/hybrid_analysis';
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
