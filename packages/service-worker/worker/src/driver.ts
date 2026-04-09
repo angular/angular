@@ -214,9 +214,12 @@ export class Driver implements Debuggable, UpdateSource {
     this.scope.addEventListener('pushsubscriptionchange', (event) =>
       // This is a bug in TypeScript, where they removed `PushSubscriptionChangeEvent`
       // based on the incorrect assumption that browsers don't support it.
-      this.onPushSubscriptionChange(event as PushSubscriptionChangeEvent),
+      this.onPushSubscriptionChange(event as unknown as PushSubscriptionChangeEvent),
     );
-    this.scope.addEventListener('messageerror', (event) => this.onMessageError(event));
+    // TODO: Remove this casting once rules_angular is bumped and includes proper TS6 DOM definitions.
+    this.scope.addEventListener('messageerror', (event) =>
+      this.onMessageError(event as unknown as ExtendableMessageEvent),
+    );
     this.scope.addEventListener('unhandledrejection', (event) => this.onUnhandledRejection(event));
 
     // The debugger generates debug pages in response to debugging requests.
@@ -355,7 +358,7 @@ export class Driver implements Debuggable, UpdateSource {
     event.waitUntil(this.handlePushSubscriptionChange(event));
   }
 
-  private onMessageError(event: MessageEvent<unknown>): void {
+  private onMessageError(event: ExtendableMessageEvent): void {
     // Handle message deserialization errors that occur when receiving messages
     // that cannot be deserialized, typically due to corrupted data or unsupported formats.
     this.debugger.log(
