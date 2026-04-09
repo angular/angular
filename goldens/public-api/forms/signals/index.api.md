@@ -126,7 +126,26 @@ export class EmailValidationError extends BaseNgValidationError {
 export type Field<TValue, TKey extends string | number = string | number> = () => FieldState<TValue, TKey>;
 
 // @public
+export const FIELD_PATH_PROXY_HANDLER: ProxyHandler<FieldPathNode>;
+
+// @public
 export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = TPathKind extends PathKind.Item ? ItemFieldContext<TValue> : TPathKind extends PathKind.Child ? ChildFieldContext<TValue> : RootFieldContext<TValue>;
+
+// @public
+export class FieldPathNode {
+    protected constructor(
+    keys: PropertyKey[], root: FieldPathNode | undefined,
+    parent: FieldPathNode | undefined,
+    keyInParent: PropertyKey | undefined);
+    get builder(): LogicNodeBuilder;
+    readonly fieldPathProxy: SchemaPath<any>;
+    getChild(key: PropertyKey): FieldPathNode;
+    readonly keys: PropertyKey[];
+    mergeIn(other: SchemaImpl, predicate?: Predicate): void;
+    static newRoot(): FieldPathNode;
+    readonly root: FieldPathNode;
+    static unwrapFieldPath(formPath: SchemaPath<unknown, SchemaPathRules>): FieldPathNode;
+}
 
 // @public
 export interface FieldState<TValue, TKey extends string | number = string | number> extends ReadonlyFieldState<TValue, TKey> {

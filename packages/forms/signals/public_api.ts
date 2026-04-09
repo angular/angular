@@ -22,3 +22,4 @@ export * from './src/api/transformed_value';
 export * from './src/api/types';
 export * from './src/directive/form_field';
 export * from './src/directive/form_root';
+export * from './src/schema/path_node';
