@@ -424,9 +424,9 @@ export function warnIncrementalHydrationNotConfigured(): void {
       formatRuntimeError(
         RuntimeErrorCode.MISCONFIGURED_INCREMENTAL_HYDRATION,
         'Angular has detected that some `@defer` blocks use `hydrate` triggers, ' +
-          'but incremental hydration was not enabled. Please ensure that the `withIncrementalHydration()` ' +
-          'call is added as an argument for the `provideClientHydration()` function call ' +
-          'in your application config.',
+          'but incremental hydration was not enabled. Incremental hydration is enabled by default ' +
+          'with `provideClientHydration()`. Make sure `provideClientHydration()` is included in ' +
+          'your application config and that you have not opted out using `withNoIncrementalHydration()`.',
       ),
     );
   }
