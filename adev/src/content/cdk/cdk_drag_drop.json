@@ -431,7 +431,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-drop.ts",
         "startLine": 19,
-        "endLine": 49
+        "endLine": 46
       }
     },
     {
@@ -639,7 +639,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-placeholder.ts",
         "startLine": 23,
-        "endLine": 44
+        "endLine": 42
       }
     },
     {
@@ -784,7 +784,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-preview.ts",
         "startLine": 31,
-        "endLine": 55
+        "endLine": 53
       }
     },
     {
@@ -1315,7 +1315,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-handle.ts",
         "startLine": 33,
-        "endLine": 89
+        "endLine": 87
       }
     },
     {
@@ -1663,7 +1663,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drop-list.ts",
         "startLine": 36,
-        "endLine": 436
+        "endLine": 434
       }
     },
     {
@@ -2406,7 +2406,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-drop-registry.ts",
         "startLine": 59,
-        "endLine": 336
+        "endLine": 333
       }
     },
     {
@@ -3376,7 +3376,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag.ts",
         "startLine": 60,
-        "endLine": 617
+        "endLine": 615
       }
     },
     {
