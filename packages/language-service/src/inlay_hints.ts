@@ -54,7 +54,7 @@ import {
   ExpressionSymbol,
 } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api/checker';
-import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
+import {findFirstMatchingNode} from '@angular/compiler-cli/private/hybrid_analysis';
 import ts from 'typescript';
 
 import {TypeCheckInfo} from './utils';
