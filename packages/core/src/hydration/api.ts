@@ -354,6 +354,9 @@ export function withI18nSupport(): Provider[] {
  * Requires hydration to be enabled separately.
  * Enabling incremental hydration also enables event replay for the entire app.
  * @see [Incremental Hydration](guide/incremental-hydration#how-do-you-enable-incremental-hydration-in-angular)
+ *
+ * @deprecated Since v22.0.0, incremental hydration is enabled by default with `provideClientHydration`.
+ * Intent to remove in v24.
  */
 export function withIncrementalHydration(): Provider[] {
   const providers: Provider[] = [

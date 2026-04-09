@@ -12,22 +12,31 @@ Incremental hydration also lets you use deferrable views (`@defer`) for content 
 
 You can enable incremental hydration for applications that already use server-side rendering (SSR) with hydration. Follow the [Angular SSR Guide](guide/ssr) to enable server-side rendering and the [Angular Hydration Guide](guide/hydration) to enable hydration first.
 
-Enable incremental hydration by adding the `withIncrementalHydration()` function to the `provideClientHydration` provider.
+Incremental hydration is enabled by default when you use `provideClientHydration()`.
 
-```typescript
-import {
-  bootstrapApplication,
-  provideClientHydration,
-  withIncrementalHydration,
-} from '@angular/platform-browser';
-...
+```ts
+import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
-  providers: [provideClientHydration(withIncrementalHydration())]
+  providers: [provideClientHydration()],
 });
 ```
 
-Incremental Hydration depends on and enables [event replay](guide/hydration#capturing-and-replaying-events) automatically. If you already have `withEventReplay()` in your list, you can safely remove it after enabling incremental hydration.
+NOTE: Incremental Hydration depends on and enables [event replay](guide/hydration#capturing-and-replaying-events) automatically. If you already have `withEventReplay()` in your list, you can safely remove it.
+
+To opt out of incremental hydration, use `withNoIncrementalHydration()`:
+
+```ts
+import {
+  bootstrapApplication,
+  provideClientHydration,
+  withNoIncrementalHydration,
+} from '@angular/platform-browser';
+
+bootstrapApplication(App, {
+  providers: [provideClientHydration(withNoIncrementalHydration())],
+});
+```
 
 ## How does incremental hydration work?
 
