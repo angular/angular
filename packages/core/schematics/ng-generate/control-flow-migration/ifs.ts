@@ -11,6 +11,7 @@ import {visitAll} from '@angular/compiler';
 import {ElementCollector, ElementToMigrate, endMarker, Result, startMarker} from './types';
 import {
   calculateNesting,
+  getBlockLineBreak,
   getMainBlock,
   getOriginals,
   getPlaceholder,
@@ -119,9 +120,11 @@ function buildIfBlock(etm: ElementToMigrate, tmpl: string, offset: number): Resu
 
   const originals = getOriginals(etm, tmpl, offset);
 
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${startMarker}@if (${condition}) {${lbString}${start}`;
-  const endBlock = `${end}${lbString}}${endMarker}`;
+  const mainBlock = getMainBlock(etm, tmpl, offset);
+  const {start, middle, end} = mainBlock;
+  const blockLb = getBlockLineBreak(mainBlock, lbString);
+  const startBlock = `${startMarker}@if (${condition}) {${blockLb}${start}`;
+  const endBlock = `${end}${blockLb}}${endMarker}`;
 
   const ifBlock = startBlock + middle + endBlock;
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + ifBlock + tmpl.slice(etm.end(offset));
@@ -186,10 +189,12 @@ function buildIfElseBlock(
 
   const originals = getOriginals(etm, tmpl, offset);
 
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${startMarker}@if (${condition}) {${lbString}${start}`;
+  const mainBlock = getMainBlock(etm, tmpl, offset);
+  const {start, middle, end} = mainBlock;
+  const blockLb = getBlockLineBreak(mainBlock, lbString);
+  const startBlock = `${startMarker}@if (${condition}) {${blockLb}${start}`;
 
-  const elseBlock = `${end}${lbString}} @else {${lbString}`;
+  const elseBlock = `${end}${blockLb}} @else {${lbString}`;
 
   const postBlock = elseBlock + elsePlaceholder + `${lbString}}${endMarker}`;
   const ifElseBlock = startBlock + middle + postBlock;

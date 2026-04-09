@@ -368,6 +368,29 @@ export function hasLineBreaks(template: string): boolean {
 }
 
 /**
+ * Returns an empty string instead of the given line break when the block content is
+ * plain text from a removed container, to prevent Angular from introducing extra
+ * whitespace. Angular does not strip whitespace around plain text inside control flow blocks.
+ */
+export function getBlockLineBreak(
+  {start, middle, end}: {start: string; middle: string; end: string},
+  lbString: string,
+): string {
+  if (start !== '' || end !== '') return lbString;
+  const stripped = middle
+    .replace(new RegExp(startMarker, 'g'), '')
+    .replace(new RegExp(endMarker, 'g'), '')
+    .replace(new RegExp(startI18nMarker, 'g'), '')
+    .replace(new RegExp(endI18nMarker, 'g'), '')
+    .trim();
+  if (stripped.length === 0) return lbString;
+  const startsWithStructure = stripped.startsWith('<') || stripped.startsWith('@');
+  const endsWithStructure = stripped.endsWith('>') || stripped.endsWith('}');
+  if (startsWithStructure && endsWithStructure) return lbString;
+  return '';
+}
+
+/**
  * properly adjusts template offsets based on current nesting levels
  */
 export function reduceNestingOffset(
@@ -845,6 +868,9 @@ export function formatTemplate(tmpl: string, templateType: string): string {
     // @if | @switch | @case | @default | @for | } @else
     const openBlockRegex = /^\s*\@(if|switch|case|default|for)|^\s*\}\s\@else/;
 
+    // match a control flow block that opens and closes on the same line
+    const singleLineBlockRegex = /\}\s*$/;
+
     // regex for matching an html element opening
     // <div thing="stuff" [binding]="true"> || <div thing="stuff" [binding]="true"
     const openElRegex = /^\s*<([a-z0-9]+)(?![^>]*\/>)[^>]*>?/;
@@ -989,12 +1015,13 @@ export function formatTemplate(tmpl: string, templateType: string): string {
       }
 
       // this matches an open control flow block, an open HTML element, but excludes single line
-      // self closing tags
+      // self closing tags and single line control flow blocks
       if (
         (openBlockRegex.test(line) || openElRegex.test(line)) &&
         !singleLineElRegex.test(line) &&
         !selfClosingRegex.test(line) &&
-        !openSelfClosingRegex.test(line)
+        !openSelfClosingRegex.test(line) &&
+        !(openBlockRegex.test(line) && singleLineBlockRegex.test(line))
       ) {
         // open block, increase indent
         indent += '  ';

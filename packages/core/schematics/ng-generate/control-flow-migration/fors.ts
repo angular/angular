@@ -11,6 +11,7 @@ import {visitAll} from '@angular/compiler';
 import {ElementCollector, ElementToMigrate, endMarker, Result, startMarker} from './types';
 import {
   calculateNesting,
+  getBlockLineBreak,
   getMainBlock,
   getOriginals,
   getPlaceholder,
@@ -166,17 +167,20 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
 
   const aliasStr = aliases.length > 0 ? `;${aliases.join(';')}` : '';
 
-  let startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}`;
-  let endBlock = `${lbString}}${endMarker}`;
+  let startBlock: string;
+  let endBlock: string;
   let forBlock = '';
 
   if (tmplPlaceholder !== '') {
-    startBlock = startBlock + tmplPlaceholder;
+    startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}${tmplPlaceholder}`;
+    endBlock = `${lbString}}${endMarker}`;
     forBlock = startBlock + endBlock;
   } else {
-    const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-    startBlock += start;
-    endBlock = end + endBlock;
+    const mainBlock = getMainBlock(etm, tmpl, offset);
+    const {start, middle, end} = mainBlock;
+    const blockLb = getBlockLineBreak(mainBlock, lbString);
+    startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {${blockLb}${start}`;
+    endBlock = `${end}${blockLb}}${endMarker}`;
     forBlock = startBlock + middle + endBlock;
   }
 
@@ -212,10 +216,12 @@ function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number):
     trackBy = `${forAttrs.trackBy.trim()}(${aliasedIndex}, ${aliasAttrs.item})`;
   }
 
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {\n${start}`;
+  const mainBlock = getMainBlock(etm, tmpl, offset);
+  const {start, middle, end} = mainBlock;
+  const blockLb = getBlockLineBreak(mainBlock, '\n');
+  const startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {${blockLb}${start}`;
 
-  const endBlock = `${end}\n}${endMarker}`;
+  const endBlock = `${end}${blockLb}}${endMarker}`;
   const forBlock = startBlock + middle + endBlock;
 
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + forBlock + tmpl.slice(etm.end(offset));

@@ -498,6 +498,133 @@ describe('control flow migration (ng update)', () => {
       );
     });
 
+    it('should use inline block syntax when ng-container content is text not wrapped in elements', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [`<div>`, `5<ng-container *ngIf="showUnit">pts</ng-container>`, `</div>`].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([`<div>`, `  5@if (showUnit) {pts}`, `</div>`].join('\n'));
+    });
+
+    it('should preserve newlines when ng-container text content is already multi-line', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [`<div>`, `<ng-container *ngIf="showUnit">`, `  pts`, `</ng-container>`, `</div>`].join(
+          '\n',
+        ),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe([`<div>`, `  @if (showUnit) {`, `    pts`, `  }`, `</div>`].join('\n'));
+    });
+
+    it('should not use inline block syntax when ng-container content is wrapped in elements', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [`<div>`, `<ng-container *ngIf="showUnit"><span>pts</span></ng-container>`, `</div>`].join(
+          '\n',
+        ),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [`<div>`, `  @if (showUnit) {`, `    <span>pts</span>`, `  }`, `</div>`].join('\n'),
+      );
+    });
+
+    it('should use inline block syntax for if-branch text in an if/else', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `<ng-container *ngIf="showUnit; else noUnit">pts</ng-container>`,
+          `<ng-template #noUnit><span>no unit</span></ng-template>`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [
+          `<div>`,
+          `  @if (showUnit) {pts} @else {`,
+          `    <span>no unit</span>`,
+          `  }`,
+          `</div>`,
+        ].join('\n'),
+      );
+    });
+
     it('should migrate an if case on an empty container', async () => {
       writeFile(
         '/comp.ts',
@@ -1818,6 +1945,39 @@ describe('control flow migration (ng update)', () => {
       );
     });
 
+    it('should use inline block syntax when ng-container ngFor content is text', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          items = ['a', 'b'];
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<ul>`,
+          `<ng-container *ngFor="let item of items">{{ item }}, </ng-container>`,
+          `</ul>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [`<ul>`, `  @for (item of items; track item) {{{ item }}, }`, `</ul>`].join('\n'),
+      );
+    });
+
     it('should migrate multiple inline templates in the same file', async () => {
       writeFile(
         '/comp.ts',
@@ -2848,6 +3008,51 @@ describe('control flow migration (ng update)', () => {
       );
     });
 
+    it('should use inline block syntax when switch case content is text', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {ngSwitch, ngSwitchCase, ngSwitchDefault} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          status = 'active';
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div [ngSwitch]="status">`,
+          `<ng-container *ngSwitchCase="'active'">Active</ng-container>`,
+          `<ng-container *ngSwitchCase="'inactive'">Inactive</ng-container>`,
+          `<ng-container *ngSwitchDefault><span class="badge">Unknown</span></ng-container>`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `<div>`,
+        `  @switch (status) {`,
+        `    @case ('active') {Active}`,
+        `    @case ('inactive') {Inactive}`,
+        `    @default {`,
+        `      <span class="badge">Unknown</span>`,
+        `    }`,
+        `  }`,
+        `</div>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should migrate multiple inline templates in the same file', async () => {
       writeFile(
         '/comp.ts',
@@ -3143,12 +3348,8 @@ describe('control flow migration (ng update)', () => {
       const actual = tree.readContent('/comp.html');
       const expected = [
         `\n@switch (type) {`,
-        `  @case ('foo') {`,
-        `    Foo`,
-        `  }`,
-        `  @case ('bar') {`,
-        `    Bar`,
-        `  }`,
+        `  @case ('foo') { Foo }`,
+        `  @case ('bar') { Bar }`,
         `  @default {`,
         `  }`,
         `}\n`,

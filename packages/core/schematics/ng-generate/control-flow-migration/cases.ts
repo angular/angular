@@ -11,6 +11,7 @@ import {visitAll} from '@angular/compiler';
 import {ElementCollector, ElementToMigrate, endMarker, Result, startMarker} from './types';
 import {
   calculateNesting,
+  getBlockLineBreak,
   getMainBlock,
   getOriginals,
   hasLineBreaks,
@@ -93,9 +94,11 @@ function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number
 
   const originals = getOriginals(etm, tmpl, offset);
 
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${startMarker}${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${start}`;
-  const endBlock = `${end}${lbString}${leadingSpace}}${endMarker}`;
+  const mainBlock = getMainBlock(etm, tmpl, offset);
+  const {start, middle, end} = mainBlock;
+  const blockLb = getBlockLineBreak(mainBlock, lbString);
+  const startBlock = `${startMarker}${leadingSpace}@case (${condition}) {${leadingSpace}${blockLb}${start}`;
+  const endBlock = `${end}${blockLb}${leadingSpace}}${endMarker}`;
 
   const defaultBlock = startBlock + middle + endBlock;
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + defaultBlock + tmpl.slice(etm.end(offset));
@@ -115,9 +118,11 @@ function migrateNgSwitchDefault(etm: ElementToMigrate, tmpl: string, offset: num
 
   const originals = getOriginals(etm, tmpl, offset);
 
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `${startMarker}${leadingSpace}@default {${leadingSpace}${lbString}${start}`;
-  const endBlock = `${end}${lbString}${leadingSpace}}${endMarker}`;
+  const mainBlock = getMainBlock(etm, tmpl, offset);
+  const {start, middle, end} = mainBlock;
+  const blockLb = getBlockLineBreak(mainBlock, lbString);
+  const startBlock = `${startMarker}${leadingSpace}@default {${leadingSpace}${blockLb}${start}`;
+  const endBlock = `${end}${blockLb}${leadingSpace}}${endMarker}`;
 
   const defaultBlock = startBlock + middle + endBlock;
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + defaultBlock + tmpl.slice(etm.end(offset));
