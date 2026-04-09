@@ -14,7 +14,7 @@ export const enum RuntimeErrorCode {
   // Structure validation errors (10xx)
   NO_CONTROLS = 1000,
   MISSING_CONTROL = 1001,
-  MISSING_CONTROL_VALUE = 1002,
+  MISSING_CONTROL_VALUE = -1002,
 
   // Reactive Forms errors (1050-1099)
   FORM_CONTROL_NAME_MISSING_PARENT = 1050,

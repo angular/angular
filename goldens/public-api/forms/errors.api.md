@@ -21,7 +21,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_CONTROL = 1001,
     // (undocumented)
-    MISSING_CONTROL_VALUE = 1002,
+    MISSING_CONTROL_VALUE = -1002,
     // (undocumented)
     NAME_AND_FORM_CONTROL_NAME_MUST_MATCH = 1202,
     // (undocumented)
