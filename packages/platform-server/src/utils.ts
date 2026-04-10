@@ -17,6 +17,7 @@ import {
   StaticProvider,
   Type,
   ɵannotateForHydration as annotateForHydration,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵstartMeasuring as startMeasuring,
@@ -194,6 +195,7 @@ export async function renderInternal(
 
   // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
   const environmentInjector = applicationRef.injector;
+  const errorHandler = environmentInjector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
   const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
   if (callbacks) {
     const asyncCallbacks: Promise<void>[] = [];
@@ -204,15 +206,16 @@ export async function renderInternal(
           asyncCallbacks.push(callbackResult);
         }
       } catch (e) {
-        // Ignore exceptions.
-        console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
+        // Delegate to the application's ErrorHandler so custom handlers
+        // (e.g. Sentry) are notified, rather than writing directly to console.
+        errorHandler(e);
       }
     }
 
     if (asyncCallbacks.length) {
       for (const result of await Promise.allSettled(asyncCallbacks)) {
         if (result.status === 'rejected') {
-          console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', result.reason);
+          errorHandler(result.reason);
         }
       }
     }
