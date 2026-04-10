@@ -126,8 +126,8 @@ bundle_entrypoints = [
         "packages/core/schematics/migrations/http-xhr-backend/index.js",
     ],
     [
-        "strict-templates",
-        "packages/core/schematics/migrations/strict-template/index.js",
+        "strict-templates-default",
+        "packages/core/schematics/migrations/strict-templates-default/index.js",
     ],
     [
         "can-match-snapshot-required",
@@ -152,7 +152,7 @@ rollup.rollup(
         "//packages/core/schematics/migrations/change-detection-eager",
         "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/migrations/incremental-hydration",
-        "//packages/core/schematics/migrations/strict-template",
+        "//packages/core/schematics/migrations/strict-templates-default",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/common-to-standalone-migration",
         "//packages/core/schematics/ng-generate/control-flow-migration",
