@@ -1,0 +1,28 @@
+load(
+    "//tools:defaults.bzl",
+    "angular_jasmine_test",
+    "ng_web_test_suite",
+    "ts_project",
+)
+
+ts_project(
+    name = "webmcp_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core",
+        "//packages/core:node_modules/@mcp-b/webmcp-polyfill",
+        "//packages/core/testing",
+        "//packages/core/third_party/@mcp-b/webmcp-types",
+    ],
+)
+
+angular_jasmine_test(
+    name = "webmcp",
+    data = [":webmcp_lib"],
+)
+
+ng_web_test_suite(
+    name = "webmcp_web",
+    deps = [":webmcp_lib"],
+)

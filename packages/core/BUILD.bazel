@@ -49,6 +49,7 @@ ng_project(
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
         "//packages/core/src/util",
+        "//packages/core/third_party/@mcp-b/webmcp-types",
     ],
 )
 
