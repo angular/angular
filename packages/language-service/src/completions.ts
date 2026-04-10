@@ -233,7 +233,15 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     const blocksWithParens = ['if', 'else if', 'for', 'switch', 'case', 'defer'];
-    const blocksWithoutParens = ['else', 'empty', 'placeholder', 'error', 'loading', 'default'];
+    const blocksWithoutParens = [
+      'else',
+      'empty',
+      'placeholder',
+      'error',
+      'loading',
+      'default',
+      'boundary',
+    ];
 
     // Determine whether to provide a snippet, which includes parens and curly braces.
     // If the block has any expressions or a body, don't provide a snippet as the completion.
