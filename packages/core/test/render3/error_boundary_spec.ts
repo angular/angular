@@ -6,6 +6,7 @@ import {
   EnvironmentInjector,
   Input,
   signal,
+  ErrorHandler,
 } from '@angular/core';
 import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {ɵɵdefineComponent} from '../../src/render3/definition';
