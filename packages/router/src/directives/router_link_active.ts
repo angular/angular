@@ -127,11 +127,16 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    *
    * These options are passed to the `isActive()` function.
    *
+   * When `undefined`, the default subset match behavior is used.
+   * When `null`, the link is never considered active regardless of the current URL.
+   *
    * @see {@link isActive}
    */
-  @Input() routerLinkActiveOptions: {exact: boolean} | Partial<IsActiveMatchOptions> = {
-    exact: false,
-  };
+  @Input() routerLinkActiveOptions:
+    | {exact: boolean}
+    | Partial<IsActiveMatchOptions>
+    | null
+    | undefined = {exact: false};
 
   /**
    * Aria-current attribute to apply when the router link is active.
@@ -201,7 +206,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   @Input()
-  set routerLinkActive(data: string[] | string) {
+  set routerLinkActive(data: string[] | string | null | undefined) {
+    if (data == null) {
+      this.classes = [];
+      return;
+    }
     const classes = Array.isArray(data) ? data : data.split(' ');
     this.classes = classes.filter((c) => !!c);
   }
@@ -218,6 +227,10 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   private update(): void {
     if (!this.links || !this.router.navigated) return;
+    // Short-circuit: null options means "never active". Once _isActive has
+    // settled to false there is nothing for subsequent navigations to do, so
+    // skip even queuing the microtask.
+    if (this.routerLinkActiveOptions === null && !this._isActive) return;
 
     queueMicrotask(() => {
       const hasActiveLinks = this.hasActiveLinks();
@@ -249,14 +262,29 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private isLinkActive(router: Router): (link: RouterLink) => boolean {
-    const options: Partial<IsActiveMatchOptions> = isActiveMatchOptions(
-      this.routerLinkActiveOptions,
-    )
-      ? this.routerLinkActiveOptions
-      : // While the types should disallow `undefined` here, it's possible without strict inputs
-        (this.routerLinkActiveOptions.exact ?? false)
-        ? {...exactMatchOptions}
-        : {...subsetMatchOptions};
+    const opts = this.routerLinkActiveOptions;
+
+    // null vs undefined are intentionally treated differently:
+    //   undefined — semantically "not set", same as omitting the input entirely,
+    //               so the default subset match applies.
+    //   null      — an explicit opt-out: the caller wants the link to never be
+    //               considered active (e.g. dynamic UI where matching is not desired).
+    if (opts === null) {
+      return () => false;
+    }
+
+    let options: Partial<IsActiveMatchOptions>;
+    if (opts === undefined) {
+      options = {...subsetMatchOptions};
+    } else if (isActiveMatchOptions(opts)) {
+      options = opts;
+    } else if (opts.exact ?? false) {
+      // Note: `exact` can still be undefined with non-strict template type-checking,
+      // hence the nullish coalesce rather than a plain truthiness check.
+      options = {...exactMatchOptions};
+    } else {
+      options = {...subsetMatchOptions};
+    }
 
     return (link: RouterLink) => {
       const urlTree = link.urlTree;
