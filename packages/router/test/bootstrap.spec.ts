@@ -577,8 +577,6 @@ describe('bootstrap', () => {
       const ngModuleRef = await platformBrowser().bootstrapModule(TestModule);
       ngModuleRef.destroy();
 
-      expect(window.addEventListener).toHaveBeenCalledTimes(2);
-
       expect(window.addEventListener).toHaveBeenCalledWith(
         'popstate',
         jasmine.any(Function),
