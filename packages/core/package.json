@@ -19,6 +19,7 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@mcp-b/webmcp-polyfill": "^2.2.0",
     "@mcp-b/webmcp-types": "^2.2.0"
   },
   "peerDependencies": {
