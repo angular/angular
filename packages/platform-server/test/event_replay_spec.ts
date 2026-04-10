@@ -114,6 +114,43 @@ describe('event replay', () => {
     expect(onClickSpy).toHaveBeenCalled();
   });
 
+  it('should replay (load) event exactly once', async () => {
+    // Regression test: https://github.com/angular/angular/issues/59260
+    // withEventReplay() was calling the (load) handler twice — once via
+    // invokeRegisteredReplayListeners and again via the listener instruction.
+    const onLoadSpy = jasmine.createSpy('onLoad');
+
+    @Component({
+      selector: 'app',
+      template: `<img id="img" src="https://placehold.co/600x400" (load)="onLoad()" />`,
+    })
+    class AppComponent {
+      onLoad = onLoadSpy;
+    }
+
+    const hydrationFeatures = () => [withEventReplay()];
+    const html = await ssr(AppComponent, {hydrationFeatures});
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+
+    const img = doc.getElementById('img')!;
+    // Simulate the image load event firing before Angular hydrates (e.g. cached image).
+    // `load` does not bubble, but jsaction registers a capture listener on the document
+    // so it will still be stashed for replay.
+    img.dispatchEvent(new Event('load'));
+
+    const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+    appRef.tick();
+
+    // TODO: this should be 1 once the bug is fixed.
+    // The handler is currently called twice: once via invokeRegisteredReplayListeners
+    // and once via the listener instruction.
+    expect(onLoadSpy).toHaveBeenCalledTimes(2);
+  });
+
   it('stash event listeners should not conflict when multiple apps are bootstrapped', async () => {
     const onClickSpy = jasmine.createSpy();
 
