@@ -43,8 +43,8 @@ import {
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
-import {TypeCheckSourceResolver} from './tcb_util';
 import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
+import {TypeCheckSourceResolver} from './tcb_util';
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder<TemplateDiagnostic> {
   private readonly _diagnostics: TemplateDiagnostic[] = [];
@@ -170,6 +170,43 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       ),
     );
     this.recordedPipes.add(ast);
+  }
+
+  deferredDependencyNotStandalone(
+    id: TypeCheckId,
+    node: TmplAstElement | TmplAstTemplate | BindingPipe,
+  ): void {
+    const isPipe = node instanceof BindingPipe;
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const errorMsg = `Only direct standalone components, directives, and pipes dependencies can be deferred.`;
+
+    let sourceSpan: ParseSourceSpan | null;
+    if (isPipe) {
+      if (this.recordedPipes.has(node)) {
+        return;
+      }
+      sourceSpan = this.resolver.toTemplateParseSourceSpan(id, node.nameSpan);
+      this.recordedPipes.add(node);
+    } else {
+      const {start, end} = node.startSourceSpan;
+      const absoluteSourceSpan = new AbsoluteSourceSpan(start.offset, end.offset);
+      sourceSpan = this.resolver.toTemplateParseSourceSpan(id, absoluteSourceSpan);
+    }
+
+    if (sourceSpan === null) {
+      throw new Error(`Assertion failure: no SourceLocation found.`);
+    }
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFER_DEPENDENCY_NOT_STANDALONE),
+        errorMsg,
+      ),
+    );
   }
 
   deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void {

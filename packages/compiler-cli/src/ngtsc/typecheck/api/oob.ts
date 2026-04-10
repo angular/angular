@@ -87,6 +87,14 @@ export interface OutOfBandDiagnosticRecorder<T> {
   deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void;
 
   /**
+   * Reports that a component, directive, or pipe used inside a `@defer` block is not standalone.
+   */
+  deferredDependencyNotStandalone(
+    id: TypeCheckId,
+    node: TmplAstElement | TmplAstTemplate | BindingPipe,
+  ): void;
+
+  /**
    * Reports a duplicate declaration of a template variable.
    *
    * @param id the type-checking ID of the template which contains the duplicate

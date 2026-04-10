@@ -1091,6 +1091,8 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder<TemplateDiag
       | TmplAstInteractionDeferredTrigger
       | TmplAstViewportDeferredTrigger,
   ): void {}
+
+  deferredDependencyNotStandalone(): void {}
   conflictingHostDirectiveBinding(): void {}
 }
 

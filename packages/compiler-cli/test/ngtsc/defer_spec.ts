@@ -854,6 +854,174 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('dependencies: [TestPipe]');
     });
 
+    it('should throw an error when a component, directive, or pipe used inside a @defer block is not standalone', () => {
+      env.write(
+        'not-standalone.ts',
+        `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          standalone: false,
+          selector: 'not-standalone-cmp',
+          template: 'Not standalone',
+        })
+        export class NotStandaloneCmp {}
+
+        @NgModule({
+          declarations: [NotStandaloneCmp],
+          exports: [NotStandaloneCmp],
+        })
+        export class NotStandaloneModule {}
+      `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NotStandaloneModule} from './not-standalone';
+
+        @Component({
+          selector: 'test-cmp',
+          imports: [NotStandaloneModule],
+          template: \`
+            @defer {
+              <not-standalone-cmp />
+            }
+          \`,
+        })
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_DEPENDENCY_NOT_STANDALONE));
+      expect(diags[0].messageText).toBe(
+        'Only direct standalone components, directives, and pipes dependencies can be deferred.',
+      );
+    });
+
+    it('should not throw an error for a transitive non-standalone dependency', () => {
+      env.write(
+        'not-standalone.ts',
+        `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          standalone: false,
+          selector: 'not-standalone-cmp',
+          template: 'Not standalone',
+        })
+        export class NotStandaloneCmp {}
+
+        @NgModule({
+          declarations: [NotStandaloneCmp],
+          exports: [NotStandaloneCmp],
+        })
+        export class NotStandaloneModule {}
+      `,
+      );
+
+      env.write(
+        'standalone.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NotStandaloneModule} from './not-standalone';
+
+        @Component({
+          standalone: true,
+          selector: 'standalone-cmp',
+          imports: [NotStandaloneModule],
+          template: '<not-standalone-cmp />',
+        })
+        export class StandaloneCmp {}
+      `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {StandaloneCmp} from './standalone';
+
+        @Component({
+          selector: 'test-cmp',
+          imports: [StandaloneCmp],
+          template: \`
+            @defer {
+              <standalone-cmp />
+            }
+          \`,
+        })
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not throw an error if at least one of the dependencies is standalone', () => {
+      env.write(
+        'not-standalone.ts',
+        `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          standalone: false,
+          selector: 'not-standalone-cmp',
+          template: 'Not standalone',
+        })
+        export class NotStandaloneCmp {}
+
+        @NgModule({
+          declarations: [NotStandaloneCmp],
+          exports: [NotStandaloneCmp],
+        })
+        export class NotStandaloneModule {}
+      `,
+      );
+
+      env.write(
+        'standalone.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          selector: 'standalone-cmp',
+          template: 'Standalone',
+        })
+        export class StandaloneCmp {}
+      `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NotStandaloneModule} from './not-standalone';
+        import {StandaloneCmp} from './standalone';
+
+        @Component({
+          selector: 'test-cmp',
+          imports: [NotStandaloneModule, StandaloneCmp],
+          template: \`
+            @defer {
+              <not-standalone-cmp />
+              <standalone-cmp />
+            }
+          \`,
+        })
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     describe('@Component.deferredImports', () => {
       beforeEach(() => {
         env.tsconfig({onlyExplicitDeferDependencyImports: true});

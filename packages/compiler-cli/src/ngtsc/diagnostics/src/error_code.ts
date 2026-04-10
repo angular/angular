@@ -455,6 +455,11 @@ export enum ErrorCode {
   CONFLICTING_HOST_DIRECTIVE_BINDING = 8024,
 
   /**
+   * Raised when a component, directive, or pipe used inside an `@defer` block is not standalone.
+   */
+  DEFER_DEPENDENCY_NOT_STANDALONE = 8025,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *

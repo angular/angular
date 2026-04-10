@@ -33,23 +33,29 @@ import {
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
 } from '@angular/compiler';
+import {TcbDirectiveMetadata} from '../../api';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
-import {TcbDirectiveMetadata} from '../../api';
-import {Context} from './context';
-import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
-import {TcbElementOp} from './element';
-import {tcbExpression, TcbConditionOp, TcbExpressionOp} from './expression';
-import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 import {TcbComponentContextCompletionOp} from './completions';
-import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
-import {TcbIfOp} from './if_block';
-import {TcbSwitchOp} from './switch_block';
-import {TcbForOfOp} from './for_block';
-import {TcbLetDeclarationOp} from './let';
-import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
-import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbControlFlowContentProjectionOp} from './content_projection';
+import {Context} from './context';
+import {TcbDirectiveCtorOp} from './directive_constructor';
+import {
+  TcbGenericDirectiveTypeWithAnyParamsOp,
+  TcbNonGenericDirectiveTypeOp,
+} from './directive_type';
+import {TcbElementOp} from './element';
 import {TcbDirectiveOutputsOp, TcbUnclaimedOutputsOp} from './events';
+import {TcbConditionOp, tcbExpression, TcbExpressionOp} from './expression';
+import {TcbForOfOp} from './for_block';
+import {TcbHostElementOp} from './host';
+import {TcbIfOp} from './if_block';
+import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
+import {TcbIntersectionObserverOp} from './intersection_observer';
+import {TcbLetDeclarationOp} from './let';
+import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
+import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbComponentNodeOp} from './selectorless';
 import {
   CustomFormControlType,
   getCustomFieldDirectiveType,
@@ -58,15 +64,9 @@ import {
   TcbNativeFieldOp,
   TcbNativeRadioButtonFieldOp,
 } from './signal_forms';
-import {
-  TcbGenericDirectiveTypeWithAnyParamsOp,
-  TcbNonGenericDirectiveTypeOp,
-} from './directive_type';
-import {TcbDirectiveCtorOp} from './directive_constructor';
-import {TcbControlFlowContentProjectionOp} from './content_projection';
-import {TcbComponentNodeOp} from './selectorless';
-import {TcbIntersectionObserverOp} from './intersection_observer';
-import {TcbHostElementOp} from './host';
+import {TcbSwitchOp} from './switch_block';
+import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
+import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 
 /**
  * Local scope within the type check block for a particular template.
@@ -588,6 +588,13 @@ export class Scope {
         // `@Component.deferredImports`), but the node itself was used outside of a
         // `@defer` block, which is the error.
         this.tcb.oobRecorder.deferredComponentUsedEagerly(this.tcb.id, node);
+      }
+
+      // We choose to only throw if none of the dependencies is standalone.
+      // One "valid" use case is a bunch of standalone component with one projecting content
+      // with some material components (which are exported by an NgModule)
+      if (isDeferred && !directives.some((dirMeta) => dirMeta.isStandalone)) {
+        this.tcb.oobRecorder.deferredDependencyNotStandalone(this.tcb.id, node);
       }
     }
 

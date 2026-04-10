@@ -7,24 +7,26 @@
  */
 
 import {
-  LegacyAnimationTriggerNames,
   BoundTarget,
   compileClassDebugInfo,
-  compileHmrInitializer,
   compileComponentClassMetadata,
   compileComponentDeclareClassMetadata,
   compileComponentFromMetadata,
   compileDeclareComponentFromMetadata,
   compileDeferResolverFunction,
+  compileHmrInitializer,
   ConstantPool,
   CssSelector,
   DeclarationListEmitMode,
   DeclareComponentTemplateInfo,
   DeferBlockDepsEmitMode,
+  DirectiveMatcher,
   DomElementSchemaRegistry,
   ExternalExpr,
   FactoryTarget,
+  LegacyAnimationTriggerNames,
   makeBindingParser,
+  MatchSource,
   outputAst as o,
   R3ComponentDeferMetadata,
   R3ComponentMetadata,
@@ -37,12 +39,10 @@ import {
   R3TemplateDependencyKind,
   R3TemplateDependencyMetadata,
   SchemaMetadata,
+  SelectorlessMatcher,
   SelectorMatcher,
   TmplAstDeferredBlock,
   ViewEncapsulation,
-  DirectiveMatcher,
-  SelectorlessMatcher,
-  MatchSource,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -96,12 +96,9 @@ import {
 import {
   ComponentScopeKind,
   ComponentScopeReader,
-  DtsModuleScopeResolver,
-  LocalModuleScope,
   LocalModuleScopeRegistry,
   makeNotStandaloneDiagnostic,
   makeUnknownComponentImportDiagnostic,
-  StandaloneScope,
   TypeCheckScopeRegistry,
 } from '../../../scope';
 import {
@@ -118,11 +115,11 @@ import {
   ResolveResult,
 } from '../../../transform';
 import {
-  TypeCheckId,
+  HostBindingsContext,
+  TemplateContext,
   TypeCheckableDirectiveMeta,
   TypeCheckContext,
-  TemplateContext,
-  HostBindingsContext,
+  TypeCheckId,
 } from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
@@ -167,6 +164,12 @@ import {
 } from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
+import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
+import {ComponentScope} from '../../../scope/src/api';
+import {createHostElement, getTemplateDiagnostics} from '../../../typecheck';
+import {getProjectRelativePath} from '../../../util/src/path';
+import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
+import {analyzeTemplateForAnimations} from './animations';
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
 import {
   ComponentAnalysisData,
@@ -187,19 +190,13 @@ import {
   StyleUrlMeta,
   transformDecoratorResources,
 } from './resources';
+import {analyzeTemplateForSelectorless} from './selectorless';
 import {ComponentSymbol} from './symbol';
 import {
-  legacyAnimationTriggerResolver,
   collectLegacyAnimationNames,
+  legacyAnimationTriggerResolver,
   validateAndFlattenComponentImports,
 } from './util';
-import {getTemplateDiagnostics, createHostElement} from '../../../typecheck';
-import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
-import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
-import {getProjectRelativePath} from '../../../util/src/path';
-import {ComponentScope} from '../../../scope/src/api';
-import {analyzeTemplateForSelectorless} from './selectorless';
-import {analyzeTemplateForAnimations} from './animations';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -1325,6 +1322,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           data,
           analysis,
           eagerlyUsed,
+          diagnostics,
         );
         data.hasDirectiveDependencies =
           !analysis.meta.isStandalone ||
@@ -2279,6 +2277,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     resolutionData: ComponentResolutionData,
     analysisData: Readonly<ComponentAnalysisData>,
     eagerlyUsedDecls: Set<ClassDeclaration>,
+    diagnostics: ts.Diagnostic[],
   ) {
     // Collect all deferred decls from all defer blocks from the entire template
     // to intersect with the information from the `imports` field of a particular
@@ -2310,6 +2309,16 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         if (decl.kind === R3TemplateDependencyKind.Pipe && !usedPipes.has(decl.name)) {
           continue;
         }
+
+        let isStandalone = false;
+        if (decl.kind === R3TemplateDependencyKind.Directive) {
+          const dirMeta = this.metaReader.getDirectiveMetadata(decl.ref);
+          isStandalone = dirMeta !== null && dirMeta.isStandalone;
+        } else if (decl.kind === R3TemplateDependencyKind.Pipe) {
+          const pipeMeta = this.metaReader.getPipeMetadata(decl.ref);
+          isStandalone = pipeMeta !== null && pipeMeta.isStandalone;
+        }
+
         // Collect initial information about this dependency.
         // `isDeferrable`, `importPath` and `isDefaultImport` will be
         // added later during the `compile` step.
