@@ -278,6 +278,11 @@ section {
     width: fit-content;
     margin: 0 auto 2rem;
 
+    @include mq.for-phone-only {
+      width: auto;
+      margin: 0 0.5rem 1rem;
+    }
+
     .tab-background {
       position: absolute;
       top: 4px;
