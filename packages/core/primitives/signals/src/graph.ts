@@ -266,7 +266,11 @@ export function producerAccessed(node: ReactiveNode): void {
     // instead of eagerly destroying the previous link, we delay until we've finished recomputing
     // the producers list, so that we can destroy all of the old links at once.
     nextProducer: nextProducerLink,
-    prevConsumer: prevConsumerLink,
+    // Don't set prevConsumer here — it's only meaningful when the link is part of
+    // the producer's consumer list. producerAddLiveConsumer sets it correctly when
+    // the link is actually inserted. Setting it eagerly would create a dangling
+    // reference into the consumer list that prevents GC of removed entries.
+    prevConsumer: undefined,
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
