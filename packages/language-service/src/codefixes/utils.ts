@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {NgCompiler, absoluteFrom} from '@angular/compiler-cli';
+
 import type ts from 'typescript';
 
 import {TypeCheckInfo} from '../utils';

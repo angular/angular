@@ -6,11 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {AST, TmplAstComponent, TmplAstNode} from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MetaKind, PipeMeta, DirectiveMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  absoluteFrom,
+  DirectiveMeta,
+  MetaKind,
+  NgCompiler,
+  PerfPhase,
+  PipeMeta,
+  SymbolKind,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 
 import {

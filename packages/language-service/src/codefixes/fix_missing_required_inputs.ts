@@ -14,8 +14,13 @@ import {
   TmplAstTemplate,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import {TypeCheckableDirectiveMeta} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  ErrorCode,
+  InputMapping,
+  ngErrorCode,
+  TypeCheckableDirectiveMeta,
+} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
@@ -168,7 +173,7 @@ function getBoundAttributes(
     if (inputs !== null) {
       boundInputs.push({
         attribute: attr,
-        inputs: inputs.map((input) => ({
+        inputs: inputs.map((input: InputMapping) => ({
           fieldName: input.classPropertyName,
           required: input.required,
         })),

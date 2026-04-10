@@ -5,22 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {guessIndentationInSingleLine} from './format';
+import * as path from 'path';
 import {
+  ClassDeclaration,
   DirectiveModuleExportDetails,
+  NgCompiler,
   PotentialDirective,
   PotentialDirectiveModuleSpecifierResolver,
   PotentialImportMode,
   PotentialPipe,
+  Reference,
+  SymbolReference,
   TemplateTypeChecker,
   TsCompletionEntryInfo,
-  SymbolReference,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
+
 import ts from 'typescript';
-import {guessIndentationInSingleLine} from './format';
-import * as path from 'path';
-import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 
 /**
  * Return the node that most tightly encompasses the specified `position`.

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CompilerOptions} from '@angular/compiler-cli';
-import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {CompilerOptions, NgCompiler, getFileSystem} from '@angular/compiler-cli';
+
 import type ts from 'typescript';
 import {
   getMessageForClassIncompatibility,

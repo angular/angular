@@ -7,20 +7,23 @@
  */
 
 import {AST, TmplAstNode} from '@angular/compiler';
-import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
+  AbsoluteFsPath,
+  absoluteFrom,
+  CompilerOptions,
+  ConfigurationHost,
   ErrorCode,
+  FileUpdate,
+  isExternalResource,
   isFatalDiagnosticError,
+  isNamedClassDeclaration,
   ngErrorCode,
-} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
-import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import ts from 'typescript';
-
+  NgCompiler,
+  OptimizeFor,
+  PerfPhase,
+  ProgramDriver,
+  readConfiguration,
+} from '@angular/compiler-cli';
 import {
   AngularInlayHint,
   ApplyRefactoringProgressFn,
@@ -33,7 +36,8 @@ import {
   PluginConfig,
 } from '../api';
 
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import ts from 'typescript';
+
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
 import {CompilerFactory} from './compiler_factory';
@@ -455,7 +459,7 @@ export class LanguageService {
       }
 
       const classDeclarations: ts.ClassDeclaration[] = [];
-      sf.forEachChild((node) => {
+      sf.forEachChild((node: ts.Node) => {
         if (ts.isClassDeclaration(node)) {
           classDeclarations.push(node);
         }
@@ -691,7 +695,7 @@ export class LanguageService {
       (compiler) => {
         const components = compiler.getComponentsWithTemplateFile(fileName);
         const componentDeclarationLocations: ts.DocumentSpan[] = Array.from(
-          components.values(),
+          components.values() as IterableIterator<ts.ClassDeclaration>,
         ).map((c) => {
           let contextSpan: ts.TextSpan | undefined = undefined;
           let textSpan: ts.TextSpan;
