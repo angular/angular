@@ -32,7 +32,7 @@ import {
 import {TcbDirectiveMetadata, TypeCheckId} from './api';
 
 /** Categories of diagnostics that can be reported by a `OutOfBandDiagnosticRecorder`. */
-export enum OutOfBadDiagnosticCategory {
+export enum OutOfBandDiagnosticCategory {
   Error,
   Warning,
 }
@@ -151,7 +151,7 @@ export interface OutOfBandDiagnosticRecorder<T> {
    */
   controlFlowPreventingContentProjection(
     id: TypeCheckId,
-    category: OutOfBadDiagnosticCategory,
+    category: OutOfBandDiagnosticCategory,
     projectionNode: TmplAstElement | TmplAstTemplate,
     componentName: string,
     slotSelector: string,
