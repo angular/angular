@@ -58,15 +58,12 @@ function extractViewTree(
         name: dir.constructor.name,
       };
     }),
-    element: domNode.nodeName.toLowerCase(),
     nativeElement: domNode,
     hydration: hydrationStatus(domNode),
     controlFlowBlock: null,
   };
 
   if (!(domNode instanceof Element)) {
-    // In case we show the Comment nodes
-    result.push(componentTreeNode);
     return;
   }
 

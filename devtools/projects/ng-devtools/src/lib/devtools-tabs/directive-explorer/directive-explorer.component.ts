@@ -101,7 +101,6 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   ],
 })
 export class DirectiveExplorerComponent {
-  readonly showCommentNodes = input(false);
   readonly toggleInspector = output<void>();
 
   readonly directiveForest = viewChild.required(DirectiveForestComponent);

@@ -12,7 +12,6 @@ import {DevToolsNode} from '../../../../../../../protocol';
 import {ComponentDataSource, FlatNode} from '.';
 
 const tree1: DevToolsNode = {
-  element: 'app',
   directives: [
     {
       id: 1,
@@ -32,7 +31,6 @@ const tree1: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: 'bar',
       hydration: null,
       nativeElement: document.createElement('bar'),
       controlFlowBlock: null,
@@ -42,7 +40,6 @@ const tree1: DevToolsNode = {
 };
 
 const tree2: DevToolsNode = {
-  element: 'app',
   directives: [
     {
       id: 1,
@@ -62,7 +59,6 @@ const tree2: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: 'bar',
       hydration: null,
       nativeElement: document.createElement('bar'),
       controlFlowBlock: null,
@@ -75,7 +71,6 @@ const tree2: DevToolsNode = {
         name: 'qux',
       },
       directives: [],
-      element: 'qux',
       hydration: null,
       controlFlowBlock: null,
     },
@@ -84,7 +79,6 @@ const tree2: DevToolsNode = {
 };
 
 const tree3: DevToolsNode = {
-  element: 'app',
   directives: [
     {
       id: 1,
@@ -94,39 +88,11 @@ const tree3: DevToolsNode = {
   component: null,
   hydration: null,
   controlFlowBlock: null,
-  children: [
-    {
-      children: [],
-      component: {
-        id: 2,
-        isElement: false,
-        name: 'bar',
-      },
-      directives: [],
-      element: '#comment',
-      hydration: null,
-      controlFlowBlock: null,
-      nativeElement: document.createComment('bar'),
-    },
-    {
-      children: [],
-      component: {
-        id: 3,
-        isElement: false,
-        name: 'qux',
-      },
-      directives: [],
-      element: '#comment',
-      hydration: null,
-      controlFlowBlock: null,
-      nativeElement: document.createComment('bar'),
-    },
-  ],
+  children: [],
   nativeElement: document.createElement('foo'),
 };
 
 const tree4: DevToolsNode = {
-  element: 'app',
   hydration: null,
   controlFlowBlock: null,
   directives: [
@@ -136,77 +102,7 @@ const tree4: DevToolsNode = {
     },
   ],
   component: null,
-  children: [
-    {
-      children: [
-        {
-          children: [
-            {
-              children: [
-                {
-                  children: [
-                    {
-                      children: [],
-                      component: {
-                        id: 6,
-                        isElement: false,
-                        name: 'qux',
-                      },
-                      directives: [],
-                      element: 'bar',
-                      hydration: null,
-                      controlFlowBlock: null,
-                      nativeElement: document.createComment('bar'),
-                    },
-                  ],
-                  component: {
-                    id: 5,
-                    isElement: false,
-                    name: 'qux',
-                  },
-                  directives: [],
-                  element: '#comment',
-                  hydration: null,
-                  controlFlowBlock: null,
-                  nativeElement: document.createComment('bar'),
-                },
-              ],
-              component: {
-                id: 4,
-                isElement: false,
-                name: 'qux',
-              },
-              directives: [],
-              element: '#comment',
-              hydration: null,
-              controlFlowBlock: null,
-              nativeElement: document.createComment('bar'),
-            },
-          ],
-          component: {
-            id: 3,
-            isElement: false,
-            name: 'qux',
-          },
-          directives: [],
-          element: '#comment',
-          hydration: null,
-          controlFlowBlock: null,
-          nativeElement: document.createComment('bar'),
-        },
-      ],
-      component: {
-        id: 2,
-        isElement: false,
-        name: 'bar',
-      },
-      directives: [],
-      element: '#comment',
-      hydration: null,
-      nativeElement: document.createComment('bar'),
-      controlFlowBlock: null,
-    },
-  ],
+  children: [],
   nativeElement: document.createElement('foo'),
 };
 
@@ -220,33 +116,14 @@ describe('ComponentDataSource', () => {
   beforeEach(() => (dataSource = new ComponentDataSource(treeControl)));
 
   it('should return new and old items', () => {
-    const result = dataSource.update([tree1], true);
+    const result = dataSource.update([tree1]);
     expect(result.movedItems.length).toBe(0);
     expect(result.newItems.length).toBe(2);
 
-    const updatedResult = dataSource.update([tree2], true);
+    const updatedResult = dataSource.update([tree2]);
     expect(updatedResult.movedItems.length).toBe(0);
     expect(updatedResult.removedItems.length).toBe(0);
     expect(updatedResult.newItems.length).toBe(1);
     expect(updatedResult.newItems[0].name).toBe('qux');
-  });
-
-  it('should not return comment nodes when not requested', () => {
-    const result = dataSource.update([tree3], false);
-    expect(result.movedItems.length).toBe(0);
-    expect(result.newItems.length).toBe(1);
-    expect(result.newItems[0].name).toBe('app');
-  });
-
-  it('should not break nesting with nested comment nodes', () => {
-    const result = dataSource.update([tree4], false);
-    expect(result.newItems.length).toBe(2);
-    expect(result.newItems[0].name).toBe('app');
-    expect(result.newItems[1].name).toBe('qux');
-
-    expect(result.newItems[0].level).toBe(0);
-    expect(result.newItems[1].level).toBe(1);
-
-    expect(result.newItems[1].position).toEqual([0, 0, 0, 0, 0, 0]);
   });
 });

@@ -64,7 +64,6 @@ export class DirectiveForestComponent {
   private readonly elementRef = inject(ElementRef);
 
   readonly forest = input<DevToolsNode[]>([]);
-  readonly showCommentNodes = input<boolean>(false);
   readonly currentSelectedElement = input.required<IndexedNode>();
 
   readonly selectNode = output<IndexedNode | null>();
@@ -320,7 +319,7 @@ export class DirectiveForestComponent {
     movedItems: FlatNode[];
     removedItems: FlatNode[];
   } {
-    const result = this.dataSource.update(forest, this.showCommentNodes());
+    const result = this.dataSource.update(forest);
     this.forestRoot = this.dataSource.data[0];
 
     if (!this.initialized && forest && forest.length) {

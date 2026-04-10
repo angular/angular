@@ -62,29 +62,6 @@ const getId = (node: IndexedNode) => {
   return prefix + '-' + dirIds.join('-');
 };
 
-/**
- * Takes an `IndexedNode` forest and returns a transformed forest without `#comment` nodes.
- * The algorithm has linear complexity and O(depth(forest)) memory complexity.
- *
- * @param nodes indexed nodes, which have already have associated positions within the original
- *  tree and associated indices.
- * @returns forest with filtered `#comment` nodes.
- */
-const filterCommentNodes = (nodes: IndexedNode[]) => {
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i];
-    if (node.element !== '#comment') {
-      continue;
-    }
-    nodes.splice(i, 1, ...node.children);
-    i--;
-  }
-  for (const node of nodes) {
-    filterCommentNodes(node.children);
-  }
-  return nodes;
-};
-
 export class ComponentDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer<FlatNode>(trackBy);
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
@@ -103,7 +80,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         // based on this identifier directly, since it's a reference type
         // and the reference is preserved after transformation.
         position: node.position,
-        name: node.component ? node.component.name : node.element,
+        name: node.component?.name ?? '',
         directives: node.directives.map((d) => d.name),
         original: node,
         level,
@@ -144,31 +121,16 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     );
   }
 
-  update(
-    forest: DevToolsNode[],
-    showCommentNodes: boolean,
-  ): {newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[]} {
+  update(forest: DevToolsNode[]): {
+    newItems: FlatNode[];
+    movedItems: FlatNode[];
+    removedItems: FlatNode[];
+  } {
     if (!forest) {
       return {newItems: [], movedItems: [], removedItems: []};
     }
 
     let indexedForest = indexForest(forest);
-
-    // We filter comment nodes here because we need to preserve the positions within the component
-    // tree.
-    //
-    // For example:
-    // ```
-    // - #comment
-    //   - bar
-    // ```
-    //
-    // #comment's position will be [0] and bar's will be [0, 0]. If we trim #comment nodes earlier
-    // before indexing, bar's position will be [0] which will be inaccurate and will make the
-    // backend enable to find the corresponding node when we request its properties.
-    if (!showCommentNodes) {
-      indexedForest = filterCommentNodes(indexedForest);
-    }
 
     const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
 

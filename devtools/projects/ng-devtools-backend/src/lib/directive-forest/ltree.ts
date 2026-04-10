@@ -82,18 +82,17 @@ export class LTreeStrategy {
     let component: ComponentInstanceType | null = null;
     const tNode = data[idx];
     const node = lView[idx][ELEMENT];
-    const element = (node.tagName || node.nodeName).toLowerCase();
     if (!tNode) {
       return {
         nativeElement: node,
         children: [],
-        element,
         directives: [],
         component: null,
         hydration: null, // We know there is no hydration if we use the LTreeStrategy
         controlFlowBlock: null, // neither there will be any control flow block
       };
     }
+    const element = (node.tagName || node.nodeName).toLowerCase();
     for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
       const instance = lView[i];
       const dirMeta = data[i];
@@ -113,7 +112,6 @@ export class LTreeStrategy {
     return {
       nativeElement: node,
       children: [],
-      element,
       directives,
       component,
       hydration: null, // We know there is no hydration if we use the LTreeStrategy

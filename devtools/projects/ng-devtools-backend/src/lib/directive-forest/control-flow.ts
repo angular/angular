@@ -21,11 +21,6 @@ import {
 import {ComponentTreeNode} from '../interfaces';
 import {serializeValue} from '../state-serializer/state-serializer';
 
-const ELEMENT_NAME_MAP: {[key in ControlFlowBlockType]: string} = {
-  [ControlFlowBlockType.Defer]: '@defer',
-  [ControlFlowBlockType.For]: '@for',
-};
-
 export function isControlFlowBlock(node: Node, iterator: ControlFlowBlocksIterator) {
   const currentBlock = iterator.currentBlock;
   // Handles the case where the @defer is still unresolved but doesn't
@@ -80,7 +75,6 @@ export function createControlFlowTreeNode(
     children,
     component: null,
     directives: [],
-    element: ELEMENT_NAME_MAP[controlFlowBlock.type],
     nativeElement: undefined,
     hydration: null,
     controlFlowBlock: mapToDevtoolsControlFlowModel(controlFlowBlock, iteratorCurrentIdx, rootId),

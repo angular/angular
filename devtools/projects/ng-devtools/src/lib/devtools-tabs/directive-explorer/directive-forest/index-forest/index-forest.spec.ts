@@ -18,7 +18,6 @@ describe('indexForest', () => {
     expect(
       indexForest([
         {
-          element: 'Parent1',
           directives: [],
           hydration: null,
           component: {
@@ -28,7 +27,6 @@ describe('indexForest', () => {
           },
           children: [
             {
-              element: 'Child1_1',
               hydration: null,
               directives: [
                 {
@@ -47,7 +45,6 @@ describe('indexForest', () => {
               hasNativeElement: true,
             } as DevToolsNode & {hasNativeElement?: boolean},
             {
-              element: 'Child1_2',
               directives: [],
               hydration: null,
               component: {
@@ -66,13 +63,11 @@ describe('indexForest', () => {
           hasNativeElement: true,
         },
         {
-          element: 'Parent2',
           directives: [],
           component: null,
           hydration: null,
           children: [
             {
-              element: 'Child2_1',
               directives: [
                 {
                   name: 'Dir3',
@@ -87,7 +82,6 @@ describe('indexForest', () => {
               hasNativeElement: true,
             } as DevToolsNode & {hasNativeElement?: boolean},
             {
-              element: 'Child2_2',
               directives: [
                 {
                   name: 'Dir4',
@@ -113,7 +107,6 @@ describe('indexForest', () => {
       ]),
     ).toEqual([
       {
-        element: 'Parent1',
         directives: [],
         position: [0],
         hydration: null,
@@ -124,7 +117,6 @@ describe('indexForest', () => {
         },
         children: [
           {
-            element: 'Child1_1',
             position: [0, 0],
             directives: [
               {
@@ -144,7 +136,6 @@ describe('indexForest', () => {
             hasNativeElement: true,
           },
           {
-            element: 'Child1_2',
             directives: [],
             position: [0, 1],
             component: {
@@ -165,14 +156,12 @@ describe('indexForest', () => {
         hasNativeElement: true,
       },
       {
-        element: 'Parent2',
         directives: [],
         component: null,
         position: [1],
         hydration: null,
         children: [
           {
-            element: 'Child2_1',
             position: [1, 0],
             directives: [
               {
@@ -188,7 +177,6 @@ describe('indexForest', () => {
             hasNativeElement: true,
           },
           {
-            element: 'Child2_2',
             position: [1, 1],
             directives: [
               {

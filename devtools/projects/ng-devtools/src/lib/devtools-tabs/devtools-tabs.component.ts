@@ -75,7 +75,6 @@ export class DevToolsTabsComponent {
 
   readonly inspectorRunning = signal(false);
 
-  protected readonly showCommentNodes = this.settings.showCommentNodes;
   protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
   protected readonly signalGraphEnabled = () => this.supportedApis().signals;
   protected readonly transferStateEnabled = this.settings.transferStateEnabled;

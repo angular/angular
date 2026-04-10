@@ -77,11 +77,7 @@
   @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame() !== null) {
     <div class="tab-content">
       @let componentsVisible = activeTab() === 'Components';
-      <ng-directive-explorer
-        [hidden]="!componentsVisible"
-        [showCommentNodes]="showCommentNodes()"
-        (toggleInspector)="toggleInspector()"
-      />
+      <ng-directive-explorer [hidden]="!componentsVisible" (toggleInspector)="toggleInspector()" />
 
       @let profilerVisible = activeTab() === 'Profiler';
       @defer (when profilerVisible; prefetch on idle) {
@@ -129,13 +125,6 @@
         (click)="themeService.toggleDarkMode(currentTheme === 'light')"
       />
       <span class="ng-mat-menu-label-text">Dark Mode</span>
-    </label>
-    <label mat-menu-item disableRipple>
-      <mat-slide-toggle
-        [checked]="showCommentNodes()"
-        (change)="showCommentNodes.set($event.checked)"
-      />
-      <span class="ng-mat-menu-label-text">Show comment nodes</span>
     </label>
     @if (supportedApis().transferState) {
       <label mat-menu-item disableRipple>
