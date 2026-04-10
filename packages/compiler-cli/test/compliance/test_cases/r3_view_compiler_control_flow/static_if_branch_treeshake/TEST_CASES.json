@@ -1,0 +1,22 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should fold statically evaluable @if branches when enabled",
+      "inputFiles": ["if_static_true_opt_in.ts"],
+      "angularCompilerOptions": {
+        "reduceUselessStaticTemplates": true
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "if_static_true_opt_in.js",
+              "expected": "if_static_true_opt_in_template.js"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

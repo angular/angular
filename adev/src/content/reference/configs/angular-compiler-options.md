@@ -208,6 +208,25 @@ When you use the Angular CLI command `ng new --strict`, it is set to `true` in t
 
 When `true`, reports an error if a component, directive, or pipe is not standalone.
 
+### `reduceUselessStaticTemplates`
+
+When `true`, Angular can fold statically evaluable `@if` blocks at compile time.
+At the moment this optimization applies only to `@if` and does not yet fold `@switch` or `@for`.
+
+For example, with this option enabled:
+
+```html
+@if (true) {
+<p>Hello</p>
+} @else {
+<p>World</p>
+}
+```
+
+is compiled as the selected branch only (`<p>Hello</p>`), without generating runtime conditional instructions for that block.
+
+Default is `false`.
+
 ### `trace`
 
 When `true`, prints extra information while compiling templates.

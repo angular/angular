@@ -158,6 +158,7 @@ function setup(
     jitDeclarationRegistry,
     /* i18nPreserveSignificantWhitespace */ true,
     /* strictStandalone */ false,
+    /* reduceUselessStaticTemplates */ false,
     /* enableHmr */ false,
     /* implicitStandaloneValue */ true,
     /* typeCheckHostBindings */ true,

@@ -225,6 +225,7 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
     getTemplateSourceLocationsEnabled(),
+    meta.reduceUselessStaticTemplates === true,
   );
 
   // Then the IR is transformed to prepare it for code generation.

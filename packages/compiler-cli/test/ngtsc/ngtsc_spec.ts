@@ -5864,6 +5864,56 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).not.toContain('MSG_EXTERNAL_');
     });
 
+    it('should not fold static @if blocks by default', () => {
+      env.tsconfig({});
+      env.write(
+        `test.ts`,
+        `
+      import {Component} from '@angular/core';
+      @Component({
+        selector: 'test',
+        template: \`
+          @if (true) {
+            <p>Hello</p>
+          } @else {
+            <p>World</p>
+          }
+        \`
+      })
+      class FooCmp {}
+    `,
+      );
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('ɵɵconditionalCreate');
+    });
+
+    it('should fold static @if blocks when enabled through angularCompilerOptions', () => {
+      env.tsconfig({reduceUselessStaticTemplates: true});
+      env.write(
+        `test.ts`,
+        `
+      import {Component} from '@angular/core';
+      @Component({
+        selector: 'test',
+        template: \`
+          @if (true) {
+            <p>Hello</p>
+          } @else {
+            <p>World</p>
+          }
+        \`
+      })
+      class FooCmp {}
+    `,
+      );
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('ɵɵconditionalCreate');
+      expect(jsContents).toContain('ɵɵdomElementStart(0, "p")');
+      expect(jsContents).toContain('ɵɵtext(1, "Hello")');
+    });
+
     it('should render legacy ids when `enableI18nLegacyMessageIdFormat` is not false', () => {
       env.tsconfig({});
       env.write(

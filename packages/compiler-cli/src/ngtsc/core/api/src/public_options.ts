@@ -448,4 +448,11 @@ export interface MiscOptions {
    * another library without option set will not issue error if rendered in orphan way.
    */
   forbidOrphanComponents?: boolean;
+
+  /**
+   * Enables compile-time folding of statically evaluable `@if` blocks into their selected branch.
+   *
+   * Defaults to `false`.
+   */
+  reduceUselessStaticTemplates?: boolean;
 }

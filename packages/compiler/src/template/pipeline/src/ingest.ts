@@ -63,6 +63,7 @@ export function ingestComponent(
   allDeferrableDepsFn: o.ReadVarExpr | null,
   relativeTemplatePath: string | null,
   enableDebugLocations: boolean,
+  reduceUselessStaticTemplates: boolean,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -74,6 +75,7 @@ export function ingestComponent(
     allDeferrableDepsFn,
     relativeTemplatePath,
     enableDebugLocations,
+    reduceUselessStaticTemplates,
   );
   ingestNodes(job.root, template);
   return job;
@@ -499,6 +501,22 @@ function ingestBoundText(
  * Ingest an `@if` block into the given `ViewCompilation`.
  */
 function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
+  if (!unit.job.reduceUselessStaticTemplates) {
+    return ingestIfBlockWithoutStaticFolding(unit, ifBlock);
+  }
+
+  const staticallyMatchedBranch = trySelectInlineableStaticIfBranch(ifBlock);
+
+  if (staticallyMatchedBranch !== null) {
+    ingestNodes(unit, staticallyMatchedBranch.children);
+
+    return;
+  }
+
+  return ingestIfBlockWithoutStaticFolding(unit, ifBlock);
+}
+
+function ingestIfBlockWithoutStaticFolding(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   let firstXref: ir.XrefId | null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (let i = 0; i < ifBlock.branches.length; i++) {
@@ -547,6 +565,61 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     ingestNodes(cView, ifCase.children);
   }
   unit.update.push(ir.createConditionalOp(firstXref!, null, conditions, ifBlock.sourceSpan));
+}
+
+function trySelectInlineableStaticIfBranch(ifBlock: t.IfBlock): t.IfBlockBranch | null {
+  if (ifBlock.branches.some((branch) => branch.i18n !== undefined)) {
+    return null;
+  }
+
+  for (const branch of ifBlock.branches) {
+    if (!isInlineableStaticIfBranch(branch)) {
+      return null;
+    }
+
+    if (branch.expression === null) {
+      return branch;
+    }
+
+    if (branch.expressionAlias !== null) {
+      return null;
+    }
+
+    const condition = tryEvaluateStaticBoolean(branch.expression);
+
+    if (condition === null) {
+      return null;
+    }
+
+    if (condition) {
+      return branch;
+    }
+  }
+
+  return null;
+}
+
+function tryEvaluateStaticBoolean(expression: e.AST): boolean | null {
+  const maybeWrappedExpression =
+    expression instanceof e.ASTWithSource ? expression.ast : expression;
+
+  if (!(maybeWrappedExpression instanceof e.LiteralPrimitive)) {
+    return null;
+  }
+
+  return typeof maybeWrappedExpression.value === 'boolean' ? maybeWrappedExpression.value : null;
+}
+
+function isInlineableStaticIfBranch(branch: t.IfBlockBranch): boolean {
+  return branch.children.every(isInlineableStaticIfNode);
+}
+
+function isInlineableStaticIfNode(node: t.Node): boolean {
+  if (node instanceof t.Element) {
+    return node.children.every(isInlineableStaticIfNode);
+  }
+
+  return node instanceof t.Text;
 }
 
 /**

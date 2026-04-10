@@ -84,6 +84,7 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly allDeferrableDepsFn: o.ReadVarExpr | null,
     readonly relativeTemplatePath: string | null,
     readonly enableDebugLocations: boolean,
+    readonly reduceUselessStaticTemplates: boolean,
   ) {
     super(componentName, pool, mode);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);

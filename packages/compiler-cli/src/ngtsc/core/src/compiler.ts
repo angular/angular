@@ -1527,6 +1527,7 @@ export class NgCompiler {
         jitDeclarationRegistry,
         this.options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
         !!this.options.strictStandalone,
+        this.options.reduceUselessStaticTemplates === true,
         this.enableHmr,
         this.implicitStandaloneValue,
         typeCheckHostBindings,
