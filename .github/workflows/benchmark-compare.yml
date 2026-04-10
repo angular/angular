@@ -49,9 +49,21 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: pnpm benchmarks prepare-for-github-action "$COMMENT_BODY"
 
-      - run: pnpm benchmarks run-compare ${{steps.info.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
+      - name: Validate compareSha is a valid git SHA
+        env:
+          COMPARE_SHA: ${{ steps.info.outputs.compareSha }}
+        run: |
+          if ! echo "$COMPARE_SHA" | grep -qE '^[0-9a-f]{7,40}$'; then
+            echo "::error::Invalid compareSha: must be a valid git SHA"
+            exit 1
+          fi
+
+      - name: Running benchmark
         id: benchmark
-        name: Running benchmark
+        env:
+          COMPARE_SHA: ${{ steps.info.outputs.compareSha }}
+          BENCHMARK_TARGET: ${{ steps.info.outputs.benchmarkTarget }}
+        run: pnpm benchmarks run-compare "$COMPARE_SHA" "$BENCHMARK_TARGET"
 
       - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
         with:
