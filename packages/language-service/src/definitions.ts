@@ -15,13 +15,14 @@ import {
   TmplAstTemplate,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {isExternalResource, Resource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
+  absoluteFrom,
   DirectiveSymbol,
   DomBindingSymbol,
   ElementSymbol,
+  isExternalResource,
+  NgCompiler,
+  Resource,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
   Symbol,
@@ -29,7 +30,8 @@ import {
   TcbLocation,
   TemplateSymbol,
   TemplateTypeChecker,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {
   LetDeclarationSymbol,
   PotentialDirective,
@@ -16,7 +15,9 @@ import {
   TcbLocation,
   TemplateTypeChecker,
   VariableSymbol,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+  isNamedClassDeclaration,
+} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 
 // Reverse mappings of enum would generate strings

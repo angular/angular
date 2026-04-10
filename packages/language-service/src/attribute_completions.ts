@@ -19,7 +19,7 @@ import {
   TemplateSymbol,
   TemplateTypeChecker,
   TypeCheckableDirectiveMeta,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './utils/display_parts';

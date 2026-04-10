@@ -24,15 +24,16 @@ import {
   TmplAstTemplate,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
+  AbsoluteFsPath,
+  DeclarationNode,
+  DirectiveSymbol,
+  isExternalResource,
+  NgCompiler,
+  TemplateTypeChecker,
   absoluteFrom,
   absoluteFromSourceFile,
-  AbsoluteFsPath,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {

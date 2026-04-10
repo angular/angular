@@ -14,34 +14,36 @@ import {
   EmptyExpr,
   ImplicitReceiver,
   LiteralPrimitive,
-  ParsedEventType,
   ParseSourceSpan,
+  ParsedEventType,
   PropertyRead,
   SafePropertyRead,
+  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundEvent as BoundEvent,
   TmplAstElement,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
+  TmplAstSwitchBlock,
   TmplAstSwitchBlock as SwitchBlock,
   TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
   TmplAstTextAttribute as TextAttribute,
   TmplAstVariable,
-  TmplAstLetDeclaration,
-  TmplAstSwitchBlock,
-  ThisReceiver,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
   CompletionKind,
+  NgCompiler,
   PotentialDirective,
+  PotentialPipe,
   SymbolKind,
   TemplateDeclarationSymbol,
   TemplateTypeChecker,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 
 import {
@@ -1395,7 +1397,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     const pipes = this.templateTypeChecker
       .getPotentialPipes(this.component)
-      .filter((p) => p.isInScope);
+      .filter((p: PotentialPipe) => p.isInScope);
     if (pipes === null) {
       return undefined;
     }

@@ -39,8 +39,8 @@ import {
   TmplAstVariable,
   TmplAstVisitor,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {PotentialDirective} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {NgCompiler, PotentialDirective} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 import {TypeCheckInfo} from './utils';
 
