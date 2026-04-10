@@ -24,7 +24,7 @@ import {
 } from '@angular/compiler';
 import {TcbOp} from './base';
 import {Context} from './context';
-import {OutOfBadDiagnosticCategory} from '../../api';
+import {OutOfBandDiagnosticCategory} from '../../api';
 
 /**
  * A `TcbOp` that finds and flags control flow nodes that interfere with content projection.
@@ -39,7 +39,7 @@ import {OutOfBadDiagnosticCategory} from '../../api';
  * flow node didn't exist.
  */
 export class TcbControlFlowContentProjectionOp extends TcbOp {
-  private readonly category: OutOfBadDiagnosticCategory;
+  private readonly category: OutOfBandDiagnosticCategory;
 
   constructor(
     private tcb: Context,
@@ -53,8 +53,8 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
     // this check won't be enabled for `suppress`.
     this.category =
       tcb.env.config.controlFlowPreventingContentProjection === 'error'
-        ? OutOfBadDiagnosticCategory.Error
-        : OutOfBadDiagnosticCategory.Warning;
+        ? OutOfBandDiagnosticCategory.Error
+        : OutOfBandDiagnosticCategory.Warning;
   }
 
   override readonly optional = false;
