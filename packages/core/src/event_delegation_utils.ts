@@ -8,7 +8,7 @@
 
 // tslint:disable:no-duplicate-imports
 import type {EventContract} from '../primitives/event-dispatch';
-import {Attribute} from '../primitives/event-dispatch';
+import {Attribute, EventPhase} from '../primitives/event-dispatch';
 import {APP_ID} from './application/application_tokens';
 import {InjectionToken} from './di';
 import type {RElement, RNode} from './render3/interfaces/renderer_dom';
@@ -16,9 +16,18 @@ import {INJECTOR, type LView} from './render3/interfaces/view';
 
 export const DEFER_BLOCK_SSR_ID_ATTRIBUTE = 'ngb';
 
+/**
+ * A symbol used to track which event types have been replayed on a given element via
+ * `invokeListeners`. This prevents the native DOM listener (registered by the `listener`
+ * instruction in templates) from also firing for an event that was already handled by
+ * the event-replay mechanism, which would cause the handler to be called twice.
+ */
+const REPLAYED_EVENTS_KEY: unique symbol = /* @__PURE__ */ Symbol('ngReplayedEvents');
+
 declare global {
   interface Element {
     __jsaction_fns: Map<string, Function[]> | undefined;
+    [REPLAYED_EVENTS_KEY]?: Map<string, number>;
   }
 }
 
@@ -106,8 +115,65 @@ export function invokeListeners(event: Event, currentTarget: Element | null) {
   if (!handlerFns || !currentTarget?.isConnected) {
     return;
   }
+  // Track that we're about to replay this event so the native DOM listener can detect
+  // it was already handled and skip itself.
+  const replayedEvents = currentTarget[REPLAYED_EVENTS_KEY] ?? new Map<string, number>();
+  replayedEvents.set(event.type, (replayedEvents.get(event.type) ?? 0) + 1);
+  currentTarget[REPLAYED_EVENTS_KEY] = replayedEvents;
   for (const handler of handlerFns) {
     handler(event);
+  }
+}
+
+// Elements whose resources load independently and can fire `load`/`error` on their own
+// after hydration. Other elements (div, span, etc.) only get events from user interaction,
+// so they don't need this treatment.
+const AUTO_LOAD_ELEMENTS = /^(IMG|IFRAME|SCRIPT|LINK|OBJECT|EMBED|INPUT)$/;
+
+// Guards against calling enableSkipNativeListenerImpl more than once.
+let isSkipNativeListenerImplEnabled = false;
+
+let _shouldSkipNativeListenerImpl: (event: Event) => boolean = () => false;
+
+/**
+ * Returns whether the native DOM listener should be skipped for this event because
+ * `invokeListeners` already called it during replay.
+ *
+ * Defaults to `() => false` so that terser/esbuild can inline the constant and drop
+ * the branch in apps that don't use event replay. The real implementation is swapped
+ * in by `enableSkipNativeListenerImpl` when `withEventReplay()` is configured.
+ */
+export function shouldSkipNativeListener(event: Event): boolean {
+  return _shouldSkipNativeListenerImpl(event);
+}
+
+/**
+ * Installs the real `shouldSkipNativeListener` implementation. Called by `withEventReplay()`
+ * so the logic is only included in bundles that actually need event replay.
+ */
+export function enableSkipNativeListenerImpl(): void {
+  if (!isSkipNativeListenerImplEnabled) {
+    _shouldSkipNativeListenerImpl = (event: Event): boolean => {
+      // The replay invocation arrives with eventPhase === EventPhase.REPLAY — let it through.
+      // We only want to suppress the native DOM listener that fires afterwards.
+      if (event.eventPhase === EventPhase.REPLAY) return false;
+
+      const target = (event.currentTarget ?? event.target) as Element | null;
+      // Only relevant for elements that load resources on their own. For everything else
+      // (div, button, etc.) the native listener should always fire normally.
+      if (!target || !AUTO_LOAD_ELEMENTS.test(target.tagName)) {
+        return false;
+      }
+
+      const map = target[REPLAYED_EVENTS_KEY];
+      const count = map?.get(event.type);
+      if (!count) return false;
+
+      count <= 1 ? map!.delete(event.type) : map!.set(event.type, count - 1);
+      return true;
+    };
+
+    isSkipNativeListenerImplEnabled = true;
   }
 }
 

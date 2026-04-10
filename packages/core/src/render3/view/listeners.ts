@@ -28,6 +28,7 @@ import {assertNotSame} from '../../util/assert';
 import {handleUncaughtError} from '../instructions/shared';
 import {
   type EventCallback,
+  shouldSkipNativeListener,
   stashEventListenerImpl,
   type WrappedEventCallback,
 } from '../../event_delegation_utils';
@@ -50,6 +51,13 @@ export function wrapListener(
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
   return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
+    // During event replay, `invokeListeners` calls this function directly. Elements like
+    // `<img>` may then fire a native `load` event on their own — skip it so the handler
+    // doesn't run twice. Without event replay, `shouldSkipNativeListener` is a `() => false`
+    // stub that terser/esbuild inline away, so there's no overhead.
+    if (shouldSkipNativeListener(event)) {
+      return false;
+    }
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;

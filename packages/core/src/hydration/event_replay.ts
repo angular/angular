@@ -42,6 +42,7 @@ import {
   invokeListeners,
   removeListeners,
   enableStashEventListenerImpl,
+  enableSkipNativeListenerImpl,
   setStashFn,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
@@ -108,6 +109,7 @@ export function withEventReplay(): Provider[] {
             const jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
             if (shouldEnableEventReplay(injector)) {
               enableStashEventListenerImpl();
+              enableSkipNativeListenerImpl();
               const appId = injector.get(APP_ID);
               const clearStashFn = setStashFn(
                 appId,
