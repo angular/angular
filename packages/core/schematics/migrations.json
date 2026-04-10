@@ -10,10 +10,10 @@
       "description": "Adds 'withXhr' to 'provideHttpClient' function calls when the 'HttpXhrBackend' is used. For more information see: https://angular.dev/api/common/http/withXhr",
       "factory": "./bundles/http-xhr-backend.cjs#migrate"
     },
-    "strict-template": {
+    "strict-templates-default": {
       "version": "22.0.0",
-      "description": "Adds 'strictTemplates: true' in tsconfig.json.",
-      "factory": "./bundles/strict-templates.cjs#migrate"
+      "description": "Adds 'strictTemplates: false' in tsconfig.json when not set.",
+      "factory": "./bundles/strict-templates-default.cjs#migrate"
     },
     "can-match-snapshot-required": {
       "version": "22.0.0",

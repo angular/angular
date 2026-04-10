@@ -8,13 +8,16 @@ package(
 )
 
 ts_project(
-    name = "strict-template",
+    name = "strict-templates-default",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["*.spec.ts"],
     ),
     deps = [
+        "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@schematics/angular",
+        "//:node_modules/typescript",
         "//packages/core/schematics/utils",
     ],
 )
@@ -24,9 +27,11 @@ ts_project(
     testonly = True,
     srcs = glob(["*.spec.ts"]),
     deps = [
-        ":strict-template",
+        ":strict-templates-default",
         "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@schematics/angular",
+        "//:node_modules/typescript",
         "//packages/core/schematics/utils",
     ],
 )
