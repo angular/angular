@@ -16,6 +16,7 @@ import {
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstSwitchBlockCase,
+  TmplAstBoundaryBlock,
   tmplAstVisitAll,
 } from '@angular/compiler';
 import {isExternalResource, isNamedClassDeclaration, NgCompiler} from '@angular/compiler-cli';
@@ -68,7 +69,11 @@ class BlockVisitor extends TmplAstRecursiveVisitor {
       // The source span of for loops and deferred blocks contain all parts (ForLoopBlockEmpty,
       // DeferredBlockLoading, etc.). The folding range should only include the main block span for
       // these.
-      if (block instanceof TmplAstForLoopBlock || block instanceof TmplAstDeferredBlock) {
+      if (
+        block instanceof TmplAstForLoopBlock ||
+        block instanceof TmplAstDeferredBlock ||
+        block instanceof TmplAstBoundaryBlock
+      ) {
         mainBlockSpan = block.mainBlockSpan;
       }
       return {
