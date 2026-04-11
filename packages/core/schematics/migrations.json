@@ -24,6 +24,11 @@
       "version": "22.0.0",
       "description": "Adds withNoIncrementalHydration() opt out to provideClientHydration() when incremental hydration is not enabled to retain pre-v22 behavior-.",
       "factory": "./bundles/incremental-hydration.cjs#migrate"
+    },
+    "strict-safe-navigation-narrow": {
+      "version": "22.0.0",
+      "description": "Disables the 'nullishCoalescingNotNullable & optionalChainNotNullable extended diagnostics.",
+      "factory": "./bundles/strict-safe-navigation-narrow.cjs#migrate"
     }
   }
 }
