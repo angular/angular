@@ -137,6 +137,10 @@ bundle_entrypoints = [
         "incremental-hydration",
         "packages/core/schematics/migrations/incremental-hydration/index.js",
     ],
+    [
+        "strict-safe-navigation-narrow",
+        "packages/core/schematics/migrations/strict-safe-navigation-narrow/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -152,6 +156,7 @@ rollup.rollup(
         "//packages/core/schematics/migrations/change-detection-eager",
         "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/migrations/incremental-hydration",
+        "//packages/core/schematics/migrations/strict-safe-navigation-narrow",
         "//packages/core/schematics/migrations/strict-templates-default",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/common-to-standalone-migration",
