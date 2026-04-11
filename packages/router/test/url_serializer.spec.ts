@@ -408,6 +408,28 @@ describe('url serializer', () => {
       expect(url.serialize(parsed)).toBe(`/${notEncoded}${encoded}`);
     });
 
+    // Regression test: https://github.com/angular/angular/issues/47264
+    // Null characters (\u0000) encode to %00, which browsers reject with a SecurityError
+    // in history.pushState/replaceState.
+    it('should strip null characters from path segments', () => {
+      const parsed = url.parse('/foo');
+      parsed.root.children[PRIMARY_OUTLET].segments[0].path =
+        '\u0000\u0000d\u0000\u0000\u0000\u0000Q\u0000\u0000\u0000\u0000';
+      expect(url.serialize(parsed)).not.toContain('%00');
+    });
+
+    it('should strip null characters from matrix params', () => {
+      const parsed = url.parse('/foo');
+      parsed.root.children[PRIMARY_OUTLET].segments[0].parameters = {key: '\u0000value'};
+      expect(url.serialize(parsed)).not.toContain('%00');
+    });
+
+    it('should strip null characters from query params', () => {
+      const parsed = url.parse('/foo');
+      parsed.queryParams = {key: '\u0000value'};
+      expect(url.serialize(parsed)).not.toContain('%00');
+    });
+
     it('should correctly encode ampersand in segments', () => {
       const testUrl = '/parent&child';
 
