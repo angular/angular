@@ -158,12 +158,15 @@ function insertEventRecordScript(
   // Note: this is only true when build with the CLI tooling, which inserts the script in the HTML
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
+    // Escape appId to prevent script injection (e.g. via </script> breakout).
+    // This matches the escaping used in TransferState.toJson().
+    const escapedAppId = JSON.stringify(appId).replace(/</g, '\\u003C');
     const replayScriptContents =
       `window.__jsaction_bootstrap(` +
       `document.body,` +
-      `"${appId}",` +
-      `${JSON.stringify(Array.from(regular))},` +
-      `${JSON.stringify(Array.from(capture))}` +
+      `${escapedAppId},` +
+      `${JSON.stringify(Array.from(regular)).replace(/</g, '\\u003C')},` +
+      `${JSON.stringify(Array.from(capture)).replace(/</g, '\\u003C')}` +
       `);`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
