@@ -69,6 +69,16 @@ export class RouterScroller implements OnDestroy {
       if (e instanceof NavigationStart) {
         // store the scroll position of the current stable navigations.
         this.store[this.lastId] = this.viewportScroller.getScrollPosition();
+        // Evict the oldest entry once the store exceeds the browser's session history
+        // limit. Chromium/Blink enforces a hard cap of 50 entries via
+        // kMaxSessionHistoryEntries (third_party/blink/public/common/history/
+        // session_history_constants.h), pruning in NavigationControllerImpl::
+        // PruneOldestSkippableEntryIfFull(). Entries beyond that can never be
+        // restored via popstate, so keeping them would be a memory leak.
+        const keys = Object.keys(this.store);
+        if (keys.length > 50) {
+          delete this.store[Math.min(...keys.map(Number))];
+        }
         this.lastSource = e.navigationTrigger;
         this.restoredId = e.restoredState ? e.restoredState.navigationId : 0;
       } else if (e instanceof NavigationEnd) {
