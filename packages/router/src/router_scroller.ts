@@ -35,6 +35,7 @@ export class RouterScroller implements OnDestroy {
   private lastSource: NavigationTrigger | undefined = IMPERATIVE_NAVIGATION;
   private restoredId = 0;
   private store: {[key: string]: [number, number]} = {};
+  private storeSize = 0;
 
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly zone = inject(NgZone);
@@ -69,6 +70,24 @@ export class RouterScroller implements OnDestroy {
       if (e instanceof NavigationStart) {
         // store the scroll position of the current stable navigations.
         this.store[this.lastId] = this.viewportScroller.getScrollPosition();
+        this.storeSize++;
+        // Evict the oldest 50 entries once the store reaches 100. Chromium/Blink
+        // enforces a hard cap of 50 session history entries via
+        // kMaxSessionHistoryEntries (third_party/blink/public/common/history/
+        // session_history_constants.h), pruning in NavigationControllerImpl::
+        // PruneOldestSkippableEntryIfFull(). Entries beyond that can never be
+        // restored via popstate, so keeping them would be a memory leak. Batching
+        // the eviction avoids paying the Object.keys() cost on every navigation.
+        if (this.storeSize === 100) {
+          const oldest = Object.keys(this.store)
+            .map(Number)
+            .sort((a, b) => a - b)
+            .slice(0, 50);
+          for (const key of oldest) {
+            delete this.store[key];
+          }
+          this.storeSize = 50;
+        }
         this.lastSource = e.navigationTrigger;
         this.restoredId = e.restoredState ? e.restoredState.navigationId : 0;
       } else if (e instanceof NavigationEnd) {
