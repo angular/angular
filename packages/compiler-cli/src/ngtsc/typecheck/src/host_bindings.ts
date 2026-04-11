@@ -416,7 +416,9 @@ function createNodeFromListenerDecorator(
     target = null;
   } else {
     const parsedName = parser.parseEventListenerName(eventNameNode.text);
-    type = ParsedEventType.Regular;
+    type = parsedName.eventName.startsWith('animate.')
+      ? ParsedEventType.Animation
+      : ParsedEventType.Regular;
     eventName = parsedName.eventName;
     target = parsedName.target;
     phase = null;
