@@ -9,19 +9,22 @@
 import {
   ApplicationRef,
   ChangeDetectorRef,
-  ɵComponentFactory as ComponentFactory,
   ComponentRef,
+  createComponent,
+  EnvironmentInjector,
   type EventEmitter,
   Injector,
   type ɵInputSignalNode as InputSignalNode,
   OnChanges,
   type OutputEmitterRef,
+  reflectComponentType,
   ɵSIGNAL as SIGNAL,
   SimpleChange,
   SimpleChanges,
   StaticProvider,
   Testability,
   TestabilityRegistry,
+  Type,
 } from '@angular/core';
 
 import {
@@ -51,10 +54,11 @@ export class DowngradeComponentAdapter {
     private attrs: IAttributes,
     private scope: IScope,
     private ngModel: INgModelController,
+    private environmentInjector: EnvironmentInjector,
     private parentInjector: Injector,
     private $compile: ICompileService,
     private $parse: IParseService,
-    private componentFactory: ComponentFactory<any>,
+    private component: Type<any>,
     private wrapCallback: <T>(cb: () => T) => () => T,
     private readonly unsafelyOverwriteSignalInputs: boolean,
   ) {
@@ -99,11 +103,12 @@ export class DowngradeComponentAdapter {
       name: 'DowngradeComponentAdapter',
     });
 
-    const componentRef = this.componentFactory.create(
-      childInjector,
+    const componentRef = createComponent(this.component, {
+      elementInjector: childInjector,
+      environmentInjector: this.environmentInjector,
       projectableNodes,
-      this.element[0],
-    );
+      hostElement: this.element[0] as Element,
+    });
     const viewChangeDetector = componentRef.injector.get(ChangeDetectorRef);
     const changeDetector = componentRef.changeDetectorRef;
 
@@ -129,7 +134,7 @@ export class DowngradeComponentAdapter {
     {componentRef, changeDetector, viewChangeDetector}: ComponentInfo,
   ): void {
     const attrs = this.attrs;
-    const inputs = this.componentFactory.inputs || [];
+    const inputs = reflectComponentType(this.component)?.inputs ?? [];
     for (const input of inputs) {
       const inputBinding = new PropertyBinding(input.propName, input.templateName);
       let expr: string | null = null;
@@ -179,7 +184,7 @@ export class DowngradeComponentAdapter {
 
     // Invoke `ngOnChanges()` and Change Detection (when necessary)
     const detectChanges = () => changeDetector.detectChanges();
-    const prototype = this.componentFactory.componentType.prototype;
+    const prototype = this.component.prototype;
     this.implementsOnChanges = !!(prototype && (<OnChanges>prototype).ngOnChanges);
 
     this.componentScope.$watch(
@@ -221,7 +226,7 @@ export class DowngradeComponentAdapter {
 
   private setupOutputs(componentRef: ComponentRef<any>) {
     const attrs = this.attrs;
-    const outputs = this.componentFactory.outputs || [];
+    const outputs = reflectComponentType(this.component)?.outputs ?? [];
     for (const output of outputs) {
       const outputBindings = new PropertyBinding(output.propName, output.templateName);
       const bindonAttr = outputBindings.bindonAttr.substring(
@@ -269,9 +274,7 @@ export class DowngradeComponentAdapter {
       componentRef.onDestroy(() => subscription.unsubscribe());
     } else {
       throw new Error(
-        `Missing emitter '${output.prop}' on component '${getTypeName(
-          this.componentFactory.componentType,
-        )}'!`,
+        `Missing emitter '${output.prop}' on component '${getTypeName(this.component)}'!`,
       );
     }
   }
@@ -334,7 +337,7 @@ export class DowngradeComponentAdapter {
   }
 
   private groupProjectableNodes() {
-    let ngContentSelectors = this.componentFactory.ngContentSelectors;
+    let ngContentSelectors = reflectComponentType(this.component)?.ngContentSelectors ?? [];
     return groupNodesBySelector(ngContentSelectors, this.element.contents!());
   }
 }
@@ -342,7 +345,10 @@ export class DowngradeComponentAdapter {
 /**
  * Group a set of DOM nodes into `ngContent` groups, based on the given content selectors.
  */
-export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
+export function groupNodesBySelector(
+  ngContentSelectors: readonly string[],
+  nodes: Node[],
+): Node[][] {
   const projectableNodes: Node[][] = [];
 
   for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
@@ -360,7 +366,10 @@ export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]
   return projectableNodes;
 }
 
-function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number | null {
+function findMatchingNgContentIndex(
+  element: any,
+  ngContentSelectors: readonly string[],
+): number | null {
   const ngContentIndices: number[] = [];
   let wildcardNgContentIndex: number = -1;
   for (let i = 0; i < ngContentSelectors.length; i++) {

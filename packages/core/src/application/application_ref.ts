@@ -18,6 +18,7 @@ import {
   setThrowInvalidWriteToSignalError,
 } from '../../primitives/signals';
 
+import {ProfilerEvent} from '../../primitives/devtools';
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
 import {inject} from '../di';
@@ -28,27 +29,24 @@ import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {ComponentFactory, ComponentRef} from '../linker/component_factory';
-import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
+import {ComponentRef} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
 import {PendingTasksInternal} from '../pending_tasks_internal';
 import {RendererFactory2} from '../render/api';
 import {AfterRenderManager} from '../render3/after_render/manager';
-import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
-import {isStandalone} from '../render3/def_getters';
+import {ComponentFactory} from '../render3/component_ref';
+import {getComponentDef, isStandalone} from '../render3/def_getters';
 import type {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
+import {profiler} from '../render3/profiler';
+import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
+import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {NgZone} from '../zone/ng_zone';
-
-import {ProfilerEvent} from '../../primitives/devtools';
-import {profiler} from '../render3/profiler';
-import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
-import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {ApplicationInitStatus} from './application_init';
 import {TracingAction, TracingService, TracingSnapshot} from './tracing';
 
@@ -85,10 +83,6 @@ export function publishSignalConfiguration(): void {
     }
     throw new RuntimeError(RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT, errorMessage);
   });
-}
-
-export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
-  return (cf as R3ComponentFactory<C>).isBoundToModule;
 }
 
 /**
@@ -489,21 +483,19 @@ export class ApplicationRef {
         throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
       }
 
-      const resolver = this._injector.get(ComponentFactoryResolver);
-      const componentFactory = resolver.resolveComponentFactory(component)!;
-      this.componentTypes.push(componentFactory.componentType);
+      const componentDef = getComponentDef(component)!;
+      const ngModule = this._injector.get(NgModuleRef);
+      const componentFactory = new ComponentFactory<C>(componentDef, ngModule);
+      this.componentTypes.push(component);
 
       // Create a factory associated with the current module if it's not bound to some other
-      const ngModule = isBoundToModule(componentFactory)
-        ? undefined
-        : this._injector.get(NgModuleRef);
       const {hostElement, directives, bindings} = normalizeBootstrapOptions(hostElementOrOptions);
       const selectorOrNode = hostElement || componentFactory.selector;
       const compRef = componentFactory.create(
         injector,
         [],
         selectorOrNode,
-        ngModule,
+        ngModule.injector,
         directives,
         bindings,
       );
