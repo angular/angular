@@ -14,6 +14,8 @@ import {EMPTY_OBJ} from '../../util/empty';
 import {applyValueToInputField} from '../apply_value_input_field';
 import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
+let _ngOnChangesFeatureImpl: typeof NgOnChangesFeatureImpl | null = null;
+
 /**
  * The NgOnChangesFeature decorates a component with support for the ngOnChanges
  * lifecycle hook, so it should be included in any component that implements
@@ -37,6 +39,7 @@ import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
  * @codeGenApi
  */
 export const ɵɵNgOnChangesFeature: () => DirectiveDefFeature = /* @__PURE__ */ (() => {
+  _ngOnChangesFeatureImpl = NgOnChangesFeatureImpl;
   const ɵɵNgOnChangesFeatureImpl = () => NgOnChangesFeatureImpl;
 
   // This option ensures that the ngOnChanges lifecycle hook will be inherited
@@ -47,7 +50,14 @@ export const ɵɵNgOnChangesFeature: () => DirectiveDefFeature = /* @__PURE__ */
   return ɵɵNgOnChangesFeatureImpl;
 })();
 
-export function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>) {
+export function getNgOnChangesFeatureImpl(): typeof NgOnChangesFeatureImpl {
+  return _ngOnChangesFeatureImpl!;
+}
+
+/**
+ * We don't expose the feature implementation directly in order to tree shake it when `ngOnChanges` isn't used.
+ */
+function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>) {
   if (definition.type.prototype.ngOnChanges) {
     definition.setInput = ngOnChangesSetInput;
   }
