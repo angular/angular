@@ -2,7 +2,7 @@
 # 22.0.0-next.7 (2026-04-08)
 ## Breaking Changes
 ### core
-- The second arguement of appRef.bootstrap does not accept `any` anymore. Make sure the element you pass is not nullable.
+- The second argument of appRef.bootstrap does not accept `any` anymore. Make sure the element you pass is not nullable.
 - * TypeScript versions older than 6.0 are no longer supported.
 - `ComponentFactoryResolver` and `ComponentFactory` are no longer available. Pass the component class directly to APIs that previously required a factory, such as `ViewContainerRef.createComponent` or use the standalone `createComponentFunction`.
 - `ComponentFactoryResolver` and `ComponentFactory` are no longer available. Pass the component class directly to APIs that previously required a factory, such as `ViewContainerRef.createComponent` or use the standalone `createComponent` function.
