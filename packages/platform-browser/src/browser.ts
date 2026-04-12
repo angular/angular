@@ -6,19 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  CommonModule,
-  DOCUMENT,
-  XhrFactory,
-  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
-} from '@angular/common';
+import {CommonModule, DOCUMENT, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {
   ApplicationConfig,
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
   ErrorHandler,
+  inject,
   InjectionToken,
+  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
+  ɵinternalCreateApplication as internalCreateApplication,
   NgModule,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
@@ -26,23 +24,19 @@ import {
   PlatformRef,
   Provider,
   RendererFactory2,
+  ɵresolveComponentResources as resolveComponentResources,
+  ɵRuntimeError as RuntimeError,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
   StaticProvider,
   Testability,
-  Type,
-  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
-  ɵinternalCreateApplication as internalCreateApplication,
-  ɵRuntimeError as RuntimeError,
-  ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
-  inject,
-  ɵresolveComponentResources as resolveComponentResources,
-  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
+  Type,
+  ɵsetDocument,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
-import {BrowserXhr} from './browser/xhr';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
@@ -272,7 +266,6 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   {provide: SharedStylesHost, useExisting: SHARED_STYLES_HOST},
   EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
-  {provide: XhrFactory, useClass: BrowserXhr},
   typeof ngDevMode === 'undefined' || ngDevMode
     ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true}
     : [],
