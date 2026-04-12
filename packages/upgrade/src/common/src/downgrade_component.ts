@@ -6,13 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ɵComponentFactory as ComponentFactory,
-  ɵComponentFactoryResolver as ComponentFactoryResolver,
-  Injector,
-  NgZone,
-  Type,
-} from '@angular/core';
+import {EnvironmentInjector, Injector, NgZone, Type} from '@angular/core';
 
 import {
   IAnnotatedFunction,
@@ -201,27 +195,17 @@ export function downgradeComponent(info: {
         const finalModuleInjector = moduleInjector || parentInjector!;
 
         const doDowngrade = (injector: Injector, moduleInjector: Injector) => {
-          // Retrieve `ComponentFactoryResolver` from the injector tied to the `NgModule` this
-          // component belongs to.
-          const componentFactoryResolver: ComponentFactoryResolver =
-            moduleInjector.get(ComponentFactoryResolver);
-          const componentFactory: ComponentFactory<any> =
-            componentFactoryResolver.resolveComponentFactory(info.component)!;
-
-          if (!componentFactory) {
-            throw new Error(`Expecting ComponentFactory for: ${getTypeName(info.component)}`);
-          }
-
           const injectorPromise = new ParentInjectorPromise(element);
           const facade = new DowngradeComponentAdapter(
             element,
             attrs,
             scope,
             ngModel,
+            moduleInjector.get(EnvironmentInjector),
             injector,
             $compile,
             $parse,
-            componentFactory,
+            info.component,
             wrapCallback,
             unsafelyOverwriteSignalInputs,
           );

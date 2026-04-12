@@ -15,7 +15,6 @@ export {
   ModuleWithComponentFactories,
 } from './linker/compiler';
 export {ComponentRef, ComponentFactory as ɵComponentFactory} from './linker/component_factory';
-export {ComponentFactoryResolver as ɵComponentFactoryResolver} from './linker/component_factory_resolver';
 export {DestroyRef} from './linker/destroy_ref';
 export {ElementRef} from './linker/element_ref';
 export {NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';

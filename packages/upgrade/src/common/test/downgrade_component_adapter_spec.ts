@@ -5,14 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  Compiler,
-  Component,
-  ɵComponentFactory as ComponentFactory,
-  Injector,
-  NgModule,
-  TestabilityRegistry,
-} from '@angular/core';
+import {Compiler, Component, Injector, NgModule, TestabilityRegistry} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import * as angular from '../src/angular1';
@@ -143,7 +136,6 @@ withEachNg1Version(() => {
         let parentInjector: Injector; // testbed
         let $compile = undefined as any;
         let $parse = undefined as any;
-        let componentFactory: ComponentFactory<any>; // testbed
         let wrapCallback = (cb: any) => cb;
 
         content = `
@@ -170,7 +162,6 @@ withEachNg1Version(() => {
         const modFactory = compiler.compileModuleSync(NewModule);
         const testBedInjector = TestBed.inject(Injector);
         const module = modFactory.create(testBedInjector);
-        componentFactory = module.componentFactoryResolver.resolveComponentFactory(NewComponent)!;
         parentInjector = testBedInjector;
 
         return new DowngradeComponentAdapter(
@@ -178,10 +169,11 @@ withEachNg1Version(() => {
           attrs,
           scope,
           ngModel,
+          module.injector,
           parentInjector,
           $compile,
           $parse,
-          componentFactory,
+          NewComponent,
           wrapCallback,
           /* unsafelyOverwriteSignalInputs */ false,
         );

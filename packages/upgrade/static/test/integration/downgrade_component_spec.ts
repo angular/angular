@@ -10,6 +10,7 @@ import {
   ChangeDetectionStrategy,
   Compiler,
   Component,
+  createComponent,
   destroyPlatform,
   Directive,
   ElementRef,
@@ -1039,9 +1040,10 @@ withEachNg1Version(() => {
         const compiler = modInjector.get(Compiler);
         const modFactory = compiler.compileModuleSync(LazyLoadedModule);
         const childMod = modFactory.create(modInjector);
-        const cmpFactory =
-          childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent)!;
-        const lazyCmp = cmpFactory.create(componentInjector);
+        const lazyCmp = createComponent(LazyLoadedComponent, {
+          environmentInjector: childMod.injector,
+          elementInjector: componentInjector,
+        });
 
         expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
       });

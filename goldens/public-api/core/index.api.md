@@ -1273,8 +1273,6 @@ export abstract class NgModuleFactory<T> {
 
 // @public
 export abstract class NgModuleRef<T> {
-    // @deprecated
-    abstract get componentFactoryResolver(): ComponentFactoryResolver;
     abstract destroy(): void;
     abstract get injector(): EnvironmentInjector;
     abstract get instance(): T;

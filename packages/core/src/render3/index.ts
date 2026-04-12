@@ -48,7 +48,7 @@ import {
 } from './util/discovery_utils';
 
 export {NgModuleType} from '../metadata/ng_module_def';
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
+export {ComponentFactory, ComponentRef} from './component_ref';
 export {ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 export {

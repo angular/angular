@@ -16,7 +16,6 @@ export {
   ProfilerEvent as ɵProfilerEvent,
 } from '../primitives/devtools';
 export {compileNgModuleFactory as ɵcompileNgModuleFactory} from './application/application_ngmodule_factory_compiler';
-export {isBoundToModule as ɵisBoundToModule} from './application/application_ref';
 export {injectChangeDetectorRef as ɵinjectChangeDetectorRef} from './change_detection/change_detector_ref';
 export {createInjector as ɵcreateInjector} from './di/create_injector';
 export {
@@ -281,10 +280,10 @@ export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
 export {
+  ControlFlowBlock as ɵControlFlowBlock,
   ControlFlowBlockType as ɵControlFlowBlockType,
   DeferBlockData as ɵDeferBlockData,
   ForLoopBlockData as ɵForLoopBlockData,
-  ControlFlowBlock as ɵControlFlowBlock,
 } from './render3/util/control_flow_types';
 export {
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
