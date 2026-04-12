@@ -237,6 +237,7 @@ export function producerAccessed(node: ReactiveNode): void {
     nextProducerLink =
       prevProducerLink !== undefined ? prevProducerLink.nextProducer : activeConsumer.producers;
     if (nextProducerLink !== undefined && nextProducerLink.producer === node) {
+      console.log('Reuse in order', node.debugName, nextProducerLink.knownValidAtEpoch, epoch);
       // If the next producer is the same as the one we're trying to add, we can just update the
       // last read version, update the tail of the producers list of this rerun, and return.
       activeConsumer.producersTail = nextProducerLink;
@@ -255,8 +256,11 @@ export function producerAccessed(node: ReactiveNode): void {
     prevConsumerLink.consumer === activeConsumer &&
     (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
   ) {
+    console.log('Reuse already present', node.debugName, prevConsumerLink.knownValidAtEpoch, epoch);
     return;
   }
+
+  console.log('Insert', node.debugName, epoch);
 
   // If we got here, it means that we need to create a new link between the producer and the consumer.
   const isLive = consumerIsLive(activeConsumer);

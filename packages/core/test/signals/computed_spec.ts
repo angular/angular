@@ -350,7 +350,7 @@ describe('computed', () => {
     let executed = 0;
     testingEffect(() => {
       // Let the initial execution of the effect evaluate the decoy signal, incurring a consumer edge in the graph.
-      if (executed == 0) {
+      if (executed === 0) {
         decoy();
       }
 
@@ -383,6 +383,29 @@ describe('computed', () => {
 
     // Also verify that updates of the dynamic consumer are still tracked, causing the effect to rerun.
     dynamic.update((v) => v + 1);
+    flushEffects();
+    expect(executed).toEqual(3);
+  });
+
+  it('should keep links alive in a dynamic graph 2', () => {
+    const a = signal(0, {debugName: 'a'});
+    const trigger = signal(0, {debugName: 'trigger'});
+
+    let executed = 0;
+    testingEffect(() => {
+      if (executed === 0) {
+        a();
+        a.update((v) => v + 1);
+      }
+
+      trigger();
+
+      executed++;
+    });
+    flushEffects();
+    expect(executed).toEqual(2);
+
+    trigger.update((v) => v + 1);
     flushEffects();
     expect(executed).toEqual(3);
   });
