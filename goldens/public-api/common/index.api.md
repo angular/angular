@@ -1067,6 +1067,10 @@ export enum WeekDay {
 export abstract class XhrFactory {
     // (undocumented)
     abstract build(): XMLHttpRequest;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<XhrFactory, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<XhrFactory>;
 }
 
 // (No @packageDocumentation comment for this package)
