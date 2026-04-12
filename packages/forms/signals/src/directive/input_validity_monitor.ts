@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {Injectable, CSP_NONCE, inject, OnDestroy, PLATFORM_ID, forwardRef} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {
+  Injectable,
+  CSP_NONCE,
+  inject,
+  type OnDestroy,
+  forwardRef,
+  type DestroyRef,
+} from '@angular/core';
 
 /**
  * Service that monitors validity state changes on native form elements.
@@ -18,7 +25,11 @@ import {Injectable, CSP_NONCE, inject, OnDestroy, PLATFORM_ID, forwardRef} from 
  */
 @Injectable({providedIn: 'root', useClass: forwardRef(() => AnimationInputValidityMonitor)})
 export abstract class InputValidityMonitor {
-  abstract watchValidity(element: HTMLInputElement, callback: () => void): void;
+  abstract watchValidity(
+    destroyRef: DestroyRef,
+    element: HTMLInputElement,
+    callback: () => void,
+  ): void;
   abstract isBadInput(element: HTMLInputElement): boolean;
 }
 
@@ -26,12 +37,15 @@ export abstract class InputValidityMonitor {
 export class AnimationInputValidityMonitor extends InputValidityMonitor implements OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly cspNonce = inject(CSP_NONCE, {optional: true});
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly injectedStyles = new WeakMap<Document | ShadowRoot, HTMLStyleElement>();
 
   /** Starts watching the given element for validity state changes. */
-  override watchValidity(element: HTMLInputElement, callback: () => void): void {
-    if (!this.isBrowser) {
+  override watchValidity(
+    destroyRef: DestroyRef,
+    element: HTMLInputElement,
+    callback: () => void,
+  ): void {
+    if (typeof ngServerMode === 'undefined' || ngServerMode) {
       return;
     }
 
@@ -40,7 +54,7 @@ export class AnimationInputValidityMonitor extends InputValidityMonitor implemen
       this.injectedStyles.set(rootNode, this.createTransitionStyle(rootNode));
     }
 
-    element.addEventListener('animationstart', (event: Event) => {
+    const onAnimationStart = (event: Event) => {
       const animationEvent = event as AnimationEvent;
       if (
         animationEvent.animationName === 'ng-valid' ||
@@ -48,6 +62,10 @@ export class AnimationInputValidityMonitor extends InputValidityMonitor implemen
       ) {
         callback();
       }
+    };
+    element.addEventListener('animationstart', onAnimationStart);
+    destroyRef.onDestroy(() => {
+      element.removeEventListener('animationstart', onAnimationStart);
     });
   }
 

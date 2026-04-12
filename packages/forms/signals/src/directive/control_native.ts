@@ -59,7 +59,7 @@ export function nativeControlCreate(
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
   }
 
   parent.registerAsBinding();
