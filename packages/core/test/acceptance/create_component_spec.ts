@@ -12,6 +12,7 @@ import {
   createComponent,
   createEnvironmentInjector,
   Directive,
+  DOCUMENT,
   ElementRef,
   EmbeddedViewRef,
   EnvironmentInjector,
@@ -93,6 +94,36 @@ describe('createComponent', () => {
     componentRef.instance.name = 'ZoneJS';
     componentRef.changeDetectorRef.detectChanges();
     expect(hostElement.textContent).toBe('Hello ZoneJS!');
+  });
+
+  it('should create an instance of a component with a string selector', () => {
+    const selector = '#container';
+    @Component({
+      template: 'Hello {{name()}}!',
+    })
+    class StandaloneComponent {
+      name = signal('Angular');
+    }
+
+    const document = TestBed.inject(DOCUMENT);
+    const hostElement = document.createElement('div');
+    hostElement.setAttribute('id', 'container');
+    document.body.appendChild(hostElement);
+
+    const environmentInjector = TestBed.inject(EnvironmentInjector);
+    const componentRef = createComponent(StandaloneComponent, {
+      hostElement: selector,
+      environmentInjector,
+    });
+
+    componentRef.changeDetectorRef.detectChanges();
+    expect(hostElement.textContent).toBe('Hello Angular!');
+
+    // Verify basic change detection works.
+    componentRef.instance.name.set('ZoneJS');
+    componentRef.changeDetectorRef.detectChanges();
+    expect(hostElement.textContent).toBe('Hello ZoneJS!');
+    componentRef.destroy();
   });
 
   it('should render projected content', () => {

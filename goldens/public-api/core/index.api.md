@@ -431,7 +431,7 @@ export interface ContentChildrenDecorator {
 // @public
 export function createComponent<C>(component: Type<C>, options: {
     environmentInjector: EnvironmentInjector;
-    hostElement?: Element;
+    hostElement?: Element | string;
     elementInjector?: Injector;
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];

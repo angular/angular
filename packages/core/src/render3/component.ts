@@ -62,7 +62,7 @@ import {assertComponentDef} from './errors';
  * @param component Component class reference.
  * @param options Set of options to use:
  *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component.
- *  * `hostElement` (optional): A DOM node that should act as a host node for the component. If not
+ *  * `hostElement` (optional): A DOM node (or its selector) that should act as a host node for the component. If not
  * provided, Angular creates one based on the tag name used in the component selector (and falls
  * back to using `div` if selector doesn't have tag name info).
  *  * `elementInjector` (optional): An `ElementInjector` instance, see additional info about it
@@ -85,7 +85,7 @@ export function createComponent<C>(
   component: Type<C>,
   options: {
     environmentInjector: EnvironmentInjector;
-    hostElement?: Element;
+    hostElement?: Element | string;
     elementInjector?: Injector;
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
