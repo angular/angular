@@ -6725,6 +6725,79 @@ describe('platform-server full application hydration integration', () => {
         // such as "injector has already been destroyed."
         expect(errorSpy).not.toHaveBeenCalled();
       });
+
+      it('should re-render an embedded view whose first creation pass was incomplete', async () => {
+        // Tracks whether the directive should throw — only on the first instantiation.
+        let shouldThrow = true;
+
+        @Directive({
+          selector: '[throwOnCreate]',
+        })
+        class ThrowOnCreateDirective {
+          constructor() {
+            if (shouldThrow) {
+              shouldThrow = false;
+              throw new Error('Expected error during first creation pass');
+            }
+          }
+        }
+
+        // Records all errors passed to ErrorHandler so we can assert on them.
+        class RecordingErrorHandler extends ErrorHandler {
+          errors: Error[] = [];
+          override handleError(e: Error) {
+            this.errors.push(e);
+          }
+        }
+        const errorHandler = new RecordingErrorHandler();
+
+        @Component({
+          selector: 'app',
+          imports: [ThrowOnCreateDirective],
+          // Template: outer @if contains a directive-throwing element followed by a nested @if.
+          // If incompleteFirstPass is not handled, the nested @if TNode is never stored,
+          // and re-rendering after toggling crashes with "Cannot read properties of null
+          // (reading 'flags')" (happens in hydration mode).
+          template: `
+            @if (show()) {
+              <div throwOnCreate></div>
+              @if (show2()) {
+                <span>inner content</span>
+              }
+            }
+          `,
+        })
+        class AppCmp {
+          readonly show = signal(false); // Start false so initial bootstrap succeeds without error.
+          readonly show2 = signal(true);
+        }
+
+        const html = `<html><head></head><body><app></app></body></html>`;
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, AppCmp, {
+          envProviders: [{provide: ErrorHandler, useValue: errorHandler}],
+        });
+        const compRef = getComponentRef<AppCmp>(appRef);
+
+        // Trigger first embedded view creation: directive throws → incompleteFirstPass=true on
+        // the embedded TView; the nested @if TNode is never stored in data[].
+        compRef.instance.show.set(true);
+        await appRef.whenStable();
+        expect(errorHandler.errors.length).toBe(1);
+        expect(errorHandler.errors[0].message).toBe('Expected error during first creation pass');
+
+        // Toggle @if off.
+        compRef.instance.show.set(false);
+        await appRef.whenStable();
+
+        // Re-enable show. Before the fix this would add a second error:
+        // "TypeError: Cannot read properties of null (reading 'flags')"
+        compRef.instance.show.set(true);
+        await appRef.whenStable();
+        expect(errorHandler.errors.length).toBe(1); // No new errors from the recovery render.
+
+        const el = compRef.location.nativeElement;
+        expect(el.querySelector('span')?.textContent).toBe('inner content');
+      });
     });
 
     describe('@if', () => {

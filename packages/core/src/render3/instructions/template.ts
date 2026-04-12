@@ -62,7 +62,7 @@ function templateCreate(
   vars: number,
   flags?: TNodeFlags,
 ) {
-  if (declarationTView.firstCreatePass) {
+  if (declarationTView.firstCreatePass || tNode.tView === null) {
     // Merge the template attrs last so that they have the highest priority.
     tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
 
@@ -144,7 +144,7 @@ function declareDirectiveHostTemplate(
   const adjustedIndex = index + HEADER_OFFSET;
   let tNode: TContainerNode;
 
-  if (declarationTView.firstCreatePass) {
+  if (declarationTView.firstCreatePass || declarationTView.data[adjustedIndex] === null) {
     // TODO(pk): refactor getOrCreateTNode to have the "create" only version
     tNode = getOrCreateTNode(
       declarationTView,
@@ -213,7 +213,7 @@ export function declareNoDirectiveHostTemplate(
   const adjustedIndex = index + HEADER_OFFSET;
   let tNode: TContainerNode;
 
-  if (declarationTView.firstCreatePass) {
+  if (declarationTView.firstCreatePass || declarationTView.data[adjustedIndex] === null) {
     tNode = getOrCreateTNode(
       declarationTView,
       adjustedIndex,
