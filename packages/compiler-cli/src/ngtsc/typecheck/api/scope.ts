@@ -10,7 +10,6 @@ import ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
-import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
 /**
  * A PotentialImport for some Angular trait has a TypeScript module specifier, which can be

@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {TmplAstBoundAttribute, TmplAstDirective, TmplAstTemplate} from '@angular/compiler';
-import {TcbDirectiveMetadata} from '../../api';
+import {BoundAttribute, Directive, Template} from '../../render3/r3_ast';
+import {TcbDirectiveMetadata, TemplateGuardMeta} from '../api';
 import {TcbOp} from './base';
 import {declareVariable, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
@@ -14,7 +14,7 @@ import {tcbExpression} from './expression';
 import type {Scope} from './scope';
 
 /**
- * A `TcbOp` which generates a variable for a `TmplAstTemplate`'s context.
+ * A `TcbOp` which generates a variable for a `Template`'s context.
  *
  * Executing this operation returns a reference to the template's context variable.
  */
@@ -39,7 +39,7 @@ export class TcbTemplateContextOp extends TcbOp {
 }
 
 /**
- * A `TcbOp` which descends into a `TmplAstTemplate`'s children and generates type-checking code for
+ * A `TcbOp` which descends into a `Template`'s children and generates type-checking code for
  * them.
  *
  * This operation wraps the children's type-checking code in an `if` block, which may include one
@@ -49,7 +49,7 @@ export class TcbTemplateBodyOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private template: TmplAstTemplate,
+    private template: Template,
   ) {
     super();
   }
@@ -131,14 +131,14 @@ export class TcbTemplateBodyOp extends TcbOp {
 
   private addDirectiveGuards(
     guards: TcbExpr[],
-    hostNode: TmplAstTemplate | TmplAstDirective,
+    hostNode: Template | Directive,
     directives: TcbDirectiveMetadata[] | null,
   ) {
     if (directives === null || directives.length === 0) {
       return;
     }
 
-    const isTemplate = hostNode instanceof TmplAstTemplate;
+    const isTemplate = hostNode instanceof Template;
 
     for (const dir of directives) {
       const dirInstId = this.scope.resolve(hostNode, dir);
@@ -147,13 +147,13 @@ export class TcbTemplateBodyOp extends TcbOp {
       // There are two kinds of guards. Template guards (ngTemplateGuards) allow type narrowing of
       // the expression passed to an @Input of the directive. Scan the directive to see if it has
       // any template guards, and generate them if needed.
-      dir.ngTemplateGuards.forEach((guard) => {
+      dir.ngTemplateGuards.forEach((guard: TemplateGuardMeta) => {
         // For each template guard function on the directive, look for a binding to that input.
         const boundInput =
           hostNode.inputs.find((i) => i.name === guard.inputName) ||
           (isTemplate
-            ? hostNode.templateAttrs.find((input): input is TmplAstBoundAttribute => {
-                return input instanceof TmplAstBoundAttribute && input.name === guard.inputName;
+            ? hostNode.templateAttrs.find((input): input is BoundAttribute => {
+                return input instanceof BoundAttribute && input.name === guard.inputName;
               })
             : undefined);
         if (boundInput !== undefined) {

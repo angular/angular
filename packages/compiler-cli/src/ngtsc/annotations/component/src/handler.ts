@@ -32,6 +32,7 @@ import {
   R3DirectiveDependencyMetadata,
   R3NgModuleDependencyMetadata,
   R3PipeDependencyMetadata,
+  createHostElement,
   R3TargetBinder,
   R3TemplateDependency,
   R3TemplateDependencyKind,
@@ -43,6 +44,7 @@ import {
   DirectiveMatcher,
   SelectorlessMatcher,
   MatchSource,
+  TypeCheckId,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -96,12 +98,9 @@ import {
 import {
   ComponentScopeKind,
   ComponentScopeReader,
-  DtsModuleScopeResolver,
-  LocalModuleScope,
   LocalModuleScopeRegistry,
   makeNotStandaloneDiagnostic,
   makeUnknownComponentImportDiagnostic,
-  StandaloneScope,
   TypeCheckScopeRegistry,
 } from '../../../scope';
 import {
@@ -118,7 +117,6 @@ import {
   ResolveResult,
 } from '../../../transform';
 import {
-  TypeCheckId,
   TypeCheckableDirectiveMeta,
   TypeCheckContext,
   TemplateContext,
@@ -193,7 +191,7 @@ import {
   collectLegacyAnimationNames,
   validateAndFlattenComponentImports,
 } from './util';
-import {getTemplateDiagnostics, createHostElement} from '../../../typecheck';
+import {getTemplateDiagnostics} from '../../../typecheck';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 import {getProjectRelativePath} from '../../../util/src/path';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstHostElement} from '@angular/compiler';
+import {HostElement} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
@@ -23,7 +23,7 @@ export class TcbHostElementOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private element: TmplAstHostElement,
+    private element: HostElement,
   ) {
     super();
   }

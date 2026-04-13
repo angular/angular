@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {Template, Variable} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import type {Context} from './context';
 import type {Scope} from './scope';
@@ -23,7 +23,7 @@ export class TcbBlockImplicitVariableOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private type: TcbExpr,
-    private variable: TmplAstVariable,
+    private variable: Variable,
   ) {
     super();
   }
@@ -41,8 +41,8 @@ export class TcbBlockImplicitVariableOp extends TcbOp {
 }
 
 /**
- * A `TcbOp` which creates an expression for particular let- `TmplAstVariable` on a
- * `TmplAstTemplate`'s context.
+ * A `TcbOp` which creates an expression for particular let- `Variable` on a
+ * `Template`'s context.
  *
  * Executing this operation returns a reference to the variable variable (lol).
  */
@@ -50,8 +50,8 @@ export class TcbTemplateVariableOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private template: TmplAstTemplate,
-    private variable: TmplAstVariable,
+    private template: Template,
+    private variable: Variable,
   ) {
     super();
   }
@@ -64,7 +64,7 @@ export class TcbTemplateVariableOp extends TcbOp {
     // Look for a context variable for the template.
     const ctx = this.scope.resolve(this.template);
 
-    // Allocate an identifier for the TmplAstVariable, and initialize it to a read of the variable
+    // Allocate an identifier for the Variable, and initialize it to a read of the variable
     // on the template context.
     const id = new TcbExpr(this.tcb.allocateId());
     const initializer = new TcbExpr(`${ctx.print()}.${this.variable.value || '$implicit'}`);
@@ -92,7 +92,7 @@ export class TcbBlockVariableOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private initializer: TcbExpr,
-    private variable: TmplAstVariable,
+    private variable: Variable,
   ) {
     super();
   }

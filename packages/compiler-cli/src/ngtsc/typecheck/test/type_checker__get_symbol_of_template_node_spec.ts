@@ -25,6 +25,7 @@ import {
   LiteralMap,
   TmplAstIfBlock,
   TmplAstLetDeclaration,
+  TypeCheckingConfig,
   ParseTemplateOptions,
   TmplAstComponent,
   MatchSource,
@@ -52,7 +53,6 @@ import {
   SymbolReference,
   TemplateSymbol,
   TemplateTypeChecker,
-  TypeCheckingConfig,
   VariableSymbol,
 } from '../api';
 import {

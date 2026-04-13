@@ -6,25 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector, SelectorMatcher} from '../../directive_matching';
 import {
-  createCssSelectorFromNode,
-  CssSelector,
-  SelectorMatcher,
-  TmplAstComponent,
-  TmplAstElement,
-  TmplAstForLoopBlock,
-  TmplAstForLoopBlockEmpty,
-  TmplAstIfBlock,
-  TmplAstIfBlockBranch,
-  TmplAstNode,
-  TmplAstSwitchBlock,
-  TmplAstSwitchBlockCaseGroup,
-  TmplAstTemplate,
-  TmplAstText,
-} from '@angular/compiler';
+  Component,
+  Element,
+  ForLoopBlock,
+  ForLoopBlockEmpty,
+  IfBlock,
+  IfBlockBranch,
+  Node,
+  SwitchBlock,
+  SwitchBlockCaseGroup,
+  Template,
+  Text,
+} from '../../render3/r3_ast';
+import {createCssSelectorFromNode} from '../../render3/view/util';
 import {TcbOp} from './base';
 import {Context} from './context';
-import {OutOfBandDiagnosticCategory} from '../../api';
+import {OutOfBandDiagnosticCategory} from '../oob';
 
 /**
  * A `TcbOp` that finds and flags control flow nodes that interfere with content projection.
@@ -43,7 +42,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
   constructor(
     private tcb: Context,
-    private element: TmplAstElement | TmplAstComponent,
+    private element: Element | Component,
     private ngContentSelectors: string[],
     private componentName: string,
   ) {
@@ -74,7 +73,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
       for (const root of controlFlowToCheck) {
         for (const child of root.children) {
-          if (child instanceof TmplAstElement || child instanceof TmplAstTemplate) {
+          if (child instanceof Element || child instanceof Template) {
             matcher.match(createCssSelectorFromNode(child), (_, originalSelector) => {
               this.tcb.oobRecorder.controlFlowPreventingContentProjection(
                 this.tcb.id,
@@ -95,28 +94,24 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
   }
 
   private findPotentialControlFlowNodes() {
-    const result: Array<
-      | TmplAstIfBlockBranch
-      | TmplAstSwitchBlockCaseGroup
-      | TmplAstForLoopBlock
-      | TmplAstForLoopBlockEmpty
-    > = [];
+    const result: Array<IfBlockBranch | SwitchBlockCaseGroup | ForLoopBlock | ForLoopBlockEmpty> =
+      [];
 
     for (const child of this.element.children) {
-      if (child instanceof TmplAstForLoopBlock) {
+      if (child instanceof ForLoopBlock) {
         if (this.shouldCheck(child)) {
           result.push(child);
         }
         if (child.empty !== null && this.shouldCheck(child.empty)) {
           result.push(child.empty);
         }
-      } else if (child instanceof TmplAstIfBlock) {
+      } else if (child instanceof IfBlock) {
         for (const branch of child.branches) {
           if (this.shouldCheck(branch)) {
             result.push(branch);
           }
         }
-      } else if (child instanceof TmplAstSwitchBlock) {
+      } else if (child instanceof SwitchBlock) {
         for (const current of child.groups) {
           if (this.shouldCheck(current)) {
             result.push(current);
@@ -128,7 +123,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
     return result;
   }
 
-  private shouldCheck(node: TmplAstNode & {children: TmplAstNode[]}): boolean {
+  private shouldCheck(node: Node & {children: Node[]}): boolean {
     // Skip nodes with less than two children since it's impossible
     // for them to run into the issue that we're checking for.
     if (node.children.length < 2) {
@@ -145,7 +140,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
       // that we have to account for it here since the presence of text nodes affects the
       // content projection behavior.
       if (
-        !(child instanceof TmplAstText) ||
+        !(child instanceof Text) ||
         this.tcb.hostPreserveWhitespaces ||
         child.value.trim().length > 0
       ) {

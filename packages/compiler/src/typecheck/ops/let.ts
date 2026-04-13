@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstLetDeclaration} from '@angular/compiler';
+import {LetDeclaration} from '../../render3/r3_ast';
 import {Context} from './context';
 import type {Scope} from './scope';
 import {TcbOp} from './base';
@@ -14,15 +14,13 @@ import {TcbExpr} from './codegen';
 import {tcbExpression} from './expression';
 
 /**
- * A `TcbOp` which generates a constant for a `TmplAstLetDeclaration`.
- *
- * Executing this operation returns a reference to the `@let` declaration.
+ * A `TcbOp` which generates a constant for a `LetDeclaration`.
  */
 export class TcbLetDeclarationOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private node: TmplAstLetDeclaration,
+    private node: LetDeclaration,
   ) {
     super();
   }

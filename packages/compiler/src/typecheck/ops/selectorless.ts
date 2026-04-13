@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstComponent} from '@angular/compiler';
+import {Component} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {Context} from './context';
@@ -15,12 +15,12 @@ import type {Scope} from './scope';
 // TODO(crisbeto): the logic for determining the fallback tag name of a Component node is
 // still being designed. For now fall back to `ng-component`, but this will have to be
 // revisited once the design is finalized.
-export function getComponentTagName(node: TmplAstComponent): string {
+export function getComponentTagName(node: Component): string {
   return node.tagName || 'ng-component';
 }
 
 /**
- * A `TcbOp` which creates an expression for a native DOM element from a `TmplAstComponent`.
+ * A `TcbOp` which creates an expression for a native DOM element from a `Component`.
  *
  * Executing this operation returns a reference to the element variable.
  */
@@ -30,7 +30,7 @@ export class TcbComponentNodeOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private component: TmplAstComponent,
+    private component: Component,
   ) {
     super();
   }

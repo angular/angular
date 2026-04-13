@@ -7,7 +7,7 @@
  */
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom, absoluteFromSourceFile, getSourceFileOrError} from '../../file_system';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {OptimizeFor} from '../api';
 

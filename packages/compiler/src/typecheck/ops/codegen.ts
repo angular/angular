@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
-import ts from 'typescript';
+import {AbsoluteSourceSpan} from '../../expression_parser/ast';
+import {ParseSourceSpan} from '../../parse_util';
 import {CommentTriviaType, ExpressionIdentifier} from '../comments';
 
 /** Represents an expression generated within a type check block. */
@@ -25,6 +25,13 @@ export class TcbExpr {
   private ignoreComment: string | null = null;
 
   constructor(private source: string) {}
+
+  /** Wraps a string value in quotes and escapes relevant characters. */
+  static quoteAndEscape(value: string): string {
+    // Passing the value through `JSON.stringify` automatically
+    // escapes quotes and allows us to handle line breaks.
+    return JSON.stringify(value);
+  }
 
   /**
    * Converts the node's current state to a string.
@@ -127,23 +134,4 @@ export function getStatementsBlock(expressions: TcbExpr[], singleLine = false): 
     result += `${expr.print()};${singleLine ? ' ' : '\n'}`;
   }
   return result;
-}
-
-/** Wraps a string value in quotes and escapes relevant characters. */
-export function quoteAndEscape(value: string): string {
-  // Passing the value through `JSON.stringify` automatically
-  // escapes quotes and allows us to handle line breaks.
-  return JSON.stringify(value);
-}
-
-let tempPrinter: ts.Printer | null = null;
-
-/**
- * Prints a TypeScript node as a string.
- *
- * @deprecated This is a temporary method until all code generation code has been migrated.
- */
-export function tempPrint(node: ts.Node, sourceFile: ts.SourceFile): string {
-  tempPrinter ??= ts.createPrinter();
-  return tempPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 }

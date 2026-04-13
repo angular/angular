@@ -7,31 +7,31 @@
  */
 
 import {
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstHostElement,
-  TmplAstLetDeclaration,
-  TmplAstReference,
-  TmplAstTemplate,
-  TmplAstVariable,
-} from '@angular/compiler';
+  Component,
+  Directive,
+  Element,
+  HostElement,
+  LetDeclaration,
+  Reference,
+  Template,
+  Variable,
+} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TcbDirectiveMetadata} from '../../api';
+import {TcbDirectiveMetadata} from '../api';
 
 /** Types that can referenced locally in a template. */
 export type LocalSymbol =
-  | TmplAstElement
-  | TmplAstTemplate
-  | TmplAstVariable
-  | TmplAstLetDeclaration
-  | TmplAstReference
-  | TmplAstHostElement
-  | TmplAstComponent
-  | TmplAstDirective;
+  | Element
+  | Template
+  | Variable
+  | LetDeclaration
+  | Reference
+  | HostElement
+  | Component
+  | Directive;
 
 /**
  * A `TcbOp` which creates a variable for a local ref in a template.
@@ -57,9 +57,9 @@ export class TcbReferenceOp extends TcbOp {
   constructor(
     private readonly tcb: Context,
     private readonly scope: Scope,
-    private readonly node: TmplAstReference,
-    private readonly host: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-    private readonly target: TcbDirectiveMetadata | TmplAstTemplate | TmplAstElement,
+    private readonly node: Reference,
+    private readonly host: Element | Template | Component | Directive,
+    private readonly target: TcbDirectiveMetadata | Template | Element,
   ) {
     super();
   }
@@ -71,21 +71,21 @@ export class TcbReferenceOp extends TcbOp {
   override execute(): TcbExpr {
     const id = new TcbExpr(this.tcb.allocateId());
     let initializer: TcbExpr =
-      this.target instanceof TmplAstTemplate || this.target instanceof TmplAstElement
+      this.target instanceof Template || this.target instanceof Element
         ? this.scope.resolve(this.target)
         : this.scope.resolve(this.host, this.target);
 
     // The reference is either to an element, an <ng-template> node, or to a directive on an
     // element or template.
     if (
-      (this.target instanceof TmplAstElement && !this.tcb.env.config.checkTypeOfDomReferences) ||
+      (this.target instanceof Element && !this.tcb.env.config.checkTypeOfDomReferences) ||
       !this.tcb.env.config.checkTypeOfNonDomReferences
     ) {
       // References to DOM nodes are pinned to 'any' when `checkTypeOfDomReferences` is `false`.
       // References to `TemplateRef`s and directives are pinned to 'any' when
       // `checkTypeOfNonDomReferences` is `false`.
       initializer = new TcbExpr(`${initializer.print()} as any`);
-    } else if (this.target instanceof TmplAstTemplate) {
+    } else if (this.target instanceof Template) {
       // Direct references to an <ng-template> node simply require a value of type
       // `TemplateRef<any>`. To get this, an expression of the form
       // `(_t1 as any as TemplateRef<any>)` is constructed.

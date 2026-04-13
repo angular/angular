@@ -6,28 +6,27 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AST, BindingPipe, PropertyRead} from '../expression_parser/ast';
+
 import {
-  AST,
-  BindingPipe,
-  PropertyRead,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstForLoopBlock,
-  TmplAstForLoopBlockEmpty,
-  TmplAstHoverDeferredTrigger,
-  TmplAstIfBlockBranch,
-  TmplAstInteractionDeferredTrigger,
-  TmplAstLetDeclaration,
-  TmplAstReference,
-  TmplAstSwitchBlockCase,
-  TmplAstTemplate,
-  TmplAstTextAttribute,
-  TmplAstVariable,
-  TmplAstViewportDeferredTrigger,
-} from '@angular/compiler';
+  BoundAttribute,
+  BoundEvent,
+  Component,
+  Directive,
+  Element,
+  ForLoopBlock,
+  ForLoopBlockEmpty,
+  HoverDeferredTrigger,
+  IfBlockBranch,
+  InteractionDeferredTrigger,
+  LetDeclaration,
+  Reference,
+  SwitchBlockCase,
+  Template,
+  TextAttribute,
+  Variable,
+  ViewportDeferredTrigger,
+} from '../render3/r3_ast';
 
 import {TcbDirectiveMetadata, TypeCheckId} from './api';
 
@@ -54,9 +53,9 @@ export interface OutOfBandDiagnosticRecorder<T> {
    * found.
    *
    * @param id the type-checking ID of the template which contains the broken reference.
-   * @param ref the `TmplAstReference` which could not be matched to a directive.
+   * @param ref the `Reference` which could not be matched to a directive.
    */
-  missingReferenceTarget(id: TypeCheckId, ref: TmplAstReference): void;
+  missingReferenceTarget(id: TypeCheckId, ref: Reference): void;
 
   /**
    * Reports usage of a `| pipe` expression in the template for which the named pipe could not be
@@ -84,43 +83,39 @@ export interface OutOfBandDiagnosticRecorder<T> {
    * @param id the type-checking ID of the template which contains the unknown pipe.
    * @param element the element which hosts a component that was defer-loaded.
    */
-  deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void;
+  deferredComponentUsedEagerly(id: TypeCheckId, element: Element): void;
 
   /**
    * Reports a duplicate declaration of a template variable.
    *
    * @param id the type-checking ID of the template which contains the duplicate
    * declaration.
-   * @param variable the `TmplAstVariable` which duplicates a previously declared variable.
+   * @param variable the `Variable` which duplicates a previously declared variable.
    * @param firstDecl the first variable declaration which uses the same name as `variable`.
    */
-  duplicateTemplateVar(
-    id: TypeCheckId,
-    variable: TmplAstVariable,
-    firstDecl: TmplAstVariable,
-  ): void;
+  duplicateTemplateVar(id: TypeCheckId, variable: Variable, firstDecl: Variable): void;
 
   /**
    * Report a warning when structural directives support context guards, but the current
    * type-checking configuration prohibits their usage.
    */
-  suboptimalTypeInference(id: TypeCheckId, variables: TmplAstVariable[]): void;
+  suboptimalTypeInference(id: TypeCheckId, variables: Variable[]): void;
 
   /**
    * Reports a split two way binding error message.
    */
   splitTwoWayBinding(
     id: TypeCheckId,
-    input: TmplAstBoundAttribute,
-    output: TmplAstBoundEvent,
+    input: BoundAttribute,
+    output: BoundEvent,
     inputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'>,
-    outputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'> | TmplAstElement,
+    outputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'> | Element,
   ): void;
 
   /** Reports required inputs that haven't been bound. */
   missingRequiredInputs(
     id: TypeCheckId,
-    element: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    element: Element | Template | Component | Directive,
     directiveName: string,
     isComponent: boolean,
     inputAliases: string[],
@@ -129,21 +124,14 @@ export interface OutOfBandDiagnosticRecorder<T> {
   /**
    * Reports accesses of properties that aren't available in a `for` block's tracking expression.
    */
-  illegalForLoopTrackAccess(
-    id: TypeCheckId,
-    block: TmplAstForLoopBlock,
-    access: PropertyRead,
-  ): void;
+  illegalForLoopTrackAccess(id: TypeCheckId, block: ForLoopBlock, access: PropertyRead): void;
 
   /**
    * Reports deferred triggers that cannot access the element they're referring to.
    */
   inaccessibleDeferredTriggerElement(
     id: TypeCheckId,
-    trigger:
-      | TmplAstHoverDeferredTrigger
-      | TmplAstInteractionDeferredTrigger
-      | TmplAstViewportDeferredTrigger,
+    trigger: HoverDeferredTrigger | InteractionDeferredTrigger | ViewportDeferredTrigger,
   ): void;
 
   /**
@@ -152,37 +140,33 @@ export interface OutOfBandDiagnosticRecorder<T> {
   controlFlowPreventingContentProjection(
     id: TypeCheckId,
     category: OutOfBandDiagnosticCategory,
-    projectionNode: TmplAstElement | TmplAstTemplate,
+    projectionNode: Element | Template,
     componentName: string,
     slotSelector: string,
-    controlFlowNode:
-      | TmplAstIfBlockBranch
-      | TmplAstSwitchBlockCase
-      | TmplAstForLoopBlock
-      | TmplAstForLoopBlockEmpty,
+    controlFlowNode: IfBlockBranch | SwitchBlockCase | ForLoopBlock | ForLoopBlockEmpty,
     preservesWhitespaces: boolean,
   ): void;
 
   /** Reports cases where users are writing to `@let` declarations. */
-  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void;
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: LetDeclaration): void;
 
   /** Reports cases where users are accessing an `@let` before it is defined.. */
-  letUsedBeforeDefinition(id: TypeCheckId, node: PropertyRead, target: TmplAstLetDeclaration): void;
+  letUsedBeforeDefinition(id: TypeCheckId, node: PropertyRead, target: LetDeclaration): void;
 
   /**
    * Reports a `@let` declaration that conflicts with another symbol in the same scope.
    *
    * @param id the type-checking ID of the template which contains the declaration.
-   * @param current the `TmplAstLetDeclaration` which is invalid.
+   * @param current the `LetDeclaration` which is invalid.
    */
-  conflictingDeclaration(id: TypeCheckId, current: TmplAstLetDeclaration): void;
+  conflictingDeclaration(id: TypeCheckId, current: LetDeclaration): void;
 
   /**
    * Reports that a named template dependency (e.g. `<Missing/>`) is not available.
    * @param id Type checking ID of the template in which the dependency is declared.
    * @param node Node that declares the dependency.
    */
-  missingNamedTemplateDependency(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective): void;
+  missingNamedTemplateDependency(id: TypeCheckId, node: Component | Directive): void;
 
   /**
    * Reports that a templace dependency of the wrong kind has been referenced at a specific position
@@ -190,7 +174,7 @@ export interface OutOfBandDiagnosticRecorder<T> {
    * @param id Type checking ID of the template in which the dependency is declared.
    * @param node Node that declares the dependency.
    */
-  incorrectTemplateDependencyType(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective): void;
+  incorrectTemplateDependencyType(id: TypeCheckId, node: Component | Directive): void;
 
   /**
    * Reports a binding inside directive syntax that does not match any of the inputs/outputs of
@@ -201,8 +185,8 @@ export interface OutOfBandDiagnosticRecorder<T> {
    */
   unclaimedDirectiveBinding(
     id: TypeCheckId,
-    directive: TmplAstDirective,
-    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
+    directive: Directive,
+    node: BoundAttribute | TextAttribute | BoundEvent,
   ): void;
 
   /**
@@ -210,10 +194,7 @@ export interface OutOfBandDiagnosticRecorder<T> {
    */
   deferImplicitTriggerMissingPlaceholder(
     id: TypeCheckId,
-    trigger:
-      | TmplAstHoverDeferredTrigger
-      | TmplAstInteractionDeferredTrigger
-      | TmplAstViewportDeferredTrigger,
+    trigger: HoverDeferredTrigger | InteractionDeferredTrigger | ViewportDeferredTrigger,
   ): void;
 
   /**
@@ -222,28 +203,18 @@ export interface OutOfBandDiagnosticRecorder<T> {
    */
   deferImplicitTriggerInvalidPlaceholder(
     id: TypeCheckId,
-    trigger:
-      | TmplAstHoverDeferredTrigger
-      | TmplAstInteractionDeferredTrigger
-      | TmplAstViewportDeferredTrigger,
+    trigger: HoverDeferredTrigger | InteractionDeferredTrigger | ViewportDeferredTrigger,
   ): void;
 
   /**
    * Reports an unsupported binding on a form `FormField` node.
    */
-  formFieldUnsupportedBinding(
-    id: TypeCheckId,
-    node: TmplAstBoundAttribute | TmplAstTextAttribute,
-  ): void;
+  formFieldUnsupportedBinding(id: TypeCheckId, node: BoundAttribute | TextAttribute): void;
 
   /**
    * Reports that multiple components in the compilation scope match a given element.
    */
-  multipleMatchingComponents(
-    id: TypeCheckId,
-    element: TmplAstElement,
-    componentNames: string[],
-  ): void;
+  multipleMatchingComponents(id: TypeCheckId, element: Element, componentNames: string[]): void;
 
   /**
    * Reports that a host directive input/output has been exposed under multiple names.
@@ -256,7 +227,7 @@ export interface OutOfBandDiagnosticRecorder<T> {
    */
   conflictingHostDirectiveBinding(
     id: TypeCheckId,
-    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    node: Element | Template | Component | Directive,
     directiveName: string,
     kind: 'input' | 'output',
     classPropertyName: string,

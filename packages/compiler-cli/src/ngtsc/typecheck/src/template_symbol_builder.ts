@@ -31,6 +31,7 @@ import {
   TmplAstTemplate,
   TmplAstTextAttribute,
   TmplAstVariable,
+  TypeCheckingConfig,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -57,7 +58,6 @@ import {
   SymbolReference,
   TcbLocation,
   TemplateSymbol,
-  TypeCheckingConfig,
   VariableSymbol,
 } from '../api';
 import {findAllMatchingNodes, findFirstMatchingNode, readDirectiveIdFromComment} from './comments';

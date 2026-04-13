@@ -6,44 +6,28 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  DomSchemaChecker,
-  OutOfBandDiagnosticRecorder,
-  TcbComponentMetadata,
-  TcbTypeCheckBlockMetadata,
-} from '../api';
-import {Environment} from './environment';
-import {createHostBindingsBlockGuard} from './host_bindings';
+import {TcbComponentMetadata, TcbTypeCheckBlockMetadata, TcbEnvironment} from './api';
+import {OutOfBandDiagnosticRecorder} from './oob';
+import {DomSchemaChecker} from './schema';
 import {Context} from './ops/context';
 import {Scope} from './ops/scope';
 import {getStatementsBlock} from './ops/codegen';
+import {createHostBindingsBlockGuard} from './host_bindings';
 
 /**
- * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
- * "type check block" function.
+ * Given a component and metadata, compose a "type check block" function.
  *
- * When passed through TypeScript's TypeChecker, type errors that arise within the type check block
- * function indicate issues in the template itself.
- *
- * As a side effect of generating a TCB for the component, `ts.Diagnostic`s may also be produced
- * directly for issues within the template which are identified during generation. These issues are
- * recorded in either the `domSchemaChecker` (which checks usage of DOM elements and bindings) as
- * well as the `oobRecorder` (which records errors when the type-checking code generator is unable
- * to sufficiently understand a template).
- *
- * @param env an `Environment` into which type-checking code will be generated.
- * @param ref a `Reference` to the component class which should be type-checked.
+ * @param env an `TcbEnvironment` into which type-checking code will be generated.
+ * @param component metadata about the component class.
  * @param name Name of the generated function.
  * @param meta metadata about the component's template and the function being generated.
  * @param domSchemaChecker used to check and record errors regarding improper usage of DOM elements
  * and bindings.
  * @param oobRecorder used to record errors regarding template elements which could not be correctly
  * translated into types during TCB generation.
- * @param genericContextBehavior controls how generic parameters (especially parameters with generic
- * bounds) will be referenced from the generated TCB code.
  */
 export function generateTypeCheckBlock(
-  env: Environment,
+  env: TcbEnvironment,
   component: TcbComponentMetadata,
   name: string,
   meta: TcbTypeCheckBlockMetadata,
@@ -99,7 +83,11 @@ export function generateTypeCheckBlock(
   return `/*${meta.id}*/\n${funcDeclStr}`;
 }
 
-function renderBlockStatements(env: Environment, scope: Scope, wrapperExpression: string): string {
+function renderBlockStatements(
+  env: TcbEnvironment,
+  scope: Scope,
+  wrapperExpression: string,
+): string {
   // Note: this needs to be called first so that it can populate the prelude statements.
   const scopeStatements = scope.render();
   const statements = getStatementsBlock([...env.getPreludeStatements(), ...scopeStatements]);

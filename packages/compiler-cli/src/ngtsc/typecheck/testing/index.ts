@@ -11,7 +11,9 @@ import {
   BindingPipe,
   ClassPropertyMapping,
   CssSelector,
+  DomSchemaChecker,
   MatchSource,
+  OutOfBandDiagnosticRecorder,
   ParseSourceFile,
   parseTemplate,
   ParseTemplateOptions,
@@ -19,6 +21,7 @@ import {
   R3TargetBinder,
   SelectorlessMatcher,
   SelectorMatcher,
+  TcbGenericContextBehavior,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -29,6 +32,8 @@ import {
   TmplAstLetDeclaration,
   TmplAstTextAttribute,
   TmplAstViewportDeferredTrigger,
+  TypeCheckId,
+  TypeCheckingConfig,
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
@@ -87,22 +92,14 @@ import {makeProgram, resolveFromRunfiles} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {
   OptimizeFor,
-  OutOfBandDiagnosticRecorder,
   ProgramTypeCheckAdapter,
   TemplateContext,
   TemplateDiagnostic,
   TemplateTypeChecker,
   TypeCheckContext,
 } from '../api';
-import {
-  TypeCheckableDirectiveMeta,
-  TypeCheckBlockMetadata,
-  TypeCheckId,
-  TypeCheckingConfig,
-} from '../api/api';
-import {DomSchemaChecker} from '../api/schema';
+import {TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
-import {TcbGenericContextBehavior} from '../src/ops/context';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TypeCheckFile} from '../src/type_check_file';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST} from '@angular/compiler';
+import {AST} from '../../expression_parser/ast';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {Context} from './context';

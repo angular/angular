@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BindingType, TmplAstComponent, TmplAstElement, TmplAstHostElement} from '@angular/compiler';
-import {REGISTRY} from '../dom';
+import {BindingType} from '../../expression_parser/ast';
+import {Component, Element, HostElement} from '../../render3/r3_ast';
+import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
+const REGISTRY = new DomElementSchemaRegistry();
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {Context} from './context';
@@ -26,7 +28,7 @@ import {getComponentTagName} from './selectorless';
 export class TcbDomSchemaCheckerOp extends TcbOp {
   constructor(
     private tcb: Context,
-    private element: TmplAstElement | TmplAstComponent | TmplAstHostElement,
+    private element: Element | Component | HostElement,
     private checkElement: boolean,
     private claimedInputs: Set<string> | null,
   ) {
@@ -39,8 +41,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
 
   override execute(): TcbExpr | null {
     const element = this.element;
-    const isTemplateElement =
-      element instanceof TmplAstElement || element instanceof TmplAstComponent;
+    const isTemplateElement = element instanceof Element || element instanceof Component;
     const bindings = isTemplateElement ? element.inputs : element.bindings;
 
     if (this.checkElement && isTemplateElement) {
@@ -90,7 +91,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
     return null;
   }
 
-  private getTagName(node: TmplAstElement | TmplAstComponent): string {
-    return node instanceof TmplAstElement ? node.name : getComponentTagName(node);
+  private getTagName(node: Element | Component): string {
+    return node instanceof Element ? node.name : getComponentTagName(node);
   }
 }

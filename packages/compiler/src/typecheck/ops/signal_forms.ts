@@ -6,23 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AST, BindingType, Call, PropertyRead, SafeCall} from '../../expression_parser/ast';
+import {DirectiveOwner} from '../../render3/view/t2_api';
 import {
-  AST,
-  BindingType,
-  Call,
-  DirectiveOwner,
-  PropertyRead,
-  SafeCall,
-  TmplAstBoundAttribute,
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstHostElement,
-  TmplAstNode,
-  TmplAstTemplate,
-} from '@angular/compiler';
-import ts from 'typescript';
-import {TcbDirectiveMetadata} from '../../api';
+  BoundAttribute,
+  Component,
+  Directive,
+  Element,
+  HostElement,
+  Node,
+  Template,
+} from '../../render3/r3_ast';
+
+import {TcbDirectiveMetadata, TcbInputMapping} from '../api';
 import {TcbOp} from './base';
 import {declareVariable, TcbExpr} from './codegen';
 import {TcbBoundAttribute} from './bindings';
@@ -92,14 +88,14 @@ export class TcbNativeFieldOp extends TcbOp {
   constructor(
     protected tcb: Context,
     protected scope: Scope,
-    protected node: TmplAstElement,
+    protected node: Element,
     private inputType: string | null,
   ) {
     super();
   }
 
   override execute(): null {
-    const inputs = this.node instanceof TmplAstHostElement ? this.node.bindings : this.node.inputs;
+    const inputs = this.node instanceof HostElement ? this.node.bindings : this.node.inputs;
     const fieldBinding =
       inputs.find((input) => input.type === BindingType.Property && input.name === 'formField') ??
       null;
@@ -145,7 +141,7 @@ export class TcbNativeFieldOp extends TcbOp {
     return null;
   }
 
-  private getExpectedTypeFromDomNode(node: TmplAstElement): string | null {
+  private getExpectedTypeFromDomNode(node: Element): string | null {
     if (node.name === 'textarea' || node.name === 'select') {
       // `<textarea>` and `<select>` are always strings.
       return 'string';
@@ -204,7 +200,7 @@ export class TcbNativeFieldOp extends TcbOp {
  * A variation of the `TcbNativeFieldOp` with specific logic for radio buttons.
  */
 export class TcbNativeRadioButtonFieldOp extends TcbNativeFieldOp {
-  constructor(tcb: Context, scope: Scope, node: TmplAstElement) {
+  constructor(tcb: Context, scope: Scope, node: Element) {
     super(tcb, scope, node, 'radio');
     this.unsupportedBindingFields.delete('value');
   }
@@ -233,7 +229,7 @@ export class TcbNativeRadioButtonFieldOp extends TcbNativeFieldOp {
 /** Expands the set of bound inputs with the ones from custom field directives. */
 export function expandBoundAttributesForField(
   directive: TcbDirectiveMetadata,
-  node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
+  node: Template | Element | Component | Directive,
   customFormControlType: CustomFormControlType | null,
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(
@@ -308,7 +304,7 @@ function getSyntheticFieldBoundInput(
   dir: TcbDirectiveMetadata,
   inputName: string,
   fieldPropertyName: string,
-  fieldBinding: TmplAstBoundAttribute,
+  fieldBinding: BoundAttribute,
   customFieldType: CustomFormControlType | null,
 ): TcbBoundAttribute | null {
   const inputs = dir.inputs.getByBindingPropertyName(inputName);
@@ -339,7 +335,7 @@ function getSyntheticFieldBoundInput(
     value,
     sourceSpan: fieldBinding.sourceSpan,
     keySpan: fieldBinding.keySpan ?? null,
-    inputs: inputs.map((input) => ({
+    inputs: inputs.map((input: TcbInputMapping) => ({
       fieldName: input.classPropertyName,
       required: input.required,
       transformType: input.transformType,
@@ -364,9 +360,9 @@ export function getCustomFieldDirectiveType(
 /** Determines if a directive usage is on a native field. */
 export function isNativeField(
   dir: TcbDirectiveMetadata,
-  node: TmplAstNode,
+  node: Node,
   allDirectiveMatches: TcbDirectiveMetadata[],
-): node is TmplAstElement & {name: 'input' | 'select' | 'textarea'} {
+): node is Element & {name: 'input' | 'select' | 'textarea'} {
   // Only applies to the `FormField` directive.
   if (!isFieldDirective(dir)) {
     return false;
@@ -374,7 +370,7 @@ export function isNativeField(
 
   // Only applies to input, select and textarea elements.
   if (
-    !(node instanceof TmplAstElement) ||
+    !(node instanceof Element) ||
     (node.name !== 'input' && node.name !== 'select' && node.name !== 'textarea')
   ) {
     return false;
@@ -404,7 +400,7 @@ export function checkUnsupportedFieldBindings(
   unsupportedBindingFields: Set<string>,
   tcb: Context,
 ) {
-  const inputs = node instanceof TmplAstHostElement ? node.bindings : node.inputs;
+  const inputs = node instanceof HostElement ? node.bindings : node.inputs;
 
   for (const input of inputs) {
     if (input.type === BindingType.Property && unsupportedBindingFields.has(input.name)) {
@@ -417,7 +413,7 @@ export function checkUnsupportedFieldBindings(
     }
   }
 
-  if (!(node instanceof TmplAstHostElement)) {
+  if (!(node instanceof HostElement)) {
     for (const attr of node.attributes) {
       if (unsupportedBindingFields.has(attr.name.toLowerCase())) {
         tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, attr);

@@ -6,21 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  AST,
-  DirectiveOwner,
-  ImplicitReceiver,
-  ParsedEventType,
-  PropertyRead,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstElement,
-} from '@angular/compiler';
+import {AST, ImplicitReceiver, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
+import {BoundAttribute, BoundEvent, Element} from '../../render3/r3_ast';
+import {DirectiveOwner} from '../../render3/view/t2_api';
 import {TcbOp} from './base';
-import {quoteAndEscape, getStatementsBlock, TcbExpr} from './codegen';
+import {getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TcbDirectiveMetadata} from '../../api';
+import {TcbDirectiveMetadata} from '../api';
 import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
 import {ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
@@ -57,8 +50,8 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private node: DirectiveOwner,
-    private inputs: TmplAstBoundAttribute[] | null,
-    private outputs: TmplAstBoundEvent[],
+    private inputs: BoundAttribute[] | null,
+    private outputs: BoundEvent[],
     private dir: TcbDirectiveMetadata,
   ) {
     super();
@@ -94,7 +87,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
       if (dirId === null) {
         dirId = this.scope.resolve(this.node, this.dir);
       }
-      const outputField = new TcbExpr(`${dirId.print()}[${quoteAndEscape(field)}]`);
+      const outputField = new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(field)}]`);
       outputField.addParseSpanInfo(output.keySpan);
 
       if (this.tcb.env.config.checkTypeOfOutputEvents) {
@@ -134,8 +127,8 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private target: LocalSymbol,
-    private outputs: TmplAstBoundEvent[],
-    private inputs: TmplAstBoundAttribute[] | null,
+    private outputs: BoundEvent[],
+    private inputs: BoundAttribute[] | null,
     private claimedOutputs: Set<string> | null,
   ) {
     super();
@@ -218,7 +211,7 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
         // });
         // ```
         if (
-          this.target instanceof TmplAstElement &&
+          this.target instanceof Element &&
           this.target.isVoid &&
           this.tcb.env.config.allowDomEventAssertion
         ) {
@@ -239,7 +232,7 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
           domEventAssertion,
         );
         const call = new TcbExpr(
-          `${propertyAccess.print()}(${quoteAndEscape(output.name)}, ${handler.print()})`,
+          `${propertyAccess.print()}(${TcbExpr.quoteAndEscape(output.name)}, ${handler.print()})`,
         );
         call.addParseSpanInfo(output.sourceSpan);
         this.scope.addStatement(call);
@@ -291,7 +284,7 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
  * bindings. Alternatively, an explicit type can be passed for the `$event` parameter.
  */
 function tcbCreateEventHandler(
-  event: TmplAstBoundEvent,
+  event: BoundEvent,
   tcb: Context,
   scope: Scope,
   eventType: EventParamType | string,

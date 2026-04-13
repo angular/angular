@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveOwner, MatchSource, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
+import {ParseSourceSpan} from '../../parse_util';
+import {HostElement} from '../../render3/r3_ast';
+import {DirectiveOwner, MatchSource} from '../../render3/view/t2_api';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbOp} from './base';
 import {declareVariable, TcbExpr} from './codegen';
-import {TcbDirectiveMetadata} from '../../api';
+import {TcbDirectiveMetadata} from '../api';
 import {ExpressionIdentifier} from '../comments';
 
 /**
@@ -54,7 +56,7 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
       type = new TcbExpr(`${rawType.print()}<${typeArguments}>`);
     }
 
-    if (this.node instanceof TmplAstHostElement) {
+    if (this.node instanceof HostElement) {
       span = this.node.sourceSpan;
     } else {
       span = this.node.startSourceSpan || this.node.sourceSpan;

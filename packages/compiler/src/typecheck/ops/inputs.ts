@@ -6,24 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  AST,
-  BindingPropertyName,
-  BindingType,
-  ClassPropertyName,
-  R3Identifiers,
-  TmplAstBoundAttribute,
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstTemplate,
-} from '@angular/compiler';
+import {AST, BindingType} from '../../expression_parser/ast';
+import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
+import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
+import {BoundAttribute, Component, Directive, Element, Template} from '../../render3/r3_ast';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TcbDirectiveMetadata} from '../../api';
+import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
-import {declareVariable, quoteAndEscape, TcbExpr} from './codegen';
-import {REGISTRY} from '../dom';
+import {declareVariable, TcbExpr} from './codegen';
+import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
+const REGISTRY = new DomElementSchemaRegistry();
 import {tcbExpression, unwrapWritableSignal} from './expression';
 import {
   checkUnsupportedFieldBindings,
@@ -40,7 +33,7 @@ import {LocalSymbol} from './references';
 export function translateInput(value: AST | string, tcb: Context, scope: Scope): TcbExpr {
   if (typeof value === 'string') {
     // For regular attributes with a static string value, use the represented string literal.
-    return new TcbExpr(quoteAndEscape(value));
+    return new TcbExpr(TcbExpr.quoteAndEscape(value));
   } else {
     // Produce an expression representing the value of the binding.
     return tcbExpression(value, tcb, scope);
@@ -57,7 +50,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
+    private node: Template | Element | Component | Directive,
     private dir: TcbDirectiveMetadata,
     private isFormControl: boolean = false,
     private customFormControlType: CustomFormControlType | null,
@@ -150,7 +143,9 @@ export class TcbDirectiveInputsOp extends TcbOp {
           }
 
           const id = new TcbExpr(this.tcb.allocateId());
-          const type = new TcbExpr(`(typeof ${dirId.print()})[${quoteAndEscape(fieldName)}]`);
+          const type = new TcbExpr(
+            `(typeof ${dirId.print()})[${TcbExpr.quoteAndEscape(fieldName)}]`,
+          );
           const temp = declareVariable(id, type);
           this.scope.addStatement(temp);
           target = id;
@@ -163,7 +158,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
           // when possible. String literal fields may not be valid JS identifiers so we use
           // literal element access instead for those cases.
           target = this.dir.stringLiteralInputFields.has(fieldName)
-            ? new TcbExpr(`${dirId.print()}[${quoteAndEscape(fieldName)}]`)
+            ? new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(fieldName)}]`)
             : new TcbExpr(`${dirId.print()}.${fieldName}`);
         }
 
@@ -244,7 +239,7 @@ export class TcbUnclaimedInputsOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private inputs: TmplAstBoundAttribute[],
+    private inputs: BoundAttribute[],
     private target: LocalSymbol,
     private claimedInputs: Set<string> | null,
   ) {
@@ -284,7 +279,7 @@ export class TcbUnclaimedInputsOp extends TcbOp {
           // A direct binding to a property.
           const propertyName = REGISTRY.getMappedPropName(binding.name);
           const stmt = new TcbExpr(
-            `${elId.print()}[${quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
+            `${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
           ).addParseSpanInfo(binding.sourceSpan);
           this.scope.addStatement(stmt);
         } else {

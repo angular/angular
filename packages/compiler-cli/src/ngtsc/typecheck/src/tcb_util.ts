@@ -6,25 +6,25 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AbsoluteSourceSpan, ParseSourceSpan, R3Identifiers} from '@angular/compiler';
+import {
+  AbsoluteSourceSpan,
+  ParseSourceSpan,
+  R3Identifiers,
+  TcbTypeParameter,
+  TypeCheckId,
+  HOST_BINDING_GUARD_COMMENT_TEXT,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {
-  FullSourceMapping,
-  SourceLocation,
-  TypeCheckId,
-  SourceMapping,
-  TcbTypeParameter,
-} from '../api';
+import {FullSourceMapping, SourceLocation, SourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeParameterEmitter} from './type_parameter_emitter';
-import {isHostBindingsBlockGuard} from './host_bindings';
-import {tempPrint} from './ops/codegen';
+import {tempPrint} from './tcb_print';
 
 /**
  * External modules/identifiers that always should exist for type check
@@ -316,4 +316,31 @@ export function generateTcbTypeParameters(
       representationWithDefault: p.default ? representation : `${representation} = any`,
     };
   });
+}
+
+/**
+ * Determines if a given node is a guard that indicates that descendant nodes are used to check
+ * host bindings.
+ */
+function isHostBindingsBlockGuard(node: ts.Node): boolean {
+  if (!ts.isIfStatement(node)) {
+    return false;
+  }
+
+  // Needs to be kept in sync with `createHostBindingsMarker`.
+  const expr = node.expression;
+  if (!ts.isParenthesizedExpression(expr) || expr.expression.kind !== ts.SyntaxKind.TrueKeyword) {
+    return false;
+  }
+
+  const text = expr.getSourceFile().text;
+  return (
+    ts.forEachTrailingCommentRange(
+      text,
+      expr.expression.getEnd(),
+      (pos, end, kind) =>
+        kind === ts.SyntaxKind.MultiLineCommentTrivia &&
+        text.substring(pos + 2, end - 2) === HOST_BINDING_GUARD_COMMENT_TEXT,
+    ) || false
+  );
 }

@@ -11,8 +11,11 @@ import {
   AST,
   BindingPipe,
   BindingType,
+  OutOfBandDiagnosticCategory,
+  OutOfBandDiagnosticRecorder,
   ParseSourceSpan,
   PropertyRead,
+  TcbDirectiveMetadata,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -30,17 +33,12 @@ import {
   TmplAstTextAttribute,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
+  TypeCheckId,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {
-  OutOfBandDiagnosticCategory,
-  OutOfBandDiagnosticRecorder,
-  TcbDirectiveMetadata,
-  TemplateDiagnostic,
-  TypeCheckId,
-} from '../api';
+import {TemplateDiagnostic} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';

@@ -6,23 +6,22 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  TcbDirectiveMetadata,
+  TcbExpr,
+  TcbPipeMetadata,
+  TcbReferenceKey,
+  TypeCheckingConfig,
+  TypeCtorMetadata,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ReferenceEmitter} from '../../imports';
 import {ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {
-  TcbDirectiveMetadata,
-  TcbPipeMetadata,
-  TcbReferenceKey,
-  TcbReferenceMetadata,
-  TypeCheckingConfig,
-  TypeCtorMetadata,
-} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {generateTypeCtorDeclarationFn} from './type_constructor';
-import {declareVariable, TcbExpr} from './ops/codegen';
 
 /**
  * A context which hosts one or more Type Check Blocks (TCBs).
@@ -105,9 +104,8 @@ export class Environment extends ReferenceEmitEnvironment {
 
     const pipeType = this.referenceTcbValue(pipe.ref);
     const pipeInstId = `_pipe${this.nextIds.pipeInst++}`;
-
     this.pipeInsts.set(pipe.ref.key, pipeInstId);
-    this.pipeInstStatements.push(declareVariable(new TcbExpr(pipeInstId), pipeType));
+    this.pipeInstStatements.push(new TcbExpr(`var ${pipeInstId} = null! as ${pipeType.print()}`));
     return new TcbExpr(pipeInstId);
   }
 

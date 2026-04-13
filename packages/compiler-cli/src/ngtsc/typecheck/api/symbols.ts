@@ -19,7 +19,6 @@ import {
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
 import {PotentialDirective, SymbolReference} from './scope';
 

@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveOwner, MatchSource, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
+import {ParseSourceSpan} from '../../parse_util';
+import {HostElement} from '../../render3/r3_ast';
+import {DirectiveOwner, MatchSource} from '../../render3/view/t2_api';
 import {TcbOp} from './base';
-import {quoteAndEscape, TcbExpr} from './codegen';
+import {TcbExpr} from './codegen';
 import {Context} from './context';
 import type {Scope} from './scope';
-import {TcbDirectiveMetadata} from '../../api';
+import {TcbDirectiveMetadata} from '../api';
 import {ExpressionIdentifier} from '../comments';
 import {unwrapWritableSignal} from './expression';
 import {CustomFormControlType, expandBoundAttributesForField} from './signal_forms';
@@ -54,7 +56,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
     let boundAttrs: TcbBoundAttribute[];
     let span: ParseSourceSpan;
 
-    if (this.node instanceof TmplAstHostElement) {
+    if (this.node instanceof HostElement) {
       // Host elements can't bind to their own inputs so we don't resolve any.
       boundAttrs = [];
       span = this.node.sourceSpan;
@@ -176,7 +178,7 @@ function tcbCallTypeCtor(
   // Construct an object literal containing each directive input.
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
-    const propertyName = quoteAndEscape(input.field);
+    const propertyName = TcbExpr.quoteAndEscape(input.field);
     const isLast = i === inputs.length - 1;
 
     if (input.type === 'binding') {
