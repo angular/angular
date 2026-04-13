@@ -88,6 +88,7 @@ import {
   PotentialImportKind,
   PotentialImportMode,
   PotentialPipe,
+  ReferenceSymbol,
   ProgramTypeCheckAdapter,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
@@ -363,12 +364,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
 
+    if ('kind' in symbol && symbol.kind === SymbolKind.Directive) {
+      const tsSymbol = this.getTsSymbolOfReference(symbol.ref, typeChecker);
+      if (tsSymbol) return tsSymbol;
+    }
+
     if ('kind' in symbol && symbol.kind === SymbolKind.Reference) {
-      if (ts.isClassDeclaration(symbol.target as ts.Node)) {
-        const targetNode = symbol.target as ts.ClassDeclaration;
-        const tsSymbol = typeChecker.getSymbolAtLocation(targetNode.name ?? targetNode);
-        if (tsSymbol) return tsSymbol;
-      }
+      const tsSymbol = this.getTsSymbolOfReference(symbol.target, typeChecker);
+      if (tsSymbol) return tsSymbol;
+
       if (ts.isCallExpression(node)) {
         return null;
       }
@@ -408,6 +412,38 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     // Fall back to the type's symbol.
     return tsSymbol ?? typeChecker.getTypeAtLocation(node).symbol ?? null;
+  }
+
+  private getTsSymbolOfReference(
+    target: SymbolReference | TmplAstElement | TmplAstTemplate,
+    typeChecker: ts.TypeChecker,
+  ): ts.Symbol | null {
+    if (!target || !('filePath' in target)) {
+      return null;
+    }
+
+    const sf = this.programDriver.getProgram().getSourceFile(target.filePath);
+    if (!sf) {
+      return null;
+    }
+
+    const visit = (node: ts.Node): ts.ClassDeclaration | null => {
+      if (node.pos <= target.position && target.position < node.end) {
+        if (ts.isClassDeclaration(node)) {
+          return node;
+        }
+        return ts.forEachChild(node, visit) ?? null;
+      }
+      return null;
+    };
+
+    const classDecl = ts.forEachChild(sf, visit) ?? null;
+    if (!classDecl) {
+      return null;
+    }
+
+    const nameNode = classDecl.name ?? classDecl;
+    return typeChecker.getSymbolAtLocation(nameNode) ?? null;
   }
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
