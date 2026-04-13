@@ -298,7 +298,11 @@ export type ResourceSnapshot<T> =
   | {readonly status: 'resolved' | 'local'; readonly value: T}
   | {readonly status: 'error'; readonly error: Error};
 
-/** Options for `debounced`. */
+/**
+ * Options for `debounced`.
+ *
+ * @see [Debouncing signals with `debounced`](guide/signals/debounced)
+ */
 export interface DebouncedOptions<T> {
   /** The `Injector` to use for the debounced resource. */
   injector?: Injector;
@@ -309,6 +313,8 @@ export interface DebouncedOptions<T> {
 /**
  * Represents the wait condition for item debouncing.
  * Can be a number of milliseconds or a function that returns a Promise.
+ *
+ * @see [Debouncing signals with `debounced`](guide/signals/debounced)
  */
 export type DebounceTimer<T> =
   | number
