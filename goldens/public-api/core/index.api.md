@@ -243,8 +243,6 @@ export interface ClassSansProvider {
 export class Compiler {
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
-    compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>): Promise<ModuleWithComponentFactories<T>>;
-    compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
     getModuleId(moduleType: Type<any>): string | undefined;
@@ -1219,15 +1217,6 @@ export interface ModelOptions {
 export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
     // (undocumented)
     [SIGNAL]: InputSignalNode<T, T>;
-}
-
-// @public @deprecated
-export class ModuleWithComponentFactories<T> {
-    constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
-    // (undocumented)
-    componentFactories: ComponentFactory<any>[];
-    // (undocumented)
-    ngModuleFactory: NgModuleFactory<T>;
 }
 
 // @public

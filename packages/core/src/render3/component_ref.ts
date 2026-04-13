@@ -17,10 +17,7 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {
-  ComponentFactory as AbstractComponentFactory,
-  ComponentRef as AbstractComponentRef,
-} from '../linker/component_factory';
+import {ComponentRef as AbstractComponentRef} from '../linker/component_factory';
 import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
@@ -199,10 +196,10 @@ export function inferTagNameFromDefinition(componentDef: ComponentDef<unknown>):
 /**
  * ComponentFactory interface implementation.
  */
-export class ComponentFactory<T> extends AbstractComponentFactory<T> {
-  override selector: string;
-  override componentType: Type<any>;
-  override ngContentSelectors: string[];
+export class ComponentFactory<T> {
+  selector: string;
+  componentType: Type<any>;
+  ngContentSelectors: string[];
   isBoundToModule: boolean;
   private cachedInputs:
     | {
@@ -214,7 +211,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     | null = null;
   private cachedOutputs: {propName: string; templateName: string}[] | null = null;
 
-  override get inputs(): {
+  get inputs(): {
     propName: string;
     templateName: string;
     isSignal: boolean;
@@ -224,7 +221,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     return this.cachedInputs;
   }
 
-  override get outputs(): {propName: string; templateName: string}[] {
+  get outputs(): {propName: string; templateName: string}[] {
     this.cachedOutputs ??= toOutputRefArray(this.componentDef.outputs);
     return this.cachedOutputs;
   }
@@ -237,14 +234,13 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     private componentDef: ComponentDef<any>,
     private ngModule?: NgModuleRef<any>,
   ) {
-    super();
     this.componentType = componentDef.type;
     this.selector = stringifyCSSSelectorList(componentDef.selectors);
     this.ngContentSelectors = componentDef.ngContentSelectors ?? [];
     this.isBoundToModule = !!ngModule;
   }
 
-  override create(
+  create(
     injector: Injector,
     projectableNodes?: any[][] | undefined,
     rootSelectorOrNode?: any,
