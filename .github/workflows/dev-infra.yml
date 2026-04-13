@@ -6,14 +6,16 @@ on:
   issues:
     types: [opened, reopened]
 
-# Declare default permissions as read only.
-permissions:
-  contents: read
+# Deny all permissions at workflow level : each job declares its own.
+permissions: {}
 
 jobs:
   pull_request_labels:
     if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
+    permissions: 
+     contents: read
+     pull-requests: write
     steps:
       - uses: angular/dev-infra/github-actions/labeling/pull-request@ba726e7bca0b08b125ccc6f93c233749e1213c17
         with:
@@ -22,6 +24,9 @@ jobs:
   post_approval_changes:
     if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
+    permissions:  
+     contents: write
+     pull-requests: write
     steps:
       - uses: angular/dev-infra/github-actions/post-approval-changes@ba726e7bca0b08b125ccc6f93c233749e1213c17
         with:
@@ -29,6 +34,8 @@ jobs:
   issue_labels:
     if: github.event_name == 'issues'
     runs-on: ubuntu-latest
+    permissions: 
+     issues: write
     steps:
       - uses: angular/dev-infra/github-actions/labeling/issue@ba726e7bca0b08b125ccc6f93c233749e1213c17
         with:
