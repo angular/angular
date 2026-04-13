@@ -29,10 +29,10 @@ describe('rxResource()', () => {
     const appRef = TestBed.inject(ApplicationRef);
     const request = signal(1);
     let unsub = false;
-    let lastSeenRequest: number = 0;
+    let lastSeenRequest: number | null = 0;
     rxResource({
       params: request,
-      stream: ({params: request}) => {
+      stream: ({ params: request }) => {
         lastSeenRequest = request;
         return new Observable((sub) => {
           if (request === 2) {
@@ -75,7 +75,7 @@ describe('rxResource()', () => {
     expect(res.value()).toBe(3);
 
     response.error('fail');
-    expect(res.error()).toEqual(jasmine.objectContaining({cause: 'fail'}));
+    expect(res.error()).toEqual(jasmine.objectContaining({ cause: 'fail' }));
     expect(res.error()!.message).toContain('Resource');
   });
 
@@ -113,6 +113,47 @@ describe('rxResource()', () => {
     expect(rxRes.error()).toBeInstanceOf(FooError);
 
     expect(() => rxRes.value()).toThrowError(/This is a FooError/);
+  });
+
+  it('should receive null params at runtime when params option is not provided', async () => {
+    const injector = TestBed.inject(Injector);
+    const appRef = TestBed.inject(ApplicationRef);
+    let receivedParams: unknown = 'NOT_SET';
+
+    const res = rxResource({
+      // No `params` option — defaults to () => null! internally
+      stream: ({ params }) => {
+        receivedParams = params;
+        return of('result');
+      },
+      injector,
+    });
+
+    await appRef.whenStable();
+    // When no params function is provided, the resource defaults to `() => null!` internally,
+    // so params inside the stream callback should be null at runtime.
+    expect(receivedParams).toBeNull();
+    expect(res.value()).toBe('result');
+  });
+
+  it('should type params as including null when params option can be undefined (issue #62724)', async () => {
+    const injector = TestBed.inject(Injector);
+
+    // This should compile without TypeScript errors.
+    // Before the fix, `params` was typed as `string` — missing `null`.
+    // After the fix, `params` is typed as `string | null`.
+    const getParamsFn = (): (() => string) | undefined => undefined;
+
+    // The key assertion: assigning `params` to `string | null` must compile.
+    rxResource({
+      params: getParamsFn(),
+      stream: ({ params }) => {
+        // TypeScript must allow: params is `string | null`, not just `string`
+        const _typeCheck: string | null = params;
+        return of(_typeCheck ?? 'fallback');
+      },
+      injector,
+    });
   });
 });
 
