@@ -8,9 +8,9 @@ Signal Forms provides a `submit()` function that helps you manage the form submi
 
 The `submit()` function runs through a specific sequence:
 
-1. **Mark interactive fields as touched** — This surfaces any validation errors that were hidden because the user hadn't interacted with the field yet. Hidden, disabled, and readonly fields are skipped.
+1. **Mark interactive fields as touched** — Fields that display errors only after being touched will now show their validation errors. Hidden, disabled, and readonly fields are skipped.
 1. **Check validation** — If any validation rules have failed, submission stops and the `action` function does not run.
-1. **Run the action** — The `action` function executes with the form's current value.
+1. **Run the action** — The `action` function executes with the form's current value. While it runs, `submitting()` returns `true`.
 1. **Handle the result** — If the action returns errors, they are routed to their target fields. If it returns nothing, the submission is treated as successful.
 
 The `submit()` function returns a `Promise<boolean>` that resolves to `true` when the action completes without errors, and `false` when validation fails or the action returns errors.
@@ -72,10 +72,9 @@ export class Contact {
       submission: {
         action: async (field) => {
           const result = await saveContact(field().value());
+          if (result.ok) return;
 
-          if (!result.ok) {
-            return {kind: 'serverError', message: 'Failed to submit form'};
-          }
+          return {kind: 'serverError', message: 'Failed to submit form'};
         },
       },
     },
@@ -84,6 +83,8 @@ export class Contact {
 ```
 
 The `action` function runs only when no validation rules have failed. By default, pending async validators do not block submission (see [Controlling validation gating](#controlling-validation-gating-with-ignorevalidators) for more details). The action receives the field tree and a `detail` object with `root` and `submitted` field trees, which is useful when submitting a sub-form.
+
+After validation passes, the action itself may still fail due to scenarios such as a network error or duplicate entry. In those cases, you can surface the failure by returning the error(s). On the other hand, to indicate success, you only need to return `null` or `undefined`, or call an empty `return`.
 
 ## Showing submission state with `submitting()`
 
@@ -114,10 +115,9 @@ By default, errors returned from the `action` are assigned to the submitted fiel
 ```ts
 action: async (field) => {
   const result = await saveContact(field().value());
+  if (result.ok) return;
 
-  if (!result.ok) {
-    return {kind: 'serverError', message: 'Failed to submit form'};
-  }
+  return {kind: 'serverError', message: 'Failed to submit form'};
 };
 ```
 
@@ -128,10 +128,9 @@ When you want to route an error to a specific field, include a `fieldTree` prope
 ```ts
 action: async (field) => {
   const result = await saveContact(field().value());
+  if (result.ok) return;
 
-  if (!result.ok) {
-    return {kind: 'taken', message: result.message, fieldTree: field.email};
-  }
+  return {kind: 'taken', message: result.message, fieldTree: field.email};
 };
 ```
 
@@ -142,14 +141,13 @@ When you want to report errors on multiple fields, return an array:
 ```ts
 action: async (field) => {
   const result = await registerUser(field().value());
+  if (result.ok) return;
 
-  if (!result.ok) {
-    return result.errors.map((err: {field: string; message: string}) => ({
-      kind: 'serverError',
-      message: err.message,
-      fieldTree: field[err.field as keyof typeof field],
-    }));
-  }
+  return result.errors.map((err: {field: string; message: string}) => ({
+    kind: 'serverError',
+    message: err.message,
+    fieldTree: field[err.field as keyof typeof field],
+  }));
 };
 ```
 
@@ -259,10 +257,9 @@ export class Contact {
     // instead of configuring it in `FormOptions`.
     const success = await submit(this.contactForm, async (field) => {
       const result = await saveContact(field().value());
+      if (result.ok) return;
 
-      if (!result.ok) {
-        return {kind: 'serverError', message: 'Failed to save'};
-      }
+      return {kind: 'serverError', message: 'Failed to save'};
     });
 
     if (success) {
@@ -305,7 +302,6 @@ When using `FormRoot`, side effects also go inside the `action` since `FormRoot`
 submission: {
   action: async (field) => {
     const result = await saveContact(field().value());
-
     if (!result.ok) {
       return {kind: 'serverError', message: 'Failed to submit form'};
     }
