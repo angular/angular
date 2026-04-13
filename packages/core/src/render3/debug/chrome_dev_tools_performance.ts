@@ -7,8 +7,9 @@
  */
 
 import {isTypeProvider} from '../../di/provider_collection';
-import {assertDefined, assertEqual} from '../../util/assert';
+import {assertDefined} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
+import {VERSION} from '../../version';
 import {setProfiler} from '../profiler';
 import {Profiler, ProfilerEvent} from '../../../primitives/devtools';
 import {stringifyForError} from '../util/stringify_utils';
@@ -42,6 +43,10 @@ declare global {
       trackName?: string,
       trackGroup?: string,
       color?: DevToolsColor,
+      // Experimental: 7th argument for user-supplied detail data rendered in the DevTools performance panel.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Console/timeStamp_static#browser_compatibility
+      // Requires: chrome://flags/#enable-devtools-deep-link-via-extensibility-api
+      detail?: object,
     ): void;
   }
 }
@@ -52,6 +57,54 @@ let changeDetectionSyncRuns = 0;
 let counter = 0;
 type stackEntry = [ProfilerEvent | ProfilerDIEvent, number];
 const eventsStack: stackEntry[] = [];
+
+function getBaseDocUrl(): string {
+  const full = VERSION.full;
+  const isPreRelease =
+    full.includes('-next') || full.includes('-rc') || full === '0.0.0-PLACEHOLDER';
+  const prefix = isPreRelease ? 'next' : `v${VERSION.major}`;
+  return `https://${prefix}.angular.dev`;
+}
+
+/**
+ * Returns documentation URL for lifecycle hooks.
+ * Extracts lifecycle hook name from the component method string and maps to Angular docs.
+ */
+function getLifecycleHookDocUrl(hookName: string): string | undefined {
+  // Extract lifecycle hook name (e.g., "MyComponent:ngOnInit" -> "ngOnInit")
+  const match = hookName.match(/:(ng\w+)$/);
+  if (!match) return undefined;
+
+  const lifecycleHook = match[1].toLowerCase();
+  const baseUrl = getBaseDocUrl();
+
+  return `${baseUrl}/guide/components/lifecycle#${lifecycleHook}`;
+}
+
+/**
+ * Returns documentation URL for profiler events.
+ */
+function getProfilerEventDocUrl(event: ProfilerEvent | ProfilerDIEvent, entryName: string) {
+  const baseUrl = getBaseDocUrl();
+
+  switch (event) {
+    case ProfilerEvent.ChangeDetectionStart:
+    case ProfilerEvent.ChangeDetectionEnd:
+    case ProfilerEvent.ChangeDetectionSyncStart:
+    case ProfilerEvent.ChangeDetectionSyncEnd:
+      return `${baseUrl}/best-practices/runtime-performance`;
+    case ProfilerEvent.AfterRenderHooksStart:
+    case ProfilerEvent.AfterRenderHooksEnd:
+      return `${baseUrl}/guide/components/lifecycle#aftereveryrender-and-afternextrender`;
+    case ProfilerEvent.DeferBlockStateStart:
+    case ProfilerEvent.DeferBlockStateEnd:
+      return `${baseUrl}/guide/defer`;
+    case ProfilerEvent.LifecycleHookStart:
+      return getLifecycleHookDocUrl(entryName);
+    default:
+      return undefined;
+  }
+}
 
 /**
  * Enum mimicking ProfilerEvent. The idea is to have unique event identifiers for both DI and other profiling events.
@@ -72,13 +125,14 @@ function measureEnd(
   color: DevToolsColor,
 ) {
   let top: stackEntry | undefined;
-
   // The stack may be asymmetric when an end event for a prior start event is missing (e.g. when an exception
   // has occurred), unroll the stack until a matching item has been found in that case.
   do {
     top = eventsStack.pop();
     assertDefined(top, 'Profiling error: could not find start event entry ' + startEvent);
   } while (top[0] !== startEvent);
+
+  const docUrl = getProfilerEventDocUrl(startEvent, entryName);
 
   console.timeStamp(
     entryName,
@@ -87,6 +141,7 @@ function measureEnd(
     '\u{1F170}\uFE0F Angular',
     undefined,
     color,
+    docUrl ? {description: 'Documentation', url: docUrl} : undefined,
   );
 }
 

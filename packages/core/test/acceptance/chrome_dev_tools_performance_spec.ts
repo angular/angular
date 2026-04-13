@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, HostAttributeToken, inject, Inject} from '../../src/core';
+import {Component, HostAttributeToken, inject, Inject, OnInit} from '../../src/core';
 import {enableProfiling} from '../../src/render3/debug/chrome_dev_tools_performance';
 import {profiler} from '../../src/render3/profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
@@ -78,6 +78,65 @@ describe('Chrome DevTools Performance integration', () => {
         expect(syncStart.args[0]).toMatch(/^Event_/);
         expect(cdStart.args[0]).toMatch(/^Event_/);
         expect(syncEnd.args[0]).toMatch(/^Synchronization /);
+      } finally {
+        stopProfiling();
+      }
+    });
+  });
+
+  describe('documentation URLs', () => {
+    it('should include documentation URL for lifecycle hooks', () => {
+      @Component({
+        template: ``,
+      })
+      class MyCmp implements OnInit {
+        ngOnInit() {}
+      }
+
+      const timeStampSpy = spyOn(console, 'timeStamp');
+      const stopProfiling = enableProfiling();
+
+      try {
+        const fixture = TestBed.createComponent(MyCmp);
+        fixture.detectChanges();
+
+        const lifecycleCall = timeStampSpy.calls
+          .all()
+          .find((call) => (call.args[0] as string)?.includes(':ngOnInit'));
+
+        expect(lifecycleCall).toBeDefined();
+        // The 7th argument (index 6) is the detail object
+        const detail = (lifecycleCall!.args as any[])[6] as {url: string; description: string};
+        expect(detail).toBeDefined();
+        expect(detail.url).toMatch(/guide\/components\/lifecycle#ngoninit/);
+        expect(detail.description).toBe('Documentation');
+      } finally {
+        stopProfiling();
+      }
+    });
+
+    it('should include documentation URL for change detection', () => {
+      @Component({
+        template: ``,
+      })
+      class MyCmp {}
+
+      const timeStampSpy = spyOn(console, 'timeStamp');
+      const stopProfiling = enableProfiling();
+
+      try {
+        const fixture = TestBed.createComponent(MyCmp);
+        fixture.detectChanges();
+
+        const cdCall = timeStampSpy.calls
+          .all()
+          .find((call) => call.args[0]?.startsWith?.('Change detection'));
+
+        expect(cdCall).toBeDefined();
+        const detail = (cdCall!.args as any[])[6] as {url: string; description: string};
+        expect(detail).toBeDefined();
+        expect(detail.url).toMatch(/best-practices\/runtime-performance/);
+        expect(detail.description).toBe('Documentation');
       } finally {
         stopProfiling();
       }
