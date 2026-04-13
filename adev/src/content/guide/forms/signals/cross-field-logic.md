@@ -42,8 +42,8 @@ export class EventForm {
   });
 
   eventForm = form(this.eventModel, (schemaPath) => {
-    validate(schemaPath.endDate, (fieldContext) => {
-      if (fieldContext.value() <= fieldContext.valueOf(schemaPath.startDate)) {
+    validate(schemaPath.endDate, ({value, valueOf}) => {
+      if (value() <= valueOf(schemaPath.startDate)) {
         return {
           kind: 'invalidDateRange',
           message: 'End date must be after start date',
@@ -139,11 +139,11 @@ Using `required()` with `when` instead of a manual `validate()` check also adds 
 
 The examples so far use `valueOf()` to read another field's value. Sometimes your logic depends on another field's _state_ instead — whether it's valid, touched, or dirty. Use `stateOf()` for this.
 
-For example, a confirm-password field should only check for a match when the password field itself is valid. If the password is too short, flagging a mismatch on the confirmation is just noise:
+For example, a confirm-password field should only check for a match once the user has interacted with the password field. If the user hasn't touched the password yet, flagging a mismatch on the confirmation is premature:
 
 ```ts
 import {Component, signal} from '@angular/core';
-import {form, validate, minLength} from '@angular/forms/signals';
+import {form, validate} from '@angular/forms/signals';
 
 @Component({
   /* ... */
@@ -155,10 +155,8 @@ export class PasswordForm {
   });
 
   passwordForm = form(this.passwordModel, (schemaPath) => {
-    minLength(schemaPath.password, 8);
-
     validate(schemaPath.confirmPassword, ({value, valueOf, stateOf}) => {
-      if (stateOf(schemaPath.password).invalid()) {
+      if (!stateOf(schemaPath.password).touched()) {
         return null;
       }
       if (value() !== valueOf(schemaPath.password)) {
