@@ -33,6 +33,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {NgControl} from '@angular/forms';
 
 function isFirefox() {
   const userAgent = navigator.userAgent.toLowerCase();
@@ -68,6 +69,7 @@ import {
 } from '../../public_api';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
 import {TestInputValidityMonitor} from './test_input_validity_monitor';
+import {InteropNgControl} from '../../src/controls/interop_ng_control';
 
 function configureTestValidityMonitor() {
   TestBed.configureTestingModule({
@@ -5378,6 +5380,170 @@ describe('field directive', () => {
       });
 
       expect(field().dirty()).toBe(true);
+    });
+  });
+
+  describe('NgControl interop', () => {
+    it('should emit on valueChanges', () => {
+      @Directive({
+        selector: '[observeNgControl]',
+      })
+      class ObserveNgControlDirective {
+        readonly ngControl = inject(NgControl);
+      }
+
+      @Component({
+        imports: [FormField, ObserveNgControlDirective],
+        template: `<input [formField]="f" observeNgControl />`,
+      })
+      class TestCmp {
+        readonly f = form(signal('initial'));
+        readonly observer = viewChild.required(ObserveNgControlDirective);
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const cmp = fix.componentInstance;
+      const ngControl = cmp.observer().ngControl;
+
+      const callback = jasmine.createSpy('valueChanges').and.callFake(() => {});
+      const sub = ngControl.valueChanges!.subscribe(callback);
+
+      act(() => cmp.f().value.set('updated'));
+      expect(callback).toHaveBeenCalledWith('updated');
+      expect(callback).toHaveBeenCalledTimes(1);
+      callback.calls.reset();
+
+      act(() => cmp.f().value.set('again'));
+      expect(callback).toHaveBeenCalledWith('again');
+      expect(callback).toHaveBeenCalledTimes(1);
+
+      sub.unsubscribe();
+    });
+
+    it('should emit on statusChanges', () => {
+      @Directive({
+        selector: '[observeNgControl]',
+      })
+      class ObserveNgControlDirective {
+        readonly ngControl = inject(NgControl);
+      }
+
+      @Component({
+        imports: [FormField, ObserveNgControlDirective],
+        template: `<input [formField]="f" observeNgControl />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          required(p);
+        });
+        readonly observer = viewChild.required(ObserveNgControlDirective);
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const cmp = fix.componentInstance;
+      const ngControl = cmp.observer().ngControl;
+
+      const callback = jasmine.createSpy('statusChanges').and.callFake(() => {});
+      const sub = ngControl.statusChanges!.subscribe(callback);
+
+      // Initially invalid (empty string with required rule)
+      expect(ngControl.status).toBe('INVALID');
+
+      act(() => cmp.f().value.set('valid'));
+      expect(callback).toHaveBeenCalledWith('VALID');
+      expect(callback).toHaveBeenCalledTimes(1);
+      callback.calls.reset();
+
+      act(() => cmp.f().value.set(''));
+      expect(callback).toHaveBeenCalledWith('INVALID');
+      expect(callback).toHaveBeenCalledTimes(1);
+
+      sub.unsubscribe();
+    });
+
+    it('should emit value and status events', () => {
+      @Directive({
+        selector: '[observeNgControl]',
+      })
+      class ObserveNgControlDirective {
+        readonly ngControl = inject(NgControl);
+      }
+
+      @Component({
+        imports: [FormField, ObserveNgControlDirective],
+        template: `<input [formField]="f" observeNgControl />`,
+      })
+      class TestCmp {
+        readonly f = form(signal<string>('', {equal: Object.is}), (p) => {
+          required(p);
+        });
+        readonly observer = viewChild.required(ObserveNgControlDirective);
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const cmp = fix.componentInstance;
+      const ngControl = cmp.observer().ngControl;
+      const interopNgControl = ngControl as unknown as InteropNgControl;
+
+      const callback = jasmine.createSpy('events').and.callFake(() => {});
+      const sub = interopNgControl.events.subscribe(callback);
+
+      act(() => cmp.f().value.set('valid'));
+
+      const eventNames = callback.calls
+        .allArgs()
+        .map(([event]) => (event as {constructor: {name: string}}).constructor.name);
+      expect(eventNames).toContain('ValueChangeEvent');
+      expect(eventNames).toContain('StatusChangeEvent');
+
+      sub.unsubscribe();
+    });
+
+    it('should emit valueChanges and statusChanges when NgControl is injected in custom control', () => {
+      @Component({
+        selector: 'my-input',
+        template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+      })
+      class CustomInput implements FormValueControl<string> {
+        readonly value = model.required<string>();
+        readonly ngControl = inject(NgControl);
+      }
+
+      @Component({
+        imports: [FormField, CustomInput],
+        template: `<my-input [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          required(p);
+        });
+        readonly myInput = viewChild.required(CustomInput);
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const cmp = fix.componentInstance;
+      const ngControl = cmp.myInput().ngControl;
+
+      expect(ngControl.valueChanges).toBeTruthy();
+      expect(ngControl.statusChanges).toBeTruthy();
+
+      const valueCallback = jasmine.createSpy('valueChanges').and.callFake(() => {});
+      const statusCallback = jasmine.createSpy('statusChanges').and.callFake(() => {});
+      const valueSub = ngControl.valueChanges!.subscribe(valueCallback);
+      const statusSub = ngControl.statusChanges!.subscribe(statusCallback);
+
+      act(() => cmp.f().value.set('world'));
+      expect(valueCallback).toHaveBeenCalledWith('world');
+      expect(statusCallback).toHaveBeenCalledWith('VALID');
+      valueCallback.calls.reset();
+      statusCallback.calls.reset();
+
+      act(() => cmp.f().value.set(''));
+      expect(valueCallback).toHaveBeenCalledWith('');
+      expect(statusCallback).toHaveBeenCalledWith('INVALID');
+
+      valueSub.unsubscribe();
+      statusSub.unsubscribe();
     });
   });
 
