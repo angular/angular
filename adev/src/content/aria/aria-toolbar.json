@@ -121,6 +121,7 @@
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",

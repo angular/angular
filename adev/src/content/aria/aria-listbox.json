@@ -23,7 +23,9 @@
           "name": "active",
           "type": "Signal<any>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether the option is currently active (focused).",
           "jsdocTags": []
         },
@@ -45,7 +47,8 @@
           "type": "Signal<string>",
           "memberType": "property",
           "memberTags": [
-            "protected"
+            "protected",
+            "readonly"
           ],
           "description": "The text used by the typeahead search.",
           "jsdocTags": []
@@ -55,6 +58,7 @@
           "type": "InputSignal<V>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "The value of the option.",
@@ -67,6 +71,7 @@
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "Whether an item is disabled.",
@@ -79,6 +84,7 @@
           "type": "InputSignal<string | undefined>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "The text used by the typeahead search.",
@@ -171,7 +177,8 @@
           "type": "Signal<Direction>",
           "memberType": "property",
           "memberTags": [
-            "protected"
+            "protected",
+            "readonly"
           ],
           "description": "A signal wrapper for directionality.",
           "jsdocTags": []
@@ -181,7 +188,8 @@
           "type": "Signal<OptionPattern<V>[]>",
           "memberType": "property",
           "memberTags": [
-            "protected"
+            "protected",
+            "readonly"
           ],
           "description": "The Option UIPatterns of the child Options.",
           "jsdocTags": []
@@ -190,7 +198,9 @@
           "name": "orientation",
           "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether the list is vertically or horizontally oriented.",
           "jsdocTags": []
         },
@@ -198,7 +208,9 @@
           "name": "multi",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether multiple items in the list can be selected at once.",
           "jsdocTags": []
         },
@@ -206,7 +218,9 @@
           "name": "wrap",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether focus should wrap when navigating.",
           "jsdocTags": []
         },
@@ -214,7 +228,9 @@
           "name": "softDisabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
           "jsdocTags": []
         },
@@ -222,7 +238,9 @@
           "name": "focusMode",
           "type": "InputSignal<\"roving\" | \"activedescendant\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "The focus strategy used by the list.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the listbox container, and `aria-activedescendant` is used to indicate the active item.",
           "jsdocTags": []
         },
@@ -230,7 +248,9 @@
           "name": "selectionMode",
           "type": "InputSignal<\"follow\" | \"explicit\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "The selection strategy used by the list.\n- `follow`: The focused item is automatically selected.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).",
           "jsdocTags": []
         },
@@ -238,7 +258,9 @@
           "name": "typeaheadDelay",
           "type": "InputSignal<number>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "The amount of time before the typeahead search is reset.",
           "jsdocTags": []
         },
@@ -246,7 +268,9 @@
           "name": "disabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether the listbox is disabled.",
           "jsdocTags": []
         },
@@ -254,7 +278,9 @@
           "name": "readonly",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether the listbox is readonly.",
           "jsdocTags": []
         },
@@ -262,7 +288,9 @@
           "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "The values of the currently selected items.",
           "jsdocTags": []
         },
