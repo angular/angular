@@ -186,12 +186,11 @@ export interface AttributeDecorator {
 }
 
 // @public
-export interface BaseResourceOptions<T, R> {
+export type BaseResourceOptions<T, R> = {
     defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
-    params?: (ctx: ResourceParamsContext) => R;
-}
+} & ResourceParams<R>;
 
 // @public
 export interface Binding {
@@ -1444,10 +1443,10 @@ export class PlatformRef {
 export type Predicate<T> = (value: T) => boolean;
 
 // @public
-export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+export type PromiseResourceOptions<T, R> = BaseResourceOptions<T, R> & {
     loader: ResourceLoader<T, R>;
     stream?: never;
-}
+};
 
 // @public
 export function provideAppInitializer(initializerFn: () => Observable<unknown> | Promise<unknown> | void): EnvironmentProviders;
@@ -1624,12 +1623,12 @@ export interface Resource<T> {
 }
 
 // @public
-export function resource<T, R>(options: ResourceOptions<T, R> & {
+export function resource<T, R = null>(options: ResourceOptions<T, R> & {
     defaultValue: NoInfer<T>;
 }): ResourceRef<T>;
 
 // @public
-export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
+export function resource<T, R = null>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 
 // @public
 export class ResourceDependencyError extends Error {
@@ -1658,6 +1657,13 @@ export interface ResourceLoaderParams<R> {
 // @public (undocumented)
 export type ResourceOptions<T, R> = (PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>) & {
     debugName?: string;
+};
+
+// @public (undocumented)
+export type ResourceParams<R> = [R] extends [null] ? {
+    params?: (ctx: ResourceParamsContext) => R;
+} : {
+    params: (ctx: ResourceParamsContext) => R;
 };
 
 // @public
@@ -1832,10 +1838,10 @@ export interface StaticClassSansProvider {
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
 // @public
-export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
-    loader?: never;
+export type StreamingResourceOptions<T, R> = BaseResourceOptions<T, R> & {
     stream: ResourceStreamingLoader<T, R>;
-}
+    loader?: never;
+};
 
 // @public
 export class TemplateRef<C> {

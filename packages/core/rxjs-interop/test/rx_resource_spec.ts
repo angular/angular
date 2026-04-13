@@ -178,6 +178,61 @@ describe('rxResource()', () => {
   });
 });
 
+describe('types', () => {
+  it('should type stream params as null when params option is omitted', () => {
+    rxResource({
+      stream: ({params}) => {
+        const _null: null = params;
+        return of('');
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+
+  it('should type stream params correctly when params is provided', () => {
+    rxResource({
+      params: () => 'foo',
+      stream: ({params}) => {
+        const _str: string = params;
+        return of('');
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+
+  it('should type stream params as null with explicit single generic', () => {
+    rxResource<string>({
+      stream: ({params}) => {
+        const _null: null = params;
+        return of('');
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+  it('should infer only the param type as non-nullable', () => {
+    const condition = signal(true);
+    rxResource({
+      params: () => (condition() ? 'foo' : undefined),
+      stream: ({params}) => {
+        const _str: string = params;
+        return of('');
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+
+  it('should error when two explicit generics are provided but params is absent', () => {
+    // @ts-expect-error: params is required when the second generic is not null
+    rxResource<string, string>({
+      stream: ({params}) => {
+        const _str: string = params;
+        return of('');
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+});
+
 async function waitFor(fn: () => boolean): Promise<void> {
   while (!fn()) {
     await timeout(1);
