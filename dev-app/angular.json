@@ -19,10 +19,8 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "externalDependencies": ["xhr2"],
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "polyfills": ["@angular/localize/init"],
             "assets": [
               {
                 "glob": "**/*",
@@ -30,8 +28,6 @@
               }
             ],
             "styles": ["src/styles.css"],
-            "server": "src/main.server.ts",
-            "outputMode": "static",
             "sourceMap": {
               "vendor": true
             }

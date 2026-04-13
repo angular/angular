@@ -62,6 +62,7 @@ ng_application(
     ],
     env = {
         "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+        "NG_BUILD_MANGLE": "0",
     },
     ng_config = ":ng_config",
     node_modules = ":node_modules",
