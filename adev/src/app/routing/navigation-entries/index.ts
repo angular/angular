@@ -497,6 +497,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
+            label: 'Cross-field logic',
+            path: 'guide/forms/signals/cross-field-logic',
+            contentPath: 'guide/forms/signals/cross-field-logic',
+            status: 'new',
+          },
+          {
             label: 'Async operations',
             path: 'guide/forms/signals/async-operations',
             contentPath: 'guide/forms/signals/async-operations',
