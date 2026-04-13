@@ -25,6 +25,8 @@ export type Version = number & {__brand: 'Version'};
  */
 let epoch: Version = 1 as Version;
 
+let consumerAffectedByWrite = false;
+
 export type ReactiveHookFn = (node: ReactiveNode) => void;
 
 /**
@@ -42,6 +44,11 @@ export const SIGNAL: unique symbol = /* @__PURE__ */ Symbol('SIGNAL');
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
   const prev = activeConsumer;
   activeConsumer = consumer;
+  if (consumer === null) {
+    // Reset the flag whether a write has occurred while a consumer was active once all consumers have been popped
+    // of the stack.
+    consumerAffectedByWrite = false;
+  }
   return prev;
 }
 
@@ -237,12 +244,15 @@ export function producerAccessed(node: ReactiveNode): void {
     nextProducerLink =
       prevProducerLink !== undefined ? prevProducerLink.nextProducer : activeConsumer.producers;
     if (nextProducerLink !== undefined && nextProducerLink.producer === node) {
-      console.log('Reuse in order', node.debugName, nextProducerLink.knownValidAtEpoch, epoch);
+      // console.log('Reuse in order', node.debugName, nextProducerLink.knownValidAtEpoch, epoch);
       // If the next producer is the same as the one we're trying to add, we can just update the
       // last read version, update the tail of the producers list of this rerun, and return.
       activeConsumer.producersTail = nextProducerLink;
-      nextProducerLink.knownValidAtEpoch = epoch;
       nextProducerLink.lastReadVersion = node.version;
+
+      if (!consumerAffectedByWrite) {
+        nextProducerLink.knownValidAtEpoch = epoch;
+      }
       return;
     }
   }
@@ -256,11 +266,12 @@ export function producerAccessed(node: ReactiveNode): void {
     prevConsumerLink.consumer === activeConsumer &&
     (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
   ) {
-    console.log('Reuse already present', node.debugName, prevConsumerLink.knownValidAtEpoch, epoch);
+    // console.log('Reuse already present', node.debugName, prevConsumerLink.knownValidAtEpoch, epoch);
     return;
   }
 
-  console.log('Insert', node.debugName, epoch);
+  // console.log('Insert', node.debugName, prevConsumerLink !== undefined &&
+  //   prevConsumerLink.consumer === activeConsumer ? prevConsumerLink.knownValidAtEpoch : null, epoch);
 
   // If we got here, it means that we need to create a new link between the producer and the consumer.
   const isLive = consumerIsLive(activeConsumer);
@@ -271,7 +282,10 @@ export function producerAccessed(node: ReactiveNode): void {
     // the producers list, so that we can destroy all of the old links at once.
     nextProducer: nextProducerLink,
     prevConsumer: prevConsumerLink,
-    knownValidAtEpoch: epoch,
+    // If a signal write has occurred from within an active consumer, subsequent reads of the same consumer cannot be
+    // considered valid as the active consumer may need to rerun from scratch while still on the same epoch. During that
+    // rerun, the link can therefore not be assumed to be valid based on the epoch counter.
+    knownValidAtEpoch: consumerAffectedByWrite ? (0 as Version) : epoch,
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
@@ -294,6 +308,10 @@ export function producerAccessed(node: ReactiveNode): void {
  */
 export function producerIncrementEpoch(): void {
   epoch++;
+
+  if (activeConsumer !== null) {
+    consumerAffectedByWrite = true;
+  }
 }
 
 /**
