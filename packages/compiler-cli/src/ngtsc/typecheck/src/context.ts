@@ -9,12 +9,19 @@
 import {
   BoundTarget,
   DirectiveMeta,
+  DomSchemaChecker,
+  generateTypeCheckBlock,
+  OutOfBandDiagnosticRecorder,
   ParseError,
   ParseSourceFile,
   R3TargetBinder,
   SchemaMetadata,
+  TcbGenericContextBehavior,
   TmplAstHostElement,
   TmplAstNode,
+  TypeCheckId,
+  TypeCheckingConfig,
+  TypeCtorMetadata,
 } from '@angular/compiler';
 import MagicString from 'magic-string';
 import ts from 'typescript';
@@ -29,16 +36,11 @@ import {ImportManager} from '../../translator';
 import {
   HostBindingsContext,
   TemplateDiagnostic,
-  TypeCheckId,
   SourceMapping,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
   TypeCheckContext,
-  TypeCheckingConfig,
-  TypeCtorMetadata,
   TemplateContext,
-  OutOfBandDiagnosticRecorder,
-  DomSchemaChecker,
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
@@ -50,10 +52,8 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
-import {generateTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
-import {TcbGenericContextBehavior} from './ops/context';
 
 export interface ShimTypeCheckingData {
   /**

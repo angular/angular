@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ParseSourceSpan} from '@angular/compiler';
+import {ParseSourceSpan, TypeCheckId} from '@angular/compiler';
 import ts from 'typescript';
 
 import {addDiagnosticChain, makeDiagnosticChain} from '../../../diagnostics';
@@ -14,7 +14,6 @@ import {
   ExternalTemplateSourceMapping,
   IndirectSourceMapping,
   TemplateDiagnostic,
-  TypeCheckId,
   SourceMapping,
 } from '../../api';
 

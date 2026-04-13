@@ -6,14 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  AST,
-  ImplicitReceiver,
-  PropertyRead,
-  ThisReceiver,
-  TmplAstForLoopBlock,
-  TmplAstVariable,
-} from '@angular/compiler';
+import {AST, ImplicitReceiver, PropertyRead, ThisReceiver} from '../../expression_parser/ast';
+import {ForLoopBlock, Variable} from '../../render3/r3_ast';
 import {tcbExpression, TcbExpressionTranslator} from './expression';
 import type {Context} from './context';
 import type {Scope} from './scope';
@@ -29,7 +23,7 @@ export class TcbForOfOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private block: TmplAstForLoopBlock,
+    private block: ForLoopBlock,
   ) {
     super();
   }
@@ -65,12 +59,12 @@ export class TcbForOfOp extends TcbOp {
 }
 
 export class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
-  private allowedVariables: Set<TmplAstVariable>;
+  private allowedVariables: Set<Variable>;
 
   constructor(
     tcb: Context,
     scope: Scope,
-    private block: TmplAstForLoopBlock,
+    private block: ForLoopBlock,
   ) {
     super(tcb, scope);
 
@@ -93,7 +87,7 @@ export class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
 
       if (
         target !== null &&
-        (!(target instanceof TmplAstVariable) || !this.allowedVariables.has(target))
+        (!(target instanceof Variable) || !this.allowedVariables.has(target))
       ) {
         this.tcb.oobRecorder.illegalForLoopTrackAccess(this.tcb.id, this.block, ast);
       }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstIfBlock, TmplAstIfBlockBranch} from '@angular/compiler';
+import {IfBlock, IfBlockBranch} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import {getStatementsBlock, TcbExpr} from './codegen';
 import type {Scope} from './scope';
@@ -18,13 +18,13 @@ import {tcbExpression} from './expression';
  *
  * Executing this operation returns nothing.
  */
-export class TcbIfOp extends TcbOp {
-  private expressionScopes = new Map<TmplAstIfBlockBranch, Scope>();
+export class TcbIfBlockOp extends TcbOp {
+  private expressionScopes = new Map<IfBlockBranch, Scope>();
 
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private block: TmplAstIfBlock,
+    private block: IfBlock,
   ) {
     super();
   }
@@ -73,7 +73,7 @@ export class TcbIfOp extends TcbOp {
     return new TcbExpr(ifStatement + (elseBranch ? ' else ' + elseBranch.print() : ''));
   }
 
-  private getBranchScope(parentScope: Scope, branch: TmplAstIfBlockBranch, index: number): Scope {
+  private getBranchScope(parentScope: Scope, branch: IfBlockBranch, index: number): Scope {
     const checkBody = this.tcb.env.config.checkControlFlowBodies;
     return this.scope.createChildScope(
       parentScope,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ExpressionType, TransplantedType} from '@angular/compiler';
+import {ExpressionType, TcbExpr, TcbReferenceMetadata, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain} from '../../diagnostics';
@@ -19,8 +19,6 @@ import {
 } from '../../imports';
 import {ReflectionHost} from '../../reflection';
 import {ImportManager, translateType} from '../../translator';
-import {TcbReferenceMetadata} from '../api';
-import {TcbExpr} from './ops/codegen';
 
 /**
  * An environment for a given source file that can be used to emit references.

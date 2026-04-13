@@ -30,6 +30,7 @@ import {
   TmplAstReference,
   TmplAstTemplate,
   TmplAstTextAttribute,
+  TypeCheckingConfig,
   WrappedNodeExpr,
 } from '@angular/compiler';
 
@@ -100,7 +101,6 @@ import {
   TemplateTypeChecker,
   TsCompletionEntryInfo,
   TypeCheckableDirectiveMeta,
-  TypeCheckingConfig,
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 

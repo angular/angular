@@ -264,6 +264,15 @@ export {FactoryTarget} from './compiler_facade_interface';
 export {QueryFlags} from './render3/view/query_generation';
 export {setEnableTemplateSourceLocations} from './render3/view/config';
 
+export * from './typecheck/api';
+export * from './typecheck/host_bindings';
+export {CommentTriviaType, ExpressionIdentifier} from './typecheck/comments';
+export {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticCategory} from './typecheck/oob';
+export {DomSchemaChecker} from './typecheck/schema';
+export {generateTypeCheckBlock} from './typecheck/type_check_block';
+export {TcbExpr} from './typecheck/ops/codegen';
+export {TcbGenericContextBehavior} from './typecheck/ops/context';
+
 // This file only reexports content of the `src` folder. Keep it that way.
 
 // This function call has a global side effects and publishes the compiler into global namespace for

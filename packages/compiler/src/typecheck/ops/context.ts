@@ -6,15 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BoundTarget, SchemaMetadata} from '@angular/compiler';
-import {
-  TypeCheckId,
-  TcbDirectiveMetadata,
-  TcbPipeMetadata,
-  OutOfBandDiagnosticRecorder,
-  DomSchemaChecker,
-} from '../../api';
-import {Environment} from '../environment';
+import {SchemaMetadata} from '../../core';
+import {BoundTarget} from '../../render3/view/t2_api';
+import {TypeCheckId, TcbDirectiveMetadata, TcbPipeMetadata, TcbEnvironment} from '../api';
+import {OutOfBandDiagnosticRecorder} from '../oob';
+import {DomSchemaChecker} from '../schema';
 
 /**
  * Controls how generics for the component context class will be handled during TCB generation.
@@ -55,7 +51,7 @@ export class Context {
   private nextId = 1;
 
   constructor(
-    readonly env: Environment,
+    readonly env: TcbEnvironment,
     readonly domSchemaChecker: DomSchemaChecker<unknown>,
     readonly oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
     readonly id: TypeCheckId,

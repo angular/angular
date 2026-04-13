@@ -20,6 +20,7 @@ import {
   R3DirectiveMetadata,
   R3TargetBinder,
   WrappedNodeExpr,
+  createHostElement,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -92,7 +93,6 @@ import {
   TypeCheckableDirectiveMeta,
   TypeCheckContext,
 } from '../../../typecheck/api';
-import {createHostElement} from '../../../typecheck';
 
 const FIELD_DECORATORS = [
   'Input',

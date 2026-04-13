@@ -13,13 +13,13 @@ import {
   Call,
   ImplicitReceiver,
   PropertyRead,
-  R3Identifiers,
   SafeCall,
   SafePropertyRead,
-  TemplateEntity,
   ThisReceiver,
-  TmplAstLetDeclaration,
-} from '@angular/compiler';
+} from '../../expression_parser/ast';
+import {LetDeclaration} from '../../render3/r3_ast';
+import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
+import {TemplateEntity} from '../../render3/view/t2_api';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
@@ -109,7 +109,7 @@ export class TcbExpressionTranslator {
     // `astToTcbExpr` actually does the conversion. A special resolver `tcbResolve` is passed
     // which interprets specific expression nodes that interact with the `ImplicitReceiver`. These
     // nodes actually refer to identifiers within the current scope.
-    return astToTcbExpr(ast, (ast) => this.resolve(ast), this.tcb.env.config);
+    return astToTcbExpr(ast, (ast: AST) => this.resolve(ast), this.tcb.env.config);
   }
 
   /**
@@ -126,10 +126,7 @@ export class TcbExpressionTranslator {
       // `ImplicitReceiver` is resolved in the branch below.
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
       const targetExpression = target === null ? null : this.getTargetNodeExpression(target, ast);
-      if (
-        target instanceof TmplAstLetDeclaration &&
-        !this.isValidLetDeclarationAccess(target, ast)
-      ) {
+      if (target instanceof LetDeclaration && !this.isValidLetDeclarationAccess(target, ast)) {
         this.tcb.oobRecorder.letUsedBeforeDefinition(this.tcb.id, ast, target);
         // Cast the expression to `any` so we don't produce additional diagnostics.
         // We don't use `markIgnoreForDiagnostics` here, because it won't prevent duplicate
@@ -159,7 +156,7 @@ export class TcbExpressionTranslator {
       // Ignore diagnostics from TS produced for writes to `@let` and re-report them using
       // our own infrastructure. We can't rely on the TS reporting, because it includes
       // the name of the auto-generated TCB variable name.
-      if (target instanceof TmplAstLetDeclaration) {
+      if (target instanceof LetDeclaration) {
         result.markIgnoreDiagnostics();
         this.tcb.oobRecorder.illegalWriteToLetDeclaration(this.tcb.id, read, target);
       }
@@ -182,7 +179,7 @@ export class TcbExpressionTranslator {
     } else if (ast instanceof BindingPipe) {
       const expr = this.translate(ast.exp);
       const pipeMeta = this.tcb.getPipeByName(ast.name);
-      let pipe: TcbExpr | null;
+      let pipe: TcbExpr;
       if (pipeMeta === null) {
         // No pipe by that name exists in scope. Record this as an error.
         this.tcb.oobRecorder.missingPipe(this.tcb.id, ast, this.tcb.hostIsStandalone);
@@ -256,7 +253,7 @@ export class TcbExpressionTranslator {
     return expr;
   }
 
-  protected isValidLetDeclarationAccess(target: TmplAstLetDeclaration, ast: PropertyRead): boolean {
+  protected isValidLetDeclarationAccess(target: LetDeclaration, ast: PropertyRead): boolean {
     const targetStart = target.sourceSpan.start.offset;
     const targetEnd = target.sourceSpan.end.offset;
     const astStart = ast.sourceSpan.start;

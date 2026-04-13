@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {WrappedNodeExpr} from '@angular/compiler';
+import {WrappedNodeExpr, TypeCheckingConfig} from '@angular/compiler';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {initMockFileSystem} from '../../file_system/testing';
 import {
@@ -19,7 +19,7 @@ import {
   ReferenceEmitResult,
   ReferenceEmitter,
 } from '../../imports';
-import {OptimizeFor, TypeCheckingConfig} from '../api';
+import {OptimizeFor} from '../api';
 import {ALL_ENABLED_CONFIG, diagnose, setup, tcb, TestDeclaration, TestDirective} from '../testing';
 
 describe('type check blocks', () => {

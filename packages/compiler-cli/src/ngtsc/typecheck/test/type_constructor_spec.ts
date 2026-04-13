@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import ts from 'typescript';
-import {ClassPropertyMapping} from '@angular/compiler';
+import {ClassPropertyMapping, TcbInputMapping} from '@angular/compiler';
 
 import {
   absoluteFrom,
@@ -39,7 +39,6 @@ import {
 import {DirectiveSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
 import {ALL_ENABLED_CONFIG} from '../testing';
-import {TcbInputMapping} from '../api';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {

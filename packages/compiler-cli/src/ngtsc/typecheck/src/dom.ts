@@ -8,14 +8,16 @@
 
 import {
   DomElementSchemaRegistry,
+  DomSchemaChecker,
   ParseSourceSpan,
   SchemaMetadata,
   TmplAstHostElement,
+  TypeCheckId,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {DomSchemaChecker, TemplateDiagnostic, TypeCheckId} from '../api';
+import {TemplateDiagnostic} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';

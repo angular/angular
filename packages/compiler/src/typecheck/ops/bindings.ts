@@ -6,22 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AST, BindingType, LiteralArray, LiteralMap} from '../../expression_parser/ast';
+import {ClassPropertyName} from '../../property_mapping';
+import {ParseSourceSpan} from '../../parse_util';
 import {
-  AST,
-  BindingType,
-  ClassPropertyName,
-  LiteralArray,
-  LiteralMap,
-  ParseSourceSpan,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstTemplate,
-  TmplAstTextAttribute,
-} from '@angular/compiler';
-import {TcbDirectiveMetadata} from '../../api';
+  BoundAttribute,
+  BoundEvent,
+  Component,
+  Directive,
+  Element,
+  Template,
+  TextAttribute,
+} from '../../render3/r3_ast';
+import {TcbDirectiveMetadata, TcbInputMapping} from '../api';
 import {Context} from './context';
 import {TcbExpr} from './codegen';
 
@@ -86,14 +83,14 @@ export type TcbDirectiveInput = TcbDirectiveBoundInput | TcbDirectiveUnsetInput;
 
 export function getBoundAttributes(
   directive: TcbDirectiveMetadata,
-  node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
+  node: Template | Element | Component | Directive,
 ): TcbBoundAttribute[] {
   const boundInputs: TcbBoundAttribute[] = [];
 
-  const processAttribute = (attr: TmplAstBoundAttribute | TmplAstTextAttribute) => {
+  const processAttribute = (attr: BoundAttribute | TextAttribute) => {
     // Skip non-property bindings.
     if (
-      attr instanceof TmplAstBoundAttribute &&
+      attr instanceof BoundAttribute &&
       attr.type !== BindingType.Property &&
       attr.type !== BindingType.TwoWay
     ) {
@@ -108,21 +105,20 @@ export function getBoundAttributes(
         value: attr.value,
         sourceSpan: attr.sourceSpan,
         keySpan: attr.keySpan ?? null,
-        inputs: inputs.map((input) => {
+        inputs: inputs.map((input: TcbInputMapping) => {
           return {
             fieldName: input.classPropertyName,
             required: input.required,
             transformType: input.transformType,
             isSignal: input.isSignal,
-            isTwoWayBinding:
-              attr instanceof TmplAstBoundAttribute && attr.type === BindingType.TwoWay,
+            isTwoWayBinding: attr instanceof BoundAttribute && attr.type === BindingType.TwoWay,
           };
         }),
       });
     }
   };
 
-  if (node instanceof TmplAstTemplate) {
+  if (node instanceof Template) {
     if (node.tagName === 'ng-template') {
       node.inputs.forEach(processAttribute);
       node.attributes.forEach(processAttribute);
@@ -139,8 +135,8 @@ export function getBoundAttributes(
 
 export function checkSplitTwoWayBinding(
   inputName: string,
-  output: TmplAstBoundEvent,
-  inputs: TmplAstBoundAttribute[],
+  output: BoundEvent,
+  inputs: BoundAttribute[],
   tcb: Context,
 ) {
   const input = inputs.find((input) => input.name === inputName);
@@ -153,11 +149,11 @@ export function checkSplitTwoWayBinding(
   if (
     outputConsumer === null ||
     inputConsumer.ref === undefined ||
-    outputConsumer instanceof TmplAstTemplate
+    outputConsumer instanceof Template
   ) {
     return false;
   }
-  if (outputConsumer instanceof TmplAstElement) {
+  if (outputConsumer instanceof Element) {
     tcb.oobRecorder.splitTwoWayBinding(tcb.id, input, output, inputConsumer, outputConsumer);
     return true;
   } else if (outputConsumer.ref !== inputConsumer.ref) {

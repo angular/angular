@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ParseSourceSpan, SchemaMetadata, TmplAstHostElement} from '@angular/compiler';
+import {ParseSourceSpan} from '../parse_util';
+import {SchemaMetadata} from '../core';
+import {HostElement} from '../render3/r3_ast';
 import {TypeCheckId} from './api';
 
 /**
@@ -31,7 +33,7 @@ export interface DomSchemaChecker<T> {
    * @param id Template ID, suitable for resolution with a `TcbSourceResolver`.
    * @param tagName Tag name of the element in question
    * @param sourceSpanForDiagnostics Span that should be used when reporting diagnostics.
-   * @param schemas Any active schemas for the template, which might affect the validity of the
+   * @param schemas any active schemas for the template, which might affect the validity of the
    * element.
    * @param hostIsStandalone Indicates whether the element's host is a standalone component.
    */
@@ -74,7 +76,7 @@ export interface DomSchemaChecker<T> {
    */
   checkHostElementProperty(
     id: string,
-    element: TmplAstHostElement,
+    element: HostElement,
     name: string,
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],

@@ -6,37 +6,34 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector} from '../directive_matching';
 import {
-  BindingType,
-  CssSelector,
-  makeBindingParser,
-  ParsedEvent,
-  ParseSourceSpan,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstHostElement,
-  BindingParser,
   AbsoluteSourceSpan,
-  ParseSpan,
-  PropertyRead,
-  ParsedEventType,
+  AST,
+  ASTWithName,
+  BindingType,
   Call,
-  ThisReceiver,
+  ImplicitReceiver,
   KeyedRead,
   LiteralPrimitive,
-  AST,
+  ParsedEvent,
+  ParsedEventType,
+  ParseSpan,
+  PropertyRead,
   RecursiveAstVisitor,
-  ASTWithName,
   SafeCall,
-  ImplicitReceiver,
-} from '@angular/compiler';
-import ts from 'typescript';
+  ThisReceiver,
+} from '../expression_parser/ast';
+import {ParseSourceSpan} from '../parse_util';
+import {BoundAttribute, BoundEvent, HostElement} from '../render3/r3_ast';
+import {makeBindingParser} from '../render3/view/template';
+import {BindingParser} from '../template_parser/binding_parser';
 
 /**
  * Comment attached to an AST node that serves as a guard to distinguish nodes
  * used for type checking host bindings from ones used for templates.
  */
-const GUARD_COMMENT_TEXT = 'hostBindingsBlockGuard';
+export const HOST_BINDING_GUARD_COMMENT_TEXT = 'hostBindingsBlockGuard';
 
 /** Represents information extracted from the source AST. */
 export type SourceNode =
@@ -105,9 +102,9 @@ export function createHostElement(
   hostObjectLiteralBindings: HostObjectLiteralBinding[],
   hostBindingDecorators: HostBindingDecorator[],
   hostListenerDecorators: HostListenerDecorator[],
-): TmplAstHostElement | null {
-  const bindings: TmplAstBoundAttribute[] = [];
-  const listeners: TmplAstBoundEvent[] = [];
+): HostElement | null {
+  const bindings: BoundAttribute[] = [];
+  const listeners: BoundEvent[] = [];
   let parser: BindingParser | null = null;
 
   for (const binding of hostObjectLiteralBindings) {
@@ -148,7 +145,7 @@ export function createHostElement(
     tagNames.push(`ng-${type}`);
   }
 
-  return new TmplAstHostElement(tagNames, bindings, listeners, nameSpan);
+  return new HostElement(tagNames, bindings, listeners, nameSpan);
 }
 
 /**
@@ -160,34 +157,7 @@ export function createHostBindingsBlockGuard(): string {
   // used only inside a TCB and there's no way for users to produce a comment there.
   // `true /*hostBindingsBlockGuard*/`.
   // Wrap the expression in parentheses to ensure that the comment is attached to the correct node.
-  return `(true /*${GUARD_COMMENT_TEXT}*/)`;
-}
-
-/**
- * Determines if a given node is a guard that indicates that descendant nodes are used to check
- * host bindings.
- */
-export function isHostBindingsBlockGuard(node: ts.Node): boolean {
-  if (!ts.isIfStatement(node)) {
-    return false;
-  }
-
-  // Needs to be kept in sync with `createHostBindingsMarker`.
-  const expr = node.expression;
-  if (!ts.isParenthesizedExpression(expr) || expr.expression.kind !== ts.SyntaxKind.TrueKeyword) {
-    return false;
-  }
-
-  const text = expr.getSourceFile().text;
-  return (
-    ts.forEachTrailingCommentRange(
-      text,
-      expr.expression.getEnd(),
-      (pos, end, kind) =>
-        kind === ts.SyntaxKind.MultiLineCommentTrivia &&
-        text.substring(pos + 2, end - 2) === GUARD_COMMENT_TEXT,
-    ) || false
-  );
+  return `(true /*${HOST_BINDING_GUARD_COMMENT_TEXT}*/)`;
 }
 
 /**
@@ -201,8 +171,8 @@ export function isHostBindingsBlockGuard(node: ts.Node): boolean {
 function createNodeFromHostLiteralProperty(
   binding: HostObjectLiteralBinding,
   parser: BindingParser,
-  bindings: TmplAstBoundAttribute[],
-  listeners: TmplAstBoundEvent[],
+  bindings: BoundAttribute[],
+  listeners: BoundEvent[],
 ): void {
   // TODO(crisbeto): surface parsing errors here, because currently they just get ignored.
   // They'll still get reported when the handler tries to parse the bindings, but here we
@@ -227,7 +197,7 @@ function createNodeFromHostLiteralProperty(
 
     fixupSpans(ast, value);
     bindings.push(
-      new TmplAstBoundAttribute(
+      new BoundAttribute(
         attrName,
         type,
         0,
@@ -258,7 +228,7 @@ function createNodeFromHostLiteralProperty(
     }
 
     fixupSpans(events[0].handler, value);
-    listeners.push(TmplAstBoundEvent.fromParsedEvent(events[0]));
+    listeners.push(BoundEvent.fromParsedEvent(events[0]));
   }
 }
 
@@ -269,7 +239,7 @@ function createNodeFromHostLiteralProperty(
  */
 function createNodeFromBindingDecorator(
   decorator: HostBindingDecorator,
-  bindings: TmplAstBoundAttribute[],
+  bindings: BoundAttribute[],
 ): void {
   const args = decorator.arguments;
   let nameNode: SourceNode;
@@ -313,7 +283,7 @@ function createNodeFromBindingDecorator(
   const {attrName, type} = inferBoundAttribute(nameNode.text);
 
   bindings.push(
-    new TmplAstBoundAttribute(
+    new BoundAttribute(
       attrName,
       type,
       0,
@@ -336,7 +306,7 @@ function createNodeFromBindingDecorator(
 function createNodeFromListenerDecorator(
   decorator: HostListenerDecorator,
   parser: BindingParser,
-  listeners: TmplAstBoundEvent[],
+  listeners: BoundEvent[],
 ): void {
   if (decorator.eventName === null || decorator.eventName.kind !== 'string') {
     return;
@@ -425,7 +395,7 @@ function createNodeFromListenerDecorator(
   }
 
   listeners.push(
-    new TmplAstBoundEvent(
+    new BoundEvent(
       eventName,
       type,
       callNode,

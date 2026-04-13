@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstSwitchBlock, TmplAstSwitchBlockCaseGroup} from '@angular/compiler';
+import {SwitchBlock, SwitchBlockCaseGroup} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import {getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
@@ -22,7 +22,7 @@ export class TcbSwitchOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private block: TmplAstSwitchBlock,
+    private block: SwitchBlock,
   ) {
     super();
   }
@@ -82,7 +82,7 @@ export class TcbSwitchOp extends TcbOp {
     return null;
   }
 
-  private generateGuard(group: TmplAstSwitchBlockCaseGroup, switchValue: TcbExpr): TcbExpr | null {
+  private generateGuard(group: SwitchBlockCaseGroup, switchValue: TcbExpr): TcbExpr | null {
     // For non-default cases, the guard needs to compare against the case value, e.g.
     // `switchExpression === caseExpression`.
     const hasDefault = group.cases.some((c) => c.expression === null);

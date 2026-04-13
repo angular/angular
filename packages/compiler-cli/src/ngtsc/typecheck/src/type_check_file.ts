@@ -5,25 +5,25 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {
+  DomSchemaChecker,
+  generateTypeCheckBlock,
+  OutOfBandDiagnosticRecorder,
+  TcbExpr,
+  TcbGenericContextBehavior,
+  TypeCheckingConfig,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {
-  DomSchemaChecker,
-  OutOfBandDiagnosticRecorder,
-  TypeCheckBlockMetadata,
-  TypeCheckingConfig,
-} from '../api';
+import {TypeCheckBlockMetadata} from '../api';
 
 import {Environment} from './environment';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
-import {generateTypeCheckBlock} from './type_check_block';
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
-import {TcbGenericContextBehavior} from './ops/context';
-import {getStatementsBlock, TcbExpr} from './ops/codegen';
 
 /**
  * An `Environment` representing the single type-checking file into which most (if not all) Type
@@ -115,8 +115,15 @@ export class TypeCheckFile extends Environment {
     }
 
     source += '\n';
-    source += getStatementsBlock(this.pipeInstStatements);
-    source += getStatementsBlock(this.typeCtorStatements);
+
+    for (const expr of this.pipeInstStatements) {
+      source += `${expr.print()};\n`;
+    }
+
+    for (const expr of this.typeCtorStatements) {
+      source += `${expr.print()};\n`;
+    }
+
     source += '\n';
 
     for (const stmt of this.tcbStatements) {

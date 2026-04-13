@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstElement} from '@angular/compiler';
+import {Element} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
@@ -14,7 +14,7 @@ import type {Scope} from './scope';
 
 /**
  * A `TcbOp` which creates an expression for a native DOM element (or web component) from a
- * `TmplAstElement`.
+ * `Element`.
  *
  * Executing this operation returns a reference to the element variable.
  */
@@ -22,7 +22,7 @@ export class TcbElementOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private element: TmplAstElement,
+    private element: Element,
   ) {
     super();
   }

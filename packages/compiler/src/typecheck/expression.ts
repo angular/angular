@@ -38,9 +38,9 @@ import {
   TypeofExpression,
   Unary,
   VoidExpression,
-} from '@angular/compiler';
-import {TypeCheckingConfig} from '../api';
-import {quoteAndEscape, TcbExpr} from './ops/codegen';
+} from '../expression_parser/ast';
+import {TypeCheckingConfig} from './api';
+import {TcbExpr} from './ops/codegen';
 
 /**
  * Convert an `AST` to a `TcbExpr` directly, without going through an intermediate `Expression`
@@ -134,9 +134,6 @@ class TcbExprTranslator implements AstVisitor {
   }
 
   visitInterpolation(ast: Interpolation): TcbExpr {
-    // Build up a chain of binary + operations to simulate the string concatenation of the
-    // interpolation's expressions. The chain is started using an actual string literal to ensure
-    // the type is inferred as 'string'.
     const exprs = ast.expressions.map((e) => {
       const node = this.translate(e);
       node.wrapForTypeChecker();
@@ -155,7 +152,6 @@ class TcbExprTranslator implements AstVisitor {
     const elements = ast.expressions.map((expr) => this.translate(expr));
     let literal = `[${elements.map((el) => el.print()).join(', ')}]`;
 
-    // If strictLiteralTypes is disabled, array literals are cast to `any`.
     if (!this.config.strictLiteralTypes) {
       literal = `(${literal} as any)`;
     }
@@ -168,7 +164,7 @@ class TcbExprTranslator implements AstVisitor {
       const value = this.translate(ast.values[idx]);
 
       if (key.kind === 'property') {
-        const keyNode = new TcbExpr(quoteAndEscape(key.key));
+        const keyNode = new TcbExpr(TcbExpr.quoteAndEscape(key.key));
         keyNode.addParseSpanInfo(key.sourceSpan);
         return `${keyNode.print()}: ${value.print()}`;
       } else {
@@ -179,14 +175,10 @@ class TcbExprTranslator implements AstVisitor {
     let literal = `{ ${properties.join(', ')} }`;
 
     if (!this.config.strictLiteralTypes) {
-      // If strictLiteralTypes is disabled, array literals are cast to `any`.
       literal = `${literal} as any`;
     }
 
     const expression = new TcbExpr(literal).addParseSpanInfo(ast.sourceSpan);
-
-    // Always parenthesize the literal, because for DOM bindings we may put it
-    // directly in the function body at which point TS might parse it as a block.
     expression.wrapForTypeChecker();
 
     return expression;
@@ -199,7 +191,7 @@ class TcbExprTranslator implements AstVisitor {
     } else if (ast.value === null) {
       node = new TcbExpr('null');
     } else if (typeof ast.value === 'string') {
-      node = new TcbExpr(quoteAndEscape(ast.value));
+      node = new TcbExpr(TcbExpr.quoteAndEscape(ast.value));
     } else if (typeof ast.value === 'number') {
       if (Number.isNaN(ast.value)) {
         node = new TcbExpr('NaN');
@@ -242,8 +234,6 @@ class TcbExprTranslator implements AstVisitor {
   }
 
   visitPropertyRead(ast: PropertyRead): TcbExpr {
-    // This is a normal property read - convert the receiver to an expression and emit the correct
-    // TypeScript expression to read the property.
     const receiver = this.translate(ast.receiver).wrapForTypeChecker();
     return new TcbExpr(`${receiver.print()}.${ast.name}`)
       .addParseSpanInfo(ast.nameSpan)
@@ -256,22 +246,11 @@ class TcbExprTranslator implements AstVisitor {
     const receiver = this.translate(ast.receiver).wrapForTypeChecker();
     const name = new TcbExpr(ast.name).addParseSpanInfo(ast.nameSpan);
 
-    // The form of safe property reads depends on whether strictness is in use.
     if (this.config.strictSafeNavigationTypes) {
-      // Use native optional chaining so TypeScript can keep control-flow information for
-      // narrowing in guard expressions.
       node = new TcbExpr(`${receiver.print()}?.${name.print()}`);
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
-      // Emulate a View Engine bug where 'any' is inferred for the left-hand side of the safe
-      // navigation operation. With this bug, the type of the left-hand side is regarded as any.
-      // Therefore, the left-hand side only needs repeating in the output (to validate it), and then
-      // 'any' is used for the rest of the expression. This is done using a comma operator:
-      // "a?.b" becomes (a as any).b, which will of course have type 'any'.
       node = new TcbExpr(`(${receiver.print()} as any).${name.print()}`);
     } else {
-      // The View Engine bug isn't active, so check the entire type of the expression, but the final
-      // result is still inferred as `any`.
-      // "a?.b" becomes (a!.b as any)
       node = new TcbExpr(`(${receiver.print()}!.${name.print()} as any)`);
     }
     return node.addParseSpanInfo(ast.sourceSpan);
@@ -282,16 +261,11 @@ class TcbExprTranslator implements AstVisitor {
     const key = this.translate(ast.key);
     let node: TcbExpr;
 
-    // The form of safe property reads depends on whether strictness is in use.
     if (this.config.strictSafeNavigationTypes) {
-      // Use native optional chaining so TypeScript can keep control-flow information for
-      // narrowing in guard expressions.
       node = new TcbExpr(`${receiver.print()}?.[${key.print()}]`);
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
-      // "a?.[...]" becomes (a as any)[...]
       node = new TcbExpr(`(${receiver.print()} as any)[${key.print()}]`);
     } else {
-      // "a?.[...]" becomes (a!.[...] as any)
       const elementAccess = new TcbExpr(`${receiver.print()}![${key.print()}]`).addParseSpanInfo(
         ast.sourceSpan,
       );
@@ -305,9 +279,6 @@ class TcbExprTranslator implements AstVisitor {
     const receiver = ast.receiver;
     let expr: TcbExpr;
 
-    // For calls that have a property read as receiver, we have to special-case their emit to avoid
-    // inserting superfluous parenthesis as they prevent TypeScript from applying a narrowing effect
-    // if the method acts as a type guard.
     if (receiver instanceof PropertyRead) {
       const resolved = this.maybeResolve(receiver);
       if (resolved !== null) {
@@ -324,8 +295,6 @@ class TcbExprTranslator implements AstVisitor {
 
     let node: TcbExpr;
 
-    // Safe property/keyed reads will produce a ternary whose value is nullable.
-    // We have to generate a similar ternary around the call.
     if (ast.receiver instanceof SafePropertyRead || ast.receiver instanceof SafeKeyedRead) {
       node = this.convertToSafeCall(ast, expr, args);
     } else {
@@ -432,17 +401,13 @@ class TcbExprTranslator implements AstVisitor {
     const args = argNodes.map((node) => node.print()).join(', ');
 
     if (this.config.strictSafeNavigationTypes) {
-      // Use optional chaining for property access, then assert non-null before calling.
-      // (0 as any ? expr!() : undefined)
       return new TcbExpr(`(0 as any ? ${expr}!(${args}) : undefined)`);
     }
 
     if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
-      // (a as any).method(...)
       return new TcbExpr(`(${expr} as any)(${args})`);
     }
 
-    // (a!.method(...) as any)
     return new TcbExpr(`(${expr}!(${args}) as any)`);
   }
 
@@ -451,19 +416,6 @@ class TcbExprTranslator implements AstVisitor {
   }
 }
 
-/**
- * Checks whether View Engine will infer a type of 'any' for the left-hand side of a safe navigation
- * operation.
- *
- * In View Engine's template type-checker, certain receivers of safe navigation operations will
- * cause a temporary variable to be allocated as part of the checking expression, to save the value
- * of the receiver and use it more than once in the expression. This temporary variable has type
- * 'any'. In practice, this means certain receivers cause View Engine to not check the full
- * expression, and other receivers will receive more complete checking.
- *
- * For compatibility, this logic is adapted from View Engine's expression_converter.ts so that the
- * Ivy checker can emulate this bug when needed.
- */
 class VeSafeLhsInferenceBugDetector implements AstVisitor {
   private static SINGLETON = new VeSafeLhsInferenceBugDetector();
 

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {TypeCheckingConfig} from '@angular/compiler';
 import ts from 'typescript';
-
-import {TypeCheckingConfig} from '../api';
 import {diagnose} from '../testing';
 
 export interface TestInput {

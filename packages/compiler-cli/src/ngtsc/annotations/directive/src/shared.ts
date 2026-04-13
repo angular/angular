@@ -32,6 +32,10 @@ import {
   literal,
   ClassPropertyMapping,
   InputOrOutput,
+  HostObjectLiteralBinding,
+  HostListenerDecorator,
+  HostBindingDecorator,
+  SourceNode,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -92,13 +96,6 @@ import {tryParseSignalInputMapping} from './input_function';
 import {tryParseSignalModelMapping} from './model_function';
 import {tryParseInitializerBasedOutput} from './output_function';
 import {tryParseSignalQueryFromInitializer} from './query_functions';
-import {
-  HostObjectLiteralBinding,
-  HostListenerDecorator,
-  HostBindingDecorator,
-  SourceNode,
-  StaticSourceNode,
-} from '../../../typecheck/src/host_bindings';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 

@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {R3Identifiers} from '@angular/compiler';
+import {R3Identifiers, TcbExpr, TcbTypeParameter, TypeCtorMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {TypeCtorMetadata, TcbTypeParameter} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {checkIfGenericTypeBoundsCanBeEmitted, generateTcbTypeParameters} from './tcb_util';
-import {quoteAndEscape, TcbExpr} from './ops/codegen';
 
 export function generateTypeCtorDeclarationFn(
   env: ReferenceEmitEnvironment,
@@ -124,9 +122,9 @@ function constructTypeCtorParameter(
 
   for (const {classPropertyName, transformType, isSignal} of meta.fields.inputs) {
     if (isSignal) {
-      signalInputKeys.push(quoteAndEscape(classPropertyName));
+      signalInputKeys.push(TcbExpr.quoteAndEscape(classPropertyName));
     } else if (!meta.coercedInputFields.has(classPropertyName)) {
-      plainKeys.push(quoteAndEscape(classPropertyName));
+      plainKeys.push(TcbExpr.quoteAndEscape(classPropertyName));
     } else {
       const coercionType =
         transformType !== undefined

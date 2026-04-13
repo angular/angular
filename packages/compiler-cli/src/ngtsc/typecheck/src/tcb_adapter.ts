@@ -6,18 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  TypeCheckBlockMetadata,
-  TcbTypeCheckBlockMetadata,
-  TcbComponentMetadata,
-  TcbDirectiveMetadata,
-  TcbReferenceMetadata,
-  TcbInputMapping,
-  TcbPipeMetadata,
-  TcbTypeParameter,
-  TcbReferenceKey,
-  TypeCheckableDirectiveMeta,
-} from '../api';
+import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from '../api';
 import {Environment} from './environment';
 import {ImportFlags, ReferenceEmitKind, Reference} from '../../imports';
 import {
@@ -31,15 +20,23 @@ import {
   WrappedNodeExpr,
   ClassPropertyMapping,
   ConflictingHostDirectiveBinding,
+  TcbGenericContextBehavior,
+  TcbTypeCheckBlockMetadata,
+  TcbDirectiveMetadata,
+  TcbPipeMetadata,
+  TcbTypeParameter,
+  TcbReferenceMetadata,
+  TcbReferenceKey,
+  TcbComponentMetadata,
+  TcbInputMapping,
 } from '@angular/compiler';
 import {InputMapping} from '../../metadata';
 import {requiresInlineTypeCtor} from './type_constructor';
-import {tempPrint} from './ops/codegen';
+import {tempPrint} from './tcb_print';
 import {generateTcbTypeParameters} from './tcb_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 import {ClassDeclaration} from '../../reflection';
 import ts from 'typescript';
-import {TcbGenericContextBehavior} from './ops/context';
 
 /**
  * Adapts the compiler's `TypeCheckBlockMetadata` (which includes full TS AST nodes)

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {TypeCheckingConfig} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -109,7 +110,7 @@ import {
   TraitCompiler,
 } from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
-import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
+import {OptimizeFor, TemplateTypeChecker} from '../../typecheck/api';
 import {
   ALL_DIAGNOSTIC_FACTORIES,
   ExtendedTemplateCheckerImpl,
