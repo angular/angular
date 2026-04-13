@@ -28,9 +28,12 @@ import {
   ɵRuntimeError as RuntimeError,
   ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
   StaticProvider,
+  NgZone,
   Testability,
+  TestabilityRegistry,
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
+  ɵUSE_PENDING_TASKS,
   Type,
   ɵsetDocument,
 } from '@angular/core';
@@ -190,11 +193,18 @@ async function resolveJitResources(): Promise<void> {
  *
  * @publicApi
  */
-export function provideProtractorTestingSupport(): Provider[] {
+export function provideProtractorTestingSupport(
+  options: {usePendingTasksForStability?: boolean} = {},
+): Provider[] {
   // Return a copy to prevent changes to the original array in case any in-place
   // alterations are performed to the `provideProtractorTestingSupport` call results in app
   // code.
-  return [...TESTABILITY_PROVIDERS];
+  return [
+    ...TESTABILITY_PROVIDERS,
+    options?.usePendingTasksForStability !== undefined
+      ? {provide: ɵUSE_PENDING_TASKS, useValue: options.usePendingTasksForStability ?? false}
+      : [],
+  ];
 }
 
 export function initDomAdapter() {
@@ -244,10 +254,12 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY,
     useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
   {
     provide: Testability, // Also provide as `Testability` for backwards-compatibility.
     useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
 ];
 

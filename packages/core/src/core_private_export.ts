@@ -153,6 +153,7 @@ export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
 export {
   TESTABILITY as ɵTESTABILITY,
   TESTABILITY_GETTER as ɵTESTABILITY_GETTER,
+  USE_PENDING_TASKS as ɵUSE_PENDING_TASKS,
 } from './testability/testability';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 export {devModeEqual as ɵdevModeEqual} from './util/comparison';

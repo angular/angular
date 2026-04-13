@@ -267,6 +267,7 @@
       "TracingAction",
       "TracingService",
       "UNSET",
+      "USE_PENDING_TASKS",
       "USE_VALUE",
       "UnsubscriptionError",
       "VALID",
