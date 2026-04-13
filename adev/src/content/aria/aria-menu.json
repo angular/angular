@@ -63,6 +63,7 @@
           "type": "InputSignal<Menu<V> | undefined>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "The menu associated with the trigger.",

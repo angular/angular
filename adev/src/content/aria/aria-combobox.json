@@ -170,6 +170,7 @@
           "type": "ModelSignal<string>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input",
             "output"
           ],
@@ -290,7 +291,8 @@
           "type": "Signal<Direction>",
           "memberType": "property",
           "memberTags": [
-            "protected"
+            "protected",
+            "readonly"
           ],
           "description": "A signal wrapper for directionality.",
           "jsdocTags": []
@@ -319,7 +321,9 @@
           "name": "filterMode",
           "type": "InputSignal<\"manual\" | \"auto-select\" | \"highlight\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "The filter mode for the combobox.\n- `manual`: The consumer is responsible for filtering the options.\n- `auto-select`: The combobox automatically selects the first matching option.\n- `highlight`: The combobox highlights matching text in the options without changing selection.",
           "jsdocTags": []
         },
