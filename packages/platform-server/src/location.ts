@@ -30,16 +30,66 @@ function parseUrl(
   hash: string;
   href: string;
 } {
-  const {hostname, protocol, port, pathname, search, hash, href} = new URL(urlStr, origin);
+  let isAbsolute = false;
+  try {
+    new URL(urlStr);
+    isAbsolute = true;
+  } catch {}
+
+  const parsedUrl = new URL(urlStr, origin);
+
+  // Security: if the input is not an absolute URL (i.e. it is relative),
+  // ensure it cannot override the origin's hostname, protocol, or port.
+  // This prevents SSRF via protocol-relative URLs (//evil.com) and
+  // backslash bypass URLs (/\evil.com) which the WHATWG URL parser
+  // normalizes into authority-changing URLs.
+  if (!isAbsolute) {
+    let originUrl: URL;
+    try {
+      originUrl = new URL(origin);
+    } catch {
+      // If origin itself is not a valid URL (e.g. 'undefined://'),
+      // fall through and return parsed values as-is since the
+      // interceptor's protocol check will reject non-http protocols.
+      return {
+        hostname: parsedUrl.hostname,
+        href: parsedUrl.href,
+        protocol: parsedUrl.protocol,
+        port: parsedUrl.port,
+        pathname: parsedUrl.pathname,
+        search: parsedUrl.search,
+        hash: parsedUrl.hash,
+      };
+    }
+
+    if (
+      parsedUrl.hostname !== originUrl.hostname ||
+      parsedUrl.protocol !== originUrl.protocol ||
+      parsedUrl.port !== originUrl.port
+    ) {
+      // Neutralize the hostname override: keep only the path components
+      // from the user input but use the origin's host identity.
+      const safeUrl = new URL(parsedUrl.pathname + parsedUrl.search + parsedUrl.hash, origin);
+      return {
+        hostname: safeUrl.hostname,
+        href: safeUrl.href,
+        protocol: safeUrl.protocol,
+        port: safeUrl.port,
+        pathname: safeUrl.pathname,
+        search: safeUrl.search,
+        hash: safeUrl.hash,
+      };
+    }
+  }
 
   return {
-    hostname,
-    href,
-    protocol,
-    port,
-    pathname,
-    search,
-    hash,
+    hostname: parsedUrl.hostname,
+    href: parsedUrl.href,
+    protocol: parsedUrl.protocol,
+    port: parsedUrl.port,
+    pathname: parsedUrl.pathname,
+    search: parsedUrl.search,
+    hash: parsedUrl.hash,
   };
 }
 

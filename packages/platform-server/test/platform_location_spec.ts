@@ -225,5 +225,73 @@ import {bootstrapApplication} from '@angular/platform-browser';
         location.pushState(null, 'Test', '/foo#bar');
       });
     });
+
+    it('neutralizes protocol-relative URL hostname hijack attempts', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: '//attacker.com/deep/path',
+          },
+        },
+      ]);
+
+      const appRef = await bootstrapApplication(
+        LocationApp,
+        {
+          providers: [
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '<app></app>',
+                url: '//attacker.com/deep/path',
+              },
+            },
+          ],
+        },
+        {platformRef: platform},
+      );
+
+      const location = appRef.injector.get(PlatformLocation);
+      // The hostname must NOT be 'attacker.com' — the SSRF must be neutralized.
+      expect(location.hostname).not.toBe('attacker.com');
+      // The pathname should still reflect the requested path.
+      expect(location.pathname).toBe('/deep/path');
+      platform.destroy();
+    });
+
+    it('neutralizes backslash-based URL hostname hijack attempts', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: '/\\attacker.com/deep/path',
+          },
+        },
+      ]);
+
+      const appRef = await bootstrapApplication(
+        LocationApp,
+        {
+          providers: [
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '<app></app>',
+                url: '/\\attacker.com/deep/path',
+              },
+            },
+          ],
+        },
+        {platformRef: platform},
+      );
+
+      const location = appRef.injector.get(PlatformLocation);
+      // The hostname must NOT be 'attacker.com' — the SSRF must be neutralized.
+      expect(location.hostname).not.toBe('attacker.com');
+      platform.destroy();
+    });
   });
 })();
