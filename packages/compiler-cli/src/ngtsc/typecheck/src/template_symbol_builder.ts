@@ -67,7 +67,6 @@ import {isAccessExpression, isDirectiveDeclaration} from './ts_util';
 export interface SymbolDirectiveMeta {
   getSymbolReference(): SymbolReference;
   getNgModule(): ClassDeclaration | null;
-  getReferenceTargetNode(): ts.ClassDeclaration | null;
   matchSource: MatchSource;
   isComponent: boolean;
   selector: string | null;
@@ -597,10 +596,7 @@ export class SymbolBuilder {
         referenceVarLocation: referenceVarTcbLocation,
       };
     } else {
-      const targetNode = target.directive.getReferenceTargetNode();
-      if (targetNode === null) {
-        return null;
-      }
+      const targetNode = target.directive.getSymbolReference();
 
       return {
         kind: SymbolKind.Reference,
