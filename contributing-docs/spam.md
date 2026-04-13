@@ -5,7 +5,10 @@ particularly low-quality or low-value contributions, may see those contributions
 automatically closed without consideration.
 
 Community contributors should limit themselves to no more than 3 open PRs at a
-single time.
+single time. If you have more than 3 open PRs, we ask that you wait until some of those
+PRs are merged or closed before opening more.
+
+Draft pull requests are considered acceptable beyond the limit if 3, but within a reasonable limit (~10 or more within a short time frame). Beyond that reasonable limit, the team may still consider it spam and close them without consideration.
 
 ## Why?
 
