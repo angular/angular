@@ -293,6 +293,8 @@
 
   @include mq.for-phone-only {
     display: block;
+    position: relative;
+    top: 1rem;
   }
 }
 
