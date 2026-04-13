@@ -19,7 +19,7 @@ import {
 import {findMatchingDehydratedView, locateDehydratedViewsInContainer} from '../hydration/views';
 import {Type} from '../interface/type';
 import {assertNodeInjector} from '../render3/assert';
-import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
+import {ComponentFactory} from '../render3/component_ref';
 import {getComponentDef} from '../render3/def_getters';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
 import {nativeInsertBefore} from '../render3/dom_node_manipulation';
@@ -461,7 +461,7 @@ class R3ViewContainerRef extends ViewContainerRef {
     directives = options.directives;
     bindings = options.bindings;
 
-    const componentFactory = new R3ComponentFactory(getComponentDef(componentType)!);
+    const componentFactory = new ComponentFactory(getComponentDef(componentType)!);
     const contextInjector = injector || this.parentInjector;
 
     // If an `NgModuleRef` is not provided explicitly, try retrieving it from the DI tree.

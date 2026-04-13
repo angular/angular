@@ -57,7 +57,6 @@
       "CheckboxControlValueAccessor",
       "CommonModule",
       "ComponentFactory",
-      "ComponentFactory2",
       "ComponentRef",
       "ComponentRef2",
       "ConsumerObserver",

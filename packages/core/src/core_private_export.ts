@@ -121,7 +121,6 @@ export {
 } from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {Writable as ɵWritable} from './interface/type';
-export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {
   clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue,
   isComponentDefPendingResolution as ɵisComponentDefPendingResolution,

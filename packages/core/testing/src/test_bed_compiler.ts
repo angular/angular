@@ -35,7 +35,6 @@ import {
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
   ɵisEnvironmentProviders as isEnvironmentProviders,
   LOCALE_ID,
-  ModuleWithComponentFactories,
   ModuleWithProviders,
   ɵNG_COMP_DEF as NG_COMP_DEF,
   ɵNG_DIR_DEF as NG_DIR_DEF,
@@ -1200,20 +1199,6 @@ class R3TestCompiler implements Compiler {
   async compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
     await this.testBed._compileNgModuleAsync(moduleType);
     return new R3NgModuleFactory(moduleType);
-  }
-
-  compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
-    const ngModuleFactory = this.compileModuleSync(moduleType);
-    const componentFactories = this.testBed._getComponentFactories(moduleType as NgModuleType<T>);
-    return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
-  }
-
-  async compileModuleAndAllComponentsAsync<T>(
-    moduleType: Type<T>,
-  ): Promise<ModuleWithComponentFactories<T>> {
-    const ngModuleFactory = await this.compileModuleAsync(moduleType);
-    const componentFactories = this.testBed._getComponentFactories(moduleType as NgModuleType<T>);
-    return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
   }
 
   clearCache(): void {}

@@ -8,12 +8,9 @@
 
 import type {ChangeDetectorRef} from '../change_detection/change_detection';
 import type {Injector} from '../di/injector';
-import type {EnvironmentInjector} from '../di/r3_injector';
 import type {Type} from '../interface/type';
-import type {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 
 import type {ElementRef} from './element_ref';
-import type {NgModuleRef} from './ng_module_factory';
 import type {ViewRef} from './view_ref';
 
 /**
@@ -79,48 +76,4 @@ export abstract class ComponentRef<C> {
    * associated with this component. Called when the `destroy()` method is invoked.
    */
   abstract onDestroy(callback: Function): void;
-}
-
-/**
- * Base class for a factory that can create a component dynamically.
- * Instantiate a factory for a given type of component with `resolveComponentFactory()`.
- * Use the resulting `ComponentFactory.create()` method to create a component of that type.
- */
-export abstract class ComponentFactory<C> {
-  /**
-   * The component's HTML selector.
-   */
-  abstract get selector(): string;
-  /**
-   * The type of component the factory will create.
-   */
-  abstract get componentType(): Type<any>;
-  /**
-   * Selector for all <ng-content> elements in the component.
-   */
-  abstract get ngContentSelectors(): string[];
-  /**
-   * The inputs of the component.
-   */
-  abstract get inputs(): {
-    propName: string;
-    templateName: string;
-    transform?: (value: any) => any;
-    isSignal: boolean;
-  }[];
-  /**
-   * The outputs of the component.
-   */
-  abstract get outputs(): {propName: string; templateName: string}[];
-  /**
-   * Creates a new component.
-   */
-  abstract create(
-    injector: Injector,
-    projectableNodes?: any[][],
-    rootSelectorOrNode?: string | any,
-    environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
-    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
-    bindings?: Binding[],
-  ): ComponentRef<C>;
 }
