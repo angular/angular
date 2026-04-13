@@ -30,6 +30,8 @@ import {
  * @param options The options to use for the debounced signal.
  * @returns A resource representing the debounced signal.
  * @experimental 22.0
+ *
+ * @see [Debouncing signals with `debounced`](guide/signals/debounced)
  */
 export function debounced<T>(
   source: () => T,
