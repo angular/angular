@@ -82,3 +82,12 @@ export function isSymbolAliasOf(
 
   return false;
 }
+
+/**
+ * Check if a node is a class declaration or the identifier of a class declaration.
+ */
+export function isClassDeclarationOrName(node: ts.Node): boolean {
+  return (
+    ts.isClassDeclaration(node) || (ts.isIdentifier(node) && ts.isClassDeclaration(node.parent))
+  );
+}

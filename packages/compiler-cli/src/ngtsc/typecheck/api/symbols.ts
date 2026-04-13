@@ -21,7 +21,7 @@ import ts from 'typescript';
 import {AbsoluteFsPath} from '../../file_system';
 import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
-import {PotentialDirective} from './scope';
+import {PotentialDirective, SymbolReference} from './scope';
 
 export enum SymbolKind {
   Input,
@@ -157,9 +157,9 @@ export interface ReferenceSymbol {
    * Depending on the type of the reference, this is one of the following:
    *  - `TmplAstElement` when the local ref refers to the HTML element
    *  - `TmplAstTemplate` when the ref refers to an `ng-template`
-   *  - `ts.ClassDeclaration` when the local ref refers to a Directive instance (#ref="myExportAs")
+   *  - `SymbolReference` when the local ref refers to a Directive instance (#ref="myExportAs")
    */
-  target: TmplAstElement | TmplAstTemplate | ts.ClassDeclaration;
+  target: TmplAstElement | TmplAstTemplate | SymbolReference;
 
   /**
    * The node in the `TemplateAst` where the symbol is declared. That is, node for the `#ref` or
