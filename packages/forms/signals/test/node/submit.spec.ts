@@ -513,7 +513,7 @@ describe('submit', () => {
       }),
     ).toBe(false);
 
-    expect(onInvalidSpy).toHaveBeenCalledWith(f, {root: f, submitted: f});
+    expect(onInvalidSpy).toHaveBeenCalledWith(f, {root: f, submitted: f, submitEvent: undefined});
   });
 
   it('runs action on invalid form with ignoreValidators: all', async () => {
