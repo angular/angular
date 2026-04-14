@@ -6197,7 +6197,36 @@ describe('platform-server full application hydration integration', () => {
           expect(message).toContain('During hydration Angular expected <b> but found <span>');
           expect(message).toContain('<b>…</b>  <-- AT THIS LOCATION');
           expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+          expect(message).toContain('/guide/hydration#third-party-scripts-with-dom-manipulation');
           verifyNodeHasMismatchInfo(doc);
+        });
+      });
+
+      it('should if there are any third-party scripts that manipulate the DOM', async () => {
+        @Component({
+          selector: 'app',
+          template: `<div>Original content</div>`,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const div = this.doc.querySelector('div');
+            const ins = this.doc.createElement('ins');
+            ins.setAttribute('data-ad-client', 'ca-pub-1234');
+            ins.textContent = 'Ad content';
+            div?.parentNode?.insertBefore(ins, div);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        resetTViewsFor(SimpleComponent);
+
+        await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain('During hydration Angular expected <div> but found <ins>');
+          expect(message).toContain('/guide/hydration#third-party-scripts-with-dom-manipulation');
         });
       });
 
