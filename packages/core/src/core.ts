@@ -128,6 +128,7 @@ export {TypeDecorator} from './util/decorators';
 export {DefaultExport} from './util/default_export';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export * from './version';
+export * from './webmcp';
 export * from './zone';
 
 import {global} from './util/global';
