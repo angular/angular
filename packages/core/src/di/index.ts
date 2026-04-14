@@ -17,6 +17,8 @@ export {assertInInjectionContext, runInInjectionContext} from './contextual';
 export {ɵɵdefineInjectable, ɵɵdefineInjector, InjectableType, InjectorType} from './interface/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
+export {Service, ServiceDecorator} from './service';
+export {ɵɵdefineService} from './interface/service';
 export {Injector, DestroyableInjector} from './injector';
 export {EnvironmentInjector} from './r3_injector';
 export {
