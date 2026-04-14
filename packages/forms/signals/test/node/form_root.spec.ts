@@ -116,17 +116,21 @@ describe('FormRoot', () => {
     @Component({
       template: `
         <form [formRoot]="f">
-          <button type="submit">Submit</button>
+          <button type="submit" value="submit">Submit</button>
         </form>
       `,
       imports: [FormRoot, ReactiveFormsModule],
     })
     class TestCmp {
       submitted = false;
+      submitterValue: string | null = null;
+
       readonly f = form(signal({}), {
         submission: {
-          action: async () => {
+          action: async (_field, _detail, event) => {
             this.submitted = true;
+            const submitter = event?.submitter as HTMLButtonElement | null;
+            this.submitterValue = submitter?.value ?? null;
           },
         },
       });
@@ -135,12 +139,19 @@ describe('FormRoot', () => {
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const component = fixture.componentInstance;
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
 
-    const event = new Event('submit', {cancelable: true});
+    const event = new Event('submit', {cancelable: true}) as SubmitEvent;
+    Object.defineProperty(event, 'submitter', {
+      value: button,
+      configurable: true,
+    });
+
     act(() => formElement.dispatchEvent(event));
 
     expect(event.defaultPrevented).toBe(true);
     expect(component.submitted).toBeTrue();
+    expect(component.submitterValue).toBe('submit');
   });
 });
 

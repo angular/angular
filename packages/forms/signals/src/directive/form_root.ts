@@ -41,7 +41,7 @@ import {FieldNode} from '../field/node';
 export class FormRoot<T> {
   readonly fieldTree = input.required<FieldTree<T>>({alias: 'formRoot'});
 
-  protected onSubmit(event: Event): void {
+  protected onSubmit(event: SubmitEvent): void {
     event.preventDefault();
 
     untracked(() => {
@@ -49,7 +49,7 @@ export class FormRoot<T> {
       const node = fieldTree() as FieldState<unknown> as FieldNode;
 
       if (node.structure.fieldManager.submitOptions) {
-        submit(fieldTree);
+        submit(fieldTree, undefined, event);
       }
     });
   }

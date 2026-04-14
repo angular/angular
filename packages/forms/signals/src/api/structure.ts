@@ -378,14 +378,17 @@ export function applyWhenValue(
 export async function submit<TModel>(
   form: FieldTree<TModel>,
   options?: NoInfer<FormSubmitOptions<unknown, TModel>>,
+  submitEvent?: SubmitEvent,
 ): Promise<boolean>;
 export async function submit<TModel>(
   form: FieldTree<TModel>,
   action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>,
+  submitEvent?: SubmitEvent,
 ): Promise<boolean>;
 export async function submit<TModel>(
   form: FieldTree<TModel>,
   options?: FormSubmitOptions<unknown, TModel> | FormSubmitOptions<unknown, TModel>['action'],
+  submitEvent?: SubmitEvent,
 ): Promise<boolean> {
   const node = untracked(form) as FieldState<unknown> as FieldNode;
 
@@ -417,7 +420,7 @@ export async function submit<TModel>(
   try {
     if (shouldRun) {
       node.submitState.selfSubmitting.set(true);
-      const errors = await untracked(() => action?.(field, detail));
+      const errors = await untracked(() => action?.(field, detail, submitEvent));
       errors && setSubmissionErrors(node, errors);
       return !errors || (isArray(errors) && errors.length === 0);
     } else {
