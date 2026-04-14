@@ -66,8 +66,6 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 });
 ```
 
-For deeply nested forms, you may be tempted to use `apply()` to reach nested fields, but that's not necessary. Just use dot notation (such as `schemaPath.billing.address.street`) to access the field you want.
-
 ## Conditional schemas with `applyWhen()`
 
 NOTE: The [Adding form logic guide](guide/forms/signals/form-logic) introduced `applyWhen()` for conditional rules with inline logic. This section covers how to compose `applyWhen()` with reusable schemas.
