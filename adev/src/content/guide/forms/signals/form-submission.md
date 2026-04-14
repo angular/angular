@@ -302,11 +302,12 @@ When using `FormRoot`, side effects also go inside the `action` since `FormRoot`
 submission: {
   action: async (field) => {
     const result = await saveContact(field().value());
-    if (!result.ok) {
-      return {kind: 'serverError', message: 'Failed to submit form'};
+    if (result.ok) {
+      await this.router.navigate(['/confirmation']);
+      return;
     }
 
-    await this.router.navigate(['/confirmation']);
+    return {kind: 'serverError', message: 'Failed to submit form'};
   },
 }
 ```
