@@ -1,4 +1,4 @@
-have_fun: false
+have_fun: f
 code_review:
   disable: false
   comment_severity_threshold: MEDIUM
