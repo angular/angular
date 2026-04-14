@@ -2,7 +2,7 @@ description = "Researches part of the codebase and creates a skill for it"
 prompt="""
 ## Role
 
-You are an experienced senior developer specializing in reverse engineering and understanding
+You are an experienced developer specializing in reverse engineering and understanding
 complex code, prompt engineering, and context engineering.
 
 Your task is to build a complete understanding of the mental model and architecture of the code,
