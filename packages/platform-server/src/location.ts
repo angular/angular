@@ -18,29 +18,18 @@ import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG} from './tokens';
 
-function parseUrl(
-  urlStr: string,
-  origin: string,
-): {
-  hostname: string;
-  protocol: string;
-  port: string;
-  pathname: string;
-  search: string;
-  hash: string;
-  href: string;
-} {
-  const {hostname, protocol, port, pathname, search, hash, href} = new URL(urlStr, origin);
+/**
+ * Parses a URL string and returns a URL object.
+ * @param urlStr The string to parse.
+ * @param origin The origin to use for resolving the URL.
+ * @returns The parsed URL.
+ */
+function parseUrl(urlStr: string, origin: string): URL {
+  // If the URL is empty or start with a `/` it is a pathname relative to the origin
+  // otherwise it's an absolute URL.
+  const urlToParse = urlStr.length === 0 || urlStr[0] === '/' ? origin + urlStr : urlStr;
 
-  return {
-    hostname,
-    href,
-    protocol,
-    port,
-    pathname,
-    search,
-    hash,
-  };
+  return new URL(urlToParse);
 }
 
 /**
@@ -65,14 +54,17 @@ export class ServerPlatformLocation implements PlatformLocation {
       return;
     }
     if (config.url) {
-      const url = parseUrl(config.url, this._doc.location.origin);
-      this.protocol = url.protocol;
-      this.hostname = url.hostname;
-      this.port = url.port;
-      this.pathname = url.pathname;
-      this.search = url.search;
-      this.hash = url.hash;
-      this.href = url.href;
+      const {protocol, hostname, port, pathname, search, hash, href} = parseUrl(
+        config.url,
+        this._doc.location.origin,
+      );
+      this.protocol = protocol;
+      this.hostname = hostname;
+      this.port = port;
+      this.pathname = pathname;
+      this.search = search;
+      this.hash = hash;
+      this.href = href;
     }
   }
 
@@ -114,12 +106,13 @@ export class ServerPlatformLocation implements PlatformLocation {
 
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
-    const parsedUrl = parseUrl(newUrl, this._doc.location.origin);
-    (this as Writable<this>).pathname = parsedUrl.pathname;
-    (this as Writable<this>).search = parsedUrl.search;
-    (this as Writable<this>).href = parsedUrl.href;
-    (this as Writable<this>).protocol = parsedUrl.protocol;
-    this.setHash(parsedUrl.hash, oldUrl);
+    const {pathname, search, hash, href, protocol} = parseUrl(newUrl, this._doc.location.origin);
+    const writableThis = this as Writable<this>;
+    writableThis.pathname = pathname;
+    writableThis.search = search;
+    writableThis.href = href;
+    writableThis.protocol = protocol;
+    this.setHash(hash, oldUrl);
   }
 
   pushState(state: any, title: string, newUrl: string): void {
