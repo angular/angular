@@ -2,7 +2,7 @@ set +e
 
 pnpm --silent ng-dev commit-message pre-commit-validate --file $1 2>/dev/null
 if [ $? -ne 0 ]; then
-  echo "WARNING: failed to run commit message validation (ng-dev commit-mesage pre-commit-validate)"
+  echo "WARNING: failed to run commit validation (ng-dev commit-mesage pre-commit-validate)"
 fi
 
 exit 0;
