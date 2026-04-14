@@ -8,10 +8,10 @@
 
 import {PlatformLocation, XhrFactory} from '@angular/common';
 import {
+  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
   HttpEvent,
   HttpHandlerFn,
   HttpRequest,
-  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
 } from '@angular/common/http';
 import {inject, Injectable, Provider} from '@angular/core';
 import {Observable} from 'rxjs';
@@ -64,10 +64,18 @@ function relativeUrlsTransformerInterceptorFn(
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
-  {provide: XhrFactory, useClass: ServerXhr},
   {
     provide: HTTP_ROOT_INTERCEPTOR_FNS,
     useValue: relativeUrlsTransformerInterceptorFn,
     multi: true,
   },
 ];
+
+/**
+ * Enables Xhr support on the server. This is required when using `withXhr` to make HTTP requests from the server.
+ *
+ * @publicApi 22.0
+ */
+export function provideXhrServerSupport(): Provider {
+  return {provide: XhrFactory, useClass: ServerXhr};
+}

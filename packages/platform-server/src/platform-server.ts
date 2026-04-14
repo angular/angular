@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export {provideXhrServerSupport} from './http';
 export {PlatformState} from './platform_state';
 export {provideServerRendering} from './provide_server';
 export {platformServer, ServerModule} from './server';

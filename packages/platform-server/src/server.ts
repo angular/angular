@@ -8,14 +8,15 @@
 
 import {
   DOCUMENT,
-  PlatformLocation,
-  ViewportScroller,
   ɵgetDOM as getDOM,
   ɵNullViewportScroller as NullViewportScroller,
   ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID,
+  PlatformLocation,
+  ViewportScroller,
 } from '@angular/common';
 import {
   createPlatformFactory,
+  inject,
   Injector,
   NgModule,
   PLATFORM_ID,
@@ -23,16 +24,15 @@ import {
   platformCore,
   PlatformRef,
   Provider,
-  Testability,
-  ɵsetDocument,
-  ɵTESTABILITY as TESTABILITY,
-  inject,
   StaticProvider,
+  Testability,
+  ɵTESTABILITY as TESTABILITY,
+  ɵsetDocument,
 } from '@angular/core';
 import {
+  ɵBrowserDomAdapter as BrowserDomAdapter,
   BrowserModule,
   EVENT_MANAGER_PLUGINS,
-  ɵBrowserDomAdapter as BrowserDomAdapter,
 } from '@angular/platform-browser';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
@@ -87,7 +87,8 @@ export const PLATFORM_SERVER_PROVIDERS: Provider[] = [
  */
 @NgModule({
   exports: [BrowserModule],
-  providers: PLATFORM_SERVER_PROVIDERS,
+  // Note: the `HttpClientModule` still defaults on using `Xhr`, we do the same here.
+  providers: [...PLATFORM_SERVER_PROVIDERS],
 })
 export class ServerModule {}
 

@@ -46,6 +46,9 @@ export class PlatformState {
 export function provideServerRendering(): EnvironmentProviders;
 
 // @public
+export function provideXhrServerSupport(): Provider;
+
+// @public
 export function renderApplication(bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>, options: {
     document?: string | Document;
     url?: string;

@@ -15,7 +15,9 @@
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0",
+    "tslib": "^2.3.0"
+  },
+  "optionalDependencies": {
     "xhr2": "^0.2.0"
   },
   "repository": {
