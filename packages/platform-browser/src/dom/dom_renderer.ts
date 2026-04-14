@@ -618,6 +618,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     // `delegate.destroy()` via `afterFlushAnimationsDone` + `queueMicrotask`.
     // Without this, the deferred `disableStyles()` would find the *replacement*
     // component's newly-added style record (same content key) and disable it.
+    // TODO: clean this up when the legacy animation package (`@angular/platform-browser/animations`) is removed.
     this.styles = [];
     this.styleUrls = undefined;
   }
