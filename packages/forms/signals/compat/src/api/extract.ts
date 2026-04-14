@@ -96,7 +96,6 @@ function visitFieldTree(
 ): RawValue<unknown> | DeepPartial<RawValue<unknown>> {
   const state = field();
   const value = state.value();
-  console.log('value', value);
 
   const matchingChildren = extractChildren(field, value, filter);
 
