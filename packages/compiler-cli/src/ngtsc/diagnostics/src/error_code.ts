@@ -189,6 +189,11 @@ export enum ErrorCode {
    */
   COMPONENT_ANIMATIONS_CONFLICT = 2027,
 
+  /**
+   * Raised when an `@Service` class is using constructor dependency injection.
+   */
+  SERVICE_CONSTRUCTOR_DI = 2028,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be

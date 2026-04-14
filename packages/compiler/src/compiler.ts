@@ -48,6 +48,7 @@ export * from './expression_parser/lexer';
 export * from './expression_parser/parser';
 export * from './i18n/index';
 export * from './injectable_compiler_2';
+export * from './service_compiler';
 export {publishFacade} from './jit_compiler_facade';
 export * from './ml_parser/ast';
 export * from './ml_parser/html_parser';
@@ -142,6 +143,7 @@ export {
 export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
 export {compileDeclareFactoryFunction} from './render3/partial/factory';
 export {compileDeclareInjectableFromMetadata} from './render3/partial/injectable';
+export {compileDeclareServiceFromMetadata} from './render3/partial/service';
 export {compileDeclareInjectorFromMetadata} from './render3/partial/injector';
 export {compileDeclareNgModuleFromMetadata} from './render3/partial/ng_module';
 export {compileDeclarePipeFromMetadata} from './render3/partial/pipe';

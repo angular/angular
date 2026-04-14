@@ -126,6 +126,7 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 import {untagAllTsFiles} from '../../shims';
 import {angularJitApplicationTransform} from '../../transform/jit';
 import {coreVersionSupportsFeature} from './feature_detection';
+import {ServiceDecoratorHandler} from '../../annotations/src/service';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -1577,6 +1578,14 @@ export class NgCompiler {
         !!this.options.generateExtraImportsInLocalMode,
         !!this.options.strictStandalone,
         this.implicitStandaloneValue,
+      ),
+      new ServiceDecoratorHandler(
+        reflector,
+        evaluator,
+        isCore,
+        this.delegatingPerfRecorder,
+        supportTestBed,
+        compilationMode,
       ),
       new InjectableDecoratorHandler(
         reflector,

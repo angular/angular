@@ -9,8 +9,8 @@
 import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
+import {ɵɵdefineService} from '../../di/interface/service';
 import {registerNgModuleType} from '../../linker/ng_module_registration';
-import * as iframe_attrs_validation from '../../sanitization/iframe_attrs_validation';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
 
@@ -30,6 +30,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdefineInjectable': ɵɵdefineInjectable,
   'ɵɵdefineInjector': ɵɵdefineInjector,
   'ɵɵdefineNgModule': r3.ɵɵdefineNgModule,
+  'ɵɵdefineService': ɵɵdefineService,
   'ɵɵdefinePipe': r3.ɵɵdefinePipe,
   'ɵɵdirectiveInject': r3.ɵɵdirectiveInject,
   'ɵɵgetInheritedFactory': r3.ɵɵgetInheritedFactory,

@@ -1765,6 +1765,27 @@ export interface SelfDecorator {
 }
 
 // @public
+export interface Service {
+    autoProvided?: boolean;
+    factory?: () => unknown;
+}
+
+// @public
+export const Service: ServiceDecorator;
+
+// @public
+export interface ServiceDecorator {
+    (): TypeDecorator;
+    (options?: {
+        autoProvided: false;
+    }): TypeDecorator;
+    (options?: {
+        autoProvided?: true;
+        factory?: () => unknown;
+    }): TypeDecorator;
+}
+
+// @public
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
