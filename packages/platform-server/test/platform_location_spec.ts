@@ -8,20 +8,13 @@
 import '@angular/compiler';
 
 import {PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, destroyPlatform} from '@angular/core';
+import {destroyPlatform} from '@angular/core';
 import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
-import {bootstrapApplication} from '@angular/platform-browser';
 
 (function () {
   if (getDOM().supportsDOMEvents) return; // NODE only
 
   describe('PlatformLocation', () => {
-    @Component({
-      selector: 'app',
-      template: `Works!`,
-    })
-    class LocationApp {}
-
     beforeEach(() => {
       destroyPlatform();
     });
@@ -34,15 +27,8 @@ import {bootstrapApplication} from '@angular/platform-browser';
       const platform = platformServer([
         {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
       ]);
-      const appRef = await bootstrapApplication(
-        LocationApp,
-        {
-          providers: [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}],
-        },
-        {platformRef: platform},
-      );
 
-      const location = appRef.injector.get(PlatformLocation);
+      const location = platform.injector.get(PlatformLocation);
       expect(location.pathname).toBe('/');
       platform.destroy();
     });
@@ -57,23 +43,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
         },
       ]);
 
-      const appRef = await bootstrapApplication(
-        LocationApp,
-        {
-          providers: [
-            {
-              provide: INITIAL_CONFIG,
-              useValue: {
-                document: '<app></app>',
-                url: 'http://test.com/deep/path?query#hash',
-              },
-            },
-          ],
-        },
-        {platformRef: platform},
-      );
-
-      const location = appRef.injector.get(PlatformLocation);
+      const location = platform.injector.get(PlatformLocation);
       expect(location.pathname).toBe('/deep/path');
       expect(location.search).toBe('?query');
       expect(location.hash).toBe('#hash');
@@ -90,23 +60,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
         },
       ]);
 
-      const appRef = await bootstrapApplication(
-        LocationApp,
-        {
-          providers: [
-            {
-              provide: INITIAL_CONFIG,
-              useValue: {
-                document: '<app></app>',
-                url: 'http://test.com:80/deep/path?query#hash',
-              },
-            },
-          ],
-        },
-        {platformRef: platform},
-      );
-
-      const location = appRef.injector.get(PlatformLocation);
+      const location = platform.injector.get(PlatformLocation);
       expect(location.hostname).toBe('test.com');
       expect(location.protocol).toBe('http:');
       expect(location.port).toBe('');
@@ -126,23 +80,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
         },
       ]);
 
-      const appRef = await bootstrapApplication(
-        LocationApp,
-        {
-          providers: [
-            {
-              provide: INITIAL_CONFIG,
-              useValue: {
-                document: '<app></app>',
-                url: 'http://test.com/deep/path',
-              },
-            },
-          ],
-        },
-        {platformRef: platform},
-      );
-
-      const location = appRef.injector.get(PlatformLocation);
+      const location = platform.injector.get(PlatformLocation);
       expect(location.pathname).toBe('/deep/path');
       expect(location.search).toBe('');
       expect(location.hash).toBe('');
@@ -153,14 +91,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
         {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
       ]);
 
-      const appRef = await bootstrapApplication(
-        LocationApp,
-        {
-          providers: [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}],
-        },
-        {platformRef: platform},
-      );
-      const location = appRef.injector.get(PlatformLocation);
+      const location = platform.injector.get(PlatformLocation);
       location.pushState(null, 'Test', '/foo#bar');
       expect(location.pathname).toBe('/foo');
       expect(location.hash).toBe('#bar');
@@ -178,22 +109,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
         },
       ]);
 
-      const appRef = await bootstrapApplication(
-        LocationApp,
-        {
-          providers: [
-            {
-              provide: INITIAL_CONFIG,
-              useValue: {
-                document: '<app></app>',
-                url: 'http://test.com/deep/path?query#hash',
-              },
-            },
-          ],
-        },
-        {platformRef: platform},
-      );
-      const location = appRef.injector.get(PlatformLocation);
+      const location = platform.injector.get(PlatformLocation);
       location.replaceState(null, 'Test', '/foo#bar');
       expect(location.pathname).toBe('/foo');
       expect(location.hash).toBe('#bar');
@@ -206,24 +122,42 @@ import {bootstrapApplication} from '@angular/platform-browser';
       const platform = platformServer([
         {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
       ]);
-      bootstrapApplication(
-        LocationApp,
-        {
-          providers: [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}],
-        },
-        {platformRef: platform},
-      ).then((appRef) => {
-        const location: PlatformLocation = appRef.injector.get(PlatformLocation);
-        expect(location.pathname).toBe('/');
-        location.onHashChange((e: any) => {
-          expect(e.type).toBe('hashchange');
-          expect(e.oldUrl).toBe('/');
-          expect(e.newUrl).toBe('/foo#bar');
-          platform.destroy();
-          done();
-        });
-        location.pushState(null, 'Test', '/foo#bar');
+      const location = platform.injector.get(PlatformLocation);
+
+      expect(location.pathname).toBe('/');
+      location.onHashChange((e: any) => {
+        expect(e.type).toBe('hashchange');
+        expect(e.oldUrl).toBe('/');
+        expect(e.newUrl).toBe('/foo#bar');
+        platform.destroy();
+        done();
       });
+      location.pushState(null, 'Test', '/foo#bar');
+    });
+
+    it('neutralizes hostname hijack attempts', async () => {
+      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
+
+      for (const url of urls) {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {
+              document: '',
+              // This should be treated as relative URL.
+              // Example: `req.url: '//attacker.com/deep/path'` where request
+              // to express server is 'http://localhost:4200//attacker.com/deep/path'.
+              url,
+            },
+          },
+        ]);
+
+        const location = platform.injector.get(PlatformLocation);
+        platform.destroy();
+
+        expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
+        expect(location.pathname).withContext(`pathname for URL: "${url}"`).toBe(url);
+      }
     });
   });
 })();
