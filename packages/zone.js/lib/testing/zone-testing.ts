@@ -9,7 +9,6 @@
 import {patchJasmine} from '../jasmine/jasmine';
 import {patchJest} from '../jest/jest';
 import {patchMocha} from '../mocha/mocha';
-import {patchVitest} from '../vitest/vitest';
 import {ZoneType} from '../zone-impl';
 import {patchAsyncTest} from '../zone-spec/async-test';
 import {patchFakeAsyncTest} from '../zone-spec/fake-async-test';
@@ -26,7 +25,6 @@ export function rollupTesting(Zone: ZoneType): void {
   patchJasmine(Zone);
   patchJest(Zone);
   patchMocha(Zone);
-  patchVitest(Zone);
   patchAsyncTest(Zone);
   patchFakeAsyncTest(Zone);
   patchPromiseTesting(Zone);
