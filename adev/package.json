@@ -64,7 +64,7 @@
     "character-entities-legacy": "^3.0.0",
     "comma-separated-tokens": "^2.0.3",
     "crelt": "1.0.6",
-    "diff": "8.0.4",
+    "diff": "9.0.0",
     "emoji-regex": "10.6.0",
     "fflate": "0.8.2",
     "hast-util-to-html": "^9.0.5",
