@@ -17,6 +17,7 @@ import {
   inject,
   input,
   PLATFORM_ID,
+  signal,
   Type,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -53,6 +54,7 @@ export default class PlaygroundComponent {
   protected nodeRuntimeSandbox?: NodeRuntimeSandbox;
   protected embeddedEditorComponent?: Type<unknown>;
   protected selectedTemplate: PlaygroundTemplate = this.defaultTemplate;
+  private readonly isSandboxReady = signal(false);
 
   constructor() {
     if (this.isServer) {
@@ -82,6 +84,7 @@ export default class PlaygroundComponent {
       .subscribe(() => {
         this.changeDetectorRef.markForCheck();
         this.nodeRuntimeSandbox?.init();
+        this.isSandboxReady.set(true);
       });
   }
 
@@ -97,7 +100,9 @@ export default class PlaygroundComponent {
     });
     this.selectedTemplate = template;
     await this.loadTemplate(template.path);
-    await this.nodeRuntimeSandbox?.reset();
+    if (this.isSandboxReady()) {
+      await this.nodeRuntimeSandbox?.reset();
+    }
   }
 
   private async loadTemplate(tutorialPath: string) {
