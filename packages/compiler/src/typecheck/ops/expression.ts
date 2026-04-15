@@ -47,6 +47,17 @@ export function unwrapWritableSignal(expression: TcbExpr, tcb: Context): TcbExpr
 }
 
 /**
+ * Ensures two-way bindings are writable or non-signal values.
+ */
+export function assertWritableTwoWayBinding(expression: TcbExpr, tcb: Context): TcbExpr {
+  const assertRef = tcb.env.referenceExternalSymbol(
+    R3Identifiers.assertWritableTwoWayBinding.moduleName,
+    R3Identifiers.assertWritableTwoWayBinding.name,
+  );
+  return new TcbExpr(`${assertRef.print()}(${expression.print()})`);
+}
+
+/**
  * A `TcbOp` which renders an Angular expression (e.g. `{{foo() && bar.baz}}`).
  *
  * Executing this operation returns nothing.
