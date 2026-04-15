@@ -1,3 +1,12 @@
+<a name="19.2.21"></a>
+# 19.2.21 (2026-04-15)
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f3a5bfb949](https://github.com/angular/angular/commit/f3a5bfb949cb4d2de960b962a53aa16d8435b8e4) | fix | prevent SSRF bypasses via protocol-relative and backslash URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.19"></a>
 # 20.3.19 (2026-04-15)
 ### platform-server
