@@ -82,7 +82,7 @@ export const REACTIVE_NODE: ReactiveNode = {
 interface ReactiveLink {
   producer: ReactiveNode;
   consumer: ReactiveNode;
-  knownValidAtEpoch: Version;
+  knownValidAtEpoch: Version | null;
   lastReadVersion: number;
   prevConsumer: ReactiveLink | undefined;
   nextConsumer: ReactiveLink | undefined;
@@ -237,7 +237,6 @@ export function producerAccessed(node: ReactiveNode): void {
     nextProducerLink =
       prevProducerLink !== undefined ? prevProducerLink.nextProducer : activeConsumer.producers;
     if (nextProducerLink !== undefined && nextProducerLink.producer === node) {
-      // console.log('Reuse in order', node.debugName, nextProducerLink.knownValidAtEpoch, epoch, activeConsumer.dirty);
       // If the next producer is the same as the one we're trying to add, we can just update the
       // last read version, update the tail of the producers list of this rerun, and return.
       activeConsumer.producersTail = nextProducerLink;
@@ -259,12 +258,8 @@ export function producerAccessed(node: ReactiveNode): void {
     prevConsumerLink.consumer === activeConsumer &&
     (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
   ) {
-    // console.log('Reuse already present', node.debugName, prevConsumerLink.knownValidAtEpoch, epoch, activeConsumer.dirty);
     return;
   }
-
-  // console.log('Insert', node.debugName, prevConsumerLink !== undefined &&
-  //   prevConsumerLink.consumer === activeConsumer ? prevConsumerLink.knownValidAtEpoch : null, epoch, activeConsumer.dirty);
 
   // If we got here, it means that we need to create a new link between the producer and the consumer.
   const isLive = consumerIsLive(activeConsumer);
@@ -275,10 +270,10 @@ export function producerAccessed(node: ReactiveNode): void {
     // the producers list, so that we can destroy all of the old links at once.
     nextProducer: nextProducerLink,
     prevConsumer: prevConsumerLink,
-    // If a signal write has occurred from within an active consumer, subsequent reads of the same consumer cannot be
-    // considered valid as the active consumer may need to rerun from scratch while still on the same epoch. During that
+    // If a signal write has occurred that has marked the consumer dirty, subsequent reads of the same consumer cannot
+    // be considered valid as the active consumer may rerun from scratch while still on the same epoch. During that
     // rerun, the link can therefore not be assumed to be valid based on the epoch counter.
-    knownValidAtEpoch: activeConsumer.dirty ? (0 as Version) : epoch,
+    knownValidAtEpoch: activeConsumer.dirty ? null : epoch,
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };

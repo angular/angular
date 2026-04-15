@@ -208,8 +208,8 @@ describe('watchers', () => {
   });
 
   it('should keep links alive when retriggered by a signal write', () => {
-    const a = signal(0, {debugName: 'a'});
-    const trigger = signal(0, {debugName: 'trigger'});
+    const a = signal(0);
+    const trigger = signal(0);
 
     let executed = 0;
     testingEffect(() => {
