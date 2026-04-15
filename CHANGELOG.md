@@ -1,3 +1,25 @@
+<a name="21.2.9"></a>
+# 21.2.9 (2026-04-15)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f603d4714f](https://github.com/angular/angular/commit/f603d4714fa184aad34a6f7f9ea4e79c8af3afac) | fix | escape forward slashes in transfer state to prevent crawler indexing |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [540536c386](https://github.com/angular/angular/commit/540536c386f2c735a700c2c9e2697a88dcb3d4ec) | fix | add CSP nonce support to JsonpClientBackend |
+| [63a857b874](https://github.com/angular/angular/commit/63a857b874172766451aa75ed3347ba50f0ee229) | fix | Don't on Passthru outside of reactive context |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e0b5078cf2](https://github.com/angular/angular/commit/e0b5078cf2ebe79a6de85e9123148ae948b3d81d) | fix | prevent SSRF bypasses via protocol-relative and backslash URLs |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [684e9fd53d](https://github.com/angular/angular/commit/684e9fd53daacb9e910f42d98c6017f9e5cb4180) | fix | normalize multiple leading slashes in URL parser |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.8"></a>
 # 21.2.8 (2026-04-08)
 ### compiler
