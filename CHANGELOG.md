@@ -1,3 +1,12 @@
+<a name="20.3.19"></a>
+# 20.3.19 (2026-04-15)
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [303d4cd580](https://github.com/angular/angular/commit/303d4cd580dec38bfaa71a0a34965f151bab3ba8) | fix | prevent SSRF bypasses via protocol-relative and backslash URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-next.8"></a>
 # 22.0.0-next.8 (2026-04-15)
 ## Breaking Changes
