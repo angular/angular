@@ -8,7 +8,7 @@
 
 import {
   Injector,
-  ɵGlobalDevModeUtils,
+  ɵExternalCoreGlobalUtils,
   ɵProviderRecord as ProviderRecord,
   InjectionToken,
 } from '@angular/core';
@@ -18,7 +18,7 @@ import {
   serializeProviderRecord,
 } from './component-tree';
 
-type Ng = ɵGlobalDevModeUtils['ng'];
+type Ng = ɵExternalCoreGlobalUtils;
 const NG_VERSION = 'ng-version';
 const VERSION = '0.0.0-PLACEHOLDER';
 
