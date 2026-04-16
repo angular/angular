@@ -1756,7 +1756,7 @@ describe('redirects', () => {
       );
     });
 
-    it('does not receive data from the parent route with component (default paramsInheritanceStrategy is emptyOnly)', async () => {
+    it('receives data from the parent route with component by default (paramsInheritanceStrategy is always)', async () => {
       await checkRedirect(
         [
           {
@@ -1767,8 +1767,8 @@ describe('redirects', () => {
               {
                 path: 'c',
                 redirectTo: ({data}) => {
-                  expect(data['data1']).toBeUndefined();
-                  expect(data['data2']).toBeUndefined();
+                  expect(data['data1']).toBe('hello');
+                  expect(data['data2']).toBe('world');
                   return `/redirect`;
                 },
               },
@@ -1887,7 +1887,7 @@ async function checkRedirect(
   config: Routes,
   url: string,
   callback: (t: UrlTree, state: RouterStateSnapshot) => void,
-  paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
+  paramsInheritanceStrategy: ParamsInheritanceStrategy = 'always',
   errorCallback?: (e: unknown) => void,
 ): Promise<void> {
   try {

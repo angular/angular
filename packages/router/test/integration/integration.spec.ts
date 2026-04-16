@@ -642,16 +642,22 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(team.snapshotParams).toEqual([{id: '22'}]);
-      expect(user.recordedParams).toEqual([{name: 'victor'}]);
-      expect(user.snapshotParams).toEqual([{name: 'victor'}]);
+      expect(user.recordedParams).toEqual([{id: '22', name: 'victor'}]);
+      expect(user.snapshotParams).toEqual([{id: '22', name: 'victor'}]);
 
       router.navigateByUrl('/team/22/user/fedor');
       await advance(fixture);
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(team.snapshotParams).toEqual([{id: '22'}]);
-      expect(user.recordedParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
-      expect(user.snapshotParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
+      expect(user.recordedParams).toEqual([
+        {id: '22', name: 'victor'},
+        {id: '22', name: 'fedor'},
+      ]);
+      expect(user.snapshotParams).toEqual([
+        {id: '22', name: 'victor'},
+        {id: '22', name: 'fedor'},
+      ]);
     });
 
     it('should work when navigating to /', async () => {

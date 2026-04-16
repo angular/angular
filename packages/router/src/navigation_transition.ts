@@ -66,7 +66,6 @@ import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
 import {TitleStrategy} from './page_title_strategy';
-import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -74,6 +73,7 @@ import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
   createEmptyState,
+  DEFAULT_PARAMS_INHERITANCE_STRATEGY,
   RouterState,
   RouterStateSnapshot,
 } from './router_state';
@@ -361,7 +361,7 @@ export class NavigationTransitions {
   private readonly titleStrategy?: TitleStrategy = inject(TitleStrategy);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
-    this.options.paramsInheritanceStrategy || 'emptyOnly';
+    this.options.paramsInheritanceStrategy || DEFAULT_PARAMS_INHERITANCE_STRATEGY;
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
   private readonly navigationErrorHandler = inject(NAVIGATION_ERROR_HANDLER, {optional: true});

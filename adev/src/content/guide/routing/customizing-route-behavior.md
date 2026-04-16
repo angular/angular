@@ -47,10 +47,10 @@ router.navigate(['/some-path'], {onSameUrlNavigation: 'reload'});
 
 `paramsInheritanceStrategy` defines how route parameters and data flow from parent routes.
 
-With the default `'emptyOnly'`, child routes inherit params only when their path is empty or the parent does not declare a component.
+By default (`'always'`), child routes automatically inherit parameters, route data, and resolved values from parent routes.
 
 ```ts
-provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'always'}));
+provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}));
 ```
 
 ```ts
@@ -87,7 +87,7 @@ export class Customer {
 }
 ```
 
-Using `'always'` ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as:
+This ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as:
 
 ```text {hideCopy}
 /org/:orgId/projects/:projectId/customers/:customerId

@@ -19,6 +19,7 @@ import {
   ActivatedRoute,
   advanceActivatedRoute,
   createEmptyState,
+  DEFAULT_PARAMS_INHERITANCE_STRATEGY,
   RouterState,
   RouterStateSnapshot,
 } from '../src/router_state';
@@ -188,7 +189,7 @@ async function createState(config: Routes, url: string): Promise<RouterStateSnap
     config,
     tree(url),
     new DefaultUrlSerializer(),
-    undefined,
+    DEFAULT_PARAMS_INHERITANCE_STRATEGY,
     new AbortController().signal,
   );
   return result.state;

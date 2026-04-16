@@ -160,6 +160,7 @@ describe('recognize', () => {
         {path: 'c', component: ComponentC, outlet: 'left'},
       ],
       'a;a1=11;a2=22/b;b1=111;b2=222(left:c;c1=1111;c2=2222)',
+      'emptyOnly',
     );
     const c = s.root.children;
     checkActivatedRoute(c[0], 'a', {a1: '11', a2: '22'}, ComponentA);
@@ -189,7 +190,7 @@ describe('recognize', () => {
       expect(r.data).toEqual({one: 1, two: 2});
     });
 
-    it("should not inherit route's data if it has component", async () => {
+    it("should inherit route's data if it has component by default (paramsInheritanceStrategy is always)", async () => {
       const s = await recognize(
         [
           {
@@ -202,10 +203,10 @@ describe('recognize', () => {
         'a/b',
       );
       const r: ActivatedRouteSnapshot = s.root.firstChild!.firstChild!;
-      expect(r.data).toEqual({two: 2});
+      expect(r.data).toEqual({one: 1, two: 2});
     });
 
-    it("should not inherit route's data if it has loadComponent", async () => {
+    it("should not inherit route's data if it has loadComponent with emptyOnly strategy", async () => {
       const s = await recognize(
         [
           {
@@ -216,6 +217,7 @@ describe('recognize', () => {
           },
         ],
         'a/b',
+        'emptyOnly',
       );
       const r: ActivatedRouteSnapshot = s.root.firstChild!.firstChild!;
       expect(r.data).toEqual({two: 2});
@@ -919,6 +921,7 @@ describe('recognize', () => {
           },
         ],
         'p/11/a/victor/b/c',
+        'emptyOnly',
       );
       const p = s.root.firstChild!;
       checkActivatedRoute(p, 'p/11', {id: '11'}, null);
@@ -1030,6 +1033,7 @@ describe('recognize', () => {
           },
         ] as any,
         '/a/1;p=99/b',
+        'emptyOnly',
       );
       const a = s.root.firstChild!;
       checkActivatedRoute(a, 'a/1', {id: '1', p: '99'}, ComponentA);
@@ -1145,7 +1149,7 @@ describe('recognize', () => {
 async function recognize(
   config: Routes,
   url: string,
-  paramsInheritanceStrategy: 'emptyOnly' | 'always' = 'emptyOnly',
+  paramsInheritanceStrategy: 'emptyOnly' | 'always' = 'always',
 ): Promise<RouterStateSnapshot> {
   const serializer = new DefaultUrlSerializer();
   const result = await new Recognizer(
