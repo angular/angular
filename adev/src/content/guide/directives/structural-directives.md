@@ -76,7 +76,7 @@ Angular creates the directive class and specifies the CSS selector, `[select]`, 
 Import `TemplateRef`, and `ViewContainerRef`. Inject `TemplateRef` and `ViewContainerRef` in the directive as private properties.
 
 ```ts
-import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, TemplateRef, ViewContainerRef, inject} from '@angular/core';
 
 @Directive({
   selector: '[select]',
