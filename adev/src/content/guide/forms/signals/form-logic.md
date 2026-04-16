@@ -516,7 +516,7 @@ import {form, FormField, min, max, validate} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-custom',
-  imports: [formField],
+  imports: [FormField],
   template: ` <input [formField]="customForm.score" /> `,
 })
 export class Custom {
@@ -643,7 +643,7 @@ import {form, FormField, max} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-inventory',
-  imports: [formField],
+  imports: [FormField],
   template: `
     <label>
       Item
@@ -742,7 +742,7 @@ import {
 
 @Component({
   selector: 'app-promo',
-  imports: [formField],
+  imports: [FormField],
   template: `
     @if (!promoForm.promoCode().hidden()) {
       <label>
@@ -787,7 +787,7 @@ import {form, FormField, applyWhen, required, pattern} from '@angular/forms/sign
 
 @Component({
   selector: 'app-address',
-  imports: [formField],
+  imports: [FormField],
   template: `
     <label>
       Country
