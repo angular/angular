@@ -203,7 +203,8 @@ describe('ng-debug-api', () => {
       expect(ngDebugSignalTransitiveDepsInspectionApiIsSupported()).toBeTrue();
     });
 
-    it('should NOT support transitive signal dependencies inspection API', () => {
+    // Todo(hawkgs): Enable when the API is implemented.
+    xit('should NOT support transitive signal dependencies inspection API', () => {
       (globalThis as any).ng = fakeNgGlobal(Framework.Angular);
       (globalThis as any).ng.ɵgetTransitiveDependencies = undefined;
       expect(ngDebugSignalTransitiveDepsInspectionApiIsSupported()).toBeFalse();

@@ -29,7 +29,6 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-manager",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-transitive-deps-pane:types",
-        "//devtools/projects/ng-devtools/src/lib/shared/icon",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
         "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
         "//devtools/projects/protocol",

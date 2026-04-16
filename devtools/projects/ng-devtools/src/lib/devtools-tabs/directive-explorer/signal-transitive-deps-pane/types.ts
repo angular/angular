@@ -10,5 +10,4 @@ import {DevtoolsSignalNode} from '../../../shared/signal-graph';
 
 export interface SignalTransitiveDepsEvent {
   signalNode: DevtoolsSignalNode;
-  direction: 'up' | 'down';
 }

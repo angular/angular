@@ -21,7 +21,7 @@
     justify-content: space-between;
     gap: 0.75rem;
 
-    .controls {
+    .actions {
       display: flex;
       gap: 0.5rem;
 
@@ -101,6 +101,17 @@
         }
       }
     }
+  }
+
+  .value-preview {
+    @extend %monospaced;
+    width: 160px;
+    display: block;
+    border-radius: 0.25rem;
+    margin-top: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    box-sizing: border-box;
+    background: var(--nonary-contrast);
   }
 }
 

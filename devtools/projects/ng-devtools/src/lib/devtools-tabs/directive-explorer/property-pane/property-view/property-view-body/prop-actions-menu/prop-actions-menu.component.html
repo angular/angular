@@ -15,7 +15,7 @@
     </button>
   }
 
-  @if (availableActions.showUpstreamDeps) {
+  @if (availableActions.transitiveDeps) {
     @let upstreamBtnTooltip = `Show '${node().prop.name}' upstream dependencies`;
 
     <button
@@ -23,23 +23,9 @@
       type="button"
       [matTooltip]="upstreamBtnTooltip"
       [aria-label]="upstreamBtnTooltip"
-      (click)="showSigTransitiveDeps($event, 'up')"
+      (click)="showSigTransitiveDeps($event)"
     >
-      <ng-icon name="graph_upstream" />
-    </button>
-  }
-
-  @if (availableActions.showDownstreamDeps) {
-    @let downstreamBtnTooltip = `Show '${node().prop.name}' downstream dependants`;
-
-    <button
-      class="prop-action-btn show-signal"
-      type="button"
-      [matTooltip]="downstreamBtnTooltip"
-      [aria-label]="downstreamBtnTooltip"
-      (click)="showSigTransitiveDeps($event, 'down')"
-    >
-      <ng-icon name="graph_downstream" />
+      <mat-icon>graph_3</mat-icon>
     </button>
   }
 
@@ -101,27 +87,15 @@
           </button>
         }
 
-        @if (availableActions.showUpstreamDeps) {
+        @if (availableActions.transitiveDeps) {
           <button
             ngMenuItem
             value="upstream-deps"
             class="ng-ctx-menu-item"
-            (click)="showSigTransitiveDeps($event, 'up')"
+            (click)="showSigTransitiveDeps($event)"
           >
-            <ng-icon name="graph_upstream" />
-            <span>Show upstream dependencies</span>
-          </button>
-        }
-
-        @if (availableActions.showDownstreamDeps) {
-          <button
-            ngMenuItem
-            value="downstream-deps"
-            class="ng-ctx-menu-item"
-            (click)="showSigTransitiveDeps($event, 'down')"
-          >
-            <ng-icon name="graph_downstream" />
-            <span>Show downstream dependants</span>
+            <mat-icon>graph_3</mat-icon>
+            <span>Show transitive dependencies</span>
           </button>
         }
 

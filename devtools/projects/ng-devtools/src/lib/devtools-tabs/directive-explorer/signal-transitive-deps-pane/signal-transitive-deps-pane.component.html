@@ -2,7 +2,7 @@
 @let graph = this.graph();
 
 @if (data && graph) {
-  <h3 class="title">{{ data.signalNode.label }} {{ direction() }}</h3>
+  <h3 class="title">{{ data.signalNode.label }} transitive dependencies</h3>
 
   <ng-signals-visualizer
     #visualizer
@@ -18,11 +18,25 @@
     <ng-signal-details
       [node]="node"
       [graph]="graph"
-      (gotoSource)="gotoSource($event)"
+      [availableActions]="{
+        gotoSource: false,
+        expandCluster: true,
+        highlightDownstreamDeps: true,
+        highlightUpstreamDeps: true,
+        showTransitiveDeps: false,
+      }"
       (expandCluster)="expandCluster($event)"
       (close)="detailsVisible.set(false)"
     />
   }
 }
 
-<button (click)="close.emit()">Close</button>
+<button
+  ng-button
+  btnType="icon"
+  (click)="close.emit()"
+  class="close"
+  aria-label="Close transitive dependencies graph"
+>
+  <mat-icon>close</mat-icon>
+</button>

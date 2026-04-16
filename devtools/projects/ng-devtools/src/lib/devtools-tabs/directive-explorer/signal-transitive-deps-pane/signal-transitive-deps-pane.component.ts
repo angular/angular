@@ -17,6 +17,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
+
 import {SignalTransitiveDepsEvent} from './types';
 import {Events, MessageBus} from '../../../../../../protocol';
 import {
@@ -26,21 +28,18 @@ import {
 } from '../../../shared/signal-graph';
 import {SignalsVisualizerComponent} from '../../../shared/signals-visualizer/signals-visualizer.component';
 import {SignalDetailsComponent} from '../../../shared/signal-details/signal-details.component';
-import {ApplicationOperations} from '../../../application-operations';
-import {FrameManager} from '../../../application-services/frame_manager';
+import {ButtonComponent} from '../../../shared/button/button.component';
 
 @Component({
   selector: 'ng-signal-transitive-deps-pane',
   templateUrl: './signal-transitive-deps-pane.component.html',
   styleUrl: './signal-transitive-deps-pane.component.scss',
-  imports: [SignalsVisualizerComponent, SignalDetailsComponent],
+  imports: [SignalsVisualizerComponent, SignalDetailsComponent, MatIcon, ButtonComponent],
 })
 export class SignalTransitiveDepsPaneComponent {
   protected readonly visualizer = viewChild.required<SignalsVisualizerComponent>('visualizer');
 
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly appOperations = inject(ApplicationOperations);
-  private readonly frameManager = inject(FrameManager);
 
   protected readonly data = input.required<SignalTransitiveDepsEvent | null>();
   protected readonly close = output<void>();
@@ -51,13 +50,6 @@ export class SignalTransitiveDepsPaneComponent {
   protected readonly selectedNodeId = linkedSignal({
     source: this.data,
     computation: (source) => source?.signalNode.id ?? null,
-  });
-
-  protected readonly direction = computed(() => {
-    if (this.data()?.direction === 'up') {
-      return 'upstream dependencies';
-    }
-    return 'downstream dependants';
   });
 
   protected readonly selectedNode = computed(() => {
@@ -90,17 +82,6 @@ export class SignalTransitiveDepsPaneComponent {
   onNodeClick(node: DevtoolsSignalGraphNode) {
     this.selectedNodeId.set(node.id);
     this.detailsVisible.set(true);
-  }
-
-  gotoSource(node: DevtoolsSignalGraphNode) {
-    const frame = this.frameManager.selectedFrame();
-    // this.appOperations.inspectSignal(
-    //   {
-    //     element,
-    //     signalId: node.id,
-    //   },
-    //   frame!,
-    // );
   }
 
   expandCluster(clusterId: string) {
