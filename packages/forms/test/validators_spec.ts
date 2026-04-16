@@ -428,6 +428,12 @@ import {useAutoTick, timeout} from '@angular/private/testing';
       it('should not error on "undefined" pattern', () =>
         expect(Validators.pattern(undefined!)(new FormControl('aaAA'))).toBeNull());
 
+      it('should not error on an empty array pattern', () =>
+        expect(Validators.pattern([] as any)(new FormControl('aaAA'))).toBeNull());
+
+      it('should not error on an object pattern', () =>
+        expect(Validators.pattern({} as any)(new FormControl('aaAA'))).toBeNull());
+
       it('should work with pattern string containing both boundary symbols', () =>
         expect(Validators.pattern('^[aA]*$')(new FormControl('aaAA'))).toBeNull());
 

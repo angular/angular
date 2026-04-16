@@ -13,6 +13,7 @@ import {
   forwardRef,
   inject,
   input,
+  Input,
   provideZonelessChangeDetection,
   resource,
   signal,
@@ -27,6 +28,7 @@ import {
   NG_VALUE_ACCESSOR,
   NgControl,
   ReactiveFormsModule,
+  FormsModule,
   ValidationErrors,
   Validator,
 } from '@angular/forms';
@@ -1228,6 +1230,61 @@ describe('ControlValueAccessor', () => {
 
         act(() => fixture.componentInstance.pattern.set(/b*/));
         expect(dir.pattern()).toEqual([/b*/]);
+      });
+
+      it('should not crash when a CVA has an @Input() pattern and internally uses PatternValidator', () => {
+        // Regression test for https://github.com/angular/angular/issues/68246
+        // When using [formField] on a CVA that has an \`@Input() pattern\` and uses
+        // \`[pattern]\` + \`[ngModel]\` internally, the binding loop in control_cva.ts
+        // propagates \`[]\` (empty array) to the \`@Input() pattern\`.
+        // The internal \`PatternValidator\` then receives \`[]\` and, before the fix,
+        // it crashed with \`TypeError: regex.test is not a function\`.
+        @Component({
+          selector: 'custom-control-with-pattern',
+          template: `<input [pattern]="pattern" [ngModel]="value" (ngModelChange)="onInput($event)" />`,
+          imports: [FormsModule],
+          providers: [
+            {
+              provide: NG_VALUE_ACCESSOR,
+              useExisting: CustomControlWithPattern,
+              multi: true,
+            },
+          ],
+        })
+        class CustomControlWithPattern implements ControlValueAccessor {
+          // Typed as "any" to simulate that at runtime, regardless of compile-time types
+          // (or if a UI library uses lax typings), the framework will imperatively inject
+          // an empty array [] into this input, bypassing template type checking.
+          @Input() pattern: any = null;
+          value = '';
+          private onChangeFn?: (value: string) => void;
+
+          writeValue(newValue: string): void {
+            this.value = newValue;
+          }
+          registerOnChange(fn: (value: string) => void): void {
+            this.onChangeFn = fn;
+          }
+          registerOnTouched(fn: () => void): void {}
+
+          onInput(newValue: string) {
+            this.value = newValue;
+            this.onChangeFn?.(newValue);
+          }
+        }
+
+        @Component({
+          imports: [CustomControlWithPattern, FormField],
+          template: `<custom-control-with-pattern [formField]="f" />`,
+        })
+        class TestCmp {
+          // No pattern() rule configured on this field.
+          // FieldNode.pattern defaults to EMPTY ([]).
+          readonly f = form(signal('abc'));
+        }
+
+        // Should not throw TypeError: regex.test is not a function
+        expect(() => act(() => TestBed.createComponent(TestCmp))).not.toThrow();
       });
     });
   });

@@ -693,4 +693,9 @@ export class PatternValidator extends AbstractValidatorDirective {
 
   /** @internal */
   override createValidator = (input: string | RegExp): ValidatorFn => patternValidator(input);
+
+  /** @docs-private */
+  override enabled(input: unknown): boolean {
+    return typeof input === 'string' || input instanceof RegExp;
+  }
 }

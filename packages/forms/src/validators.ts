@@ -568,6 +568,7 @@ export function maxLengthValidator(maxLength: number): ValidatorFn {
  */
 export function patternValidator(pattern: string | RegExp): ValidatorFn {
   if (!pattern) return nullValidator;
+  if (typeof pattern !== 'string' && !(pattern instanceof RegExp)) return nullValidator;
   let regex: RegExp;
   let regexStr: string;
   if (typeof pattern === 'string') {
