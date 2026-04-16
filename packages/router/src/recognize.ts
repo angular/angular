@@ -50,7 +50,7 @@ export async function recognize(
   config: Routes,
   urlTree: UrlTree,
   urlSerializer: UrlSerializer,
-  paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
+  paramsInheritanceStrategy: ParamsInheritanceStrategy,
   abortSignal: AbortSignal,
 ): Promise<{state: RouterStateSnapshot; tree: UrlTree}> {
   return new Recognizer(

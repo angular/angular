@@ -68,10 +68,12 @@ provideRouter(appRoutes, withComponentInputBinding({queryParams: false}));
 
 ### Inherit parent route data
 
-If you want to use the parent components route info you will need to set the router `paramsInheritanceStrategy` option:
+By default, child routes inherit parameters and data from parent routes (equivalent to `paramsInheritanceStrategy: 'always'`). This means you can access parent route info directly in child components.
+
+If you need to restore the legacy behavior where parameters were only inherited from empty path routes, you can set `paramsInheritanceStrategy` to `'emptyOnly'`:
 
 ```ts
-withRouterConfig({paramsInheritanceStrategy: 'always'});
+provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}));
 ```
 
 See [router configuration options](guide/routing/customizing-route-behavior#router-configuration-options) for details on other available settings.

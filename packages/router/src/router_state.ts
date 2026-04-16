@@ -240,6 +240,8 @@ export class ActivatedRoute {
 
 export type ParamsInheritanceStrategy = 'emptyOnly' | 'always';
 
+export const DEFAULT_PARAMS_INHERITANCE_STRATEGY: ParamsInheritanceStrategy = 'always';
+
 /** @internal */
 export type Inherited = {
   params: Params;
@@ -256,7 +258,7 @@ export type Inherited = {
 export function getInherited(
   route: ActivatedRouteSnapshot,
   parent: ActivatedRouteSnapshot | null,
-  paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
+  paramsInheritanceStrategy: ParamsInheritanceStrategy,
 ): Inherited {
   let inherited: Inherited;
   const {routeConfig} = route;
