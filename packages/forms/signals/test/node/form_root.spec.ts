@@ -116,21 +116,20 @@ describe('FormRoot', () => {
     @Component({
       template: `
         <form [formRoot]="f">
-          <button type="submit" value="submit">Submit</button>
+          <button type="submit" value="publish">Publish</button>
         </form>
       `,
       imports: [FormRoot, ReactiveFormsModule],
     })
     class TestCmp {
       submitted = false;
-      submitterValue: string | null = null;
+      submitter: HTMLButtonElement | null = null;
 
       readonly f = form(signal({}), {
         submission: {
-          action: async (_field, _detail, event) => {
+          action: async (_field, _detail) => {
             this.submitted = true;
-            const submitter = event?.submitter as HTMLButtonElement | null;
-            this.submitterValue = submitter?.value ?? null;
+            this.submitter = _detail.submitEvent?.submitter as HTMLButtonElement | null;
           },
         },
       });
@@ -151,7 +150,7 @@ describe('FormRoot', () => {
 
     expect(event.defaultPrevented).toBe(true);
     expect(component.submitted).toBeTrue();
-    expect(component.submitterValue).toBe('submit');
+    expect(component.submitter).toBe(button);
   });
 });
 
