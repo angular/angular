@@ -140,11 +140,7 @@ describe('FormRoot', () => {
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
     const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
 
-    const event = new Event('submit', {cancelable: true}) as SubmitEvent;
-    Object.defineProperty(event, 'submitter', {
-      value: button,
-      configurable: true,
-    });
+    const event = createSubmitEvent(button);
 
     act(() => formElement.dispatchEvent(event));
 
@@ -160,4 +156,13 @@ function act<T>(fn: () => T): T {
   } finally {
     TestBed.tick();
   }
+}
+
+function createSubmitEvent(button: HTMLButtonElement): SubmitEvent {
+  const event = new Event('submit', {cancelable: true}) as SubmitEvent;
+  Object.defineProperty(event, 'submitter', {
+    value: button,
+    configurable: true,
+  });
+  return event;
 }
