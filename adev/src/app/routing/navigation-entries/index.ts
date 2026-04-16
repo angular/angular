@@ -538,6 +538,13 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
+            label: 'Testing',
+            path: 'guide/forms/signals/testing',
+            contentPath: 'guide/forms/signals/testing',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
             label: 'Comparison with other form systems',
             path: 'guide/forms/signals/comparison',
             contentPath: 'guide/forms/signals/comparison',
