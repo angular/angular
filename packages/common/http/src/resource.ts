@@ -42,7 +42,7 @@ import {
  * based `httpRequest` as well as sub-functions for `ArrayBuffer`, `Blob`, and `string` type
  * requests.
  *
- * @experimental 19.2
+ * @publicApi 22.0
  */
 export interface HttpResourceFn {
   /**
@@ -54,7 +54,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     url: (ctx: ResourceParamsContext) => string | undefined,
@@ -70,7 +70,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     url: (ctx: ResourceParamsContext) => string | undefined,
@@ -86,7 +86,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
@@ -102,7 +102,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   <TResult = unknown>(
     request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
@@ -117,7 +117,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed into an `ArrayBuffer`.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   arrayBuffer: {
     <TResult = ArrayBuffer>(
@@ -149,7 +149,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed into a `Blob`.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   blob: {
     <TResult = Blob>(
@@ -181,7 +181,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed as a `string`.
    *
-   * @experimental 19.2
+   * @publicApi 22.0
    */
   text: {
     <TResult = string>(
@@ -212,7 +212,7 @@ export interface HttpResourceFn {
  * request that expects a different kind of data, you can use a sub-constructor of `httpResource`,
  * such as `httpResource.text`.
  *
- * @experimental 19.2
+ * @publicApi 22.0
  * @initializerApiFunction
  */
 export const httpResource: HttpResourceFn = (() => {
