@@ -31,7 +31,7 @@ import {
   Provider,
   runInInjectionContext,
   Type,
-  ɵpublishExternalGlobalUtil,
+  ɵpublishNonCoreGlobalUtil,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -104,9 +104,9 @@ import {
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     // Publish this util when the router is provided so that the devtools can use it.
-    ɵpublishExternalGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
-    ɵpublishExternalGlobalUtil('ɵgetRouterInstance', getRouterInstance);
-    ɵpublishExternalGlobalUtil('ɵnavigateByUrl', navigateByUrl);
+    ɵpublishNonCoreGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
+    ɵpublishNonCoreGlobalUtil('ɵgetRouterInstance', getRouterInstance);
+    ɵpublishNonCoreGlobalUtil('ɵnavigateByUrl', navigateByUrl);
   }
 
   return makeEnvironmentProviders([
