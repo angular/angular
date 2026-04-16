@@ -45,6 +45,7 @@
             @if (signalGraphPaneOpen() && signalGraph.element()) {
               <ng-signal-graph-pane
                 [externallySelectedNodeId]="externallySelectedSignalNodeId()"
+                (showTransitiveDeps)="showSignalTransitiveDeps($event)"
                 (close)="signalGraphPaneOpen.set(false)"
               />
             }

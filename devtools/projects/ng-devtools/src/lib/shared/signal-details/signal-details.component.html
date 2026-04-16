@@ -1,54 +1,78 @@
 @let node = this.node();
 @let isSignalNode = this.isSignalNode(node);
 @let isClusterNode = this.isClusterNode(node);
+@let available = availableActions();
 
 <div class="header">
-  <div class="controls">
-    @if (isSignalNode) {
-      <button
-        ng-button
-        size="compact"
-        class="action-btn"
-        btnType="secondary"
-        (click)="gotoSource.emit(node)"
-        [disabled]="!node.debuggable"
-        matTooltip="View source"
-      >
-        <mat-icon> code </mat-icon>
-      </button>
-    } @else if (isClusterNode) {
-      <button
-        ng-button
-        size="compact"
-        class="action-btn"
-        btnType="secondary"
-        (click)="expandCluster.emit(node.id)"
-        matTooltip="Expand"
-      >
-        <mat-icon> expand_content </mat-icon>
-      </button>
-    }
-    <button
-      ng-button
-      size="compact"
-      class="action-btn"
-      btnType="secondary"
-      (click)="highlightDeps.emit({node, direction: 'down'})"
-      matTooltip="Highlight local downstream dependents path"
-    >
-      <ng-icon name="graph_downstream" />
-    </button>
-    <button
-      ng-button
-      size="compact"
-      class="action-btn"
-      btnType="secondary"
-      (click)="highlightDeps.emit({node, direction: 'up'})"
-      matTooltip="Highlight local upstream dependencies path"
-    >
-      <ng-icon name="graph_upstream" />
-    </button>
-  </div>
+  @if (actionsVisible()) {
+    <div class="actions">
+      @if (available.gotoSource && isSignalNode) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="gotoSource.emit(node)"
+          [disabled]="!node.debuggable"
+          matTooltip="View source"
+        >
+          <mat-icon> code </mat-icon>
+        </button>
+      } @else if (available.expandCluster && isClusterNode) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="expandCluster.emit(node.id)"
+          matTooltip="Expand"
+        >
+          <mat-icon> expand_content </mat-icon>
+        </button>
+      }
+      @if (available.highlightDownstreamDeps) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="highlightDeps.emit({node, direction: 'down'})"
+          matTooltip="Highlight local downstream dependants path"
+        >
+          <ng-icon name="graph_downstream" />
+        </button>
+      }
+      @if (available.highlightUpstreamDeps) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="highlightDeps.emit({node, direction: 'up'})"
+          matTooltip="Highlight local upstream dependencies path"
+        >
+          <ng-icon name="graph_upstream" />
+        </button>
+      }
+      @if (
+        available.showTransitiveDeps &&
+        isSignalNode &&
+        supportedApis().signals &&
+        supportedApis().transitiveSignalDepsInspection
+      ) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="showTransitiveDeps.emit({signalNode: node})"
+          matTooltip="Show transitive dependencies"
+        >
+          <mat-icon>graph_3</mat-icon>
+        </button>
+      }
+    </div>
+  }
   <button
     ng-button
     btnType="icon"
@@ -108,17 +132,19 @@
   }
 </dl>
 
-@let element = this.element();
 @let isPreviewable =
   isSignalNode &&
-  element &&
   (node.kind === 'signal' ||
     node.kind === 'computed' ||
     node.kind === 'linkedSignal' ||
     node.kind === 'childSignalProp');
 
-@if (isPreviewable || (resourceCluster() && element)) {
-  @if (previewableNode(); as previewableNode) {
+@if (isPreviewable || resourceCluster()) {
+  @let element = this.element();
+  @if (element && previewableNode(); as previewableNode) {
     <ng-signal-value-tree [node]="previewableNode" [element]="element" />
+  } @else if (isSignalNode) {
+    <!-- Fallback preview -->
+    <div class="value-preview">{{ fallbackPreview() }}</div>
   }
 }

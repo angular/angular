@@ -670,7 +670,7 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
 
 const getSignalTransitiveDependencies =
   (messageBus: MessageBus<Events>) => (signals: DebugSignalGraphNode[]) => {
-    // NOTE(hawkgs): This is mock data until the API is finalized.
+    // NOTE(hawkgs): This is mock data for testing purposes.
     // const ng = ngDebugClient();
     // const graph = ng.ɵgetSignalTransitiveDependencies?.(signals);
     const [node] = signals;

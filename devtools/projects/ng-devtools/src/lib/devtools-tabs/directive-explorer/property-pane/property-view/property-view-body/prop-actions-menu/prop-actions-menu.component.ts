@@ -32,7 +32,6 @@ import {SUPPORTED_APIS} from '../../../../../../application-providers/supported_
 import {DirectivePropertyResolver} from '../../../../property-resolver/directive-property-resolver';
 import {SignalGraphManager} from '../../../../signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode, DevtoolsSignalNode} from '../../../../../../shared/signal-graph';
-import {IconComponent} from '../../../../../../shared/icon/icon.component';
 import {SignalTransitiveDepsEvent} from '../../../../signal-transitive-deps-pane/types';
 
 // Based on the current design.
@@ -77,24 +76,14 @@ const CTX_MENU_POSITIONS: ConnectedPosition[] = [
 interface AvailableActions {
   logToConsole: boolean;
   showSignalGraph: boolean;
-  showUpstreamDeps: boolean;
-  showDownstreamDeps: boolean;
+  transitiveDeps: boolean;
 }
 
 @Component({
   selector: 'ng-prop-actions-menu',
   templateUrl: './prop-actions-menu.component.html',
   styleUrl: './prop-actions-menu.component.scss',
-  imports: [
-    MatTooltip,
-    MatIcon,
-    Menu,
-    MenuContent,
-    MenuItem,
-    MenuTrigger,
-    CdkConnectedOverlay,
-    IconComponent,
-  ],
+  imports: [MatTooltip, MatIcon, Menu, MenuContent, MenuItem, MenuTrigger, CdkConnectedOverlay],
 })
 export class PropActionsMenuComponent {
   private readonly signalGraph = inject(SignalGraphManager);
@@ -124,8 +113,7 @@ export class PropActionsMenuComponent {
       logToConsole: node.level === 0,
       showSignalGraph:
         supportedApis.signalPropertiesInspection && supportedApis.signals && isSignalNode,
-      showDownstreamDeps: transitiveDepsSupported,
-      showUpstreamDeps: transitiveDepsSupported,
+      transitiveDeps: transitiveDepsSupported,
     };
   });
 
@@ -175,14 +163,14 @@ export class PropActionsMenuComponent {
     this.ctxMenu()?.close();
   }
 
-  showSigTransitiveDeps(e: Event, direction: SignalTransitiveDepsEvent['direction']) {
+  showSigTransitiveDeps(e: Event) {
     e.stopPropagation();
 
     const signalNode = this.getSignalNode(this.node())!;
     this.showSignalTransitiveDeps.emit({
-      direction,
       signalNode,
     });
+    this.ctxMenu()?.close();
   }
 
   private getSignalNode(node: FlatNode): DevtoolsSignalNode | null {

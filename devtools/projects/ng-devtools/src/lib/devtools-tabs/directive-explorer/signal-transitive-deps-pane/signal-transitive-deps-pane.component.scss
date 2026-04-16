@@ -22,4 +22,16 @@
     bottom: 0.5rem;
     right: 0.5rem;
   }
+
+  .close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+
+    mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+    }
+  }
 }

@@ -17,6 +17,7 @@
     (gotoSource)="gotoSource($event)"
     (expandCluster)="expandCluster($event)"
     (highlightDeps)="highlightDeps($event)"
+    (showTransitiveDeps)="showTransitiveDeps.emit($event)"
     (close)="detailsVisible.set(false)"
   />
 }

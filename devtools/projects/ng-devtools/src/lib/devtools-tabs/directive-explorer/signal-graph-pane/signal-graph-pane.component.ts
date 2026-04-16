@@ -26,6 +26,7 @@ import {SignalGraphManager} from '../signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../../../shared/signal-graph';
 import {SignalsVisualizerComponent} from '../../../shared/signals-visualizer/signals-visualizer.component';
 import {ElementPosition} from '../../../../../../protocol';
+import {SignalTransitiveDepsEvent} from '../signal-transitive-deps-pane/types';
 
 type SelectedNodeSource = {
   element: ElementPosition | undefined;
@@ -45,6 +46,7 @@ export class SignalGraphPaneComponent {
   private readonly appOperations = inject(ApplicationOperations);
   private readonly frameManager = inject(FrameManager);
 
+  protected readonly showTransitiveDeps = output<SignalTransitiveDepsEvent>();
   protected readonly close = output<void>();
 
   // Source for selected node ID.
