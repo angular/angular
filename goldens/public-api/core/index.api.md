@@ -908,6 +908,14 @@ export interface InjectableType<T> extends Type<T> {
 }
 
 // @public
+export function injectAsync<T>(loader: () => Promise<ProviderToken<T>>, options?: InjectAsyncOptions): () => Promise<T>;
+
+// @public
+export interface InjectAsyncOptions {
+    prefetch?: PrefetchTrigger;
+}
+
+// @public
 export interface InjectDecorator {
     (token: string): any;
     (token: any): any;
@@ -1316,6 +1324,11 @@ export interface OnDestroy {
 }
 
 // @public
+export function onIdle(options?: {
+    timeout?: number;
+}): Promise<void>;
+
+// @public
 export interface OnInit {
     ngOnInit(): void;
 }
@@ -1442,6 +1455,9 @@ export class PlatformRef {
 
 // @public
 export type Predicate<T> = (value: T) => boolean;
+
+// @public
+export type PrefetchTrigger = () => Promise<void>;
 
 // @public
 export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
