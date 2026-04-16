@@ -921,7 +921,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 21.2.7
-        version: 21.2.7(e0ff16c824c8a7da0ca89bea49248bb2)
+        version: 21.2.7(f46d6596421c3e9c3d1d408a11472cdd)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1092,7 +1092,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 21.2.7
-        version: 21.2.7(d6dce06a9652871bee040d320e5ceef4)
+        version: 21.2.7(4819669fdc2d6bb40f4a21a5a5130ddc)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1320,7 +1320,7 @@ importers:
         version: 2.5.2
       jest:
         specifier: 30.2.0
-        version: 30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3))
+        version: 30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2))
       jest-environment-jsdom:
         specifier: 30.2.0
         version: 30.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
@@ -13848,6 +13848,68 @@ snapshots:
       - tsx
       - yaml
 
+  '@angular/build@21.2.7(4819669fdc2d6bb40f4a21a5a5130ddc)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2102.7(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.0
+      '@babel/helper-annotate-as-pure': 7.27.3
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 5.1.21(@types/node@24.12.2)
+      '@vitejs/plugin-basic-ssl': 2.1.4(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      beasties: 0.4.1
+      browserslist: 4.28.2
+      esbuild: 0.27.3
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      istanbul-lib-instrument: 6.0.3
+      jsonc-parser: 3.3.1
+      listr2: 9.0.5
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.0
+      picomatch: 4.0.4
+      piscina: 5.1.4
+      rolldown: 1.0.0-rc.4(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      sass: 1.97.3
+      semver: 7.7.4
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.15
+      tslib: 2.8.1
+      typescript: 6.0.2
+      undici: 7.24.4
+      vite: 7.3.2(@types/node@24.12.2)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 21.2.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.6.4
+      lmdb: 3.5.1
+      ng-packagr: 21.2.3(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.3))(tslib@2.8.1)(typescript@6.0.2)
+      postcss: 8.5.9
+      tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.3)
+      vitest: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.27.3)(jiti@2.6.1)(jsdom@28.0.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
   '@angular/build@21.2.7(73f9c4d142ce022ac3be9add89309027)':
     dependencies:
       '@ampproject/remapping': 2.3.0
@@ -14034,7 +14096,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.2.7(e0ff16c824c8a7da0ca89bea49248bb2)':
+  '@angular/build@21.2.7(f46d6596421c3e9c3d1d408a11472cdd)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.7(chokidar@5.0.0)
@@ -14063,7 +14125,7 @@ snapshots:
       source-map-support: 0.5.21
       tinyglobby: 0.2.15
       tslib: 2.8.1
-      typescript: 5.9.3
+      typescript: 6.0.2
       undici: 7.24.4
       vite: 7.3.2(@types/node@24.10.11)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
       watchpack: 2.5.1
@@ -14077,7 +14139,7 @@ snapshots:
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.4
       lmdb: 3.5.1
-      ng-packagr: 21.2.3(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.3))(tslib@2.8.1)(typescript@5.9.3)
+      ng-packagr: 21.2.3(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.3))(tslib@2.8.1)(typescript@6.0.2)
       postcss: 8.5.9
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.3)
       vitest: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.10.11)(esbuild@0.27.3)(jiti@2.6.1)(jsdom@28.0.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -16801,7 +16863,7 @@ snapshots:
       - ts-node
     optional: true
 
-  '@jest/core@30.2.0(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3))':
+  '@jest/core@30.2.0(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2))':
     dependencies:
       '@jest/console': 30.2.0
       '@jest/pattern': 30.0.1
@@ -16816,7 +16878,7 @@ snapshots:
       exit-x: 0.2.2
       graceful-fs: 4.2.11
       jest-changed-files: 30.2.0
-      jest-config: 30.2.0(@types/node@24.10.11)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3))
+      jest-config: 30.2.0(@types/node@24.10.11)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2))
       jest-haste-map: 30.2.0
       jest-message-util: 30.2.0
       jest-regex-util: 30.0.1
@@ -23306,15 +23368,15 @@ snapshots:
       - ts-node
     optional: true
 
-  jest-cli@30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3)):
+  jest-cli@30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2)):
     dependencies:
-      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3))
+      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2))
       '@jest/test-result': 30.2.0
       '@jest/types': 30.2.0
       chalk: 4.1.2
       exit-x: 0.2.2
       import-local: 3.2.0
-      jest-config: 30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3))
+      jest-config: 30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2))
       jest-util: 30.2.0
       jest-validate: 30.2.0
       yargs: 17.7.2
@@ -23393,7 +23455,7 @@ snapshots:
       - supports-color
     optional: true
 
-  jest-config@30.2.0(@types/node@24.10.11)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3)):
+  jest-config@30.2.0(@types/node@24.10.11)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2)):
     dependencies:
       '@babel/core': 7.29.0
       '@jest/get-type': 30.1.0
@@ -23421,12 +23483,12 @@ snapshots:
       strip-json-comments: 3.1.1
     optionalDependencies:
       '@types/node': 24.10.11
-      ts-node: 10.9.2(@types/node@24.12.2)(typescript@5.9.3)
+      ts-node: 10.9.2(@types/node@24.12.2)(typescript@6.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
 
-  jest-config@30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3)):
+  jest-config@30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2)):
     dependencies:
       '@babel/core': 7.29.0
       '@jest/get-type': 30.1.0
@@ -23454,7 +23516,7 @@ snapshots:
       strip-json-comments: 3.1.1
     optionalDependencies:
       '@types/node': 24.12.2
-      ts-node: 10.9.2(@types/node@24.12.2)(typescript@5.9.3)
+      ts-node: 10.9.2(@types/node@24.12.2)(typescript@6.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -23706,12 +23768,12 @@ snapshots:
       - ts-node
     optional: true
 
-  jest@30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3)):
+  jest@30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2)):
     dependencies:
-      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3))
+      '@jest/core': 30.2.0(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2))
       '@jest/types': 30.2.0
       import-local: 3.2.0
-      jest-cli: 30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3))
+      jest-cli: 30.2.0(@types/node@24.12.2)(ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2))
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -24824,6 +24886,37 @@ snapshots:
     optionalDependencies:
       rollup: 4.57.1
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.3)
+
+  ng-packagr@21.2.3(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.3))(tslib@2.8.1)(typescript@6.0.2):
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@rollup/plugin-json': 6.1.0(rollup@4.57.1)
+      '@rollup/wasm-node': 4.60.1
+      ajv: 8.18.0
+      ansi-colors: 4.1.3
+      browserslist: 4.28.2
+      chokidar: 5.0.0
+      commander: 14.0.3
+      dependency-graph: 1.0.0
+      esbuild: 0.27.2
+      find-cache-directory: 6.0.0
+      injection-js: 2.6.1
+      jsonc-parser: 3.3.1
+      less: 4.6.4
+      ora: 9.3.0
+      piscina: 5.1.4
+      postcss: 8.5.6
+      rollup-plugin-dts: 6.4.1(rollup@4.57.1)(typescript@6.0.2)
+      rxjs: 7.8.2
+      sass: 1.99.0
+      tinyglobby: 0.2.15
+      tslib: 2.8.1
+      typescript: 6.0.2
+    optionalDependencies:
+      rollup: 4.57.1
+      tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.3)
+    optional: true
 
   ngx-flamegraph@0.1.1(@angular/common@packages+common)(@angular/core@packages+core):
     dependencies:
@@ -26207,6 +26300,18 @@ snapshots:
     optionalDependencies:
       '@babel/code-frame': 7.29.0
 
+  rollup-plugin-dts@6.4.1(rollup@4.57.1)(typescript@6.0.2):
+    dependencies:
+      '@jridgewell/remapping': 2.3.5
+      '@jridgewell/sourcemap-codec': 1.5.5
+      convert-source-map: 2.0.0
+      magic-string: 0.30.21
+      rollup: 4.57.1
+      typescript: 6.0.2
+    optionalDependencies:
+      '@babel/code-frame': 7.29.0
+    optional: true
+
   rollup-plugin-preserve-shebang@1.0.1:
     dependencies:
       magic-string: 0.25.9
@@ -27395,7 +27500,7 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-node@10.9.2(@types/node@24.12.2)(typescript@5.9.3):
+  ts-node@10.9.2(@types/node@24.12.2)(typescript@6.0.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.12
@@ -27409,7 +27514,7 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.4
       make-error: 1.3.6
-      typescript: 5.9.3
+      typescript: 6.0.2
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optional: true
