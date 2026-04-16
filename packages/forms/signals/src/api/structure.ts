@@ -420,12 +420,13 @@ export async function submit<TModel>(
   try {
     if (shouldRun) {
       node.submitState.selfSubmitting.set(true);
-      const detail = {
-        root: node.structure.root.fieldProxy,
-        submitted: form,
+
+      const actionDetail = {
+        ...detail,
         submitEvent,
       };
-      const errors = await untracked(() => action?.(field, detail));
+
+      const errors = await untracked(() => action?.(field, actionDetail));
       errors && setSubmissionErrors(node, errors);
       return !errors || (isArray(errors) && errors.length === 0);
     } else {

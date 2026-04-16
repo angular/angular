@@ -50,11 +50,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
    */
   onInvalid?: (
     field: FieldTree<TRootModel & TSubmittedModel>,
-    detail: {
-      root: FieldTree<TRootModel>;
-      submitted: FieldTree<TSubmittedModel>;
-      submitEvent?: SubmitEvent;
-    },
+    detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
   ) => void;
   /**
    * Whether to ignore any of the validators when submitting:
