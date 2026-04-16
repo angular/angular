@@ -134,7 +134,7 @@ In cases like this, the following rules determine which value wins:
 ## Styling with CSS custom properties
 
 Developers often rely on [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties) to enable a flexible configuration of their component's styles.
-You can set such custom properties on a host element with a [style binding][style binding](guide/templates/binding#css-style-properties).
+You can set such custom properties on a host element with a [style binding](guide/templates/binding#css-style-properties).
 
 ```angular-ts
 @Component({
