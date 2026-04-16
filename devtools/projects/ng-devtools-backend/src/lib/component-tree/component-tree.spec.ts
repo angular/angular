@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, ɵGlobalDevModeUtils} from '@angular/core';
+import {Injector, ɵExternalCoreGlobalUtils} from '@angular/core';
 import {
   getInjectorFromElementNode,
   getRootElements,
   serializeProviderRecord,
 } from './component-tree';
 
-type Ng = ɵGlobalDevModeUtils['ng'];
+type Ng = ɵExternalCoreGlobalUtils;
 const NG_VERSION = 'ng-version';
 const VERSION = '0.0.0-PLACEHOLDER';
 
