@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
-
-import {injectAsync} from '../core/services/inject-async';
+import {EnvironmentInjector, injectAsync, runInInjectionContext} from '@angular/core';
 
 export function injectEmbeddedTutorialManager(injector: EnvironmentInjector) {
-  return injectAsync(injector, () =>
-    import('./embedded-tutorial-manager.service').then((c) => c.EmbeddedTutorialManager),
+  return runInInjectionContext(injector, () =>
+    injectAsync(() =>
+      import('./embedded-tutorial-manager.service').then((c) => c.EmbeddedTutorialManager),
+    )(),
   );
 }
