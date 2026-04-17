@@ -202,7 +202,6 @@
     "https://bcr.bazel.build/modules/upb/0.0.0-20220923-a547704/MODULE.bazel": "7298990c00040a0e2f121f6c32544bab27d4452f80d9ce51349b1a28f3005c43",
     "https://bcr.bazel.build/modules/yq.bzl/0.1.1/MODULE.bazel": "9039681f9bcb8958ee2c87ffc74bdafba9f4369096a2b5634b88abc0eaefa072",
     "https://bcr.bazel.build/modules/yq.bzl/0.3.2/MODULE.bazel": "0384efa70e8033d842ea73aa4b7199fa099709e236a7264345c03937166670b6",
-    "https://bcr.bazel.build/modules/yq.bzl/0.3.5/MODULE.bazel": "130c603e54be717bdf84100210f06598a0d2b4b4e01888fb01b70f50f41767ec",
     "https://bcr.bazel.build/modules/yq.bzl/0.3.6/MODULE.bazel": "985c2a0cb4ad9994bb0e33cc7fae931c91105eeefe3faa355b8f4c258d0607c0",
     "https://bcr.bazel.build/modules/yq.bzl/0.3.6/source.json": "678aaf6e291164f3cd761bb3e872e8a151248f413dbb63c5524a50b82a5bc890",
     "https://bcr.bazel.build/modules/zlib/1.2.11/MODULE.bazel": "07b389abc85fdbca459b69e2ec656ae5622873af3f845e1c9d80fe179f3effa0",
