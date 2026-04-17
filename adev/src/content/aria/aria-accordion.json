@@ -10,7 +10,7 @@
       "entryType": "undecorated_class",
       "members": [],
       "generics": [],
-      "description": "A structural directive that provides a mechanism for lazily rendering the content for an\n`ngAccordionPanel`.\n\nThis directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\nIt allows the content of the panel to be lazily rendered, improving performance\nby only creating the content when the panel is first expanded.\n\n```html\n<div ngAccordionPanel panelId=\"unique-id-1\">\n  <ng-template ngAccordionContent>\n    <p>This is the content that will be displayed inside the panel.</p>\n  </ng-template>\n</div>\n```",
+      "description": "A structural directive that provides a mechanism for lazily rendering the content for an\n`ngAccordionPanel`.\n\nThis directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\nIt allows the content of the panel to be lazily rendered, improving performance\nby only creating the content when the panel is first expanded.\n\n```html\n<div ngAccordionPanel>\n  <ng-template ngAccordionContent>\n    <p>This is the content that will be displayed inside the panel.</p>\n  </ng-template>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
@@ -21,7 +21,7 @@
           "comment": "[Accordion](guide/aria/accordion)"
         }
       ],
-      "rawComment": "/**\n * A structural directive that provides a mechanism for lazily rendering the content for an\n * `ngAccordionPanel`.\n *\n * This directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\n * It allows the content of the panel to be lazily rendered, improving performance\n * by only creating the content when the panel is first expanded.\n *\n * ```html\n * <div ngAccordionPanel panelId=\"unique-id-1\">\n *   <ng-template ngAccordionContent>\n *     <p>This is the content that will be displayed inside the panel.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
+      "rawComment": "/**\n * A structural directive that provides a mechanism for lazily rendering the content for an\n * `ngAccordionPanel`.\n *\n * This directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\n * It allows the content of the panel to be lazily rendered, improving performance\n * by only creating the content when the panel is first expanded.\n *\n * ```html\n * <div ngAccordionPanel>\n *   <ng-template ngAccordionContent>\n *     <p>This is the content that will be displayed inside the panel.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
       "implements": [],
       "source": {
         "filePath": "src/aria/accordion/accordion-content.ts",
@@ -34,6 +34,16 @@
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the trigger element.",
+          "jsdocTags": []
+        },
         {
           "name": "id",
           "type": "InputSignal<any>",
@@ -171,259 +181,7 @@
       "source": {
         "filePath": "/src/aria/accordion/accordion-panel.ts",
         "startLine": 34,
-        "endLine": 88
-      }
-    },
-    {
-      "name": "AccordionTrigger",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the trigger element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "panel",
-          "type": "InputSignal<AccordionPanel>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The associated AccordionPanel.",
-          "jsdocTags": [],
-          "inputAlias": "panel",
-          "isRequiredInput": true
-        },
-        {
-          "name": "id",
-          "type": "InputSignal<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The unique identifier for the trigger.",
-          "jsdocTags": [],
-          "inputAlias": "id",
-          "isRequiredInput": false
-        },
-        {
-          "name": "panelId",
-          "type": "Signal<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The unique identifier for the correspondingtrigger panel.",
-          "jsdocTags": []
-        },
-        {
-          "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Whether the trigger is disabled.",
-          "jsdocTags": [],
-          "inputAlias": "disabled",
-          "isRequiredInput": false
-        },
-        {
-          "name": "expanded",
-          "type": "ModelSignal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input",
-            "output"
-          ],
-          "description": "Whether the corresponding panel is expanded.",
-          "jsdocTags": [],
-          "inputAlias": "expanded",
-          "isRequiredInput": false,
-          "outputAlias": "expandedChange"
-        },
-        {
-          "name": "active",
-          "type": "Signal<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the trigger is active.",
-          "jsdocTags": []
-        },
-        {
-          "name": "ngOnInit",
-          "signatures": [
-            {
-              "name": "ngOnInit",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnInit",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "expand",
-          "signatures": [
-            {
-              "name": "expand",
-              "entryType": "function",
-              "description": "Expands this item.",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "/** Expands this item. */",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "expand",
-            "description": "Expands this item.",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": "/** Expands this item. */"
-          },
-          "entryType": "function",
-          "description": "Expands this item.",
-          "jsdocTags": [],
-          "rawComment": "/** Expands this item. */",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "collapse",
-          "signatures": [
-            {
-              "name": "collapse",
-              "entryType": "function",
-              "description": "Collapses this item.",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "/** Collapses this item. */",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "collapse",
-            "description": "Collapses this item.",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": "/** Collapses this item. */"
-          },
-          "entryType": "function",
-          "description": "Collapses this item.",
-          "jsdocTags": [],
-          "rawComment": "/** Collapses this item. */",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "toggle",
-          "signatures": [
-            {
-              "name": "toggle",
-              "entryType": "function",
-              "description": "Toggles the expansion state of this item.",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "/** Toggles the expansion state of this item. */",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "toggle",
-            "description": "Toggles the expansion state of this item.",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": "/** Toggles the expansion state of this item. */"
-          },
-          "entryType": "function",
-          "description": "Toggles the expansion state of this item.",
-          "jsdocTags": [],
-          "rawComment": "/** Toggles the expansion state of this item. */",
-          "memberType": "method",
-          "memberTags": []
-        }
-      ],
-      "generics": [],
-      "description": "The trigger that toggles the visibility of its associated `ngAccordionPanel`.\n\nThis directive requires the `panel` input be set to the template reference of the `ngAccordionPanel`\nit controls. When clicked, it will expand or collapse the panel. It also handles keyboard\ninteractions for navigation within the `ngAccordionGroup`. It applies `role=\"button\"` and manages\n`aria-expanded`, `aria-controls`, and `aria-disabled` attributes for accessibility.\nThe `disabled` input can be used to disable the trigger.\n\n```html\n<button ngAccordionTrigger [panel]=\"panel\">\n  Accordion Trigger Text\n</button>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Accordion](guide/aria/accordion)"
-        }
-      ],
-      "rawComment": "/**\n * The trigger that toggles the visibility of its associated `ngAccordionPanel`.\n *\n * This directive requires the `panel` input be set to the template reference of the `ngAccordionPanel`\n * it controls. When clicked, it will expand or collapse the panel. It also handles keyboard\n * interactions for navigation within the `ngAccordionGroup`. It applies `role=\"button\"` and manages\n * `aria-expanded`, `aria-controls`, and `aria-disabled` attributes for accessibility.\n * The `disabled` input can be used to disable the trigger.\n *\n * ```html\n * <button ngAccordionTrigger [panel]=\"panel\">\n *   Accordion Trigger Text\n * </button>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
-      "implements": [
-        "OnInit"
-      ],
-      "isStandalone": true,
-      "selector": "[ngAccordionTrigger]",
-      "exportAs": [
-        "ngAccordionTrigger"
-      ],
-      "aliases": [
-        "ngAccordionTrigger"
-      ],
-      "source": {
-        "filePath": "/src/aria/accordion/accordion-trigger.ts",
-        "startLine": 42,
-        "endLine": 112
+        "endLine": 94
       }
     },
     {
@@ -594,14 +352,317 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion-group.ts",
-        "startLine": 60,
-        "endLine": 120
+        "startLine": 59,
+        "endLine": 144
+      }
+    },
+    {
+      "name": "AccordionTrigger",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the trigger element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "panel",
+          "type": "InputSignal<AccordionPanel>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The associated AccordionPanel.",
+          "jsdocTags": [],
+          "inputAlias": "panel",
+          "isRequiredInput": true
+        },
+        {
+          "name": "id",
+          "type": "InputSignal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The unique identifier for the trigger.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
+        {
+          "name": "panelId",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The unique identifier for the corresponding trigger panel.",
+          "jsdocTags": []
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the trigger is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "index",
+          "type": "InputSignal<number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The index of the trigger within the accordion group.",
+          "jsdocTags": [],
+          "inputAlias": "index",
+          "isRequiredInput": false
+        },
+        {
+          "name": "expanded",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "Whether the corresponding panel is expanded.",
+          "jsdocTags": [],
+          "inputAlias": "expanded",
+          "isRequiredInput": false,
+          "outputAlias": "expandedChange"
+        },
+        {
+          "name": "active",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the trigger is active.",
+          "jsdocTags": []
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "expand",
+          "signatures": [
+            {
+              "name": "expand",
+              "entryType": "function",
+              "description": "Expands this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Expands this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "expand",
+            "description": "Expands this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Expands this item. */"
+          },
+          "entryType": "function",
+          "description": "Expands this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Expands this item. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "collapse",
+          "signatures": [
+            {
+              "name": "collapse",
+              "entryType": "function",
+              "description": "Collapses this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Collapses this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "collapse",
+            "description": "Collapses this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Collapses this item. */"
+          },
+          "entryType": "function",
+          "description": "Collapses this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Collapses this item. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "toggle",
+          "signatures": [
+            {
+              "name": "toggle",
+              "entryType": "function",
+              "description": "Toggles the expansion state of this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Toggles the expansion state of this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "toggle",
+            "description": "Toggles the expansion state of this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Toggles the expansion state of this item. */"
+          },
+          "entryType": "function",
+          "description": "Toggles the expansion state of this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Toggles the expansion state of this item. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "The trigger that toggles the visibility of its associated `ngAccordionPanel`.\n\nThis directive requires the `panel` input be set to the template reference of the `ngAccordionPanel`\nit controls. When clicked, it will expand or collapse the panel. It also handles keyboard\ninteractions for navigation within the `ngAccordionGroup`. It applies `role=\"button\"` and manages\n`aria-expanded`, `aria-controls`, and `aria-disabled` attributes for accessibility.\nThe `disabled` input can be used to disable the trigger.\n\n```html\n<button ngAccordionTrigger [panel]=\"panel\">\n  Accordion Trigger Text\n</button>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Accordion](guide/aria/accordion)"
+        }
+      ],
+      "rawComment": "/**\n * The trigger that toggles the visibility of its associated `ngAccordionPanel`.\n *\n * This directive requires the `panel` input be set to the template reference of the `ngAccordionPanel`\n * it controls. When clicked, it will expand or collapse the panel. It also handles keyboard\n * interactions for navigation within the `ngAccordionGroup`. It applies `role=\"button\"` and manages\n * `aria-expanded`, `aria-controls`, and `aria-disabled` attributes for accessibility.\n * The `disabled` input can be used to disable the trigger.\n *\n * ```html\n * <button ngAccordionTrigger [panel]=\"panel\">\n *   Accordion Trigger Text\n * </button>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[ngAccordionTrigger]",
+      "exportAs": [
+        "ngAccordionTrigger"
+      ],
+      "aliases": [
+        "ngAccordionTrigger"
+      ],
+      "source": {
+        "filePath": "/src/aria/accordion/accordion-trigger.ts",
+        "startLine": 43,
+        "endLine": 124
       }
     }
   ],
   "symbols": [
     [
       "Directive",
+      "@angular/core"
+    ],
+    [
+      "ElementRef",
       "@angular/core"
     ],
     [
@@ -625,23 +686,7 @@
       "@angular/cdk/a11y"
     ],
     [
-      "ElementRef",
-      "@angular/core"
-    ],
-    [
-      "OnInit",
-      "@angular/core"
-    ],
-    [
       "booleanAttribute",
-      "@angular/core"
-    ],
-    [
-      "model",
-      "@angular/core"
-    ],
-    [
-      "contentChildren",
       "@angular/core"
     ],
     [
@@ -653,15 +698,23 @@
       "@angular/cdk/bidi"
     ],
     [
+      "OnDestroy",
+      "@angular/core"
+    ],
+    [
+      "OnInit",
+      "@angular/core"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
       "AccordionContent",
       "@angular/aria/accordion"
     ],
     [
       "AccordionPanel",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger",
       "@angular/aria/accordion"
     ],
     [
@@ -669,11 +722,19 @@
       "@angular/aria/accordion"
     ],
     [
+      "AccordionTrigger",
+      "@angular/aria/accordion"
+    ],
+    [
       "AccordionContent",
       "@angular/aria/accordion"
     ],
     [
       "AccordionPanel",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionPanel.element",
       "@angular/aria/accordion"
     ],
     [
@@ -694,54 +755,6 @@
     ],
     [
       "AccordionPanel.toggle",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.element",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.panel",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.id",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.panelId",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.disabled",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.expanded",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.active",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.ngOnInit",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.expand",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.collapse",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.toggle",
       "@angular/aria/accordion"
     ],
     [
@@ -778,6 +791,62 @@
     ],
     [
       "AccordionGroup.collapseAll",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.element",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.panel",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.id",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.panelId",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.disabled",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.index",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.expanded",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.active",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.ngOnInit",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.ngOnDestroy",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.expand",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.collapse",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.toggle",
       "@angular/aria/accordion"
     ]
   ]
