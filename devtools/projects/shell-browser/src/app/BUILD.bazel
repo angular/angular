@@ -27,6 +27,7 @@ ng_project(
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools",
+        "//devtools/projects/ng-devtools/src/lib/application-services:deep_link",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/protocol",
     ],
@@ -39,6 +40,31 @@ ts_project(
     ],
     deps = [
         "//:node_modules/@types/chrome",
+    ],
+)
+
+ts_project(
+    name = "devtools_connected_flag",
+    srcs = [
+        "devtools-connected-flag.ts",
+    ],
+)
+
+esbuild(
+    name = "devtools_connected_flag_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "devtools-connected-flag.ts",
+    format = "iife",
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":devtools_connected_flag",
     ],
 )
 
