@@ -138,7 +138,7 @@ export class LTreeStrategy {
         const node = this._getNode(lView, tView.data, i);
 
         // TODO(mgechev): verify if this won't make us skip projected content.
-        if (node.component || node.directives.length) {
+        if (node.component || node.directives?.length) {
           nodes.push(node);
           this._extract(lViewItem, node.children);
         }

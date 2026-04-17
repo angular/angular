@@ -68,7 +68,13 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if (a.component && b.component && a.component.id !== b.component.id) {
     return false;
   }
-  const aDirectives = new Set(a.directives.map((d) => d.id));
+  if (!a.directives && !b.directives) {
+    return true;
+  }
+  if (!a.directives || !b.directives) {
+    return false;
+  }
+  const aDirectives = new Set(a.directives.map((d) => d.id) ?? []);
   for (const dir of b.directives) {
     if (!aDirectives.has(dir.id)) {
       return false;
@@ -233,9 +239,8 @@ export class DirectiveExplorerComponent {
     const selectedEl = this.currentSelectedElement();
     if (!selectedEl) return;
 
-    const directiveIndex = selectedEl.directives.findIndex(
-      (directive) => directive.name === directiveName,
-    );
+    const directiveIndex =
+      selectedEl.directives?.findIndex((directive) => directive.name === directiveName) ?? -1;
 
     const selectedFrame = this._frameManager.selectedFrame();
     if (!this._frameManager.activeFrameHasUniqueUrl()) {
