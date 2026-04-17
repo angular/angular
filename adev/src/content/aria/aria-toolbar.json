@@ -5,80 +5,6 @@
   "normalizedModuleName": "angular_aria_toolbar",
   "entries": [
     {
-      "name": "ToolbarWidgetGroup",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the host element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Whether the widget group is disabled.",
-          "jsdocTags": [],
-          "inputAlias": "disabled",
-          "isRequiredInput": false
-        },
-        {
-          "name": "multi",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Whether the group allows multiple widgets to be selected.",
-          "jsdocTags": [],
-          "inputAlias": "multi",
-          "isRequiredInput": false
-        }
-      ],
-      "generics": [
-        {
-          "name": "V"
-        }
-      ],
-      "description": "A directive that groups toolbar widgets, used for more complex widgets like radio groups\nthat have their own internal navigation.",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Toolbar](guide/aria/toolbar)"
-        }
-      ],
-      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups\n * that have their own internal navigation.\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
-      "implements": [],
-      "isStandalone": true,
-      "selector": "[ngToolbarWidgetGroup]",
-      "exportAs": [
-        "ngToolbarWidgetGroup"
-      ],
-      "aliases": [
-        "ngToolbarWidgetGroup"
-      ],
-      "source": {
-        "filePath": "/src/aria/toolbar/toolbar-widget-group.ts",
-        "startLine": 31,
-        "endLine": 67
-      }
-    },
-    {
       "name": "Toolbar",
       "isAbstract": false,
       "entryType": "directive",
@@ -199,8 +125,82 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 47,
-        "endLine": 133
+        "startLine": 46,
+        "endLine": 132
+      }
+    },
+    {
+      "name": "ToolbarWidgetGroup",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the widget group is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "multi",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the group allows multiple widgets to be selected.",
+          "jsdocTags": [],
+          "inputAlias": "multi",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "A directive that groups toolbar widgets, used for more complex widgets like radio groups\nthat have their own internal navigation.",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Toolbar](guide/aria/toolbar)"
+        }
+      ],
+      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups\n * that have their own internal navigation.\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngToolbarWidgetGroup]",
+      "exportAs": [
+        "ngToolbarWidgetGroup"
+      ],
+      "aliases": [
+        "ngToolbarWidgetGroup"
+      ],
+      "source": {
+        "filePath": "/src/aria/toolbar/toolbar-widget-group.ts",
+        "startLine": 31,
+        "endLine": 67
       }
     },
     {
@@ -392,6 +392,10 @@
   ],
   "symbols": [
     [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
       "Directive",
       "@angular/core"
     ],
@@ -416,14 +420,6 @@
       "@angular/core"
     ],
     [
-      "contentChildren",
-      "@angular/core"
-    ],
-    [
-      "afterRenderEffect",
-      "@angular/core"
-    ],
-    [
       "signal",
       "@angular/core"
     ],
@@ -434,6 +430,10 @@
     [
       "Directionality",
       "@angular/cdk/bidi"
+    ],
+    [
+      "contentChildren",
+      "@angular/core"
     ],
     [
       "OnInit",
@@ -448,31 +448,15 @@
       "@angular/cdk/a11y"
     ],
     [
-      "ToolbarWidgetGroup",
-      "@angular/aria/toolbar"
-    ],
-    [
       "Toolbar",
       "@angular/aria/toolbar"
     ],
     [
-      "ToolbarWidget",
-      "@angular/aria/toolbar"
-    ],
-    [
       "ToolbarWidgetGroup",
       "@angular/aria/toolbar"
     ],
     [
-      "ToolbarWidgetGroup.element",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.disabled",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.multi",
+      "ToolbarWidget",
       "@angular/aria/toolbar"
     ],
     [
@@ -505,6 +489,22 @@
     ],
     [
       "Toolbar.value",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup.element",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup.disabled",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup.multi",
       "@angular/aria/toolbar"
     ],
     [

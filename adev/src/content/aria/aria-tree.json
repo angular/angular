@@ -119,8 +119,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree-item-group.ts",
-        "startLine": 45,
-        "endLine": 89
+        "startLine": 44,
+        "endLine": 88
       }
     },
     {
@@ -387,8 +387,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree-item.ts",
-        "startLine": 45,
-        "endLine": 173
+        "startLine": 44,
+        "endLine": 172
       }
     },
     {
@@ -606,8 +606,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 64,
-        "endLine": 221
+        "startLine": 63,
+        "endLine": 220
       }
     }
   ],
