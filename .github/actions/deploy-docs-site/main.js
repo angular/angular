@@ -19248,7 +19248,7 @@ var ChildProcess = class {
     return new Promise((resolve5, reject) => {
       const commandText = `${command2} ${args.join(" ")}`;
       Log.debug(`Executing command: ${commandText}`);
-      const childProcess = _spawn(command2, args, { ...options, shell: true, stdio: "inherit" });
+      const childProcess = _spawn(command2, args, { ...options, stdio: "inherit" });
       childProcess.on("close", (status) => status === 0 ? resolve5() : reject(status));
     });
   }
@@ -19256,7 +19256,7 @@ var ChildProcess = class {
     const commandText = `${command2} ${args.join(" ")}`;
     const env22 = getEnvironmentForNonInteractiveCommand(options.env);
     Log.debug(`Executing command: ${commandText}`);
-    const { status: exitCode, signal, stdout, stderr } = _spawnSync(command2, args, { ...options, env: env22, encoding: "utf8", shell: true, stdio: "pipe" });
+    const { status: exitCode, signal, stdout, stderr } = _spawnSync(command2, args, { ...options, env: env22, encoding: "utf8", stdio: "pipe" });
     const status = statusFromExitCodeAndSignal(exitCode, signal);
     if (status === 0 || options.suppressErrorOnFailingExitCode) {
       return { status, stdout, stderr };
@@ -19266,7 +19266,7 @@ var ChildProcess = class {
   static spawn(command2, args, options = {}) {
     const commandText = `${command2} ${args.join(" ")}`;
     const env22 = getEnvironmentForNonInteractiveCommand(options.env);
-    return processAsyncCmd(commandText, options, _spawn(command2, args, { ...options, env: env22, shell: true, stdio: "pipe" }));
+    return processAsyncCmd(commandText, options, _spawn(command2, args, { ...options, env: env22, stdio: "pipe" }));
   }
   static exec(command2, options = {}) {
     const env22 = getEnvironmentForNonInteractiveCommand(options.env);
@@ -19321,7 +19321,7 @@ ${logOutput}`);
   });
 }
 function determineRepoBaseDirFromCwd() {
-  const { stdout, stderr, status } = ChildProcess.spawnSync("git", ["rev-parse --show-toplevel"]);
+  const { stdout, stderr, status } = ChildProcess.spawnSync("git", ["rev-parse", "--show-toplevel"]);
   if (status !== 0) {
     throw Error(`Unable to find the path to the base directory of the repository.
 Was the command run from inside of the repo?
@@ -33595,7 +33595,7 @@ tmp/lib/tmp.js:
   (* v8 ignore next -- @preserve *)
   (* v8 ignore else -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-YN3IWAKJ.mjs:
+@angular/ng-dev/bundles/chunk-G7GMCCSS.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -33636,7 +33636,7 @@ tmp/lib/tmp.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-TUTTLTAK.mjs:
+@angular/ng-dev/bundles/chunk-PTDPQBIK.mjs:
   (*! Bundled license information:
   
   @octokit/request-error/dist-src/index.js:

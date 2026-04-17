@@ -11,7 +11,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/cdk": "21.2.6",
+    "@angular/cdk": "21.2.7",
     "@angular/common": "link:./in-existing-linked-by-bazel",
     "@angular/compiler": "link:./in-existing-linked-by-bazel",
     "@angular/core": "link:./in-existing-linked-by-bazel",
