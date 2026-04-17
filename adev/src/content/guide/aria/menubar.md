@@ -8,7 +8,7 @@
 
 ## Overview
 
-The manubar is a horizontal navigation bar that provides persistent access to application menus. Menubars organize commands into logical categories like File, Edit, and View, helping users discover and execute application features through keyboard or mouse interaction.
+The menubar is a horizontal navigation bar that provides persistent access to application menus. Menubars organize commands into logical categories like File, Edit, and View, helping users discover and execute application features through keyboard or mouse interaction.
 
 <docs-tab-group>
   <docs-tab label="Basic">
