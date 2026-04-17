@@ -51,7 +51,7 @@
     Angular CLI's `ng update` runs automated code transformations that automatically handle routine breaking changes, dramatically simplifying major version updates. Keeping up with the latest version keeps your app as fast and secure as possible.
   </docs-card>
   <docs-card title="Language Service" href="tools/language-service" link="Language Service" iconImgSrc="adev/src/assets/icons/language-service.svg">
-    Angular's IDE language services powers code completion, navigation, refactoring, and real-time diagnostics in your favorite editor.
+    Angular's IDE language service powers code completion, navigation, refactoring, and real-time diagnostics in your favorite editor.
   </docs-card>
 </docs-card-container>
 
