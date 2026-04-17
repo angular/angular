@@ -7,10 +7,8 @@
  */
 
 import {computed, signal, WritableSignal} from '../../src/core';
-import {ReactiveNode, SIGNAL} from '../../primitives/signals';
+import {createWatch, SIGNAL} from '../../primitives/signals';
 import {isBrowser, timeout} from '@angular/private/testing';
-
-import {flushEffects, resetEffects, testingEffect} from './effect_util';
 
 describe('signal graph: destroyed consumers should be GC-eligible', () => {
   if (isBrowser) {
@@ -18,29 +16,22 @@ describe('signal graph: destroyed consumers should be GC-eligible', () => {
     return;
   }
 
-  afterEach(() => {
-    resetEffects();
-  });
-
   function setupAndReturnRef(source: WritableSignal<number>): WeakRef<object> {
-    const destroyEffect = testingEffect(() => source());
-    flushEffects();
+    const watch = createWatch(
+      () => source(),
+      () => {},
+      true,
+    );
+    watch.run();
 
-    const sourceNode = source[SIGNAL] as ReactiveNode;
-    let watchNode;
-    let link = (sourceNode as any).consumers;
-    while (link !== undefined) {
-      watchNode = link.consumer;
-      link = link.nextConsumer;
-    }
-    const ref = new WeakRef(watchNode!);
+    const ref = new WeakRef(watch[SIGNAL]);
 
     // Non-live computed that also reads source.
     const derived = computed(() => source() + 1);
     derived();
 
     // Clearing the graph edges.
-    destroyEffect();
+    watch.destroy();
 
     return ref;
   }
