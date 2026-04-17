@@ -29,6 +29,11 @@
       "version": "22.0.0",
       "description": "Disables the 'nullishCoalescingNotNullable & optionalChainNotNullable extended diagnostics.",
       "factory": "./bundles/strict-safe-navigation-narrow.cjs#migrate"
+    },
+    "model-output": {
+      "version": "22.0.0",
+      "description": "Migrate broken duplicate outputs",
+      "factory": "./bundles/model-output.cjs#migrate"
     }
   }
 }
