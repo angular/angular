@@ -79,7 +79,8 @@ describe('render tree extraction', () => {
     expect(rtree[0].children.length).toBe(2);
     expect(rtree[0].children[0].component?.instance).toBe(childComponent);
     expect(rtree[0].children[1].component).toBe(null);
-    expect(rtree[0].children[1].directives[0].instance).toBe(childDirective);
+    expect(rtree[0].children[1].directives).toBeDefined();
+    expect(rtree[0].children[1].directives![0].instance).toBe(childDirective);
   });
 
   it('should skip nodes without directives', () => {

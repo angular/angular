@@ -161,7 +161,7 @@ export const getLatestComponentState = (
     }
   };
 
-  node.directives.forEach((dir) => populateResultSet(dir));
+  node.directives?.forEach((dir) => populateResultSet(dir));
   if (node.component) {
     populateResultSet(node.component);
   }
@@ -736,7 +736,7 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
     );
     return;
   }
-  if (updatedStateData.directiveId.directive !== undefined) {
+  if (node.directives && updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateNestedProp(directive, updatedStateData.keyPath, updatedStateData.newValue);
     if (ngDebugApiIsSupported(ng, 'getOwningComponent')) {
@@ -766,7 +766,7 @@ export function logValue(valueInfo: {
     return;
   }
 
-  if (valueInfo.directiveId.directive !== undefined) {
+  if (node.directives && valueInfo.directiveId.directive !== undefined) {
     const directiveInstance = node.directives[valueInfo.directiveId.directive].instance;
     if (valueInfo.keyPath === null) {
       logToConsole(directiveInstance);

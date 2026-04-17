@@ -124,7 +124,7 @@ export type ChangeDetection = 'ng-on-push' | 'ng-eager' | 'acx-on-push' | 'acx-d
 // and only really exists on the ng-devtools-backend
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
-  directives: DirType[];
+  directives?: DirType[];
   component: CmpType | null;
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
