@@ -89,13 +89,11 @@ function optimizeBlock(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>): void {
 
   for (const xref of xrefs) {
     const start = startPos.get(xref)!;
-    const end = endPos.get(xref);
-    if (end === undefined) {
-      // A temporary was assigned but never read — this should not occur given
-      // the invariants enforced by expandSafeReads and generateTemporaryVariables,
-      // but skip rather than corrupt the output.
-      continue;
-    }
+    // A temporary may be assigned but never read (e.g. a switch with a single
+    // case, where the test is assigned for side-effects but never referenced
+    // again). Treat those as live for a single point so they still get a slot
+    // and are correctly renamed/declared in the output.
+    const end = endPos.get(xref) ?? start;
 
     // Release slots for intervals that finished before this one starts.
     // active is kept sorted ascending by end, so we can stop at the first non-expired entry.
