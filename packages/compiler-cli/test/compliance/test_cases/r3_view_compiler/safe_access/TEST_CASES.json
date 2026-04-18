@@ -98,6 +98,21 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should reuse temporary variable slots across non-overlapping safe navigation instructions",
+      "inputFiles": ["safe_access_cross_instruction_reuse.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_cross_instruction_reuse_template.js",
+              "generated": "safe_access_cross_instruction_reuse.js"
+            }
+          ],
+          "failureMessage": "Temporary variables not reused across instructions"
+        }
+      ]
     }
   ]
 }
