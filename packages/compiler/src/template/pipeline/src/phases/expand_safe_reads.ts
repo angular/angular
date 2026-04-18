@@ -101,12 +101,9 @@ function eliminateTemporaryAssignments(
     e,
     (e) => {
       if (e instanceof ir.AssignTemporaryExpr && tmps.has(e.xref)) {
-        const read = new ir.ReadTemporaryExpr(e.xref);
-        // `TemplateDefinitionBuilder` has the (accidental?) behavior of generating assignments of
-        // temporary variables to themselves. This happens because some subexpression that the
-        // temporary refers to, possibly through nested temporaries, has a function call. We copy that
-        // behavior here.
-        return new ir.AssignTemporaryExpr(read, read.xref);
+        // The guard side already computed and stored this temporary. The expression side
+        // only needs to read its value — no re-assignment necessary.
+        return new ir.ReadTemporaryExpr(e.xref);
       }
       return e;
     },
