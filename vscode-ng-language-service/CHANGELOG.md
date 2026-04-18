@@ -1217,7 +1217,7 @@ New features:
 - More detailed grammar scopes for template property binding syntax
 - Textmate grammar for template event bindings
 - Reenable probing language service and tsserver from active workspace
-- Priortize workspace version when resolving ts and ng
+- Prioritize workspace version when resolving ts and ng
 - Add grammar for two-way bindings
 - Trigger autocomplete on '$' character
 - Upgrade `vscode-jsonrpc` to major version v5
