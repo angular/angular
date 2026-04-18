@@ -80,6 +80,7 @@ import {optimizeStoreLet} from './phases/store_let_optimization';
 import {stripNonrequiredParentheses} from './phases/strip_nonrequired_parentheses';
 import {specializeStyleBindings} from './phases/style_binding_specialization';
 import {generateTemporaryVariables} from './phases/temporary_variables';
+import {optimizeTemporaries} from './phases/optimize_temporaries';
 import {optimizeTrackFns} from './phases/track_fn_optimization';
 import {generateTrackVariables} from './phases/track_variables';
 import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set';
@@ -145,6 +146,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: expandSafeReads},
   {kind: Kind.Both, fn: stripNonrequiredParentheses},
   {kind: Kind.Both, fn: generateTemporaryVariables},
+  {kind: Kind.Both, fn: optimizeTemporaries},
   {kind: Kind.Both, fn: optimizeVariables},
   {kind: Kind.Both, fn: optimizeStoreLet},
   {kind: Kind.Tmpl, fn: convertI18nText},
