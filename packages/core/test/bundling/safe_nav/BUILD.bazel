@@ -1,0 +1,21 @@
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+
+package(default_visibility = ["//visibility:public"])
+
+optimize_angular_app(
+    name = "bundles",
+    srcs = [
+        "main.ts",
+    ],
+    env = {
+        "NG_BUILD_MANGLE": "0",
+    },
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//packages/core/test/bundling:node_modules/@angular/build",
+        "//packages/core/test/bundling:node_modules/@angular/common",
+        "//packages/core/test/bundling:node_modules/@angular/core",
+        "//packages/core/test/bundling:node_modules/@angular/platform-browser",
+    ],
+)
