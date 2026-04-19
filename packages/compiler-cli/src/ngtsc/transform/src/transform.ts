@@ -8,7 +8,6 @@
 
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
-
 import {
   DefaultImportTracker,
   ImportRewriter,
@@ -275,7 +274,7 @@ class IvyTransformationVisitor extends Visitor {
     }
   }
 
-  private _nonCoreDecoratorsOnly(node: ts.HasDecorators): ts.NodeArray<ts.Decorator> | undefined {
+  private _nonCoreDecoratorsOnly(node: ts.HasDecorators): ts.Decorator[] | undefined {
     const decorators = ts.getDecorators(node);
 
     // Shortcut if the node has no decorators.
@@ -285,25 +284,8 @@ class IvyTransformationVisitor extends Visitor {
     // Build a Set of the decorators on this node from @angular/core.
     const coreDecorators = this._angularCoreDecorators(node);
 
-    if (coreDecorators.size === decorators.length) {
-      // If all decorators are to be removed, return `undefined`.
-      return undefined;
-    } else if (coreDecorators.size === 0) {
-      // If no decorators need to be removed, return the original decorators array.
-      return nodeArrayFromDecoratorsArray(decorators);
-    }
-
     // Filter out the core decorators.
-    const filtered = decorators.filter((dec) => !coreDecorators.has(dec));
-
-    // If no decorators survive, return `undefined`. This can only happen if a core decorator is
-    // repeated on the node.
-    if (filtered.length === 0) {
-      return undefined;
-    }
-
-    // Create a new `NodeArray` with the filtered decorators that sourcemaps back to the original.
-    return nodeArrayFromDecoratorsArray(filtered);
+    return decorators.filter((dec) => !coreDecorators.has(dec));
   }
 
   /**
@@ -314,71 +296,24 @@ class IvyTransformationVisitor extends Visitor {
    */
   private _stripAngularDecorators<T extends ts.Node>(node: T): T {
     const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined;
-    const nonCoreDecorators = ts.canHaveDecorators(node)
-      ? this._nonCoreDecoratorsOnly(node)
-      : undefined;
-    const combinedModifiers = [...(nonCoreDecorators || []), ...(modifiers || [])];
-
-    if (ts.isParameter(node)) {
-      // Strip decorators from parameters (probably of the constructor).
-      node = ts.factory.updateParameterDeclaration(
-        node,
-        combinedModifiers,
-        node.dotDotDotToken,
-        node.name,
-        node.questionToken,
-        node.type,
-        node.initializer,
-      ) as T & ts.ParameterDeclaration;
-    } else if (ts.isMethodDeclaration(node)) {
-      // Strip decorators of methods.
-      node = ts.factory.updateMethodDeclaration(
-        node,
-        combinedModifiers,
-        node.asteriskToken,
-        node.name,
-        node.questionToken,
-        node.typeParameters,
-        node.parameters,
-        node.type,
-        node.body,
-      ) as T & ts.MethodDeclaration;
-    } else if (ts.isPropertyDeclaration(node)) {
-      // Strip decorators of properties.
-      node = ts.factory.updatePropertyDeclaration(
-        node,
-        combinedModifiers,
-        node.name,
-        node.questionToken || node.exclamationToken,
-        node.type,
-        node.initializer,
-      ) as T & ts.PropertyDeclaration;
-    } else if (ts.isGetAccessor(node)) {
-      // Strip decorators of getters.
-      node = ts.factory.updateGetAccessorDeclaration(
-        node,
-        combinedModifiers,
-        node.name,
-        node.parameters,
-        node.type,
-        node.body,
-      ) as T & ts.GetAccessorDeclaration;
-    } else if (ts.isSetAccessor(node)) {
-      // Strip decorators of setters.
-      node = ts.factory.updateSetAccessorDeclaration(
-        node,
-        combinedModifiers,
-        node.name,
-        node.parameters,
-        node.body,
-      ) as T & ts.SetAccessorDeclaration;
-    } else if (ts.isConstructorDeclaration(node)) {
+    if (ts.isConstructorDeclaration(node)) {
       // For constructors, strip decorators of the parameters.
       const parameters = node.parameters.map((param) => this._stripAngularDecorators(param));
       node = ts.factory.updateConstructorDeclaration(node, modifiers, parameters, node.body) as T &
         ts.ConstructorDeclaration;
     }
-    return node;
+
+    if (!ts.canHaveDecorators(node)) {
+      return node;
+    }
+
+    const nonCoreDecorators = this._nonCoreDecoratorsOnly(node);
+    if (nonCoreDecorators === undefined) {
+      return node;
+    }
+
+    const combinedModifiers = [...nonCoreDecorators, ...(modifiers ?? [])];
+    return ts.factory.replaceDecoratorsAndModifiers(node, combinedModifiers) as T;
   }
 }
 
@@ -571,18 +506,4 @@ function createRecorderFn(
       defaultImportTracker.recordUsedImport(importDecl);
     }
   };
-}
-
-/** Creates a `NodeArray` with the correct offsets from an array of decorators. */
-function nodeArrayFromDecoratorsArray(
-  decorators: readonly ts.Decorator[],
-): ts.NodeArray<ts.Decorator> {
-  const array = ts.factory.createNodeArray(decorators);
-
-  if (array.length > 0) {
-    (array.pos as number) = decorators[0].pos;
-    (array.end as number) = decorators[decorators.length - 1].end;
-  }
-
-  return array;
 }
