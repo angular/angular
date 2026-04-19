@@ -10,6 +10,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^22.0.0-next",
+    "@angular/aria": "^22.0.0-next",
     "@angular/cdk": "^22.0.0-next",
     "@angular/common": "^22.0.0-next",
     "@angular/compiler": "^22.0.0-next",

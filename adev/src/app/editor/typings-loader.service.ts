@@ -25,6 +25,7 @@ export class TypingsLoader {
     '@angular/platform-browser',
     '@angular/material',
     '@angular/cdk',
+    '@angular/aria',
   ];
 
   private webContainer: WebContainer | undefined;
