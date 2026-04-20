@@ -34,7 +34,7 @@ export class ConfigService {
 
 ## Configuring features of `HttpClient`
 
-`provideHttpClient` accepts a list of optional feature configurations, to enable or configure the behavior of different aspects of the client. This section details the optional features and their usages.
+`provideHttpClient` accepts a list of optional feature configurations to enable or configure different aspects of the client. This section details the optional features and their usage.
 
 ### `withXhr`
 
@@ -62,7 +62,7 @@ HELPFUL: Functional interceptors (through `withInterceptors`) have more predicta
 
 By default, when you configure `HttpClient` using `provideHttpClient` within a given injector, this configuration overrides any configuration for `HttpClient` which may be present in the parent injector.
 
-When you add `withRequestsMadeViaParent()`, `HttpClient` is configured to instead pass requests up to the `HttpClient` instance in the parent injector, once they've passed through any configured interceptors at this level. This is useful if you want to _add_ interceptors in a child injector, while still sending the request through the parent injector's interceptors as well.
+When you add `withRequestsMadeViaParent()`, `HttpClient` is configured to instead pass requests up to the `HttpClient` instance in the parent injector, once they've passed through any configured interceptors at this level. This is useful if you want to _add_ interceptors in a child injector while still sending the request through the parent injector's interceptors.
 
 CRITICAL: You must configure an instance of `HttpClient` above the current injector, or this option is not valid and you'll get a runtime error when you try to use it.
 
@@ -74,7 +74,7 @@ HELPFUL: Prefer using [CORS](https://developer.mozilla.org/docs/Web/HTTP/CORS) t
 
 ### `withXsrfConfiguration(...)`
 
-Including this option allows for customization of `HttpClient`'s built-in XSRF security functionality. See the [security guide](best-practices/security) for more information.
+Including this option allows customization of `HttpClient`'s built-in XSRF security functionality. See the [security guide](best-practices/security) for more information.
 
 ### `withNoXsrfProtection()`
 
