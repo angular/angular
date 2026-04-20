@@ -95,6 +95,11 @@ export enum OpKind {
   BoundaryCreate,
 
   /**
+   * Create a boundary error branch creation instruction op.
+   */
+  BoundaryErrorCreate,
+
+  /**
    * An op to validate and handle errors in a template.
    */
   Boundary,

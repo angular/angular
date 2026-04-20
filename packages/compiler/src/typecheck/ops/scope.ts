@@ -13,6 +13,7 @@ import {
   BoundText,
   Component,
   Content,
+  BoundaryBlock,
   BoundaryErrorBlock,
   DeferredBlock,
   DeferredBlockTriggers,
@@ -45,6 +46,7 @@ import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} f
 import {TcbComponentContextCompletionOp} from './completions';
 import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
 import {TcbIfBlockOp} from './if_block';
+import {TcbBoundaryOp} from './boundary';
 import {TcbSwitchOp} from './switch_block';
 import {TcbForOfOp} from './for_block';
 import {TcbLetDeclarationOp} from './let';
@@ -185,7 +187,7 @@ export class Scope {
   static forNodes(
     tcb: Context,
     parentScope: Scope | null,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | BoundaryErrorBlock | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -307,6 +309,18 @@ export class Scope {
    * @param directive if present, a directive type on a `Element` or `Template` to
    * look up instead of the default for an element or template node.
    */
+  resolveByName(name: string): TcbExpr | null {
+    for (const [v] of this.varMap.entries()) {
+      if (v.name === name) {
+        return this.resolve(v);
+      }
+    }
+    if (this.parent !== null) {
+      return this.parent.resolveByName(name);
+    }
+    return null;
+  }
+
   resolve(node: LocalSymbol, directive?: TcbDirectiveMetadata): TcbExpr {
     // Attempt to resolve the operation locally.
     const res = this.resolveLocal(node, directive);
@@ -391,7 +405,7 @@ export class Scope {
    */
   createChildScope(
     parentScope: Scope,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | BoundaryErrorBlock | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -514,6 +528,8 @@ export class Scope {
       this.appendDeferredBlock(node);
     } else if (node instanceof IfBlock) {
       this.opQueue.push(new TcbIfBlockOp(this.tcb, this, node));
+    } else if (node instanceof BoundaryBlock) {
+      this.opQueue.push(new TcbBoundaryOp(this.tcb, this, node));
     } else if (node instanceof SwitchBlock) {
       this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof ForLoopBlock) {

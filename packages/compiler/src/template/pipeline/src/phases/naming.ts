@@ -143,6 +143,7 @@ function addNamesToView(unit: CompilationUnit, baseName: string, state: {index: 
         break;
       case ir.OpKind.ConditionalCreate:
       case ir.OpKind.ConditionalBranchCreate:
+      case ir.OpKind.BoundaryErrorCreate:
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
