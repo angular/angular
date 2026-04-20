@@ -364,7 +364,7 @@ export abstract class PropertiesExtractor {
   }
 
   /**
-   * Check wether a member has a private computed property name like [ɵWRITABLE_SIGNAL]
+   * Check whether a member has a private computed property name like [ɵWRITABLE_SIGNAL]
    *
    * This will prevent exposing private computed properties in the docs.
    */
