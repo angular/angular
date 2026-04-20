@@ -134,12 +134,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       args,
     );
     if (pure) {
-      ts.addSyntheticLeadingComment(
-        call,
-        ts.SyntaxKind.MultiLineCommentTrivia,
-        this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
-        /* trailing newline */ false,
-      );
+      this.markAsPure(call);
     }
     return call;
   }
@@ -147,14 +142,18 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   createCallExpression(callee: ts.Expression, args: ts.Expression[], pure: boolean): ts.Expression {
     const call = ts.factory.createCallExpression(callee, undefined, args);
     if (pure) {
-      ts.addSyntheticLeadingComment(
-        call,
-        ts.SyntaxKind.MultiLineCommentTrivia,
-        this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
-        /* trailing newline */ false,
-      );
+      this.markAsPure(call);
     }
     return call;
+  }
+
+  private markAsPure<T extends ts.Node>(node: T): T {
+    return ts.addSyntheticLeadingComment(
+      node,
+      ts.SyntaxKind.MultiLineCommentTrivia,
+      this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
+      /* trailing newline */ false,
+    );
   }
 
   createConditional(

@@ -340,7 +340,7 @@ export interface BazelAndG3Options {
   _experimentalAllowEmitDeclarationOnly?: boolean;
 
   /**
-   * Whether to follow the Javascirt optional chaining specs: returning `undefined` instead of `null` for null-safe navigation operations.
+   * Whether to follow the Javascript optional chaining specs: returning `undefined` instead of `null` for null-safe navigation operations.
    *
    * Defaults to `false`.
    */

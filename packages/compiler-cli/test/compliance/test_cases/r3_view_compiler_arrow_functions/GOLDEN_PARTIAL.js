@@ -544,7 +544,7 @@ export declare class TestComp {
         };
     };
     static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never, false, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -642,7 +642,7 @@ export declare class TestComp {
         };
     };
     static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never, false, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************

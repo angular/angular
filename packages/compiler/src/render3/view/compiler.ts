@@ -352,12 +352,6 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   if (meta.isSignal) {
     typeParams.push(o.expressionType(o.literal(meta.isSignal)));
   }
-  if (meta.legacyOptionalChaining) {
-    if (!meta.isSignal) {
-      typeParams.push(o.expressionType(o.literal(false)));
-    }
-    typeParams.push(o.expressionType(o.literal(meta.legacyOptionalChaining)));
-  }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 

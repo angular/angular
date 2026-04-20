@@ -54,7 +54,6 @@ export type ɵɵComponentDeclaration<
   IsStandalone extends boolean = false,
   HostDirectives = never,
   IsSignal extends boolean = false,
-  legacyOptionalChaining extends boolean = false,
 > = unknown;
 
 /**
