@@ -24,9 +24,9 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
-        "//:node_modules/@types/d3",
-        "//:node_modules/d3",
-        "//:node_modules/dagre-d3-es",
+        "//devtools:node_modules/@types/d3",
+        "//devtools:node_modules/d3",
+        "//devtools:node_modules/dagre-d3-es",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
         "//devtools/projects/protocol",
