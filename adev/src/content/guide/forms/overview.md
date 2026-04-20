@@ -6,7 +6,7 @@ Applications use forms to enable users to log in, to update a profile, to enter 
 
 Angular provides two different approaches to handling user input through forms: reactive and template-driven.
 
-Both capture user input events from the view, validate the user input, create a form model and data model to update, and provide a way to track changes.
+Both capture user input events from the view, validate the input, create a form and data model, and provide a way to track changes.
 
 TIP: If you're looking for the new experimental Signal Forms, check out our [essential Signal Forms guide](/essentials/signal-forms)!
 
@@ -86,7 +86,7 @@ The following component implements the same input field for a single control, us
 
 <docs-code language="angular-ts" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.ts"/>
 
-IMPORTANT: In a template-driven form the source of truth is the template. The `NgModel` directive automatically manages the `FormControl` instance for you.
+IMPORTANT: In a template-driven form, the source of truth is the template. The `NgModel` directive automatically manages the `FormControl` instance for you.
 
 ## Data flow in forms
 
@@ -99,10 +99,10 @@ The following diagrams illustrate both kinds of data flow for each type of form,
 
 ### Data flow in reactive forms
 
-In reactive forms each form element in the view is directly linked to the form model (a `FormControl` instance).
+In reactive forms, each form element in the view is directly linked to the form model (a `FormControl` instance).
 Updates from the view to the model and from the model to the view are synchronous and do not depend on how the UI is rendered.
 
-The view-to-model diagram shows how data flows when an input field's value is changed from the view through the following steps.
+The view-to-model diagram shows how data flows when an input field's value is changed from the view through the following steps:
 
 1. The user types a value into the input element, in this case the favorite color _Blue_.
 1. The form input element emits an "input" event with the latest value.
