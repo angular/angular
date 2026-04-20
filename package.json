@@ -137,7 +137,6 @@
     "rollup-plugin-dts": "^6.1.1",
     "rxjs": "^7.0.0",
     "selenium-webdriver": "3.5.0",
-    "semver-dsl": "^1.0.1",
     "source-map": "0.7.6",
     "source-map-support": "0.5.21",
     "systemjs": "0.18.10",

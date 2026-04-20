@@ -10,7 +10,8 @@ ts_project(
     ),
     deps = [
         "//:node_modules/@angular/core",
-        "//:node_modules/semver-dsl",
+        "//:node_modules/@types/semver",
+        "//:node_modules/semver",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib:utils",
