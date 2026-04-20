@@ -15,7 +15,7 @@ Any consumers of the streams have access to manipulate that data safely.
 Reactive forms differ from [template-driven forms](guide/forms/template-driven-forms) in distinct ways.
 Reactive forms provide synchronous access to the data model, immutability with observable operators, and change tracking through observable streams.
 
-Template-driven forms let direct access modify data in your template, but are less explicit than reactive forms because they rely on directives embedded in the template, along with mutable data to track changes asynchronously.
+Template-driven forms allow direct access to modify data in your template, but are less explicit than reactive forms because they rely on directives embedded in the template, along with mutable data to track changes asynchronously.
 See the [Forms Overview](guide/forms) for detailed comparisons between the two paradigms.
 
 ## Adding a basic form control
