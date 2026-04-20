@@ -30,17 +30,33 @@ export function generateBoundaryConditions(job: ComponentCompilationJob): void {
           o.NULL_EXPR,
         );
 
-        const primaryBranch = op.conditions.find((c) => c.target === op.primaryTarget);
-        const errorBranch = op.conditions.find((c) => c.target !== op.primaryTarget);
+        const errorBranches = op.conditions;
+        const fallbackBranch = errorBranches.find((c) => c.expr === null);
+        let errorResultExpr: o.Expression = fallbackBranch
+          ? new ir.SlotLiteralExpr(fallbackBranch.targetSlot)
+          : o.literal(-1);
 
-        if (!primaryBranch || !errorBranch) {
-          throw new Error(`Boundary must have both primary and error branches`);
+        // Iterate in reverse order over error branches WITH conditions
+        const conditionalBranches = errorBranches.filter((c) => c.expr !== null);
+        for (let i = conditionalBranches.length - 1; i >= 0; i--) {
+          const branch = conditionalBranches[i];
+
+          let conditionExpr = branch.expr!;
+
+          // The alias variable for the condition is generated in generate_variables.ts
+          // and resolved by resolve_names.
+
+          errorResultExpr = new o.ConditionalExpr(
+            conditionExpr,
+            new ir.SlotLiteralExpr(branch.targetSlot),
+            errorResultExpr,
+          );
         }
 
         op.processed = new o.ConditionalExpr(
           condition,
-          new ir.SlotLiteralExpr(primaryBranch.targetSlot),
-          new ir.SlotLiteralExpr(errorBranch.targetSlot),
+          new ir.SlotLiteralExpr(op.guarded.targetSlot),
+          errorResultExpr,
         );
       }
     }

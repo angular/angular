@@ -712,15 +712,15 @@ function ingestBoundaryBlock(unit: ViewCompilationUnit, boundaryBlock: t.Boundar
     const tagName = ingestControlFlowInsertionPoint(unit, errorView.xref, errorBlock);
 
     // Create branch creation operation
-    const branchCreateOp = ir.createConditionalBranchCreateOp(
+    const branchCreateOp = ir.createBoundaryErrorCreateOp(
       errorView.xref,
       ir.TemplateKind.Block,
-      tagName,
       'Error',
-      ir.Namespace.HTML,
       undefined,
       errorBlock.startSourceSpan,
       errorBlock.sourceSpan,
+      createOp.xref,
+      errorBlock.contextVariables,
     );
     unit.create.push(branchCreateOp);
 
@@ -729,11 +729,13 @@ function ingestBoundaryBlock(unit: ViewCompilationUnit, boundaryBlock: t.Boundar
       ? convertAst(errorBlock.expression, unit.job, null)
       : null;
 
+    const errorVar = errorBlock.contextVariables.find((v) => v.value === '$error');
+
     const conditionalCaseExpr = new ir.ConditionalCaseExpr(
       caseExpr,
       branchCreateOp.xref,
       branchCreateOp.handle,
-      null,
+      errorVar || null,
     );
     conditions.push(conditionalCaseExpr);
 
@@ -754,11 +756,17 @@ function ingestBoundaryBlock(unit: ViewCompilationUnit, boundaryBlock: t.Boundar
     primaryCreateOp.handle,
     null,
   );
-  conditions.push(primaryCaseExpr);
+
   ingestNodes(primaryView, boundaryBlock.children);
 
   unit.update.push(
-    ir.createBoundaryOp(createOp.xref, primaryCreateOp.xref, conditions, boundaryBlock.sourceSpan),
+    ir.createBoundaryOp(
+      createOp.xref,
+      primaryCreateOp.xref,
+      primaryCaseExpr,
+      conditions,
+      boundaryBlock.sourceSpan,
+    ),
   );
 }
 

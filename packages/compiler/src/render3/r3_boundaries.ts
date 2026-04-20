@@ -27,7 +27,8 @@ export function createBoundaryBlock(
   const errors: ParseError[] = [];
   const errorBlocks: t.BoundaryErrorBlock[] = [];
 
-  for (const block of connectedBlocks) {
+  for (let blockIndex = 0; blockIndex < connectedBlocks.length; blockIndex++) {
+    const block = connectedBlocks[blockIndex];
     if (block.name === 'error') {
       const contextVariables: t.Variable[] = [];
       let expression: AST | null = null;
@@ -106,6 +107,41 @@ export function createBoundaryBlock(
           continue;
         }
 
+        const aliasMatch = param.expression.match(
+          /^([$A-Z_][0-9A-Z_$]*)\s*=\s*([$A-Z_][0-9A-Z_$]*)$/i,
+        );
+        if (aliasMatch) {
+          const name = aliasMatch[1];
+          const variableName = aliasMatch[2];
+
+          if (variableName !== '$error' && variableName !== '$retry') {
+            errors.push(
+              new ParseError(
+                param.sourceSpan,
+                `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
+              ),
+            );
+          } else if (contextVariables.some((v) => v.name === name)) {
+            errors.push(new ParseError(param.sourceSpan, `Duplicate parameter variable "${name}"`));
+          } else {
+            const nameIndex = param.expression.indexOf(name);
+            const keySpan = new ParseSourceSpan(
+              param.sourceSpan.start.moveBy(nameIndex),
+              param.sourceSpan.start.moveBy(nameIndex + name.length),
+            );
+            const equalsIndex = param.expression.indexOf('=');
+            const valueIndex = param.expression.indexOf(variableName, equalsIndex + 1);
+            const valueSpan = new ParseSourceSpan(
+              param.sourceSpan.start.moveBy(valueIndex),
+              param.sourceSpan.start.moveBy(valueIndex + variableName.length),
+            );
+            const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan.end);
+            contextVariables.push(
+              new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan),
+            );
+          }
+          continue;
+        }
 
         const whenMatch = param.expression.match(WHEN_PATTERN);
         if (whenMatch) {
@@ -154,13 +190,22 @@ export function createBoundaryBlock(
     }
   }
 
+  let wholeSourceSpan = ast.sourceSpan;
+  const lastErrorBlock = errorBlocks[errorBlocks.length - 1];
+  if (lastErrorBlock !== undefined) {
+    wholeSourceSpan = new ParseSourceSpan(ast.startSourceSpan.start, lastErrorBlock.sourceSpan.end);
+  }
+  const endSourceSpan =
+    errorBlocks.length > 0 ? errorBlocks[errorBlocks.length - 1].endSourceSpan : ast.endSourceSpan;
+
   const node = new t.BoundaryBlock(
     html.visitAll(visitor, ast.children, ast.children),
     errorBlocks,
     ast.nameSpan,
+    wholeSourceSpan,
     ast.sourceSpan,
     ast.startSourceSpan,
-    ast.endSourceSpan,
+    endSourceSpan,
     ast.i18n,
   );
 

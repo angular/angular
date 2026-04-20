@@ -645,4 +645,119 @@ describe('@boundary runtime instructions (JIT)', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Main Content');
   });
+
+  it('should support multiple @error blocks with when conditions', async () => {
+    class ChartError extends Error {
+      constructor(message: string) {
+        super(message);
+        this.name = 'ChartError';
+      }
+    }
+
+    @Component({
+      template: `
+        @boundary {
+          @if (doThrow()) {
+            {{ throwError() }}
+          } @else {
+            Main Content
+          }
+        } @error (let err; r = $retry; when isChartError(err)) {
+          Chart Error: {{err.message}}
+          <button id="retry-chart" (click)="r()">Retry</button>
+        } @error (let error; r = $retry) {
+          Generic Error: {{error.message}}
+          <button id="retry-generic" (click)="r()">Retry</button>
+        }
+      `,
+      standalone: true,
+    })
+    class HostComponent {
+      doThrow = signal(true);
+      errorToThrow: Error = new ChartError('Chart Failed');
+
+      throwError() {
+        throw this.errorToThrow;
+      }
+
+      isChartError(e: any) {
+        return e instanceof ChartError;
+      }
+    }
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Chart Error: Chart Failed');
+
+    // Click retry button to clear error and reset state to allow throwing again
+    const button = fixture.nativeElement.querySelector('#retry-chart');
+    button.click();
+
+    fixture.componentInstance.doThrow.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Main Content');
+
+    // Change error type and throw again
+    fixture.componentInstance.errorToThrow = new Error('Generic Failed');
+    fixture.componentInstance.doThrow.set(true);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Generic Error: Generic Failed');
+  });
+
+  it('should fall through and rethrow if no @error block matches', async () => {
+    class ChartError extends Error {
+      constructor(message: string) {
+        super(message);
+        this.name = 'ChartError';
+      }
+    }
+
+    let topError: any;
+    const CustomErrorHandler = {
+      handleError(error: any) {
+        topError = error;
+      },
+    };
+
+    @Component({
+      template: `
+        @boundary {
+          @if (doThrow()) {
+            {{ throwError() }}
+          }
+        } @error (let err; when isChartError(err)) {
+          Chart Error: {{err.message}}
+        }
+      `,
+      standalone: true,
+    })
+    class HostComponent {
+      doThrow = signal(true);
+      errorToThrow: Error = new Error('Generic Failed');
+
+      throwError() {
+        throw this.errorToThrow;
+      }
+
+      isChartError(e: any) {
+        return e instanceof ChartError;
+      }
+    }
+
+    TestBed.configureTestingModule({
+      rethrowApplicationErrors: true,
+    });
+
+    const fixture = TestBed.createComponent(HostComponent);
+
+    expect(() => {
+      fixture.detectChanges();
+    }).toThrowError(/Unhandled error in @boundary fell through/);
+  });
 });
