@@ -86,6 +86,7 @@ npm.npm_translate_lock(
         "//adev:package.json",
         "//adev/shared-docs:package.json",
         "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//devtools:package.json",
         "//integration:package.json",
         "//modules:package.json",
         "//packages/animations:package.json",

@@ -4,6 +4,7 @@ packages:
   - adev/shared-docs
   - adev/shared-docs/pipeline/api-gen
   - dev-app/
+  - devtools/
   - modules
   - integration
   - packages/animations/

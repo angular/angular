@@ -123,9 +123,6 @@ importers:
       '@types/dom-navigation':
         specifier: ^1.0.5
         version: 1.0.7
-      '@types/firefox-webext-browser':
-        specifier: ^143.0.0
-        version: 143.0.0
       '@types/jasmine':
         specifier: ^6.0.0
         version: 6.0.0
@@ -171,12 +168,6 @@ importers:
       chalk:
         specifier: ^5.4.1
         version: 5.6.2
-      d3:
-        specifier: ^7.0.0
-        version: 7.9.0
-      dagre-d3-es:
-        specifier: ^7.0.14
-        version: 7.0.14
       diff:
         specifier: ^9.0.0
         version: 9.0.0
@@ -216,9 +207,6 @@ importers:
       magic-string:
         specifier: ^0.30.8
         version: 0.30.21
-      ngx-flamegraph:
-        specifier: 0.1.1
-        version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
       protractor:
         specifier: ^7.0.0
         version: 7.0.0
@@ -246,12 +234,6 @@ importers:
       tinyglobby:
         specifier: ^0.2.12
         version: 0.2.16
-      todomvc-app-css:
-        specifier: ^2.3.0
-        version: 2.4.3
-      todomvc-common:
-        specifier: ^1.0.5
-        version: 1.0.5
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -261,9 +243,6 @@ importers:
       typescript:
         specifier: 6.0.2
         version: 6.0.2
-      webtreemap:
-        specifier: ^2.0.1
-        version: 2.0.1
       ws:
         specifier: ^8.15.0
         version: 8.20.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
@@ -310,9 +289,6 @@ importers:
       '@types/cldrjs':
         specifier: ^0.4.22
         version: 0.4.29
-      '@types/d3':
-        specifier: ^7.4.3
-        version: 7.4.3
       '@types/tmp':
         specifier: ^0.2.6
         version: 0.2.6
@@ -789,6 +765,34 @@ importers:
       vitest:
         specifier: ^4.0.0
         version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.0)(jiti@2.6.1)(jsdom@29.0.2)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+
+  devtools:
+    dependencies:
+      d3:
+        specifier: ^7.0.0
+        version: 7.9.0
+      dagre-d3-es:
+        specifier: ^7.0.14
+        version: 7.0.14
+      ngx-flamegraph:
+        specifier: 0.1.1
+        version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
+      todomvc-app-css:
+        specifier: ^2.3.0
+        version: 2.4.3
+      todomvc-common:
+        specifier: ^1.0.5
+        version: 1.0.5
+      webtreemap:
+        specifier: ^2.0.1
+        version: 2.0.1
+    devDependencies:
+      '@types/d3':
+        specifier: ^7.4.3
+        version: 7.4.3
+      '@types/firefox-webext-browser':
+        specifier: ^143.0.0
+        version: 143.0.0
 
   integration:
     dependencies:
