@@ -135,6 +135,32 @@ describe('field directive', () => {
       });
       expect(component.model()).toEqual({x: 'a', y: 'c'});
     });
+
+    it('should update field value before template (input) listener fires', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input [formField]="f.x" (input)="onInput()" />`,
+      })
+      class TestCmp {
+        readonly model = signal({x: 'a'});
+        readonly f = form(this.model);
+        observedDuringInput: string | undefined;
+
+        onInput() {
+          this.observedDuringInput = this.f.x().value();
+        }
+      }
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const component = fixture.componentInstance;
+      const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+      act(() => {
+        input.value = 'b';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(component.observedDuringInput).toBe('b');
+      expect(component.model()).toEqual({x: 'b'});
+    });
   });
 
   describe('host directive mapping', () => {

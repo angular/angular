@@ -18,7 +18,7 @@ const REPLACEMENTS = new Map<ir.OpKind, [ir.OpKind, ir.OpKind]>([
 /**
  * Op kinds that should not prevent merging of start/end ops.
  */
-const IGNORED_OP_KINDS = new Set([ir.OpKind.Pipe]);
+const IGNORED_OP_KINDS = new Set([ir.OpKind.Pipe, ir.OpKind.ControlCreate]);
 
 /**
  * Replace sequences of mergable instructions (e.g. `ElementStart` and `ElementEnd`) with a
