@@ -106,9 +106,6 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.24.2
         version: 7.58.2(@types/node@20.19.39)
-      '@rollup/plugin-babel':
-        specifier: ^7.0.0
-        version: 7.0.0(@babel/core@7.29.0)(@types/babel__core@7.20.5)(rollup@4.60.1)
       '@rollup/plugin-commonjs':
         specifier: ^29.0.0
         version: 29.0.2(rollup@4.60.1)
@@ -241,9 +238,6 @@ importers:
       karma-jasmine:
         specifier: ^5.0.0
         version: 5.1.0(karma@6.4.4(bufferutil@4.1.0))
-      karma-requirejs:
-        specifier: ^1.1.0
-        version: 1.1.0(karma@6.4.4(bufferutil@4.1.0))
       karma-sourcemap-loader:
         specifier: ^0.4.0
         version: 0.4.0
@@ -253,9 +247,6 @@ importers:
       ngx-flamegraph:
         specifier: 0.1.1
         version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
-      open-in-idx:
-        specifier: ^0.1.1
-        version: 0.1.1
       protractor:
         specifier: ^7.0.0
         version: 7.0.0
@@ -268,9 +259,6 @@ importers:
       rollup-plugin-dts:
         specifier: ^6.1.1
         version: 6.4.1(rollup@4.60.1)(typescript@6.0.2)
-      rollup-plugin-preserve-shebang:
-        specifier: ^1.0.1
-        version: 1.0.1
       rxjs:
         specifier: ^7.0.0
         version: 7.8.2
@@ -4871,19 +4859,6 @@ packages:
 
   '@rolldown/pluginutils@1.0.0-rc.15':
     resolution: {integrity: sha512-UromN0peaE53IaBRe9W7CjrZgXl90fqGpK+mIZbA3qSTeYqg3pqpROBdIPvOG3F5ereDHNwoHBI2e50n1BDr1g==}
-
-  '@rollup/plugin-babel@7.0.0':
-    resolution: {integrity: sha512-NS2+P7v80N3MQqehZEjgpaFb9UyX3URNMW/zvoECKGo4PY4DvJfQusTI7BX/Ks+CPvtTfk3TqcR6S9VYBi/C+A==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0
-      '@types/babel__core': ^7.1.9
-      rollup: ^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      '@types/babel__core':
-        optional: true
-      rollup:
-        optional: true
 
   '@rollup/plugin-commonjs@29.0.2':
     resolution: {integrity: sha512-S/ggWH1LU7jTyi9DxZOKyxpVd4hF/OZ0JrEbeLjXk/DFXwRny0tjD2c992zOUYQobLrVkRVMDdmHP16HKP7GRg==}
@@ -9639,12 +9614,6 @@ packages:
     peerDependencies:
       karma: ^6.0.0
 
-  karma-requirejs@1.1.0:
-    resolution: {integrity: sha512-MHTOYKdwwJBkvYid0TaYvBzOnFH3TDtzo6ie5E4o9SaUSXXsfMRLa/whUz6efVIgTxj1xnKYasNn/XwEgJeB/Q==}
-    peerDependencies:
-      karma: '>=0.9'
-      requirejs: ^2.1.0
-
   karma-sauce-launcher@4.3.6:
     resolution: {integrity: sha512-Ej62q4mUPFktyAm8g0g8J5qhwEkXwdHrwtiV4pZjKNHNnSs+4qgDyzs3VkpOy3AmNTsTqQXUN/lpiy0tZpDJZQ==}
     engines: {node: '>= 10.0.0'}
@@ -10013,9 +9982,6 @@ packages:
 
   lsofi@1.0.0:
     resolution: {integrity: sha512-MKr9vM1MSm+TSKfI05IYxpKV1NCxpJaBLnELyIf784zYJ5KV9lGCE1EvpA2DtXDNM3fCuFeCwXUzim/fyQRi+A==}
-
-  magic-string@0.25.9:
-    resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -11595,9 +11561,6 @@ packages:
       rollup: ^3.29.4 || ^4
       typescript: 6.0.2
 
-  rollup-plugin-preserve-shebang@1.0.1:
-    resolution: {integrity: sha512-gk7ExGBqvUinhgrvldKHkAKXXwRkWMXMZymNkrtn50uBgHITlhRjhnKmbNGwAIc4Bzgl3yLv7/8Fhi/XeHhFKg==}
-
   rollup-plugin-sourcemaps2@0.5.6:
     resolution: {integrity: sha512-oalmewAT4GLVsW6NugcDybx0ypet94vU0dUK3VofdYoWiN4ZjoX1L4dizFd0OhoJ78r/Am9sARTR9gMrX0cJ7w==}
     engines: {node: '>=18.0.0'}
@@ -11984,10 +11947,6 @@ packages:
   source-map@0.7.6:
     resolution: {integrity: sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ==}
     engines: {node: '>= 12'}
-
-  sourcemap-codec@1.4.8:
-    resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
-    deprecated: Please use @jridgewell/sourcemap-codec instead
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
@@ -17759,17 +17718,6 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-rc.15': {}
 
-  '@rollup/plugin-babel@7.0.0(@babel/core@7.29.0)(@types/babel__core@7.20.5)(rollup@4.60.1)':
-    dependencies:
-      '@babel/core': 7.29.0
-      '@babel/helper-module-imports': 7.28.6
-      '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
-    optionalDependencies:
-      '@types/babel__core': 7.20.5
-      rollup: 4.60.1
-    transitivePeerDependencies:
-      - supports-color
-
   '@rollup/plugin-commonjs@29.0.2(rollup@4.60.1)':
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
@@ -23502,10 +23450,6 @@ snapshots:
       jasmine-core: 4.6.1
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
-  karma-requirejs@1.1.0(karma@6.4.4(bufferutil@4.1.0)):
-    dependencies:
-      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-
   karma-sauce-launcher@4.3.6(bufferutil@4.1.0)(encoding@0.1.13)(typescript@6.0.2):
     dependencies:
       global-agent: 2.2.0
@@ -23908,10 +23852,6 @@ snapshots:
     dependencies:
       is-number: 2.1.0
       through2: 2.0.5
-
-  magic-string@0.25.9:
-    dependencies:
-      sourcemap-codec: 1.4.8
 
   magic-string@0.30.21:
     dependencies:
@@ -25736,10 +25676,6 @@ snapshots:
     optionalDependencies:
       '@babel/code-frame': 7.29.0
 
-  rollup-plugin-preserve-shebang@1.0.1:
-    dependencies:
-      magic-string: 0.25.9
-
   rollup-plugin-sourcemaps2@0.5.6(@types/node@20.19.39)(rollup@4.60.1):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
@@ -26269,8 +26205,6 @@ snapshots:
   source-map@0.6.1: {}
 
   source-map@0.7.6: {}
-
-  sourcemap-codec@1.4.8: {}
 
   space-separated-tokens@2.0.2: {}
 
