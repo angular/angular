@@ -38,14 +38,6 @@ export function createNgModule<T>(
 ): viewEngine_NgModuleRef<T> {
   return new NgModuleRef<T>(ngModule, parentInjector ?? null, []);
 }
-
-/**
- * The `createNgModule` function alias for backwards-compatibility.
- * Please avoid using it directly and use `createNgModule` instead.
- *
- * @deprecated Use `createNgModule` instead.
- */
-export const createNgModuleRef = createNgModule;
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
