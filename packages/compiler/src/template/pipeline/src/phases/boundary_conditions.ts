@@ -67,6 +67,8 @@ export function generateBoundaryConditions(job: ComponentCompilationJob): void {
               );
             }
           }
+          // The alias variable for the condition is generated in generate_variables.ts
+          // and resolved by resolve_names.
 
           errorResultExpr = new o.ConditionalExpr(
             conditionExpr,

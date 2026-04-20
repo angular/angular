@@ -12,7 +12,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
-import {IDENTIFIER_PATTERN, LET_PATTERN, parseLetParameters} from './util';
+import {LET_PATTERN, parseLetParameters} from './util';
 
 /** Pattern used to identify a boundary `when` expression. */
 const WHEN_PATTERN = /^(when\s+)(.*)/;
@@ -181,13 +181,22 @@ export function createBoundaryBlock(
     }
   }
 
+  let wholeSourceSpan = ast.sourceSpan;
+  const lastErrorBlock = errorBlocks[errorBlocks.length - 1];
+  if (lastErrorBlock !== undefined) {
+    wholeSourceSpan = new ParseSourceSpan(ast.startSourceSpan.start, lastErrorBlock.sourceSpan.end);
+  }
+  const endSourceSpan =
+    errorBlocks.length > 0 ? errorBlocks[errorBlocks.length - 1].endSourceSpan : ast.endSourceSpan;
+
   const node = new t.BoundaryBlock(
     html.visitAll(visitor, ast.children, ast.children),
     errorBlocks,
     ast.nameSpan,
+    wholeSourceSpan,
     ast.sourceSpan,
     ast.startSourceSpan,
-    ast.endSourceSpan,
+    endSourceSpan,
     ast.i18n,
   );
 

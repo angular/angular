@@ -10,6 +10,7 @@ import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
+import * as t from '../../../../../render3/r3_ast';
 import {
   AnimationKind,
   BindingKind,
@@ -82,7 +83,8 @@ export type CreateOp =
   | AnimationOp
   | SourceLocationOp
   | ControlCreateOp
-  | BoundaryCreateOp;
+  | BoundaryCreateOp
+  | BoundaryErrorCreateOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -592,6 +594,67 @@ export function createBoundaryCreateOp(
     i18nPlaceholder,
     startSourceSpan,
     wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a boundary error block.
+ */
+export interface BoundaryErrorCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.BoundaryErrorCreate;
+
+  templateKind: TemplateKind;
+
+  decls: number | null;
+
+  vars: number | null;
+
+  functionNameSuffix: string;
+
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+
+  /**
+   * The Xref of the BoundaryCreate op that this error branch belongs to.
+   */
+  boundaryXref: XrefId;
+
+  contextVariables: t.Variable[];
+
+  /**
+   * The handle to the slot allocated for this element.
+   */
+  handle: SlotHandle;
+
+  startSourceSpan: ParseSourceSpan;
+
+  wholeSourceSpan: ParseSourceSpan;
+}
+
+export function createBoundaryErrorCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  functionNameSuffix: string,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+  boundaryXref: XrefId,
+  contextVariables: t.Variable[],
+): BoundaryErrorCreateOp {
+  return {
+    kind: OpKind.BoundaryErrorCreate,
+    xref,
+    templateKind,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    boundaryXref,
+    contextVariables,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
