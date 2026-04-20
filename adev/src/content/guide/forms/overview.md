@@ -86,7 +86,7 @@ The following component implements the same input field for a single control, us
 
 <docs-code language="angular-ts" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.ts"/>
 
-IMPORTANT: In a template-driven form the source of truth is the template. The `NgModel` directive automatically manages the `FormControl` instance for you.
+IMPORTANT: In a template-driven form, the source of truth is the template. The `NgModel` directive automatically manages the `FormControl` instance for you.
 
 ## Data flow in forms
 
@@ -99,7 +99,7 @@ The following diagrams illustrate both kinds of data flow for each type of form,
 
 ### Data flow in reactive forms
 
-In reactive forms each form element in the view is directly linked to the form model (a `FormControl` instance).
+In reactive forms, each form element in the view is directly linked to the form model (a `FormControl` instance).
 Updates from the view to the model and from the model to the view are synchronous and do not depend on how the UI is rendered.
 
 The view-to-model diagram shows how data flows when an input field's value is changed from the view through the following steps.
