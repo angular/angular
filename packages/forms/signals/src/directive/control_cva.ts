@@ -10,22 +10,22 @@ import {
   computed,
   signal,
   untracked,
+  type ɵControlDirectiveHost as ControlDirectiveHost,
   type Signal,
   type WritableSignal,
-  type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
-import {NG_VALIDATORS, type Validator, Validators, type ValidatorFn} from '@angular/forms';
-import {reactiveErrorsToSignalErrors} from '../compat/validation_errors';
+import {NG_VALIDATORS, Validators, type Validator, type ValidatorFn} from '@angular/forms';
 import {type ValidationError} from '../api/rules';
+import {reactiveErrorsToSignalErrors} from '../compat/validation_errors';
 import {
   bindingUpdated,
   CONTROL_BINDING_NAMES,
-  type ControlBindingKey,
   createBindings,
   readFieldStateBindingValue,
+  type ControlBindingKey,
 } from './bindings';
-import {setNativeDomProperty} from './native';
 import type {FormField} from './form_field';
+import {setNativeDomProperty} from './native';
 
 function isValidatorObject(v: Function | Validator): v is Validator {
   return typeof v === 'object' && v !== null;
@@ -38,13 +38,16 @@ export function cvaControlCreate(
   const bindings = createBindings<ControlBindingKey | 'controlValue'>();
 
   parent.controlValueAccessor!.registerOnChange((value: unknown) => {
+    if (parent.state().isOrphaned()) return;
     // Update tracking for 'controlValue' here so that when the effect runs,
     // `bindingUpdated` sees that the model value matches the last seen view value.
     // This prevents the framework from writing the same value back to the CVA (CVA loopback).
     bindings['controlValue'] = value;
     parent.state().controlValue.set(value as any);
   });
-  parent.controlValueAccessor!.registerOnTouched(() => parent.state().markAsTouched());
+  parent.controlValueAccessor!.registerOnTouched(() => {
+    if (!parent.state().isOrphaned()) parent.state().markAsTouched();
+  });
 
   const legacyValidators = parent.injector.get(NG_VALIDATORS, null, {optional: true, self: true});
   if (legacyValidators) {
