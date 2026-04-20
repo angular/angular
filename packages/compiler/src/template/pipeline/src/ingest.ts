@@ -63,7 +63,7 @@ export function ingestComponent(
   allDeferrableDepsFn: o.ReadVarExpr | null,
   relativeTemplatePath: string | null,
   enableDebugLocations: boolean,
-  legacyOptionalChaining: boolean = false,
+  legacyOptionalChaining: boolean,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -87,7 +87,7 @@ export interface HostBindingInput {
   properties: e.ParsedProperty[] | null;
   attributes: {[key: string]: o.Expression};
   events: e.ParsedEvent[] | null;
-  legacyOptionalChaining?: boolean;
+  legacyOptionalChaining: boolean;
 }
 
 /**
@@ -1166,9 +1166,14 @@ function convertAst(
     return new ir.SafePropertyReadExpr(convertAst(ast.receiver, job, baseSourceSpan), ast.name);
   } else if (ast instanceof e.SafeCall) {
     // TODO: source span
-    return new ir.SafeInvokeFunctionExpr(
+    return new o.InvokeFunctionExpr(
       convertAst(ast.receiver, job, baseSourceSpan),
       ast.args.map((a) => convertAst(a, job, baseSourceSpan)),
+      null,
+      convertSourceSpan(ast.span, baseSourceSpan),
+      false,
+      [],
+      true,
     );
   } else if (ast instanceof e.EmptyExpr) {
     return new ir.EmptyExpr(convertSourceSpan(ast.span, baseSourceSpan));

@@ -404,9 +404,9 @@ export enum ExpressionKind {
   SafeKeyedRead,
 
   /**
-   * A safe function call requiring expansion into a null check.
+   * Wraps an expression to indicate that it should be evaluated with legacy null-safe navigation semantics.
    */
-  SafeInvokeFunction,
+  SafeNavigationMigration,
 
   /**
    * An intermediate expression that will be expanded from a safe read into an explicit ternary.

@@ -14,15 +14,19 @@ import {CompilationJob} from '../compilation';
  * Find any function calls to `$safeNavigationMigration`, and remove them, while marking the argument
  * so that it uses the legacy null-returning safe navigation semantics.
  */
-export function removeNullCasts(job: CompilationJob): void {
+export function removeSafeNavigationMigration(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      ir.transformExpressionsInOp(op, extractNullCasts, ir.VisitorContextFlag.None);
+      ir.transformExpressionsInOp(
+        op,
+        (e) => extractremoveSafeNavigationMigration(e),
+        ir.VisitorContextFlag.None,
+      );
     }
   }
 }
 
-function extractNullCasts(e: o.Expression): o.Expression {
+function extractremoveSafeNavigationMigration(e: o.Expression): o.Expression {
   if (
     e instanceof o.InvokeFunctionExpr &&
     e.fn instanceof ir.LexicalReadExpr &&
@@ -33,18 +37,7 @@ function extractNullCasts(e: o.Expression): o.Expression {
         'The $safeNavigationMigration builtin function expects exactly one argument.',
       );
     }
-    const arg = e.args[0];
-
-    ir.transformExpressionsInExpression(
-      arg,
-      (child) => {
-        (child as any)._useNull = true;
-        return child;
-      },
-      ir.VisitorContextFlag.None,
-    );
-
-    return arg;
+    return new ir.SafeNavigationMigrationExpr(e.args[0]);
   }
   return e;
 }

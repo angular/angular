@@ -55,7 +55,6 @@ import {nameFunctionsAndVariables} from './phases/naming';
 import {mergeNextContextExpressions} from './phases/next_context_merging';
 import {generateNgContainerOps} from './phases/ng_container';
 import {disableBindings} from './phases/nonbindable';
-import {removeNullCasts} from './phases/null_cast';
 import {orderOps} from './phases/ordering';
 import {parseExtractedStyles} from './phases/parse_extracted_styles';
 import {removeContentSelectors} from './phases/phase_remove_content_selectors';
@@ -77,6 +76,7 @@ import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_plac
 import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
 import {resolveNames} from './phases/resolve_names';
 import {resolveSanitizers} from './phases/resolve_sanitizers';
+import {removeSafeNavigationMigration} from './phases/safe_navigation_migration';
 import {saveAndRestoreView} from './phases/save_restore_view';
 import {allocateSlots} from './phases/slot_allocation';
 import {optimizeStoreLet} from './phases/store_let_optimization';
@@ -133,7 +133,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateVariables},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
-  {kind: Kind.Both, fn: removeNullCasts},
+  {kind: Kind.Both, fn: removeSafeNavigationMigration},
   {kind: Kind.Both, fn: resolveDollarEvent},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Tmpl, fn: removeIllegalLetReferences},
