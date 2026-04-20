@@ -14,12 +14,12 @@ When a significant change is released in the CLI, the applications should be upd
 ```bash
 $ cd integration/cli-hello-world[-*]
 $ pnpm install
-$ pnpm ng update @angular/cli @angular-devkit/build-angular
+$ pnpm ng update @angular/cli @angular/build
 $ pnpm build
 $ pnpm test
 ```
 
-Afterwards the `@angular/cli` and `@angular-devkit/build-angular` should be reverted to the `file:../` urls
+Afterwards the `@angular/cli` and `@angular/build` should be reverted to the `file:../` urls
 and the main `package.json` should be updated with the new versions.
 
 ## Render3 tests

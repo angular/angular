@@ -65,7 +65,7 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "progress": false,
             "polyfills": ["zone.js", "zone.js/testing"],
@@ -145,7 +145,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "progress": false,
             "polyfills": ["zone.js", "zone.js/testing"],
