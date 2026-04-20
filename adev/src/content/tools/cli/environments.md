@@ -99,6 +99,8 @@ export const environment = {
 };
 ```
 
+CRITICAL: Files in `src/environments/` are bundled into your client-side application and visible to anyone who loads the page. Never store secrets such as API keys here. Use a server-side proxy or a secrets manager instead.
+
 You can add target-specific configuration files, such as `environment.development.ts`.
 The following content sets default values for the development build target:
 
