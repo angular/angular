@@ -742,6 +742,11 @@ export interface BoundaryOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, C
   primaryTarget: XrefId;
 
   /**
+   * The primary branch (guarded by the no-error condition).
+   */
+  guarded: ConditionalCaseExpr;
+
+  /**
    * Each possible error fallback view that could be displayed.
    */
   conditions: Array<ConditionalCaseExpr>;
@@ -762,6 +767,7 @@ export function createBoundaryOp(
   target: XrefId,
   targetSlot: SlotHandle,
   primaryTarget: XrefId,
+  guarded: ConditionalCaseExpr,
   conditions: Array<ConditionalCaseExpr>,
   sourceSpan: ParseSourceSpan,
 ): BoundaryOp {
@@ -770,6 +776,7 @@ export function createBoundaryOp(
     target,
     targetSlot,
     primaryTarget,
+    guarded,
     conditions,
     processed: null,
     sourceSpan,

@@ -1389,6 +1389,7 @@ export function transformExpressionsInOp(
     case OpKind.Control:
     case OpKind.ControlCreate:
     case OpKind.BoundaryCreate:
+    case OpKind.BoundaryErrorCreate:
       // These operations contain no expressions.
       break;
     default:
@@ -1483,6 +1484,10 @@ export function transformExpressionsInExpression(
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (expr instanceof o.SpreadElementExpr) {
     expr.expression = transformExpressionsInExpression(expr.expression, transform, flags);
+  } else if (expr instanceof o.FunctionExpr) {
+    for (let i = 0; i < expr.statements.length; i++) {
+      transformExpressionsInStatement(expr.statements[i], transform, flags);
+    }
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||

@@ -557,6 +557,25 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           ),
         );
         break;
+      case ir.OpKind.BoundaryErrorCreate:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        const boundaryErrorCreateChildView = unit.job.views.get(op.xref)!;
+        ir.OpList.replace(
+          op,
+          ng.conditionalBranchCreate(
+            op.handle.slot!,
+            o.variable(boundaryErrorCreateChildView.fnName!),
+            boundaryErrorCreateChildView.decls!,
+            boundaryErrorCreateChildView.vars!,
+            null, // tag
+            null, // attributes
+            null, // localRefs
+            op.startSourceSpan,
+          ),
+        );
+        break;
       case ir.OpKind.BoundaryCreate:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
