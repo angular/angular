@@ -77,17 +77,8 @@ export class Navigation {
   protected readonly currentDocsVersion = this.versionManager.currentDocsVersion;
   protected readonly currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
-  // Set the values of the search label and title only on the client, because the label is user-agent specific.
-  protected searchLabel = this.isBrowser
-    ? isApple
-      ? this.APPLE_SEARCH_LABEL
-      : this.DEFAULT_SEARCH_LABEL
-    : '';
-  protected searchTitle = this.isBrowser
-    ? isApple
-      ? `${COMMAND} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
-      : `${CONTROL} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
-    : '';
+  protected searchLabel = '';
+  protected searchTitle = '';
   protected versions = this.versionManager.versions;
 
   protected isMobileNavigationOpened = this.navigationState.isMobileNavVisible;
@@ -95,6 +86,11 @@ export class Navigation {
   primaryRouteChanged$ = toObservable(this.activeRouteItem);
 
   constructor() {
+    // Set the search label and title only on the client, because the label is user-agent specific.
+    if (this.isBrowser) {
+      this.searchLabel = isApple ? this.APPLE_SEARCH_LABEL : this.DEFAULT_SEARCH_LABEL;
+      this.searchTitle = `${isApple ? COMMAND : CONTROL} ${SEARCH_TRIGGER_KEY.toUpperCase()}`;
+    }
     this.listenToRouteChange();
     this.preventToScrollContentWhenSecondaryNavIsOpened();
     this.closeMobileNavOnPrimaryRouteChange();
