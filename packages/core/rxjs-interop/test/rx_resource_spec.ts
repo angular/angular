@@ -8,11 +8,24 @@
 
 import {timeout} from '@angular/private/testing';
 import {BehaviorSubject, EMPTY, Observable, of, Subscriber, throwError} from 'rxjs';
-import {ApplicationRef, Injector, makeStateKey, signal, TransferState} from '../../src/core';
+import {
+  ApplicationRef,
+  ɵCACHE_ACTIVE as CACHE_ACTIVE,
+  Injector,
+  makeStateKey,
+  signal,
+  TransferState,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 import {rxResource} from '../src';
 
 describe('rxResource()', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [{provide: CACHE_ACTIVE, useValue: {isActive: true}}],
+    });
+  });
+
   it('should fetch data using an observable loader', async () => {
     const injector = TestBed.inject(Injector);
     const res = rxResource({
@@ -196,7 +209,7 @@ describe('rxResource()', () => {
       const injector = TestBed.inject(Injector);
       const testResource = rxResource({
         stream: () => of(456),
-        transferCacheKey: () => key,
+        id: key,
         injector,
       });
 
@@ -216,7 +229,7 @@ describe('rxResource()', () => {
       const injector = TestBed.inject(Injector);
       const testResource = rxResource({
         stream: () => of(789),
-        transferCacheKey: () => key,
+        id: key,
         injector,
       });
 
@@ -242,7 +255,7 @@ describe('rxResource()', () => {
               sub.complete();
             });
           }),
-        transferCacheKey: () => key,
+        id: key,
         injector,
       });
 
@@ -261,7 +274,7 @@ describe('rxResource()', () => {
       const injector = TestBed.inject(Injector);
       const testResource = rxResource({
         stream: () => of(131415),
-        transferCacheKey: () => key,
+        id: key,
         injector,
       });
 

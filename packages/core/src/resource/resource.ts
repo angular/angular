@@ -30,6 +30,7 @@ import {assertInInjectionContext} from '../di/contextual';
 import {Injector} from '../di/injector';
 import {inject} from '../di/injector_compatibility';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {CACHE_ACTIVE} from '../hydration/cache';
 import {DestroyRef} from '../linker/destroy_ref';
 import {PendingTasks} from '../pending_tasks';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
@@ -79,7 +80,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.debugName,
     options.injector ?? inject(Injector),
-    options.transferCacheKey,
+    options.id as StateKey<T>,
   );
 }
 
@@ -206,7 +207,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     private readonly equal: ValueEqualityFn<T> | undefined,
     private readonly debugName: string | undefined,
     injector: Injector,
-    private transferCacheKey: ((request: R) => StateKey<T>) | undefined,
+    private transferCacheKey: StateKey<T> | undefined,
     getInitialStream?: (request: R) => Signal<ResourceStreamItem<T>> | undefined,
   ) {
     if (isInParamsFunction()) {
@@ -239,6 +240,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       ),
       debugName,
     );
+
+    const cacheState = injector.get(CACHE_ACTIVE, undefined, {optional: true}) ?? {isActive: false};
 
     this.transferState = injector.get(TransferState, undefined, {optional: true}) ?? undefined;
 
@@ -280,11 +283,13 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
           );
         } else if (!status) {
           if (!previous) {
-            if (this.transferCacheKey && this.transferState && request !== undefined) {
-              const key = this.transferCacheKey(request as R);
-              if (this.transferState.hasKey(key)) {
+            const transferState = this.transferState;
+            const cacheKey = this.transferCacheKey;
+            if (cacheState.isActive && cacheKey && transferState && request !== undefined) {
+              const key = this.transferCacheKey;
+              if (transferState.hasKey(cacheKey)) {
                 stream = signal(
-                  {value: this.transferState.get(key, null!)},
+                  {value: transferState.get(cacheKey, defaultValue)},
                   ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
                 );
               }
@@ -466,15 +471,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         });
 
         const result = untracked(stream);
-        if (
-          typeof ngServerMode !== 'undefined' &&
-          ngServerMode &&
-          this.transferCacheKey &&
-          this.transferState &&
-          isResolved(result)
-        ) {
-          const key = this.transferCacheKey(extRequest.request as R);
-          this.transferState.set(key, result.value);
+        if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+          saveToTransferState(result, this.transferCacheKey, this.transferState);
         }
       } else {
         const resolvedStream = await stream;
@@ -491,16 +489,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
         // Use a local variable for the result so TypeScript can narrow `resolvedStream` correctly.
         const result = resolvedStream ? untracked(resolvedStream) : undefined;
-        if (
-          typeof ngServerMode !== 'undefined' &&
-          ngServerMode &&
-          this.transferCacheKey &&
-          this.transferState &&
-          result &&
-          isResolved(result)
-        ) {
-          const key = this.transferCacheKey(extRequest.request as R);
-          this.transferState.set(key, result.value);
+        if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+          saveToTransferState(result, this.transferCacheKey, this.transferState);
         }
       }
     } catch (err) {
@@ -532,6 +522,16 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     // Once the load is aborted, we no longer want to block stability on its resolution.
     this.resolvePendingTask?.();
     this.resolvePendingTask = undefined;
+  }
+}
+
+function saveToTransferState<R, T>(
+  result: ResourceStreamItem<T> | undefined,
+  transferCacheKey: StateKey<T> | undefined,
+  transferState: TransferState | undefined,
+): void {
+  if (transferCacheKey && transferState && result && isResolved(result)) {
+    transferState.set(transferCacheKey, result.value);
   }
 }
 

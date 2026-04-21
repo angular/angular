@@ -8,6 +8,7 @@
 
 import {
   ApplicationRef,
+  ɵCACHE_ACTIVE as CACHE_ACTIVE,
   Component,
   computed,
   createEnvironmentInjector,
@@ -1124,7 +1125,9 @@ describe('with TransferState', () => {
   let transferState: TransferState;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({providers: [TransferState]});
+    TestBed.configureTestingModule({
+      providers: [TransferState, {provide: CACHE_ACTIVE, useValue: {isActive: true}}],
+    });
     transferState = TestBed.inject(TransferState);
   });
 
@@ -1134,7 +1137,7 @@ describe('with TransferState', () => {
 
     const testResource = resource({
       loader: async () => 456,
-      transferCacheKey: () => key,
+      id: key,
       injector: TestBed.inject(Injector),
     });
 
@@ -1149,11 +1152,11 @@ describe('with TransferState', () => {
 
   it('should write to TransferState on server when resolved', async () => {
     (globalThis as any).ngServerMode = true;
-    const key = makeStateKey<number>('server-key');
+    const key = 'server-key';
 
     const testResource = resource({
       loader: async () => 789,
-      transferCacheKey: () => key,
+      id: key,
       injector: TestBed.inject(Injector),
     });
 
@@ -1163,16 +1166,16 @@ describe('with TransferState', () => {
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(789);
-    expect(transferState.get(key, null!)).toBe(789);
+    expect(transferState.get(makeStateKey<number>(key), null!)).toBe(789);
     (globalThis as any).ngServerMode = undefined;
   });
 
   it('should not write to TransferState on client when resolved', async () => {
-    const key = makeStateKey<number>('client-key');
+    const key = 'client-key';
 
     const testResource = resource({
       loader: async () => 101112,
-      transferCacheKey: () => key,
+      id: key,
       injector: TestBed.inject(Injector),
     });
 
@@ -1180,6 +1183,6 @@ describe('with TransferState', () => {
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(101112);
-    expect(transferState.hasKey(key)).toBeFalse();
+    expect(transferState.hasKey(makeStateKey(key))).toBeFalse();
   });
 });

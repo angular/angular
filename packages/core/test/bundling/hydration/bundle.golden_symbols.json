@@ -29,6 +29,7 @@
       "BUBBLE_EVENT_TYPES",
       "BehaviorSubject",
       "BrowserDomAdapter",
+      "CACHE_ACTIVE",
       "CACHE_OPTIONS",
       "CAPTURE_EVENT_TYPES",
       "CHILD_HEAD",

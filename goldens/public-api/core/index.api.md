@@ -189,9 +189,9 @@ export interface AttributeDecorator {
 export interface BaseResourceOptions<T, R> {
     defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
+    id?: string;
     injector?: Injector;
     params?: (ctx: ResourceParamsContext) => R;
-    transferCacheKey?: (params: R) => StateKey<T>;
 }
 
 // @public

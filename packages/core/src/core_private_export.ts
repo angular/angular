@@ -92,6 +92,7 @@ export {
   withIncrementalHydration as ɵwithIncrementalHydration,
   CLIENT_RENDER_MODE_FLAG as ɵCLIENT_RENDER_MODE_FLAG,
 } from './hydration/api';
+export {CACHE_ACTIVE as ɵCACHE_ACTIVE} from './hydration/cache';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {JSACTION_EVENT_CONTRACT as ɵJSACTION_EVENT_CONTRACT} from './event_delegation_utils';
 export {
