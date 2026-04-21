@@ -1,10 +1,5 @@
 {
-  "rulesDirectory": [
-    "tools/tslint",
-    "node_modules/vrsource-tslint-rules/rules",
-    "node_modules/tslint-eslint-rules/dist/rules",
-    "node_modules/tslint-no-toplevel-property-access/rules"
-  ],
+  "rulesDirectory": ["tools/tslint", "node_modules/tslint-no-toplevel-property-access/rules"],
   "rules": {
     // The first rule needs to be `ts-node-loader` which sets up `ts-node` within TSLint so
     // that rules written in TypeScript can be loaded without needing to be transpiled.
@@ -54,7 +49,6 @@
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
     "no-var-keyword": true,
-    "prefer-literal": [true, "object"],
     "no-toplevel-property-access": [
       true,
       "packages/animations/src/",
@@ -68,7 +62,6 @@
     ],
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "variable-name": [true, "ban-keywords"],
-    "no-inner-declarations": [true, "function"],
     "no-debugger": true,
     "ban": [
       true,
@@ -105,7 +98,6 @@
     "no-duplicate-variable": true,
     "semicolon": [true],
     "variable-name": [true, "ban-keywords"],
-    "no-inner-declarations": [true, "function"],
     "ban": [
       true,
       {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
