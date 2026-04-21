@@ -191,17 +191,6 @@ jobs:
       - run: pnpm -C packages/zone.js electrontest
       - run: pnpm -C packages/zone.js/test/typings test
 
-  # saucelabs:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
-  #   steps:
-  #     - name: Initialize environment
-  #       uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b5a3609f89c06eb4037dce22a93641213a5d1508
-  #     - name: Install node modules
-  #       run: pnpm install --frozen-lockfile
-  #     - uses: ./.github/actions/saucelabs-legacy
-
   adev-deploy:
     needs: [adev]
     if: needs.adev.result == 'success'
