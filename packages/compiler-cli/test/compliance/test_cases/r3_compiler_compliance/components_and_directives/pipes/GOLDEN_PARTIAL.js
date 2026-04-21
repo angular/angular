@@ -266,3 +266,58 @@ export declare class PipeWithoutName implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<PipeWithoutName, null, true>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: optimized_constant_object_literals.js
+ ****************************************************************************************************/
+import { Component, Pipe, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyPipe {
+    transform(value) { return value; }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, isStandalone: false, name: "myPipe" });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, decorators: [{
+            type: Pipe,
+            args: [{ name: 'myPipe', standalone: false }]
+        }] });
+export class MyApp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: false, selector: "ng-component", ngImport: i0, template: `{{ {name: 'Angular'} | myPipe }}`, isInline: true, dependencies: [{ kind: "pipe", type: MyPipe, name: "myPipe" }] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `{{ {name: 'Angular'} | myPipe }}`,
+                    standalone: false
+                }]
+        }] });
+export class MyMod {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod, declarations: [MyPipe, MyApp] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [MyPipe, MyApp] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: optimized_constant_object_literals.d.ts
+ ****************************************************************************************************/
+import { PipeTransform } from '@angular/core';
+import * as i0 from "@angular/core";
+export declare class MyPipe implements PipeTransform {
+    transform(value: any): any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyPipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe", false>;
+}
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+export declare class MyMod {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof MyPipe, typeof MyApp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyMod>;
+}
+

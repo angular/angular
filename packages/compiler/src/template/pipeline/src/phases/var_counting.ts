@@ -57,6 +57,12 @@ export function countVariables(job: CompilationJob): void {
         return;
       }
 
+      // 0-arg pure functions are optimized to use direct references to constants
+      // and don't need a variable slot for caching.
+      if (expr.args.length === 0) {
+        return;
+      }
+
       // Some expressions require knowledge of the number of variable slots consumed.
       if (ir.hasUsesVarOffsetTrait(expr)) {
         expr.varOffset = varCount;

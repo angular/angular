@@ -62,11 +62,11 @@ class PureFunctionConstant extends GenericKeyFn implements SharedConstantDefinit
       ir.VisitorContextFlag.None,
     );
 
-    return new o.DeclareVarStmt(
-      declName,
-      new o.ArrowFunctionExpr(fnParams, returnExpr),
-      undefined,
-      o.StmtModifier.Final,
-    );
+    // 0-arg pure functions are optimized to be emitted as direct references to constants,
+    // so we don't need to wrap them in an arrow function.
+    const initializer =
+      this.numArgs === 0 ? returnExpr : new o.ArrowFunctionExpr(fnParams, returnExpr);
+
+    return new o.DeclareVarStmt(declName, initializer, undefined, o.StmtModifier.Final);
   }
 }
