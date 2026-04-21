@@ -40,7 +40,8 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "typescript": "6.0.2"
+    "typescript": "6.0.2",
+    "@types/convert-source-map": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
