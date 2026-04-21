@@ -15,11 +15,11 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
+import {isBrowser} from '@angular/private/testing';
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '../testing';
-import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {isBrowser} from '@angular/private/testing';
 @NgModule({
   providers: [provideZonelessChangeDetection()],
 })
@@ -128,7 +128,7 @@ if (isBrowser) {
 
     describe('errors', () => {
       describe('should fail when an ResourceLoader fails', () => {
-        // TODO(alxhub): figure out why this is failing on saucelabs
+        // TODO(alxhub): figure out why this is failing on browsers
         xit('should fail with an error from a promise', async () => {
           @Component({
             selector: 'bad-template-comp',
