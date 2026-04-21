@@ -176,4 +176,46 @@ describe('Field Context', () => {
       expect(ctx.fieldTreeOf(p.age)().value()).toEqual(5);
     });
   });
+
+  describe('fieldTreeOf with numeric index on SchemaPathTree', () => {
+    it('should resolve fieldTreeOf(path.array[n]) to the element field - mutable array', () => {
+      const data = signal({items: ['alpha', 'beta', 'gamma']});
+      testContext(data, (ctx, p) => {
+        expect(ctx.fieldTreeOf(p.items[0])().value()).toEqual('alpha');
+        expect(ctx.fieldTreeOf(p.items[1])().value()).toEqual('beta');
+        expect(ctx.fieldTreeOf(p.items[2])().value()).toEqual('gamma');
+      });
+    });
+
+    it('should resolve fieldTreeOf(path.array[n]) to the element field - readonly array', () => {
+      const data = signal({items: ['x', 'y'] as readonly string[]});
+      testContext(data, (ctx, p) => {
+        expect(ctx.fieldTreeOf(p.items[0])().value()).toEqual('x');
+        expect(ctx.fieldTreeOf(p.items[1])().value()).toEqual('y');
+      });
+    });
+
+    it('should produce the same field whether index is before or after fieldTreeOf', () => {
+      const data = signal({items: ['only']});
+      testContext(data, (ctx, p) => {
+        const beforeFieldTreeOf = ctx.fieldTreeOf(p.items[0]);
+        const afterFieldTreeOf = ctx.fieldTreeOf(p.items)[0];
+        expect(beforeFieldTreeOf).toBe(afterFieldTreeOf);
+      });
+    });
+
+    it('should resolve nested array element via chained numeric index', () => {
+      const data = signal({
+        matrix: [
+          ['a', 'b'],
+          ['c', 'd'],
+        ],
+      });
+      testContext(data, (ctx, p) => {
+        expect(ctx.fieldTreeOf(p.matrix[0])().value()).toEqual(['a', 'b']);
+        expect(ctx.fieldTreeOf(p.matrix[0][0])().value()).toEqual('a');
+        expect(ctx.fieldTreeOf(p.matrix[1][1])().value()).toEqual('d');
+      });
+    });
+  });
 });

@@ -8,13 +8,16 @@
 
 import {signal, WritableSignal} from '@angular/core';
 import {
+  applyEach,
   FieldTree,
   form,
   provideSignalFormsConfig,
   ReadonlyFieldState,
+  ReadonlyFieldTree,
   required,
   schema,
   SchemaFn,
+  SchemaPathTree,
   validate,
 } from '../../public_api';
 
@@ -161,6 +164,106 @@ function typeVerificationOnlyDoNotRunMe() {
             return true;
           },
         },
+      });
+    });
+
+    it('should allow numeric index on SchemaPathTree of mutable array', () => {
+      schema<{items: string[]}>((p) => {
+        validate(p, ({fieldTreeOf}) => {
+          // numeric index before fieldTreeOf must resolve to ReadonlyFieldTree<string>
+          const field: ReadonlyFieldTree<string> = fieldTreeOf(p.items[0]);
+          field().value();
+          return null;
+        });
+      });
+    });
+
+    it('should allow numeric index on SchemaPathTree of readonly array', () => {
+      schema<{items: readonly string[]}>((p) => {
+        validate(p, ({fieldTreeOf}) => {
+          const field: ReadonlyFieldTree<string> = fieldTreeOf(p.items[0]);
+          field().value();
+          return null;
+        });
+      });
+    });
+
+    it('should allow rules to be applied directly to an element path of a mutable array', () => {
+      schema<{items: string[]}>((p) => {
+        // required() expects SchemaPath<string, Supported, Child> — must compile
+        required(p.items[0]);
+      });
+    });
+
+    it('should allow rules to be applied directly to an element path of a readonly array', () => {
+      schema<{items: readonly string[]}>((p) => {
+        required(p.items[0]);
+      });
+    });
+
+    it('should allow numeric index before and after fieldTreeOf to be equivalent', () => {
+      schema<{items: string[]}>((p) => {
+        validate(p, ({fieldTreeOf}) => {
+          // Both orderings must produce ReadonlyFieldTree<string>
+          const a: ReadonlyFieldTree<string> = fieldTreeOf(p.items[0]);
+          const b: ReadonlyFieldTree<string> = fieldTreeOf(p.items)[0];
+          a().value();
+          b().value();
+          return null;
+        });
+      });
+    });
+
+    it('should allow numeric index on nested arrays', () => {
+      schema<{matrix: string[][]}>((p) => {
+        validate(p, ({fieldTreeOf}) => {
+          // path.matrix[0] → SchemaPathTree<string[]>, path.matrix[0][0] → SchemaPathTree<string>
+          const row: ReadonlyFieldTree<string[]> = fieldTreeOf(p.matrix[0]);
+          const cell: ReadonlyFieldTree<string> = fieldTreeOf(p.matrix[0][0]);
+          row().value();
+          cell().value();
+          return null;
+        });
+      });
+    });
+
+    it('should not allow numeric index on SchemaPathTree of a plain object', () => {
+      schema<{obj: {x: number}}>((p) => {
+        validate(p, ({fieldTreeOf}) => {
+          // @ts-expect-error — plain objects have no numeric index
+          fieldTreeOf(p.obj[0]);
+          return null;
+        });
+      });
+    });
+
+    it('should not allow numeric index on SchemaPathTree of a primitive', () => {
+      schema<{name: string}>((p) => {
+        validate(p, ({fieldTreeOf}) => {
+          // @ts-expect-error — primitives have no numeric index
+          fieldTreeOf(p.name[0]);
+          return null;
+        });
+      });
+    });
+
+    it('should preserve string key access on Record after the array fix', () => {
+      schema<{lookup: Record<string, string>}>((p) => {
+        validate(p, ({fieldTreeOf}) => {
+          // Records must continue to work — no regression
+          const field: ReadonlyFieldTree<string> = fieldTreeOf(p.lookup['key']);
+          field().value();
+          return null;
+        });
+      });
+    });
+
+    it('should allow SchemaPathTree of array to be passed to applyEach', () => {
+      // applyEach takes SchemaPath<TValue>; SchemaPathTree<string[]> must remain assignable
+      schema<{items: string[]}>((p) => {
+        applyEach(p.items, (item: SchemaPathTree<string>) => {
+          required(item);
+        });
       });
     });
   });

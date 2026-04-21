@@ -715,9 +715,9 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
     // Subpaths
     ([TModel] extends [AbstractControl]
       ? unknown
-      : // Array paths have no subpaths
-        [TModel] extends [ReadonlyArray<any>]
-        ? unknown
+      : // Array paths expose numeric element access
+        [TModel] extends [ReadonlyArray<infer TItem>]
+        ? {[K: number]: MaybeSchemaPathTree<TItem, PathKind.Child>}
         : // Object subfields
           TModel extends Record<string, any>
           ? {[K in keyof TModel]: MaybeSchemaPathTree<TModel[K], PathKind.Child>}

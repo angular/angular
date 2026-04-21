@@ -598,7 +598,9 @@ export namespace SchemaPathRules {
 // @public
 export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> = ([TModel] extends [AbstractControl] ? CompatSchemaPath<TModel, TPathKind> : SchemaPath<TModel, SchemaPathRules.Supported, TPathKind>) & ([TModel] extends [AbstractControl] ? unknown : [
 TModel
-] extends [ReadonlyArray<any>] ? unknown : TModel extends Record<string, any> ? {
+] extends [ReadonlyArray<infer TItem>] ? {
+    [K: number]: MaybeSchemaPathTree<TItem, PathKind.Child>;
+} : TModel extends Record<string, any> ? {
     [K in keyof TModel]: MaybeSchemaPathTree<TModel[K], PathKind.Child>;
 } : unknown);
 
