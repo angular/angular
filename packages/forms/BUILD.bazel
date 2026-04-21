@@ -1,6 +1,9 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_examples_db", "ng_package", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages()
 
 ng_project(
     name = "forms",

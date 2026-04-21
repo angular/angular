@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "@standard-schema/spec": "^1.0.0"
+    "@standard-schema/spec": "^1.0.0",
+    "zod": "^4.0.10"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",

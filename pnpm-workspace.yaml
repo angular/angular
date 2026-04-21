@@ -36,7 +36,6 @@ allowedDeprecatedVersions:
   tslint: '*'
   gulp-conventional-changelog: '5'
   protractor: '7'
-  '@babel/plugin-proposal-async-generator-functions': '7'
 
 # The minimum age of a release to be considered for dependency installation.
 # The value is in minutes (1440 minutes = 1 day).
