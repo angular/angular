@@ -422,18 +422,12 @@ importers:
       tsec:
         specifier: 0.2.9
         version: 0.2.9(@bazel/bazelisk@1.28.1)(typescript@6.0.2)
-      tslint-eslint-rules:
-        specifier: 5.4.0
-        version: 5.4.0(tslint@6.1.3(typescript@6.0.2))(typescript@6.0.2)
       tslint-no-toplevel-property-access:
         specifier: 0.0.2
         version: 0.0.2(tslint@6.1.3(typescript@6.0.2))(typescript@6.0.2)
       typed-graphqlify:
         specifier: ^3.1.1
         version: 3.1.6
-      vrsource-tslint-rules:
-        specifier: 6.0.0
-        version: 6.0.0(tslint@6.1.3(typescript@6.0.2))(typescript@6.0.2)
       zod:
         specifier: ^4.0.10
         version: 4.3.6
@@ -7667,10 +7661,6 @@ packages:
     resolution: {integrity: sha512-l4gcSouhcgIKRvyy99RNVOgxXiicE+2jZoNmaNmZ6JXiGajBOJAesk1OBlJuM5k2c+eudGdLxDqXuPCKIj6kpw==}
     engines: {node: '>=6'}
 
-  doctrine@0.7.2:
-    resolution: {integrity: sha512-qiB/Rir6Un6Ad/TIgTRzsremsTGWzs8j7woXvp14jgq00676uBiBT5eUOi+FgRywZFVy5Us/c04ISRpZhRbS6w==}
-    engines: {node: '>=0.10.0'}
-
   dom-serialize@2.2.1:
     resolution: {integrity: sha512-Yra4DbvoW7/Z6LBN560ZwXMjoNOSAN2wRsKFGc4iBeso+mpIA6qj1vfdf9HpMaKAqG6wXTy+1SYEzmNpKXOSsQ==}
 
@@ -7947,10 +7937,6 @@ packages:
 
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
-
-  esutils@1.1.6:
-    resolution: {integrity: sha512-RG1ZkUT7iFJG9LSHr7KDuuMSlujfeTtMNIcInURxKAxhMtwQhI3NrQhz26gZQYlsYZQKzsnwtpKrFKj9K9Qu1A==}
-    engines: {node: '>=0.10.0'}
 
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
@@ -12495,17 +12481,8 @@ packages:
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
 
-  tslib@1.9.0:
-    resolution: {integrity: sha512-f/qGG2tUkrISBlQZEjEqoZ3B2+npJjIf04H1wuAv9iA8i04Icp+61KRXxFdha22670NJopsZCIjhC3SnjPRKrQ==}
-
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
-
-  tslint-eslint-rules@5.4.0:
-    resolution: {integrity: sha512-WlSXE+J2vY/VPgIcqQuijMQiel+UtmXS+4nvK4ZzlDiqBfXse8FAvkNnTcYhnQyOTW5KFM+uRRGXxYhFpuBc6w==}
-    peerDependencies:
-      tslint: ^5.0.0
-      typescript: 6.0.2
 
   tslint-no-toplevel-property-access@0.0.2:
     resolution: {integrity: sha512-Oc+UUurlGLBkgeUSGxMoTpRUpaXsjqzQCEAYrYQyuU8330fi5FKlye5n53y87EJ24AlfdoxMPV7DJfFOADapfg==}
@@ -12527,12 +12504,6 @@ packages:
 
   tsutils@2.29.0:
     resolution: {integrity: sha512-g5JVHCIJwzfISaXpXE1qvNalca5Jwob6FjI4AoPlqMusJ6ftFE7IkkFoMhVLRgK+4Kx3gkzb8UZK5t5yTTvEmA==}
-    peerDependencies:
-      typescript: 6.0.2
-
-  tsutils@3.21.0:
-    resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
-    engines: {node: '>= 6'}
     peerDependencies:
       typescript: 6.0.2
 
@@ -13016,12 +12987,6 @@ packages:
   void-elements@2.0.1:
     resolution: {integrity: sha512-qZKX4RnBzH2ugr8Lxa7x+0V6XD9Sb/ouARtiasEQCHB1EVU4NXtmHsDDrx1dO4ne5fc3J6EW05BP1Dl0z0iung==}
     engines: {node: '>=0.10.0'}
-
-  vrsource-tslint-rules@6.0.0:
-    resolution: {integrity: sha512-pmcnJdIVziZTk1V0Cqehmh3gIabBRkBYXkv9vx+1CZDNEa41kNGUBFwQLzw21erYOd2QnD8jJeZhBGqnlT1HWw==}
-    peerDependencies:
-      tslint: '*'
-      typescript: 6.0.2
 
   vscode-css-languageservice@6.3.10:
     resolution: {integrity: sha512-eq5N9Er3fC4vA9zd9EFhyBG90wtCCuXgRSpAndaOgXMh1Wgep5lBgRIeDgjZBW9pa+332yC9+49cZMW8jcL3MA==}
@@ -20801,11 +20766,6 @@ snapshots:
     dependencies:
       '@leichtgewicht/ip-codec': 2.0.5
 
-  doctrine@0.7.2:
-    dependencies:
-      esutils: 1.1.6
-      isarray: 0.0.1
-
   dom-serialize@2.2.1:
     dependencies:
       custom-event: 1.0.1
@@ -21206,8 +21166,6 @@ snapshots:
   estree-walker@3.0.3:
     dependencies:
       '@types/estree': 1.0.8
-
-  esutils@1.1.6: {}
 
   esutils@2.0.3: {}
 
@@ -26876,17 +26834,7 @@ snapshots:
 
   tslib@1.14.1: {}
 
-  tslib@1.9.0: {}
-
   tslib@2.8.1: {}
-
-  tslint-eslint-rules@5.4.0(tslint@6.1.3(typescript@6.0.2))(typescript@6.0.2):
-    dependencies:
-      doctrine: 0.7.2
-      tslib: 1.9.0
-      tslint: 6.1.3(typescript@6.0.2)
-      tsutils: 3.21.0(typescript@6.0.2)
-      typescript: 6.0.2
 
   tslint-no-toplevel-property-access@0.0.2(tslint@6.1.3(typescript@6.0.2))(typescript@6.0.2):
     dependencies:
@@ -26915,11 +26863,6 @@ snapshots:
   tsutils@2.29.0(typescript@6.0.2):
     dependencies:
       tslib: 1.14.1
-      typescript: 6.0.2
-
-  tsutils@3.21.0(typescript@6.0.2):
-    dependencies:
-      tslib: 1.9.0
       typescript: 6.0.2
 
   tsx@4.21.0:
@@ -27484,11 +27427,6 @@ snapshots:
       - yaml
 
   void-elements@2.0.1: {}
-
-  vrsource-tslint-rules@6.0.0(tslint@6.1.3(typescript@6.0.2))(typescript@6.0.2):
-    dependencies:
-      tslint: 6.1.3(typescript@6.0.2)
-      typescript: 6.0.2
 
   vscode-css-languageservice@6.3.10:
     dependencies:
