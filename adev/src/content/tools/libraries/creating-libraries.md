@@ -49,7 +49,7 @@ When you generate a new library, the workspace configuration file, `angular.json
     "prefix": "lib",
     "architect": {
       "build": {
-        "builder": "@angular-devkit/build-angular:ng-packagr",
+        "builder": "@angular/build:ng-packagr",
         …
 
 ```
@@ -228,7 +228,7 @@ ng build my-lib --watch
 
 IMPORTANT: The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
 
-- The build system for applications, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects
+- The build system for applications, `@angular/build`, is based on `esbuild`, and is included in all new Angular CLI projects
 - The build system for libraries is based on `ng-packagr`.
   It is only added to your dependencies when you add a library using `ng generate library my-lib`.
 
@@ -274,7 +274,7 @@ To use linked libraries, you need to configure your application's `angular.json`
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "prebundle": {
               "exclude": ["my-lib"]
