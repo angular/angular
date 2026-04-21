@@ -10,7 +10,7 @@ template: function MyComponent_Template(rf, $ctx$) {
   }
   if (rf & 2) {
     $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 11, $ctx$.myStyleExp, 1000));
-    $r3$.ɵɵclassMap($r3$.ɵɵpureFunction0(23, _c0));
+    $r3$.ɵɵclassMap(_c0);
     $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 14, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 17, $ctx$.bazExp, 4000));
     $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 20, $ctx$.fooExp, 2000));
     $r3$.ɵɵadvance(5);

@@ -814,6 +814,11 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
       if (expr.fn === null) {
         throw new Error(`AssertionError: expected PureFunctions to have been extracted`);
       }
+      // 0-arg pure functions are optimized to use direct references to constants,
+      // so we can just return the reference directly.
+      if (expr.args.length === 0) {
+        return expr.fn;
+      }
       return ng.pureFunction(expr.varOffset!, expr.fn, expr.args);
     case ir.ExpressionKind.PureFunctionParameterExpr:
       throw new Error(`AssertionError: expected PureFunctionParameterExpr to have been extracted`);
