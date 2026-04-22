@@ -7,11 +7,9 @@ Get started with Angular quickly with online starters or locally with your termi
 
 If you just want to play around with Angular in your browser without setting up a project, you can use our online sandbox:
 
-<docs-card-container>
-  <docs-card title="" href="/playground" link="Open on Playground">
-  The fastest way to play with an Angular app. No setup required.
-  </docs-card>
-</docs-card-container>
+<docs-card title="Playground" href="/playground" link="Open on Playground" iconImgSrc="adev/src/assets/icons/playground.svg" titleInline>
+The fastest way to play with an Angular app. No setup required.
+</docs-card>
 
 ## Set up a new project locally
 
