@@ -6,9 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  Directive,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+  ɵcreateAndInsertForeignView,
+} from '@angular/core';
 import {TestBed} from '../../testing';
-import {ɵcreateAndInsertForeignView} from '../../src/render3/foreign_view';
 import {HEADER_OFFSET, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 
 @Component({
@@ -16,7 +22,6 @@ import {HEADER_OFFSET, TVIEW, TViewType} from '../../src/render3/interfaces/view
     <div #container></div>
     <div #container2></div>
   `,
-  standalone: true,
 })
 class TestComponent {
   @ViewChild('container', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
@@ -25,7 +30,6 @@ class TestComponent {
 
 @Directive({
   selector: '[foreign]',
-  standalone: true,
 })
 class ForeignDirective {
   constructor(vcr: ViewContainerRef) {
@@ -45,7 +49,6 @@ class ForeignDirective {
     </ng-template>
     <div #target></div>
   `,
-  standalone: true,
   imports: [ForeignDirective],
 })
 class TestTemplateComponent {
