@@ -10,7 +10,7 @@ import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup} from '@angular/forms';
 import {applyEach, disabled, form} from '@angular/forms/signals';
-import {compatForm, extractValue, SignalFormControl} from '@angular/forms/signals/compat';
+import {compatForm, extractValue, SignalFormControl, toValueSignal} from '@angular/forms/signals/compat';
 
 describe('extractValue', () => {
   let injector: Injector;
@@ -290,3 +290,65 @@ describe('extractValue', () => {
     });
   });
 });
+
+describe('toValueSignal', () => {
+  let injector: Injector;
+
+  beforeEach(() => {
+    injector = TestBed.inject(Injector);
+  });
+
+  it('should return a reactive signal unwrapping FormControl values', () => {
+    const ctrl = new FormControl('initial');
+    const model = signal({email: '', password: ctrl});
+    const f = compatForm(model, {injector});
+
+    const valueSignal = toValueSignal(f);
+    expect(valueSignal()).toEqual({email: '', password: 'initial'});
+
+    ctrl.setValue('updated');
+    expect(valueSignal()).toEqual({email: '', password: 'updated'});
+  });
+
+  it('should react to model signal changes for pure signal forms', () => {
+    const model = signal({a: 1, b: 'two'});
+    const f = form(model, {injector});
+
+    const valueSignal = toValueSignal(f);
+    expect(valueSignal()).toEqual({a: 1, b: 'two'});
+
+    model.set({a: 2, b: 'three'});
+    expect(valueSignal()).toEqual({a: 2, b: 'three'});
+  });
+
+  it('should support the dirty filter reactively', () => {
+    const model = {a: 1, b: 2};
+    const f = form(signal(model), {injector});
+
+    const dirtySignal = toValueSignal(f, {dirty: true});
+    expect(dirtySignal()).toBeUndefined();
+
+    f.a().markAsDirty();
+    expect(dirtySignal()).toEqual({a: 1});
+  });
+
+  it('should unwrap nested FormGroup reactively', () => {
+    const innerCtrl = new FormControl('hello');
+    const group = new FormGroup({inner: innerCtrl});
+    const model = signal({group});
+    const f = compatForm(model, {injector});
+
+    const valueSignal = toValueSignal(f);
+    expect(valueSignal()).toEqual({group: {inner: 'hello'}});
+
+    innerCtrl.setValue('world');
+    expect(valueSignal()).toEqual({group: {inner: 'world'}});
+  });
+
+  it('should return the primitive value for a leaf field', () => {
+    const f = form(signal(42), {injector});
+    const valueSignal = toValueSignal(f);
+    expect(valueSignal()).toBe(42);
+  });
+});
+

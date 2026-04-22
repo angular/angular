@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {untracked} from '@angular/core';
+import {computed, Signal, untracked} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {FieldState, FieldTree} from '../../../src/api/types';
 import {isArray, isObject} from '../../../src/util/type_guards';
@@ -89,6 +89,51 @@ export function extractValue<T>(
 ): RawValue<T> | DeepPartial<RawValue<T>> {
   return untracked(() => visitFieldTree(field, filter)) as RawValue<T> | DeepPartial<RawValue<T>>;
 }
+
+/**
+ * Returns a reactive {@link Signal} that tracks the raw value of a {@link FieldTree},
+ * unwrapping any `AbstractControl` instances found in a compat form.
+ *
+ * Unlike {@link extractValue}, the returned signal automatically re-evaluates whenever
+ * any underlying field value changes (including values proxied from `FormControl`),
+ * making it suitable for templates (`@let`), `computed()`, or any other reactive context.
+ *
+ * @param field The field tree to derive the value signal from.
+ * @returns A reactive signal of the raw form value.
+ *
+ * @category interop
+ * @experimental 21.2.0
+ */
+export function toValueSignal<T>(field: FieldTree<T>): Signal<RawValue<T>>;
+
+/**
+ * Returns a reactive {@link Signal} that tracks the raw value of a {@link FieldTree},
+ * including only fields that match the provided filter criteria.
+ *
+ * Unlike {@link extractValue}, the returned signal automatically re-evaluates whenever
+ * any underlying field value changes.
+ *
+ * @param field The field tree to derive the value signal from.
+ * @param filter Criteria to include only fields matching certain state (dirty, touched, enabled).
+ * @returns A reactive signal of the filtered partial raw value.
+ *
+ * @category interop
+ * @experimental 21.2.0
+ */
+export function toValueSignal<T>(
+  field: FieldTree<T>,
+  filter: ExtractFilter,
+): Signal<DeepPartial<RawValue<T>>>;
+
+export function toValueSignal<T>(
+  field: FieldTree<T>,
+  filter?: ExtractFilter,
+): Signal<RawValue<T>> | Signal<DeepPartial<RawValue<T>>> {
+  return computed(
+    () => visitFieldTree(field, filter),
+  ) as Signal<RawValue<T>> | Signal<DeepPartial<RawValue<T>>>;
+}
+
 
 function visitFieldTree(
   field: FieldTree<unknown>,

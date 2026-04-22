@@ -51,6 +51,12 @@ export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
 export function extractValue<T>(field: FieldTree<T>, filter: ExtractFilter): DeepPartial<RawValue<T>>;
 
 // @public
+export function toValueSignal<T>(field: FieldTree<T>): Signal<RawValue<T>>;
+
+// @public
+export function toValueSignal<T>(field: FieldTree<T>, filter: ExtractFilter): Signal<DeepPartial<RawValue<T>>>;
+
+// @public
 export const NG_STATUS_CLASSES: SignalFormsConfig['classes'];
 
 // @public
