@@ -1,3 +1,20 @@
+<a name="21.2.10"></a>
+# 21.2.10 (2026-04-22)
+### docs
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0d5ee9ae1b](https://github.com/angular/angular/commit/0d5ee9ae1ba4b7acd8f27a059a778f0b4bd8a5bd) | fix | link formatting in "Animating your Application with CSS" |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5533ab4f56](https://github.com/angular/angular/commit/5533ab4f56f574bc9365cf0573c4a34a3ab5aaf1) | fix | fix NgClass leaving trailing comma after removal |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [580212c995](https://github.com/angular/angular/commit/580212c995751c4bf4ce8a49df4167498743e0ea) | fix | restore internal URL on popstate when `browserUrl` is used |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.21"></a>
 # 19.2.21 (2026-04-15)
 ### platform-server
