@@ -17,13 +17,13 @@ export class Settings {
 
   readonly showCommentNodes = this.settingsStore.create({
     key: 'show_comment_nodes',
-    category: 'general',
+    category: 'general', // Good candidate for migration to `components`
     initialValue: false,
   });
 
   readonly timingAPIEnabled = this.settingsStore.create({
     key: 'timing_api_enabled',
-    category: 'general',
+    category: 'general', // Good candidate for migration to `profiler`
     initialValue: false,
   });
 
@@ -43,5 +43,11 @@ export class Settings {
     key: 'activeTab',
     category: 'general',
     initialValue: 'Components',
+  });
+
+  readonly showHydrationOverlays = this.settingsStore.create({
+    key: 'show_hydration_overlays',
+    category: 'components',
+    initialValue: false,
   });
 }

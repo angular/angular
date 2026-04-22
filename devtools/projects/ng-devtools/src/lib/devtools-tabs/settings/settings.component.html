@@ -1,0 +1,72 @@
+<div class="wrapper">
+  <h2>Settings</h2>
+
+  <h3>General</h3>
+  <ul>
+    <li>
+      <label for="theme">Theme:</label>
+      <select id="theme" (change)="onThemeChange($event)">
+        @for (theme of themeOptions; track $index) {
+          <option [value]="theme" [selected]="theme === settings.theme()">{{ theme }}</option>
+        }
+      </select>
+    </li>
+
+    @if (supportedApis().transferState) {
+      <li>
+        <input
+          id="enable-transfer-state"
+          type="checkbox"
+          (change)="settings.transferStateEnabled.set($event.target.checked)"
+          [checked]="settings.transferStateEnabled()"
+        />
+        <label for="enable-transfer-state">Enable Transfer State tab</label>
+      </li>
+    }
+  </ul>
+
+  <h3>Components</h3>
+  <ul>
+    <li>
+      <input
+        id="show-comment-nodes"
+        type="checkbox"
+        (change)="settings.showCommentNodes.set($event.target.checked)"
+        [checked]="settings.showCommentNodes()"
+      />
+      <label for="show-comment-nodes">Show comment nodes</label>
+    </li>
+    <li>
+      <input
+        id="show-hydration-overlays"
+        type="checkbox"
+        (change)="settings.showHydrationOverlays.set($event.target.checked)"
+        [checked]="settings.showHydrationOverlays()"
+      />
+      <label for="show-hydration-overlays">Show hydration overlays</label>
+    </li>
+  </ul>
+
+  <h3>Profiler</h3>
+  <ul>
+    <li>
+      <input
+        id="enable-timing-api"
+        type="checkbox"
+        (change)="settings.timingAPIEnabled.set($event.target.checked)"
+        [checked]="settings.timingAPIEnabled()"
+      />
+      <label for="enable-timing-api">Enable timing API</label>
+    </li>
+  </ul>
+</div>
+
+<button
+  ng-button
+  btnType="icon"
+  (click)="close.emit()"
+  class="close-btn"
+  aria-label="Close signal graph"
+>
+  <mat-icon>close</mat-icon>
+</button>

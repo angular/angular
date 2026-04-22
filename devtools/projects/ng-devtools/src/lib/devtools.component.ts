@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, OnDestroy, signal} from '@angular/core';
+import {Component, computed, effect, inject, OnDestroy, signal} from '@angular/core';
 import {Events, MessageBus} from '../../../protocol';
 import {interval} from 'rxjs';
 
@@ -20,6 +20,7 @@ import {BrowserStylesService} from './application-services/browser_styles_servic
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {SUPPORTED_APIS} from './application-providers/supported_apis';
 import {APP_DATA} from './application-providers/app_data';
+import {Settings} from './application-services/settings';
 
 const DETECT_ANGULAR_ATTEMPTS = 20;
 
@@ -52,6 +53,9 @@ export const LAST_SUPPORTED_VERSION = 12;
 export class DevToolsComponent implements OnDestroy {
   protected readonly supportedApis = inject(SUPPORTED_APIS);
   protected readonly appData = inject(APP_DATA);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly frameManager = inject(FrameManager);
+  private readonly settings = inject(Settings);
 
   readonly angularStatus = signal(AngularStatus.UNKNOWN);
 
@@ -65,14 +69,11 @@ export class DevToolsComponent implements OnDestroy {
     return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && ivy;
   });
 
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly _frameManager = inject(FrameManager);
-
-  private _interval$ = interval(500).subscribe((attempt) => {
+  private interval$ = interval(500).subscribe((attempt) => {
     if (attempt === DETECT_ANGULAR_ATTEMPTS) {
       this.angularStatus.set(AngularStatus.DOES_NOT_EXIST);
     }
-    this._messageBus.emit('queryNgAvailability');
+    this.messageBus.emit('queryNgAvailability');
   });
 
   constructor() {
@@ -80,7 +81,7 @@ export class DevToolsComponent implements OnDestroy {
     inject(BrowserStylesService).initBrowserSpecificStyles();
     inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
 
-    this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
+    this.messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
       this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
       this.appData.init({
         version,
@@ -88,19 +89,41 @@ export class DevToolsComponent implements OnDestroy {
         ivy,
         hydration,
       });
-      this._interval$.unsubscribe();
+      this.interval$.unsubscribe();
 
       if (supportedApis) {
         this.supportedApis.init(supportedApis);
       }
     });
+
+    this.syncBackendWithSettings();
   }
 
   inspectFrame(frame: Frame) {
-    this._frameManager.inspectFrame(frame);
+    this.frameManager.inspectFrame(frame);
   }
 
   ngOnDestroy(): void {
-    this._interval$.unsubscribe();
+    this.interval$.unsubscribe();
+  }
+
+  private syncBackendWithSettings() {
+    // Keep BE in sync with timing API.
+    effect(() => {
+      if (this.settings.timingAPIEnabled()) {
+        this.messageBus.emit('enableTimingAPI');
+      } else {
+        this.messageBus.emit('disableTimingAPI');
+      }
+    });
+
+    // Keep BE in sync with hydration visualization.
+    effect(() => {
+      if (this.settings.showHydrationOverlays()) {
+        this.messageBus.emit('createHydrationOverlay');
+      } else {
+        this.messageBus.emit('removeHydrationOverlay');
+      }
+    });
   }
 }

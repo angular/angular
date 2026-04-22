@@ -17,6 +17,7 @@ import {
   viewChild,
   computed,
   DestroyRef,
+  untracked,
 } from '@angular/core';
 import {
   ComponentExplorerView,
@@ -54,7 +55,7 @@ import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
 import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../../shared/signal-graph';
-import {APP_DATA} from '../../application-providers/app_data';
+import {Settings} from '../../application-services/settings';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -119,14 +120,13 @@ export class DirectiveExplorerComponent {
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
-  private showHydrationNodeHighlights = false;
 
   private readonly _appOperations = inject(ApplicationOperations);
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly _propResolver = inject(ElementPropertyResolver);
   private readonly _frameManager = inject(FrameManager);
-  protected readonly appData = inject(APP_DATA);
 
+  private readonly settings = inject(Settings);
   private readonly platform = inject(Platform);
   private readonly snackBar = inject(MatSnackBar);
   protected readonly signalGraph = inject(SignalGraphManager);
@@ -360,27 +360,18 @@ export class DirectiveExplorerComponent {
     }
   }
 
-  toggleHydrationNodesHighlights(toggle: boolean) {
-    if (toggle) {
-      this.hightlightHydrationNodes();
-    } else {
-      this.removeHydrationNodesHightlights();
-    }
-    this.showHydrationNodeHighlights = toggle;
-  }
-
-  hightlightHydrationNodes() {
+  createHydrationOverlays() {
     this._messageBus.emit('createHydrationOverlay');
   }
 
-  removeHydrationNodesHightlights() {
+  removeHydrationOverlays() {
     this._messageBus.emit('removeHydrationOverlay');
   }
 
   private refreshHydrationNodeHighlightsIfNeeded() {
-    if (this.showHydrationNodeHighlights) {
-      this.removeHydrationNodesHightlights();
-      this.hightlightHydrationNodes();
+    if (untracked(this.settings.showHydrationOverlays)) {
+      this.removeHydrationOverlays();
+      this.createHydrationOverlays();
     }
   }
 
