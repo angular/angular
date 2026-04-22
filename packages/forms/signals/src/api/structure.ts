@@ -33,6 +33,7 @@ import type {
   LogicFn,
   OneOrMany,
   PathKind,
+  ReadonlyFieldState,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
@@ -336,6 +337,98 @@ export function applyWhenValue(
   schema: SchemaOrSchemaFn<unknown>,
 ) {
   applyWhen(path, ({value}) => predicate(value()), schema);
+}
+
+/**
+ * Narrows a `FieldTree<TValue>` to a `FieldTree<TNarrowed>` when a type-guard predicate is
+ * satisfied by the field's current value.
+ *
+ * This is the **template-side counterpart** to `applyWhenValue` for discriminated unions.
+ * When the current value passes the predicate the same field tree object is returned, recast to
+ * the narrower type so that variant-specific sub-fields become accessible. When the predicate
+ * fails `null` is returned.
+ *
+ * Because `narrowFieldTree` reads `fieldTree().value()` — a reactive signal read — Angular's
+ * template engine and `computed()` automatically re-evaluate whenever the value changes,
+ * keeping the narrowed reference in sync at zero extra cost.
+ *
+ * The parameter type is structural (`{(): ReadonlyFieldState<TModel>}`), so the function
+ * accepts both `FieldTree<TModel>` and `ReadonlyFieldTree<TModel>` without overloads.
+ *
+ * ### Template usage (recommended)
+ *
+ * ```ts
+ * interface TestA { type: 'a'; a: number; }
+ * interface TestB { type: 'b'; b: string; }
+ * type Tester = TestA | TestB;
+ *
+ * @Component({
+ *   template: `
+ *     @let formA = narrowFieldTree(testerForm, (v): v is TestA => v.type === 'a');
+ *     @if (formA) {
+ *       <!-- formA is FieldTree<TestA>: formA.a is correctly typed as FieldTree<number> -->
+ *       <input type="number" [formField]="formA.a" />
+ *     }
+ *   `
+ * })
+ * export class MyComponent {
+ *   readonly testerForm = form(signal<Tester>({ type: 'a', a: 0 }));
+ * }
+ * ```
+ *
+ * ### Component-class usage (pass to child components)
+ *
+ * ```ts
+ * export class ParentComponent {
+ *   readonly testerForm = form(signal<Tester>({ type: 'a', a: 0 }));
+ *
+ *   // Reactive computed — updates automatically when testerForm value changes.
+ *   readonly formA = computed(() =>
+ *     narrowFieldTree(this.testerForm, (v): v is TestA => v.type === 'a')
+ *   );
+ * }
+ * ```
+ *
+ * @param fieldTree The field tree to narrow. Accepts both `FieldTree` and `ReadonlyFieldTree`.
+ * @param predicate A type guard returning `true` if the current value is of type `TNarrowed`.
+ * @returns `FieldTree<TNarrowed>` when the predicate passes, otherwise `null`.
+ * @template TModel The model type inferred from the field tree.
+ * @template TNarrowed The narrowed variant type (must extend `TModel`).
+ *
+ * @category structure
+ * @experimental 21.2.0
+ */
+export function narrowFieldTree<TModel, TNarrowed extends TModel>(
+  fieldTree: {(): ReadonlyFieldState<TModel, any>},
+  predicate: (value: TModel) => value is TNarrowed,
+): FieldTree<TNarrowed> | null;
+
+/**
+ * Narrows a `FieldTree<TValue>` based on a boolean predicate applied to the field's current value.
+ *
+ * Returns the same field tree when the predicate passes, or `null` when it does not.
+ * Unlike the type-guard overload, the return type is not narrowed — use a type-guard predicate
+ * for full TypeScript inference.
+ *
+ * @param fieldTree The field tree to narrow.
+ * @param predicate A function returning `true` when the field tree should be returned.
+ * @returns The field tree (still typed as `FieldTree<TModel>`) when the predicate passes, otherwise `null`.
+ * @template TModel The model type inferred from the `FieldTree`.
+ *
+ * @category structure
+ * @experimental 21.2.0
+ */
+export function narrowFieldTree<TModel>(
+  fieldTree: {(): ReadonlyFieldState<TModel, any>},
+  predicate: (value: TModel) => boolean,
+): FieldTree<TModel> | null;
+
+export function narrowFieldTree<TModel>(
+  fieldTree: {(): ReadonlyFieldState<TModel, any>},
+  predicate: (value: TModel) => boolean,
+): FieldTree<unknown> | null {
+  const value = fieldTree().value();
+  return predicate(value) ? (fieldTree as unknown as FieldTree<unknown>) : null;
 }
 
 /**

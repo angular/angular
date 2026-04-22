@@ -10,6 +10,7 @@ import {signal, WritableSignal} from '@angular/core';
 import {
   FieldTree,
   form,
+  narrowFieldTree,
   provideSignalFormsConfig,
   ReadonlyFieldState,
   required,
@@ -162,6 +163,47 @@ function typeVerificationOnlyDoNotRunMe() {
           },
         },
       });
+    });
+
+    it('narrowFieldTree should narrow the FieldTree type with a type guard', () => {
+      interface VariantA {
+        type: 'a';
+        a: number;
+      }
+      interface VariantB {
+        type: 'b';
+        b: string;
+      }
+      type Discriminated = VariantA | VariantB;
+
+      function testTypeNarrow(f: FieldTree<Discriminated>) {
+        const narrowed = narrowFieldTree(f, (v): v is VariantA => v.type === 'a');
+        // Verify that the narrowed type gives access to VariantA-specific sub-fields.
+        if (narrowed) {
+          const aField: FieldTree<number> = narrowed.a;
+          aField;
+        }
+      }
+      testTypeNarrow;
+    });
+
+    it('narrowFieldTree should return FieldTree<TValue> | null without a type guard', () => {
+      interface VariantA {
+        type: 'a';
+        a: number;
+      }
+      interface VariantB {
+        type: 'b';
+        b: string;
+      }
+      type Discriminated = VariantA | VariantB;
+
+      function testTypeNarrow(f: FieldTree<Discriminated>) {
+        // Without a type guard the return type stays FieldTree<Discriminated> | null.
+        const narrowed: FieldTree<Discriminated> | null = narrowFieldTree(f, (v) => v.type === 'a');
+        narrowed;
+      }
+      testTypeNarrow;
     });
   });
 }

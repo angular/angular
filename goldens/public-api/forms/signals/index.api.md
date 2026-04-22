@@ -413,6 +413,16 @@ export class MinValidationError extends BaseNgValidationError {
 }
 
 // @public
+export function narrowFieldTree<TModel, TNarrowed extends TModel>(fieldTree: {
+    (): ReadonlyFieldState<TModel, any>;
+}, predicate: (value: TModel) => value is TNarrowed): FieldTree<TNarrowed> | null;
+
+// @public
+export function narrowFieldTree<TModel>(fieldTree: {
+    (): ReadonlyFieldState<TModel, any>;
+}, predicate: (value: TModel) => boolean): FieldTree<TModel> | null;
+
+// @public
 export class NativeInputParseError extends BaseNgValidationError {
     // (undocumented)
     readonly kind = "parse";

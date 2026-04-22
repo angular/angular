@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, signal, WritableSignal} from '@angular/core';
+import {computed, Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   applyEach,
+  applyWhenValue,
   createMetadataKey,
   FieldContext,
+  FieldTree,
   form,
   metadata,
+  narrowFieldTree,
   PathKind,
+  ReadonlyFieldTree,
+  required,
   SchemaPath,
   SchemaPathTree,
   validate,
@@ -175,5 +180,195 @@ describe('Field Context', () => {
       expect(ctx.fieldTreeOf(p.name)().value()).toEqual('pirojok-the-cat');
       expect(ctx.fieldTreeOf(p.age)().value()).toEqual(5);
     });
+  });
+});
+
+interface VariantA {
+  type: 'a';
+  a: number;
+}
+interface VariantB {
+  type: 'b';
+  b: string;
+}
+type Discriminated = VariantA | VariantB;
+
+describe('narrowFieldTree', () => {
+  it('returns the field tree cast to the narrowed type when the predicate passes', () => {
+    const model = signal<Discriminated>({type: 'a', a: 42});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    const narrowed = narrowFieldTree(f, (v): v is VariantA => v.type === 'a');
+
+    expect(narrowed).not.toBeNull();
+    // Access the type-specific sub-field on the narrowed tree.
+    expect(narrowed!.a().value()).toBe(42);
+  });
+
+  it('returns null when the predicate does not pass', () => {
+    const model = signal<Discriminated>({type: 'b', b: 'hello'});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    const narrowed = narrowFieldTree(f, (v): v is VariantA => v.type === 'a');
+
+    expect(narrowed).toBeNull();
+  });
+
+  it('is reactive — re-evaluates when the value changes', () => {
+    const model = signal<Discriminated>({type: 'a', a: 42});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    // Initially matches variant A.
+    expect(narrowFieldTree(f, (v): v is VariantA => v.type === 'a')).not.toBeNull();
+    expect(narrowFieldTree(f, (v): v is VariantB => v.type === 'b')).toBeNull();
+
+    // Switch to variant B.
+    model.set({type: 'b', b: 'hello'});
+
+    expect(narrowFieldTree(f, (v): v is VariantA => v.type === 'a')).toBeNull();
+    expect(narrowFieldTree(f, (v): v is VariantB => v.type === 'b')).not.toBeNull();
+    expect(
+      narrowFieldTree(f, (v): v is VariantB => v.type === 'b')!
+        .b()
+        .value(),
+    ).toBe('hello');
+  });
+
+  it('works with a child field', () => {
+    const model = signal({nested: {type: 'a', a: 99} as Discriminated});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    const narrowed = narrowFieldTree(f.nested, (v): v is VariantA => v.type === 'a');
+
+    expect(narrowed).not.toBeNull();
+    expect(narrowed!.a().value()).toBe(99);
+  });
+
+  it('returns the same FieldTree instance when narrowed (no wrapping)', () => {
+    const model = signal<Discriminated>({type: 'a', a: 1});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    const narrowed = narrowFieldTree(f, (v): v is VariantA => v.type === 'a');
+
+    // The narrowed result is the exact same proxy object — just retyped.
+    expect(narrowed as unknown).toBe(f as unknown);
+  });
+
+  it('works with the boolean (non-type-guard) overload', () => {
+    const model = signal<Discriminated>({type: 'a', a: 7});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    // Boolean predicate: return type is FieldTree<Discriminated> | null, not narrowed.
+    const matched = narrowFieldTree(f, (v) => v.type === 'a');
+    const unmatched = narrowFieldTree(f, (v) => v.type === 'b');
+
+    expect(matched).not.toBeNull();
+    expect(unmatched).toBeNull();
+    // The matched result is still the same object.
+    expect(matched as unknown).toBe(f as unknown);
+  });
+
+  it('accepts a ReadonlyFieldTree', () => {
+    const model = signal<Discriminated>({type: 'a', a: 55});
+    const f: ReadonlyFieldTree<Discriminated> = form(model, {injector: TestBed.inject(Injector)});
+
+    // narrowFieldTree's structural parameter type {(): ReadonlyFieldState<TModel>} must accept
+    // ReadonlyFieldTree as well as writable FieldTree.
+    const narrowed = narrowFieldTree(f, (v): v is VariantA => v.type === 'a');
+
+    expect(narrowed).not.toBeNull();
+    expect(narrowed!.a().value()).toBe(55);
+  });
+
+  it('integrates with computed() — the computed re-evaluates when the value signal changes', () => {
+    const model = signal<Discriminated>({type: 'a', a: 1});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    // Wrapping in computed() is the recommended component-class usage.
+    const narrowed = TestBed.runInInjectionContext(() =>
+      computed(() => narrowFieldTree(f, (v): v is VariantA => v.type === 'a')),
+    );
+
+    // Computed resolves to the narrowed tree initially.
+    expect(narrowed()).not.toBeNull();
+    expect(narrowed()!.a().value()).toBe(1);
+
+    // Changing to variant B invalidates the computed.
+    model.set({type: 'b', b: 'world'});
+    expect(narrowed()).toBeNull();
+
+    // Switching back to variant A re-establishes the narrowed tree.
+    model.set({type: 'a', a: 99});
+    expect(narrowed()).not.toBeNull();
+    expect(narrowed()!.a().value()).toBe(99);
+  });
+
+  it('works with a three-member discriminated union', () => {
+    interface VariantC {
+      type: 'c';
+      c: boolean;
+    }
+    type ThreeWay = VariantA | VariantB | VariantC;
+
+    const model = signal<ThreeWay>({type: 'c', c: true});
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    expect(narrowFieldTree(f, (v): v is VariantA => v.type === 'a')).toBeNull();
+    expect(narrowFieldTree(f, (v): v is VariantB => v.type === 'b')).toBeNull();
+    const narrowedC = narrowFieldTree(f, (v): v is VariantC => v.type === 'c');
+    expect(narrowedC).not.toBeNull();
+    expect(narrowedC!.c().value()).toBe(true);
+
+    // Switch to variant A.
+    model.set({type: 'a', a: 5});
+    expect(narrowFieldTree(f, (v): v is VariantC => v.type === 'c')).toBeNull();
+    const narrowedA = narrowFieldTree(f, (v): v is VariantA => v.type === 'a');
+    expect(narrowedA).not.toBeNull();
+    expect(narrowedA!.a().value()).toBe(5);
+  });
+
+  it('works alongside applyWhenValue — schema and template narrowing stay in sync', () => {
+    // applyWhenValue is the schema-side counterpart; narrowFieldTree is the template-side.
+    // Both must agree on which variant is active.
+    const model = signal<Discriminated>({type: 'a', a: 0});
+    const f = form(
+      model,
+      (path) => {
+        applyWhenValue(
+          path,
+          (v): v is VariantA => v.type === 'a',
+          (variantAPath) => {
+            validate(variantAPath.a, ({value}) => (value() < 1 ? {kind: 'too-small'} : undefined));
+          },
+        );
+        applyWhenValue(
+          path,
+          (v): v is VariantB => v.type === 'b',
+          (variantBPath) => {
+            validate(variantBPath.b, ({value}) =>
+              value().length === 0 ? {kind: 'empty'} : undefined,
+            );
+          },
+        );
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    // Schema fires for variant A; template can narrow to it.
+    const narrowedA = narrowFieldTree(f, (v): v is VariantA => v.type === 'a');
+    expect(narrowedA).not.toBeNull();
+    expect(narrowedA!.a().errors()).toEqual([{kind: 'too-small', fieldTree: narrowedA!.a}]);
+
+    // Switch to variant B — schema switches, template narrowing switches too.
+    model.set({type: 'b', b: ''});
+    expect(narrowFieldTree(f, (v): v is VariantA => v.type === 'a')).toBeNull();
+    const narrowedB = narrowFieldTree(f, (v): v is VariantB => v.type === 'b');
+    expect(narrowedB).not.toBeNull();
+    expect(narrowedB!.b().errors()).toEqual([{kind: 'empty', fieldTree: narrowedB!.b}]);
+
+    // Fix variant B — errors clear.
+    model.set({type: 'b', b: 'hello'});
+    const narrowedB2 = narrowFieldTree(f, (v): v is VariantB => v.type === 'b');
+    expect(narrowedB2!.b().errors()).toEqual([]);
   });
 });
