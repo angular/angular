@@ -1,28 +1,28 @@
 <docs-decorative-header title="Dependency injection in Angular" imgSrc="adev/src/assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
 
-Dependency Injection (DI) is a design pattern used to organize and share code across an application.
+Dependency Injection (DI) is a design pattern used to organize and share code across an application by allowing dependencies to be supplied to a class instead of being created inside it.
 </docs-decorative-header>
 
 TIP: Check out Angular's [Essentials](essentials/dependency-injection) before diving into this comprehensive guide.
 
-As an application grows, developers often need to reuse and share features across different parts of the codebase. [Dependency Injection (DI)](https://en.wikipedia.org/wiki/Dependency_injection) is a design pattern used to organize and share code across an application by allowing you to "inject" features into different parts.
+As an application grows, developers often need to reuse and share functionality across different parts of the codebase. [Dependency Injection (DI)](https://en.wikipedia.org/wiki/Dependency_injection) helps achieve this by allowing dependencies to be provided to a class instead of being created directly inside it. This makes different parts of the application more reusable and easier to manage.
 
 Dependency injection is a popular pattern because it allows developers to address common challenges such as:
 
-- **Improved code maintainability**: Dependency injection allows cleaner separation of concerns which enables easier refactoring and reducing code duplication.
-- **Scalability**: Modular functionality can be reused across multiple contexts and allows for easier scaling.
-- **Better testing**: DI allows unit tests to easily use [test doubles](https://en.wikipedia.org/wiki/Test_double) for situations when using a real implementation is not practical.
+- **Improved code maintainability**: Dependency injection promotes a clear separation of concerns, making code easier to refactor and reducing duplication.
+- **Scalability**: Modular functionality can be reused across different parts of an application, making it easier to scale.
+- **Better testing**: DI allows unit tests to use [test doubles](https://en.wikipedia.org/wiki/Test_double) in place of real implementations when needed.
 
 ## How does dependency injection work in Angular?
 
-A dependency is any object, value, function or service that a class needs to work but does not create itself. In other words, it creates a relationship between different parts of your application since it wouldn't work without the dependency.
+A dependency is any object, value, function, or service that a class requires to work but does not create itself. Instead, it is provided from the outside, creating a clear relationship between different parts of the application.
 
-There are two ways that code interacts with any dependency injection system:
+Code interacts with a dependency injection system in two main ways:
 
 - Code can _provide_, or make available, values.
 - Code can _inject_, or ask for, those values as dependencies.
 
-"Values," in this context, can be any JavaScript value, including objects and functions. Common types of injected dependencies include:
+In this context, "values" can refer to any JavaScript value, including objects, functions, or class instances. Common types of injected dependencies include:
 
 - **Configuration values**: Environment-specific constants, API URLs, feature flags, etc.
 - **Factories**: Functions that create objects or values based on runtime conditions
