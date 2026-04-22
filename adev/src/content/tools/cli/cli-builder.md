@@ -147,8 +147,7 @@ In the `package.json` file, add a `builders` key that tells the Architect tool w
   "description": "Builder for copying files",
   "builders": "builders.json",
   "dependencies": {
-    "@angular-devkit/architect": "~0.1200.0",
-    "@angular-devkit/core": "^12.0.0"
+    "@angular/build": "^21.2.0"
   }
 }
 ```
@@ -169,7 +168,7 @@ A target specifies the builder to use, its default options configuration, and na
 Architect in the Angular CLI uses the target definition to resolve input options for a given run.
 
 The `angular.json` file has a section for each project, and the "architect" section of each project configures targets for builders used by CLI commands such as 'build', 'test', and 'serve'.
-By default, for example, the `ng build` command runs the builder `@angular-devkit/build-angular:browser` to perform the build task, and passes in default option values as specified for the `build` target in `angular.json`.
+By default, for example, the `ng build` command runs the builder `@angular/build:application` to perform the build task, and passes in default option values as specified for the `build` target in `angular.json`.
 
 ```json {header: "angular.json"}
 {
@@ -177,7 +176,7 @@ By default, for example, the `ng build` command runs the builder `@angular-devki
     "...": "...",
     "architect": {
       "build": {
-        "builder": "@angular-devkit/build-angular:browser",
+        "builder": "@angular/build:application",
         "options": {
           "outputPath": "dist/myApp",
           "index": "src/index.html",
@@ -267,7 +266,7 @@ If you create a new project with `ng new builder-test`, the generated `angular.j
     "builder-test": {
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/builder-test",
             "index": "src/index.html",
@@ -278,8 +277,7 @@ If you create a new project with `ng new builder-test`, the generated `angular.j
           "configurations": {
             "production": {
               "optimization": true,
-              "aot": true,
-              "buildOptimizer": true
+              "aot": true
             }
           }
         }

@@ -91,6 +91,15 @@ export abstract class StateManager {
     return path;
   }
 
+  protected routerUrlState(navigation?: Navigation): {
+    ɵrouterUrl?: string;
+  } {
+    if (navigation?.targetBrowserUrl === undefined || navigation?.finalUrl === undefined) {
+      return {};
+    }
+    return {ɵrouterUrl: this.urlSerializer.serialize(navigation.finalUrl)};
+  }
+
   protected commitTransition({targetRouterState, finalUrl, initialUrl}: Navigation): void {
     // If we are committing the transition after having a final URL and target state, we're updating
     // all pieces of the state. Otherwise, we likely skipped the transition (due to URL handling strategy)
@@ -226,20 +235,22 @@ export class HistoryStateManager extends StateManager {
     }
   }
 
-  private setBrowserUrl(path: string, {extras, id}: Navigation) {
+  private setBrowserUrl(path: string, navigation: Navigation) {
+    const {extras, id} = navigation;
     const {replaceUrl, state} = extras;
+
     if (this.location.isCurrentPathEqualTo(path) || !!replaceUrl) {
       // replacements do not update the target page
       const currentBrowserPageId = this.browserPageId;
       const newState = {
         ...state,
-        ...this.generateNgRouterState(id, currentBrowserPageId),
+        ...this.generateNgRouterState(id, currentBrowserPageId, navigation),
       };
       this.location.replaceState(path, '', newState);
     } else {
       const newState = {
         ...state,
-        ...this.generateNgRouterState(id, this.browserPageId + 1),
+        ...this.generateNgRouterState(id, this.browserPageId + 1, navigation),
       };
       this.location.go(path, '', newState);
     }
@@ -299,10 +310,15 @@ export class HistoryStateManager extends StateManager {
     );
   }
 
-  private generateNgRouterState(navigationId: number, routerPageId: number) {
+  private generateNgRouterState(
+    navigationId: number,
+    routerPageId: number,
+    navigation?: Navigation,
+  ) {
     if (this.canceledNavigationResolution === 'computed') {
-      return {navigationId, ɵrouterPageId: routerPageId};
+      return {navigationId, ɵrouterPageId: routerPageId, ...this.routerUrlState(navigation)};
     }
-    return {navigationId};
+
+    return {navigationId, ...this.routerUrlState(navigation)};
   }
 }
