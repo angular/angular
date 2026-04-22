@@ -32,13 +32,15 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           token: '${{secrets.GITHUB_TOKEN}}'
+          persist-credentials: false
 
       - name: Configure Firebase deploy target
         working-directory: ./
         run: |
           # We can use `npx` as the Firebase deploy actions uses it too.
-          npx -y firebase-tools@latest target:clear --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs
-          npx -y firebase-tools@latest target:apply --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs ${{env.PREVIEW_SITE}}
+          # Use stable version release
+          npx -y firebase-tools@15.15.0 target:clear --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs
+          npx -y firebase-tools@15.15.0 target:apply --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs ${{env.PREVIEW_SITE}}
 
       - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@ba726e7bca0b08b125ccc6f93c233749e1213c17
         with:
