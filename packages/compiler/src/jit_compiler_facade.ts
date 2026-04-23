@@ -25,6 +25,7 @@ import {
   R3DeclarePipeDependencyFacade,
   R3DeclarePipeFacade,
   R3DeclareQueryMetadataFacade,
+  R3DeclareServiceFacade,
   R3DependencyMetadataFacade,
   R3DirectiveMetadataFacade,
   R3FactoryDefMetadataFacade,
@@ -33,6 +34,7 @@ import {
   R3NgModuleMetadataFacade,
   R3PipeMetadataFacade,
   R3QueryMetadataFacade,
+  R3ServiceMetadataFacade,
   R3TemplateDependencyFacade,
 } from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
@@ -103,6 +105,7 @@ import {R3TargetBinder} from './render3/view/t2_binder';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
+import {compileService} from './service_compiler';
 import {getJitStandaloneDefaultForVersion} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
@@ -267,6 +270,44 @@ export class CompilerFacadeImpl implements CompilerFacade {
     );
     const meta = convertDeclareDirectiveFacadeToMetadata(declaration, typeSourceSpan);
     return this.compileDirectiveFromMeta(angularCoreEnv, sourceMapUrl, meta);
+  }
+
+  compileService(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    facade: R3ServiceMetadataFacade,
+  ): any {
+    const {expression, statements} = compileService(
+      {
+        name: facade.name,
+        type: wrapReference(facade.type),
+        typeArgumentCount: facade.typeArgumentCount,
+        autoProvided: facade.autoProvided,
+        factory: facade.factory ? wrapExpression(facade, 'factory') : undefined,
+      },
+      /* resolveForwardRefs */ true,
+    );
+
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
+  }
+
+  compileServiceDeclaration(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    facade: R3DeclareServiceFacade,
+  ): any {
+    const {expression, statements} = compileService(
+      {
+        name: facade.type.name,
+        type: wrapReference(facade.type),
+        typeArgumentCount: 0,
+        autoProvided: facade.autoProvided,
+        factory: facade.factory ? wrapExpression(facade, 'factory') : undefined,
+      },
+      /* resolveForwardRefs */ true,
+    );
+
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
   }
 
   private compileDirectiveFromMeta(

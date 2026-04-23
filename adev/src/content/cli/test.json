@@ -125,6 +125,11 @@
       "description": "Specifies the path to a TypeScript file that provides an array of Angular providers for the test environment. The file must contain a default export of the provider array."
     },
     {
+      "name": "quiet",
+      "type": "boolean",
+      "description": "Suppresses the verbose build summary and stats table on each rebuild. Defaults to `true` locally and `false` in CI environments."
+    },
+    {
       "name": "reporters",
       "type": "array",
       "description": "Specifies the reporters to use during test execution. Each reporter can be a string representing its name, or a tuple containing the name and an options object. Built-in reporters include 'default', 'verbose', 'dots', 'json', 'junit', 'tap', 'tap-flat', and 'html'. You can also provide a path to a custom reporter."

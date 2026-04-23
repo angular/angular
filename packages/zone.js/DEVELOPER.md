@@ -51,18 +51,6 @@ pnpm webdriver-http
 pnpm webdriver-test
 ```
 
-2. run locally with sauce connect
-
-```
-// export SAUCE_USERNAME and SAUCE_ACCESS_KEY
-export SAUCE_USERNAME=XXXX
-export SAUCE_ACCESS_KEY=XXX
-
-sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY
-pnpm webdriver-http
-pnpm webdriver-sauce-test
-```
-
 ## Releasing
 
 Releasing `zone.js` is a two step process.

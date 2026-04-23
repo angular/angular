@@ -272,6 +272,7 @@ export {
   ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,
   ɵɵngDeclareInjectable,
+  ɵɵngDeclareService,
   ɵɵngDeclareInjector,
   ɵɵngDeclareNgModule,
   ɵɵngDeclarePipe,

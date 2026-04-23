@@ -1,4 +1,3 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@devinfra//bazel/validation:defs.bzl", "validate_ts_version_matching")
 load("@npm//:defs.bzl", "npm_link_all_packages")
@@ -9,7 +8,6 @@ package(default_visibility = ["//visibility:public"])
 exports_files([
     "LICENSE",
     "karma-js.conf.js",
-    "browser-providers.conf.js",
     "package.json",
 ])
 
@@ -34,14 +32,6 @@ alias(
     actual = "//packages:tsconfig-build.json",
 )
 
-js_library(
-    name = "browser-providers",
-    srcs = [
-        "browser-providers.conf.d.ts",
-        "browser-providers.conf.js",
-    ],
-)
-
 copy_to_bin(
     name = "angularjs_scripts",
     srcs = [
@@ -62,15 +52,6 @@ copy_to_bin(
 config_setting(
     name = "stamp",
     values = {"stamp": "true"},
-)
-
-alias(
-    name = "sauce_connect",
-    actual = select({
-        "@devinfra//bazel/constraints:linux_x64": "@sauce_connect_linux_amd64//:bin/sc",
-        "@devinfra//bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
-        "@devinfra//bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
-    }),
 )
 
 # When enabled, this flag substitutes dependency versions with snapshot repositories

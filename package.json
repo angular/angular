@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "22.0.0-next.8",
+  "version": "22.0.0-next.9",
   "private": true,
   "description": "Angular - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
@@ -100,7 +100,6 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
-    "@types/selenium-webdriver4": "npm:@types/selenium-webdriver@4.35.5",
     "@types/semver": "^7.3.4",
     "@types/systemjs": "6.15.4",
     "@types/yargs": "^17.0.3",
@@ -138,7 +137,6 @@
     "rollup-plugin-dts": "^6.1.1",
     "rxjs": "^7.0.0",
     "selenium-webdriver": "3.5.0",
-    "selenium-webdriver4": "npm:selenium-webdriver@4.43.0",
     "semver-dsl": "^1.0.1",
     "source-map": "0.7.6",
     "source-map-support": "0.5.21",
@@ -186,21 +184,17 @@
     "husky": "9.1.7",
     "karma-coverage": "^2.2.1",
     "karma-jasmine-html-reporter": "^2.2.0",
-    "karma-sauce-launcher": "^4.3.6",
     "prettier": "^3.8.0",
     "rollup-plugin-sourcemaps2": "^0.5.1",
     "semver": "^7.3.5",
     "tmp": "^0.2.3",
     "ts-node": "^10.9.1",
     "tsec": "0.2.9",
-    "tslint-eslint-rules": "5.4.0",
     "tslint-no-toplevel-property-access": "0.0.2",
     "typed-graphqlify": "^3.1.1",
-    "vrsource-tslint-rules": "6.0.0",
     "zod": "^4.0.10"
   },
   "resolutions": {
-    "saucelabs": "9.0.2",
     "typescript": "6.0.2"
   },
   "pnpm": {
