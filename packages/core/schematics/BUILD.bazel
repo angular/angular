@@ -145,6 +145,10 @@ bundle_entrypoints = [
         "model-output",
         "packages/core/schematics/migrations/model-output/index.js",
     ],
+    [
+        "safe-optional-chaining",
+        "packages/core/schematics/migrations/safe-optional-chaining/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -161,6 +165,7 @@ rollup.rollup(
         "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/migrations/incremental-hydration",
         "//packages/core/schematics/migrations/model-output",
+        "//packages/core/schematics/migrations/safe-optional-chaining",
         "//packages/core/schematics/migrations/strict-safe-navigation-narrow",
         "//packages/core/schematics/migrations/strict-templates-default",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
