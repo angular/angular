@@ -187,6 +187,10 @@ export class Identifiers {
     name: 'ɵɵdeferEnableTimerScheduling',
     moduleName: CORE,
   };
+  static enableIncrementalHydrationRuntime: o.ExternalReference = {
+    name: 'ɵɵenableIncrementalHydrationRuntime',
+    moduleName: CORE,
+  };
 
   static conditionalCreate: o.ExternalReference = {name: 'ɵɵconditionalCreate', moduleName: CORE};
   static conditionalBranchCreate: o.ExternalReference = {

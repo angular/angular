@@ -57,6 +57,7 @@ export type CreateOp =
   | VariableOp<CreateOp>
   | NamespaceOp
   | ProjectionDefOp
+  | EnableIncrementalHydrationRuntimeOp
   | ProjectionOp
   | ExtractedAttributeOp
   | DeferOp
@@ -1123,6 +1124,27 @@ export function createProjectionDefOp(def: o.Expression | null): ProjectionDefOp
   return {
     kind: OpKind.ProjectionDef,
     def,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that emits a top-level call to the `ɵɵenableIncrementalHydrationRuntime`
+ * instruction. This op is inserted once per view (before the first `Defer` op
+ * with hydrate triggers) to activate the incremental hydration runtime.
+ */
+export interface EnableIncrementalHydrationRuntimeOp extends Op<CreateOp> {
+  kind: OpKind.EnableIncrementalHydrationRuntime;
+
+  sourceSpan: ParseSourceSpan | null;
+}
+
+export function createEnableIncrementalHydrationRuntimeOp(
+  sourceSpan: ParseSourceSpan | null,
+): EnableIncrementalHydrationRuntimeOp {
+  return {
+    kind: OpKind.EnableIncrementalHydrationRuntime,
+    sourceSpan,
     ...NEW_OP,
   };
 }

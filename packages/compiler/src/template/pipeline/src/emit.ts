@@ -35,6 +35,7 @@ import {convertI18nBindings} from './phases/convert_i18n_bindings';
 import {createI18nContexts} from './phases/create_i18n_contexts';
 import {deduplicateTextBindings} from './phases/deduplicate_text_bindings';
 import {configureDeferInstructions} from './phases/defer_configs';
+import {insertIncrementalHydrationRuntime} from './phases/insert_incremental_hydration_runtime';
 import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
 import {collapseEmptyInstructions} from './phases/empty_elements';
 import {expandSafeReads} from './phases/expand_safe_reads';
@@ -124,6 +125,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateConditionalExpressions},
   {kind: Kind.Tmpl, fn: createPipes},
   {kind: Kind.Tmpl, fn: configureDeferInstructions},
+  {kind: Kind.Tmpl, fn: insertIncrementalHydrationRuntime},
   {kind: Kind.Tmpl, fn: createVariadicPipes},
   {kind: Kind.Both, fn: generateArrowFunctions},
   {kind: Kind.Both, fn: generatePureLiteralStructures},

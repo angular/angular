@@ -1290,6 +1290,7 @@ export function transformExpressionsInOp(
     case OpKind.Pipe:
     case OpKind.Projection:
     case OpKind.ProjectionDef:
+    case OpKind.EnableIncrementalHydrationRuntime:
     case OpKind.Template:
     case OpKind.Text:
     case OpKind.I18nAttributes:

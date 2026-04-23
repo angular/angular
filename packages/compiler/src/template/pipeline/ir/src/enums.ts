@@ -191,6 +191,13 @@ export enum OpKind {
   ProjectionDef,
 
   /**
+   * Emit a top-level call to the `ɵɵenableIncrementalHydrationRuntime` instruction.
+   * This op is inserted once per view (before the first `Defer` op with hydrate triggers)
+   * to activate the incremental hydration runtime for that view.
+   */
+  EnableIncrementalHydrationRuntime,
+
+  /**
    * Create a content projection slot.
    */
   Projection,

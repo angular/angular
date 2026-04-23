@@ -2,6 +2,7 @@ function MyApp_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵtext(0);
     $r3$.ɵɵdomTemplate(1, MyApp_Defer_1_Template, 1, 1);
+    $r3$.ɵɵenableIncrementalHydrationRuntime();
     $r3$.ɵɵdefer(2, 1, null, null, null, null, null, null, null, 1);
     $r3$.ɵɵdeferHydrateOnIdle();
     $r3$.ɵɵdeferHydrateOnImmediate();
