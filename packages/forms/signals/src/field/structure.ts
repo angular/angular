@@ -118,6 +118,20 @@ export abstract class FieldNodeStructure {
   }
 
   /**
+   * Gets only the child fields that have been materialized already.
+   *
+   * This is useful for iterating over children without triggering materialization of children
+   * that haven't been accessed yet.
+   */
+  materializedChildren(): readonly FieldNode[] {
+    const map = untracked(() => this.childrenMap());
+    if (map === undefined) {
+      return [];
+    }
+    return Array.from(map.byPropertyKey.values()).map((child) => untracked(child.reader)!);
+  }
+
+  /**
    * Internal method (cast to any in tests) to check if the children map has been materialized.
    * Useful for validating that fields without logic are lazily instantiated.
    *

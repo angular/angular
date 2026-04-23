@@ -53,6 +53,10 @@ import {
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
 
+export interface ControlValueSignal<T> extends WritableSignal<T> {
+  rawSet(value: T): void;
+}
+
 /**
  * Internal node in the form tree for a given field.
  *
@@ -73,7 +77,7 @@ export class FieldNode implements FieldState<unknown> {
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;
   readonly fieldAdapter: FieldAdapter;
-  readonly controlValue: WritableSignal<unknown>;
+  readonly controlValue: ControlValueSignal<unknown>;
 
   private _context: FieldContext<unknown> | undefined = undefined;
   get context(): FieldContext<unknown> {
@@ -319,14 +323,22 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   private _reset(value?: unknown) {
+    this.pendingSync()?.abort();
+
     if (value !== undefined) {
       this.value.set(value);
     }
 
+    // controlValue is a linkedSignal that only auto-resets when value *changes*.
+    // When the reset value equals the current value (or no value was passed),
+    // controlValue retains the typed text. Force it to match value by setting
+    // directly via the raw interface, which doesn't trigger a sync.
+    this.controlValue.rawSet(this.value());
+
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();
 
-    for (const child of this.structure.children()) {
+    for (const child of this.structure.materializedChildren()) {
       child._reset();
     }
   }
@@ -356,10 +368,11 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * Creates a linked signal that initiates a {@link debounceSync} when set.
    */
-  private controlValueSignal(): WritableSignal<unknown> {
-    const controlValue = linkedSignal(this.value);
+  private controlValueSignal(): ControlValueSignal<unknown> {
+    const controlValue = linkedSignal(this.value) as ControlValueSignal<unknown>;
     const {set, update} = controlValue;
 
+    controlValue.rawSet = set;
     controlValue.set = (newValue) => {
       set(newValue);
       this.markAsDirty();
