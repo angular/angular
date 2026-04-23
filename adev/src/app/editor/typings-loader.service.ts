@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, signal} from '@angular/core';
+import {signal, Service} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {WebContainer} from '@webcontainer/api';
 import {Typing} from './code-editor/workers/interfaces/define-types-request';
@@ -15,7 +15,7 @@ import {Typing} from './code-editor/workers/interfaces/define-types-request';
  * This service is responsible for retrieving the types definitions for the
  * predefined dependencies.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class TypingsLoader {
   private readonly librariesToGetTypesFrom = [
     '@angular/common',
