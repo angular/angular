@@ -37,7 +37,7 @@ import {
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
-import {ServerPlatformLocation} from './location';
+import {sanitizeConfigUrl, ServerPlatformLocation} from './location';
 import {enableDomEmulation, PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
@@ -100,7 +100,7 @@ function _document() {
     document =
       typeof config.document === 'string'
         ? _enableDomEmulation
-          ? parseDocument(config.document, config.url)
+          ? parseDocument(config.document, sanitizeConfigUrl(config.url))
           : window.document
         : config.document;
   } else {

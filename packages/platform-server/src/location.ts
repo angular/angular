@@ -19,17 +19,51 @@ import {Subject} from 'rxjs';
 import {INITIAL_CONFIG} from './tokens';
 
 /**
- * Parses a URL string and returns a URL object.
- * @param urlStr The string to parse.
- * @param origin The origin to use for resolving the URL.
- * @returns The parsed URL.
+ * Returns the path + query + fragment portion of an untrusted URL-or-path
+ * input, discarding any authority the input carries.
+ *
+ * Security: `INITIAL_CONFIG.url` is populated from `req.url` in SSR handlers.
+ * Node preserves absolute-form request-targets (RFC 9112 §3.2.2) in `req.url`
+ * verbatim, so attacker-controlled cross-origin inputs (`http://attacker/...`,
+ * `//evil/...`, `\\evil/...`) can reach here. The hard-coded `http://localhost/`
+ * base is a scaffold for the WHATWG URL parser only; its host never appears in
+ * the return value.
+ */
+export function sanitizeConfigUrl(raw: string | undefined): string {
+  try {
+    const u = new URL(raw || '/', 'http://localhost/');
+    const path = u.pathname.startsWith('/') ? u.pathname : '/' + u.pathname;
+    return path + u.search + u.hash;
+  } catch {
+    return '/';
+  }
+}
+
+/**
+ * Normalizes a trusted-origin configuration string (such as
+ * `INITIAL_CONFIG.publicOrigin`) to a bare `scheme://host[:port]` origin.
+ *
+ * Returns `null` for inputs that are empty, unparseable, or whose scheme is
+ * not `http:`/`https:`. Any path, query, fragment, or credentials present in
+ * the input are discarded — only the origin is retained.
+ */
+export function sanitizeOrigin(raw: string | undefined): string | null {
+  if (!raw) return null;
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    return u.origin;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Resolves a same-origin path within the platform origin.
+ * The input is first sanitized to drop any cross-origin authority.
  */
 function parseUrl(urlStr: string, origin: string): URL {
-  // If the URL is empty or start with a `/` it is a pathname relative to the origin
-  // otherwise it's an absolute URL.
-  const urlToParse = urlStr.length === 0 || urlStr[0] === '/' ? origin + urlStr : urlStr;
-
-  return new URL(urlToParse);
+  return new URL(sanitizeConfigUrl(urlStr), origin);
 }
 
 /**
@@ -47,16 +81,23 @@ export class ServerPlatformLocation implements PlatformLocation {
   public readonly hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
   private _doc = inject(DOCUMENT);
+  // Authority reflected on `PlatformLocation` and used by the SSR HTTP
+  // interceptor comes from the operator-supplied `publicOrigin` only.
+  // `INITIAL_CONFIG.url` is considered untrusted (attacker-controlled via
+  // `req.url`) and never contributes to authority, even in absolute form.
+  private _trustedOrigin =
+    sanitizeOrigin(inject(INITIAL_CONFIG, {optional: true})?.publicOrigin) ??
+    this._doc.location.origin;
 
   constructor() {
     const config = inject(INITIAL_CONFIG, {optional: true});
     if (!config) {
       return;
     }
-    if (config.url) {
+    if (config.url || config.publicOrigin) {
       const {protocol, hostname, port, pathname, search, hash, href} = parseUrl(
-        config.url,
-        this._doc.location.origin,
+        config.url ?? '',
+        this._trustedOrigin,
       );
       this.protocol = protocol;
       this.hostname = hostname;
@@ -106,7 +147,7 @@ export class ServerPlatformLocation implements PlatformLocation {
 
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
-    const {pathname, search, hash, href, protocol} = parseUrl(newUrl, this._doc.location.origin);
+    const {pathname, search, hash, href, protocol} = parseUrl(newUrl, this._trustedOrigin);
     const writableThis = this as Writable<this>;
     writableThis.pathname = pathname;
     writableThis.search = search;

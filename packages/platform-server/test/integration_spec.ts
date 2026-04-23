@@ -1462,7 +1462,7 @@ class HiddenModule {}
         });
       });
 
-      describe(`given 'url' is provided in 'INITIAL_CONFIG'`, () => {
+      describe(`given 'publicOrigin' is provided in 'INITIAL_CONFIG'`, () => {
         let mock: HttpTestingController;
         let ref: NgModuleRef<HttpInterceptorExampleModule>;
         let http: HttpClient;
@@ -1473,7 +1473,13 @@ class HiddenModule {}
               provide: INITIAL_CONFIG,
               useValue: {
                 document: '<app></app>',
-                url: 'http://localhost:4000/foo',
+                // `publicOrigin` is the trusted server origin used by the SSR
+                // HTTP interceptor to prefix relative requests. The `url`
+                // field carries only the request target (path), since its
+                // authority is stripped by the sanitizer — see
+                // GHSA-45q2-gjvg-7973 and `sanitizeConfigUrl` / `sanitizeOrigin`.
+                publicOrigin: 'http://localhost:4000',
+                url: '/foo',
               },
             },
           ]);

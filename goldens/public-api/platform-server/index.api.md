@@ -25,6 +25,7 @@ export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 // @public
 export interface PlatformConfig {
     document?: string;
+    publicOrigin?: string;
     url?: string;
 }
 
@@ -49,6 +50,7 @@ export function provideServerRendering(): EnvironmentProviders;
 export function renderApplication(bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>, options: {
     document?: string | Document;
     url?: string;
+    publicOrigin?: string;
     platformProviders?: Provider[];
 }): Promise<string>;
 
@@ -56,6 +58,7 @@ export function renderApplication(bootstrap: (context: BootstrapContext) => Prom
 export function renderModule<T>(moduleType: Type<T>, options: {
     document?: string | Document;
     url?: string;
+    publicOrigin?: string;
     extraProviders?: StaticProvider[];
 }): Promise<string>;
 

@@ -50,12 +50,16 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
     });
 
     it('parses component pieces of a URL', async () => {
+      // Authority now comes from `publicOrigin` (trusted, operator-supplied),
+      // not from the `url` field (which is sanitized to path-only because it
+      // is typically populated from `req.url`).
       const platform = platformServer([
         {
           provide: INITIAL_CONFIG,
           useValue: {
             document: '<app></app>',
-            url: 'http://test.com:80/deep/path?query#hash',
+            publicOrigin: 'http://test.com:80',
+            url: '/deep/path?query#hash',
           },
         },
       ]);
@@ -104,7 +108,8 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           provide: INITIAL_CONFIG,
           useValue: {
             document: '<app></app>',
-            url: 'http://test.com/deep/path?query#hash',
+            publicOrigin: 'http://test.com',
+            url: '/deep/path?query#hash',
           },
         },
       ]);
@@ -139,25 +144,191 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
       const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
 
       for (const url of urls) {
+        const platform = platformServer([{provide: INITIAL_CONFIG, useValue: {document: '', url}}]);
+
+        const location = platform.injector.get(PlatformLocation);
+        platform.destroy();
+
+        expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
+        expect(location.pathname).withContext(`pathname for URL: "${url}"`).toBe('/deep/path');
+      }
+    });
+
+    it('neutralizes absolute-form request-target hostname hijack attempts', async () => {
+      // GHSA-45q2-gjvg-7973 bypass: absolute-form request-target (RFC 9112 §3.2.2)
+      // in `req.url` flows into `INITIAL_CONFIG.url` and previously leaked authority.
+      const urls = [
+        'http://attacker.example/deep/path',
+        'https://attacker.example/deep/path',
+        'http://169.254.169.254/latest/meta-data/',
+        'http://10.0.0.1:8080/admin',
+      ];
+
+      for (const url of urls) {
+        const platform = platformServer([{provide: INITIAL_CONFIG, useValue: {document: '', url}}]);
+
+        const location = platform.injector.get(PlatformLocation);
+        platform.destroy();
+
+        const parsed = new URL(url);
+        const attackerHost = parsed.hostname;
+        expect(location.hostname).withContext(`hostname for URL: "${url}"`).not.toBe(attackerHost);
+        // Only assert port divergence when the attacker URL specified a
+        // non-default port — `new URL('http://host/').port` is `''`, which
+        // would trivially equal the post-fix `location.port`.
+        if (parsed.port !== '') {
+          expect(location.port).withContext(`port for URL: "${url}"`).not.toBe(parsed.port);
+        }
+        expect(location.href).withContext(`href for URL: "${url}"`).not.toContain(attackerHost);
+      }
+    });
+
+    it('publicOrigin populates authority; url supplies path', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '',
+            publicOrigin: 'https://my-site.com',
+            url: '/page?x=1#top',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      platform.destroy();
+
+      expect(location.protocol).toBe('https:');
+      expect(location.hostname).toBe('my-site.com');
+      expect(location.port).toBe('');
+      expect(location.pathname).toBe('/page');
+      expect(location.search).toBe('?x=1');
+      expect(location.hash).toBe('#top');
+      expect(location.href).toBe('https://my-site.com/page?x=1#top');
+    });
+
+    it('publicOrigin beats an attacker-controlled absolute url', async () => {
+      // With both set, authority must come from publicOrigin; the path (and
+      // only the path) is carried over from url.
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '',
+            publicOrigin: 'https://victim.example.com',
+            url: 'http://attacker.example/admin',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      platform.destroy();
+
+      expect(location.hostname).toBe('victim.example.com');
+      expect(location.protocol).toBe('https:');
+      expect(location.pathname).toBe('/admin');
+      expect(location.href).not.toContain('attacker.example');
+      expect(location.href).toBe('https://victim.example.com/admin');
+    });
+
+    it('publicOrigin falls back to the platform default when invalid', async () => {
+      // Non-http(s) schemes, unparseable strings, and empty values all map to
+      // the DOMINO default origin, matching the behavior of no publicOrigin.
+      for (const publicOrigin of ['javascript:void(0)', 'data:text/html,x', 'not a url', '']) {
         const platform = platformServer([
           {
             provide: INITIAL_CONFIG,
-            useValue: {
-              document: '',
-              // This should be treated as relative URL.
-              // Example: `req.url: '//attacker.com/deep/path'` where request
-              // to express server is 'http://localhost:4200//attacker.com/deep/path'.
-              url,
-            },
+            useValue: {document: '', publicOrigin, url: '/page'},
           },
         ]);
 
         const location = platform.injector.get(PlatformLocation);
         platform.destroy();
 
-        expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
-        expect(location.pathname).withContext(`pathname for URL: "${url}"`).toBe(url);
+        expect(location.hostname)
+          .withContext(`hostname for publicOrigin: ${JSON.stringify(publicOrigin)}`)
+          .toBe('');
+        expect(location.pathname)
+          .withContext(`pathname for publicOrigin: ${JSON.stringify(publicOrigin)}`)
+          .toBe('/page');
       }
+    });
+
+    it('non-http(s) scheme in url never leaks to location.protocol', async () => {
+      // A malformed or malicious `url` carrying an opaque scheme
+      // (`javascript:`, `data:`, `blob:`) must not override the protocol
+      // derived from `publicOrigin`. The sanitizer discards the scheme; only
+      // the path portion reaches `parseUrl`.
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '',
+            publicOrigin: 'https://victim.example.com',
+            url: 'javascript:alert(1)',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      platform.destroy();
+
+      expect(location.protocol).toBe('https:');
+      expect(location.hostname).toBe('victim.example.com');
+      expect(location.href).not.toContain('javascript:');
+    });
+
+    it('userinfo and port in url are discarded when publicOrigin is set', async () => {
+      // Parser-confusion vector: `http://attacker:443@attacker-host/admin`
+      // puts `attacker:443` in userinfo and `attacker-host` as host. The
+      // sanitizer must strip both — only `/admin` should cross the trust
+      // boundary into `PlatformLocation`.
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '',
+            publicOrigin: 'https://victim.example.com',
+            url: 'http://attacker:443@attacker-host/admin',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      platform.destroy();
+
+      expect(location.hostname).toBe('victim.example.com');
+      expect(location.port).toBe('');
+      expect(location.pathname).toBe('/admin');
+      expect(location.href).toBe('https://victim.example.com/admin');
+      expect(location.href).not.toContain('attacker');
+      expect(location.href).not.toContain(':443');
+    });
+
+    it('publicOrigin discards path, query, fragment, and credentials', async () => {
+      // Only scheme+host+port are retained from publicOrigin.
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '',
+            publicOrigin: 'https://user:pass@my-site.com/ignored?x=1#frag',
+            url: '/page',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      platform.destroy();
+
+      expect(location.hostname).toBe('my-site.com');
+      expect(location.protocol).toBe('https:');
+      expect(location.href).toBe('https://my-site.com/page');
+      expect(location.href).not.toContain('user');
+      expect(location.href).not.toContain('pass');
+      expect(location.href).not.toContain('ignored');
+      expect(location.href).not.toContain('?x=1');
+      expect(location.href).not.toContain('#frag');
     });
   });
 })();

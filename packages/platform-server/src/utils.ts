@@ -42,6 +42,7 @@ export const EVENT_DISPATCH_SCRIPT_ID = 'ng-event-dispatch-contract';
 interface PlatformOptions {
   document?: string | Document;
   url?: string;
+  publicOrigin?: string;
   platformProviders?: Provider[];
 }
 
@@ -55,7 +56,14 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
   startMeasuring(measuringLabel);
 
   const platform = platformServer([
-    {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
+    {
+      provide: INITIAL_CONFIG,
+      useValue: {
+        document: options.document,
+        url: options.url,
+        publicOrigin: options.publicOrigin,
+      },
+    },
     extraProviders,
   ]);
 
@@ -263,17 +271,27 @@ function sanitizeServerContext(serverContext: string): string {
  * @param options Additional configuration for the render operation:
  *  - `document` - the document of the page to render, either as an HTML string or
  *                 as a reference to the `document` instance.
- *  - `url` - the URL for the current render request.
+ *  - `url` - the request target (path, query, fragment) for the current render.
+ *                 Authority from this value is stripped; use `publicOrigin` for a
+ *                 trusted origin.
+ *  - `publicOrigin` - trusted origin of the server (`scheme://host[:port]`). Used
+ *                 for `PlatformLocation.{protocol, hostname, port, href}` and the
+ *                 SSR HTTP interceptor. Must be a server-controlled constant.
  *  - `extraProviders` - set of platform level providers for the current render request.
  *
  * @publicApi
  */
 export async function renderModule<T>(
   moduleType: Type<T>,
-  options: {document?: string | Document; url?: string; extraProviders?: StaticProvider[]},
+  options: {
+    document?: string | Document;
+    url?: string;
+    publicOrigin?: string;
+    extraProviders?: StaticProvider[];
+  },
 ): Promise<string> {
-  const {document, url, extraProviders: platformProviders} = options;
-  const platformRef = createServerPlatform({document, url, platformProviders});
+  const {document, url, publicOrigin, extraProviders: platformProviders} = options;
+  const platformRef = createServerPlatform({document, url, publicOrigin, platformProviders});
   try {
     const moduleRef = await platformRef.bootstrapModule(moduleType);
     const applicationRef = moduleRef.injector.get(ApplicationRef);
@@ -313,7 +331,12 @@ export async function renderModule<T>(
  * @param options Additional configuration for the render operation:
  *  - `document` - the document of the page to render, either as an HTML string or
  *                 as a reference to the `document` instance.
- *  - `url` - the URL for the current render request.
+ *  - `url` - the request target (path, query, fragment) for the current render.
+ *                 Authority from this value is stripped; use `publicOrigin` for a
+ *                 trusted origin.
+ *  - `publicOrigin` - trusted origin of the server (`scheme://host[:port]`). Used
+ *                 for `PlatformLocation.{protocol, hostname, port, href}` and the
+ *                 SSR HTTP interceptor. Must be a server-controlled constant.
  *  - `platformProviders` - the platform level providers for the current render request.
  *
  * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
@@ -322,7 +345,12 @@ export async function renderModule<T>(
  */
 export async function renderApplication(
   bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>,
-  options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
+  options: {
+    document?: string | Document;
+    url?: string;
+    publicOrigin?: string;
+    platformProviders?: Provider[];
+  },
 ): Promise<string> {
   const renderAppLabel = 'renderApplication';
   const bootstrapLabel = 'bootstrap';
