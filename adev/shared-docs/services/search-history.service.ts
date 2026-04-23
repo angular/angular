@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, inject, Injectable, signal} from '@angular/core';
+import {computed, inject, signal, Service} from '@angular/core';
 import {LOCAL_STORAGE} from '../providers';
 import {SearchResultItem} from '../interfaces';
 
@@ -29,7 +29,7 @@ function cleanUpHtml(label: string | null): string {
   return (label || '').replace(/<\/?mark>/g, '');
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class SearchHistory {
   private readonly localStorage = inject(LOCAL_STORAGE);
   private readonly history = signal<Map<string, HistoryItem>>(new Map());

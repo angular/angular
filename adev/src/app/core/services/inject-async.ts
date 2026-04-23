@@ -10,13 +10,13 @@ import {
   DestroyRef,
   ENVIRONMENT_INITIALIZER,
   EnvironmentInjector,
-  Injectable,
   Injector,
   Provider,
   ProviderToken,
   Type,
   createEnvironmentInjector,
   inject,
+  Service,
 } from '@angular/core';
 
 /**
@@ -32,7 +32,7 @@ export async function injectAsync<T>(
   return injectImpl.get(injector, providerLoader);
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 class InjectAsyncImpl<T> {
   private overrides = new WeakMap(); // no need to cleanup
   override<T>(type: Type<T>, mock: Type<unknown>) {

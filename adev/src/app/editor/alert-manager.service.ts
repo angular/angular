@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {LOCAL_STORAGE, WINDOW, isMobile} from '@angular/docs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ErrorSnackBar, ErrorSnackBarData} from '../core/services/errors-handling/error-snack-bar';
@@ -19,7 +19,7 @@ export enum AlertReason {
   MOBILE,
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class AlertManager {
   private readonly localStorage = inject(LOCAL_STORAGE);
   private readonly window = inject(WINDOW);
