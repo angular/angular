@@ -42,7 +42,7 @@ export const environment = {
 Import the environment where needed:
 
 ```ts
-import { environment } from '../environments/environment';
+import {environment} from '../environments/environment';
 
 const apiUrl = environment.apiUrl;
 ```
@@ -73,20 +73,18 @@ A common approach is to load a JSON configuration file from the `assets` folder 
 Load the configuration before the application starts:
 
 ```ts
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {firstValueFrom} from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AppConfigService {
-  private config!: { apiUrl: string };
+  private config!: {apiUrl: string};
 
   constructor(private http: HttpClient) {}
 
   loadConfig(): Promise<void> {
-    return firstValueFrom(
-      this.http.get<{ apiUrl: string }>('/assets/config.json')
-    ).then(cfg => {
+    return firstValueFrom(this.http.get<{apiUrl: string}>('/assets/config.json')).then((cfg) => {
       this.config = cfg;
     });
   }
@@ -100,7 +98,7 @@ export class AppConfigService {
 Register the loader during application bootstrap:
 
 ```ts
-import { provideAppInitializer, inject } from '@angular/core';
+import {provideAppInitializer, inject} from '@angular/core';
 
 provideAppInitializer(() => {
   const config = inject(AppConfigService);
@@ -116,11 +114,11 @@ This ensures configuration is available before the application renders.
 
 ## Choosing a strategy
 
-| Criteria | Build-time | Runtime |
-|----------|-----------|---------|
-| Change without rebuild | No | Yes |
-| Startup performance | Faster | Slight delay |
-| Complexity | Low | Moderate |
-| Deployment flexibility | Limited | High |
+| Criteria               | Build-time | Runtime      |
+| ---------------------- | ---------- | ------------ |
+| Change without rebuild | No         | Yes          |
+| Startup performance    | Faster     | Slight delay |
+| Complexity             | Low        | Moderate     |
+| Deployment flexibility | Limited    | High         |
 
 Use build-time configuration for most applications, and runtime configuration when you need to deploy the same build across multiple environments.
