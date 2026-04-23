@@ -43,6 +43,7 @@ import {bindingUpdated, type ControlBindingKey, createBindings} from './bindings
 import {customControlCreate} from './control_custom';
 import {cvaControlCreate} from './control_cva';
 import {nativeControlCreate} from './control_native';
+import {selectMultipleControlCreate} from './control_select_multiple';
 import {
   isNativeFormElement,
   isNumericFormElement,
@@ -341,6 +342,12 @@ export class FormField<T> {
       this.ɵngControlUpdate = cvaControlCreate(host, this as FormField<unknown>);
     } else if (host.customControl) {
       this.ɵngControlUpdate = customControlCreate(host, this as FormField<unknown>);
+    } else if (
+      this.elementIsNativeFormElement &&
+      this.nativeFormElement.tagName === 'SELECT' &&
+      (this.nativeFormElement as HTMLSelectElement).multiple
+    ) {
+      this.ɵngControlUpdate = selectMultipleControlCreate(host, this as FormField<unknown>);
     } else if (this.elementIsNativeFormElement) {
       this.ɵngControlUpdate = nativeControlCreate(
         host,

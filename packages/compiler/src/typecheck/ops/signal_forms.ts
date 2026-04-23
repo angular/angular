@@ -142,9 +142,13 @@ export class TcbNativeFieldOp extends TcbOp {
   }
 
   private getExpectedTypeFromDomNode(node: Element): string | null {
-    if (node.name === 'textarea' || node.name === 'select') {
-      // `<textarea>` and `<select>` are always strings.
+    if (node.name === 'textarea') {
+      // `<textarea>` is always a string.
       return 'string';
+    }
+
+    if (node.name === 'select') {
+      return hasMultipleSelect(node) ? 'string[]' : 'string';
     }
 
     if (node.name !== 'input') {
@@ -194,6 +198,18 @@ export class TcbNativeFieldOp extends TcbOp {
   private getUnsupportedType(): string {
     return 'never';
   }
+}
+
+function hasMultipleSelect(node: Element): boolean {
+  if (node.attributes.some((attr) => attr.name.toLowerCase() === 'multiple')) {
+    return true;
+  }
+
+  return node.inputs.some(
+    (input) =>
+      (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+      input.name.toLowerCase() === 'multiple',
+  );
 }
 
 /**
