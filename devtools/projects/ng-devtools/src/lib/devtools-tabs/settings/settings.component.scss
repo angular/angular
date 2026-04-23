@@ -43,6 +43,17 @@
         align-items: center;
         margin: 0.5rem 0;
         gap: 0.5rem;
+
+        &:has(select) {
+          flex-direction: column;
+          align-items: flex-start;
+
+          select {
+            margin-left: 0.75rem;
+            margin-bottom: 0.5rem;
+            width: 12rem;
+          }
+        }
       }
     }
   }

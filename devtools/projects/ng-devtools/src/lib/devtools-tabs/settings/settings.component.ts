@@ -29,7 +29,11 @@ export class SettingsComponent {
 
   protected readonly close = output<void>();
 
-  protected readonly themeOptions: ThemePreference[] = ['system', 'dark', 'light'];
+  protected readonly themeOptions: {value: ThemePreference; label: string}[] = [
+    {value: 'system', label: 'System'},
+    {value: 'dark', label: 'Dark'},
+    {value: 'light', label: 'Light'},
+  ];
   private hostClicked = false;
 
   onThemeChange(e: Event) {

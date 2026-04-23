@@ -6,8 +6,10 @@
     <li>
       <label for="theme">Theme:</label>
       <select id="theme" (change)="onThemeChange($event)">
-        @for (theme of themeOptions; track $index) {
-          <option [value]="theme" [selected]="theme === settings.theme()">{{ theme }}</option>
+        @for (opt of themeOptions; track $index) {
+          <option [value]="opt.value" [selected]="opt.value === settings.theme()">
+            {{ opt.label }}
+          </option>
         }
       </select>
     </li>
