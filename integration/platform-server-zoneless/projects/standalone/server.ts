@@ -38,11 +38,15 @@ app.get('/api-2', (req, res) => {
 
 // All regular routes use the Universal engine
 app.use((req, res) => {
-  const {protocol, originalUrl, baseUrl, headers} = req;
+  const {originalUrl, baseUrl} = req;
 
   renderApplication(bootstrap, {
     document: indexHtml,
-    url: `${protocol}://${headers.host}${originalUrl}`,
+    url: originalUrl,
+    // `publicOrigin` must be a server-controlled constant, never derived from
+    // request headers, to avoid reintroducing the SSRF class closed by
+    // GHSA-45q2-gjvg-7973.
+    publicOrigin: 'http://localhost:4209',
     platformProviders: [{provide: APP_BASE_HREF, useValue: baseUrl}],
   }).then((response: string) => {
     res.send(response);
