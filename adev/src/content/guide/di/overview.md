@@ -62,6 +62,8 @@ export class AnalyticsLogger {
 
 NOTE: The `providedIn: 'root'` option makes this service available throughout your entire application as a singleton. This is the recommended approach for most services.
 
+HELPFUL: You can also use the [`@Service`](guide/di/creating-and-using-services#using-the-service-decorator) decorator, a ergonomic shorthand for `@Injectable({providedIn: 'root'})`.
+
 ## Injecting dependencies with `inject()`
 
 You can inject dependencies using Angular's `inject()` function.

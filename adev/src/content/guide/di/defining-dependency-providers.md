@@ -2,7 +2,7 @@
 
 Angular provides two ways to make services available for injection:
 
-1. **Automatic provision** - Using `providedIn` in the `@Injectable` decorator or by providing a factory in the `InjectionToken` configuration
+1. **Automatic provision** - Using `providedIn` in the `@Injectable` decorator, the developer-preview [`@Service`](guide/di/creating-and-using-services#using-the-service-decorator) decorator, or by providing a factory in the `InjectionToken` configuration
 2. **Manual provision** - Using the `providers` array in components, directives, routes, or application config
 
 In the [previous guide](/guide/di/creating-and-using-services), you learned how to create services using `providedIn: 'root'`, which handles most common use cases. This guide explores additional patterns for both automatic and manual provider configuration.
