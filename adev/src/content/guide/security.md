@@ -379,7 +379,7 @@ The validation rules are:
 - `X-Forwarded-Prefix` header must start with `/` and contain only alphanumeric characters, hyphens, and underscores, separated by single slashes.
 - By default, all `X-Forwarded-*` headers are treated as untrusted and are removed from the request. To retain them, they must be explicitly allowed by configuring `trustProxyHeaders`.
 
-Invalid headers now trigger an error log, and unallowed proxy headers are removed from the request. Requests with unrecognized hostnames will result in a Client-Side Rendered (CSR) page if `allowedHosts` is defined; if not, a `400 Bad Request` is issued. Note that in a future major release, all unrecognized hostnames will default to a `400 Bad Request` regardless of `allowedHosts` settings.
+Invalid headers trigger an error log, and unallowed proxy headers are removed from the request. Requests with unrecognized hostnames will result in a `400 Bad Request` is issued.
 
 NOTE: Most cloud providers and CDN providers perform automatic validation of these headers before a request ever reaches the application origin. This inherent filtering significantly reduces the practical attack surface.
 
