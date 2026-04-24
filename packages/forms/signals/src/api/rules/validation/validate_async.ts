@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, ResourceRef, ResourceSnapshot, Signal, debounced} from '@angular/core';
+import {
+  DebounceTimer,
+  Resource,
+  ResourceRef,
+  ResourceSnapshot,
+  Signal,
+  debounced,
+} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -121,12 +128,13 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   opts: AsyncValidatorOptions<TValue, TParams, TResult, TPathKind>,
 ): void {
   assertPathIsCurrent(path);
+  let debouncedResource: Resource<TParams | undefined> | undefined = undefined;
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
     (_state, params) => {
       if (opts.debounce !== undefined) {
-        const debouncedResource = debounced(() => params(), opts.debounce);
+        debouncedResource = debounced(() => params(), opts.debounce);
         return opts.factory(debouncedResource.value);
       }
       return opts.factory(params);
@@ -145,6 +153,11 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
 
   pathNode.builder.addAsyncErrorRule((ctx) => {
     const res = ctx.state.metadata(RESOURCE)!;
+
+    if (debouncedResource?.isLoading()) {
+      return 'pending';
+    }
+
     let errors;
     switch (res.status()) {
       case 'idle':

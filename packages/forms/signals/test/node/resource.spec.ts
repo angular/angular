@@ -507,4 +507,69 @@ describe('resources', () => {
 
     expect(success).toBeTrue();
   });
+
+  it('should report pending during debounce window', async () => {
+    const model = signal({username: ''});
+    const f = form(
+      model,
+      (path) => {
+        validateAsync(path.username, {
+          params: ({value}) => value(),
+          factory: (params) => resource({params, loader: async () => true}),
+          debounce: 500,
+          onSuccess: () => ({kind: 'invalid'}),
+          onError: () => null,
+        });
+      },
+      {injector},
+    );
+
+    model.set({username: 'john'});
+    TestBed.tick();
+
+    // During debounce window — should already be pending
+    expect(f.username().pending()).toBe(true);
+
+    await timeout(500);
+    TestBed.tick();
+    await appRef.whenStable();
+
+    expect(f.username().pending()).toBe(false);
+  });
+
+  it('should stay pending if multiple changes happen within debounce window', async () => {
+    const model = signal({username: ''});
+    const f = form(
+      model,
+      (path) => {
+        validateAsync(path.username, {
+          params: ({value}) => value(),
+          factory: (params) => resource({params, loader: async () => true}),
+          debounce: 50,
+          onSuccess: () => ({kind: 'invalid'}),
+          onError: () => null,
+        });
+      },
+      {injector},
+    );
+
+    model.set({username: 'j'});
+    TestBed.tick();
+    expect(f.username().pending()).toBe(true);
+
+    await timeout(200);
+    model.set({username: 'jo'});
+    TestBed.tick();
+    expect(f.username().pending()).toBe(true);
+
+    await timeout(200);
+    model.set({username: 'joh'});
+    TestBed.tick();
+    expect(f.username().pending()).toBe(true);
+
+    await timeout(500);
+    TestBed.tick();
+    await appRef.whenStable();
+    expect(f.username().pending()).toBe(false);
+  });
 });
