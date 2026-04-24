@@ -27,5 +27,5 @@
     "@types/node": "^20.14.8",
     "typescript": "6.0.2"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.2"
 }
