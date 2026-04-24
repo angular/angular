@@ -428,8 +428,10 @@ describe('resources', () => {
     usernameForm().value.set('taken-user');
     TestBed.tick();
 
-    // Should not have triggered a new request yet
+    // Should not have triggered a new request yet, but the field must already be pending
+    // because the debounce timer is running
     backend.expectNone('/api/check?username=taken-user');
+    expect(usernameForm().pending()).toBe(true);
 
     // Wait for debounce
     await timeout(80);

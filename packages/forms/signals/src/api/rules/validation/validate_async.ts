@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, ResourceRef, ResourceSnapshot, Signal, debounced} from '@angular/core';
+import {
+  DebounceTimer,
+  ResourceRef,
+  Signal,
+  computed,
+  ResourceStatus,
+  debounced,
+} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -126,8 +133,15 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
     (_state, params) => {
       if (opts.debounce !== undefined) {
-        const debouncedResource = debounced(() => params(), opts.debounce);
-        return opts.factory(debouncedResource.value);
+        const debouncedParams = debounced(() => params(), opts.debounce);
+        const res = opts.factory(debouncedParams.value);
+        return Object.create(res, {
+          status: {
+            value: computed<ResourceStatus>(() =>
+              debouncedParams.isLoading() ? 'loading' : res.status(),
+            ),
+          },
+        }) as typeof res;
       }
       return opts.factory(params);
     },
