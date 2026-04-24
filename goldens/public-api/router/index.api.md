@@ -201,6 +201,7 @@ export type ComponentInputBindingFeature = RouterFeature<RouterFeatureKind.Compo
 // @public
 export interface ComponentInputBindingOptions {
     queryParams?: boolean;
+    unmatchedInputBehavior?: 'alwaysUndefined' | 'undefinedIfStale';
 }
 
 // @public
