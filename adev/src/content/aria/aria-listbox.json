@@ -43,17 +43,6 @@
           "isRequiredInput": false
         },
         {
-          "name": "searchTerm",
-          "type": "Signal<string>",
-          "memberType": "property",
-          "memberTags": [
-            "protected",
-            "readonly"
-          ],
-          "description": "The text used by the typeahead search.",
-          "jsdocTags": []
-        },
-        {
           "name": "value",
           "type": "InputSignal<V>",
           "memberType": "property",
@@ -144,7 +133,7 @@
       "source": {
         "filePath": "/src/aria/listbox/option.ts",
         "startLine": 34,
-        "endLine": 88
+        "endLine": 83
       }
     },
     {
@@ -489,10 +478,6 @@
     ],
     [
       "Option.id",
-      "@angular/aria/listbox"
-    ],
-    [
-      "Option.searchTerm",
       "@angular/aria/listbox"
     ],
     [
