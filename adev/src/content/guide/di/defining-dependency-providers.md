@@ -5,15 +5,15 @@ Angular provides two ways to make services available for injection:
 1. **Automatic provision** - Using `providedIn` in the `@Injectable` decorator, the developer-preview [`@Service`](guide/di/creating-and-using-services#using-the-service-decorator) decorator, or by providing a factory in the `InjectionToken` configuration
 2. **Manual provision** - Using the `providers` array in components, directives, routes, or application config
 
-In the [previous guide](/guide/di/creating-and-using-services), you learned how to create services using `providedIn: 'root'`, which handles most common use cases. This guide explores additional patterns for both automatic and manual provider configuration.
+In the [previous guide](/guide/di/creating-and-using-services), you learned how to create services using `providedIn: 'root'`, which covers most common use cases. This guide explores additional patterns for both automatic and manual provider configuration.
 
 ## Automatic provision for non-class dependencies
 
-While the `@Injectable` decorator with `providedIn: 'root'` works great for services (classes), you might need to provide other types of values globally - like configuration objects, functions, or primitive values. Angular provides `InjectionToken` for this purpose.
+While the `@Injectable` decorator with `providedIn: 'root'` works well for services (classes), you might need to provide other types of values globally, such as configuration objects, functions, or primitive values. Angular provides `InjectionToken` for this purpose.
 
 ### What is an InjectionToken?
 
-An `InjectionToken` is an object that Angular's dependency injection system uses to uniquely identify values for injection. Think of it as a special key that lets you store and retrieve any type of value in Angular's DI system:
+An `InjectionToken` is an object that Angular's dependency injection system uses to uniquely identify values for injection. It acts as a key that lets you store and retrieve any type of value in Angular's DI system:
 
 ```ts
 import {InjectionToken} from '@angular/core';
@@ -36,7 +36,7 @@ NOTE: The string parameter (e.g., `'api.url'`) is a description purely for debug
 
 ### InjectionToken with `providedIn: 'root'`
 
-An `InjectionToken` that has a `factory` results in `providedIn: 'root'` by default (but can be overidden via the `providedIn` prop).
+An `InjectionToken` with a `factory` uses `providedIn: 'root'` by default (but can be overridden using the `providedIn` option).
 
 ```ts
 // 📁 /app/config.token.ts
@@ -73,7 +73,7 @@ export class Header {
 
 ### When to use InjectionToken with factory functions
 
-InjectionToken with factory functions is ideal when you can't use a class but need to provide dependencies globally:
+Use `InjectionToken` with factory functions when you cannot use a class but still need to provide dependencies globally:
 
 ```ts
 // 📁 /app/logger.token.ts
@@ -138,7 +138,7 @@ This approach offers several advantages:
 
 ## Understanding manual provider configuration
 
-When you need more control than `providedIn: 'root'` offers, you can manually configure providers. Manual configuration through the `providers` array is useful when:
+When you need more control than `providedIn: 'root'`, configure providers manually. Use manual configuration through the `providers` array when:
 
 1. **The service doesn't have `providedIn`** - Services without automatic provision must be manually provided
 2. **You want a new instance** - To create a separate instance at the component/directive level instead of using the shared one
@@ -227,7 +227,7 @@ In the example above:
 
 ## Declaring a provider
 
-Think of Angular's dependency injection system as a hash map or dictionary. Each provider configuration object defines a key-value pair:
+Think of Angular's dependency injection system as a hash map or dictionary. Each provider configuration defines a key-value pair:
 
 - **Key (Provider identifier)**: The unique identifier you use to request a dependency
 - **Value**: What Angular should return when that token is requested
@@ -279,7 +279,7 @@ Provider identifiers allow Angular's dependency injection (DI) system to retriev
 
 #### Class names
 
-Class name use the imported class directly as the identifier:
+Class names use the imported class directly as the identifier:
 
 ```angular-ts
 import {Component} from '@angular/core';
@@ -328,7 +328,7 @@ export class Example {
 
 #### Can TypeScript interfaces be identifiers for injection?
 
-TypeScript interfaces cannot be used for injection because they don't exist at runtime:
+TypeScript interfaces cannot be used for injection because they do not exist at runtime:
 
 ```ts
 // ❌ This won't work!
@@ -357,7 +357,7 @@ export class Example {
 }
 ```
 
-The InjectionToken provides a runtime value that Angular's DI system can use, while still maintaining type safety through TypeScript's generic type parameter.
+An `InjectionToken` provides a runtime value that Angular's DI system can use, while maintaining type safety through TypeScript generics.
 
 ### Provider value types
 
@@ -589,7 +589,7 @@ providers: [
 ];
 ```
 
-IMPORTANT: Don't confuse `useExisting` with `useClass`. `useClass` creates separate instances, while `useExisting` ensures you get the same singleton instance.
+IMPORTANT: Do not confuse `useExisting` with `useClass`. `useClass` creates separate instances, while `useExisting` ensures you get the same singleton instance.
 
 ### Multiple providers
 
@@ -650,7 +650,7 @@ bootstrapApplication(App, {
 
 #### Why provide during bootstrap instead of using `providedIn: 'root'`?
 
-You might want a provider during bootstrap when:
+Provide dependencies during bootstrap when:
 
 - The provider has side-effects (e.g., installing the client-side router)
 - The provider requires configuration (e.g., routes)
@@ -897,7 +897,7 @@ bootstrapApplication(App, {
 
 ### Why use provider functions instead of direct configuration?
 
-Provider functions offer several advantages for library authors:
+Provider functions offer several advantages:
 
 1. **Encapsulation** - Internal tokens and implementation details remain private
 2. **Type safety** - TypeScript ensures correct configuration at compile time

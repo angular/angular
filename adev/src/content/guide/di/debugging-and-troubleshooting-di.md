@@ -82,7 +82,7 @@ export class EagerView {
 }
 ```
 
-Lazy-loaded routes create child injectors that are only available after the route loads.
+Lazy-loaded routes create child injectors that become available only after the route loads.
 
 NOTE: By default, route injectors and their services persist even after navigating away from the route. They are not destroyed until the application is closed. For automatic cleanup of unused route injectors, see [customizing route behavior](guide/routing/customizing-route-behavior#experimental-automatic-cleanup-of-unused-route-injectors).
 
@@ -130,7 +130,7 @@ export class UserSettings {
 }
 ```
 
-Each component gets its own `UserClient` instance. Changes in one component don't affect the other.
+Each component gets its own `UserClient` instance. Changes in one component do not affect the other.
 
 **Solution:** Use `providedIn: 'root'` for singletons.
 
@@ -173,7 +173,7 @@ export class UserForm {
 }
 ```
 
-This pattern is useful for:
+This pattern is useful in scenarios such as:
 
 - Form state management (each form has isolated state)
 - Component-specific caching
@@ -272,13 +272,13 @@ export class DataLoader {
 
 The `runInInjectionContext()` method creates a temporary injection context, allowing code inside the callback to call `inject()`.
 
-IMPORTANT: Always capture dependencies at the class level when possible. Use `injector.get()` for simple deferred retrieval, and `runInInjectionContext()` only when external code needs to call `inject()`.
+IMPORTANT: Capture dependencies at the class level whenever possible. Use `injector.get()` for simple deferred retrieval, and `runInInjectionContext()` only when external code needs to call `inject()`.
 
 TIP: Use `assertInInjectionContext()` to verify your code is running in a valid injection context. This is useful when creating reusable functions that call `inject()`. See [Asserting the context](guide/di/dependency-injection-context#asserts-the-context) for details.
 
 ### providers vs viewProviders confusion
 
-The difference between `providers` and `viewProviders` affects content projection scenarios.
+The difference between `providers` and `viewProviders` affects content projection.
 
 #### Understanding the difference
 
@@ -373,7 +373,7 @@ Use `viewProviders` when:
 
 ### InjectionToken issues
 
-When using `InjectionToken` for non-class dependencies, developers often encounter problems related to token identity, type safety, and provider configuration. These issues usually stem from how JavaScript handles object identity and how TypeScript infers types.
+When using `InjectionToken` for non-class dependencies, you may encounter issues related to token identity, type safety, and provider configuration. These issues usually stem from how JavaScript handles object identity and how TypeScript infers types.
 
 #### Token identity confusion
 
@@ -417,7 +417,7 @@ export class FeatureView {
 }
 ```
 
-Even though both tokens have the description `'app config'`, they are different objects. Angular compares tokens by reference, not by description.
+Even though both tokens have the description `'app config'`, they are different objects in memory. Angular compares tokens by reference, not by description.
 
 **Solution:** Import the same token instance.
 
@@ -629,7 +629,7 @@ This shows you which instances are available at different injector levels.
 
 ### Debugging workflow
 
-When DI fails, follow this systematic approach:
+When DI fails, follow this approach:
 
 **Step 1: Read the error message**
 
@@ -708,7 +708,7 @@ export class UserClient {
 }
 ```
 
-NOTE: Classes with zero-argument constructors can work without `@Injectable()`, but this is not recommended. Always include the decorator for consistency and to avoid issues when adding dependencies later.
+NOTE: Classes with zero-argument constructors can work without `@Injectable()`, but this approach is not recommended. Always include the decorator for consistency and to avoid issues when adding dependencies later.
 
 #### Missing providedIn configuration
 

@@ -2,11 +2,11 @@
 
 This guide provides in-depth coverage of Angular's hierarchical dependency injection system, including resolution rules, modifiers, and advanced patterns.
 
-NOTE: For basic concepts about injector hierarchy and provider scoping, see the [defining dependency providers guide](guide/di/defining-dependency-providers#injector-hierarchy-in-angular).
+NOTE: For basic concepts about injector hierarchy and provider scoping, see the [Defining dependency providers guide](guide/di/defining-dependency-providers#injector-hierarchy-in-angular).
 
 ## Types of injector hierarchies
 
-Angular has two injector hierarchies:
+Angular defines two injector hierarchies:
 
 | Injector hierarchies            | Details                                                                                                                                                                   |
 | :------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -19,7 +19,7 @@ For `NgModule` based applications, you can provide dependencies with the `Module
 
 ### `EnvironmentInjector`
 
-The `EnvironmentInjector` can be configured in one of two ways by using:
+Configure the `EnvironmentInjector` in one of the following ways:
 
 - The `@Injectable()` `providedIn` property to refer to `root` or `platform`
 - The `ApplicationConfig` `providers` array
@@ -32,9 +32,9 @@ Tree-shaking is especially useful for a library because the application which us
 
 </docs-callout>
 
-`EnvironmentInjector` is configured by the `ApplicationConfig.providers`.
+The `ApplicationConfig.providers` configures the `EnvironmentInjector`.
 
-Provide services using `providedIn` of `@Injectable()` as follows:
+Provide services using the `providedIn` option of `@Injectable()`:
 
 ```ts {highlight:[4]}
 import {Injectable} from '@angular/core';
@@ -47,25 +47,25 @@ export class ItemService {
 }
 ```
 
-The `@Injectable()` decorator identifies a service class.
-The `providedIn` property configures a specific `EnvironmentInjector`, here `root`, which makes the service available in the `root` `EnvironmentInjector`.
+The `@Injectable()` decorator marks a class as a service.
+The `providedIn` property configures a specific `EnvironmentInjector`. In this example, `root` makes the service available in the root `EnvironmentInjector`.
 
 ### ModuleInjector
 
-In the case of `NgModule` based applications, the ModuleInjector can be configured in one of two ways by using:
+In `NgModule`-based applications, configure the `ModuleInjector` in one of the following ways:
 
 - The `@Injectable()` `providedIn` property to refer to `root` or `platform`
 - The `@NgModule()` `providers` array
 
-`ModuleInjector` is configured by the `@NgModule.providers` and `NgModule.imports` property. `ModuleInjector` is a flattening of all the providers arrays that can be reached by following the `NgModule.imports` recursively.
+The `ModuleInjector` is configured by the `@NgModule.providers` and `NgModule.imports` properties. `ModuleInjector` is a flattening of all the providers arrays that can be reached by following the `NgModule.imports` recursively.
 
 Child `ModuleInjector` hierarchies are created when lazy loading other `@NgModules`.
 
 ### Platform injector
 
-There are two more injectors above `root`, an additional `EnvironmentInjector` and `NullInjector()`.
+Above the `root` injector are an additional `EnvironmentInjector` and the `NullInjector()`.
 
-Consider how Angular bootstraps the application with the following in `main.ts`:
+Angular bootstraps the application as shown in `main.ts`:
 
 ```ts
 bootstrapApplication(App, appConfig);
@@ -79,7 +79,7 @@ This allows multiple applications to share a platform configuration.
 For example, a browser has only one URL bar, no matter how many applications you have running.
 You can configure additional platform-specific providers at the platform level by supplying `extraProviders` using the `platformBrowser()` function.
 
-The next parent injector in the hierarchy is the `NullInjector()`, which is the top of the tree.
+The next parent injector in the hierarchy is the `NullInjector()`, which is the top of the injector tree.
 If you've gone so far up the tree that you are looking for a service in the `NullInjector()`, you'll get an error unless you've used `@Optional()` because ultimately, everything ends at the `NullInjector()` and it returns an error or, in the case of `@Optional()`, `null`.
 For more information on `@Optional()`, see the [`@Optional()` section](#optional) of this guide.
 
@@ -99,7 +99,7 @@ stateDiagram-v2
 While the name `root` is a special alias, other `EnvironmentInjector` hierarchies don't have aliases.
 You have the option to create `EnvironmentInjector` hierarchies whenever a dynamically loaded component is created, such as with the Router, which will create child `EnvironmentInjector` hierarchies.
 
-All requests forward up to the root injector, whether you configured it with the `ApplicationConfig` instance passed to the `bootstrapApplication()` method, or registered all providers with `root` in their own services.
+All requests propagate up to the root injector, whether it is configured through `ApplicationConfig` in `bootstrapApplication()` or via `providedIn: 'root'` in services.
 
 <docs-callout title="@Injectable() vs. ApplicationConfig">
 
@@ -118,9 +118,9 @@ For `NgModule` based applications, configure app-wide providers in the `AppModul
 
 ### `ElementInjector`
 
-Angular creates `ElementInjector` hierarchies implicitly for each DOM element.
+Angular creates an `ElementInjector` hierarchy implicitly for each DOM element.
 
-Providing a service in the `@Component()` decorator using its `providers` or `viewProviders` property configures an `ElementInjector`.
+Providing a service in the `@Component()` decorator using the `providers` or `viewProviders` property configures an `ElementInjector`.
 For example, the following `TestComponent` configures the `ElementInjector` by providing the service as follows:
 
 ```ts {highlight:[3]}
@@ -152,13 +152,13 @@ When resolving a token for a component/directive, Angular resolves it in two pha
 1. Against its parents in the `ElementInjector` hierarchy.
 2. Against its parents in the `EnvironmentInjector` hierarchy.
 
-When a component declares a dependency, Angular tries to satisfy that dependency with its own `ElementInjector`.
+When a component declares a dependency, Angular first tries to resolve it using its own `ElementInjector`.
 If the component's injector lacks the provider, it passes the request up to its parent component's `ElementInjector`.
 
 The requests keep forwarding up until Angular finds an injector that can handle the request or runs out of ancestor `ElementInjector` hierarchies.
 
-If Angular doesn't find the provider in any `ElementInjector` hierarchies, it goes back to the element where the request originated and looks in the `EnvironmentInjector` hierarchy.
-If Angular still doesn't find the provider, it throws an error.
+If Angular does not find the provider in any `ElementInjector` hierarchies, it returns to the origin element and searches the `EnvironmentInjector` hierarchy.
+If Angular still does not find the provider, it throws an error.
 
 If you have registered a provider for the same DI token at different levels, the first one Angular encounters is the one it uses to resolve the dependency.
 If, for example, a provider is registered locally in the component that needs a service,
@@ -168,7 +168,7 @@ HELPFUL: For `NgModule` based applications, Angular will search the `ModuleInjec
 
 ## Resolution modifiers
 
-Angular's resolution behavior can be modified with `optional`, `self`, `skipSelf` and `host`.
+Modify Angular's resolution behavior using `optional`, `self`, `skipSelf`, and `host`.
 Import each of them from `@angular/core` and use each in the [`inject`](/api/core/inject) configuration when you inject your service.
 
 ### Types of modifiers
@@ -179,7 +179,7 @@ Resolution modifiers fall into three categories:
 - Where to start looking, that is `skipSelf`
 - Where to stop looking, `host` and `self`
 
-By default, Angular always starts at the current `Injector` and keeps searching all the way up.
+By default, Angular starts at the current `Injector` and continues searching up the hierarchy.
 Modifiers allow you to change the starting, or _self_, location and the ending location.
 
 Additionally, you can combine all of the modifiers except:
