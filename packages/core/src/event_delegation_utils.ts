@@ -101,9 +101,28 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
   },
 );
 
+// Tracks (event, element) pairs already dispatched by a real DOM listener
+// post-hydration. Keyed per element so that jsaction can still replay the same
+// event on a *different* element (e.g. incremental hydration replays on a
+// deferred block's element, not the trigger that originally fired). Prevents
+// double-invocation when a component hydrates before app stability (#67328).
+const handledEventElements = new WeakMap<Event, WeakSet<Element>>();
+
+export function markEventHandledForElement(event: Event, element: Element): void {
+  let elements = handledEventElements.get(event);
+  if (!elements) {
+    elements = new WeakSet<Element>();
+    handledEventElements.set(event, elements);
+  }
+  elements.add(element);
+}
+
 export function invokeListeners(event: Event, currentTarget: Element | null) {
   const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
   if (!handlerFns || !currentTarget?.isConnected) {
+    return;
+  }
+  if (currentTarget && handledEventElements.get(event)?.has(currentTarget)) {
     return;
   }
   for (const handler of handlerFns) {
