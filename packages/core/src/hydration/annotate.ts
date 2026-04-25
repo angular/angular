@@ -442,10 +442,24 @@ function serializeLContainer(
       }
 
       if (!isHydrateNeverBlock) {
-        Object.assign(
-          serializedView,
-          serializeLView(lContainer[i] as LView, parentDeferBlockId, context),
-        );
+        // Skip serialization for component views that opted out of hydration via
+        // ngSkipHydration. This mirrors the guard in serializeLView for inline
+        // child components (see the Array.isArray branch below), but applies to
+        // components hosted inside an LContainer (e.g. created via
+        // ViewContainerRef.createComponent). Without this check, NG0503 is thrown
+        // when such a component receives projectable nodes even if ngSkipHydration
+        // is present on its host element (#67928).
+        const childHostElement = unwrapRNode(childLView[HOST]!);
+        if (
+          childLView[TVIEW].type !== TViewType.Component ||
+          childHostElement === null ||
+          !(childHostElement as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)
+        ) {
+          Object.assign(
+            serializedView,
+            serializeLView(lContainer[i] as LView, parentDeferBlockId, context),
+          );
+        }
       }
     }
 
