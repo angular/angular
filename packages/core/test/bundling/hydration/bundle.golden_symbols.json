@@ -656,6 +656,7 @@
       "handleStoppedNotification",
       "handleUncaughtError",
       "handleUnhandledError",
+      "handledEventElements",
       "hasApplyArgsData",
       "hasAuthHeaders",
       "hasDeps",
