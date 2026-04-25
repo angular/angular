@@ -90,6 +90,53 @@ describe('event replay', () => {
     window._ejsas = {};
   });
 
+  // Issue #67328: post-hydration events must not be replayed
+  it('should not replay an event that was already handled by a real DOM listener after component hydration', async () => {
+    const onClickSpy = jasmine.createSpy();
+    let removeTask: (() => void) | null = null;
+
+    @Component({
+      selector: 'app',
+      template: `<button id="btn" (click)="onClick()"></button>`,
+    })
+    class AppComponent {
+      constructor() {
+        if (isPlatformBrowser(inject(PLATFORM_ID))) {
+          removeTask = inject(PendingTasks).add();
+        }
+      }
+      onClick = onClickSpy;
+    }
+
+    const hydrationFeatures = () => [withEventReplay()];
+    const html = await ssr(AppComponent, {hydrationFeatures});
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+
+    // Hydrate the component (registers real DOM listeners) but keep app unstable
+    const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+    appRef.tick();
+
+    // Click AFTER hydration: real DOM listener fires once, jsaction also queues it
+    const btn = doc.getElementById('btn')!;
+    btn.click();
+
+    // Real DOM listener should have fired once
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
+
+    // Let the app become stable — triggers whenStable() which kicks off jsaction replay
+    removeTask!();
+    await appRef.whenStable();
+    appRef.tick();
+
+    // Without the fix, jsaction replay fires the handler a second time (count = 2).
+    // With the fix, the post-hydration event must not be replayed again (count = 1).
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('should work for elements with local refs', async () => {
     const onClickSpy = jasmine.createSpy();
 

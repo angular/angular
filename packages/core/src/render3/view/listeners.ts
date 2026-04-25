@@ -28,6 +28,7 @@ import {assertNotSame} from '../../util/assert';
 import {handleUncaughtError} from '../instructions/shared';
 import {
   type EventCallback,
+  markEventHandledForElement,
   stashEventListenerImpl,
   type WrappedEventCallback,
 } from '../../event_delegation_utils';
@@ -162,7 +163,17 @@ export function listenToDomEvent(
 
     stashEventListenerImpl(lView, target, eventName, wrappedListener);
 
-    const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
+    // Wrap the real DOM listener to mark the (event, element) pair as handled.
+    // This prevents jsaction from replaying events that were already dispatched
+    // by a real DOM listener post-hydration while keeping replay working for
+    // other elements (e.g. incremental hydration — see #67328).
+    const domListener = (event: Event) => {
+      if (!eventTargetResolver) {
+        markEventHandledForElement(event, native as unknown as Element);
+      }
+      return wrappedListener(event);
+    };
+    const cleanupFn = renderer.listen(target as RElement, eventName, domListener);
 
     // We skip cleaning up animation event types to ensure leaving animation events can be used.
     // These events should be automatically garbage collected anyway after the element is
