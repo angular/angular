@@ -109,6 +109,9 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
 const handledEventElements = new WeakMap<Event, WeakSet<Element>>();
 
 export function markEventHandledForElement(event: Event, element: Element): void {
+  // Guard: WeakMap requires object keys. Synthetic events from triggerEventHandler in tests
+  // may be null or primitives, which are not real DOM events and don't need tracking.
+  if (event == null || typeof event !== 'object') return;
   let elements = handledEventElements.get(event);
   if (!elements) {
     elements = new WeakSet<Element>();
