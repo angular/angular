@@ -214,7 +214,7 @@ export interface ComponentInputBindingOptions {
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *
- * @see {@link /api/router/routerModule#forRoot forRoot}
+ * @see {@link /api/router/RouterModule#forRoot forRoot}
  *
  *
  * @publicApi
