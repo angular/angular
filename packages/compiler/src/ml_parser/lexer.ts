@@ -145,6 +145,7 @@ const SUPPORTED_BLOCKS = [
   '@if',
   '@else', // Covers `@else if` as well
   '@for',
+  '@repeat',
   '@switch',
   '@case',
   '@default',

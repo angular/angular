@@ -21,6 +21,7 @@ import {
   InteractionDeferredTrigger,
   LetDeclaration,
   Reference,
+  RepeatBlock,
   SwitchBlockCase,
   Template,
   TextAttribute,
@@ -143,7 +144,12 @@ export interface OutOfBandDiagnosticRecorder<T> {
     projectionNode: Element | Template,
     componentName: string,
     slotSelector: string,
-    controlFlowNode: IfBlockBranch | SwitchBlockCase | ForLoopBlock | ForLoopBlockEmpty,
+    controlFlowNode:
+      | IfBlockBranch
+      | SwitchBlockCase
+      | ForLoopBlock
+      | ForLoopBlockEmpty
+      | RepeatBlock,
     preservesWhitespaces: boolean,
   ): void;
 

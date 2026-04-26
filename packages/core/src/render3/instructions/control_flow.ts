@@ -9,7 +9,7 @@
 import {setActiveConsumer} from '../../../primitives/signals';
 
 import {TrackByFunction} from '../../change_detection';
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {
   findAndReconcileMatchingDehydratedViews,
@@ -39,6 +39,7 @@ import {destroyLView} from '../node_manipulation';
 import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
+import {stringifyForError} from '../util/stringify_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {AnimationLViewData} from '../../animation/interfaces';
@@ -251,6 +252,47 @@ export function ɵɵrepeaterTrackByIndex(index: number) {
  */
 export function ɵɵrepeaterTrackByIdentity<T>(_: number, value: T) {
   return value;
+}
+
+class RepeatCountIterable implements Iterable<number> {
+  constructor(private readonly count: number) {}
+
+  [Symbol.iterator](): Iterator<number> {
+    let index = 0;
+    const count = this.count;
+
+    return {
+      next(): IteratorResult<number> {
+        if (index < count) {
+          return {value: index++, done: false};
+        }
+        return {value: undefined, done: true};
+      },
+    };
+  }
+}
+
+/**
+ * Converts a `@repeat` count into an iterable range consumed by the repeater instruction.
+ *
+ * @codeGenApi
+ */
+export function ɵɵrepeatCount(count: number | null | undefined): Iterable<number> | null {
+  if (count == null) {
+    return null;
+  }
+
+  if (typeof count !== 'number' || count < 0 || count === Infinity) {
+    throw new RuntimeError(
+      RuntimeErrorCode.REPEAT_INVALID_COUNT,
+      ngDevMode &&
+        `The \`@repeat\` count must be a non-negative finite number, but received ${stringifyForError(count)}.`,
+    );
+  }
+
+  const n = Math.trunc(count);
+
+  return n > 0 ? new RepeatCountIterable(n) : null;
 }
 
 class RepeaterMetadata {

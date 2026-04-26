@@ -7,7 +7,7 @@
  */
 
 import {AST, ImplicitReceiver, PropertyRead, ThisReceiver} from '../../expression_parser/ast';
-import {ForLoopBlock, Variable} from '../../render3/r3_ast';
+import {ForLoopBlock, RepeatBlock, Variable} from '../../render3/r3_ast';
 import {tcbExpression, TcbExpressionTranslator} from './expression';
 import type {Context} from './context';
 import type {Scope} from './scope';
@@ -53,6 +53,45 @@ export class TcbForOfOp extends TcbOp {
     const block = getStatementsBlock([...loopScope.render(), trackExpression]);
     this.scope.addStatement(
       new TcbExpr(`for (${initializer.print()} of ${expression.print()}) {\n${block} }`),
+    );
+    return null;
+  }
+}
+
+/**
+ * A `TcbOp` which renders a repeat block as a TypeScript numeric loop.
+ */
+export class TcbRepeatOp extends TcbOp {
+  constructor(
+    private tcb: Context,
+    private scope: Scope,
+    private block: RepeatBlock,
+  ) {
+    super();
+  }
+
+  override get optional() {
+    return false;
+  }
+
+  override execute(): null {
+    const loopScope = this.scope.createChildScope(
+      this.scope,
+      this.block,
+      this.tcb.env.config.checkControlFlowBodies ? this.block.children : [],
+      null,
+    );
+    const countId = new TcbExpr(this.tcb.allocateId());
+    const expression = tcbExpression(this.block.expression, this.tcb, this.scope);
+    const initializer = new TcbExpr(
+      `var ${countId.print()}: number | null | undefined = ${expression.print()}`,
+    );
+    const indexId = this.tcb.allocateId();
+    const block = getStatementsBlock(loopScope.render());
+    this.scope.addStatement(
+      new TcbExpr(
+        `${initializer.print()};\nfor (let ${indexId} = 0; ${countId.print()} != null && ${indexId} < ${countId.print()}; ${indexId}++) {\n${block} }`,
+      ),
     );
     return null;
   }

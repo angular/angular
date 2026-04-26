@@ -105,6 +105,7 @@ export {
   ɵɵviewQuery,
   ɵɵviewQuerySignal,
   ɵɵreference,
+  ɵɵrepeatCount,
   ɵɵrepeater,
   ɵɵrepeaterCreate,
   ɵɵrepeaterTrackByIdentity,

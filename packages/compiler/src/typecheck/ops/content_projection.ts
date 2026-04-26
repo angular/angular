@@ -15,6 +15,7 @@ import {
   IfBlock,
   IfBlockBranch,
   Node,
+  RepeatBlock,
   SwitchBlock,
   SwitchBlockCaseGroup,
   Template,
@@ -30,8 +31,9 @@ import {OutOfBandDiagnosticCategory} from '../oob';
  *
  * Context:
  * Control flow blocks try to emulate the content projection behavior of `*ngIf` and `*ngFor`
- * in order to reduce breakages when moving from one syntax to the other (see #52414), however the
- * approach only works if there's only one element at the root of the control flow expression.
+ * in order to reduce breakages when moving from one syntax to the other (see #52414). `@repeat`
+ * follows the same projection model. The approach only works if there's only one element at the
+ * root of the control flow expression.
  * This means that a stray sibling node (e.g. text) can prevent an element from being projected
  * into the right slot. The purpose of the `TcbOp` is to find any places where a node at the root
  * of a control flow expression *would have been projected* into a specific slot, if the control
@@ -94,8 +96,9 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
   }
 
   private findPotentialControlFlowNodes() {
-    const result: Array<IfBlockBranch | SwitchBlockCaseGroup | ForLoopBlock | ForLoopBlockEmpty> =
-      [];
+    const result: Array<
+      IfBlockBranch | SwitchBlockCaseGroup | ForLoopBlock | ForLoopBlockEmpty | RepeatBlock
+    > = [];
 
     for (const child of this.element.children) {
       if (child instanceof ForLoopBlock) {
@@ -104,6 +107,10 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
         }
         if (child.empty !== null && this.shouldCheck(child.empty)) {
           result.push(child.empty);
+        }
+      } else if (child instanceof RepeatBlock) {
+        if (this.shouldCheck(child)) {
+          result.push(child);
         }
       } else if (child instanceof IfBlock) {
         for (const branch of child.branches) {

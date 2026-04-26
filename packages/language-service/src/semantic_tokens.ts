@@ -28,6 +28,7 @@ import {
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
+  TmplAstRepeatBlock,
   TmplAstSwitchBlock,
   TmplAstSwitchBlockCase,
   TmplAstSwitchBlockCaseGroup,
@@ -189,6 +190,10 @@ class ClassificationVisitor implements TmplAstVisitor {
   }
 
   visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty) {
+    this.visitAll(block.children);
+  }
+
+  visitRepeatBlock(block: TmplAstRepeatBlock) {
     this.visitAll(block.children);
   }
 

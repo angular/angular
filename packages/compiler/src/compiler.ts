@@ -163,6 +163,7 @@ export {
   Element as TmplAstElement,
   ForLoopBlock as TmplAstForLoopBlock,
   ForLoopBlockEmpty as TmplAstForLoopBlockEmpty,
+  RepeatBlock as TmplAstRepeatBlock,
   HoverDeferredTrigger as TmplAstHoverDeferredTrigger,
   Icu as TmplAstIcu,
   IdleDeferredTrigger as TmplAstIdleDeferredTrigger,

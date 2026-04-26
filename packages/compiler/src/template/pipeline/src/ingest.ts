@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {Identifiers} from '../../../render3/r3_identifiers';
 import {DeferBlockDepsEmitMode, R3ComponentDeferMetadata} from '../../../render3/view/api';
 import {icuFromI18nMessage} from '../../../render3/view/i18n/util';
 import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
@@ -255,6 +256,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestIcu(unit, node);
     } else if (node instanceof t.ForLoopBlock) {
       ingestForBlock(unit, node);
+    } else if (node instanceof t.RepeatBlock) {
+      ingestRepeatBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
       ingestLetDeclaration(unit, node);
     } else if (node instanceof t.Component) {
@@ -986,6 +989,72 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
     repeaterCreate.handle,
     expression,
     forBlock.sourceSpan,
+  );
+  unit.update.push(repeater);
+}
+
+/**
+ * Ingest a `@repeat` block into the given `ViewCompilation`.
+ */
+function ingestRepeatBlock(unit: ViewCompilationUnit, repeatBlock: t.RepeatBlock): void {
+  const repeaterView = unit.job.allocateView(unit.xref);
+  const indexName = `ɵ$index_${repeaterView.xref}`;
+  const countName = `ɵ$count_${repeaterView.xref}`;
+  const indexVarNames = new Set<string>();
+
+  for (const variable of repeatBlock.contextVariables) {
+    if (variable.value === '$index') {
+      indexVarNames.add(variable.name);
+    }
+    if (variable.name === '$index') {
+      repeaterView.contextVariables.set('$index', variable.value).set(indexName, variable.value);
+    } else if (variable.name === '$count') {
+      repeaterView.contextVariables.set('$count', variable.value).set(countName, variable.value);
+    } else {
+      repeaterView.aliases.add({
+        kind: ir.SemanticVariableKind.Alias,
+        name: null,
+        identifier: variable.name,
+        expression: getComputedForLoopVariableExpression(variable, indexName, countName),
+      });
+    }
+  }
+
+  ingestNodes(repeaterView, repeatBlock.children);
+
+  const varNames: ir.RepeaterVarNames = {
+    $index: indexVarNames,
+    $implicit: `ɵ$repeat_${repeaterView.xref}`,
+  };
+
+  if (repeatBlock.i18n !== undefined && !(repeatBlock.i18n instanceof i18n.BlockPlaceholder)) {
+    throw Error('AssertionError: Unhandled i18n metadata type or @repeat');
+  }
+
+  const tagName = ingestControlFlowInsertionPoint(unit, repeaterView.xref, repeatBlock);
+  const repeaterCreate = ir.createRepeaterCreateOp(
+    repeaterView.xref,
+    null,
+    tagName,
+    new ir.LexicalReadExpr('$index'),
+    varNames,
+    null,
+    repeatBlock.i18n,
+    undefined,
+    repeatBlock.startSourceSpan,
+    repeatBlock.sourceSpan,
+  );
+  repeaterCreate.functionNameSuffix = 'Repeat';
+  unit.create.push(repeaterCreate);
+
+  const sourceSpan = convertSourceSpan(repeatBlock.expression.span, repeatBlock.sourceSpan);
+  const expression = convertAst(repeatBlock.expression, unit.job, sourceSpan);
+  const rangeExpression = o.importExpr(Identifiers.repeatCount).callFn([expression], sourceSpan);
+  const repeater = ir.createRepeaterOp(
+    repeaterCreate.xref,
+    repeaterCreate.handle,
+    rangeExpression,
+    repeatBlock.sourceSpan,
   );
   unit.update.push(repeater);
 }
@@ -1828,7 +1897,12 @@ function convertSourceSpan(
 function ingestControlFlowInsertionPoint(
   unit: ViewCompilationUnit,
   xref: ir.XrefId,
-  node: t.IfBlockBranch | t.SwitchBlockCaseGroup | t.ForLoopBlock | t.ForLoopBlockEmpty,
+  node:
+    | t.IfBlockBranch
+    | t.SwitchBlockCaseGroup
+    | t.ForLoopBlock
+    | t.ForLoopBlockEmpty
+    | t.RepeatBlock,
 ): string | null {
   let root: t.Element | t.Template | null = null;
 

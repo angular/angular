@@ -211,6 +211,7 @@ export {
   ɵɵqueryRefresh,
   ɵɵreadContextLet,
   ɵɵreference,
+  ɵɵrepeatCount,
   ɵɵrepeater,
   ɵɵrepeaterCreate,
   ɵɵrepeaterTrackByIdentity,

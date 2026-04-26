@@ -16,6 +16,7 @@ import {
   Directive,
   ElementRef,
   EnvironmentInjector,
+  Input,
   QueryList,
   viewChild,
   ViewChildren,
@@ -119,6 +120,54 @@ describe('queries as signals', () => {
       fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(1);
+    });
+
+    it('should update view queries inside repeat blocks', () => {
+      @Component({
+        template: `
+          @repeat (count; let index = $index) {
+            <button #button [attr.data-index]="index">Button {{ index }}</button>
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppComponent {
+        count = 0;
+        firstButton = viewChild('button', {read: ElementRef});
+        buttons = viewChildren('button', {read: ElementRef});
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.firstButton()).toBeUndefined();
+      expect(fixture.componentInstance.buttons()).toEqual([]);
+
+      fixture.componentInstance.count = 3;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(
+        fixture.componentInstance.firstButton()!.nativeElement.getAttribute('data-index'),
+      ).toBe('0');
+      expect(
+        fixture.componentInstance
+          .buttons()
+          .map((button) => button.nativeElement.getAttribute('data-index')),
+      ).toEqual(['0', '1', '2']);
+
+      fixture.componentInstance.count = 1;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(
+        fixture.componentInstance
+          .buttons()
+          .map((button) => button.nativeElement.getAttribute('data-index')),
+      ).toEqual(['0']);
+
+      fixture.componentInstance.count = 0;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.firstButton()).toBeUndefined();
+      expect(fixture.componentInstance.buttons()).toEqual([]);
     });
 
     it('should return an empty array when reading children query in the constructor', () => {
@@ -319,6 +368,62 @@ describe('queries as signals', () => {
       fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
+    });
+
+    it('should update content queries for projected repeat blocks', () => {
+      @Directive({selector: '[repeatQueryItem]'})
+      class RepeatQueryItem {
+        @Input() index = -1;
+      }
+
+      @Component({
+        selector: 'repeat-content-query-target',
+        template: '<ng-content />',
+      })
+      class ContentQueryTarget {
+        firstItem = contentChild(RepeatQueryItem);
+        items = contentChildren(RepeatQueryItem);
+      }
+
+      @Component({
+        imports: [ContentQueryTarget, RepeatQueryItem],
+        template: `
+          <repeat-content-query-target>
+            @repeat (itemCount; let index = $index) {
+              <div repeatQueryItem [index]="index"></div>
+            }
+          </repeat-content-query-target>
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AppComponent {
+        itemCount = 0;
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const target = fixture.debugElement
+        .query(By.directive(ContentQueryTarget))
+        .injector.get(ContentQueryTarget);
+      expect(target.firstItem()).toBeUndefined();
+      expect(target.items()).toEqual([]);
+
+      fixture.componentInstance.itemCount = 2;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(target.firstItem()?.index).toBe(0);
+      expect(target.items().map((item) => item.index)).toEqual([0, 1]);
+
+      fixture.componentInstance.itemCount = 1;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(target.items().map((item) => item.index)).toEqual([0]);
+
+      fixture.componentInstance.itemCount = 0;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(target.firstItem()).toBeUndefined();
+      expect(target.items()).toEqual([]);
     });
 
     it('should run content queries defined on directives', () => {

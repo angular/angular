@@ -8,6 +8,7 @@
 
 import {AST, ASTWithSource, EmptyExpr, RecursiveAstVisitor} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
+import {isNgContent} from '../ml_parser/tags';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
@@ -217,6 +218,47 @@ export function createForLoop(
   return {node, errors};
 }
 
+/** Creates a `repeat` block from an HTML AST node. */
+export function createRepeatBlock(
+  ast: html.Block,
+  visitor: html.Visitor,
+  bindingParser: BindingParser,
+): {node: t.RepeatBlock | null; errors: ParseError[]} {
+  const errors: ParseError[] = validateRepeatBlock(ast);
+  const params = parseRepeatParameters(ast, errors, bindingParser);
+  let node: t.RepeatBlock | null = null;
+
+  if (params !== null) {
+    node = new t.RepeatBlock(
+      params.expression,
+      params.context,
+      html.visitAll(visitor, ast.children, ast.children),
+      ast.sourceSpan,
+      ast.sourceSpan,
+      ast.startSourceSpan,
+      ast.endSourceSpan,
+      ast.nameSpan,
+      ast.i18n,
+    );
+  }
+
+  return {node, errors};
+}
+
+function validateRepeatBlock(ast: html.Block): ParseError[] {
+  const errors: ParseError[] = [];
+
+  for (const child of ast.children) {
+    if (child instanceof html.Element && isNgContent(child.name)) {
+      errors.push(
+        new ParseError(child.sourceSpan, '<ng-content> cannot be used inside an @repeat block'),
+      );
+    }
+  }
+
+  return errors;
+}
+
 /** Creates a switch block from an HTML AST node. */
 export function createSwitchBlock(
   ast: html.Block,
@@ -359,6 +401,67 @@ export function createSwitchBlock(
   return {node, errors};
 }
 
+/** Parses the parameters of a `repeat` block. */
+function parseRepeatParameters(
+  block: html.Block,
+  errors: ParseError[],
+  bindingParser: BindingParser,
+) {
+  if (block.parameters.length === 0) {
+    errors.push(
+      new ParseError(block.startSourceSpan, '@repeat block does not have a count expression'),
+    );
+    return null;
+  }
+
+  const [expressionParam, ...secondaryParams] = block.parameters;
+  const rawExpression = stripOptionalParentheses(expressionParam, errors);
+
+  if (rawExpression === null) {
+    return null;
+  }
+
+  if (rawExpression.trim().length === 0) {
+    errors.push(new ParseError(expressionParam.sourceSpan, '@repeat block expression is empty'));
+    return null;
+  }
+
+  const result = {
+    expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression),
+    context: createRepeaterContextVariables(block),
+  };
+
+  for (const param of secondaryParams) {
+    const letMatch = param.expression.match(FOR_LOOP_LET_PATTERN);
+
+    if (letMatch !== null) {
+      const variablesSpan = new ParseSourceSpan(
+        param.sourceSpan.start.moveBy(letMatch[0].length - letMatch[1].length),
+        param.sourceSpan.end,
+      );
+      parseLetParameter(
+        param.sourceSpan,
+        letMatch[1],
+        variablesSpan,
+        null,
+        result.context,
+        errors,
+        '@repeat block',
+      );
+      continue;
+    }
+
+    errors.push(
+      new ParseError(
+        param.sourceSpan,
+        `Unrecognized @repeat block parameter "${param.expression}"`,
+      ),
+    );
+  }
+
+  return result;
+}
+
 /** Parses the parameters of a `for` loop block. */
 function parseForLoopParameters(
   block: html.Block,
@@ -409,20 +512,7 @@ function parseForLoopParameters(
     itemName: new t.Variable(itemName, '$implicit', variableSpan, variableSpan),
     trackBy: null as {expression: ASTWithSource; keywordSpan: ParseSourceSpan} | null,
     expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression),
-    context: Array.from(ALLOWED_FOR_LOOP_LET_VARIABLES, (variableName) => {
-      // Give ambiently-available context variables empty spans at the end of
-      // the start of the `for` block, since they are not explicitly defined.
-      const emptySpanAfterForBlockStart = new ParseSourceSpan(
-        block.startSourceSpan.end,
-        block.startSourceSpan.end,
-      );
-      return new t.Variable(
-        variableName,
-        variableName,
-        emptySpanAfterForBlockStart,
-        emptySpanAfterForBlockStart,
-      );
-    }),
+    context: createRepeaterContextVariables(block),
   };
 
   for (const param of secondaryParams) {
@@ -440,6 +530,7 @@ function parseForLoopParameters(
         itemName,
         result.context,
         errors,
+        '@for loop',
       );
       continue;
     }
@@ -487,14 +578,32 @@ function validateTrackByExpression(
   }
 }
 
-/** Parses the `let` parameter of a `for` loop block. */
+function createRepeaterContextVariables(block: html.Block): t.Variable[] {
+  return Array.from(ALLOWED_FOR_LOOP_LET_VARIABLES, (variableName) => {
+    // Give ambiently-available context variables empty spans at the end of
+    // the start of the block, since they are not explicitly defined.
+    const emptySpanAfterBlockStart = new ParseSourceSpan(
+      block.startSourceSpan.end,
+      block.startSourceSpan.end,
+    );
+    return new t.Variable(
+      variableName,
+      variableName,
+      emptySpanAfterBlockStart,
+      emptySpanAfterBlockStart,
+    );
+  });
+}
+
+/** Parses the `let` parameter of a `for` loop or `repeat` block. */
 function parseLetParameter(
   sourceSpan: ParseSourceSpan,
   expression: string,
   span: ParseSourceSpan,
-  loopItemName: string,
+  loopItemName: string | null,
   context: t.Variable[],
   errors: ParseError[],
+  blockName: '@for loop' | '@repeat block',
 ): void {
   const parts = expression.split(',');
   let startSpan = span.start;
@@ -507,7 +616,7 @@ function parseLetParameter(
       errors.push(
         new ParseError(
           sourceSpan,
-          `Invalid @for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"`,
+          `Invalid ${blockName} "let" parameter. Parameter should match the pattern "<name> = <variable name>"`,
         ),
       );
     } else if (!ALLOWED_FOR_LOOP_LET_VARIABLES.has(variableName)) {
@@ -519,11 +628,11 @@ function parseLetParameter(
           ).join(', ')}`,
         ),
       );
-    } else if (name === loopItemName) {
+    } else if (loopItemName !== null && name === loopItemName) {
       errors.push(
         new ParseError(
           sourceSpan,
-          `Invalid @for loop "let" parameter. Variable cannot be called "${loopItemName}"`,
+          `Invalid ${blockName} "let" parameter. Variable cannot be called "${loopItemName}"`,
         ),
       );
     } else if (context.some((v) => v.name === name)) {

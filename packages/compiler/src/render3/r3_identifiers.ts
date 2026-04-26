@@ -196,6 +196,7 @@ export class Identifiers {
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
   static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
   static repeaterCreate: o.ExternalReference = {name: 'ɵɵrepeaterCreate', moduleName: CORE};
+  static repeatCount: o.ExternalReference = {name: 'ɵɵrepeatCount', moduleName: CORE};
   static repeaterTrackByIndex: o.ExternalReference = {
     name: 'ɵɵrepeaterTrackByIndex',
     moduleName: CORE,

@@ -27,6 +27,7 @@ import {
   LetDeclaration,
   Node,
   Reference,
+  RepeatBlock,
   SwitchBlockCaseGroup,
   Template,
   TextAttribute,
@@ -40,6 +41,7 @@ export type ScopedNode =
   | IfBlockBranch
   | ForLoopBlock
   | ForLoopBlockEmpty
+  | RepeatBlock
   | DeferredBlock
   | DeferredBlockError
   | DeferredBlockLoading

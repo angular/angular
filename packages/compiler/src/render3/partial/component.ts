@@ -274,6 +274,10 @@ class BlockPresenceVisitor extends RecursiveVisitor {
     this.hasBlocks = true;
   }
 
+  override visitRepeatBlock(): void {
+    this.hasBlocks = true;
+  }
+
   override visitSwitchBlock(): void {
     this.hasBlocks = true;
   }

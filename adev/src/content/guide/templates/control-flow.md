@@ -105,6 +105,57 @@ You can optionally include an `@empty` section immediately after the `@for` bloc
 }
 ```
 
+## Repeat content with the `@repeat` block
+
+The `@repeat` block repeatedly renders the content of a block for a numeric count. Use `@repeat` when you need a fixed number of views and do not have a collection to loop over.
+
+```angular-html
+@repeat (2) {
+  <button>Click me</button>
+}
+```
+
+The count expression can be dynamic. Angular updates the repeated views when the expression value changes:
+
+```angular-html
+@repeat (columns(); let col = $index) {
+  <div class="skeleton-cell" [style.grid-column]="col + 1"></div>
+}
+```
+
+Values of zero render no views. `null` and `undefined` also render no views. Non-integer values are truncated toward zero, matching the behavior of `String.prototype.repeat`. Negative counts and `Infinity` throw [NG0957](errors/NG0957).
+
+Unlike `@for`, `@repeat` does not require or support a `track` expression. The identity of each view is its `$index`.
+
+### Contextual variables in `@repeat` blocks
+
+Inside `@repeat` blocks, several implicit variables are always available:
+
+| Variable | Meaning                                   |
+| -------- | ----------------------------------------- |
+| `$count` | Number of views rendered by the block     |
+| `$index` | Index of the current view                 |
+| `$first` | Whether the current view is the first one |
+| `$last`  | Whether the current view is the last one  |
+| `$even`  | Whether the current view index is even    |
+| `$odd`   | Whether the current view index is odd     |
+
+These variables are always available with these names, but can be aliased via a `let` segment:
+
+```angular-html
+@repeat (rows(); let row = $index) {
+  @repeat (columns(); let col = $index) {
+    <cell-component [row]="row" [col]="col" />
+  }
+}
+```
+
+When blocks are nested, contextual variables follow normal template scoping rules. An inner `@repeat` shadows `$index` from an outer `@repeat`; alias the outer value when it needs to be read inside the inner block.
+
+Queries such as `viewChild`, `viewChildren`, `contentChild`, and `contentChildren` update when `@repeat` creates or removes embedded views. Use required queries only when the count is guaranteed to be greater than zero.
+
+IMPORTANT: Do not place `<ng-content>` directly inside an `@repeat` block. Angular processes content projection at build-time and projected content is not cloned for each repeated view. For conditional or repeated rendering of component content, use [Template fragments](api/core/ng-template).
+
 ## Conditionally display content with the `@switch` block
 
 While the `@if` block is great for most scenarios, the `@switch` block provides an alternate syntax to conditionally render data. Its syntax closely resembles JavaScript's `switch` statement.

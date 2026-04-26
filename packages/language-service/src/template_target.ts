@@ -40,6 +40,7 @@ import {
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
+  TmplAstRepeatBlock,
   TmplAstSwitchBlock,
   TmplAstSwitchBlockCase,
   TmplAstSwitchBlockCaseGroup,
@@ -685,6 +686,12 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty) {
+    this.visitAll(block.children);
+  }
+
+  visitRepeatBlock(block: TmplAstRepeatBlock) {
+    this.visitAll(block.contextVariables);
+    this.visitBinding(block.expression);
     this.visitAll(block.children);
   }
 

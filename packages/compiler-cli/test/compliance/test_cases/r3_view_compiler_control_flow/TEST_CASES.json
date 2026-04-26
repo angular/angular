@@ -783,6 +783,51 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should generate a basic repeat block",
+      "inputFiles": ["basic_repeat.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_repeat_template.js",
+              "generated": "basic_repeat.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate repeat block context variables ($index, $count, $first, $last, $even, $odd)",
+      "inputFiles": ["repeat_template_variables.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "repeat_template_variables_template.js",
+              "generated": "repeat_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate nested repeat blocks with shadowed $index variables",
+      "inputFiles": ["nested_repeat.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_repeat_template.js",
+              "generated": "nested_repeat.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

@@ -26,6 +26,7 @@ import {
   InteractionDeferredTrigger,
   LetDeclaration,
   Node,
+  RepeatBlock,
   Reference,
   SwitchBlock,
   Template,
@@ -45,7 +46,7 @@ import {TcbComponentContextCompletionOp} from './completions';
 import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
 import {TcbIfBlockOp} from './if_block';
 import {TcbSwitchOp} from './switch_block';
-import {TcbForOfOp} from './for_block';
+import {TcbForOfOp, TcbRepeatOp} from './for_block';
 import {TcbLetDeclarationOp} from './let';
 import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
 import {TcbDomSchemaCheckerOp} from './schema';
@@ -184,7 +185,7 @@ export class Scope {
   static forNodes(
     tcb: Context,
     parentScope: Scope | null,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | RepeatBlock | HostElement | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -237,6 +238,21 @@ export class Scope {
       for (const variable of scopedNode.contextVariables) {
         if (!forLoopContextVariableTypes.has(variable.value)) {
           throw new Error(`Unrecognized for loop context variable ${variable.name}`);
+        }
+
+        const type = new TcbExpr(forLoopContextVariableTypes.get(variable.value)!);
+        Scope.registerVariable(
+          scope,
+          variable,
+          new TcbBlockImplicitVariableOp(tcb, scope, type, variable),
+        );
+      }
+    } else if (scopedNode instanceof RepeatBlock) {
+      const forLoopContextVariableTypes = Scope.getForLoopContextVariableTypes();
+
+      for (const variable of scopedNode.contextVariables) {
+        if (!forLoopContextVariableTypes.has(variable.value)) {
+          throw new Error(`Unrecognized repeat block context variable ${variable.name}`);
         }
 
         const type = new TcbExpr(forLoopContextVariableTypes.get(variable.value)!);
@@ -374,7 +390,7 @@ export class Scope {
    */
   createChildScope(
     parentScope: Scope,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | RepeatBlock | HostElement | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -502,6 +518,8 @@ export class Scope {
     } else if (node instanceof ForLoopBlock) {
       this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
       node.empty && this.tcb.env.config.checkControlFlowBodies && this.appendChildren(node.empty);
+    } else if (node instanceof RepeatBlock) {
+      this.opQueue.push(new TcbRepeatOp(this.tcb, this, node));
     } else if (node instanceof BoundText) {
       this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value));
     } else if (node instanceof Icu) {

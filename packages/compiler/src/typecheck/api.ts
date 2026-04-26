@@ -285,7 +285,8 @@ export interface TypeCheckingConfig {
   allowDomEventAssertion: boolean;
 
   /**
-   * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
+   * Whether to descend into the bodies of control flow blocks
+   * (`@if`, `@switch`, `@for` and `@repeat`).
    */
   checkControlFlowBodies: boolean;
 

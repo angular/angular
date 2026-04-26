@@ -160,6 +160,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RENDERER_NOT_FOUND = 407,
     // (undocumented)
+    REPEAT_INVALID_COUNT = 957,
+    // (undocumented)
     REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
     // (undocumented)
     REQUIRED_INPUT_NO_VALUE = -950,

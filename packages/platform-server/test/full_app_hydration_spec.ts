@@ -7707,6 +7707,140 @@ describe('platform-server full application hydration integration', () => {
       });
     });
 
+    describe('@repeat', () => {
+      it('should hydrate @repeat block content', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @repeat (3; let i = $index) {
+              <div>Item #{{ i }}</div>
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should hydrate @repeat block and update count reactively', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @repeat (count(); let i = $index) {
+              <span>{{ i }}</span>
+            }
+          `,
+        })
+        class SimpleComponent {
+          count = signal(3);
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+        // Update count on the client after hydration
+        compRef.instance.count.set(5);
+        compRef.changeDetectorRef.detectChanges();
+        expect(clientRootNode.querySelectorAll('span').length).toBe(5);
+      });
+
+      it('should hydrate @repeat with zero count rendering nothing', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @repeat (count()) {
+              <div>item</div>
+            }
+          `,
+        })
+        class SimpleComponent {
+          count = signal(0);
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+        expect(ssrContents).not.toContain('<div>item</div>');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should hydrate @repeat exposing $count, $first, $last, $even, $odd correctly', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @repeat (3; let i = $index) {
+              <span
+                [attr.data-first]="$first"
+                [attr.data-last]="$last"
+                [attr.data-even]="$even"
+                [attr.data-odd]="$odd"
+                [attr.data-count]="$count"
+              >{{ i }}</span>
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+        const spans = Array.from(clientRootNode.querySelectorAll('span')) as Element[];
+        expect(spans.length).toBe(3);
+        expect(spans.map((s) => s.getAttribute('data-count'))).toEqual(['3', '3', '3']);
+        expect(spans.map((s) => s.getAttribute('data-first'))).toEqual(['true', 'false', 'false']);
+        expect(spans.map((s) => s.getAttribute('data-last'))).toEqual(['false', 'false', 'true']);
+        expect(spans.map((s) => s.getAttribute('data-even'))).toEqual(['true', 'false', 'true']);
+        expect(spans.map((s) => s.getAttribute('data-odd'))).toEqual(['false', 'true', 'false']);
+      });
+    });
+
     describe('Router', () => {
       it('should wait for lazy routes before triggering post-hydration cleanup', async () => {
         const ngZone = TestBed.inject(NgZone);

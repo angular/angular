@@ -526,6 +526,26 @@ export class ForLoopBlockEmpty extends BlockNode implements Node {
   }
 }
 
+export class RepeatBlock extends BlockNode implements Node {
+  constructor(
+    public expression: ASTWithSource,
+    public contextVariables: Variable[],
+    public children: Node[],
+    sourceSpan: ParseSourceSpan,
+    public mainBlockSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitRepeatBlock(this);
+  }
+}
+
 export class IfBlock extends BlockNode implements Node {
   constructor(
     public branches: IfBlockBranch[],
@@ -756,6 +776,7 @@ export interface Visitor<Result = any> {
   visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck): Result;
   visitForLoopBlock(block: ForLoopBlock): Result;
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
+  visitRepeatBlock(block: RepeatBlock): Result;
   visitIfBlock(block: IfBlock): Result;
   visitIfBlockBranch(block: IfBlockBranch): Result;
   visitUnknownBlock(block: UnknownBlock): Result;
@@ -810,6 +831,10 @@ export class RecursiveVisitor implements Visitor<void> {
   }
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): void {
     visitAll(this, block.children);
+  }
+  visitRepeatBlock(block: RepeatBlock): void {
+    const blockItems = [...block.contextVariables, ...block.children];
+    visitAll(this, blockItems);
   }
   visitIfBlock(block: IfBlock): void {
     visitAll(this, block.branches);

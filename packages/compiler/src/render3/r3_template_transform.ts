@@ -28,6 +28,7 @@ import * as t from './r3_ast';
 import {
   createForLoop,
   createIfBlock,
+  createRepeatBlock,
   createSwitchBlock,
   isConnectedForLoopBlock,
   isConnectedIfLoopBlock,
@@ -492,6 +493,10 @@ class HtmlAstToIvyAst implements html.Visitor {
           this,
           this.bindingParser,
         );
+        break;
+
+      case 'repeat':
+        result = createRepeatBlock(block, this, this.bindingParser);
         break;
 
       case 'if':

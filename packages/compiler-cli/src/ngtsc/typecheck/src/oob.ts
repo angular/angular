@@ -28,6 +28,7 @@ import {
   TmplAstInteractionDeferredTrigger,
   TmplAstLetDeclaration,
   TmplAstReference,
+  TmplAstRepeatBlock,
   TmplAstSwitchBlockCase,
   TmplAstTemplate,
   TmplAstTextAttribute,
@@ -44,7 +45,9 @@ import {makeTemplateDiagnostic} from '../diagnostics';
 import {TypeCheckSourceResolver} from './tcb_util';
 import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
-export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder<TemplateDiagnostic> {
+export class OutOfBandDiagnosticRecorderImpl
+  implements OutOfBandDiagnosticRecorder<TemplateDiagnostic>
+{
   private readonly _diagnostics: TemplateDiagnostic[] = [];
 
   /**
@@ -428,7 +431,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       | TmplAstIfBlockBranch
       | TmplAstSwitchBlockCase
       | TmplAstForLoopBlock
-      | TmplAstForLoopBlockEmpty,
+      | TmplAstForLoopBlockEmpty
+      | TmplAstRepeatBlock,
     preservesWhitespaces: boolean,
   ): void {
     const blockName = controlFlowNode.nameSpan.toString().trim();

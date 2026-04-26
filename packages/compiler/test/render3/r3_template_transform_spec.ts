@@ -130,6 +130,11 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitRepeatBlock(block: t.RepeatBlock): void {
+    this.result.push(['RepeatBlock', unparse(block.expression)]);
+    this.visitAll([block.contextVariables, block.children]);
+  }
+
   visitIfBlock(block: t.IfBlock): void {
     this.result.push(['IfBlock']);
     this.visitAll([block.branches]);
@@ -2070,6 +2075,86 @@ describe('R3 template transform', () => {
           }
         `),
         ).toThrowError(/Incomplete block "default never"/);
+      });
+    });
+  });
+
+  describe('repeat blocks', () => {
+    it('should parse a repeat block', () => {
+      expectFromHtml(`
+        @repeat (columns(); let col = $index) {
+          {{ col }}
+        }
+      `).toEqual([
+        ['RepeatBlock', 'columns()'],
+        ['Variable', '$index', '$index'],
+        ['Variable', '$first', '$first'],
+        ['Variable', '$last', '$last'],
+        ['Variable', '$even', '$even'],
+        ['Variable', '$odd', '$odd'],
+        ['Variable', '$count', '$count'],
+        ['Variable', 'col', '$index'],
+        ['BoundText', ' {{ col }} '],
+      ]);
+    });
+
+    it('should parse nested repeat blocks with shadowed context variables', () => {
+      expectFromHtml(`
+        @repeat (2; let row = $index) {
+          @repeat (3; let col = $index) {
+            {{ row }}:{{ col }}:{{ $index }}
+          }
+        }
+      `).toEqual([
+        ['RepeatBlock', '2'],
+        ['Variable', '$index', '$index'],
+        ['Variable', '$first', '$first'],
+        ['Variable', '$last', '$last'],
+        ['Variable', '$even', '$even'],
+        ['Variable', '$odd', '$odd'],
+        ['Variable', '$count', '$count'],
+        ['Variable', 'row', '$index'],
+        ['RepeatBlock', '3'],
+        ['Variable', '$index', '$index'],
+        ['Variable', '$first', '$first'],
+        ['Variable', '$last', '$last'],
+        ['Variable', '$even', '$even'],
+        ['Variable', '$odd', '$odd'],
+        ['Variable', '$count', '$count'],
+        ['Variable', 'col', '$index'],
+        ['BoundText', ' {{ row }}:{{ col }}:{{ $index }} '],
+      ]);
+    });
+
+    describe('validations', () => {
+      it('should report if repeat does not have a count expression', () => {
+        expect(() => parse(`@repeat {hello}`)).toThrowError(
+          /@repeat block does not have a count expression/,
+        );
+      });
+
+      it('should report an empty repeat expression', () => {
+        expect(() => parse(`@repeat (( )) {hello}`)).toThrowError(
+          /@repeat block expression is empty/,
+        );
+      });
+
+      it('should report unrecognized repeat parameters', () => {
+        expect(() => parse(`@repeat (2; track $index) {hello}`)).toThrowError(
+          /Unrecognized @repeat block parameter "track \$index"/,
+        );
+      });
+
+      it('should report an invalid `let` parameter', () => {
+        expect(() => parse(`@repeat (2; let i = $index, $odd) {}`)).toThrowError(
+          /Invalid @repeat block "let" parameter. Parameter should match the pattern "<name> = <variable name>"/,
+        );
+      });
+
+      it('should report ng-content inside repeat blocks', () => {
+        expect(() => parse(`@repeat (2) {<ng-content />}`)).toThrowError(
+          /<ng-content> cannot be used inside an @repeat block/,
+        );
       });
     });
   });

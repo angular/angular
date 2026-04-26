@@ -39,6 +39,7 @@ import {
   LetDeclaration,
   Node,
   Reference,
+  RepeatBlock,
   SwitchBlock,
   SwitchBlockCase,
   SwitchBlockCaseGroup,
@@ -338,6 +339,9 @@ class Scope implements Visitor {
       this.visitVariable(nodeOrNodes.item);
       nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
       nodeOrNodes.children.forEach((node) => node.visit(this));
+    } else if (nodeOrNodes instanceof RepeatBlock) {
+      nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
+      nodeOrNodes.children.forEach((node) => node.visit(this));
     } else if (
       nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
@@ -416,6 +420,10 @@ class Scope implements Visitor {
   }
 
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
+    this.ingestScopedNode(block);
+  }
+
+  visitRepeatBlock(block: RepeatBlock) {
     this.ingestScopedNode(block);
   }
 
@@ -621,6 +629,11 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
+    block.children.forEach((node) => node.visit(this));
+  }
+
+  visitRepeatBlock(block: RepeatBlock) {
+    block.contextVariables.forEach((v) => v.visit(this));
     block.children.forEach((node) => node.visit(this));
   }
 
@@ -997,6 +1010,11 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       nodeOrNodes.trackBy.visit(this);
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof RepeatBlock) {
+      nodeOrNodes.contextVariables.forEach((v) => this.visitNode(v));
+      nodeOrNodes.expression.visit(this);
+      nodeOrNodes.children.forEach(this.visitNode);
+      this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof DeferredBlock) {
       if (this.scope.rootNode !== nodeOrNodes) {
         throw new Error(
@@ -1094,6 +1112,11 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
   }
 
   override visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
+    this.ingestScopedNode(block);
+  }
+
+  override visitRepeatBlock(block: RepeatBlock) {
+    block.expression.visit(this);
     this.ingestScopedNode(block);
   }
 
