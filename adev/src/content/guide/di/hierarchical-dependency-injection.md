@@ -232,7 +232,7 @@ In this case, the injector looks no further than the current `ElementInjector` b
   providers: [{provide: FlowerService, useValue: {emoji: '🌷'}}],
 })
 export class Self {
-  constructor(@Self() public flower: FlowerService) {}
+  public flower = inject(FlowerService, {self: true});
 }
 ```
 
