@@ -44,7 +44,6 @@ export function checkExpectations(
   skipMappingCheck = false,
 ): void {
   const builtDirectory = getBuildOutputDirectory(fs);
-  console.warn(`Checking expectations for test "${testPath}"...`);
   for (const expectedFile of expectedFiles) {
     const expectedPath = fs.resolve(getRootDirectory(fs), expectedFile.expected);
     if (!fs.exists(expectedPath)) {
@@ -86,7 +85,6 @@ export function checkExpectations(
 
     runExtraChecks(testPath, generated, extraChecks);
   }
-  console.warn(`✓ Expectations for test "${testPath}" passed!`);
 }
 
 function runExtraChecks(

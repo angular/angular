@@ -215,6 +215,9 @@ export class TcbExpressionTranslator {
     ) {
       // Resolve the special `$safeNavigationMigration(expr)` syntax to evaluate as the wrapped expression.
       // `$safeNavigationMigration(expr)` -> `expr`
+      // In the TCB this magic function will not affect the emitted TS
+      // as Safe avigation expressions already returned `undefined` instead of null
+      // see bug https://github.com/angular/angular/issues/37622
       if (
         ast.receiver.receiver instanceof ImplicitReceiver &&
         ast.receiver.name === '$safeNavigationMigration' &&

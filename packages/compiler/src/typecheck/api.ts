@@ -234,11 +234,6 @@ export interface TypeCheckingConfig {
   strictSafeNavigationTypes: boolean;
 
   /**
-   * Whether to follow the Javascript optional chaining specs: returning `undefined` instead of `null` for null-safe navigation operations.
-   */
-  legacyOptionalChaining: boolean;
-
-  /**
    * Whether to descend into template bodies and check any bindings there.
    */
   checkTemplateBodies: boolean;

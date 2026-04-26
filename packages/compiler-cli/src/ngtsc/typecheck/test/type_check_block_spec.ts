@@ -1158,7 +1158,6 @@ describe('type check blocks', () => {
       allowSignalsInTwoWayBindings: true,
       checkTwoWayBoundEvents: true,
       allowDomEventAssertion: true,
-      legacyOptionalChaining: false,
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -1450,19 +1449,6 @@ describe('type check blocks', () => {
         expect(block).toContain('((((this).a))?.[0])');
         expect(block).toContain('(0 as any ? (((((this).a)).optionalMethod))!() : undefined)');
       });
-      it('should use undefined for safe navigation operations when legacyOptionalChaining is enabled', () => {
-        // This behavior is _wrong_ but this is where we are today.
-        // See https://github.com/angular/angular/issues/37622
-        const USE_NULL_CONFIG: TypeCheckingConfig = {
-          ...BASE_CONFIG,
-          legacyOptionalChaining: true,
-        };
-        const block = tcb(TEMPLATE, DIRECTIVES, USE_NULL_CONFIG);
-        expect(block).toContain('(0 as any ? (((this).a))?.method!() : undefined)');
-        expect(block).toContain('((((this).a))?.b)');
-        expect(block).toContain('((((this).a))?.[0])');
-        expect(block).toContain('(0 as any ? (((((this).a)).optionalMethod))!() : undefined)');
-      });
 
       it('should use undefined for safe navigation operations when using the $safeNavigationMigration magic function', () => {
         // This behavior is _wrong_ but this is where we are today.
@@ -1499,19 +1485,7 @@ describe('type check blocks', () => {
           '(0 as any ? (((((this).a)).method())?.otherMethod)!() : undefined)',
         );
       });
-      it('should check the presence of a property/method on the receiver when legacyOptionalChaining is enabled', () => {
-        const USE_NULL_CONFIG: TypeCheckingConfig = {
-          ...BASE_CONFIG,
-          legacyOptionalChaining: true,
-        };
-        const block = tcb(TEMPLATE, DIRECTIVES, USE_NULL_CONFIG);
-        expect(block).toContain('(((((this).a)).method())?.b)');
-        expect(block).toContain('(0 as any ? ((this).a())?.method!() : undefined)');
-        expect(block).toContain('(((((this).a)).method())?.[0])');
-        expect(block).toContain(
-          '(0 as any ? (((((this).a)).method())?.otherMethod)!() : undefined)',
-        );
-      });
+
       it('should not check the presence of a property/method on the receiver when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {
           ...BASE_CONFIG,

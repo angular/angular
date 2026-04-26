@@ -124,10 +124,10 @@ import {SourceFileValidator} from '../../validation';
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
+import {ServiceDecoratorHandler} from '../../annotations/src/service';
 import {untagAllTsFiles} from '../../shims';
 import {angularJitApplicationTransform} from '../../transform/jit';
 import {coreVersionSupportsFeature} from './feature_detection';
-import {ServiceDecoratorHandler} from '../../annotations/src/service';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -1095,7 +1095,6 @@ export class NgCompiler {
         // Pipes are checked in View Engine so there is no strictness flag.
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: strictTemplates,
-        legacyOptionalChaining: this.options.legacyOptionalChaining ?? false,
         useContextGenericType: strictTemplates,
         strictLiteralTypes: true,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
@@ -1129,7 +1128,6 @@ export class NgCompiler {
         checkTypeOfNonDomReferences: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
-        legacyOptionalChaining: this.options.legacyOptionalChaining ?? false,
         useContextGenericType: false,
         strictLiteralTypes: false,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,

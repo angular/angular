@@ -207,6 +207,9 @@ function safeTransform(
     ctx.job.legacyOptionalChaining ||
     (flags & ir.VisitorContextFlag.InSafeNavigationMigration) !== 0;
   if (!useNullSemantics) {
+    // Convert the intermediate IR safe-navigation nodes to output AST nodes with `isOptional=true`.
+    // This is the "native optional chaining" path: the output AST nodes carry the `?.` flag and
+    // are later translated to native JS/TS optional-chain syntax by the code generators.
     if (e instanceof ir.SafePropertyReadExpr) {
       return new o.ReadPropExpr(e.receiver, e.name, null, e.sourceSpan, [], true);
     }

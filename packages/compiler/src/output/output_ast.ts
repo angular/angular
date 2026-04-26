@@ -1258,6 +1258,9 @@ export class ReadPropExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     leadingComments?: LeadingComment[],
+    /**
+     * Whether the property access uses the optional-chaining operator (`?.`).
+     */
     public isOptional = false,
   ) {
     super(type, sourceSpan, leadingComments);
@@ -1314,6 +1317,9 @@ export class ReadKeyExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     leadingComments?: LeadingComment[],
+    /**
+     * Whether the property access uses the optional-chaining operator (`?.[`).
+     */
     public isOptional = false,
   ) {
     super(type, sourceSpan, leadingComments);

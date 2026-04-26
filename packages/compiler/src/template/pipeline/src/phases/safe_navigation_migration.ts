@@ -19,14 +19,14 @@ export function removeSafeNavigationMigration(job: CompilationJob): void {
     for (const op of unit.ops()) {
       ir.transformExpressionsInOp(
         op,
-        (e) => extractremoveSafeNavigationMigration(e),
+        (e) => convertSafeNavigationMigrationCall(e),
         ir.VisitorContextFlag.None,
       );
     }
   }
 }
 
-function extractremoveSafeNavigationMigration(e: o.Expression): o.Expression {
+function convertSafeNavigationMigrationCall(e: o.Expression): o.Expression {
   if (
     e instanceof o.InvokeFunctionExpr &&
     e.fn instanceof ir.LexicalReadExpr &&

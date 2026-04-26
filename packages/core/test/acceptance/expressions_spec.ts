@@ -32,7 +32,7 @@ describe('expressions', () => {
 
   it('should return null for safe calls when using the $safeNavigationMigration magic function', async () => {
     @Component({
-      template: `{{ $safeNavigationMigration(method(prop?.field)) === null }}`,
+      template: `{{ method($safeNavigationMigration(prop?.field)) }}`,
     })
     class App {
       prop: {field: string} | undefined = undefined;
@@ -44,6 +44,6 @@ describe('expressions', () => {
 
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    expect(fixture.nativeElement.innerHTML).toEqual('false');
+    expect(fixture.nativeElement.innerHTML).toEqual('unexpected null');
   });
 });
