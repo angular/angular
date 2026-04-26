@@ -133,7 +133,7 @@ class MyMenuItem {}
 class MyMenu {
   triggerText = input('');
 
-  @ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
+  items = contentChildren(MyMenuItem);
 }
 ```
 
