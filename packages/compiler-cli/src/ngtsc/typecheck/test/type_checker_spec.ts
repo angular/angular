@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {InliningMode} from '../../program_driver';
 import {OptimizeFor} from '../api';
 
 import {getClass, setup, TestDeclaration} from '../testing';
@@ -165,7 +165,7 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(0);
       });
 
-      it('should produce errors for components that require TCB inlining', () => {
+      it('should generate TCB in shim file when inlining is unsupported but required', () => {
         const fileName = absoluteFrom('/main.ts');
         const {program, templateTypeChecker} = setup(
           [
@@ -175,12 +175,16 @@ runInEachFileSystem(() => {
               templates: {'Cmp': '<div></div>'},
             },
           ],
-          {inlining: false},
+          {inliningMode: InliningMode.CopySourceToTcb},
         );
         const sf = getSourceFileOrError(program, fileName);
         const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
-        expect(diags.length).toBe(1);
-        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TCB_REQUIRED));
+        expect(diags.length).toBe(0);
+
+        const cmp = getClass(sf, 'Cmp');
+        const block = templateTypeChecker.getTypeCheckBlock(cmp);
+        expect(block).not.toBeNull();
+        expect(block!.getText()).toContain(`Cmp`);
       });
     });
 

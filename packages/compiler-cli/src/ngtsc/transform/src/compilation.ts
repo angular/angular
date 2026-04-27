@@ -267,9 +267,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   private scanClassForTraits(
     clazz: ClassDeclaration,
   ): PendingTrait<unknown, unknown, SemanticSymbol | null, unknown>[] | null {
-    if (!this.compileNonExportedClasses && !this.reflector.isStaticallyExported(clazz)) {
-      return null;
-    }
+
 
     const decorators = this.reflector.getDecoratorsOfDeclaration(clazz);
 
@@ -477,6 +475,16 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
 
     const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
+    if (!this.reflector.isStaticallyExported(clazz) && !this.compileNonExportedClasses) {
+      const isStandalone = (result.analysis as {meta?: {isStandalone?: boolean}} | undefined)?.meta?.isStandalone === true;
+      if (!isStandalone) {
+        // Only compile standalone things when not exported.
+        trait.toSkipped();
+        return;
+      }
+    }
+
+
     if (result.analysis !== undefined && trait.handler.register !== undefined) {
       trait.handler.register(clazz, result.analysis);
     }
