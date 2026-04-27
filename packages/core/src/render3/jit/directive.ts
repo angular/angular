@@ -28,7 +28,7 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {flatten} from '../../util/array_utils';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../def_getters';
+import {getComponentDef, getDirectiveDef, getPipeDef} from '../def_getters';
 import {depsTracker} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
@@ -445,7 +445,8 @@ function extractQueriesMetadata(
   propMetadata: {[key: string]: any[]},
   isQueryAnn: (ann: any) => ann is Query,
 ): R3QueryMetadataFacade[] {
-  const queriesMeta: R3QueryMetadataFacade[] = [];
+  const signalQueriesMeta: R3QueryMetadataFacade[] = [];
+  const decoratorQueriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       const annotations = propMetadata[field];
@@ -460,12 +461,19 @@ function extractQueriesMetadata(
           if (annotations.some(isInputAnnotation)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);
           }
-          queriesMeta.push(convertToR3QueryMetadata(field, ann));
+          const queryMeta = convertToR3QueryMetadata(field, ann);
+          if (queryMeta.isSignal) {
+            signalQueriesMeta.push(queryMeta);
+          } else {
+            decoratorQueriesMeta.push(queryMeta);
+          }
         }
       });
     }
   }
-  return queriesMeta;
+
+  // We match the behavior of AOT here by having signal queries first, then the decorator queries.
+  return [...signalQueriesMeta, ...decoratorQueriesMeta];
 }
 
 function extractExportAs(exportAs: string | undefined): string[] | null {
