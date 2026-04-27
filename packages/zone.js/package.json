@@ -35,7 +35,8 @@
     "electrontest": "cd test/extra && node electron.js",
     "jest:test": "jest --config ./test/jest/jest.config.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js",
-    "vitest:test": "vitest ./test/vitest/vitest.spec.js",
+    "vitest:test": "vitest ./test/vitest/*.spec.js --exclude ./test/vitest/*-globals.spec.js",
+    "vitest-globals:test": "vitest ./test/vitest/*-globals.spec.js --globals",
     "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs",
     "release": "node tools/release.mts"
   },

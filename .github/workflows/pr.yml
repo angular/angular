@@ -174,5 +174,6 @@ jobs:
       - run: pnpm -C packages/zone.js jest:test
       - run: pnpm -C packages/zone.js jest:nodetest
       - run: pnpm -C packages/zone.js vitest:test
+      - run: pnpm -C packages/zone.js vitest-globals:test
       - run: pnpm -C packages/zone.js electrontest
       - run: pnpm -C packages/zone.js/test/typings test
