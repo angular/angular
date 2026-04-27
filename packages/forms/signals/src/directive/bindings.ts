@@ -82,3 +82,21 @@ export function bindingUpdated<TKey extends string>(
   }
   return false;
 }
+
+/**
+ * Iterates over all control binding names, computes each value from field state, and calls
+ * `onUpdate` for any binding whose value has changed since the last call. Shared by native
+ * and select-multiple control implementations to avoid duplicating the update loop.
+ */
+export function applyControlStateBindings(
+  bindings: {[key: string]: unknown},
+  state: ReadonlyFieldState<unknown>,
+  onUpdate: (name: ControlBindingKey, value: unknown) => void,
+): void {
+  for (const name of CONTROL_BINDING_NAMES) {
+    const value = readFieldStateBindingValue(state, name);
+    if (bindingUpdated(bindings, name, value)) {
+      onUpdate(name, value);
+    }
+  }
+}

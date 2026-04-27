@@ -5,12 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {type ɵControlDirectiveHost as ControlDirectiveHost} from '@angular/core';
 import {
+  ɵRuntimeError as RuntimeError,
+  type ɵControlDirectiveHost as ControlDirectiveHost,
+} from '@angular/core';
+import {RuntimeErrorCode} from '../errors';
+import {
+  applyControlStateBindings,
   bindingUpdated,
-  CONTROL_BINDING_NAMES,
   createBindings,
-  readFieldStateBindingValue,
   type ControlBindingKey,
 } from './bindings';
 import type {FormField} from './form_field';
@@ -51,15 +54,12 @@ export function selectMultipleControlCreate(
       setSelectMultipleControlValue(select, controlValue);
     }
 
-    for (const name of CONTROL_BINDING_NAMES) {
-      const value = readFieldStateBindingValue(state, name);
-      if (bindingUpdated(bindings, name, value)) {
-        host.setInputOnDirectives(name, value);
-        if (parent.elementAcceptsNativeProperty(name)) {
-          setNativeDomProperty(parent.renderer, select, name, value as string | number | undefined);
-        }
+    applyControlStateBindings(bindings, state, (name, value) => {
+      host.setInputOnDirectives(name, value);
+      if (parent.elementAcceptsNativeProperty(name)) {
+        setNativeDomProperty(parent.renderer, select, name, value as string | number | undefined);
       }
-    }
+    });
 
     updateMode = true;
   };
@@ -76,6 +76,9 @@ function getSelectMultipleControlValue(select: HTMLSelectElement): string[] {
     return selected;
   }
 
+  // `selectedOptions` is not available in some environments (e.g. older jsdom versions used
+  // in Node.js tests). Fall back to iterating the full `options` list and filtering by the
+  // `selected` flag.
   for (let i = 0; i < select.options.length; i++) {
     const option = select.options[i];
     if (option.selected) {
@@ -87,7 +90,15 @@ function getSelectMultipleControlValue(select: HTMLSelectElement): string[] {
 }
 
 function setSelectMultipleControlValue(select: HTMLSelectElement, value: unknown): void {
-  const selectedValues = new Set(Array.isArray(value) ? value : []);
+  if (!Array.isArray(value)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.SELECT_MULTIPLE_NON_ARRAY_VALUE,
+      ngDevMode &&
+        `Expected an array value for select[multiple], but got ${typeof value}. ` +
+          `Bind a signal holding a string array: e.g. form(signal<string[]>([]))`,
+    );
+  }
+  const selectedValues = new Set<string>(value);
   for (let i = 0; i < select.options.length; i++) {
     const option = select.options[i];
     option.selected = selectedValues.has(option.value);

@@ -3927,7 +3927,7 @@ describe('field directive', () => {
     @Component({
       imports: [FormField],
       template: `
-        <select #select multiple [formField]="$any(f)">
+        <select #select multiple [formField]="f">
           <option value="one">One</option>
           <option value="two">Two</option>
           <option value="three">Three</option>

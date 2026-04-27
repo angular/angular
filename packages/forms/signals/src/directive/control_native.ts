@@ -13,10 +13,9 @@ import {
 import type {ValidationError} from '../api/rules';
 import {createParser} from '../util/parser';
 import {
+  applyControlStateBindings,
   bindingUpdated,
-  CONTROL_BINDING_NAMES,
   createBindings,
-  readFieldStateBindingValue,
   type ControlBindingKey,
 } from './bindings';
 import type {FormField} from './form_field';
@@ -96,15 +95,12 @@ export function nativeControlCreate(
       setNativeControlValue(input, controlValue);
     }
 
-    for (const name of CONTROL_BINDING_NAMES) {
-      const value = readFieldStateBindingValue(state, name);
-      if (bindingUpdated(bindings, name, value)) {
-        host.setInputOnDirectives(name, value);
-        if (parent.elementAcceptsNativeProperty(name)) {
-          setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
-        }
+    applyControlStateBindings(bindings, state, (name, value) => {
+      host.setInputOnDirectives(name, value);
+      if (parent.elementAcceptsNativeProperty(name)) {
+        setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
       }
-    }
+    });
 
     updateMode = true;
   };
