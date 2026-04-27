@@ -76,9 +76,8 @@ function getSelectMultipleControlValue(select: HTMLSelectElement): string[] {
     return selected;
   }
 
-  // `selectedOptions` is not available in some environments (e.g. older jsdom versions used
-  // in Node.js tests). Fall back to iterating the full `options` list and filtering by the
-  // `selected` flag.
+  // `selectedOptions` is not implemented in Domino (used for server-side rendering), so fall
+  // back to iterating the full `options` list and filtering by the `selected` flag.
   for (let i = 0; i < select.options.length; i++) {
     const option = select.options[i];
     if (option.selected) {
