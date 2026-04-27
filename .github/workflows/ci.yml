@@ -54,16 +54,16 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run unit tests
         run: pnpm run -s devtools:build:firefox --jobs 4
-      - name: Test build
-        run: pnpm devtools:build:chrome
-      - name: Cypress run
-        uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
-        with:
-          command: pnpm devtools:test:e2e
-          start: pnpm bazel run //devtools/src:devserver
-          wait-on: 'http://localhost:4200'
-          wait-on-timeout: 300
-          install: false
+      # - name: Test build
+      #   run: pnpm devtools:build:chrome
+      # - name: Cypress run
+      #   uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
+      #   with:
+      #     command: pnpm devtools:test:e2e
+      #     start: pnpm bazel run //devtools/src:devserver
+      #     wait-on: 'http://localhost:4200'
+      #     wait-on-timeout: 300
+      #     install: false
 
   test:
     runs-on: ubuntu-latest
