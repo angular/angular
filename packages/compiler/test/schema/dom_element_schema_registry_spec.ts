@@ -168,6 +168,16 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext('set', 'to', false)).toBe(SecurityContext.ATTRIBUTE_NO_BINDING);
   });
 
+  it('should return security contexts for meta, background and svg:use sinks', () => {
+    expect(registry.securityContext('meta', 'content', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('body', 'background', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('table', 'background', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('td', 'background', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('th', 'background', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('use', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
+    expect(registry.securityContext('use', 'xlink:href', false)).toBe(SecurityContext.RESOURCE_URL);
+  });
+
   it('should detect properties on namespaced elements', () => {
     const htmlAst = new HtmlParser().parse('<svg:style>', 'TestComp');
     const nodeName = (<Element>htmlAst.rootNodes[0]).name;
