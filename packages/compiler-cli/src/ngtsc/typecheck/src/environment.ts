@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {ReferenceEmitter} from '../../imports';
-import {ReflectionHost} from '../../reflection';
+
 import {ImportManager} from '../../translator';
 import {
   TcbDirectiveMetadata,
@@ -51,10 +51,9 @@ export class Environment extends ReferenceEmitEnvironment {
     readonly config: TypeCheckingConfig,
     importManager: ImportManager,
     refEmitter: ReferenceEmitter,
-    reflector: ReflectionHost,
     contextFile: ts.SourceFile,
   ) {
-    super(importManager, refEmitter, reflector, contextFile);
+    super(importManager, refEmitter, contextFile);
   }
 
   /**

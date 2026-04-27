@@ -39,7 +39,6 @@ export class TypeCheckFile extends Environment {
     readonly fileName: AbsoluteFsPath,
     config: TypeCheckingConfig,
     refEmitter: ReferenceEmitter,
-    reflector: ReflectionHost,
     compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
   ) {
     super(
@@ -52,7 +51,6 @@ export class TypeCheckFile extends Environment {
         shouldUseSingleQuotes: () => true,
       }),
       refEmitter,
-      reflector,
       ts.createSourceFile(
         compilerHost.getCanonicalFileName(fileName),
         '',
@@ -68,12 +66,14 @@ export class TypeCheckFile extends Environment {
     domSchemaChecker: DomSchemaChecker,
     oobRecorder: OutOfBandDiagnosticRecorder,
     genericContextBehavior: TcbGenericContextBehavior,
+    reflector: ReflectionHost,
   ): void {
     const fnId = `_tcb${this.nextTcbId++}`;
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
       ref,
       meta,
       this,
+      reflector,
       genericContextBehavior,
     );
     const fn = generateTypeCheckBlock(

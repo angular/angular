@@ -63,7 +63,6 @@ runInEachFileSystem(() => {
         _('/_typecheck_.ts'),
         ALL_ENABLED_CONFIG,
         new ReferenceEmitter([]),
-        /* reflector */ null!,
         host,
       );
       const sf = file.render();

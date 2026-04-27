@@ -19,10 +19,18 @@ import {
   TypeCheckableDirectiveMeta,
 } from '../api';
 import {Environment} from './environment';
-import {ImportFlags, ReferenceEmitKind, Reference} from '../../imports';
+import {
+  ImportFlags,
+  ReferenceEmitKind,
+  Reference,
+  ReferenceEmitter,
+  assertSuccessfulReferenceEmit,
+} from '../../imports';
+import {ImportManager, translateType} from '../../translator';
 import {
   AbsoluteSourceSpan,
   ExternalExpr,
+  ExpressionType,
   TransplantedType,
   BoundTarget,
   ReferenceTarget,
@@ -36,7 +44,7 @@ import {requiresInlineTypeCtor} from './type_constructor';
 import {tempPrint} from './ops/codegen';
 import {generateTcbTypeParameters} from './tcb_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import ts from 'typescript';
 import {TcbGenericContextBehavior} from './ops/context';
 
@@ -48,16 +56,42 @@ export function adaptTypeCheckBlockMetadata(
   ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
   meta: TypeCheckBlockMetadata,
   env: Environment,
+  reflector: ReflectionHost,
   genericContextBehavior: TcbGenericContextBehavior,
 ): {tcbMeta: TcbTypeCheckBlockMetadata; component: TcbComponentMetadata} {
   const refCache = new Map<Reference<ClassDeclaration>, TcbReferenceMetadata>();
   const dirCache = new Map<TypeCheckableDirectiveMeta, TcbDirectiveMetadata>();
 
+  const canReferenceType = (r: Reference) => {
+    const result = env.refEmitter.emit(
+      r,
+      env.contextFile,
+      ImportFlags.NoAliasing | ImportFlags.AllowTypeImports | ImportFlags.AllowRelativeDtsImports,
+    );
+    return result.kind === ReferenceEmitKind.Success;
+  };
+
+  const referenceType = (r: Reference) => {
+    const ngExpr = env.refEmitter.emit(
+      r,
+      env.contextFile,
+      ImportFlags.NoAliasing | ImportFlags.AllowTypeImports | ImportFlags.AllowRelativeDtsImports,
+    );
+    assertSuccessfulReferenceEmit(ngExpr, env.contextFile, 'symbol');
+    return translateType(
+      new ExpressionType(ngExpr.expression),
+      env.contextFile,
+      reflector,
+      env.refEmitter,
+      env.importManager,
+    );
+  };
+
   const extractRef = (ref: Reference<ClassDeclaration>) => {
     if (refCache.has(ref)) {
       return refCache.get(ref)!;
     }
-    const result = extractReferenceMetadata(ref, env);
+    const result = extractReferenceMetadata(ref, env.refEmitter, env.contextFile);
     refCache.set(ref, result);
     return result;
   };
@@ -79,8 +113,12 @@ export function adaptTypeCheckBlockMetadata(
             isSignal: input.isSignal,
             transformType: (() => {
               if (input.transform != null) {
-                const node = env.referenceTransplantedType(
+                const node = translateType(
                   new TransplantedType(input.transform.type),
+                  env.contextFile,
+                  reflector,
+                  env.refEmitter,
+                  env.importManager,
                 );
                 return tempPrint(node, env.contextFile);
               }
@@ -118,17 +156,20 @@ export function adaptTypeCheckBlockMetadata(
       isGeneric: dir.isGeneric,
       requiresInlineTypeCtor: requiresInlineTypeCtor(
         dir.ref.node as ClassDeclaration<ts.ClassDeclaration>,
-        env.reflector,
-        env,
+        reflector,
+        canReferenceType,
       ),
       ...adaptGenerics(
         dir.ref.node as ClassDeclaration<ts.ClassDeclaration>,
         env,
+        reflector,
         // The directive that we're processing is its own dependency
         // so we should the same generic context behavior.
         extractRef(dir.ref).key === extractRef(ref).key
           ? genericContextBehavior
           : TcbGenericContextBehavior.UseEmitter,
+        canReferenceType,
+        referenceType,
       ),
     };
 
@@ -208,7 +249,14 @@ export function adaptTypeCheckBlockMetadata(
     },
     component: {
       ref: extractRef(ref as Reference<ClassDeclaration>),
-      ...adaptGenerics(ref.node, env, genericContextBehavior),
+      ...adaptGenerics(
+        ref.node,
+        env,
+        reflector,
+        genericContextBehavior,
+        canReferenceType,
+        referenceType,
+      ),
     },
   };
 }
@@ -216,7 +264,10 @@ export function adaptTypeCheckBlockMetadata(
 function adaptGenerics(
   node: ClassDeclaration<ts.ClassDeclaration>,
   env: Environment,
+  reflector: ReflectionHost,
   genericContextBehavior: TcbGenericContextBehavior,
+  canReferenceType: (ref: Reference) => boolean,
+  referenceType: (ref: Reference) => ts.TypeNode,
 ): {
   typeParameters: TcbTypeParameter[] | null;
   typeArguments: string[] | null;
@@ -231,9 +282,9 @@ function adaptGenerics(
 
     switch (genericContextBehavior) {
       case TcbGenericContextBehavior.UseEmitter:
-        const emitter = new TypeParameterEmitter(node.typeParameters, env.reflector);
-        const emittedParams = emitter.canEmit((r) => env.canReferenceType(r))
-          ? emitter.emit((typeRef) => env.referenceType(typeRef))
+        const emitter = new TypeParameterEmitter(node.typeParameters, reflector);
+        const emittedParams = emitter.canEmit(canReferenceType)
+          ? emitter.emit(referenceType)
           : undefined;
         typeParameters = generateTcbTypeParameters(
           emittedParams || node.typeParameters,
@@ -259,14 +310,15 @@ function adaptGenerics(
 
 function extractReferenceMetadata(
   ref: Reference<ClassDeclaration>,
-  env: Environment,
+  refEmitter: ReferenceEmitter,
+  contextFile: ts.SourceFile,
 ): TcbReferenceMetadata {
   let name = ref.debugName || ref.node.name!.text;
   let moduleName = ref.ownedByModuleGuess;
   let unexportedDiagnostic: string | null = null;
   let isLocal = true;
 
-  const emitted = env.refEmitter.emit(ref, env.contextFile, ImportFlags.NoAliasing);
+  const emitted = refEmitter.emit(ref, contextFile, ImportFlags.NoAliasing);
   if (emitted.kind === ReferenceEmitKind.Success) {
     if (emitted.expression instanceof ExternalExpr) {
       name = emitted.expression.value.name!;
