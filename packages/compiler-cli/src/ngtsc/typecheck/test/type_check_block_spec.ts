@@ -21,6 +21,8 @@ import {
 } from '../../imports';
 import {OptimizeFor} from '../api';
 import {ALL_ENABLED_CONFIG, diagnose, setup, tcb, TestDeclaration, TestDirective} from '../testing';
+import {InliningMode} from '../../program_driver';
+import {TypeCheckShimGenerator} from '../src/shim';
 
 describe('type check blocks', () => {
   beforeEach(() => initMockFileSystem('Native'));
@@ -2520,6 +2522,57 @@ describe('type check blocks', () => {
         `import { Component, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE } from '@angular/core'; // should be re-used`,
       );
       expect(testSf.text).toContain(`[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`);
+    });
+
+    function removeSpans(text: string): string {
+      return text.replace(/\/\*[\s\S]*?\*\//g, '');
+    }
+
+    it('should copy source content to shim file in CopySourceToTcb mode', () => {
+      const TEMPLATE = '<div>{{hello}}</div>';
+      const {templateTypeChecker, program, programStrategy} = setup(
+        [
+          {
+            fileName: absoluteFrom('/test.ts'),
+            templates: {'AppComponent': TEMPLATE},
+            // Use non-exported class to force inlining need
+            source: `
+              import {Component} from '@angular/core';
+              class AppComponent {
+                hello = 'world';
+              }
+            `,
+          },
+        ],
+        {
+          inliningMode: InliningMode.CopySourceToTcb,
+        },
+      );
+
+      // Trigger type check block generation.
+      templateTypeChecker.getDiagnosticsForFile(
+        getSourceFileOrError(program, absoluteFrom('/test.ts')),
+        OptimizeFor.SingleFile,
+      );
+
+      const typeCheckProgram = programStrategy.getProgram();
+      const originalSf = getSourceFileOrError(typeCheckProgram, absoluteFrom('/test.ts'));
+      const shimSf = getSourceFileOrError(
+        typeCheckProgram,
+        TypeCheckShimGenerator.shimFor(absoluteFrom('/test.ts')),
+      );
+
+      // Original file should NOT contain the TCB
+      expect(originalSf.text).not.toContain('function tcb');
+
+      // Shim file SHOULD contain the copied source and the TCB
+      expect(shimSf.text).toContain('class AppComponent');
+      expect(shimSf.text).toContain('function _tcb_');
+
+      // Verify that the TCB contains the binding check
+      // The TCB contains spans in comments, so we clean them up for the assertion.
+      const cleanShimText = removeSpans(shimSf.text);
+      expect(cleanShimText).toContain('"" + (((this).hello');
     });
   });
 

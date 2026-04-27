@@ -37,6 +37,14 @@ export class TypeCheckFile extends Environment {
   readonly isTypeCheckFile = true;
   private nextTcbId = 1;
   private tcbStatements: string[] = [];
+  private sourceContent: string = '';
+  get hasCopiedSource() {
+    return this.copiedSourceOriginPath !== undefined;
+  }
+
+  setSourceContent(text: string) {
+    this.sourceContent = text;
+  }
 
   constructor(
     readonly fileName: AbsoluteFsPath,
@@ -105,7 +113,7 @@ export class TypeCheckFile extends Environment {
     }
 
     const printer = ts.createPrinter();
-    let source = '';
+    let source = this.sourceContent;
 
     const newImports = importChanges.newImports.get(this.contextFile.fileName);
     if (newImports !== undefined) {

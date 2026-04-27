@@ -89,7 +89,7 @@ export function adaptTypeCheckBlockMetadata(
     if (refCache.has(ref)) {
       return refCache.get(ref)!;
     }
-    const result = extractReferenceMetadata(ref, env.refEmitter, env.contextFile);
+    const result = extractReferenceMetadata(ref, env);
     refCache.set(ref, result);
     return result;
   };
@@ -312,15 +312,55 @@ function adaptGenerics(
 
 function extractReferenceMetadata(
   ref: Reference<ClassDeclaration>,
-  refEmitter: ReferenceEmitter,
-  contextFile: ts.SourceFile,
+  env: Environment,
 ): TcbReferenceMetadata {
   let name = ref.debugName || ref.node.name!.text;
   let moduleName = ref.ownedByModuleGuess;
   let unexportedDiagnostic: string | null = null;
   let isLocal = true;
 
-  const emitted = refEmitter.emit(ref, contextFile, ImportFlags.NoAliasing);
+  // When the compiler operates in `CopySourceToTcb` mode, it creates a separate shim file
+  // and copies the entire source content of the original file into it. From a pure text
+  // perspective in that shim file, the original classes are local.
+  //
+  // However, during the generation phase here, the compiler is still working with the
+  // AST nodes of the original file. So, `ref.node.getSourceFile()` returns the original
+  // file, not the shim file. If we fall through to standard reference resolution below,
+  // the emitter would assume it needs to generate an import (because the target file and
+  // source file don't match in AST terms). For non-exported symbols, that auto-import
+  // would fail.
+  //
+  // This condition acts as a bridge between AST reality and the physical file text:
+  // it identifies that the class is local because its text was copied to this shim,
+  // and it ensures we just output the class name directly rather than an import.
+  if (env.copiedSourceOriginPath !== undefined) {
+    const refFile = ref.node.getSourceFile().fileName;
+    if (refFile === env.copiedSourceOriginPath) {
+      const nodeName = ref.node?.name as ts.Identifier | undefined;
+      const nodeNameSpan = nodeName
+        ? new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd())
+        : undefined;
+
+      let key: TcbReferenceKey;
+      if (nodeNameSpan !== undefined) {
+        key = `${refFile}#${nodeNameSpan.start}` as TcbReferenceKey;
+      } else {
+        key = name as TcbReferenceKey;
+      }
+
+      return {
+        name,
+        moduleName: null,
+        isLocal: true,
+        unexportedDiagnostic: null,
+        nodeNameSpan,
+        nodeFilePath: refFile,
+        key,
+      } satisfies TcbReferenceMetadata;
+    }
+  }
+
+  const emitted = env.refEmitter.emit(ref, env.contextFile, ImportFlags.NoAliasing);
   if (emitted.kind === ReferenceEmitKind.Success) {
     if (emitted.expression instanceof ExternalExpr) {
       name = emitted.expression.value.name!;

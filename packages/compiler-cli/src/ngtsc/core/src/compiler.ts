@@ -87,7 +87,7 @@ import {
   PerfEvent,
   PerfPhase,
 } from '../../perf';
-import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
+import {FileUpdate, InliningMode, ProgramDriver, UpdateMode} from '../../program_driver';
 import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {
@@ -1880,6 +1880,10 @@ class NotifyingProgramDriverWrapper implements ProgramDriver {
     private notifyNewProgram: (program: ts.Program) => void,
   ) {
     this.getSourceFileVersion = this.delegate.getSourceFileVersion?.bind(this);
+  }
+
+  get inliningMode(): InliningMode {
+    return this.delegate.inliningMode;
   }
 
   get supportsInlineOperations() {

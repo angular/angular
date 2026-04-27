@@ -107,7 +107,6 @@ import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
 import {
-  InliningMode,
   ShimTypeCheckingData,
   TypeCheckData,
   TypeCheckContextImpl,
@@ -627,6 +626,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       for (const [shimPath, shimRecord] of fileRecord.shimData) {
+        // TODO(atscott): Filter out diagnostics from original source in CopySourceToTcb
+        // We don't want to duplicate diagnostics from original source when copying to tcb
+
         const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
         diagnostics.push(
           ...typeCheckProgram
@@ -993,16 +995,13 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private newContext(host: TypeCheckingHost): TypeCheckContextImpl {
-    const inlining = this.programDriver.supportsInlineOperations
-      ? InliningMode.InlineOps
-      : InliningMode.Error;
     return new TypeCheckContextImpl(
       this.config,
       this.compilerHost,
       this.refEmitter,
       this.reflector,
       host,
-      inlining,
+      this.programDriver.inliningMode,
       this.perf,
     );
   }

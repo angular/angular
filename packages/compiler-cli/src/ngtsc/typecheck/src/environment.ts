@@ -15,6 +15,7 @@ import {
   TypeCtorMetadata,
 } from '@angular/compiler';
 import ts from 'typescript';
+import {AbsoluteFsPath} from '../../file_system';
 
 import {ReferenceEmitter} from '../../imports';
 
@@ -46,13 +47,17 @@ export class Environment extends ReferenceEmitEnvironment {
   private pipeInsts = new Map<TcbReferenceKey, string>();
   protected pipeInstStatements: TcbExpr[] = [];
 
+  copiedSourceOriginPath?: AbsoluteFsPath;
+
   constructor(
     readonly config: TypeCheckingConfig,
     importManager: ImportManager,
     refEmitter: ReferenceEmitter,
     contextFile: ts.SourceFile,
+    copiedSourceOriginPath?: AbsoluteFsPath,
   ) {
     super(importManager, refEmitter, contextFile);
+    this.copiedSourceOriginPath = copiedSourceOriginPath;
   }
 
   /**

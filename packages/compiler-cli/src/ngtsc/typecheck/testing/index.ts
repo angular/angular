@@ -73,7 +73,7 @@ import {
   PipeMeta,
 } from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
-import {TsCreateProgramDriver} from '../../program_driver';
+import {InliningMode, TsCreateProgramDriver} from '../../program_driver';
 import {
   AmbientImport,
   ClassDeclaration,
@@ -520,6 +520,7 @@ export function setup(
     config?: Partial<TypeCheckingConfig>;
     options?: ts.CompilerOptions;
     inlining?: boolean;
+    inliningMode?: InliningMode;
     parseOptions?: ParseTemplateOptions;
     referenceEmitter?: ReferenceEmitter;
   } = {},
@@ -670,8 +671,12 @@ export function setup(
   });
 
   const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
-  if (overrides.inlining !== undefined) {
-    (programStrategy as any).supportsInlineOperations = overrides.inlining;
+  if (overrides.inliningMode !== undefined) {
+    (programStrategy as any).inliningMode = overrides.inliningMode;
+  } else if (overrides.inlining !== undefined) {
+    (programStrategy as any).inliningMode = overrides.inlining
+      ? InliningMode.InlineOps
+      : InliningMode.Error;
   }
 
   const fakeScopeReader: ComponentScopeReader = {
