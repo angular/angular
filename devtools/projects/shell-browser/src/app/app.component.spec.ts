@@ -24,7 +24,7 @@ describe('AppComponent', () => {
           useClass: applicationOperationsSPy,
         },
       ],
-    }).compileComponents();
+    });
   }));
 
   it('should create the app', () => {
