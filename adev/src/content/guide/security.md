@@ -450,6 +450,12 @@ const nodeAppEngine = new AngularNodeAppEngine({
 });
 ```
 
+For the Node.js variant `AngularNodeAppEngine`, you can also provide the `NG_TRUST_PROXY_HEADERS` environment variable (with comma-separated list of headers as a value) to allow the usage of these headers.
+
+```bash {hideDollar}
+export NG_TRUST_PROXY_HEADERS="X-FORWARDED-HOST,X-FORWARDED-PREFIX"
+```
+
 IMPORTANT: Only enable `trustProxyHeaders` if your application is behind a trusted proxy that strictly validates or overrides these headers. Otherwise, attackers can spoof these headers to cause [Server-Side Request Forgery (SSRF)](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/SSRF) attacks.
 
 ## Auditing Angular applications
