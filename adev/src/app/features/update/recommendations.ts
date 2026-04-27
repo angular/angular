@@ -2912,4 +2912,12 @@ export const RECOMMENDATIONS: Step[] = [
     action:
       'The `lastSuccessfulNavigation` property on the Router has been converted to a signal. To get its value, you now need to invoke it as a function: `router.lastSuccessfulNavigation()`.',
   },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-configure-commonengine-allowed-hosts',
+    action:
+      "Starting `@angular/ssr` 21.1.5, if your application uses SSR with `CommonEngine`, set the `allowedHosts` option in your `server.ts` (for example, `new CommonEngine({allowedHosts: ['localhost', '*.yourdomain.com']})`). Without it, SSR silently falls back to client-side rendering. This requirement comes from security advisory [GHSA-x288-3778-4hhx](https://github.com/angular/angular-cli/security/advisories/GHSA-x288-3778-4hhx) (also backported to 20.3.17 and 19.2.21).",
+  },
 ];
