@@ -39,6 +39,7 @@
 | `NG01002` | [Missing Control Value](errors/NG01002)                                              |
 | `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
 | `NG01203` | [Missing value accessor](errors/NG01203)                                             |
+| `NG01902` | [Orphan field in signal forms](errors/NG01902)                                       |
 | `NG02200` | [Missing Iterable Differ](errors/NG02200)                                            |
 | `NG02800` | [JSONP support in HttpClient configuration](errors/NG02800)                          |
 | `NG02802` | [Headers not transferred by HttpTransferCache](errors/NG02802)                       |
