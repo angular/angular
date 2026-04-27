@@ -13,7 +13,7 @@ import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project}
 function quickInfoSkeleton(): {[fileName: string]: string} {
   return {
     'app.ts': `
-        import {Component, Directive, EventEmitter, Input, NgModule, Output, Pipe, PipeTransform, model, signal} from '@angular/core';
+        import {Component, Directive, EventEmitter, Input, NgModule, Output, Pipe, PipeTransform, input, model, signal} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
         export interface Address {
@@ -97,6 +97,22 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
         }
 
         @Directive({
+          selector: '[signal-input]',
+          standalone: false,
+        })
+        export class SignalInput {
+          signalInput = input<string>();
+        }
+
+        @Directive({
+          selector: '[restricted-signal-input]',
+          standalone: false,
+        })
+        export class RestrictedSignalInput {
+          protected restrictedSignalInput = input<string>();
+        }
+
+        @Directive({
           selector: 'button[custom-button][compound]',
           standalone: false,
         })
@@ -122,6 +138,8 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
             StringModel,
             TestComponent,
             SignalModel,
+            SignalInput,
+            RestrictedSignalInput,
             DeprecatedDirective
           ],
           imports: [
@@ -285,6 +303,81 @@ describe('quick info', () => {
             expectedDisplayString:
               '(property) SignalModel.signalModel: ModelSignal<string | undefined>',
           });
+        });
+
+        it('should work for signal inputs', () => {
+          expectQuickInfo({
+            templateOverride: `<div signal-input [signal¦Input]="signalValue"></div>`,
+            expectedSpanText: 'signalInput',
+            expectedDisplayString:
+              '(property) SignalInput.signalInput: InputSignal<string | undefined>',
+          });
+        });
+
+        it('should work for restricted signal inputs', () => {
+          const customEnv = LanguageServiceTestEnv.setup();
+          const customProject = customEnv.addProject('custom-test', quickInfoSkeleton());
+
+          const text = `<div restricted-signal-input [restricted¦SignalInput]="signalValue"></div>`;
+          const templateOverride = text;
+          const expectedSpanText = 'restrictedSignalInput';
+          const expectedDisplayString =
+            '(property) RestrictedSignalInput.restrictedSignalInput: InputSignal<string | undefined>';
+
+          const template = customProject.openFile('app.html');
+          template.contents = text.replace('¦', '');
+          customEnv.expectNoSourceDiagnostics();
+
+          template.moveCursorToText(templateOverride);
+          const quickInfo = template.getQuickInfoAtPosition();
+          expect(quickInfo).toBeTruthy();
+          const {textSpan, displayParts} = quickInfo!;
+          expect(
+            template.contents.substring(textSpan.start, textSpan.start + textSpan.length),
+          ).toEqual(expectedSpanText);
+          expect(toText(displayParts)).toEqual(expectedDisplayString);
+        });
+
+        it('should work for inputs with ngAcceptInputType_', () => {
+          const customEnv = LanguageServiceTestEnv.setup();
+          const files = quickInfoSkeleton();
+          files['app.ts'] = files['app.ts'].replace(
+            'declarations: [',
+            'declarations: [\n            CoercedInputDir,',
+          );
+          files['app.ts'] = files['app.ts'].replace(
+            '@NgModule({',
+            `
+            @Directive({
+              selector: '[coerced-input]',
+              standalone: false,
+            })
+            export class CoercedInputDir {
+              @Input() coerced!: boolean;
+              static ngAcceptInputType_coerced: boolean | string;
+            }
+            
+            @NgModule({`,
+          );
+          const customProject = customEnv.addProject('custom-test', files);
+
+          const text = `<div coerced-input [coerced¦]="true"></div>`;
+          const templateOverride = text;
+          const expectedSpanText = 'coerced';
+          const expectedDisplayString = '(property) CoercedInputDir.coerced: boolean';
+
+          const template = customProject.openFile('app.html');
+          template.contents = text.replace('¦', '');
+          customEnv.expectNoSourceDiagnostics();
+
+          template.moveCursorToText(templateOverride);
+          const quickInfo = template.getQuickInfoAtPosition();
+          expect(quickInfo).toBeTruthy();
+          const {textSpan, displayParts} = quickInfo!;
+          expect(
+            template.contents.substring(textSpan.start, textSpan.start + textSpan.length),
+          ).toEqual(expectedSpanText);
+          expect(toText(displayParts)).toEqual(expectedDisplayString);
         });
       });
 
