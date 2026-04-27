@@ -843,7 +843,7 @@ class _TreeBuilder {
       endToken = this._advance();
     }
 
-    const end = endToken.sourceSpan.fullStart;
+    const end = endToken.sourceSpan.end;
     const span = new ParseSourceSpan(
       startToken.sourceSpan.start,
       end,
