@@ -2706,6 +2706,14 @@ export const RECOMMENDATIONS: Step[] = [
   {
     possibleIn: 2000,
     necessaryAsOf: 2000,
+    level: ApplicationComplexity.Medium,
+    step: '20.0.0_set_moduleResolution_to_bundler',
+    action:
+      "Set `moduleResolution` to `'bundler'` in your `tsconfig.json`. Angular CLI's `ng update` migration applies this change automatically; if you upgrade manually or override the option in a base tsconfig, set it explicitly so imports of secondary entry-points such as `@angular/core/rxjs-interop` continue to resolve correctly.",
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
     level: ApplicationComplexity.Advanced,
     step: '20.0.0_review_AsyncPipe_error_handling_in_tests',
     action:
