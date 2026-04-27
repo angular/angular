@@ -233,7 +233,7 @@ const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined>
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  const isResource = RESOURCE_MAP[tag]?.[prop] === true;
+  const isResource = RESOURCE_MAP[tag.toLowerCase()]?.[prop] === true;
 
   return isResource ? ɵɵsanitizeResourceUrl : ɵɵsanitizeUrl;
 }
