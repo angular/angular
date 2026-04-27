@@ -35,6 +35,11 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'a|href',
       'a|xlink:href',
       'form|action',
+      'meta|content',
+      'body|background',
+      'table|background',
+      'td|background',
+      'th|background',
 
       // MathML namespace
       // https://crsrc.org/c/third_party/blink/renderer/core/sanitizer/sanitizer.cc;l=753-768;drc=b3eb16372dcd3317d65e9e0265015e322494edcd;bpv=1;bpt=1
@@ -123,6 +128,8 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/SVGScriptElement/href
       'script|href',
       'script|xlink:href',
+      'use|href',
+      'use|xlink:href',
     ]);
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts
