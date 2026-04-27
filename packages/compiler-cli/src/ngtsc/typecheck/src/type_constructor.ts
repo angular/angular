@@ -9,6 +9,7 @@
 import {R3Identifiers, TcbExpr, TcbTypeParameter, TypeCtorMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
+import {Reference} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
@@ -179,11 +180,11 @@ function generateGenericArgs(typeParameters: ReadonlyArray<TcbTypeParameter> | u
 export function requiresInlineTypeCtor(
   node: ClassDeclaration<ts.ClassDeclaration>,
   host: ReflectionHost,
-  env: ReferenceEmitEnvironment,
+  canReferenceType: (ref: Reference) => boolean,
 ): boolean {
   // The class requires an inline type constructor if it has generic type bounds that can not be
   // emitted into the provided type-check environment.
-  return !checkIfGenericTypeBoundsCanBeEmitted(node, host, env);
+  return !checkIfGenericTypeBoundsCanBeEmitted(node, host, canReferenceType);
 }
 
 /**

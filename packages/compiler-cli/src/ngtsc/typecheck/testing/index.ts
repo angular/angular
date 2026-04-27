@@ -456,7 +456,7 @@ export function tcb(
     new RelativePathStrategy(reflectionHost),
   ]);
 
-  const env = new TypeCheckFile(fileName, fullConfig, refEmmiter, reflectionHost, host);
+  const env = new TypeCheckFile(fileName, fullConfig, refEmmiter, host);
 
   env.addTypeCheckBlock(
     new Reference(clazz),
@@ -464,6 +464,7 @@ export function tcb(
     new NoopSchemaChecker(),
     new NoopOobRecorder(),
     TcbGenericContextBehavior.UseEmitter,
+    reflectionHost,
   );
 
   let rendered = env.render();
