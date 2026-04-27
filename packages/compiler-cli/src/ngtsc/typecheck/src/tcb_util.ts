@@ -111,7 +111,9 @@ export function requiresInlineTypeCheckBlock(
   if (!env.canReferenceType(ref)) {
     // Condition 1 is false, the class is not exported.
     return TcbInliningRequirement.MustInline;
-  } else if (!checkIfGenericTypeBoundsCanBeEmitted(ref.node, reflector, env)) {
+  } else if (
+    !checkIfGenericTypeBoundsCanBeEmitted(ref.node, reflector, (r) => env.canReferenceType(r))
+  ) {
     // Condition 2 is false, the class has constrained generic types. It should be checked with an
     // inline TCB if possible, but can potentially use fallbacks to avoid inlining if not.
     return TcbInliningRequirement.ShouldInlineForGenericBounds;
@@ -276,11 +278,11 @@ export function ensureTypeCheckFilePreparationImports(env: ReferenceEmitEnvironm
 export function checkIfGenericTypeBoundsCanBeEmitted(
   node: ClassDeclaration<ts.ClassDeclaration>,
   reflector: ReflectionHost,
-  env: ReferenceEmitEnvironment,
+  canReferenceType: (ref: Reference) => boolean,
 ): boolean {
   // Generic type parameters are considered context free if they can be emitted into any context.
   const emitter = new TypeParameterEmitter(node.typeParameters, reflector);
-  return emitter.canEmit((ref) => env.canReferenceType(ref));
+  return emitter.canEmit(canReferenceType);
 }
 
 export function findNodeInFile<T extends ts.Node>(

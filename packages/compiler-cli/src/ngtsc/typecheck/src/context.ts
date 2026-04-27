@@ -285,7 +285,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
         const dirNode = dirRef.node;
 
-        if (!dir.isGeneric || !requiresInlineTypeCtor(dirNode, this.reflector, shimData.file)) {
+        if (
+          !dir.isGeneric ||
+          !requiresInlineTypeCtor(dirNode, this.reflector, (r) => shimData.file.canReferenceType(r))
+        ) {
           // inlining not required
           continue;
         }
@@ -408,6 +411,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         shimData.domSchemaChecker,
         shimData.oobRecorder,
         TcbGenericContextBehavior.FallbackToAny,
+        this.reflector,
       );
     } else {
       shimData.file.addTypeCheckBlock(
@@ -416,6 +420,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         shimData.domSchemaChecker,
         shimData.oobRecorder,
         TcbGenericContextBehavior.UseEmitter,
+        this.reflector,
       );
     }
   }
@@ -594,13 +599,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
           this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
         ),
-        file: new TypeCheckFile(
-          shimPath,
-          this.config,
-          this.refEmitter,
-          this.reflector,
-          this.compilerHost,
-        ),
+        file: new TypeCheckFile(shimPath, this.config, this.refEmitter, this.compilerHost),
         data: new Map<TypeCheckId, TypeCheckData>(),
         shimDiagnostics: null,
       });
@@ -692,13 +691,14 @@ class InlineTcbOp implements Op {
   }
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
-    const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
+    const env = new Environment(this.config, im, refEmitter, sf);
     const fnName = `_tcb_${this.ref.node.pos}`;
 
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
       this.ref,
       this.meta,
       env,
+      this.reflector,
       TcbGenericContextBehavior.CopyClassNodes,
     );
 
@@ -735,7 +735,7 @@ class TypeCtorOp implements Op {
   }
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
-    const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
+    const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, sf);
     return generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
   }
 }
