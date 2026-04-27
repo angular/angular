@@ -67,24 +67,12 @@ export function selectMultipleControlCreate(
 
 function getSelectMultipleControlValue(select: HTMLSelectElement): string[] {
   const selected: string[] = [];
-  const selectedOptions = select.selectedOptions;
-
-  if (selectedOptions !== undefined) {
-    for (let i = 0; i < selectedOptions.length; i++) {
-      selected.push(selectedOptions[i].value);
-    }
-    return selected;
-  }
-
-  // `selectedOptions` is not implemented in Domino (used for server-side rendering), so fall
-  // back to iterating the full `options` list and filtering by the `selected` flag.
   for (let i = 0; i < select.options.length; i++) {
     const option = select.options[i];
     if (option.selected) {
       selected.push(option.value);
     }
   }
-
   return selected;
 }
 
