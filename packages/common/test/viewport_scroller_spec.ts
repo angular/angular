@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
 import {isNode, waitFor} from '@angular/private/testing';
+import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
 
 describe('BrowserViewportScroller', () => {
   describe('setHistoryScrollRestoration', () => {
