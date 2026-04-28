@@ -1,21 +1,21 @@
 # Creating an injectable service
 
-Service is a broad category encompassing any value, function, or feature that an application needs.
-A service is typically a class with a narrow, well-defined purpose.
-A component is one type of class that can use DI.
+A service is a broad category that encompasses any value, function, or feature that your application needs.
+A service is typically a class with a focused and well-defined purpose.
+A component is one type of class that you can use with dependency injection (DI).
 
-Angular distinguishes components from services to increase modularity and reusability.
-By separating a component's view-related features from other kinds of processing, you can make your component classes lean and efficient.
+Angular distinguishes components from services to improve modularity and reusability.
+By separating a component's view-related features from other types of processing, you can keep your component classes lean and efficient.
 
-Ideally, a component's job is to enable the user experience and nothing more.
+Ideally, your component's responsibility is to enable the user experience and nothing more.
 A component should present properties and methods for data binding, to mediate between the view (rendered by the template) and the application logic (which often includes some notion of a model).
 
-A component can delegate certain tasks to services, such as fetching data from the server, validating user input, or logging directly to the console.
-By defining such processing tasks in an injectable service class, you make those tasks available to any component.
-You can also make your application more adaptable by configuring different providers of the same kind of service, as appropriate in different circumstances.
+You can delegate tasks from a component to services, such as fetching data from a server, validating user input, or logging to the console.
+By defining such tasks in an injectable service class, you make those capabilities available to any component.
+You can also make your application more adaptable by configuring different providers for the same type of service based on different circumstances.
 
-Angular does not enforce these principles.
-Angular helps you follow these principles by making it easy to factor your application logic into services and make those services available to components through DI.
+Angular does not strictly enforce these principles.
+Angular helps you follow these principles by making it easy to organize your application logic into services and make those services available to components through DI.
 
 ## Service examples
 
@@ -82,7 +82,7 @@ export class HeroService {}
 ```
 
 The `@Injectable()` decorator specifies that Angular can use this class in the DI system.
-The metadata, `providedIn: 'root'`, means that the `HeroService` is provided throughout the application.
+The `providedIn: 'root'` metadata specifies that the `HeroService` is available throughout your application.
 
 Add a `getHeroes()` method that returns the heroes from `mock.heroes.ts` to get the hero mock data:
 
@@ -106,7 +106,7 @@ For clarity and maintainability, it is recommended that you define components an
 
 ## Injecting services
 
-To inject a service as a dependency into a component, you can declare a class field representing the dependency and use Angular's [`inject`](/api/core/inject) function to initialize it.
+To inject a service into a component, declare a class field for the dependency and use Angular's [`inject`](/api/core/inject) function to initialize it.
 
 The following example specifies the `HeroService` in the `HeroList`.
 The type of `heroService` is `HeroService`.
@@ -125,7 +125,7 @@ It is also possible to inject a service into a component using the component's c
   constructor(private heroService: HeroService)
 ```
 
-The [`inject`](/api/core/inject) method can be used in both classes and functions, while the constructor method can naturally only be used in a class constructor. However, in either case a dependency may only be injected in a valid [injection context](guide/di/dependency-injection-context), usually in the construction or initialization of a component.
+The [`inject`](/api/core/inject) method can be used in both classes and functions, while the constructor method can naturally only be used in a class constructor. However, in both cases, you can only inject a dependency within a valid [injection context](guide/di/dependency-injection-context), typically during the construction or initialization of a component.
 
 ## Injecting services in other services
 
