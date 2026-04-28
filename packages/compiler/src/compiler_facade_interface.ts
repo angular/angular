@@ -300,7 +300,6 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   changeDetection?: ChangeDetectionStrategy;
   encapsulation?: ViewEncapsulation;
   preserveWhitespaces?: boolean;
-  legacyOptionalChaining?: boolean;
 }
 
 export type R3DeclareTemplateDependencyFacade = {

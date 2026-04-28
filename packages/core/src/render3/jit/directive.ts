@@ -154,7 +154,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           // dependency might be a directive dependency.
           hasDirectiveDependencies:
             !baseMeta.isStandalone || (metadata.imports != null && metadata.imports.length > 0),
-          legacyOptionalChaining: false, // fallback to false in JIT
         };
 
         compilationDepth++;

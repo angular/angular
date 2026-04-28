@@ -490,7 +490,7 @@ function createHostBindingsFunction(
       properties: bindings,
       events: eventBindings,
       attributes: hostBindingsMetadata.attributes,
-      legacyOptionalChaining: legacyOptionalChaining ?? false,
+      legacyOptionalChaining: legacyOptionalChaining,
     },
     bindingParser,
     constantPool,

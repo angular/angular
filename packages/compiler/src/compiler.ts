@@ -274,6 +274,7 @@ export {DomSchemaChecker} from './typecheck/schema';
 export {generateTypeCheckBlock} from './typecheck/type_check_block';
 export {TcbExpr} from './typecheck/ops/codegen';
 export {TcbGenericContextBehavior} from './typecheck/ops/context';
+export {LEGACY_OPTIONAL_CHAINING_DEFAULT} from './legacy_optional_chaining_default';
 
 // This file only reexports content of the `src` folder. Keep it that way.
 
