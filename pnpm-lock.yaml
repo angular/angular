@@ -336,8 +336,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdfa88246e1c221b7ff67a1cec6df699e3b03ec1
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdfa88246e1c221b7ff67a1cec6df699e3b03ec1(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#ab3557efa43d75ac873b8a6d94683b33bf18ca0f
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/ab3557efa43d75ac873b8a6d94683b33bf18ca0f(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -1493,6 +1493,9 @@ packages:
   '@actions/core@3.0.0':
     resolution: {integrity: sha512-zYt6cz+ivnTmiT/ksRVriMBOiuoUpDCJJlZ5KPl2/FRdvwU3f7MPh9qftvbkXJThragzUZieit2nyHUyw53Seg==}
 
+  '@actions/core@3.0.1':
+    resolution: {integrity: sha512-a6d/Nwahm9fliVGRhdhofo40HjHQasUPusmc7vBfyky+7Z+P2A1J68zyFVaNcEclc/Se+eO595oAr5nwEIoIUA==}
+
   '@actions/exec@3.0.0':
     resolution: {integrity: sha512-6xH/puSoNBXb72VPlZVm7vQ+svQpFyA96qdDBvhB8eNZOE8LtPf9L4oAsfzK/crCL8YZ+19fKYVnM63Sl+Xzlw==}
 
@@ -1792,9 +1795,9 @@ packages:
       '@angular/platform-browser': ^21.0.0 || ^22.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdfa88246e1c221b7ff67a1cec6df699e3b03ec1':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdfa88246e1c221b7ff67a1cec6df699e3b03ec1}
-    version: 0.0.0-2c2d7e68e6634e9ac92eaa5f12c137a96725d216
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/ab3557efa43d75ac873b8a6d94683b33bf18ca0f':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/ab3557efa43d75ac873b8a6d94683b33bf18ca0f}
+    version: 0.0.0-a71a5d725b4f2c8f090a58c8fda7b437bdc3b89a
     hasBin: true
 
   '@angular/ssr@21.2.8':
@@ -3040,8 +3043,8 @@ packages:
   '@externs/nodejs@1.5.0':
     resolution: {integrity: sha512-2J+FRDjGfKKldTQ5YqLmhQ04/sA9swTQ6OTtPzo4xhg41u1+eiufciXiqW6u3UXEcmm413a27NakgnLbzfp0wQ==}
 
-  '@firebase/ai@2.11.0':
-    resolution: {integrity: sha512-+oqOne/h5J51LezazR+VyzKe3AK455W29JXnb4jOeVvQhC7FymledN5+XE+w5vEcMhRQ6n1f62fdGs4A44X32A==}
+  '@firebase/ai@2.11.1':
+    resolution: {integrity: sha512-WGTF81W3WBKJY+c7xqTzO15OGAkCAs8cpADqflAI0skhTZjIkhF0qyf55rq4Ctt6jKygkv99rPfMrjAHTgXaVQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app': 0.x
@@ -3533,15 +3536,6 @@ packages:
   '@inquirer/prompts@7.10.1':
     resolution: {integrity: sha512-Dx/y9bCQcXLI5ooQ5KyvA4FTgeo2jYj/7plWfV5Ak5wDPKQZgudKez2ixyfz7tKXzcJciTxqLeK7R9HItwiByg==}
     engines: {node: '>=18'}
-    peerDependencies:
-      '@types/node': '>=18'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-
-  '@inquirer/prompts@8.4.1':
-    resolution: {integrity: sha512-AH5xPQ997K7e0F0vulPlteIHke2awMkFi8F0dBemrDfmvtPmHJo82mdHbONC4F/t8d1NHwrbI5cGVI+RbLWdoQ==}
-    engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
     peerDependencies:
       '@types/node': '>=18'
     peerDependenciesMeta:
@@ -8084,8 +8078,8 @@ packages:
     engines: {node: '>=20.0.0 || >=22.0.0 || >=24.0.0'}
     hasBin: true
 
-  firebase@12.12.0:
-    resolution: {integrity: sha512-5Ap+pN5iEJUvBlQEZEmLuUm7Gvu6I5xv1jZ5SiSNyw4jrwlHo+4tmZv3OPPoKfN9eo1kBwyyBvi+pWHIPXwfYw==}
+  firebase@12.12.1:
+    resolution: {integrity: sha512-ee7xA+bTJLfjB9BP/8FQr3EkxmpAAGc1lNc5QkWgTDpUw24HYXFPm7FEWRdLtGnygxIdYpFmepSc5VjkI6NHhw==}
 
   flagged-respawn@2.0.0:
     resolution: {integrity: sha512-Gq/a6YCi8zexmGHMuJwahTGzXlAZAOsbCVKduWXC6TlLCjjFRlExMJc4GC2NYPYZ0r/brw9P7CpRgQmlPVeOoA==}
@@ -10299,8 +10293,8 @@ packages:
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
-  nock@14.0.12:
-    resolution: {integrity: sha512-kZM3bHV0KzhHH6E2eRszHyML/w87AUzLBwupNTHohtYWP9fZYgUPmCbSKq6ITfEEmHqN4/p0MscvUipT4P5Qsg==}
+  nock@14.0.13:
+    resolution: {integrity: sha512-SCPsQmGVNY8h1rfS3aU0MzOGYY+wKIFukHEsoSIwPRCYocZkya7MFIlWIEYPWQZj+Gaksg6EyUaY255ZDqpQuA==}
     engines: {node: '>=18.20.0 <20 || >=20.12.1'}
 
   node-abi@3.89.0:
@@ -13453,6 +13447,11 @@ snapshots:
       '@actions/exec': 3.0.0
       '@actions/http-client': 4.0.0
 
+  '@actions/core@3.0.1':
+    dependencies:
+      '@actions/exec': 3.0.0
+      '@actions/http-client': 4.0.0
+
   '@actions/exec@3.0.0':
     dependencies:
       '@actions/io': 3.0.2
@@ -14211,13 +14210,13 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdfa88246e1c221b7ff67a1cec6df699e3b03ec1(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/ab3557efa43d75ac873b8a6d94683b33bf18ca0f(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))':
     dependencies:
-      '@actions/core': 3.0.0
+      '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
       '@google/genai': 1.50.1(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
-      '@inquirer/prompts': 8.4.1(@types/node@24.12.2)
+      '@inquirer/prompts': 8.4.2(@types/node@24.12.2)
       '@inquirer/type': 4.0.5(@types/node@24.12.2)
       '@octokit/auth-app': 8.2.0
       '@octokit/core': 7.0.6
@@ -14248,7 +14247,7 @@ snapshots:
       ejs: 5.0.2
       encoding: 0.1.13
       fast-glob: 3.3.3
-      firebase: 12.12.0
+      firebase: 12.12.1
       folder-hash: 4.1.2(supports-color@10.2.2)
       jasmine: 6.2.0
       jasmine-core: 6.2.0
@@ -14256,7 +14255,7 @@ snapshots:
       jsonc-parser: 3.3.1
       minimatch: 10.2.5
       multimatch: 8.0.0
-      nock: 14.0.12
+      nock: 14.0.13
       semver: 7.7.4
       supports-color: 10.2.2
       tsx: 4.21.0
@@ -15666,7 +15665,7 @@ snapshots:
 
   '@externs/nodejs@1.5.0': {}
 
-  '@firebase/ai@2.11.0(@firebase/app-types@0.9.4)(@firebase/app@0.14.11)':
+  '@firebase/ai@2.11.1(@firebase/app-types@0.9.4)(@firebase/app@0.14.11)':
     dependencies:
       '@firebase/app': 0.14.11
       '@firebase/app-check-interop-types': 0.3.3
@@ -16568,21 +16567,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/prompts@8.4.1(@types/node@24.12.2)':
-    dependencies:
-      '@inquirer/checkbox': 5.1.4(@types/node@24.12.2)
-      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
-      '@inquirer/editor': 5.1.1(@types/node@24.12.2)
-      '@inquirer/expand': 5.0.13(@types/node@24.12.2)
-      '@inquirer/input': 5.0.12(@types/node@24.12.2)
-      '@inquirer/number': 4.0.12(@types/node@24.12.2)
-      '@inquirer/password': 5.0.12(@types/node@24.12.2)
-      '@inquirer/rawlist': 5.2.8(@types/node@24.12.2)
-      '@inquirer/search': 4.1.8(@types/node@24.12.2)
-      '@inquirer/select': 5.1.4(@types/node@24.12.2)
-    optionalDependencies:
-      '@types/node': 24.12.2
-
   '@inquirer/prompts@8.4.2(@types/node@20.19.39)':
     dependencies:
       '@inquirer/checkbox': 5.1.4(@types/node@20.19.39)
@@ -16597,6 +16581,21 @@ snapshots:
       '@inquirer/select': 5.1.4(@types/node@20.19.39)
     optionalDependencies:
       '@types/node': 20.19.39
+
+  '@inquirer/prompts@8.4.2(@types/node@24.12.2)':
+    dependencies:
+      '@inquirer/checkbox': 5.1.4(@types/node@24.12.2)
+      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
+      '@inquirer/editor': 5.1.1(@types/node@24.12.2)
+      '@inquirer/expand': 5.0.13(@types/node@24.12.2)
+      '@inquirer/input': 5.0.12(@types/node@24.12.2)
+      '@inquirer/number': 4.0.12(@types/node@24.12.2)
+      '@inquirer/password': 5.0.12(@types/node@24.12.2)
+      '@inquirer/rawlist': 5.2.8(@types/node@24.12.2)
+      '@inquirer/search': 4.1.8(@types/node@24.12.2)
+      '@inquirer/select': 5.1.4(@types/node@24.12.2)
+    optionalDependencies:
+      '@types/node': 24.12.2
 
   '@inquirer/rawlist@4.1.11(@types/node@20.19.39)':
     dependencies:
@@ -22015,9 +22014,9 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  firebase@12.12.0:
+  firebase@12.12.1:
     dependencies:
-      '@firebase/ai': 2.11.0(@firebase/app-types@0.9.4)(@firebase/app@0.14.11)
+      '@firebase/ai': 2.11.1(@firebase/app-types@0.9.4)(@firebase/app@0.14.11)
       '@firebase/analytics': 0.10.21(@firebase/app@0.14.11)
       '@firebase/analytics-compat': 0.2.27(@firebase/app-compat@0.5.11)(@firebase/app@0.14.11)
       '@firebase/app': 0.14.11
@@ -24858,7 +24857,7 @@ snapshots:
       lower-case: 2.0.2
       tslib: 2.8.1
 
-  nock@14.0.12:
+  nock@14.0.13:
     dependencies:
       '@mswjs/interceptors': 0.41.4
       json-stringify-safe: 5.0.1
