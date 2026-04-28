@@ -7,12 +7,13 @@
  */
 
 import {inject, Service} from '@angular/core';
-import {LOCAL_STORAGE, WINDOW, isMobile} from '@angular/docs';
+import {LOCAL_STORAGE, SESSION_STORAGE, WINDOW, isMobile} from '@angular/docs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ErrorSnackBar, ErrorSnackBarData} from '../core/services/errors-handling/error-snack-bar';
 
 export const MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = 3;
 export const WEBCONTAINERS_COUNTER_KEY = 'numberOfWebcontainers';
+export const WEBCONTAINER_SESSION_KEY = 'hasRunningWebcontainer';
 
 export enum AlertReason {
   OUT_OF_MEMORY,
@@ -22,13 +23,14 @@ export enum AlertReason {
 @Service()
 export class AlertManager {
   private readonly localStorage = inject(LOCAL_STORAGE);
+  private readonly sessionStorage = inject(SESSION_STORAGE);
   private readonly window = inject(WINDOW);
   private snackBar = inject(MatSnackBar);
 
   init(): void {
     this.listenToLocalStorageValuesChange();
 
-    this.increaseInstancesCounter();
+    this.registerCurrentTab();
 
     this.decreaseInstancesCounterOnPageClose();
 
@@ -43,20 +45,31 @@ export class AlertManager {
     });
   }
 
-  // Increase count of the running instances of the webcontainers when user will boot the webcontainer
-  private increaseInstancesCounter(): void {
+  // Register the current tab once so automatic reloads don't double count the same tab.
+  private registerCurrentTab(): void {
+    if (this.sessionStorage?.getItem(WEBCONTAINER_SESSION_KEY) === 'true') {
+      this.validateRunningInstances(this.getStoredCountOfWebcontainerInstances());
+      return;
+    }
+
     const countOfRunningInstances = this.getStoredCountOfWebcontainerInstances() + 1;
 
     this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, countOfRunningInstances.toString());
+    this.sessionStorage?.setItem(WEBCONTAINER_SESSION_KEY, 'true');
     this.validateRunningInstances(countOfRunningInstances);
   }
 
   // Decrease count of running instances of the webcontainers when user close the app.
   private decreaseInstancesCounterOnPageClose(): void {
     this.window.addEventListener('beforeunload', () => {
-      const countOfRunningInstances = this.getStoredCountOfWebcontainerInstances() - 1;
+      if (this.sessionStorage?.getItem(WEBCONTAINER_SESSION_KEY) !== 'true') {
+        return;
+      }
+
+      const countOfRunningInstances = Math.max(this.getStoredCountOfWebcontainerInstances() - 1, 0);
 
       this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, countOfRunningInstances.toString());
+      this.sessionStorage?.removeItem(WEBCONTAINER_SESSION_KEY);
       this.validateRunningInstances(countOfRunningInstances);
     });
   }

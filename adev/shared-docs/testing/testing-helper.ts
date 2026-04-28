@@ -52,11 +52,15 @@ export class FakeEventTarget implements EventTarget {
   }
 }
 
-export class MockLocalStorage implements Pick<Storage, 'getItem' | 'setItem'> {
+export class MockLocalStorage implements Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
   private items = new Map<string, string | null>();
 
   getItem(key: string): string | null {
     return this.items.get(key) ?? null;
+  }
+
+  removeItem(key: string): void {
+    this.items.delete(key);
   }
 
   setItem(key: string, value: string | null): void {
