@@ -6274,7 +6274,7 @@
       "@angular/core"
     ],
     [
-      "Injectable",
+      "Service",
       "@angular/core"
     ],
     [
