@@ -148,7 +148,10 @@ export class TcbNativeFieldOp extends TcbOp {
     }
 
     if (node.name === 'select') {
-      return hasMultipleSelect(node) ? 'string[]' : 'string';
+      const mode = getSelectMultipleMode(node);
+      if (mode === 'static') return 'string[]';
+      if (mode === 'dynamic') return 'string | string[]';
+      return 'string';
     }
 
     if (node.name !== 'input') {
@@ -200,16 +203,20 @@ export class TcbNativeFieldOp extends TcbOp {
   }
 }
 
-function hasMultipleSelect(node: Element): boolean {
+function getSelectMultipleMode(node: Element): 'static' | 'dynamic' | 'none' {
   if (node.attributes.some((attr) => attr.name.toLowerCase() === 'multiple')) {
-    return true;
+    return 'static';
   }
-
-  return node.inputs.some(
-    (input) =>
-      (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
-      input.name.toLowerCase() === 'multiple',
-  );
+  if (
+    node.inputs.some(
+      (input) =>
+        (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+        input.name.toLowerCase() === 'multiple',
+    )
+  ) {
+    return 'dynamic';
+  }
+  return 'none';
 }
 
 /**

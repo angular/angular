@@ -17,7 +17,6 @@ import {
   type ControlBindingKey,
 } from './bindings';
 import type {FormField} from './form_field';
-import {setNativeDomProperty} from './native';
 import {observeSelectMutations} from './select';
 
 export function selectMultipleControlCreate(
@@ -48,18 +47,22 @@ export function selectMultipleControlCreate(
   const bindings = createBindings<ControlBindingKey | 'controlValue'>();
 
   return () => {
+    if (ngDevMode && !updateMode && !select.multiple) {
+      throw new RuntimeError(
+        RuntimeErrorCode.DYNAMIC_SELECT_MULTIPLE_BINDING,
+        ngDevMode &&
+          `Signal Forms does not support dynamic [multiple] bindings on <select>. ` +
+            `Use the static 'multiple' attribute instead.`,
+      );
+    }
+
     const state = parent.state();
     const controlValue = state.controlValue();
     if (bindingUpdated(bindings, 'controlValue', controlValue)) {
       setSelectMultipleControlValue(select, controlValue);
     }
 
-    applyControlStateBindings(bindings, state, (name, value) => {
-      host.setInputOnDirectives(name, value);
-      if (parent.elementAcceptsNativeProperty(name)) {
-        setNativeDomProperty(parent.renderer, select, name, value as string | number | undefined);
-      }
-    });
+    applyControlStateBindings(bindings, state, host, parent);
 
     updateMode = true;
   };
