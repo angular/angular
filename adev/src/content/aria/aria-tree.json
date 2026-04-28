@@ -497,6 +497,16 @@
           "jsdocTags": []
         },
         {
+          "name": "tabIndex",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The tabindex of the tree.",
+          "jsdocTags": []
+        },
+        {
           "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
@@ -534,6 +544,16 @@
             "readonly"
           ],
           "description": "The `aria-current` type. It can be used in navigation trees to indicate the currently active item.\nSee https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current for more details.",
+          "jsdocTags": []
+        },
+        {
+          "name": "activeDescendant",
+          "type": "Signal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The ID of the active descendant in the tree.",
           "jsdocTags": []
         },
         {
@@ -606,8 +626,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 63,
-        "endLine": 226
+        "startLine": 65,
+        "endLine": 239
       }
     }
   ],
@@ -667,6 +687,10 @@
     [
       "_IdGenerator",
       "@angular/cdk/a11y"
+    ],
+    [
+      "numberAttribute",
+      "@angular/core"
     ],
     [
       "untracked",
@@ -821,6 +845,10 @@
       "@angular/aria/tree"
     ],
     [
+      "Tree.tabIndex",
+      "@angular/aria/tree"
+    ],
+    [
       "Tree.value",
       "@angular/aria/tree"
     ],
@@ -834,6 +862,10 @@
     ],
     [
       "Tree.currentType",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.activeDescendant",
       "@angular/aria/tree"
     ],
     [

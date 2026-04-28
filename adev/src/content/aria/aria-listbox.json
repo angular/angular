@@ -274,6 +274,16 @@
           "jsdocTags": []
         },
         {
+          "name": "tabIndex",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The tabindex of the listbox.",
+          "jsdocTags": []
+        },
+        {
           "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
@@ -281,6 +291,16 @@
             "readonly"
           ],
           "description": "The values of the currently selected items.",
+          "jsdocTags": []
+        },
+        {
+          "name": "activeDescendant",
+          "type": "Signal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The ID of the active descendant in the listbox.",
           "jsdocTags": []
         },
         {
@@ -398,8 +418,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 53,
-        "endLine": 210
+        "startLine": 55,
+        "endLine": 223
       }
     }
   ],
@@ -445,7 +465,15 @@
       "@angular/core"
     ],
     [
+      "numberAttribute",
+      "@angular/core"
+    ],
+    [
       "signal",
+      "@angular/core"
+    ],
+    [
+      "Signal",
       "@angular/core"
     ],
     [
@@ -553,7 +581,15 @@
       "@angular/aria/listbox"
     ],
     [
+      "Listbox.tabIndex",
+      "@angular/aria/listbox"
+    ],
+    [
       "Listbox.value",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.activeDescendant",
       "@angular/aria/listbox"
     ],
     [
