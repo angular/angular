@@ -207,15 +207,7 @@ export type ResourceStreamingLoader<T, R> = (
  *
  * @experimental
  */
-export interface BaseResourceOptions<T, R> {
-  /**
-   * A reactive function which determines the request to be made. Whenever the request changes, the
-   * loader will be triggered to fetch a new value for the resource.
-   *
-   * If a params function isn't provided, the loader won't rerun unless the resource is reloaded.
-   */
-  params?: (ctx: ResourceParamsContext) => R;
-
+export type BaseResourceOptions<T, R> = {
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as
    * when the resource is still loading.
@@ -231,14 +223,14 @@ export interface BaseResourceOptions<T, R> {
    * Overrides the `Injector` used by `resource`.
    */
   injector?: Injector;
-}
+} & ResourceParams<R>;
 
 /**
  * Options to the `resource` function, for creating a resource.
  *
  * @experimental
  */
-export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+export type PromiseResourceOptions<T, R> = BaseResourceOptions<T, R> & {
   /**
    * Loading function which returns a `Promise` of the resource's value for a given request.
    */
@@ -248,14 +240,14 @@ export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> 
    * Cannot specify `stream` and `loader` at the same time.
    */
   stream?: never;
-}
+};
 
 /**
  * Options to the `resource` function, for creating a resource.
  *
  * @experimental
  */
-export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+export type StreamingResourceOptions<T, R> = BaseResourceOptions<T, R> & {
   /**
    * Loading function which returns a `Promise` of a signal of the resource's value for a given
    * request, which can change over time as new values are received from a stream.
@@ -266,7 +258,16 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
    * Cannot specify `stream` and `loader` at the same time.
    */
   loader?: never;
-}
+};
+
+/**
+ *
+ *
+ * @experimental
+ */
+export type ResourceParams<R> = [R] extends [null]
+  ? {params?: (ctx: ResourceParamsContext) => R}
+  : {params: (ctx: ResourceParamsContext) => R};
 
 /**
  * @experimental

@@ -19,18 +19,17 @@ export function outputToObservable<T>(ref: OutputRef<T>): Observable<T>;
 export function pendingUntilEvent<T>(injector?: Injector): MonoTypeOperatorFunction<T>;
 
 // @public
-export function rxResource<T, R>(opts: RxResourceOptions<T, R> & {
+export function rxResource<T, R = null>(opts: RxResourceOptions<T, R> & {
     defaultValue: NoInfer<T>;
 }): ResourceRef<T>;
 
 // @public
-export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
+export function rxResource<T, R = null>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 
 // @public
-export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
-    // (undocumented)
+export type RxResourceOptions<T, R> = BaseResourceOptions<T, R> & {
     stream: (params: ResourceLoaderParams<R>) => Observable<T>;
-}
+};
 
 // @public
 export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T>;

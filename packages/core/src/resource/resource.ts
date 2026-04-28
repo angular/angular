@@ -46,7 +46,7 @@ import {linkedSignal} from '../render3/reactivity/linked_signal';
  *
  * @experimental 19.0
  */
-export function resource<T, R>(
+export function resource<T, R = null>(
   options: ResourceOptions<T, R> & {defaultValue: NoInfer<T>},
 ): ResourceRef<T>;
 
@@ -61,8 +61,10 @@ export function resource<T, R>(
  * @experimental 19.0
  * @see [Async reactivity with resources](guide/signals/resource)
  */
-export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
-export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
+export function resource<T, R = null>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
+export function resource<T, R>(
+  options: ResourceOptions<T, R> | ResourceOptions<T, never>,
+): ResourceRef<T | undefined> {
   if (ngDevMode && !options?.injector) {
     assertInInjectionContext(resource);
   }
@@ -73,7 +75,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
   const params = options.params ?? oldNameForParams ?? (() => null!);
   return new ResourceImpl<T | undefined, R>(
     params,
-    getLoader(options),
+    getLoader(options as ResourceOptions<T, R>),
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.debugName,
@@ -506,7 +508,7 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
   return async (params) => {
     try {
       return signal(
-        {value: await options.loader(params)},
+        {value: await options!.loader(params)},
         ngDevMode ? createDebugNameObject(options.debugName, 'stream') : undefined,
       );
     } catch (err) {
@@ -520,7 +522,7 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
 
 function isStreamingResourceOptions<T, R>(
   options: ResourceOptions<T, R>,
-): options is StreamingResourceOptions<T, R> {
+): options is ResourceOptions<T, R> & StreamingResourceOptions<T, R> {
   return !!(options as StreamingResourceOptions<T, R>).stream;
 }
 

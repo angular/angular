@@ -23,7 +23,7 @@ describe('resource with ResourceParamsStatus', () => {
     const s = signal<string | ResourceParamsStatus>('foo');
     const res = await act(() =>
       resource({
-        params: throwStatusAndErrors(s),
+        params: throwStatusAndErrors<string>(s),
         loader: async ({params}) => {
           return params;
         },
@@ -45,7 +45,7 @@ describe('resource with ResourceParamsStatus', () => {
     let loadCount = 0;
     const res = await act(() =>
       resource({
-        params: throwStatusAndErrors(s),
+        params: throwStatusAndErrors(s)!,
         loader: async ({params}) => {
           loadCount++;
           return params as string;
@@ -69,7 +69,7 @@ describe('resource with ResourceParamsStatus', () => {
     const s = signal<string | Error>('foo');
     const res = await act(() =>
       resource({
-        params: throwStatusAndErrors(s),
+        params: throwStatusAndErrors(s) as () => string,
         loader: async ({params}) => params as string,
         injector: TestBed.inject(Injector),
       }),
@@ -90,7 +90,7 @@ describe('resource with ResourceParamsStatus', () => {
     let loadCount = 0;
     const res = await act(() =>
       resource({
-        params: throwStatusAndErrors(s),
+        params: throwStatusAndErrors(s)!,
         loader: async ({params}) => {
           loadCount++;
           return params;

@@ -240,7 +240,7 @@ describe('resource', () => {
   });
 
   it('should not trigger consumers on every value change via hasValue()', async () => {
-    const testResource = resource<number | undefined, unknown>({
+    const testResource = resource<number | undefined>({
       loader: () => Promise.resolve(undefined),
       injector: TestBed.inject(Injector),
     });
@@ -1101,6 +1101,59 @@ describe('resource', () => {
         const _value: unknown = readonly.value();
       } else if (readonly.error()) {
       }
+    });
+  });
+});
+
+describe('types', () => {
+  it('should type loader params as null when params option is omitted', () => {
+    resource({
+      loader: async ({params}) => {
+        const _null: null = params;
+        return '';
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+
+  it('should type loader params correctly when params is provided', () => {
+    resource({
+      params: () => 'foo',
+      loader: async ({params}) => {
+        const _str: string = params;
+        return '';
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+
+  it('should type loader params as null with single generic parameter', () => {
+    resource<string>({
+      loader: async ({params}) => {
+        const _null: null = params;
+        return '';
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+
+  it('should exclude undefined from loader params when params can return undefined', () => {
+    const condition = signal(true);
+    resource({
+      params: () => (condition() ? 'foo' : undefined),
+      loader: async ({params}) => {
+        const _str: string = params;
+        return '';
+      },
+      injector: TestBed.inject(Injector),
+    });
+  });
+
+  it('should error when two explicit generics are provided but params is absent', () => {
+    // @ts-expect-error: params is required when the second generic is not null
+    resource<string, string>({
+      loader: async ({params}) => '',
+      injector: TestBed.inject(Injector),
     });
   });
 });

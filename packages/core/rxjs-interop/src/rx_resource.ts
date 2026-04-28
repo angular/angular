@@ -12,6 +12,7 @@ import {
   BaseResourceOptions,
   resource,
   ResourceLoaderParams,
+  ResourceOptions,
   ResourceRef,
   ResourceStreamItem,
   Signal,
@@ -26,9 +27,9 @@ import {encapsulateResourceError} from '../../src/resource/resource';
  *
  * @experimental
  */
-export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+export type RxResourceOptions<T, R> = BaseResourceOptions<T, R> & {
   stream: (params: ResourceLoaderParams<R>) => Observable<T>;
-}
+};
 
 /**
  * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
@@ -38,7 +39,7 @@ export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
  *
  * @experimental
  */
-export function rxResource<T, R>(
+export function rxResource<T, R = null>(
   opts: RxResourceOptions<T, R> & {defaultValue: NoInfer<T>},
 ): ResourceRef<T>;
 
@@ -48,7 +49,7 @@ export function rxResource<T, R>(
  *
  * @experimental
  */
-export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
+export function rxResource<T, R = null>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined> {
   if (ngDevMode && !opts?.injector) {
     assertInInjectionContext(rxResource);
@@ -108,5 +109,5 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
 
       return promise;
     },
-  });
+  } as ResourceOptions<T, R>);
 }
