@@ -1,20 +1,20 @@
 # Creating and using services
 
-Services are reusable pieces of code that can be shared across your Angular application. They typically handle data fetching, business logic, or other functionality that multiple components need to access.
+Services are reusable pieces of code that you can share across your Angular application. You commonly use them to handle data fetching, business logic, or other functionality that multiple components need to access.
 
 ## Creating a service
 
-You can create a service with the [Angular CLI](tools/cli) with the following command:
+You can create a service using the [Angular CLI](tools/cli) with the following command:
 
 ```bash
 ng generate service CUSTOM_NAME
 ```
 
-This creates a dedicated `CUSTOM_NAME.ts` file in your `src` directory.
+This command creates a dedicated `CUSTOM_NAME.ts` file in your `src` directory.
 
-You can also manually create a service by adding the `@Injectable()` decorator to a TypeScript class. This tells Angular that the service can be injected as a dependency.
+You can also manually create a service by adding the `@Injectable()` decorator to a TypeScript class. This tells Angular that you can use the class as an injectable dependency.
 
-Here is an example of a service that allows users to add and request data:
+The following example defines a service that allows users to add and retrieve data:
 
 ```ts {header: "src/app/basic-data-store.ts"}
 import {Injectable} from '@angular/core';
@@ -37,9 +37,9 @@ export class BasicDataStore {
 
 When you use `@Injectable({ providedIn: 'root' })` in your service, Angular:
 
-- **Creates a single instance** (singleton) for your entire application
-- **Makes it available everywhere** without any additional configuration
-- **Enables tree-shaking** so the service is only included in your JavaScript bundle if it's actually used
+- **Creates a single instance** (a singleton) for the entire application
+- **Makes it available throughout your application** without additional configuration
+- **Enables tree-shaking** so Angular only includes the service in your JavaScript bundle if you actually use it
 
 This is the recommended approach for most services.
 
@@ -174,7 +174,7 @@ export class BasicDataStore {
 
 ## Next steps
 
-While `providedIn: 'root'` covers most use cases, Angular offers additional ways to provide services for specialized scenarios:
+While `providedIn: 'root'` covers most use cases, Angular also provides additional ways you can configure services for more specialized scenarios:
 
 - **Component-specific instances** - When components need their own isolated service instances
 - **Manual configuration** - For services that require runtime configuration
