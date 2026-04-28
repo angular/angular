@@ -78,6 +78,7 @@ function baseDirectiveFields(
       meta.selector || '',
       meta.name,
       definitionMap,
+      meta.legacyOptionalChaining,
     ),
   );
 
@@ -214,6 +215,7 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
     getTemplateSourceLocationsEnabled(),
+    meta.legacyOptionalChaining,
   );
 
   // Then the IR is transformed to prepare it for code generation.
@@ -453,6 +455,7 @@ function createHostBindingsFunction(
   selector: string,
   name: string,
   definitionMap: DefinitionMap,
+  legacyOptionalChaining: boolean,
 ): o.Expression | null {
   const bindings = bindingParser.createBoundHostProperties(
     hostBindingsMetadata.properties,
@@ -487,6 +490,7 @@ function createHostBindingsFunction(
       properties: bindings,
       events: eventBindings,
       attributes: hostBindingsMetadata.attributes,
+      legacyOptionalChaining: legacyOptionalChaining ?? false,
     },
     bindingParser,
     constantPool,

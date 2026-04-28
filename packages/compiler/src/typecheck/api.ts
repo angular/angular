@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {SchemaMetadata} from '../core';
 import {AbsoluteSourceSpan} from '../expression_parser/ast';
-import {TcbExpr} from './ops/codegen';
 import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../property_mapping';
 import {BoundTarget, LegacyAnimationTriggerNames, MatchSource} from '../render3/view/t2_api';
-import {SchemaMetadata} from '../core';
+import {TcbExpr} from './ops/codegen';
 
 export interface TypeCtorMetadata {
   /**

@@ -7,24 +7,27 @@
  */
 
 import {
-  LegacyAnimationTriggerNames,
   BoundTarget,
   compileClassDebugInfo,
-  compileHmrInitializer,
   compileComponentClassMetadata,
   compileComponentDeclareClassMetadata,
   compileComponentFromMetadata,
   compileDeclareComponentFromMetadata,
   compileDeferResolverFunction,
+  compileHmrInitializer,
   ConstantPool,
+  createHostElement,
   CssSelector,
   DeclarationListEmitMode,
   DeclareComponentTemplateInfo,
   DeferBlockDepsEmitMode,
+  DirectiveMatcher,
   DomElementSchemaRegistry,
   ExternalExpr,
   FactoryTarget,
+  LegacyAnimationTriggerNames,
   makeBindingParser,
+  MatchSource,
   outputAst as o,
   R3ComponentDeferMetadata,
   R3ComponentMetadata,
@@ -32,19 +35,16 @@ import {
   R3DirectiveDependencyMetadata,
   R3NgModuleDependencyMetadata,
   R3PipeDependencyMetadata,
-  createHostElement,
   R3TargetBinder,
   R3TemplateDependency,
   R3TemplateDependencyKind,
   R3TemplateDependencyMetadata,
   SchemaMetadata,
+  SelectorlessMatcher,
   SelectorMatcher,
   TmplAstDeferredBlock,
-  ViewEncapsulation,
-  DirectiveMatcher,
-  SelectorlessMatcher,
-  MatchSource,
   TypeCheckId,
+  ViewEncapsulation,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -117,10 +117,10 @@ import {
   ResolveResult,
 } from '../../../transform';
 import {
+  HostBindingsContext,
+  TemplateContext,
   TypeCheckableDirectiveMeta,
   TypeCheckContext,
-  TemplateContext,
-  HostBindingsContext,
 } from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
@@ -165,6 +165,12 @@ import {
 } from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
+import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
+import {ComponentScope} from '../../../scope/src/api';
+import {getTemplateDiagnostics} from '../../../typecheck';
+import {getProjectRelativePath} from '../../../util/src/path';
+import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
+import {analyzeTemplateForAnimations} from './animations';
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
 import {
   ComponentAnalysisData,
@@ -185,19 +191,13 @@ import {
   StyleUrlMeta,
   transformDecoratorResources,
 } from './resources';
+import {analyzeTemplateForSelectorless} from './selectorless';
 import {ComponentSymbol} from './symbol';
 import {
-  legacyAnimationTriggerResolver,
   collectLegacyAnimationNames,
+  legacyAnimationTriggerResolver,
   validateAndFlattenComponentImports,
 } from './util';
-import {getTemplateDiagnostics} from '../../../typecheck';
-import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
-import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
-import {getProjectRelativePath} from '../../../util/src/path';
-import {ComponentScope} from '../../../scope/src/api';
-import {analyzeTemplateForSelectorless} from './selectorless';
-import {analyzeTemplateForAnimations} from './animations';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -283,6 +283,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     private readonly typeCheckHostBindings: boolean,
     private readonly enableSelectorless: boolean,
     private readonly emitDeclarationOnly: boolean,
+    private readonly legacyOptionalChaining: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -499,6 +500,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       this.strictStandalone,
       this.implicitStandaloneValue,
       this.emitDeclarationOnly,
+      this.legacyOptionalChaining,
     );
     // `extractDirectiveMetadata` returns `jitForced = true` when the `@Component` has
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
@@ -984,6 +986,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           changeDetection,
           styles,
           externalStyles,
+          legacyOptionalChaining: this.legacyOptionalChaining,
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
           animations,

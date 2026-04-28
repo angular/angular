@@ -609,6 +609,7 @@ function convertDeclareDirectiveFacadeToMetadata(
       declaration.isStandalone ?? getJitStandaloneDefaultForVersion(declaration.version),
     isSignal: declaration.isSignal ?? false,
     hostDirectives,
+    legacyOptionalChaining: declaration.legacyOptionalChaining ?? false,
   };
 }
 
@@ -714,6 +715,7 @@ function convertDeclareComponentFacadeToMetadata(
     i18nUseExternalIds: true,
     relativeTemplatePath: null,
     hasDirectiveDependencies,
+    legacyOptionalChaining: decl.legacyOptionalChaining ?? false,
   };
 }
 

@@ -224,6 +224,7 @@ export interface R3DirectiveMetadataFacade {
   isStandalone: boolean;
   isSignal: boolean;
   hostDirectives: R3HostDirectiveMetadataFacade[] | null;
+  legacyOptionalChaining: boolean;
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
@@ -300,6 +301,7 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   changeDetection?: ChangeDetectionStrategy;
   encapsulation?: ViewEncapsulation;
   preserveWhitespaces?: boolean;
+  legacyOptionalChaining?: boolean;
 }
 
 export type R3DeclareTemplateDependencyFacade = {

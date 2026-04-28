@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {WrappedNodeExpr, TypeCheckingConfig} from '@angular/compiler';
+import {TypeCheckingConfig, WrappedNodeExpr} from '@angular/compiler';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {initMockFileSystem} from '../../file_system/testing';
 import {
@@ -1438,6 +1438,18 @@ describe('type check blocks', () => {
         expect(block).toContain('((((this).a))?.[0])');
         expect(block).toContain('(0 as any ? (((((this).a)).optionalMethod))!() : undefined)');
       });
+
+      it('should use undefined for safe navigation operations when using the $safeNavigationMigration magic function', () => {
+        // This behavior is _wrong_ but this is where we are today.
+        // See https://github.com/angular/angular/issues/37622
+        const TEMPLATE = `{{$safeNavigationMigration(a?.b)}} {{$safeNavigationMigration(a?.method())}} {{$safeNavigationMigration(a?.[0])}} {{$safeNavigationMigration(a.optionalMethod?.())}}`;
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('(0 as any ? (((this).a))?.method!() : undefined)');
+        expect(block).toContain('((((this).a))?.b)');
+        expect(block).toContain('((((this).a))?.[0])');
+        expect(block).toContain('(0 as any ? (((((this).a)).optionalMethod))!() : undefined)');
+      });
+
       it("should use an 'any' type for safe navigation operations when disabled", () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {
           ...BASE_CONFIG,
@@ -1462,6 +1474,7 @@ describe('type check blocks', () => {
           '(0 as any ? (((((this).a)).method())?.otherMethod)!() : undefined)',
         );
       });
+
       it('should not check the presence of a property/method on the receiver when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {
           ...BASE_CONFIG,
