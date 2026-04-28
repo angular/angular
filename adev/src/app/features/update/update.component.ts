@@ -17,6 +17,20 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {marked} from 'marked';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
+/**
+ * Configure marked with a custom link renderer so external links in the
+ * update guide open in a new tab, matching the convention applied elsewhere
+ * in adev via the `ExternalLink` directive.
+ */
+marked.use({
+  renderer: {
+    link({href, title, text}) {
+      const titleAttr = title ? ` title="${title}"` : '';
+      return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+    },
+  },
+});
+
 interface Option {
   id: keyof Step;
   name: string;

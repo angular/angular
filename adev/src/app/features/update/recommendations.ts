@@ -14,6 +14,12 @@ export enum ApplicationComplexity {
 
 export interface Step {
   step: string;
+  /**
+   * Action text rendered as Markdown. Use Markdown link syntax `[text](url)`
+   * for any links — raw `<a>` HTML tags bypass the custom link renderer in
+   * `update.component.ts` and will not pick up `target="_blank"` or the
+   * external-link icon.
+   */
   action: string;
   possibleIn: number;
   necessaryAsOf: number;
@@ -155,7 +161,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'gendir',
     action:
-      'Do not rely on `gendir`, instead look at using `skipTemplateCodeGen`. <a href=https://github.com/angular/angular/issues/19339#issuecomment-332607471" target="_blank">Read More</a>',
+      'Do not rely on `gendir`, instead look at using `skipTemplateCodeGen`. [Read More](https://github.com/angular/angular/issues/19339#issuecomment-332607471)',
   },
   {
     possibleIn: 220,
@@ -239,7 +245,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'node 8',
     action:
-      'Make sure you are using <a href="http://www.hostingadvice.com/how-to/update-node-js-latest-version/" target="_blank">Node 8 or later</a>',
+      'Make sure you are using [Node 8 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
   },
   {
     possibleIn: 600,
@@ -248,7 +254,7 @@ export const RECOMMENDATIONS: Step[] = [
     windows: false,
     step: 'Update to CLI v6',
     action:
-      'Update your Angular CLI, and migrate the configuration to the <a href="https://github.com/angular/angular-cli/wiki/angular-workspace" target="_blank">new angular.json format</a> by running the following:<br/><br/>`NG_DISABLE_VERSION_CHECK=1 npx @angular/cli@6 update @angular/cli@6`<br/>',
+      'Update your Angular CLI, and migrate the configuration to the [new angular.json format](https://github.com/angular/angular-cli/wiki/angular-workspace) by running the following:<br/><br/>`NG_DISABLE_VERSION_CHECK=1 npx @angular/cli@6 update @angular/cli@6`<br/>',
   },
   {
     possibleIn: 600,
@@ -257,7 +263,7 @@ export const RECOMMENDATIONS: Step[] = [
     windows: true,
     step: 'Update to CLI v6',
     action:
-      'Update your Angular CLI, and migrate the configuration to the <a href="https://github.com/angular/angular-cli/wiki/angular-workspace" target="_blank">new angular.json format</a> by running the following:<br/><br/>`cmd /C "set "NG_DISABLE_VERSION_CHECK=1" && npx @angular/cli@6 update @angular/cli@6 @angular/core@6"`<br/>',
+      'Update your Angular CLI, and migrate the configuration to the [new angular.json format](https://github.com/angular/angular-cli/wiki/angular-workspace) by running the following:<br/><br/>`cmd /C "set "NG_DISABLE_VERSION_CHECK=1" && npx @angular/cli@6 update @angular/cli@6 @angular/core@6"`<br/>',
   },
   {
     possibleIn: 600,
@@ -343,7 +349,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'strictPropertyInitializer',
     action:
-      'If you have TypeScript configured to be strict (if you have set `strict` to `true` in your `tsconfig.json` file), update your `tsconfig.json` to disable `strictPropertyInitialization` or move property initialization from `ngOnInit` to your constructor. You can learn more about this flag on the <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#strict-class-initialization">TypeScript 2.7 release notes</a>.',
+      'If you have TypeScript configured to be strict (if you have set `strict` to `true` in your `tsconfig.json` file), update your `tsconfig.json` to disable `strictPropertyInitialization` or move property initialization from `ngOnInit` to your constructor. You can learn more about this flag on the [TypeScript 2.7 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#strict-class-initialization).',
   },
   {
     possibleIn: 600,
@@ -351,7 +357,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'update to RxJS 6',
     action:
-      'Remove deprecated RxJS 5 features using <a href="https://github.com/ReactiveX/rxjs-tslint" target="_blank">rxjs-tslint auto update rules</a><br/><br/>For most applications this will mean running the following two commands:<br/><br/>`npx rxjs-tslint`<br/>`rxjs-5-to-6-migrate -p src/tsconfig.app.json`',
+      'Remove deprecated RxJS 5 features using [rxjs-tslint auto update rules](https://github.com/ReactiveX/rxjs-tslint)<br/><br/>For most applications this will mean running the following two commands:<br/><br/>`npx rxjs-tslint`<br/>`rxjs-5-to-6-migrate -p src/tsconfig.app.json`',
   },
   {
     possibleIn: 600,
@@ -374,7 +380,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'TypeScript 3.1',
     action:
-      'Angular now uses TypeScript 3.1, read more about any potential breaking changes: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html',
+      'Angular now uses TypeScript 3.1, read more about [any potential breaking changes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html).',
   },
   {
     possibleIn: 700,
@@ -382,7 +388,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'Node 10',
     action:
-      'Angular has now added support for Node 10: https://nodejs.org/en/blog/release/v10.0.0/',
+      'Angular has now added support for [Node 10](https://nodejs.org/en/blog/release/v10.0.0/).',
   },
   {
     possibleIn: 700,
@@ -464,7 +470,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'use ::ng-deep instead of /deep/',
     action:
-      'Replace `/deep/` with `::ng-deep` in your styles, [read more about angular component styles and ::ng-deep](https://angular.io/guide/component-styles#deprecated-deep--and-ng-deep). `/deep/` and `::ng-deep` both are deprecated but using `::ng-deep` is preferred until the shadow-piercing descendant combinator is [removed from browsers and tools](https://www.chromestatus.com/features/6750456638341120) completely.',
+      'Replace `/deep/` with `::ng-deep` in your styles, [read more about angular component styles and ::ng-deep](https://angular.io/guide/component-styles#deprecated-deep--and-ng-deep). `/deep/` and `::ng-deep` both are deprecated but using `::ng-deep` is preferred until the shadow-piercing descendant combinator is [removed from browsers and tools](https://chromestatus.com/feature/5045542597951488) completely.',
   },
   {
     possibleIn: 800,
@@ -480,7 +486,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'node 10',
     action:
-      'Make sure you are using <a href="http://www.hostingadvice.com/how-to/update-node-js-latest-version/" target="_blank">Node 10 or later</a>.',
+      'Make sure you are using [Node 10 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/).',
   },
   {
     possibleIn: 800,
@@ -573,7 +579,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'node 10.13',
     action:
-      'Make sure you are using <a href="http://www.hostingadvice.com/how-to/update-node-js-latest-version/" target="_blank">Node 10.13 or later</a>.',
+      'Make sure you are using [Node 10.13 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/).',
   },
   {
     possibleIn: 900,
@@ -782,8 +788,7 @@ export const RECOMMENDATIONS: Step[] = [
     necessaryAsOf: 1000,
     level: ApplicationComplexity.Basic,
     step: 'v10 NodeJS 12',
-    action:
-      'Make sure you are using <a href="https://nodejs.org/dist/latest-v12.x/" target="_blank">Node 12 or later</a>.',
+    action: 'Make sure you are using [Node 12 or later](https://nodejs.org/dist/latest-v12.x/).',
   },
   {
     possibleIn: 1000,
@@ -871,7 +876,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'esm5-bundles',
     action:
-      "The [Angular Package Format](https://g.co/ng/apf) has been updated to remove `esm5` and `fesm5` formats. These are no longer distributed in our npm packages. If you don't use the CLI, you may need to downlevel Angular code to ES5 yourself.",
+      "The [Angular Package Format](https://angular.dev/tools/libraries/angular-package-format) has been updated to remove `esm5` and `fesm5` formats. These are no longer distributed in our npm packages. If you don't use the CLI, you may need to downlevel Angular code to ES5 yourself.",
   },
   {
     possibleIn: 1000,
@@ -1335,7 +1340,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'TypeScript 4.4',
     action:
-      'Angular now uses TypeScript 4.4, read more about any potential breaking changes: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html',
+      'Angular now uses TypeScript 4.4, read more about [any potential breaking changes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html).',
   },
   {
     possibleIn: 1300,
@@ -1343,7 +1348,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v13 node',
     action:
-      'Make sure you are using <a href="http://www.hostingadvice.com/how-to/update-node-js-latest-version/" target="_blank">Node 12.20.0 or later</a>',
+      'Make sure you are using [Node 12.20.0 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
   },
   {
     possibleIn: 1300,
@@ -1457,7 +1462,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'TypeScript 4.6',
     action:
-      'Angular now uses TypeScript 4.6, read more about any potential breaking changes: https://devblogs.microsoft.com/typescript/announcing-typescript-4-6/',
+      'Angular now uses TypeScript 4.6, read more about [any potential breaking changes](https://devblogs.microsoft.com/typescript/announcing-typescript-4-6/).',
   },
 
   {
@@ -1466,7 +1471,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v14 node',
     action:
-      'Make sure you are using <a href="http://www.hostingadvice.com/how-to/update-node-js-latest-version/" target="_blank">Node 14.15.0 or later</a>',
+      'Make sure you are using [Node 14.15.0 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
   },
   {
     possibleIn: 1400,
@@ -1669,7 +1674,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 node support',
     action:
-      'Make sure that you are using a supported version of node.js before you upgrade your application. Angular v15 supports node.js versions: 14.20.x, 16.13.x and 18.10.x. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-01" alt="Link to more information about this change">Read further</a>',
+      'Make sure that you are using a supported version of node.js before you upgrade your application. Angular v15 supports node.js versions: 14.20.x, 16.13.x and 18.10.x. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-01)',
   },
   {
     possibleIn: 1500,
@@ -1677,7 +1682,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 ts support',
     action:
-      'Make sure that you are using a supported version of TypeScript before you upgrade your application. Angular v15 supports TypeScript version 4.8 or later.  <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-02" alt="Link to more information about this change">Read further</a>',
+      'Make sure that you are using a supported version of TypeScript before you upgrade your application. Angular v15 supports TypeScript version 4.8 or later.  [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-02)',
   },
   {
     possibleIn: 1500,
@@ -1701,7 +1706,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 keyframe',
     action:
-      'In v15, the Angular compiler prefixes `@keyframes` in CSS with the component\'s scope. This means that any TypeScript code that relies on `keyframes` names no longer works in v15. Update any such instances to: define keyframes programmatically, use global stylesheets, or change the component\'s view encapsulation. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-03" alt="Link to more information about this change">Read further</a>',
+      "In v15, the Angular compiler prefixes `@keyframes` in CSS with the component's scope. This means that any TypeScript code that relies on `keyframes` names no longer works in v15. Update any such instances to: define keyframes programmatically, use global stylesheets, or change the component's view encapsulation. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-03)",
   },
   {
     possibleIn: 1500,
@@ -1717,7 +1722,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 base-decorators',
     action:
-      'Make sure to use decorators in base classes with child classes that inherit constructors and use dependency injection. Such base classes should be decorated with either `@Injectable` or `@Directive` or the compiler returns an error. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-05" alt="Link to more information about this change">Read further</a>',
+      'Make sure to use decorators in base classes with child classes that inherit constructors and use dependency injection. Such base classes should be decorated with either `@Injectable` or `@Directive` or the compiler returns an error. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-05)',
   },
   {
     possibleIn: 1500,
@@ -1725,7 +1730,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 setDisabledState',
     action:
-      'In v15, `setDisabledState` is always called when a `ControlValueAccessor` is attached. To opt-out of this behavior, use `FormsModule.withConfig` or `ReactiveFormsModule.withConfig`. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-06" alt="Link to more information about this change">Read further</a>',
+      'In v15, `setDisabledState` is always called when a `ControlValueAccessor` is attached. To opt-out of this behavior, use `FormsModule.withConfig` or `ReactiveFormsModule.withConfig`. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-06)',
   },
   {
     possibleIn: 1500,
@@ -1733,7 +1738,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'v15 canParse',
     action:
-      'Applications that use `canParse` should use `analyze` from `@angular/localize/tools` instead. In v15, the `canParse` method was removed from all translation parsers in `@angular/localize/tools`.  <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-07" alt="Link to more information about this change">Read further</a>',
+      'Applications that use `canParse` should use `analyze` from `@angular/localize/tools` instead. In v15, the `canParse` method was removed from all translation parsers in `@angular/localize/tools`.  [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-07)',
   },
   {
     possibleIn: 1500,
@@ -1741,7 +1746,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 ActivatedRoutSnapshot',
     action:
-      'Make sure that all `ActivatedRouteSnapshot` objects have a `title` property. In v15, the `title` property is a required property of `ActivatedRouteSnapshot`. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-08" alt="Link to more information about this change">Read further</a>',
+      'Make sure that all `ActivatedRouteSnapshot` objects have a `title` property. In v15, the `title` property is a required property of `ActivatedRouteSnapshot`. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-08)',
   },
   {
     possibleIn: 1500,
@@ -1749,7 +1754,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'v15 RouterOutlet',
     action:
-      'If your tests with `RouterOutlet` break, make sure they don\'t depend on the instantiation order of the corresponding component relative to change detection. In v15, `RouterOutlet` instantiates the component after change detection. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-09" alt="Link to more information about this change">Read further</a>',
+      "If your tests with `RouterOutlet` break, make sure they don't depend on the instantiation order of the corresponding component relative to change detection. In v15, `RouterOutlet` instantiates the component after change detection. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-09)",
   },
   {
     possibleIn: 1500,
@@ -1757,7 +1762,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 relativeLinkResolution',
     action:
-      'In v15, `relativeLinkResolution` is not configurable in the Router. It was used to opt out of an earlier bug fix that is now standard.  <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-10" alt="Link to more information about this change">Read further</a>',
+      'In v15, `relativeLinkResolution` is not configurable in the Router. It was used to opt out of an earlier bug fix that is now standard.  [Read further](https://v15.angular.io/guide/update-to-version-15#v15-bc-10)',
   },
   {
     possibleIn: 1500,
@@ -1765,7 +1770,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 DATE_PIPE_DEFAULT_OPTIONS',
     action:
-      'Change instances of the `DATE_PIPE_DEFAULT_TIMEZONE` token to use `DATE_PIPE_DEFAULT_OPTIONS` to configure time zones.  In v15, the `DATE_PIPE_DEFAULT_TIMEZONE` token is deprecated. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-01" alt="Link to more information about this change">Read further</a>',
+      'Change instances of the `DATE_PIPE_DEFAULT_TIMEZONE` token to use `DATE_PIPE_DEFAULT_OPTIONS` to configure time zones.  In v15, the `DATE_PIPE_DEFAULT_TIMEZONE` token is deprecated. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-dp-01)',
   },
   {
     possibleIn: 1500,
@@ -1781,7 +1786,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 Injector.get',
     action:
-      'Update instances of `Injector.get()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `Injector.get()` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-02" alt="Link to more information about this change">Read further</a>',
+      'Update instances of `Injector.get()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `Injector.get()` is deprecated in v15. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-dp-02)',
   },
   {
     possibleIn: 1500,
@@ -1789,7 +1794,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 TestBed.inject',
     action:
-      'Update instances of `TestBed.inject()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `TestBed.inject()` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-01" alt="Link to more information about this change">Read further</a>',
+      'Update instances of `TestBed.inject()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `TestBed.inject()` is deprecated in v15. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-dp-01)',
   },
   {
     possibleIn: 1500,
@@ -1797,7 +1802,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 ngModule in providedIn',
     action:
-      'Using `providedIn: ngModule` for an `@Injectable` and `InjectionToken` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-04" alt="Link to more information about this change">Read further</a>',
+      'Using `providedIn: ngModule` for an `@Injectable` and `InjectionToken` is deprecated in v15. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-dp-04)',
   },
   {
     possibleIn: 1500,
@@ -1805,7 +1810,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 providedIn any',
     action:
-      'Using `providedIn: \'any\'` for an `@Injectable` or `InjectionToken` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-05" alt="Link to more information about this change">Read further</a>',
+      "Using `providedIn: 'any'` for an `@Injectable` or `InjectionToken` is deprecated in v15. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-dp-05)",
   },
   {
     possibleIn: 1500,
@@ -1813,7 +1818,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 RouterLinkWithHref',
     action:
-      'Update instances of the `RouterLinkWithHref`directive to use the `RouterLink` directive. The `RouterLinkWithHref` directive is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-06" alt="Link to more information about this change">Read further</a>',
+      'Update instances of the `RouterLinkWithHref`directive to use the `RouterLink` directive. The `RouterLinkWithHref` directive is deprecated in v15. [Read further](https://v15.angular.io/guide/update-to-version-15#v15-dp-06)',
   },
   {
     possibleIn: 1500,
@@ -1822,7 +1827,7 @@ export const RECOMMENDATIONS: Step[] = [
     material: true,
     step: 'v15 mat refactor',
     action:
-      'In Angular Material v15, many of the components have been refactored to be based on the official Material Design Components for Web (MDC). This change affected the DOM and CSS classes of many components. <a href="https://rc.material.angular.dev/guide/mdc-migration" alt="Link to more information about this change">Read further</a>',
+      'In Angular Material v15, many of the components have been refactored to be based on the official Material Design Components for Web (MDC). This change affected the DOM and CSS classes of many components. [Read further](https://rc.material.angular.dev/guide/mdc-migration)',
   },
   {
     possibleIn: 1500,
@@ -2669,7 +2674,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: '20.0.0_update_nodejs_version',
     action:
-      'Ensure your Node.js version is at least 20.11.1 and not v18 or v22.0-v22.10 before upgrading to Angular v20. Check https://angular.dev/reference/versions for the full list of supported Node.js versions.',
+      'Ensure your Node.js version is at least 20.11.1 and not v18 or v22.0-v22.10 before upgrading to Angular v20. Check the [full list of supported Node.js versions](https://angular.dev/reference/versions).',
   },
   {
     possibleIn: 2000,
