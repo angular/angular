@@ -47,6 +47,7 @@ import {
   ViewEncapsulation,
 } from './core';
 import {compileInjectable} from './injectable_compiler_2';
+import {LEGACY_OPTIONAL_CHAINING_DEFAULT} from './legacy_optional_chaining_default';
 import {
   DeclareVarStmt,
   Expression,
@@ -609,7 +610,7 @@ function convertDeclareDirectiveFacadeToMetadata(
       declaration.isStandalone ?? getJitStandaloneDefaultForVersion(declaration.version),
     isSignal: declaration.isSignal ?? false,
     hostDirectives,
-    legacyOptionalChaining: declaration.legacyOptionalChaining ?? false,
+    legacyOptionalChaining: declaration.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
   };
 }
 
@@ -715,7 +716,7 @@ function convertDeclareComponentFacadeToMetadata(
     i18nUseExternalIds: true,
     relativeTemplatePath: null,
     hasDirectiveDependencies,
-    legacyOptionalChaining: decl.legacyOptionalChaining ?? false,
+    legacyOptionalChaining: decl.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
   };
 }
 
