@@ -209,3 +209,50 @@ export function useAutoTick() {
     jasmine.clock().uninstall();
   });
 }
+
+export interface WaitForOptions {
+  timeout?: number;
+  interval?: number;
+}
+
+// Intentionally does not participate in fake clocks.
+const realNow = performance.now.bind(performance);
+const realSetTimeout = setTimeout;
+
+export async function waitFor<T>(
+  callback: () => Promise<T> | T,
+  options: WaitForOptions = {},
+): Promise<T> {
+  const waitTime = options.timeout ?? 100;
+  const interval = options.interval ?? 0;
+  const stack = new Error().stack;
+
+  const deadline = realNow() + waitTime;
+  let i = 0;
+  let lastError: any | undefined;
+
+  while (true) {
+    try {
+      return await callback();
+    } catch (cause) {
+      lastError = cause;
+    }
+
+    i++;
+
+    if (deadline < realNow()) {
+      throw Object.assign(
+        new Error(
+          `Timed out after ${waitTime}ms and ${i} attempts. ` +
+            `Last error: ${lastError?.message ?? 'condition returned false'}`,
+        ),
+        {
+          stack: stack + `Last error: ${lastError?.stack ?? 'condition returned false'}`,
+        },
+      );
+    }
+
+    // Guarantee a macro-task between retries.
+    await new Promise((resolve) => void realSetTimeout(resolve, interval));
+  }
+}
