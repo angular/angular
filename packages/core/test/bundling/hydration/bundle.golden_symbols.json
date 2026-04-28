@@ -525,7 +525,6 @@
       "getUniqueLViewId",
       "handleStoppedNotification",
       "handleUnhandledError",
-      "handledEventElements",
       "hasApplyArgsData",
       "hasAuthHeaders",
       "hasDeps",
