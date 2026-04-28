@@ -567,9 +567,13 @@ function lookupTokenUsingNodeInjector<T>(
       if (parentLocation === NO_PARENT_INJECTOR || !shouldSearchParent(flags, false)) {
         injectorIndex = -1;
       } else {
+        const viewOffset = parentLocation >> RelativeInjectorLocationFlags.ViewOffsetShift;
         previousTView = lView[TVIEW];
+        for (let i = 0; i < viewOffset; i++) {
+          previousTView = lView[TVIEW];
+          lView = lView[DECLARATION_VIEW]!;
+        }
         injectorIndex = getParentInjectorIndex(parentLocation);
-        lView = getParentInjectorView(parentLocation, lView);
       }
     }
 
@@ -609,9 +613,13 @@ function lookupTokenUsingNodeInjector<T>(
       ) {
         // The def wasn't found anywhere on this node, so it was a false positive.
         // Traverse up the tree and continue searching.
-        previousTView = tView;
+        const viewOffset = parentLocation >> RelativeInjectorLocationFlags.ViewOffsetShift;
+        previousTView = lView[TVIEW];
+        for (let i = 0; i < viewOffset; i++) {
+          previousTView = lView[TVIEW];
+          lView = lView[DECLARATION_VIEW]!;
+        }
         injectorIndex = getParentInjectorIndex(parentLocation);
-        lView = getParentInjectorView(parentLocation, lView);
       } else {
         // If we should not search parent OR If the ancestor bloom filter value does not have the
         // bit corresponding to the directive we can give up on traversing up to find the specific
@@ -652,7 +660,9 @@ function searchTokensOnInjector<T>(
         // - AND the parent TNode is an Element.
         // This means that we just came from the Component's View and therefore are allowed to see
         // into the ViewProviders.
-        previousTView != currentTView && (tNode.type & TNodeType.AnyRNode) !== 0;
+        previousTView != currentTView &&
+        (tNode.type & TNodeType.Element) !== 0 &&
+        previousTView.type === TViewType.Component;
 
   // This special case happens when there is a @host on the inject and when we are searching
   // on the host element node.
