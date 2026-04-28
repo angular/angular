@@ -1053,7 +1053,6 @@ export class NgCompiler {
     const strictTemplates = this.strictTemplates;
 
     const useInlineTypeConstructors = this.programDriver.supportsInlineOperations;
-    const checkTwoWayBoundEvents = this.options['_checkTwoWayBoundEvents'] ?? false;
 
     // Check whether the loaded version of `@angular/core` in the `ts.Program` supports unwrapping
     // writable signals for type-checking. Only Angular versions greater than 17.2 have the necessary
@@ -1104,7 +1103,6 @@ export class NgCompiler {
         unusedStandaloneImports:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
-        checkTwoWayBoundEvents,
         allowDomEventAssertion,
       };
     } else {
@@ -1137,7 +1135,6 @@ export class NgCompiler {
         unusedStandaloneImports:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
-        checkTwoWayBoundEvents,
         allowDomEventAssertion,
       };
     }

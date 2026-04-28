@@ -297,24 +297,7 @@ function tcbCreateEventHandler(
     statements.push(assertionExpression);
   }
 
-  // TODO(crisbeto): remove the `checkTwoWayBoundEvents` check in v20.
-  if (event.type === ParsedEventType.TwoWay && tcb.env.config.checkTwoWayBoundEvents) {
-    // If we're dealing with a two-way event, we create a variable initialized to the unwrapped
-    // signal value of the expression and then we assign `$event` to it. Note that in most cases
-    // this will already be covered by the corresponding input binding, however it allows us to
-    // handle the case where the input has a wider type than the output (see #58971).
-    const target = tcb.allocateId();
-    const initializer = tcb.env.config.allowSignalsInTwoWayBindings
-      ? unwrapWritableSignal(handler, tcb)
-      : handler;
-
-    statements.push(
-      new TcbExpr(`var ${target} = ${initializer.print()}`),
-      new TcbExpr(`${target} = ${EVENT_PARAMETER}`),
-    );
-  } else {
-    statements.push(handler);
-  }
+  statements.push(handler);
 
   let eventParamType: string | undefined;
   if (eventType === EventParamType.Infer) {

@@ -288,7 +288,6 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   controlFlowPreventingContentProjection: 'warning',
   unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
-  checkTwoWayBoundEvents: true,
   allowDomEventAssertion: true,
 };
 
@@ -443,7 +442,6 @@ export function tcb(
     enableTemplateTypeChecker: false,
     useInlineTypeConstructors: true,
     allowSignalsInTwoWayBindings: true,
-    checkTwoWayBoundEvents: true,
     allowDomEventAssertion: true,
     ...config,
   };
