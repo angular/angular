@@ -159,5 +159,21 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
         expect(location.pathname).withContext(`pathname for URL: "${url}"`).toBe(url);
       }
     });
+
+    it('throws on absolute-form URLs with a foreign hostname (SSRF guard)', () => {
+      // HTTP/1.1 absolute-form request targets (e.g. `GET http://evil.com/ HTTP/1.1`)
+      // cause Express to set `req.url = "http://evil.com/"`. That string starts with `h`,
+      // not `/`, so the leading-slash guard does not apply. Without a hostname check the
+      // parsed URL would silently poison `ServerPlatformLocation.hostname`, enabling SSRF
+      // via the SSR HTTP interceptor. Ref: https://github.com/angular/angular/issues/68436
+      expect(() =>
+        platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {document: '', url: 'http://evil.com/'},
+          },
+        ]),
+      ).toThrowError(/Refusing to parse/);
+    });
   });
 })();

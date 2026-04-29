@@ -25,11 +25,24 @@ import {INITIAL_CONFIG} from './tokens';
  * @returns The parsed URL.
  */
 function parseUrl(urlStr: string, origin: string): URL {
-  // If the URL is empty or start with a `/` it is a pathname relative to the origin
-  // otherwise it's an absolute URL.
+  // If the URL is empty or starts with `/` it is a pathname relative to the origin,
+  // otherwise treat it as an absolute URL. Protocol-relative (`//`) and backslash (`/\`)
+  // variants are normalised to relative paths by the leading-slash check above.
   const urlToParse = urlStr.length === 0 || urlStr[0] === '/' ? origin + urlStr : urlStr;
+  const parsed = new URL(urlToParse);
 
-  return new URL(urlToParse);
+  // Guard against HTTP/1.1 absolute-form request targets (e.g. `http://evil.com/`) that
+  // bypass the leading-slash check and would otherwise poison `ServerPlatformLocation`
+  // with an attacker-controlled hostname, enabling SSRF via the SSR HTTP interceptor.
+  // See: https://github.com/angular/angular/issues/68436
+  if (parsed.hostname !== new URL(origin).hostname) {
+    throw new Error(
+      `ng-platform-server: Refusing to parse "${urlStr}" — hostname "${parsed.hostname}" ` +
+        `does not match the configured origin "${origin}".`,
+    );
+  }
+
+  return parsed;
 }
 
 /**
