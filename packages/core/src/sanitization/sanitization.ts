@@ -291,7 +291,7 @@ const SECURITY_SENSITIVE_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(['href',
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-const SECURITY_SENSITIVE_ELEMENTS: Record<
+export const SECURITY_SENSITIVE_ELEMENTS: Record<
   string,
   Record<string, true | undefined | ReadonlySet<string>> | undefined
 > = {
