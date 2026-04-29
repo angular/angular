@@ -28,6 +28,7 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {IDLE_SERVICE, IdleService} from '../../../src/defer/idle_service';
 import {injectAsync} from '../../../src/di/inject_async';
+import DefaultExportedFooService from './test_service';
 
 describe('injectAsync', () => {
   it('should inject asynchronously', async () => {
@@ -45,6 +46,13 @@ describe('injectAsync', () => {
       const foo = await injectAsync(() => Promise.resolve(FooService))();
 
       expect(foo).toBeInstanceOf(MyMockedFooService);
+    });
+  });
+
+  it('should inject asynchronously from a default import shape', async () => {
+    await TestBed.runInInjectionContext(async () => {
+      const foo = await injectAsync(() => import('./test_service'))();
+      expect(foo).toBeInstanceOf(DefaultExportedFooService);
     });
   });
 

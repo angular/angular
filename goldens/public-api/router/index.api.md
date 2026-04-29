@@ -7,6 +7,7 @@
 import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
+import { DefaultExport } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
@@ -217,10 +218,7 @@ export type Data = {
 // @public
 export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFeature>;
 
-// @public
-export interface DefaultExport<T> {
-    default: T;
-}
+export { DefaultExport }
 
 // @public
 export class DefaultTitleStrategy extends TitleStrategy {
