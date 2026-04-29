@@ -1,3 +1,26 @@
+<a name="21.2.11"></a>
+# 21.2.11 (2026-04-29)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [10ad3c0692](https://github.com/angular/angular/commit/10ad3c06923453ae0ec06b06e664ce05900a4ff6) | fix | prevent focus from scrollToAnchor |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f5d8a2c0b](https://github.com/angular/angular/commit/4f5d8a2c0b5e38d4debc4293945270cea4a9590d) | fix | let declaration span not including end character |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a40e2cebc8](https://github.com/angular/angular/commit/a40e2cebc878965c3e21bfb61658f3f80cbd2ebf) | fix | fix ordering of view queries metadata in JIT mode |
+| [885a1a1d97](https://github.com/angular/angular/commit/885a1a1d9757adfa8766d9b369c848a277438c31) | fix | guard against non-object events and avoid listener wrapper identity mismatch |
+| [7a64aff9b5](https://github.com/angular/angular/commit/7a64aff9b59999077ea915486a7fa0b97a286659) | fix | prevent event replay double-invocation when element hydrates before app stability |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [be1f80a253](https://github.com/angular/angular/commit/be1f80a253b8ee27ed7d8de2287d6895c4821909) | fix | ensure origin has a trailing slash when parsing url |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.10"></a>
 # 21.2.10 (2026-04-22)
 ### docs
