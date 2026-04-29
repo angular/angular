@@ -1160,6 +1160,7 @@
       "updateSegmentGroupChildren",
       "updateTextNode",
       "upgradeLinkedSignalGetter",
+      "validateAgainstEventAttributes",
       "validateCommands",
       "viewAttachedToChangeDetector",
       "viewAttachedToContainer",
