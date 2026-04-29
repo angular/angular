@@ -2,9 +2,9 @@
 
 IMPORTANT: The `@angular/animations` package is now deprecated. The Angular team recommends using native CSS with `animate.enter` and `animate.leave` for animations for all new code. Learn more at the new enter and leave [animation guide](guide/animations). Also see [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start migrating to pure CSS animations in your apps.
 
-Animation provides the illusion of motion: HTML elements change styling over time.
-Well-designed animations can make your application more fun and straightforward to use, but they aren't just cosmetic.
-Animations can improve your application and user experience in a number of ways:
+Animation provides the illusion of motion: HTML elements change styles over time.
+Well-designed animations can make your application more intuitive and engaging, but they aren't just cosmetic.
+Animations can improve your application and the user experience in a number of ways:
 
 - Without animations, web page transitions can seem abrupt and jarring
 - Motion greatly enhances the user experience, so animations give users a chance to detect the application's response to their actions
@@ -70,7 +70,7 @@ You put the trigger that defines an animation within the `animations` metadata p
 Let's animate a transition that changes a single HTML element from one state to another.
 For example, you can specify that a button displays either **Open** or **Closed** based on the user's last action.
 When the button is in the `open` state, it's visible and yellow.
-When it's the `closed` state, it's translucent and blue.
+When it's in the `closed` state, it's translucent and blue.
 
 In HTML, these attributes are set using ordinary CSS styles such as color and opacity.
 In Angular, use the `style()` function to specify a set of CSS styles for use with animations.
