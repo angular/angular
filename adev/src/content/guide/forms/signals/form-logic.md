@@ -467,7 +467,7 @@ Signal Forms provides six pre-defined metadata keys that built-in validators pop
 | `MAX_LENGTH` | `maxLength()` | `field().maxLength()` |
 | `PATTERN`    | `pattern()`   | `field().pattern()`   |
 
-The `[formField]` directive automatically binds these to the corresponding HTML attributes:
+The `[formField]` directive automatically binds five of these (`REQUIRED`, `MIN`, `MAX`, `MIN_LENGTH`, and `MAX_LENGTH`) to the corresponding HTML attribute on a native form control. `PATTERN` is the exception, because Signal Forms supports multiple patterns per field but the HTML `pattern` attribute accepts only a single regular expression.
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -500,7 +500,7 @@ export class Age {
 
 ### Reactive metadata
 
-Validation rules can compute their bound from other field values, making the published metadata reactive:
+Validation rules can derive their constraints from other fields, making the published metadata reactive:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';

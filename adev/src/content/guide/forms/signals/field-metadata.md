@@ -126,29 +126,15 @@ The logic function receives the field's context, which exposes `value` as a sign
 
 ## Reading metadata from a field
 
-When you want to read the value, call `state.metadata(key)`. The call has two ways of yielding no value, and you need to distinguish them when you read it:
-
-1. **No schema rule was ever registered for this key on this field.** The call returns `undefined`.
-2. **A rule was registered, but no contribution has produced a value yet.** The call returns a signal whose current value is `undefined` (or the reducer's initial value, if the key has one).
-
-For `USERNAME_HELP` — a string key with override semantics — this means the return type is `Signal<string | undefined> | undefined`:
-
-| Layer | Type                                         | When it is `undefined`                                                           |
-| ----- | -------------------------------------------- | -------------------------------------------------------------------------------- |
-| Outer | `Signal<string \| undefined>` or `undefined` | No schema rule ever registered a `metadata()` call for this key on this field.   |
-| Inner | The signal's current value                   | No contribution has produced a value yet (the override reducer's initial state). |
-
-Keys with a reducer swap out the inner type: instead of `string | undefined`, the signal holds whatever the reducer accumulates — typically non-nullable, like `string[]` for `list()`. Managed keys skip the signal wrapper entirely: reading returns the object your `create` function produced, or `undefined` if no rule registered the key. In all three cases, the outer `undefined` (no rule registered) stays the same possibility.
-
-The outer layer is the important one, because it tells you whether the key is _known_ on this field at all, not just whether the value happens to be undefined right now. Use `hasMetadata(key)` to check it explicitly.
+`hasMetadata(key)` returns `true` if any schema rule registered the key on this field. `state.metadata(key)` returns `undefined` when no rule has registered the key, and a signal of the current reduced value otherwise.
 
 ```ts
 registrationForm.username().hasMetadata(USERNAME_HELP); // true if any metadata() rule registered this key
 ```
 
-`hasMetadata()` returns a plain `boolean` and checks whether any `metadata()` rule was applied to this field's path for this key. It does not check whether the current reduced value is non-`undefined`.
+The shape of that inner value (whether it can itself be `undefined`, what type it holds) depends on the key's reducer. Reducers are covered in the next section.
 
-Once you have confirmed the key exists, unwrap the signal:
+When the key may not be registered, gate the read with `hasMetadata()`:
 
 ```angular-html
 @if (registrationForm.username().hasMetadata(USERNAME_HELP)) {
@@ -298,9 +284,8 @@ Managed metadata stores a lifecycle-aware object on a field instead of a reactiv
 When you want to define a managed key, call `createManagedMetadataKey<TRead, TWrite>(create)`. The `create` function you pass produces the value the key holds.
 
 ```ts
-import {Signal, inject, resource} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {firstValueFrom} from 'rxjs';
+import {Signal} from '@angular/core';
+import {httpResource} from '@angular/common/http';
 import {createManagedMetadataKey} from '@angular/forms/signals';
 
 export interface UrlPreview {
@@ -310,13 +295,9 @@ export interface UrlPreview {
 }
 
 export const URL_PREVIEW = createManagedMetadataKey((_state, url: Signal<string | undefined>) => {
-  const http = inject(HttpClient);
-  return resource({
-    params: url,
-    loader: async ({params: currentUrl}) => {
-      if (!currentUrl) return undefined;
-      return firstValueFrom(http.get<UrlPreview>('/api/url-preview', {params: {url: currentUrl}}));
-    },
+  return httpResource<UrlPreview>(() => {
+    const currentUrl = url();
+    return currentUrl ? {url: '/api/url-preview', params: {url: currentUrl}} : undefined;
   });
 });
 ```
@@ -325,7 +306,7 @@ The `create` function receives the field's `FieldState` and a `Signal<TAcc>` of 
 
 `create` runs once when a field is constructed, inside the field's injection context. That lets you call `inject()`, `resource()`, and `effect()` inside `create`, and ties cleanup to the field's lifecycle: when the field is destroyed, Angular destroys the injection context, and any `resource()`, `effect()`, or `DestroyRef` callback you registered there cleans up automatically.
 
-Because `create` itself is not reactive, any behavior that needs to respond to signal changes has to live inside an `effect()` or `resource()` set up during that initial call. `URL_PREVIEW` demonstrates the pattern: the `resource()` takes the URL signal as its `params` and reloads whenever that signal changes. The schema rule (`metadata(path.url, URL_PREVIEW, ({value}) => value())`) decides what data to feed in; the managed key decides what to do with it.
+Because `create` itself is not reactive, any behavior that needs to respond to signal changes has to live inside an `effect()`, `resource()`, or `httpResource()` set up during that initial call. `URL_PREVIEW` demonstrates the pattern: the `httpResource()` reads the URL signal inside its request function, so the request re-runs whenever the signal changes. The schema rule (`metadata(path.url, URL_PREVIEW, ({value}) => value())`) decides what data to feed in; the managed key decides what to do with it.
 
 ### Using a managed key in a form
 
@@ -351,16 +332,14 @@ import {URL_PREVIEW} from './url-preview';
           @let preview = link.url().metadata(URL_PREVIEW);
           @if (preview?.isLoading()) {
             <p>Loading preview...</p>
-          }
-          @if (preview?.hasValue() && preview.value(); as data) {
+          } @else if (preview?.hasValue() && preview.value(); as data) {
             <article class="preview">
               <h3>{{ data.title }}</h3>
               @if (data.description) {
                 <p>{{ data.description }}</p>
               }
             </article>
-          }
-          @if (preview?.error()) {
+          } @else if (preview?.error()) {
             <p class="error">Could not load preview.</p>
           }
         </fieldset>
@@ -382,10 +361,7 @@ export class LinkEditor {
   });
 
   addLink() {
-    this.linksModel.update((model) => ({
-      ...model,
-      links: [...model.links, {url: ''}],
-    }));
+    this.linksForm.links().value.update((links) => [...links, {url: ''}]);
   }
 }
 ```
