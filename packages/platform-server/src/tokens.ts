@@ -21,9 +21,7 @@ export interface PlatformConfig {
   document?: string;
   /**
    * The URL for the current application state. This is used for initializing
-   * the platform's location. `protocol`, `hostname`, and `port` will be
-   * overridden if `baseUrl` is set.
-   * @default none
+   * the platform's location. `protocol`, `hostname`, and `port`.
    */
   url?: string;
 }
