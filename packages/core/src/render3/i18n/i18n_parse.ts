@@ -998,7 +998,7 @@ function i18nSanitizeAttribute(attrName: string): SanitizerFn | null {
   }
 
   if (SECURITY_SENSITIVE_ATTRS.has(lowerAttrName)) {
-    return _validateAttribute;
+    return <SanitizerFn>_validateAttribute;
   }
 
   return null;
