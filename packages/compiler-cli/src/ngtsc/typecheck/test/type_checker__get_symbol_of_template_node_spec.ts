@@ -153,6 +153,156 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('should get a symbol for coerced inputs using ngAcceptInputType', () => {
+      it('should resolve the correct symbol for a transformed input', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const templateString = `<div dir [name]="'coerced'"></div>`;
+        const targets: TypeCheckingTarget[] = [
+          {
+            fileName,
+            templates: {'Cmp': templateString} as {[key: string]: string},
+            declarations: [
+              {
+                name: 'TestDir',
+                selector: '[dir]',
+                file: dirFile,
+                type: 'directive' as const,
+                inputs: {name: 'name'},
+                coercedInputFields: ['name'],
+              },
+            ],
+          },
+          {
+            fileName: dirFile,
+            source: `export class TestDir {
+              name!: string;
+              static ngAcceptInputType_name: string | boolean;
+            }`,
+          },
+        ];
+
+        const {templateTypeChecker, program} = setup(targets);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+        const {inputs} = getAstElements(templateTypeChecker, cmp)[0];
+        const symbol = templateTypeChecker.getSymbolOfNode(inputs[0], cmp)!;
+
+        assertInputBindingSymbol(symbol);
+        expect(
+          (
+            templateTypeChecker.getTsSymbolOfSymbol(symbol.bindings[0])!
+              .declarations![0] as ts.PropertyDeclaration
+          ).name.getText(),
+        ).toEqual('name');
+
+        // Ensure we can go back to the original location using the shim location
+        const mapping = templateTypeChecker.getSourceMappingAtTcbLocation(
+          symbol.bindings[0].tcbLocation,
+        )!;
+        expect(mapping.span.toString()).toEqual('name');
+      });
+
+      it('should resolve the correct symbol for an input with a transform function', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const templateString = `<div dir [name]="'coerced'"></div>`;
+        const targets: TypeCheckingTarget[] = [
+          {
+            fileName,
+            templates: {'Cmp': templateString} as {[key: string]: string},
+            declarations: [
+              {
+                name: 'TestDir',
+                selector: '[dir]',
+                file: dirFile,
+                type: 'directive' as const,
+                inputs: {name: 'name'},
+                // Mark this input as having a transform
+                coercedInputFields: ['name'],
+              },
+            ],
+          },
+          {
+            fileName: dirFile,
+            source: `
+              import {Input} from '@angular/core';
+              export class TestDir {
+                @Input({transform: (v: string) => true}) name!: boolean;
+              }
+            `,
+          },
+        ];
+
+        const {templateTypeChecker, program} = setup(targets);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+        const {inputs} = getAstElements(templateTypeChecker, cmp)[0];
+        const symbol = templateTypeChecker.getSymbolOfNode(inputs[0], cmp)!;
+
+        assertInputBindingSymbol(symbol);
+        expect(
+          (
+            templateTypeChecker.getTsSymbolOfSymbol(symbol.bindings[0])!
+              .declarations![0] as ts.PropertyDeclaration
+          ).name.getText(),
+        ).toEqual('name');
+
+        // Ensure we can go back to the original location using the shim location
+        const mapping = templateTypeChecker.getSourceMappingAtTcbLocation(
+          symbol.bindings[0].tcbLocation,
+        )!;
+        expect(mapping.span.toString()).toEqual('name');
+      });
+
+      it('should resolve the correct symbol for transformed inputs from a .d.ts file', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dtsFile = absoluteFrom('/dir.d.ts');
+        const templateString = `<div dir [name]="'coerced'"></div>`;
+        const targets: TypeCheckingTarget[] = [
+          {
+            fileName,
+            templates: {'Cmp': templateString} as {[key: string]: string},
+            declarations: [
+              {
+                name: 'TestDir',
+                selector: '[dir]',
+                file: dtsFile,
+                type: 'directive' as const,
+                inputs: {name: 'name'},
+                coercedInputFields: ['name'],
+              },
+            ],
+          },
+          {
+            fileName: dtsFile,
+            source: `
+              import * as i0 from '@angular/core';
+              export declare class TestDir {
+                name: boolean;
+                static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, { "name": { "alias": "name", "required": false, "isSignal": false, "transform": typeof someTransform }; }, {}, never, never, false, never>;
+                static ngAcceptInputType_name: string | boolean;
+              }
+            `,
+          },
+        ];
+
+        const {templateTypeChecker, program} = setup(targets);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+        const {inputs} = getAstElements(templateTypeChecker, cmp)[0];
+        const symbol = templateTypeChecker.getSymbolOfNode(inputs[0], cmp)!;
+
+        assertInputBindingSymbol(symbol);
+        expect(
+          (
+            templateTypeChecker.getTsSymbolOfSymbol(symbol.bindings[0])!
+              .declarations![0] as ts.PropertyDeclaration
+          ).name.getText(),
+        ).toEqual('name');
+      });
+    });
+
     describe('templates', () => {
       describe('ng-templates', () => {
         let templateTypeChecker: TemplateTypeChecker;

@@ -33,7 +33,6 @@ import {
 
 import ts from 'typescript';
 
-import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';
 import {
   createDollarAnyQuickInfo,
   createNgTemplateQuickInfo,
@@ -48,6 +47,7 @@ import {
   getDirectiveMatchesForElementTag,
   getTextSpanOfNode,
 } from './utils';
+import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';
 
 export class QuickInfoBuilder {
   private readonly typeChecker: ts.TypeChecker;
@@ -125,11 +125,70 @@ export class QuickInfoBuilder {
       return undefined;
     }
 
+    if (symbol.kind === SymbolKind.Input) {
+      const transformedQuickInfo = this.getQuickInfoForTransformedInput(symbol);
+      if (transformedQuickInfo !== null) {
+        return transformedQuickInfo;
+      }
+    }
+
     const kind =
       symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
 
     const quickInfo = this.getQuickInfoAtTcbLocation(symbol.bindings[0].tcbLocation);
     return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
+  }
+
+  private getQuickInfoForTransformedInput(symbol: InputBindingSymbol): ts.QuickInfo | null {
+    const binding = symbol.bindings[0];
+    const target = binding.target;
+    if (target.kind !== SymbolKind.Directive) {
+      return null;
+    }
+
+    const tsSymbol = this.compiler.getTemplateTypeChecker().getTsSymbolOfSymbol(target);
+    if (
+      tsSymbol === null ||
+      tsSymbol.valueDeclaration === undefined ||
+      !ts.isClassDeclaration(tsSymbol.valueDeclaration)
+    ) {
+      return null;
+    }
+
+    if (
+      !(this.node instanceof TmplAstBoundAttribute) &&
+      !(this.node instanceof TmplAstTextAttribute)
+    ) {
+      return null;
+    }
+
+    const dirMeta = this.compiler
+      .getTemplateTypeChecker()
+      .getDirectiveMetadata(tsSymbol.valueDeclaration);
+    const inputMappings = dirMeta?.inputs.getByBindingPropertyName(this.node.name);
+    const inputMapping = inputMappings?.[0];
+
+    if (!inputMapping || inputMapping.transform === null) {
+      return null;
+    }
+
+    // Get the transform parameter type (what the template can pass in)
+    const typeString = this.typeChecker.typeToString(
+      this.typeChecker.getTypeFromTypeNode(inputMapping.transform.type.node),
+    );
+
+    const className = tsSymbol.valueDeclaration.name?.getText() ?? '';
+    const existingQuickInfo = this.getQuickInfoAtTcbLocation(binding.tcbLocation);
+
+    return createQuickInfo(
+      inputMapping.classPropertyName,
+      DisplayInfoKind.INPUT,
+      getTextSpanOfNode(this.node),
+      className,
+      typeString,
+      existingQuickInfo?.documentation,
+      existingQuickInfo?.tags,
+    );
   }
 
   private getQuickInfoForElementSymbol(symbol: ElementSymbol): ts.QuickInfo {
