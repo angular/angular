@@ -7,11 +7,14 @@
  */
 
 import {IDLE_SERVICE} from '../defer/idle_service';
+import {DefaultExport, maybeUnwrapDefaultExport} from '../util/default_export';
 import {promiseWithResolvers} from '../util/promise_with_resolvers';
 import {assertInInjectionContext} from './contextual';
 import {Injector} from './injector';
 import {inject} from './injector_compatibility';
 import {ProviderToken} from './provider_token';
+
+type InjectAsyncLoaderResult<T> = ProviderToken<T> | DefaultExport<ProviderToken<T>>;
 
 /**
  * A helper function that allows to inject dependencies asynchronously,
@@ -44,6 +47,14 @@ import {ProviderToken} from './provider_token';
 export function injectAsync<T>(
   loader: () => Promise<ProviderToken<T>>,
   options?: InjectAsyncOptions,
+): () => Promise<T>;
+export function injectAsync<T>(
+  loader: () => Promise<DefaultExport<ProviderToken<T>>>,
+  options?: InjectAsyncOptions,
+): () => Promise<T>;
+export function injectAsync<T>(
+  loader: () => Promise<InjectAsyncLoaderResult<T>>,
+  options?: InjectAsyncOptions,
 ): () => Promise<T> {
   if (ngDevMode) {
     assertInInjectionContext(injectAsync);
@@ -51,7 +62,7 @@ export function injectAsync<T>(
 
   const injector = inject(Injector);
 
-  let loadedPromise: Promise<ProviderToken<T>> | null = null;
+  let loadedPromise: Promise<InjectAsyncLoaderResult<T>> | null = null;
   const load = () => {
     if (!loadedPromise) {
       loadedPromise = loader();
@@ -64,7 +75,7 @@ export function injectAsync<T>(
   }
 
   // We can't use `inject` later on because of the async nature of the loader
-  return () => load().then((type) => injector.get(type)!);
+  return () => load().then((loadedToken) => injector.get(maybeUnwrapDefaultExport(loadedToken))!);
 }
 
 /**

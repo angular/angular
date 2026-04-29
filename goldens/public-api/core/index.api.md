@@ -542,6 +542,11 @@ export class DebugNode {
 // @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
 
+// @public
+export interface DefaultExport<T> {
+    default: T;
+}
+
 // @public @deprecated (undocumented)
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
     constructor(trackByFn?: TrackByFunction<V>);
@@ -909,6 +914,9 @@ export interface InjectableType<T> extends Type<T> {
 
 // @public
 export function injectAsync<T>(loader: () => Promise<ProviderToken<T>>, options?: InjectAsyncOptions): () => Promise<T>;
+
+// @public (undocumented)
+export function injectAsync<T>(loader: () => Promise<DefaultExport<ProviderToken<T>>>, options?: InjectAsyncOptions): () => Promise<T>;
 
 // @public
 export interface InjectAsyncOptions {

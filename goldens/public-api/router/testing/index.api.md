@@ -9,6 +9,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
+import { DefaultExport } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';

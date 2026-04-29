@@ -7,6 +7,7 @@
  */
 
 import {
+  DefaultExport,
   EnvironmentInjector,
   EnvironmentProviders,
   NgModuleFactory,
@@ -15,6 +16,7 @@ import {
   Type,
 } from '@angular/core';
 import {Observable} from 'rxjs';
+export {DefaultExport} from '@angular/core';
 
 import type {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
@@ -212,22 +214,6 @@ export type Data = {
 export type ResolveData = {
   [key: string | symbol]: ResolveFn<unknown> | DeprecatedResolve;
 };
-
-/**
- * An ES Module object with a default export of the given type.
- *
- * @see {@link Route#loadComponent}
- * @see {@link LoadChildrenCallback}
- *
- * @publicApi
- */
-export interface DefaultExport<T> {
-  /**
-   * Default exports are bound under the name `"default"`, per the ES Module spec:
-   * https://tc39.es/ecma262/#table-export-forms-mapping-to-exportentry-records
-   */
-  default: T;
-}
 
 /**
  *
