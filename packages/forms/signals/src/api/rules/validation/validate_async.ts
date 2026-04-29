@@ -61,11 +61,12 @@ export interface AsyncValidatorOptions<
 > {
   /**
    * A function that receives the field context and returns the params for the resource.
-   *
+   * Returning `undefined` indicates that the resource should not be run for the current state
+   * (the forms system will report the params as `undefiend` to the factory's resource)
    * @param ctx The field context for the field being validated.
-   * @returns The params for the resource.
+   * @returns The params for the resource, or `undefiend` to skip the running the resource
    */
-  readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
+  readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams | undefined;
 
   /**
    * Duration in milliseconds to wait before triggering the async operation, or a function that
