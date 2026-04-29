@@ -52,7 +52,7 @@ import {
   PipeMeta,
 } from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
-import {ProgramDriver, UpdateMode} from '../../program_driver';
+import {ProgramDriver, UpdateMode, InliningMode} from '../../program_driver';
 import {
   ClassDeclaration,
   DeclarationNode,
@@ -626,14 +626,37 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       for (const [shimPath, shimRecord] of fileRecord.shimData) {
-        // TODO(atscott): Filter out diagnostics from original source in CopySourceToTcb
-        // We don't want to duplicate diagnostics from original source when copying to tcb
-
         const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
+        const semanticDiagnostics = typeCheckProgram.getSemanticDiagnostics(shimSf);
+
+        let tcbStart: number | null = null;
+        if (this.programDriver.inliningMode === InliningMode.CopySourceToTcb) {
+          for (const stmt of shimSf.statements) {
+            if (
+              ts.isFunctionDeclaration(stmt) &&
+              stmt.name !== undefined &&
+              stmt.name.text.startsWith('_tcb')
+            ) {
+              tcbStart = stmt.getFullStart();
+              break;
+            }
+          }
+        }
+
+        // Filter out diagnostics that fall within the copied source content.
+        // We only keep diagnostics that are within a known TCB range.
+        // We use `InliningMode.CopySourceToTcb` as a signal that this shim
+        // contains copied source content.
+        const filteredDiagnostics =
+          this.programDriver.inliningMode === InliningMode.CopySourceToTcb
+            ? semanticDiagnostics.filter((diag) => {
+                if (diag.start === undefined) return true;
+                return tcbStart !== null && diag.start >= tcbStart;
+              })
+            : semanticDiagnostics;
+
         diagnostics.push(
-          ...typeCheckProgram
-            .getSemanticDiagnostics(shimSf)
-            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+          ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
         );
         diagnostics.push(...shimRecord.genesisDiagnostics);
 

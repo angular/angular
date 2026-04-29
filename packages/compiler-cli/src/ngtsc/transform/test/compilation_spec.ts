@@ -18,7 +18,13 @@ import {
   TypeScriptReflectionHost,
 } from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
-import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler, TraitState} from '../../transform';
+import {
+  CompilationMode,
+  DetectResult,
+  DtsTransformRegistry,
+  TraitCompiler,
+  TraitState,
+} from '../../transform';
 import {
   AnalysisOutput,
   CompileResult,
@@ -433,7 +439,10 @@ runInEachFileSystem(() => {
           name = 'FakeComponentHandler';
           precedence = HandlerPrecedence.PRIMARY;
 
-          detect(node: ClassDeclaration, decorators: Decorator[] | null): DetectResult<{}> | undefined {
+          detect(
+            node: ClassDeclaration,
+            decorators: Decorator[] | null,
+          ): DetectResult<{}> | undefined {
             if (node.name.text !== 'Cmp') return undefined;
             return {trigger: node, decorator: null, metadata: {}};
           }
@@ -442,26 +451,32 @@ runInEachFileSystem(() => {
             return {
               analysis: {
                 meta: {
-                  isStandalone: false // Not standalone!
-                }
-              }
+                  isStandalone: false, // Not standalone!
+                },
+              },
             };
           }
 
-          symbol(): null { return null; }
-          compileFull(): CompileResult { throw new Error('Should not be called'); }
-          compileLocal(): CompileResult { throw new Error('Should not be called'); }
+          symbol(): null {
+            return null;
+          }
+          compileFull(): CompileResult {
+            throw new Error('Should not be called');
+          }
+          compileLocal(): CompileResult {
+            throw new Error('Should not be called');
+          }
         }
 
         const contents = `
           class Cmp {} // Not exported!
         `;
-        
+
         const filename = 'test.ts';
         const {program} = makeProgram([{name: absoluteFrom('/' + filename), contents}]);
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
-        
+
         const compiler = new TraitCompiler(
           [new FakeComponentHandler()],
           reflectionHost,
@@ -473,14 +488,16 @@ runInEachFileSystem(() => {
           null,
           fakeSfTypeIdentifier,
           false,
-          false
+          false,
         );
-        
+
         const sourceFile = program.getSourceFile(filename)!;
-        
+
         compiler.analyzeSync(sourceFile);
-        
-        const record = compiler.recordFor(getDeclaration(program, absoluteFrom('/test.ts'), 'Cmp', isNamedClassDeclaration));
+
+        const record = compiler.recordFor(
+          getDeclaration(program, absoluteFrom('/test.ts'), 'Cmp', isNamedClassDeclaration),
+        );
         expect(record).not.toBeNull();
         expect(record!.traits.length).toBe(1);
         expect(record!.traits[0].state).toBe(TraitState.Skipped);
@@ -488,4 +505,3 @@ runInEachFileSystem(() => {
     });
   });
 });
-
