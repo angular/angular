@@ -11,7 +11,7 @@ export interface ConfigurationChangeLike {
 }
 
 export function shouldRestartOnConfigurationChange(e: ConfigurationChangeLike): boolean {
-  if (e.affectsConfiguration('typescript.tsdk')) {
+  if (e.affectsConfiguration('typescript.tsdk') || e.affectsConfiguration('js/ts.tsdk.path')) {
     return true;
   }
 
