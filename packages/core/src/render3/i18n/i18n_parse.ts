@@ -18,6 +18,10 @@ import {
 import {getInertBodyHelper} from '../../sanitization/inert_body';
 import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
 import {
+  ɵɵvalidateAttribute as _validateAttribute,
+  SECURITY_SENSITIVE_ELEMENTS,
+} from '../../sanitization/sanitization';
+import {
   assertDefined,
   assertEqual,
   assertGreaterThanOrEqual,
@@ -388,7 +392,7 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
           previousElementIndex,
           attrName,
           countBindings(updateOpCodes),
-          SENSITIVE_ATTRS[attrName.toLowerCase()] ? _sanitizeUrl : null,
+          i18nSanitizeAttribute(attrName),
         );
       }
     }
@@ -816,7 +820,7 @@ function walkIcuTree(
                   newIndex,
                   attr.name,
                   0,
-                  SENSITIVE_ATTRS[lowerAttrName] ? _sanitizeUrl : null,
+                  i18nSanitizeAttribute(lowerAttrName),
                 );
               } else {
                 ngDevMode &&
@@ -968,4 +972,34 @@ function addCreateAttribute(
   attrValue: string,
 ) {
   create.push((newIndex << IcuCreateOpCode.SHIFT_REF) | IcuCreateOpCode.Attr, attrName, attrValue);
+}
+
+/**
+ * Caches all keys of `SECURITY_SENSITIVE_ELEMENTS` in a Set to avoid recomputing
+ * or scanning them on every invocation.
+ */
+const SECURITY_SENSITIVE_ATTRS: ReadonlySet<string> = /* @__PURE__ */ (() =>
+  new Set(
+    Object.values(SECURITY_SENSITIVE_ELEMENTS).flatMap((attrs) =>
+      attrs ? Object.keys(attrs) : [],
+    ),
+  ))();
+
+/**
+ * Returns a sanitizer for the given attribute name or null if the attribute is not security sensitive.
+ *
+ * @param attrName The name of the attribute to sanitize.
+ * @returns The sanitizer for the given attribute name.
+ */
+function i18nSanitizeAttribute(attrName: string): SanitizerFn | null {
+  const lowerAttrName = attrName.toLowerCase();
+  if (SENSITIVE_ATTRS[lowerAttrName]) {
+    return _sanitizeUrl;
+  }
+
+  if (SECURITY_SENSITIVE_ATTRS.has(lowerAttrName)) {
+    return _validateAttribute;
+  }
+
+  return null;
 }
