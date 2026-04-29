@@ -79,7 +79,7 @@ export type DeprecatedResolve = DeprecatedGuard | any;
 /**
  * The supported types that can be returned from a `Router` guard.
  *
- * @see [Routing guide](guide/routing/common-router-tasks#preventing-unauthorized-access)
+ * @see [Routing guide](guide/routing/route-guards)
  * @publicApi
  */
 export type GuardResult = boolean | UrlTree | RedirectCommand;
@@ -111,7 +111,7 @@ export type GuardResult = boolean | UrlTree | RedirectCommand;
  *   ],
  * };
  * ```
- * @see [Routing guide](guide/routing/common-router-tasks#preventing-unauthorized-access)
+ * @see [Routing guide](guide/routing/route-guards)
  *
  * @publicApi
  */
@@ -136,7 +136,7 @@ export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
  *
  * @see {@link Route}
  * @see {@link Router}
- * @see [Router configuration guide](guide/routing/router-reference#configuration)
+ * @see [Router configuration guide](guide/routing/router-reference)
  * @publicApi
  */
 export type Routes = Route[];
@@ -328,7 +328,7 @@ export type RedirectFunction = (
  * change or query params have changed. This does not include matrix parameters.
  *
  * @see {@link Route#runGuardsAndResolvers}
- * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior#control-when-guards-and-resolvers-execute)
+ * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior)
  * @publicApi
  */
 export type RunGuardsAndResolvers =
@@ -620,7 +620,7 @@ export interface Route {
   /**
    * An object specifying a lazy-loaded component.
    *
-   * @see [Injection context lazy loading](guide/routing/define-routes#injection-context-lazy-loading)
+   * @see [Injection context lazy loading](guide/routing/loading-strategies)
    *
    */
   loadComponent?: () =>
@@ -732,7 +732,7 @@ export interface Route {
   /**
    * An object specifying lazy-loaded child routes.
    *
-   * @see [Injection context lazy loading](guide/routing/define-routes#injection-context-lazy-loading)
+   * @see [Injection context lazy loading](guide/routing/loading-strategies)
    *
    */
   loadChildren?: LoadChildren;
@@ -753,7 +753,7 @@ export interface Route {
    * change or query params have changed. This does not include matrix parameters.
    *
    * @see {@link RunGuardsAndResolvers}
-   * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior#control-when-guards-and-resolvers-execute)
+   * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior)
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
 
