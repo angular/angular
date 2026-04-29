@@ -456,7 +456,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       args.push('--suppressAngularDiagnosticCodes', suppressAngularDiagnosticCodes);
     }
 
-    const tsdk = config.get('typescript.tsdk', '');
+    const tsdk = config.get('js/ts.tsdk.path', config.get('typescript.tsdk', ''));
     if (tsdk.trim().length > 0) {
       args.push('--tsdk', tsdk);
     }
