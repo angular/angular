@@ -107,6 +107,11 @@ export class TcbDirectiveInputsOp extends TcbOp {
         // transform write type into their member type, and we extract it below when
         // setting the `WriteT` of such `InputSignalWithTransform<_, WriteT>`.
 
+        // Two-way bindings accept `T | WritableSignal<T>` so we have to unwrap the value.
+        if (isTwoWayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
+          assignment = unwrapWritableSignal(assignment, this.tcb);
+        }
+
         if (this.dir.coercedInputFields.has(fieldName)) {
           let type: TcbExpr;
 
@@ -115,8 +120,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
           } else {
             // The input has a coercion declaration which should be used instead of assigning the
             // expression into the input field directly. To achieve this, a variable is declared
-            // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
-            // target of the assignment.
+            // with a type of `typeof Directive.ngAcceptInputType_fieldName` to check the expression.
             const dirTypeRef = this.tcb.env.referenceTcbValue(this.dir.ref);
             type = new TcbExpr(`typeof ${dirTypeRef.print()}.ngAcceptInputType_${fieldName}`);
           }
@@ -124,7 +128,19 @@ export class TcbDirectiveInputsOp extends TcbOp {
           const id = new TcbExpr(this.tcb.allocateId());
           this.scope.addStatement(declareVariable(id, type));
 
-          target = id;
+          // The expression is assigned to the temporary variable to perform the type check.
+          // The result is then cast to `any` and assigned to the actual property. This avoids
+          // type mismatch errors (e.g., when assigning a string to a boolean input) while also
+          // providing a TCB node that the Language Service can resolve to the actual class property.
+          assignment = new TcbExpr(`(${id.print()} = ${assignment.print()}) as any`);
+
+          if (dirId === null) {
+            dirId = this.scope.resolve(this.node, this.dir);
+          }
+
+          target = this.dir.stringLiteralInputFields.has(fieldName)
+            ? new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(fieldName)}]`)
+            : new TcbExpr(`${dirId.print()}.${fieldName}`);
         } else if (this.dir.undeclaredInputFields.has(fieldName)) {
           // If no coercion declaration is present nor is the field declared (i.e. the input is
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
@@ -178,11 +194,6 @@ export class TcbDirectiveInputsOp extends TcbOp {
 
         if (attr.keySpan !== null) {
           target.addParseSpanInfo(attr.keySpan);
-        }
-
-        // Two-way bindings accept `T | WritableSignal<T>` so we have to unwrap the value.
-        if (isTwoWayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
-          assignment = unwrapWritableSignal(assignment, this.tcb);
         }
 
         // Finally the assignment is extended by assigning it into the target expression.
