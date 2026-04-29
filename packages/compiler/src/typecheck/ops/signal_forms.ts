@@ -142,9 +142,13 @@ export class TcbNativeFieldOp extends TcbOp {
   }
 
   private getExpectedTypeFromDomNode(node: Element): string | null {
-    if (node.name === 'textarea' || node.name === 'select') {
-      // `<textarea>` and `<select>` are always strings.
+    if (node.name === 'textarea') {
       return 'string';
+    }
+
+    if (node.name === 'select') {
+      // A <select> can bind to a string, number, or null model.
+      return 'string | number | null';
     }
 
     if (node.name !== 'input') {
