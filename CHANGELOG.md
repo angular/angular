@@ -1,3 +1,32 @@
+<a name="22.0.0-next.10"></a>
+# 22.0.0-next.10 (2026-04-29)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [97cac1cf4d](https://github.com/angular/angular/commit/97cac1cf4d0efa49199fdd5736263d01316c7ff3) | fix | prevent focus from scrollToAnchor |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2896c93cc1](https://github.com/angular/angular/commit/2896c93cc1077e1306acd91f4ed62fed4204a26b) | feat | Angular expressions with optional chaining returns `undefined` |
+| [6bd1721662](https://github.com/angular/angular/commit/6bd17216627978d68bb1c153af347b346a5aa503) | fix | let declaration span not including end character |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [444b024d49](https://github.com/angular/angular/commit/444b024d49725afc8b40aec67cfdb63a1f7f23ea) | feat | Add a `injectAsync` helper function |
+| [8c11816490](https://github.com/angular/angular/commit/8c11816490074f9d7dbde2fb854d8225b775a9cb) | fix | fix ordering of view queries metadata in JIT mode |
+| [3583c01bf9](https://github.com/angular/angular/commit/3583c01bf9a14f9e91d5173f8bae72a14ee99736) | fix | guard against non-object events and avoid listener wrapper identity mismatch |
+| [d5fd51e956](https://github.com/angular/angular/commit/d5fd51e9569b44340274c3bd3b77993c0d21da9b) | fix | prevent event replay double-invocation when element hydrates before app stability |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8f8972b0fd](https://github.com/angular/angular/commit/8f8972b0fdea2020800e7df5c6d85938602cb7e7) | feat | model + output migrations |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2a6b6fafb0](https://github.com/angular/angular/commit/2a6b6fafb032b840797625590037bb4f1d8c6261) | fix | ensure origin has a trailing slash when parsing url |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.11"></a>
 # 21.2.11 (2026-04-29)
 ### common
