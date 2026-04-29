@@ -1,6 +1,6 @@
 # Testing Signal Forms
 
-Forms are often a critical part of applications. Testing provides the confidence you need that the forms behave as expected when the codebase changes. Signal Forms keeps most of its logic in the schema rather than the template, which means you can test the majority of form behavior without rendering a component.
+Forms are often critical to applications, and testing gives you confidence they behave correctly as the codebase changes. Signal Forms keeps most of its logic in the schema rather than the template, which means you can test the majority of form behavior without rendering a component.
 
 This guide walks through how to set up those tests, starting with isolated logic tests and then covering component-bound tests for cases where DOM interaction matters.
 
@@ -41,7 +41,7 @@ describe('profile form', () => {
 });
 ```
 
-This pattern works well for most isolated tests because the injector requirement stays visible at the call site. It also matches the way many Signal Forms tests in Angular's source create forms in unit tests.
+This pattern works well for most isolated tests because the injector requirement stays visible at the call site. It also mirrors how Signal Forms unit tests in Angular's source create forms.
 
 When the code under test calls `form()` internally, you may not be able to pass the injector directly. In that case, wrap the call in an ambient injection context:
 
@@ -131,7 +131,7 @@ The same structure works for most everyday form tests:
 1. Change a field with `.value.set(...)`, including sibling fields when testing cross-field rules.
 1. Assert the updated state signals, usually `errors()`, `valid()`, or `invalid()`.
 
-When a test is about schema behavior rather than rendering, this isolated style should remain the default. It is faster than a component test and makes it easier to see which rule is responsible when the behavior changes.
+When a test is about schema behavior rather than rendering, default to this isolated style. It is faster than a component test and makes it easier to see which rule is responsible when the behavior changes.
 
 ## Testing forms bound to components
 
@@ -139,7 +139,7 @@ When you need to verify behavior that depends on template bindings, user interac
 
 ### Setting up a component test
 
-Component-bound tests require more setup than isolated tests because you need a rendered template and a change detection cycle. Create the component with `TestBed.createComponent()` and wait for rendering to complete before asserting:
+Component-bound tests render the component so you can interact with actual DOM elements. Create the component with `TestBed.createComponent()` and wait for rendering to complete before asserting:
 
 ```angular-ts {header: 'profile-form.ts'}
 import {Component, signal} from '@angular/core';
@@ -159,17 +159,12 @@ export class ProfileForm {
 ```
 
 ```ts {header: 'profile-form.spec.ts'}
-import {provideZonelessChangeDetection} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {describe, expect, it} from 'vitest';
 import {ProfileForm} from './profile-form';
 
 describe('ProfileForm', () => {
   it('reflects model values in the DOM and updates the model on user input', async () => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-
     const fixture = TestBed.createComponent(ProfileForm);
     await fixture.whenStable();
 
@@ -189,34 +184,9 @@ describe('ProfileForm', () => {
 });
 ```
 
-Notice that the component uses `form()` without an explicit injector because the component's own injection context provides it automatically. The `provideZonelessChangeDetection()` provider tells the test to use zoneless change detection, which is Angular's default direction. After each change, `await fixture.whenStable()` waits for rendering and effects to complete before asserting.
+Notice that the component uses `form()` without an explicit injector because the component's own injection context provides it automatically. After each change, `await fixture.whenStable()` waits for rendering and effects to complete before asserting.
 
-This works, but Signal Forms state updates are synchronous — validation, disabled state, and errors all resolve immediately when a value changes. That means you can flush pending effects directly with `TestBed.tick()` instead of awaiting stabilization. The result is a tighter loop with no `async`/`await`.
-
-### The act, wait, assert pattern
-
-Every interaction in a component test follows three steps:
-
-1. **Act** — Change something: set an input value, dispatch an event, update a signal.
-1. **Wait** — Call `TestBed.tick()` to flush change detection so the DOM and signals reflect the change.
-1. **Assert** — Check the expected state.
-
-Here is the same user-input scenario from the previous test, rewritten with `TestBed.tick()`:
-
-```ts
-// Act
-input.value = '';
-input.dispatchEvent(new Event('input'));
-
-// Wait
-TestBed.tick();
-
-// Assert
-expect(fixture.componentInstance.profileForm.name().value()).toBe('');
-expect(fixture.componentInstance.profileForm.name().valid()).toBe(false);
-```
-
-For async operations such as async validators or server calls, use `await fixture.whenStable()` after the async work resolves to wait for all pending effects before asserting.
+The same pattern works for async operations such as async validators or server calls. Call `await fixture.whenStable()` after the async work resolves.
 
 ## When to use each approach
 
