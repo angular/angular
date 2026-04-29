@@ -52,6 +52,12 @@ When working with Angular components, consult the following references based on 
 
 If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
 
+## Architecture and Patterns
+
+When structuring your Angular application and managing complexity, consult the following references:
+
+- **Facade Pattern**: Hiding complex state management and API calls behind a simplified service interface. Read [facade-pattern.md](references/facade-pattern.md)
+
 ## Reactivity and Data Management
 
 When managing state and data reactivity, use Angular Signals and consult the following references:
