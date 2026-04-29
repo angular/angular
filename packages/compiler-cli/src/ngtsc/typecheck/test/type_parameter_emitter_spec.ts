@@ -209,6 +209,23 @@ runInEachFileSystem(() => {
       expect(() => emit(emitter)).toThrow();
     });
 
+    it('can emit typeof references to local, exported declarations', () => {
+      const emitter = createEmitter(`
+          const Local = {};
+          export {Local};
+          export class TestClass<T extends typeof Local> {}`);
+
+      expect(emit(emitter)).toEqual('<T extends typeof i0.Local>');
+    });
+
+    it('cannot emit typeof references to non-exported local declarations', () => {
+      const emitter = createEmitter(`
+          const Local = {};
+          export class TestClass<T extends typeof Local> {}`);
+
+      expect(() => emit(emitter)).toThrow();
+    });
+
     it('cannot emit references to local declarations as nested type arguments', () => {
       const emitter = createEmitter(`
           import {NgIterable} from '@angular/core';
