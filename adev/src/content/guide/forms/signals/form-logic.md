@@ -655,7 +655,7 @@ The conditional rules only run when the condition is true. This is useful for co
 
 Extract common rule configurations into reusable functions:
 
-```angular-ts
+```ts
 import {SchemaPath, debounce, metadata, maxLength} from '@angular/forms/signals';
 import {PLACEHOLDER} from './metadata-keys';
 
