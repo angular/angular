@@ -37,14 +37,14 @@ importers:
         version: 0.16.1
     devDependencies:
       '@angular-devkit/build-angular':
-        specifier: 22.0.0-next.6
-        version: 22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(jiti@2.6.1)(typescript@6.0.2)
+        specifier: 22.0.0-next.7
+        version: 22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(jiti@2.6.1)(typescript@6.0.2)
       '@angular/build':
-        specifier: 22.0.0-next.6
-        version: 22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.12)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)
+        specifier: 22.0.0-next.7
+        version: 22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.12)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)
       '@angular/cli':
-        specifier: 22.0.0-next.6
-        version: 22.0.0-next.6(@types/node@25.6.0)
+        specifier: 22.0.0-next.7
+        version: 22.0.0-next.7(@types/node@25.6.0)
       '@angular/compiler-cli':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
@@ -117,13 +117,13 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@angular-devkit/architect@0.2200.0-next.6':
-    resolution: {integrity: sha512-Eg9Pr6mQUW4/93M2bi8pYshlz7mgRnHgv+pk97TUoXumJATzuldMJE90c+ULcXfMEE+Pkf2dScipKnI/wqp/ag==}
+  '@angular-devkit/architect@0.2200.0-next.7':
+    resolution: {integrity: sha512-SeoGwFUkCz++fQmOZlTrEjYVDCGQ9lxWVxUnFiusDMhvQshk4nDKkSI4Pihp7QmIvl3ZHKZ6kVqoh9u2wdqHsw==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
 
-  '@angular-devkit/build-angular@22.0.0-next.6':
-    resolution: {integrity: sha512-PuYNiK4i5IcePwrkFmgA+oo4qm03i5znVxrHDkJmaFBpAVVPOToP9NxkMnxF4ozAm+Zqj+jCDySS7OgBQFPztQ==}
+  '@angular-devkit/build-angular@22.0.0-next.7':
+    resolution: {integrity: sha512-NqW61HEDRHETwaMwyCqaZOmGhgZqnUzW6n194gN6EivR+NM5ngLzhsPwriBQ00g7ByQ04dGrhSq2QBp54P9dLA==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0-next.0
@@ -132,7 +132,7 @@ packages:
       '@angular/platform-browser': ^22.0.0-next.0
       '@angular/platform-server': ^22.0.0-next.0
       '@angular/service-worker': ^22.0.0-next.0
-      '@angular/ssr': ^22.0.0-next.6
+      '@angular/ssr': ^22.0.0-next.7
       browser-sync: ^3.0.2
       karma: ^6.3.0
       ng-packagr: ^22.0.0-next.0
@@ -160,15 +160,15 @@ packages:
       tailwindcss:
         optional: true
 
-  '@angular-devkit/build-webpack@0.2200.0-next.6':
-    resolution: {integrity: sha512-KiwGWn0yipjflt7qxVmNS2LFkQp+AQx6KO33wRAzWYNV1FMD35xTfy+MxL5qbupgBl9UmM5815dgDW7T6LiLHQ==}
+  '@angular-devkit/build-webpack@0.2200.0-next.7':
+    resolution: {integrity: sha512-ywG3hvt62WLO4QfmQlcloeSogiDSOCKuCj72hfhMxyqpKDAvMDc4AKFzZtO0Nx/lHoCxExcuHMN5GxnZ0Lzr0A==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       webpack: ^5.30.0
       webpack-dev-server: ^5.0.2
 
-  '@angular-devkit/core@22.0.0-next.6':
-    resolution: {integrity: sha512-ERJI1VgiE5KOV3hPa+k3QdaOLweia9jvVNnWpqmbdUxTq7aNlez6a8E4fITbhycQD/tbQadhDLPrpzBMWmwJFA==}
+  '@angular-devkit/core@22.0.0-next.7':
+    resolution: {integrity: sha512-aGMM4S5vw9EOjgJpybgVwsMsuhD79uSwJnu+jtj3UmU33LA2RTMCaiRAZJ7NhlM1HViD688dI45/qhV615/lsw==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       chokidar: ^5.0.0
@@ -176,12 +176,12 @@ packages:
       chokidar:
         optional: true
 
-  '@angular-devkit/schematics@22.0.0-next.6':
-    resolution: {integrity: sha512-XiaqWjBIfbgDCl0q/tkB0iuFSwrqQo4OvnxZWistBI6JtoizSdOdMp4aY/nyAoAfnHL5autg7VOTy0v76Gvn+g==}
+  '@angular-devkit/schematics@22.0.0-next.7':
+    resolution: {integrity: sha512-ydkUDJo0JDlEei8PDSNK4Sw18m/gRwlisqcion4FZYO1R8wHyOo8ydxLz/5q1NgcRRpz1X+4uF6Ba8hxmltGdQ==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@angular/build@22.0.0-next.6':
-    resolution: {integrity: sha512-of5UAlCrKskH6nBGGB4al1gEhQhZM2qAXsavug6ucWw7Jf1cIbzjg/i4fdovCcX7HQCrXcL8rXMn173vB6dDrA==}
+  '@angular/build@22.0.0-next.7':
+    resolution: {integrity: sha512-gG/2k/3mTIomnseuvRgOz9L6g4oe/TjLCzpsisgfHeiwT7h0Yrw+f+WWMRwzoUOlV+fZSCkLmFhFKS/Ye0CzBA==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler': ^22.0.0-next.0
@@ -191,7 +191,7 @@ packages:
       '@angular/platform-browser': ^22.0.0-next.0
       '@angular/platform-server': ^22.0.0-next.0
       '@angular/service-worker': ^22.0.0-next.0
-      '@angular/ssr': ^22.0.0-next.6
+      '@angular/ssr': ^22.0.0-next.7
       istanbul-lib-instrument: ^6.0.0
       karma: ^6.4.0
       less: ^4.2.0
@@ -229,8 +229,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cli@22.0.0-next.6':
-    resolution: {integrity: sha512-xX6xeR0kg4DzwbSSNm2nnbLR+RODMbO+fehchMkhrzI2PotMab6jolepJsfUJusSKzS2b59dlVVO6JR3QVw8XQ==}
+  '@angular/cli@22.0.0-next.7':
+    resolution: {integrity: sha512-zbR5Q6PzQFkE+vZFXWNUb3XIy2ra/0YmG6BPrDEvwkk94DiQu2XVZurHHys8CCMvcNggwYKvnox1JiKD97ZPfQ==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
 
@@ -1554,8 +1554,8 @@ packages:
     resolution: {integrity: sha512-xJIPs+bYuc9ASBl+cvGsKbGrJmS6fAKaSZCnT0lhahT5rhA2VVy9/EcIgd2JhtEuFOJNx7UHNn/qiTPTY4nrQw==}
     engines: {node: '>= 10'}
 
-  '@ngtools/webpack@22.0.0-next.6':
-    resolution: {integrity: sha512-KYWAMfTqVs+xHXBpdQypDAphppd5jQTIDMhu1UtIEsIGGJBsK66yykB2jU0FdGmk49v6dDI+yty1sF2g8bDKCA==}
+  '@ngtools/webpack@22.0.0-next.7':
+    resolution: {integrity: sha512-7/QonvD2zGiO9WzWVh35bRDR4+J0FiceOmr+OKpvBQYW++IPxkBpjokZmxY8KPQ8w6PraiFKpQjA6Sdxraf4SQ==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0-next.0
@@ -1863,8 +1863,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@schematics/angular@22.0.0-next.6':
-    resolution: {integrity: sha512-RxgB/xvQESCD22859QiGwfG/t2EA0U23lzoLuX+TDvPWJGh921E4+olXx7IRI5l/a/6c/FHRThrkQco2juDX4A==}
+  '@schematics/angular@22.0.0-next.7':
+    resolution: {integrity: sha512-dTcKfrzQm3mBQ3abYN/JHrRxakqRq13GttvHy7ohvmNHtja6Jr51YzurascVuRQLiC6NKlBfQwyz3pzGSnm6Og==}
     engines: {node: ^22.22.0 || >=24.13.1, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
   '@sigstore/bundle@4.0.0':
@@ -4020,6 +4020,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   undici-types@7.19.2:
     resolution: {integrity: sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg==}
 
@@ -4062,6 +4067,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -4372,20 +4378,20 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@angular-devkit/architect@0.2200.0-next.6':
+  '@angular-devkit/architect@0.2200.0-next.7':
     dependencies:
-      '@angular-devkit/core': 22.0.0-next.6
+      '@angular-devkit/core': 22.0.0-next.7
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(jiti@2.6.1)(typescript@6.0.2)':
+  '@angular-devkit/build-angular@22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(jiti@2.6.1)(typescript@6.0.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.0-next.6
-      '@angular-devkit/build-webpack': 0.2200.0-next.6(webpack-dev-server@5.2.3(tslib@2.8.1)(webpack@5.106.2))(webpack@5.106.2(esbuild@0.28.0))
-      '@angular-devkit/core': 22.0.0-next.6
-      '@angular/build': 22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.10)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)
+      '@angular-devkit/architect': 0.2200.0-next.7
+      '@angular-devkit/build-webpack': 0.2200.0-next.7(webpack-dev-server@5.2.3(tslib@2.8.1)(webpack@5.106.2))(webpack@5.106.2(esbuild@0.28.0))
+      '@angular-devkit/core': 22.0.0-next.7
+      '@angular/build': 22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.10)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -4397,7 +4403,7 @@ snapshots:
       '@babel/preset-env': 7.29.2(@babel/core@7.29.0)
       '@babel/runtime': 7.29.2
       '@discoveryjs/json-ext': 1.0.0
-      '@ngtools/webpack': 22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@6.0.2)(webpack@5.106.2(esbuild@0.28.0))
+      '@ngtools/webpack': 22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@6.0.2)(webpack@5.106.2(esbuild@0.28.0))
       ansi-colors: 4.1.3
       autoprefixer: 10.5.0(postcss@8.5.10)
       babel-loader: 10.1.1(@babel/core@7.29.0)(webpack@5.106.2(esbuild@0.28.0))
@@ -4463,16 +4469,16 @@ snapshots:
       - webpack-cli
       - yaml
 
-  '@angular-devkit/build-webpack@0.2200.0-next.6(webpack-dev-server@5.2.3(tslib@2.8.1)(webpack@5.106.2))(webpack@5.106.2(esbuild@0.28.0))':
+  '@angular-devkit/build-webpack@0.2200.0-next.7(webpack-dev-server@5.2.3(tslib@2.8.1)(webpack@5.106.2))(webpack@5.106.2(esbuild@0.28.0))':
     dependencies:
-      '@angular-devkit/architect': 0.2200.0-next.6
+      '@angular-devkit/architect': 0.2200.0-next.7
       rxjs: 7.8.2
       webpack: 5.106.2(esbuild@0.28.0)
       webpack-dev-server: 5.2.3(tslib@2.8.1)(webpack@5.106.2)
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/core@22.0.0-next.6':
+  '@angular-devkit/core@22.0.0-next.7':
     dependencies:
       ajv: 8.18.0
       ajv-formats: 3.0.1(ajv@8.18.0)
@@ -4481,9 +4487,9 @@ snapshots:
       rxjs: 7.8.2
       source-map: 0.7.6
 
-  '@angular-devkit/schematics@22.0.0-next.6':
+  '@angular-devkit/schematics@22.0.0-next.7':
     dependencies:
-      '@angular-devkit/core': 22.0.0-next.6
+      '@angular-devkit/core': 22.0.0-next.7
       jsonc-parser: 3.3.1
       magic-string: 0.30.21
       ora: 9.3.0
@@ -4491,10 +4497,10 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.10)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)':
+  '@angular/build@22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.10)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.0-next.6
+      '@angular-devkit/architect': 0.2200.0-next.7
       '@angular/compiler': link:in-existing-linked-by-bazel
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
       '@babel/core': 7.29.0
@@ -4542,10 +4548,10 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.12)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)':
+  '@angular/build@22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@25.6.0)(istanbul-lib-instrument@6.0.3)(jiti@2.6.1)(less@4.6.4)(postcss@8.5.12)(terser@5.46.1)(tslib@2.8.1)(typescript@6.0.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.0-next.6
+      '@angular-devkit/architect': 0.2200.0-next.7
       '@angular/compiler': link:in-existing-linked-by-bazel
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
       '@babel/core': 7.29.0
@@ -4593,15 +4599,15 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cli@22.0.0-next.6(@types/node@25.6.0)':
+  '@angular/cli@22.0.0-next.7(@types/node@25.6.0)':
     dependencies:
-      '@angular-devkit/architect': 0.2200.0-next.6
-      '@angular-devkit/core': 22.0.0-next.6
-      '@angular-devkit/schematics': 22.0.0-next.6
+      '@angular-devkit/architect': 0.2200.0-next.7
+      '@angular-devkit/core': 22.0.0-next.7
+      '@angular-devkit/schematics': 22.0.0-next.7
       '@inquirer/prompts': 8.4.2(@types/node@25.6.0)
       '@listr2/prompt-adapter-inquirer': 4.2.3(@inquirer/prompts@8.4.2(@types/node@25.6.0))(@types/node@25.6.0)(listr2@10.2.1)
       '@modelcontextprotocol/sdk': 1.29.0(zod@4.3.6)
-      '@schematics/angular': 22.0.0-next.6
+      '@schematics/angular': 22.0.0-next.7
       '@yarnpkg/lockfile': 1.1.0
       algoliasearch: 5.50.2
       ini: 6.0.0
@@ -5884,7 +5890,7 @@ snapshots:
       '@napi-rs/nice-win32-x64-msvc': 1.1.1
     optional: true
 
-  '@ngtools/webpack@22.0.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@6.0.2)(webpack@5.106.2(esbuild@0.28.0))':
+  '@ngtools/webpack@22.0.0-next.7(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@6.0.2)(webpack@5.106.2(esbuild@0.28.0))':
     dependencies:
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
       typescript: 6.0.2
@@ -6174,11 +6180,12 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
 
-  '@schematics/angular@22.0.0-next.6':
+  '@schematics/angular@22.0.0-next.7':
     dependencies:
-      '@angular-devkit/core': 22.0.0-next.6
-      '@angular-devkit/schematics': 22.0.0-next.6
+      '@angular-devkit/core': 22.0.0-next.7
+      '@angular-devkit/schematics': 22.0.0-next.7
       jsonc-parser: 3.3.1
+      typescript: 6.0.3
     transitivePeerDependencies:
       - chokidar
 
@@ -6807,12 +6814,12 @@ snapshots:
 
   css-loader@7.1.4(webpack@5.106.2(esbuild@0.28.0)):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.10)
-      postcss: 8.5.10
-      postcss-modules-extract-imports: 3.1.0(postcss@8.5.10)
-      postcss-modules-local-by-default: 4.2.0(postcss@8.5.10)
-      postcss-modules-scope: 3.2.1(postcss@8.5.10)
-      postcss-modules-values: 4.0.0(postcss@8.5.10)
+      icss-utils: 5.1.0(postcss@8.5.12)
+      postcss: 8.5.12
+      postcss-modules-extract-imports: 3.1.0(postcss@8.5.12)
+      postcss-modules-local-by-default: 4.2.0(postcss@8.5.12)
+      postcss-modules-scope: 3.2.1(postcss@8.5.12)
+      postcss-modules-values: 4.0.0(postcss@8.5.12)
       postcss-value-parser: 4.2.0
       semver: 7.7.4
     optionalDependencies:
@@ -7344,9 +7351,9 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  icss-utils@5.1.0(postcss@8.5.10):
+  icss-utils@5.1.0(postcss@8.5.12):
     dependencies:
-      postcss: 8.5.10
+      postcss: 8.5.12
 
   ignore-walk@8.0.0:
     dependencies:
@@ -7995,26 +8002,26 @@ snapshots:
 
   postcss-media-query-parser@0.2.3: {}
 
-  postcss-modules-extract-imports@3.1.0(postcss@8.5.10):
+  postcss-modules-extract-imports@3.1.0(postcss@8.5.12):
     dependencies:
-      postcss: 8.5.10
+      postcss: 8.5.12
 
-  postcss-modules-local-by-default@4.2.0(postcss@8.5.10):
+  postcss-modules-local-by-default@4.2.0(postcss@8.5.12):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.10)
-      postcss: 8.5.10
+      icss-utils: 5.1.0(postcss@8.5.12)
+      postcss: 8.5.12
       postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
 
-  postcss-modules-scope@3.2.1(postcss@8.5.10):
+  postcss-modules-scope@3.2.1(postcss@8.5.12):
     dependencies:
-      postcss: 8.5.10
+      postcss: 8.5.12
       postcss-selector-parser: 7.1.1
 
-  postcss-modules-values@4.0.0(postcss@8.5.10):
+  postcss-modules-values@4.0.0(postcss@8.5.12):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.10)
-      postcss: 8.5.10
+      icss-utils: 5.1.0(postcss@8.5.12)
+      postcss: 8.5.12
 
   postcss-safe-parser@7.0.1(postcss@8.5.12):
     dependencies:
@@ -8141,7 +8148,7 @@ snapshots:
       adjust-sourcemap-loader: 4.0.0
       convert-source-map: 1.9.0
       loader-utils: 2.0.4
-      postcss: 8.5.10
+      postcss: 8.5.12
       source-map: 0.6.1
 
   resolve@1.22.12:
@@ -8586,6 +8593,8 @@ snapshots:
   typed-assert@1.0.9: {}
 
   typescript@6.0.2: {}
+
+  typescript@6.0.3: {}
 
   undici-types@7.19.2: {}
 
