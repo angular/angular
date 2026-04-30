@@ -7,7 +7,6 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "LICENSE",
-    "karma-js.conf.js",
     "package.json",
 ])
 
