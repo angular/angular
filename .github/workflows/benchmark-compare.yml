@@ -25,7 +25,7 @@ jobs:
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
           reactions: 'rocket'
 
-      - uses: alessbell/pull-request-comment-branch@653a7d5ca8bd91d3c5cb83286063314d0b063b8e # v1.4.0
+      - uses: alessbell/pull-request-comment-branch@ef3408c9757d05f89cb525036383033a313758a0 # v2.1.0
         id: comment-branch
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
