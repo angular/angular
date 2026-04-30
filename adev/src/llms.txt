@@ -48,6 +48,7 @@ Angular — Deliver web apps with confidence 🚀
 - [Understanding Dependency injection](https://angular.dev/guide/di/dependency-injection)
 - [Creating an injectable service](https://angular.dev/guide/di/creating-injectable-service)
 - [Configuring dependency providers](https://angular.dev/guide/di/dependency-injection-providers)
+- [Lazy loading services](https://angular.dev/guide/di/lazy-loading-services)
 - [Injection context](https://angular.dev/guide/di/dependency-injection-context)
 - [Hierarchical injectors](https://angular.dev/guide/di/hierarchical-dependency-injection)
 - [Optimizing Injection tokens](https://angular.dev/guide/di/lightweight-injection-tokens)
