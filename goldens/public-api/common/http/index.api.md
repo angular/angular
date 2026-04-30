@@ -820,7 +820,11 @@ export class HttpRequest<T> implements HttpRequestOptions {
     readonly redirect: RequestRedirect;
     readonly referrer: string;
     readonly referrerPolicy: ReferrerPolicy;
+    // (undocumented)
+    readonly reportDownloadProgress: boolean;
+    // @deprecated
     readonly reportProgress: boolean;
+    readonly reportUploadProgress: boolean;
     readonly responseType: HttpResponseType;
     serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
     readonly timeout?: number;
@@ -858,7 +862,10 @@ export interface HttpRequestOptions {
     // (undocumented)
     referrerPolicy?: ReferrerPolicy;
     // (undocumented)
+    reportDownloadProgress?: boolean;
+    // @deprecated (undocumented)
     reportProgress?: boolean;
+    reportUploadProgress?: boolean;
     // (undocumented)
     responseType?: HttpResponseType;
     // (undocumented)
