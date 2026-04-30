@@ -12,6 +12,7 @@ import type {ReadonlyFieldTree, TreeValidationResult, ValidationResult} from '..
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {shortCircuitFalse} from './util';
+import {shallowArrayEquals} from '../util/array';
 
 /**
  * Helper function taking validation state, and returning own state of the node.
@@ -153,16 +154,19 @@ export class FieldValidationState implements ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  readonly rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
-    if (this.shouldSkipValidation()) {
-      return [];
-    }
+  readonly rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(
+    () => {
+      if (this.shouldSkipValidation()) {
+        return [];
+      }
 
-    return [
-      ...this.node.logicNode.logic.syncTreeErrors.compute(this.node.context),
-      ...(this.node.structure.parent?.validationState.rawSyncTreeErrors() ?? []),
-    ];
-  });
+      return [
+        ...this.node.logicNode.logic.syncTreeErrors.compute(this.node.context),
+        ...(this.node.structure.parent?.validationState.rawSyncTreeErrors() ?? []),
+      ];
+    },
+    {equal: shallowArrayEquals},
+  );
 
   /**
    * The full set of synchronous errors for this field, including synchronous tree errors and
@@ -170,18 +174,21 @@ export class FieldValidationState implements ValidationState {
    * added. From the perspective of the field state they are either there or not, they are never in a
    * pending state.
    */
-  readonly syncErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
-    // Short-circuit running validators if validation doesn't apply to this field.
-    if (this.shouldSkipValidation()) {
-      return [];
-    }
+  readonly syncErrors: Signal<ValidationError.WithFieldTree[]> = computed(
+    () => {
+      // Short-circuit running validators if validation doesn't apply to this field.
+      if (this.shouldSkipValidation()) {
+        return [];
+      }
 
-    return [
-      ...this.node.logicNode.logic.syncErrors.compute(this.node.context),
-      ...this.syncTreeErrors(),
-      ...normalizeErrors(this.node.submitState.submissionErrors()),
-    ];
-  });
+      return [
+        ...this.node.logicNode.logic.syncErrors.compute(this.node.context),
+        ...this.syncTreeErrors(),
+        ...normalizeErrors(this.node.submitState.submissionErrors()),
+      ];
+    },
+    {equal: shallowArrayEquals},
+  );
 
   /**
    * Whether the field is considered valid according solely to its synchronous validators.
@@ -204,8 +211,9 @@ export class FieldValidationState implements ValidationState {
    * The synchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant.
    */
-  readonly syncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() =>
-    this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldTree),
+  readonly syncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(
+    () => this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldTree),
+    {equal: shallowArrayEquals},
   );
 
   /**
@@ -213,58 +221,71 @@ export class FieldValidationState implements ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  readonly rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(() => {
-    // Short-circuit running validators if validation doesn't apply to this field.
-    if (this.shouldSkipValidation()) {
-      return [];
-    }
+  readonly rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(
+    () => {
+      // Short-circuit running validators if validation doesn't apply to this field.
+      if (this.shouldSkipValidation()) {
+        return [];
+      }
 
-    return [
-      // TODO: add field in `validateAsync` and remove this map
-      ...this.node.logicNode.logic.asyncErrors.compute(this.node.context),
-      // TODO: does it make sense to filter this to errors in this subtree?
-      ...(this.node.structure.parent?.validationState.rawAsyncErrors() ?? []),
-    ];
-  });
+      return [
+        // TODO: add field in `validateAsync` and remove this map
+        ...this.node.logicNode.logic.asyncErrors.compute(this.node.context),
+        // TODO: does it make sense to filter this to errors in this subtree?
+        ...(this.node.structure.parent?.validationState.rawAsyncErrors() ?? []),
+      ];
+    },
+    {equal: shallowArrayEquals},
+  );
 
   /**
    * The asynchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  readonly asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(() => {
-    if (this.shouldSkipValidation()) {
-      return [];
-    }
-    return this.rawAsyncErrors().filter(
-      (err) => err === 'pending' || err.fieldTree === this.node.fieldTree,
-    );
-  });
+  readonly asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(
+    () => {
+      if (this.shouldSkipValidation()) {
+        return [];
+      }
+      return this.rawAsyncErrors().filter(
+        (err) => err === 'pending' || err.fieldTree === this.node.fieldTree,
+      );
+    },
+    {equal: shallowArrayEquals},
+  );
 
-  readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(() =>
-    this.node.formFieldBindings().flatMap((field) => field.parseErrors()),
+  readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(
+    () => this.node.formFieldBindings().flatMap((field) => field.parseErrors()),
+    {equal: shallowArrayEquals},
   );
 
   /**
    * The combined set of all errors that currently apply to this field.
    */
-  readonly errors = computed(() => [
-    ...this.parseErrors(),
-    ...this.syncErrors(),
-    ...this.asyncErrors().filter((err) => err !== 'pending'),
-  ]);
+  readonly errors = computed(
+    () => [
+      ...this.parseErrors(),
+      ...this.syncErrors(),
+      ...this.asyncErrors().filter((err) => err !== 'pending'),
+    ],
+    {equal: shallowArrayEquals},
+  );
 
-  readonly errorSummary = computed(() => {
-    const errors = this.node.structure.reduceChildren(this.errors(), (child, result) => [
-      ...result,
-      ...child.errorSummary(),
-    ]);
-    // Sort by DOM order on client-side only.
-    if (typeof ngServerMode === 'undefined' || !ngServerMode) {
-      untracked(() => errors.sort(compareErrorPosition));
-    }
-    return errors;
-  });
+  readonly errorSummary = computed(
+    () => {
+      const errors = this.node.structure.reduceChildren(this.errors(), (child, result) => [
+        ...result,
+        ...child.errorSummary(),
+      ]);
+      // Sort by DOM order on client-side only.
+      if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+        untracked(() => errors.sort(compareErrorPosition));
+      }
+      return errors;
+    },
+    {equal: shallowArrayEquals},
+  );
 
   /**
    * Whether this field has any asynchronous validators still pending.

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
+import {ApplicationRef, computed, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   form,
@@ -90,6 +90,31 @@ describe('validation status', () => {
       f.child().value.set('INVALID');
       expect(f.child().valid()).toBe(true);
       expect(f.child().invalid()).toBe(false);
+    });
+
+    it('should not notify dependents if errors are shallowly equal', () => {
+      let computeCount = 0;
+      const val = signal('VALID');
+      const f = form(
+        val,
+        (p) => {
+          validate(p, ({value}) => (value() === 'INVALID' ? [{kind: 'custom'}] : []));
+        },
+        {injector},
+      );
+
+      const errorWatcher = computed(() => {
+        computeCount++;
+        return f().errors();
+      });
+
+      errorWatcher();
+      expect(computeCount).toBe(1);
+
+      val.set('STILL_VALID');
+
+      errorWatcher();
+      expect(computeCount).toBe(1);
     });
   });
 
