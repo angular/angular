@@ -1257,6 +1257,24 @@ export class MyComp {
   readonly fourth = input(true);
   readonly fifth = input(true);
 }
+@@@@@@ template_ng_let.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    @let sum = one() + two();
+    @let three = this.three();
+    {{ sum }} {{ three }}
+  `,
+})
+export class MyComp {
+  readonly one = input(1);
+  readonly two = input(2);
+  readonly three = input(3);
+}
 @@@@@@ template_object_shorthand.ts @@@@@@
 
 // tslint:disable
