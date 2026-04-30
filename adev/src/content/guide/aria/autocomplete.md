@@ -36,26 +36,26 @@ An accessible input field that filters and suggests options as users type, helpi
 Autocomplete works best when users need to select from a large set of options where typing is faster than scrolling. Consider using autocomplete when:
 
 - **The option list is long** (more than 20 items) - Typing narrows down choices faster than scrolling through a dropdown
-- **Users know what they're looking for** - They can type part of the expected value (like a state name, product, or username)
+- **Users know what they are looking for** - They can type part of the expected value (like a state name, product, or username)
 - **Options follow predictable patterns** - Users can guess partial matches (like country codes, email domains, or categories)
 - **Speed matters** - Forms benefit from quick selection without extensive navigation
 
-Avoid autocomplete when:
+Avoid using autocomplete when:
 
 - The list has fewer than 10 options - A regular dropdown or radio group provides better visibility
 - Users need to browse options - If discovery is important, show all options upfront
-- Options are unfamiliar - Users can't type what they don't know exists in the list
+- Options are unfamiliar - Users cannot type what they do not know exists in the list
 
 ## Features
 
 Angular's autocomplete provides a fully accessible combobox implementation with:
 
-- **Keyboard Navigation** - Navigate options with arrow keys, select with Enter, close with Escape
-- **Screen Reader Support** - Built-in ARIA attributes for assistive technologies
-- **Three Filter Modes** - Choose between auto-select, manual selection, or highlighting behavior
-- **Signal-Based Reactivity** - Reactive state management using Angular signals
-- **Popover API Integration** - Leverages the native HTML Popover API for optimal positioning
-- **Bidirectional Text Support** - Automatically handles right-to-left (RTL) languages
+- **Keyboard navigation** - Navigate options with arrow keys, select with Enter, and close with Escape
+- **Screen reader support** - Built-in ARIA attributes for assistive technologies
+- **Three filter modes** - Choose between auto-select, manual selection, or highlighting behavior
+- **Signal-based reactivity** - Reactive state management using Angular signals
+- **Popover API integration** - Leverages the native HTML Popover API for optimal positioning
+- **Bidirectional text support** - Automatically handles right-to-left (RTL) languages
 
 ## Examples
 
@@ -121,7 +121,7 @@ Manual selection mode keeps the typed text unchanged while users navigate the su
 
 ### Highlight mode
 
-Highlight mode allows the user to navigate options with arrow keys without changing the input value as they browse until they explicitly select a new option with Enter or click.
+Highlight mode allows users to navigate options with arrow keys without changing the input value as they browse, until they explicitly select a new option with Enter or click.
 
 <docs-tab-group>
   <docs-tab label="Basic">

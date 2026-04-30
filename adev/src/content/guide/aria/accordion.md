@@ -8,7 +8,7 @@
 
 ## Overview
 
-An accordion organizes related content into expandable and collapsible sections, reducing page scrolling and helping users focus on relevant information. Each section has a trigger button and a content panel. Clicking a trigger toggles the visibility of its associated panel.
+An accordion organizes related content into expandable and collapsible sections, reducing page scrolling and helping users focus on relevant information. Each section includes a trigger button and a content panel. Clicking a trigger toggles the visibility of its associated panel.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.ts">
   <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.ts"/>
@@ -22,23 +22,23 @@ Accordions work well for organizing content into logical groups where users typi
 
 **Use accordions when:**
 
-- Displaying FAQs with multiple questions and answers
-- Organizing long forms into manageable sections
-- Reducing scrolling on content-heavy pages
-- Progressively disclosing related information
+- Display FAQs with multiple questions and answers
+- Organize long forms into manageable sections
+- Reduce scrolling on content-heavy pages
+- Progressively disclose related information
 
 **Avoid accordions when:**
 
-- Building navigation menus (use the [Menu](guide/aria/menu) component instead)
-- Creating tabbed interfaces (use the [Tabs](guide/aria/tabs) component instead)
-- Showing a single collapsible section (use a disclosure pattern instead)
+- Build navigation menus (use the [Menu](guide/aria/menu) component instead)
+- Create tabbed interfaces (use the [Tabs](guide/aria/tabs) component instead)
+- Show a single collapsible section (use a disclosure pattern instead)
 - Users need to see multiple sections simultaneously (consider a different layout)
 
 ## Features
 
 - **Expansion modes** - Control whether one or multiple panels can be open at the same time
 - **Keyboard navigation** - Navigate between triggers using arrow keys, Home, and End
-- **Lazy rendering** - Content is only created when a panel first expands, improving initial load performance
+- **Lazy rendering** - Content is created only when a panel first expands, improving initial load performance
 - **Disabled states** - Disable the entire group or individual triggers
 - **Focus management** - Control whether disabled items can receive keyboard focus
 - **Programmatic control** - Expand, collapse, or toggle panels from your component code
@@ -157,7 +157,7 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 </div>
 ```
 
-By default, content remains in the DOM after the panel collapses. Set `[preserveContent]="false"` to remove the content from the DOM when the panel closes.
+By default, content remains in the DOM after the panel collapses. Set `[preserveContent]="false"` to remove content from the DOM when the panel closes.
 
 ## APIs
 

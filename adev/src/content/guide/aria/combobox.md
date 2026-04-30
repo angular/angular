@@ -8,7 +8,7 @@
 
 ## Overview
 
-A directive that coordinates a text input with a popup, providing the primitive directive for autocomplete, select, and multiselect patterns.
+A directive that coordinates a text input with a popup, providing a primitive directive for autocomplete, select, and multiselect patterns.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -38,12 +38,12 @@ A directive that coordinates a text input with a popup, providing the primitive 
 
 ## Usage
 
-Combobox is the primitive directive that coordinates a text input with a popup. It provides the foundation for autocomplete, select, and multiselect patterns. Consider using combobox directly when:
+Combobox is a primitive directive that coordinates a text input with a popup. It provides the foundation for autocomplete, select, and multiselect patterns. Consider using combobox directly when:
 
-- **Building custom autocomplete patterns** - Creating specialized filtering or suggestion behavior
-- **Creating custom selection components** - Developing dropdowns with unique requirements
-- **Coordinating input with popup** - Pairing text input with listbox, tree, or dialog content
-- **Implementing specific filter modes** - Using manual, auto-select, or highlight behaviors
+- **Build custom autocomplete patterns** - Create specialized filtering or suggestion behavior
+- **Create custom selection components** - Develop dropdowns with unique requirements
+- **Coordinate input with popup** - Pair text input with listbox, tree, or dialog content
+- **Implement specific filter modes** - Use manual, auto-select, or highlight behaviors
 
 Use documented patterns instead when:
 
@@ -57,12 +57,12 @@ NOTE: The [Autocomplete](guide/aria/autocomplete), [Select](guide/aria/select), 
 
 Angular's combobox provides a fully accessible input-popup coordination system with:
 
-- **Text Input with Popup** - Coordinates input field with popup content
-- **Three Filter Modes** - Manual, auto-select, or highlight behaviors
-- **Keyboard Navigation** - Arrow keys, Enter, Escape handling
-- **Screen Reader Support** - Built-in ARIA attributes including role="combobox" and aria-expanded
-- **Popup Management** - Automatic show/hide based on user interaction
-- **Signal-Based Reactivity** - Reactive state management using Angular signals
+- **Text input with popup** - Coordinates input field with popup content
+- **Three filter modes** - Manual, auto-select, or highlight behaviors
+- **Keyboard navigation** - Arrow keys, Enter, and Escape handling
+- **Screen reader support** - Built-in ARIA attributes including role="combobox" and aria-expanded
+- **Popup management** - Automatic show/hide based on user interaction
+- **Signal-based reactivity** - Reactive state management using Angular signals
 
 ## Examples
 
@@ -128,7 +128,7 @@ A pattern that combines a readonly combobox with listbox to create single-select
   </docs-tab>
 </docs-tab-group>
 
-The `readonly` attribute prevents typing in the input field. The popup opens on click or arrow keys. Users navigate options with keyboard and select with Enter or click.
+The `readonly` attribute prevents typing in the input field. The popup opens on click or arrow keys. Users navigate options with the keyboard and select with Enter or click.
 
 This configuration provides the foundation for the [Select](guide/aria/select) and [Multiselect](guide/aria/multiselect) patterns. See those guides for complete dropdown implementations with triggers and overlay positioning.
 
@@ -182,7 +182,7 @@ The `ngCombobox` directive coordinates a text input with a popup.
 
 **Filter Modes:**
 
-- **`'manual'`** - User controls filtering and selection explicitly. The popup shows options based on your filtering logic. Users select with Enter or click. This mode provides the most flexibility.
+- **`'manual'`** - Users control filtering and selection explicitly. The popup shows options based on your filtering logic. Users select with Enter or click. This mode provides the most flexibility.
 - **`'auto-select'`** - Input value automatically updates to the first matching option as users type. Requires the `firstMatch` input for coordination. See the [Autocomplete guide](guide/aria/autocomplete#auto-select-mode) for examples.
 - **`'highlight'`** - Highlights matching text without changing the input value. Users navigate with arrow keys and select with Enter.
 
