@@ -309,8 +309,6 @@ describe('iframe processing', () => {
             >
             </iframe>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {
           extraPrivileges = 'allow-scripts allow-same-origin';
