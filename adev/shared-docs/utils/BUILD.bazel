@@ -16,6 +16,7 @@ ts_project(
     deps = [
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
+        "//adev:node_modules/@types/dom-navigation",
         "//adev:node_modules/fflate",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
