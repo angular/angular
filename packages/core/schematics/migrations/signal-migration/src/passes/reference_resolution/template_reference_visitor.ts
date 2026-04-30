@@ -26,6 +26,7 @@ import {
   TmplAstDeferredBlock,
   TmplAstForLoopBlock,
   TmplAstIfBlockBranch,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstSwitchBlock,
@@ -222,6 +223,10 @@ export class TemplateReferenceVisitor<
     if (this.templateAttributeReferencedFields !== null) {
       this.templateAttributeReferencedFields.push(...referencedFields);
     }
+  }
+
+  override visitLetDeclaration(decl: TmplAstLetDeclaration): void {
+    this.checkExpressionForReferencedFields(decl, decl.value);
   }
 }
 
