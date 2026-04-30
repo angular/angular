@@ -92,9 +92,6 @@ export function nativeControlCreate(
   return () => {
     const state = parent.state();
     const controlValue = state.controlValue();
-    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
-      setNativeControlValue(input, controlValue);
-    }
 
     for (const name of CONTROL_BINDING_NAMES) {
       const value = readFieldStateBindingValue(state, name);
@@ -104,6 +101,10 @@ export function nativeControlCreate(
           setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
         }
       }
+    }
+
+    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
+      setNativeControlValue(input, controlValue);
     }
 
     updateMode = true;

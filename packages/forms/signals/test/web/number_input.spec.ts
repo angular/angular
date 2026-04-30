@@ -8,7 +8,7 @@
 
 import {Component, signal, viewChildren, Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FormField, form} from '../../public_api';
+import {FormField, form, min, max} from '../../public_api';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
 import {TestInputValidityMonitor} from './test_input_validity_monitor';
 
@@ -162,6 +162,32 @@ describe('numeric inputs', () => {
       });
 
       expect(fixture.componentInstance.f().value()).toBeNull();
+    });
+  });
+
+  describe('range inputs', () => {
+    it('should configure min and max before assigning value to prevent native clamping', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="range" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number>(150);
+        // Note: The range default max is 100. If value is assigned before max is set to 200, it would clamp to 100.
+        readonly f = form(this.data, (path) => {
+          min(path, 100);
+          max(path, 200);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      // Ensure that the native clamping didn't occur and the input retains the original 150 value
+      expect(input.min).toBe('100');
+      expect(input.max).toBe('200');
+      expect(input.value).toBe('150');
+      expect(fixture.componentInstance.f().value()).toBe(150);
     });
   });
 });
