@@ -233,6 +233,17 @@
         "local compile",
         "declaration-only emit"
       ]
+    },
+    {
+      "description": "should exercise all NgModule options in local and optimized mode",
+      "inputFiles": ["all_options.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid NgModule definition",
+          "files": ["all_options.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }
