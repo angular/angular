@@ -23,24 +23,18 @@ export interface ServiceDecorator {
    * @see [Introduction to Services and DI](guide/di)
    * @see [Creating and using services](guide/di/creating-and-using-services)
    * @see [Defining dependency providers](guide/di/defining-dependency-providers)
-   *
-   * @developerPreview 22.0
    */
   (): TypeDecorator;
 
   /**
    * When `autoProvided` is set to `false`, the service won't be exposed to the dependency
    * injection system automatically. It is up to the user to expose it in a providers list.
-   *
-   * @developerPreview 22.0
    */
   (options?: {autoProvided: false}): TypeDecorator;
 
   /**
    * Creates a service that is automatically provided. Passing an optional
    * `factory` allows for the runtime value to be replaced.
-   *
-   * @developerPreview 22.0
    */
   (options?: {autoProvided?: true; factory?: () => unknown}): TypeDecorator;
 }
@@ -49,7 +43,6 @@ export interface ServiceDecorator {
  * Type of the Service metadata.
  *
  * @publicApi
- * @developerPreview 22.0
  */
 export interface Service {
   /**
@@ -69,7 +62,6 @@ export interface Service {
  *
  * @Annotation
  * @publicApi
- * @developerPreview 22.0
  */
 export const Service: ServiceDecorator = makeDecorator(
   'Service',
