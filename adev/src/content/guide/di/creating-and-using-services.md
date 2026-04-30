@@ -45,8 +45,6 @@ This is the recommended approach for most services.
 
 ## Using the `@Service` decorator
 
-IMPORTANT: The `@Service` decorator is in [developer preview](reference/releases#developer-preview). Its API may change before becoming stable.
-
 For the common case of a singleton service available throughout your application, Angular provides the `@Service` decorator as a more ergonomic alternative to `@Injectable({providedIn: 'root'})`.
 
 The earlier `BasicDataStore` example can be rewritten with `@Service`:
