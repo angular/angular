@@ -148,7 +148,6 @@
     "@types/adm-zip": "^0.5.0",
     "@types/cldr": "^7.1.4",
     "@types/cldrjs": "^0.4.22",
-    "@types/tmp": "^0.2.6",
     "adm-zip": "^0.5.10",
     "cldr": "8.0.0",
     "cldrjs": "0.5.5",
@@ -164,7 +163,6 @@
     "prettier": "^3.8.0",
     "rollup-plugin-sourcemaps2": "^0.5.1",
     "semver": "^7.3.5",
-    "tmp": "^0.2.3",
     "ts-node": "^10.9.1",
     "tsec": "0.2.9",
     "tslint-no-toplevel-property-access": "0.0.2"

@@ -286,9 +286,6 @@ importers:
       '@types/cldrjs':
         specifier: ^0.4.22
         version: 0.4.29
-      '@types/tmp':
-        specifier: ^0.2.6
-        version: 0.2.6
       adm-zip:
         specifier: ^0.5.10
         version: 0.5.17
@@ -334,9 +331,6 @@ importers:
       semver:
         specifier: ^7.3.5
         version: 7.7.4
-      tmp:
-        specifier: ^0.2.3
-        version: 0.2.5
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.19.39)(typescript@6.0.2)
@@ -10567,7 +10561,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:

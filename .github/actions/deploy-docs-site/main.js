@@ -19522,386 +19522,6 @@ var require_fast_content_type_parse = __commonJS({
 });
 
 // 
-var require_tmp = __commonJS({
-  ""(exports, module) {
-    var fs2 = __require("fs");
-    var os4 = __require("os");
-    var path = __require("path");
-    var crypto = __require("crypto");
-    var _c2 = { fs: fs2.constants, os: os4.constants };
-    var RANDOM_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    var TEMPLATE_PATTERN = /XXXXXX/;
-    var DEFAULT_TRIES = 3;
-    var CREATE_FLAGS = (_c2.O_CREAT || _c2.fs.O_CREAT) | (_c2.O_EXCL || _c2.fs.O_EXCL) | (_c2.O_RDWR || _c2.fs.O_RDWR);
-    var IS_WIN32 = os4.platform() === "win32";
-    var EBADF = _c2.EBADF || _c2.os.errno.EBADF;
-    var ENOENT = _c2.ENOENT || _c2.os.errno.ENOENT;
-    var DIR_MODE = 448;
-    var FILE_MODE = 384;
-    var EXIT = "exit";
-    var _removeObjects = [];
-    var FN_RMDIR_SYNC = fs2.rmdirSync.bind(fs2);
-    var _gracefulCleanup = false;
-    function rimraf(dirPath, callback) {
-      return fs2.rm(dirPath, { recursive: true }, callback);
-    }
-    function FN_RIMRAF_SYNC(dirPath) {
-      return fs2.rmSync(dirPath, { recursive: true });
-    }
-    function tmpName(options, callback) {
-      const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
-      _assertAndSanitizeOptions(opts, function(err, sanitizedOptions) {
-        if (err)
-          return cb(err);
-        let tries = sanitizedOptions.tries;
-        (function _getUniqueName() {
-          try {
-            const name = _generateTmpName(sanitizedOptions);
-            fs2.stat(name, function(err2) {
-              if (!err2) {
-                if (tries-- > 0)
-                  return _getUniqueName();
-                return cb(new Error("Could not get a unique tmp filename, max tries reached " + name));
-              }
-              cb(null, name);
-            });
-          } catch (err2) {
-            cb(err2);
-          }
-        })();
-      });
-    }
-    function tmpNameSync(options) {
-      const args = _parseArguments(options), opts = args[0];
-      const sanitizedOptions = _assertAndSanitizeOptionsSync(opts);
-      let tries = sanitizedOptions.tries;
-      do {
-        const name = _generateTmpName(sanitizedOptions);
-        try {
-          fs2.statSync(name);
-        } catch (e) {
-          return name;
-        }
-      } while (tries-- > 0);
-      throw new Error("Could not get a unique tmp filename, max tries reached");
-    }
-    function file(options, callback) {
-      const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
-      tmpName(opts, function _tmpNameCreated(err, name) {
-        if (err)
-          return cb(err);
-        fs2.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err2, fd) {
-          if (err2)
-            return cb(err2);
-          if (opts.discardDescriptor) {
-            return fs2.close(fd, function _discardCallback(possibleErr) {
-              return cb(possibleErr, name, void 0, _prepareTmpFileRemoveCallback(name, -1, opts, false));
-            });
-          } else {
-            const discardOrDetachDescriptor = opts.discardDescriptor || opts.detachDescriptor;
-            cb(null, name, fd, _prepareTmpFileRemoveCallback(name, discardOrDetachDescriptor ? -1 : fd, opts, false));
-          }
-        });
-      });
-    }
-    function fileSync2(options) {
-      const args = _parseArguments(options), opts = args[0];
-      const discardOrDetachDescriptor = opts.discardDescriptor || opts.detachDescriptor;
-      const name = tmpNameSync(opts);
-      let fd = fs2.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
-      if (opts.discardDescriptor) {
-        fs2.closeSync(fd);
-        fd = void 0;
-      }
-      return {
-        name,
-        fd,
-        removeCallback: _prepareTmpFileRemoveCallback(name, discardOrDetachDescriptor ? -1 : fd, opts, true)
-      };
-    }
-    function dir(options, callback) {
-      const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
-      tmpName(opts, function _tmpNameCreated(err, name) {
-        if (err)
-          return cb(err);
-        fs2.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err2) {
-          if (err2)
-            return cb(err2);
-          cb(null, name, _prepareTmpDirRemoveCallback(name, opts, false));
-        });
-      });
-    }
-    function dirSync(options) {
-      const args = _parseArguments(options), opts = args[0];
-      const name = tmpNameSync(opts);
-      fs2.mkdirSync(name, opts.mode || DIR_MODE);
-      return {
-        name,
-        removeCallback: _prepareTmpDirRemoveCallback(name, opts, true)
-      };
-    }
-    function _removeFileAsync(fdPath, next) {
-      const _handler = function(err) {
-        if (err && !_isENOENT(err)) {
-          return next(err);
-        }
-        next();
-      };
-      if (0 <= fdPath[0])
-        fs2.close(fdPath[0], function() {
-          fs2.unlink(fdPath[1], _handler);
-        });
-      else
-        fs2.unlink(fdPath[1], _handler);
-    }
-    function _removeFileSync(fdPath) {
-      let rethrownException = null;
-      try {
-        if (0 <= fdPath[0])
-          fs2.closeSync(fdPath[0]);
-      } catch (e) {
-        if (!_isEBADF(e) && !_isENOENT(e))
-          throw e;
-      } finally {
-        try {
-          fs2.unlinkSync(fdPath[1]);
-        } catch (e) {
-          if (!_isENOENT(e))
-            rethrownException = e;
-        }
-      }
-      if (rethrownException !== null) {
-        throw rethrownException;
-      }
-    }
-    function _prepareTmpFileRemoveCallback(name, fd, opts, sync) {
-      const removeCallbackSync = _prepareRemoveCallback(_removeFileSync, [fd, name], sync);
-      const removeCallback = _prepareRemoveCallback(_removeFileAsync, [fd, name], sync, removeCallbackSync);
-      if (!opts.keep)
-        _removeObjects.unshift(removeCallbackSync);
-      return sync ? removeCallbackSync : removeCallback;
-    }
-    function _prepareTmpDirRemoveCallback(name, opts, sync) {
-      const removeFunction = opts.unsafeCleanup ? rimraf : fs2.rmdir.bind(fs2);
-      const removeFunctionSync = opts.unsafeCleanup ? FN_RIMRAF_SYNC : FN_RMDIR_SYNC;
-      const removeCallbackSync = _prepareRemoveCallback(removeFunctionSync, name, sync);
-      const removeCallback = _prepareRemoveCallback(removeFunction, name, sync, removeCallbackSync);
-      if (!opts.keep)
-        _removeObjects.unshift(removeCallbackSync);
-      return sync ? removeCallbackSync : removeCallback;
-    }
-    function _prepareRemoveCallback(removeFunction, fileOrDirName, sync, cleanupCallbackSync) {
-      let called = false;
-      return function _cleanupCallback(next) {
-        if (!called) {
-          const toRemove = cleanupCallbackSync || _cleanupCallback;
-          const index = _removeObjects.indexOf(toRemove);
-          if (index >= 0)
-            _removeObjects.splice(index, 1);
-          called = true;
-          if (sync || removeFunction === FN_RMDIR_SYNC || removeFunction === FN_RIMRAF_SYNC) {
-            return removeFunction(fileOrDirName);
-          } else {
-            return removeFunction(fileOrDirName, next || function() {
-            });
-          }
-        }
-      };
-    }
-    function _garbageCollector() {
-      if (!_gracefulCleanup)
-        return;
-      while (_removeObjects.length) {
-        try {
-          _removeObjects[0]();
-        } catch (e) {
-        }
-      }
-    }
-    function _randomChars(howMany) {
-      let value = [], rnd = null;
-      try {
-        rnd = crypto.randomBytes(howMany);
-      } catch (e) {
-        rnd = crypto.pseudoRandomBytes(howMany);
-      }
-      for (let i = 0; i < howMany; i++) {
-        value.push(RANDOM_CHARS[rnd[i] % RANDOM_CHARS.length]);
-      }
-      return value.join("");
-    }
-    function _isUndefined(obj) {
-      return typeof obj === "undefined";
-    }
-    function _parseArguments(options, callback) {
-      if (typeof options === "function") {
-        return [{}, options];
-      }
-      if (_isUndefined(options)) {
-        return [{}, callback];
-      }
-      const actualOptions = {};
-      for (const key of Object.getOwnPropertyNames(options)) {
-        actualOptions[key] = options[key];
-      }
-      return [actualOptions, callback];
-    }
-    function _resolvePath(name, tmpDir, cb) {
-      const pathToResolve = path.isAbsolute(name) ? name : path.join(tmpDir, name);
-      fs2.stat(pathToResolve, function(err) {
-        if (err) {
-          fs2.realpath(path.dirname(pathToResolve), function(err2, parentDir) {
-            if (err2)
-              return cb(err2);
-            cb(null, path.join(parentDir, path.basename(pathToResolve)));
-          });
-        } else {
-          fs2.realpath(pathToResolve, cb);
-        }
-      });
-    }
-    function _resolvePathSync(name, tmpDir) {
-      const pathToResolve = path.isAbsolute(name) ? name : path.join(tmpDir, name);
-      try {
-        fs2.statSync(pathToResolve);
-        return fs2.realpathSync(pathToResolve);
-      } catch (_err) {
-        const parentDir = fs2.realpathSync(path.dirname(pathToResolve));
-        return path.join(parentDir, path.basename(pathToResolve));
-      }
-    }
-    function _generateTmpName(opts) {
-      const tmpDir = opts.tmpdir;
-      if (!_isUndefined(opts.name)) {
-        return path.join(tmpDir, opts.dir, opts.name);
-      }
-      if (!_isUndefined(opts.template)) {
-        return path.join(tmpDir, opts.dir, opts.template).replace(TEMPLATE_PATTERN, _randomChars(6));
-      }
-      const name = [
-        opts.prefix ? opts.prefix : "tmp",
-        "-",
-        process.pid,
-        "-",
-        _randomChars(12),
-        opts.postfix ? "-" + opts.postfix : ""
-      ].join("");
-      return path.join(tmpDir, opts.dir, name);
-    }
-    function _assertOptionsBase(options) {
-      if (!_isUndefined(options.name)) {
-        const name = options.name;
-        if (path.isAbsolute(name))
-          throw new Error(`name option must not contain an absolute path, found "${name}".`);
-        const basename2 = path.basename(name);
-        if (basename2 === ".." || basename2 === "." || basename2 !== name)
-          throw new Error(`name option must not contain a path, found "${name}".`);
-      }
-      if (!_isUndefined(options.template) && !options.template.match(TEMPLATE_PATTERN)) {
-        throw new Error(`Invalid template, found "${options.template}".`);
-      }
-      if (!_isUndefined(options.tries) && isNaN(options.tries) || options.tries < 0) {
-        throw new Error(`Invalid tries, found "${options.tries}".`);
-      }
-      options.tries = _isUndefined(options.name) ? options.tries || DEFAULT_TRIES : 1;
-      options.keep = !!options.keep;
-      options.detachDescriptor = !!options.detachDescriptor;
-      options.discardDescriptor = !!options.discardDescriptor;
-      options.unsafeCleanup = !!options.unsafeCleanup;
-      options.prefix = _isUndefined(options.prefix) ? "" : options.prefix;
-      options.postfix = _isUndefined(options.postfix) ? "" : options.postfix;
-    }
-    function _getRelativePath(option, name, tmpDir, cb) {
-      if (_isUndefined(name))
-        return cb(null);
-      _resolvePath(name, tmpDir, function(err, resolvedPath) {
-        if (err)
-          return cb(err);
-        const relativePath = path.relative(tmpDir, resolvedPath);
-        if (!resolvedPath.startsWith(tmpDir)) {
-          return cb(new Error(`${option} option must be relative to "${tmpDir}", found "${relativePath}".`));
-        }
-        cb(null, relativePath);
-      });
-    }
-    function _getRelativePathSync(option, name, tmpDir) {
-      if (_isUndefined(name))
-        return;
-      const resolvedPath = _resolvePathSync(name, tmpDir);
-      const relativePath = path.relative(tmpDir, resolvedPath);
-      if (!resolvedPath.startsWith(tmpDir)) {
-        throw new Error(`${option} option must be relative to "${tmpDir}", found "${relativePath}".`);
-      }
-      return relativePath;
-    }
-    function _assertAndSanitizeOptions(options, cb) {
-      _getTmpDir(options, function(err, tmpDir) {
-        if (err)
-          return cb(err);
-        options.tmpdir = tmpDir;
-        try {
-          _assertOptionsBase(options, tmpDir);
-        } catch (err2) {
-          return cb(err2);
-        }
-        _getRelativePath("dir", options.dir, tmpDir, function(err2, dir2) {
-          if (err2)
-            return cb(err2);
-          options.dir = _isUndefined(dir2) ? "" : dir2;
-          _getRelativePath("template", options.template, tmpDir, function(err3, template) {
-            if (err3)
-              return cb(err3);
-            options.template = template;
-            cb(null, options);
-          });
-        });
-      });
-    }
-    function _assertAndSanitizeOptionsSync(options) {
-      const tmpDir = options.tmpdir = _getTmpDirSync(options);
-      _assertOptionsBase(options, tmpDir);
-      const dir2 = _getRelativePathSync("dir", options.dir, tmpDir);
-      options.dir = _isUndefined(dir2) ? "" : dir2;
-      options.template = _getRelativePathSync("template", options.template, tmpDir);
-      return options;
-    }
-    function _isEBADF(error2) {
-      return _isExpectedError(error2, -EBADF, "EBADF");
-    }
-    function _isENOENT(error2) {
-      return _isExpectedError(error2, -ENOENT, "ENOENT");
-    }
-    function _isExpectedError(error2, errno, code) {
-      return IS_WIN32 ? error2.code === code : error2.code === code && error2.errno === errno;
-    }
-    function setGracefulCleanup() {
-      _gracefulCleanup = true;
-    }
-    function _getTmpDir(options, cb) {
-      return fs2.realpath(options && options.tmpdir || os4.tmpdir(), cb);
-    }
-    function _getTmpDirSync(options) {
-      return fs2.realpathSync(options && options.tmpdir || os4.tmpdir());
-    }
-    process.addListener(EXIT, _garbageCollector);
-    Object.defineProperty(module.exports, "tmpdir", {
-      enumerable: true,
-      configurable: false,
-      get: function() {
-        return _getTmpDirSync();
-      }
-    });
-    module.exports.dir = dir;
-    module.exports.dirSync = dirSync;
-    module.exports.file = file;
-    module.exports.fileSync = fileSync2;
-    module.exports.tmpName = tmpName;
-    module.exports.tmpNameSync = tmpNameSync;
-    module.exports.setGracefulCleanup = setGracefulCleanup;
-  }
-});
-
-// 
 var require_lockfile = __commonJS({
   ""(exports, module) {
     module.exports = /******/
@@ -32028,20 +31648,22 @@ var context2 = new Context();
 
 // .github/actions/deploy-docs-site/lib/deploy.mjs
 import { mkdtemp, readFile, rm as rm2, writeFile as writeFile2 } from "node:fs/promises";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
+import { join as join2 } from "node:path";
+import { tmpdir as tmpdir2 } from "node:os";
 import { spawnSync } from "node:child_process";
 
 // .github/actions/deploy-docs-site/lib/credential.mjs
-var import_tmp = __toESM(require_tmp(), 1);
-import { writeSync } from "node:fs";
+import { writeFileSync, mkdtempSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 var credentialFilePath;
 function getCredentialFilePath() {
   if (credentialFilePath === void 0) {
-    const tmpFile = (0, import_tmp.fileSync)({ postfix: ".json" });
-    writeSync(tmpFile.fd, getInput("serviceKey", { required: true }));
-    setSecret(tmpFile.name);
-    credentialFilePath = tmpFile.name;
+    const tmpDir = mkdtempSync(join(tmpdir(), "credential-"));
+    const filePath = join(tmpDir, "credential.json");
+    writeFileSync(filePath, getInput("serviceKey", { required: true }));
+    setSecret(filePath);
+    credentialFilePath = filePath;
   }
   return credentialFilePath;
 }
@@ -32056,7 +31678,7 @@ async function deployToFirebase(deployment, configPath, stagingDir) {
     return;
   }
   console.log("Preparing for deployment to firebase...");
-  const deployConfigPath = join(stagingDir, "firebase.json");
+  const deployConfigPath = join2(stagingDir, "firebase.json");
   const config = JSON.parse(await readFile(configPath, { encoding: "utf-8" }));
   config["hosting"]["public"] = "./browser";
   await writeFile2(deployConfigPath, JSON.stringify(config, null, 2));
@@ -32084,8 +31706,8 @@ async function setupRedirect(deployment) {
       ]
     }
   }, null, 2);
-  const tmpRedirectDir = await mkdtemp(join(tmpdir(), "redirect-directory"));
-  const redirectConfigPath = join(tmpRedirectDir, "firebase.json");
+  const tmpRedirectDir = await mkdtemp(join2(tmpdir2(), "redirect-directory"));
+  const redirectConfigPath = join2(tmpRedirectDir, "firebase.json");
   await writeFile2(redirectConfigPath, redirectConfig);
   spawnSync(`chmod 777 -R ${tmpRedirectDir}`, { encoding: "utf-8", shell: true });
   firebase(`target:clear --config ${redirectConfigPath} --project angular-dev-site hosting angular-docs`, tmpRedirectDir);
@@ -32329,7 +31951,7 @@ import { format } from "util";
 import { normalize, resolve as resolve2 } from "path";
 import { readFileSync as readFileSync2 } from "fs";
 import { createRequire } from "node:module";
-import { basename, dirname as dirname2, extname, relative, resolve as resolve4, join as join2 } from "path";
+import { basename, dirname as dirname2, extname, relative, resolve as resolve4, join as join3 } from "path";
 import { readFileSync as readFileSync22, statSync as statSync2, writeFile as writeFile3 } from "fs";
 import { format as format2 } from "util";
 import { resolve as resolve3 } from "path";
@@ -32339,7 +31961,7 @@ import { styleText } from "util";
 import { spawn as _spawn, spawnSync as _spawnSync, exec as _exec } from "child_process";
 import assert from "assert";
 import { stripVTControlCharacters } from "util";
-import { join as join3 } from "path";
+import { join as join32 } from "path";
 import { pathToFileURL } from "url";
 var require4 = __cjsCompatRequire_ngDev3(import.meta.url);
 var require_get_caller_file = __commonJS2({
@@ -34310,7 +33932,7 @@ var esm_default = {
     extname,
     relative,
     resolve: resolve4,
-    join: join2
+    join: join3
   },
   process: {
     argv: () => process.argv,
@@ -37778,7 +37400,7 @@ async function getConfig(baseDirOrAssertions) {
     } else {
       baseDir = determineRepoBaseDirFromCwd();
     }
-    const configPath = join3(baseDir, CONFIG_FILE_PATH_MATCHER);
+    const configPath = join32(baseDir, CONFIG_FILE_PATH_MATCHER);
     cachedConfig2 = await readConfigFile(configPath);
     setCachedConfig(cachedConfig2);
   }
@@ -51896,7 +51518,7 @@ function joinUrlParts(...parts) {
 // .github/actions/deploy-docs-site/lib/main.mts
 import { spawnSync as spawnSync3 } from "child_process";
 import { cp, mkdtemp as mkdtemp2 } from "fs/promises";
-import { tmpdir as tmpdir2 } from "os";
+import { tmpdir as tmpdir3 } from "os";
 import { join as join5 } from "path";
 var refMatcher = /refs\/heads\/(.*)/;
 async function deployDocs() {
@@ -51911,7 +51533,7 @@ async function deployDocs() {
   }
   const currentBranch = matchedRef[1];
   const configPath = getInput("configPath");
-  const stagingDir = await mkdtemp2(join5(tmpdir2(), "deploy-directory"));
+  const stagingDir = await mkdtemp2(join5(tmpdir3(), "deploy-directory"));
   await cp(getInput("distDir"), stagingDir, { recursive: true });
   spawnSync3(`chmod 777 -R ${stagingDir}`, { encoding: "utf-8", shell: true });
   const deployment = (await getDeployments()).get(currentBranch);
@@ -51960,15 +51582,6 @@ undici/lib/web/fetch/body.js:
 
 undici/lib/web/websocket/frame.js:
   (*! ws. MIT License. Einar Otto Stangvik <einaros@gmail.com> *)
-
-tmp/lib/tmp.js:
-  (*!
-   * Tmp
-   *
-   * Copyright (c) 2011-2017 KARASZI Istvan <github@spam.raszi.hu>
-   *
-   * MIT Licensed
-   *)
 
 @octokit/request-error/dist-src/index.js:
   (* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist *)
