@@ -118,9 +118,7 @@ describe('security integration tests', function () {
           expect(() => {
             const cmp = TestBed.createComponent(LocalSecuredComponent);
             cmp.detectChanges();
-          }).toThrowError(
-            /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../,
-          );
+          }).toThrowError(/NG0306/);
         } finally {
           (globalThis as any).ngDevMode = originalNgDevMode;
         }
