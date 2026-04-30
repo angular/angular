@@ -270,10 +270,12 @@ export function validateAgainstEventProperties(name: string) {
 
 export function validateAgainstEventAttributes(name: string) {
   if (name.toLowerCase().startsWith('on')) {
-    const errorMessage =
-      `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-      `please use (${name.slice(2)})=...`;
-    throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_EVENT_BINDING,
+      ngDevMode &&
+        `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+          `please use (${name.slice(2)})=...`,
+    );
   }
 }
 
