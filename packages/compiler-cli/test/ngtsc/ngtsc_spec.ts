@@ -9402,6 +9402,41 @@ runInEachFileSystem((os: string) => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should emit `declare` fields without runtime initialization in decorated classes', () => {
+        env.tsconfig();
+        env.write(
+          'test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          function Log(target: any, key: string): void {}
+
+          @Directive({selector: '[child]'})
+          export class Child {
+            @Log declare value: string;
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = trim(env.getContents('test.js'));
+        expect(jsContents).toContain(
+          trim(`
+            import { Directive } from '@angular/core';
+            import * as i0 from "@angular/core";
+            function Log(target, key) { }
+            export class Child {
+            }
+            Child.ɵfac = function Child_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Child)(); };
+            Child.ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Child, selectors: [["", "child", ""]] });
+            __decorate([
+                Log
+            ], Child.prototype, "value", void 0);
+          `),
+        );
+      });
     });
 
     describe('SVG animation processing', () => {

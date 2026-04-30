@@ -18,6 +18,7 @@ interface DocsCardToken extends Tokens.Generic {
   href?: string;
   imgSrc?: string;
   iconImgSrc?: string; // Need image since icons are custom
+  titleInline?: boolean;
   tokens: Token[];
 }
 
@@ -30,6 +31,7 @@ const linkRule = /link="([^"]*)"/;
 const hrefRule = /href="([^"]*)"/;
 const imgSrcRule = /imgSrc="([^"]*)"/;
 const iconImgSrcRule = /iconImgSrc="([^"]*)"/;
+const titleInlineRule = /(?:^|\s)titleInline(?=\s|$|=)/;
 
 export const docsCardExtension = {
   name: 'docs-card',
@@ -47,6 +49,7 @@ export const docsCardExtension = {
       const href = hrefRule.exec(attr);
       const imgSrc = imgSrcRule.exec(attr);
       const iconImgSrc = iconImgSrcRule.exec(attr);
+      const titleInline = titleInlineRule.test(attr);
 
       const body = match[2].trim();
 
@@ -59,6 +62,7 @@ export const docsCardExtension = {
         link: link ? link[1] : undefined,
         imgSrc: imgSrc ? imgSrc[1] : undefined,
         iconImgSrc: iconImgSrc ? iconImgSrc[1] : undefined,
+        titleInline,
         tokens: [],
       };
       this.lexer.blockTokens(token.body, token.tokens);
@@ -79,12 +83,14 @@ function getStandardCard(renderer: AdevDocsRenderer, token: DocsCardToken) {
     // We need to read svg content, instead of renering svg with `img`,
     // cause we would like to use CSS variables to support dark and light mode.
     const icon = loadWorkspaceRelativeFile(token.iconImgSrc);
+    const header = token.titleInline
+      ? `<div class="docs-card-header-inline">${icon}<h3>${token.title}</h3></div>`
+      : `${icon}<h3>${token.title}</h3>`;
 
     return `
     <a href="${token.href}" ${anchorTarget(token.href)} class="docs-card">
       <div>
-        ${icon}
-        <h3>${token.title}</h3>
+        ${header}
         ${renderer.parser.parse(token.tokens)}
       </div>
       <span>${token.link ? token.link : 'Learn more'}</span>

@@ -241,7 +241,7 @@ const getNestedPropertiesCallback =
       return emitEmpty();
     }
     const current =
-      position.directive === undefined ? node.component : node.directives[position.directive];
+      position.directive === undefined ? node.component : node.directives?.[position.directive];
     if (!current) {
       return emitEmpty();
     }
@@ -432,7 +432,7 @@ const prepareForestForSerialization = (
             id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance)!,
           }
         : null,
-      directives: node.directives.map((d) => ({
+      directives: node.directives?.map((d) => ({
         name: d.name,
         id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance)!,
       })),

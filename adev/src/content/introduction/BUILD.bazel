@@ -15,6 +15,7 @@ generate_guides(
         "//adev/src/assets/icons:forms.svg",
         "//adev/src/assets/icons:language-service.svg",
         "//adev/src/assets/icons:ng-update.svg",
+        "//adev/src/assets/icons:playground.svg",
         "//adev/src/assets/icons:routing.svg",
         "//adev/src/assets/icons:signals.svg",
         "//adev/src/assets/icons:ssr.svg",

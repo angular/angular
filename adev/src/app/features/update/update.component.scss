@@ -1,4 +1,5 @@
 @use '@angular/docs/styles/media-queries' as mq;
+@use '@angular/docs/styles/links' as links;
 
 $ver-dropdown-width: clamp(165px, 20vw, 200px);
 
@@ -172,7 +173,14 @@ h4 {
   }
 
   // Code blocks are generable from the markdown, we need to opt-out of the scoping
-  ::ng-deep code {
-    cursor: pointer;
+  ::ng-deep {
+    code {
+      cursor: pointer;
+    }
+
+    // External links (rendered with target="_blank") get an "open in new" icon
+    a[target='_blank'] {
+      @include links.external-link-with-icon;
+    }
   }
 }

@@ -36,7 +36,7 @@ import type {ReadonlyFieldState} from '../api/types';
  * because it confuses the internal JS minifier which can cause collisions in field names.
  */
 interface CombinedControl {
-  value: any;
+  value: unknown;
   valid: boolean;
   invalid: boolean;
   touched: boolean;
@@ -65,7 +65,7 @@ export class InteropNgControl implements CombinedControl {
 
   readonly control: AbstractControl<any, any> = this as unknown as AbstractControl<any, any>;
 
-  get value(): any {
+  get value(): unknown {
     // CVA controls are not aware of user debouncing and will expect `NgControl.value` to reflect their latest writes.
     return this.field().controlValue();
   }

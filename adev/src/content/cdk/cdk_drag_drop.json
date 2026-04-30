@@ -4049,10 +4049,6 @@
                 {
                   "name": "param",
                   "comment": "Event that triggered the dropping sequence."
-                },
-                {
-                  "name": "breaking-change",
-                  "comment": "15.0.0 `previousIndex` and `event` parameters to become required."
                 }
               ],
               "params": [
@@ -4109,11 +4105,11 @@
                   "name": "event",
                   "description": "Event that triggered the dropping sequence.",
                   "type": "MouseEvent | TouchEvent",
-                  "isOptional": true,
+                  "isOptional": false,
                   "isRestParam": false
                 }
               ],
-              "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   *\n   * @breaking-change 15.0.0 `previousIndex` and `event` parameters to become required.\n   */",
+              "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   */",
               "returnType": "void"
             }
           ],
@@ -4172,7 +4168,7 @@
                 "name": "event",
                 "description": "Event that triggered the dropping sequence.",
                 "type": "MouseEvent | TouchEvent",
-                "isOptional": true,
+                "isOptional": false,
                 "isRestParam": false
               }
             ],
@@ -4210,13 +4206,9 @@
               {
                 "name": "param",
                 "comment": "Event that triggered the dropping sequence."
-              },
-              {
-                "name": "breaking-change",
-                "comment": "15.0.0 `previousIndex` and `event` parameters to become required."
               }
             ],
-            "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   *\n   * @breaking-change 15.0.0 `previousIndex` and `event` parameters to become required.\n   */"
+            "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   */"
           },
           "entryType": "function",
           "description": "Drops an item into this container.",
@@ -4248,13 +4240,9 @@
             {
               "name": "param",
               "comment": "Event that triggered the dropping sequence."
-            },
-            {
-              "name": "breaking-change",
-              "comment": "15.0.0 `previousIndex` and `event` parameters to become required."
             }
           ],
-          "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   *\n   * @breaking-change 15.0.0 `previousIndex` and `event` parameters to become required.\n   */",
+          "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -4835,7 +4823,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/drop-list-ref.ts",
         "startLine": 73,
-        "endLine": 805
+        "endLine": 803
       }
     },
     {
@@ -6274,7 +6262,7 @@
       "@angular/core"
     ],
     [
-      "Injectable",
+      "Service",
       "@angular/core"
     ],
     [

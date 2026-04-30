@@ -16,7 +16,7 @@ export const enum JitCompilerUsage {
 
 interface JitCompilerUsageRequest {
   usage: JitCompilerUsage;
-  kind: 'directive' | 'component' | 'pipe' | 'injectable' | 'NgModule';
+  kind: 'directive' | 'component' | 'pipe' | 'injectable' | 'NgModule' | 'service';
   type: Type;
 }
 

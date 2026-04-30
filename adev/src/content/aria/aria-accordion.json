@@ -181,7 +181,7 @@
       "source": {
         "filePath": "/src/aria/accordion/accordion-panel.ts",
         "startLine": 34,
-        "endLine": 94
+        "endLine": 96
       }
     },
     {
@@ -353,7 +353,7 @@
       "source": {
         "filePath": "src/aria/accordion/accordion-group.ts",
         "startLine": 59,
-        "endLine": 144
+        "endLine": 143
       }
     },
     {

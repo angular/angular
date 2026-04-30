@@ -150,15 +150,18 @@ export default class Tutorial {
 
     this.embeddedTutorialManager.revealAnswer();
 
-    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
+    try {
+      const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
+      await Promise.all(
+        Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
+          nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
+        ),
+      );
 
-    await Promise.all(
-      Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
-      ),
-    );
-
-    this.answerRevealed.set(true);
+      this.answerRevealed.set(true);
+    } catch (err) {
+      console.error('Failed to reveal answer', err);
+    }
   }
 
   async handleResetAnswer() {
@@ -166,13 +169,16 @@ export default class Tutorial {
 
     this.embeddedTutorialManager.resetRevealAnswer();
 
-    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
-
-    await Promise.all(
-      Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
-      ),
-    );
+    try {
+      const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
+      await Promise.all(
+        Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
+          nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
+        ),
+      );
+    } catch (err) {
+      console.error('Failed to reset answer', err);
+    }
 
     this.answerRevealed.set(false);
   }
@@ -195,9 +201,13 @@ export default class Tutorial {
       (routeData.type === TutorialType.EDITOR || routeData.type === TutorialType.CLI) &&
       this.isBrowser
     ) {
-      await this.setEditorTutorialData(
-        tutorialNavigationItem.path.replace(`${PAGE_PREFIX.TUTORIALS}/`, ''),
-      );
+      try {
+        await this.setEditorTutorialData(
+          tutorialNavigationItem.path.replace(`${PAGE_PREFIX.TUTORIALS}/`, ''),
+        );
+      } catch (err) {
+        console.error('Failed to load embedded editor tutorial data', err);
+      }
     }
   }
 

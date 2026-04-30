@@ -11,8 +11,25 @@ import {PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {destroyPlatform} from '@angular/core';
 import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
 
+import {parseUrl} from '../src/location';
+
 (function () {
   if (getDOM().supportsDOMEvents) return; // NODE only
+
+  describe('parseUrl', () => {
+    it('should resolve relative paths against origin', () => {
+      const url = parseUrl('/deep/path?query#hash', 'http://test.com');
+      expect(url.href).toBe('http://test.com/deep/path?query#hash');
+      expect(url.search).toBe('?query');
+      expect(url.hash).toBe('#hash');
+    });
+
+    it('should resolve absolute URLs ignoring origin', () => {
+      const url = parseUrl('http://other.com/deep/path', 'http://test.com');
+      expect(url.href).toBe('http://other.com/deep/path');
+      expect(url.origin).toBe('http://other.com');
+    });
+  });
 
   describe('PlatformLocation', () => {
     beforeEach(() => {

@@ -77,10 +77,10 @@ ts_project(
     ),
     deps = [
         "//:node_modules/@types/yargs",
-        "//:node_modules/chokidar",
         "//:node_modules/reflect-metadata",
         "//:node_modules/typescript",
         "//packages/compiler",
+        "//packages/compiler-cli:node_modules/chokidar",
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/core",

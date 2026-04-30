@@ -877,7 +877,7 @@ describe('quick info', () => {
       it('should get quick info for a let declaration', () => {
         expectQuickInfo({
           templateOverride: `@let na¦me = 'Frodo'; {{name}}`,
-          expectedSpanText: `@let name = 'Frodo'`,
+          expectedSpanText: `@let name = 'Frodo';`,
           expectedDisplayString: `(let) name: "Frodo"`,
         });
       });
@@ -885,7 +885,7 @@ describe('quick info', () => {
       it('should get quick info for a let declaration initialized with a narrowed property', () => {
         expectQuickInfo({
           templateOverride: `@if (signalValue) { @let na¦me = signalValue; {{name}} }`,
-          expectedSpanText: `@let name = signalValue`,
+          expectedSpanText: `@let name = signalValue;`,
           expectedDisplayString: `(let) name: string`,
         });
       });

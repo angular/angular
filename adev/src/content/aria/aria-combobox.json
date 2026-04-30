@@ -42,105 +42,6 @@
       }
     },
     {
-      "name": "ComboboxDialog",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the dialog element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "combobox",
-          "type": "Combobox<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The combobox that the dialog belongs to.",
-          "jsdocTags": []
-        },
-        {
-          "name": "close",
-          "signatures": [
-            {
-              "name": "close",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "close",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        }
-      ],
-      "generics": [],
-      "description": "Integrates a native `<dialog>` element with the combobox, allowing for\na modal or non-modal popup experience. It handles the opening and closing of the dialog\nbased on the combobox's expanded state.\n\n```html\n<ng-template ngComboboxPopupContainer>\n  <dialog ngComboboxDialog class=\"example-dialog\">\n    <!-- ... dialog content ... -->\n  </dialog>\n</ng-template>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Combobox](guide/aria/combobox)"
-        },
-        {
-          "name": "see",
-          "comment": "[Select](guide/aria/select)"
-        },
-        {
-          "name": "see",
-          "comment": "[Multiselect](guide/aria/multiselect)"
-        },
-        {
-          "name": "see",
-          "comment": "[Autocomplete](guide/aria/autocomplete)"
-        }
-      ],
-      "rawComment": "/**\n * Integrates a native `<dialog>` element with the combobox, allowing for\n * a modal or non-modal popup experience. It handles the opening and closing of the dialog\n * based on the combobox's expanded state.\n *\n * ```html\n * <ng-template ngComboboxPopupContainer>\n *   <dialog ngComboboxDialog class=\"example-dialog\">\n *     <!-- ... dialog content ... -->\n *   </dialog>\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Combobox](guide/aria/combobox)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n * @see [Autocomplete](guide/aria/autocomplete)\n */",
-      "implements": [],
-      "isStandalone": true,
-      "selector": "dialog[ngComboboxDialog]",
-      "exportAs": [
-        "ngComboboxDialog"
-      ],
-      "aliases": [
-        "ngComboboxDialog"
-      ],
-      "source": {
-        "filePath": "src/aria/combobox/combobox-dialog.ts",
-        "startLine": 34,
-        "endLine": 84
-      }
-    },
-    {
       "name": "ComboboxInput",
       "isAbstract": false,
       "entryType": "directive",
@@ -218,7 +119,7 @@
       "source": {
         "filePath": "src/aria/combobox/combobox-input.ts",
         "startLine": 44,
-        "endLine": 90
+        "endLine": 92
       }
     },
     {
@@ -279,6 +180,118 @@
         "filePath": "/src/aria/combobox/combobox-popup.ts",
         "startLine": 29,
         "endLine": 44
+      }
+    },
+    {
+      "name": "ComboboxDialog",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLDialogElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the dialog element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "combobox",
+          "type": "Combobox<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The combobox that the dialog belongs to.",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "InputSignal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The unique identifier for the trigger.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
+        {
+          "name": "close",
+          "signatures": [
+            {
+              "name": "close",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "close",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "Integrates a native `<dialog>` element with the combobox, allowing for\na modal or non-modal popup experience. It handles the opening and closing of the dialog\nbased on the combobox's expanded state.\n\n```html\n<ng-template ngComboboxPopupContainer>\n  <dialog ngComboboxDialog class=\"example-dialog\">\n    <!-- ... dialog content ... -->\n  </dialog>\n</ng-template>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Combobox](guide/aria/combobox)"
+        },
+        {
+          "name": "see",
+          "comment": "[Select](guide/aria/select)"
+        },
+        {
+          "name": "see",
+          "comment": "[Multiselect](guide/aria/multiselect)"
+        },
+        {
+          "name": "see",
+          "comment": "[Autocomplete](guide/aria/autocomplete)"
+        }
+      ],
+      "rawComment": "/**\n * Integrates a native `<dialog>` element with the combobox, allowing for\n * a modal or non-modal popup experience. It handles the opening and closing of the dialog\n * based on the combobox's expanded state.\n *\n * ```html\n * <ng-template ngComboboxPopupContainer>\n *   <dialog ngComboboxDialog class=\"example-dialog\">\n *     <!-- ... dialog content ... -->\n *   </dialog>\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Combobox](guide/aria/combobox)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n * @see [Autocomplete](guide/aria/autocomplete)\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "dialog[ngComboboxDialog]",
+      "exportAs": [
+        "ngComboboxDialog"
+      ],
+      "aliases": [
+        "ngComboboxDialog"
+      ],
+      "source": {
+        "filePath": "src/aria/combobox/combobox-dialog.ts",
+        "startLine": 35,
+        "endLine": 84
       }
     },
     {
@@ -487,7 +500,7 @@
       "source": {
         "filePath": "/src/aria/combobox/combobox.ts",
         "startLine": 60,
-        "endLine": 162
+        "endLine": 164
       }
     }
   ],
@@ -525,6 +538,14 @@
       "@angular/core"
     ],
     [
+      "input",
+      "@angular/core"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
       "booleanAttribute",
       "@angular/core"
     ],
@@ -537,19 +558,11 @@
       "@angular/core"
     ],
     [
-      "input",
-      "@angular/core"
-    ],
-    [
       "Directionality",
       "@angular/cdk/bidi"
     ],
     [
       "ComboboxPopupContainer",
-      "@angular/aria/combobox"
-    ],
-    [
-      "ComboboxDialog",
       "@angular/aria/combobox"
     ],
     [
@@ -561,27 +574,15 @@
       "@angular/aria/combobox"
     ],
     [
+      "ComboboxDialog",
+      "@angular/aria/combobox"
+    ],
+    [
       "Combobox",
       "@angular/aria/combobox"
     ],
     [
       "ComboboxPopupContainer",
-      "@angular/aria/combobox"
-    ],
-    [
-      "ComboboxDialog",
-      "@angular/aria/combobox"
-    ],
-    [
-      "ComboboxDialog.element",
-      "@angular/aria/combobox"
-    ],
-    [
-      "ComboboxDialog.combobox",
-      "@angular/aria/combobox"
-    ],
-    [
-      "ComboboxDialog.close",
       "@angular/aria/combobox"
     ],
     [
@@ -606,6 +607,26 @@
     ],
     [
       "ComboboxPopup.combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog.element",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog.combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog.id",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog.close",
       "@angular/aria/combobox"
     ],
     [

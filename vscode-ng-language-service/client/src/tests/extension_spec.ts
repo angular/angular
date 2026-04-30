@@ -43,6 +43,12 @@ describe('extension config restart policy', () => {
     ).toBeTrue();
   });
 
+  it('restarts for js/ts.tsdk.path changes', () => {
+    expect(
+      shouldRestartOnConfigurationChange(createConfigChangeEvent(['js/ts.tsdk.path'])),
+    ).toBeTrue();
+  });
+
   it('does not restart for unrelated settings', () => {
     expect(
       shouldRestartOnConfigurationChange(createConfigChangeEvent(['editor.fontSize'])),

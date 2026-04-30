@@ -8,10 +8,10 @@ ng_project(
         "**/*.ts",
     ]),
     deps = [
-        "//:node_modules/zod",
         "//packages/core",
         "//packages/core/testing",
         "//packages/forms",
+        "//packages/forms:node_modules/zod",
         "//packages/forms/signals",
         "//packages/forms/signals/compat",
         "//packages/platform-browser",

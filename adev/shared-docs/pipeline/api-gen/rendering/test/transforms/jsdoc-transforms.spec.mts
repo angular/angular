@@ -199,6 +199,23 @@ describe('jsdoc transforms', () => {
 
       expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
     });
+
+    it('should throw on a miscased absolute @link to a known API symbol', () => {
+      setSymbols({RouterModule: 'router'});
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '{@link /api/router/routerModule#forRoot forRoot}',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(/Broken @link.*Did you mean \/api\/router\/RouterModule/);
+    });
   });
 
   describe('addHtmlDescription', () => {

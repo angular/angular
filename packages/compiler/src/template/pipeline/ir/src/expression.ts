@@ -9,8 +9,8 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
-import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as t from '../../../../render3/r3_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
 import {OpList, type XrefId} from './operations';
@@ -43,7 +43,7 @@ export type Expression =
   | PipeBindingVariadicExpr
   | SafePropertyReadExpr
   | SafeKeyedReadExpr
-  | SafeInvokeFunctionExpr
+  | SafeNavigationMigrationExpr
   | EmptyExpr
   | AssignTemporaryExpr
   | ReadTemporaryExpr
@@ -767,46 +767,42 @@ export class SafeKeyedReadExpr extends ExpressionBase {
   }
 }
 
-export class SafeInvokeFunctionExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.SafeInvokeFunction;
+/**
+ * Wraps an expression to indicate that it should be evaluated with legacy null-safe navigation semantics.
+ * This is used to implement the `$safeNavigationMigration` builtin function.
+ */
+export class SafeNavigationMigrationExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.SafeNavigationMigration;
 
-  constructor(
-    public receiver: o.Expression,
-    public args: o.Expression[],
-  ) {
+  constructor(public expr: o.Expression) {
     super();
   }
 
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {
-    this.receiver.visitExpression(visitor, context);
-    for (const a of this.args) {
-      a.visitExpression(visitor, context);
-    }
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): void {
+    this.expr.visitExpression(visitor, context);
   }
 
-  override isEquivalent(): boolean {
-    return false;
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof SafeNavigationMigrationExpr && this.expr.isEquivalent(e.expr);
   }
 
   override isConstant(): boolean {
-    return false;
+    return this.expr.isConstant();
   }
 
   override transformInternalExpressions(
     transform: ExpressionTransform,
     flags: VisitorContextFlag,
   ): void {
-    this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
-    for (let i = 0; i < this.args.length; i++) {
-      this.args[i] = transformExpressionsInExpression(this.args[i], transform, flags);
-    }
+    this.expr = transformExpressionsInExpression(
+      this.expr,
+      transform,
+      flags | VisitorContextFlag.InSafeNavigationMigration,
+    );
   }
 
-  override clone(): SafeInvokeFunctionExpr {
-    return new SafeInvokeFunctionExpr(
-      this.receiver.clone(),
-      this.args.map((a) => a.clone()),
-    );
+  override clone(): SafeNavigationMigrationExpr {
+    return new SafeNavigationMigrationExpr(this.expr.clone());
   }
 }
 
@@ -1124,6 +1120,7 @@ export enum VisitorContextFlag {
   None = 0b0000,
   InChildOperation = 0b0001,
   InArrowFunctionOperation = 0b0010,
+  InSafeNavigationMigration = 0b0100,
 }
 
 function transformExpressionsInInterpolation(

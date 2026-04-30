@@ -37,12 +37,19 @@ export class TypeCheckFile extends Environment {
   readonly isTypeCheckFile = true;
   private nextTcbId = 1;
   private tcbStatements: string[] = [];
+  private sourceContent: string = '';
+  get hasCopiedSource() {
+    return this.copiedSourceOriginPath !== undefined;
+  }
+
+  setSourceContent(text: string) {
+    this.sourceContent = text;
+  }
 
   constructor(
     readonly fileName: AbsoluteFsPath,
     config: TypeCheckingConfig,
     refEmitter: ReferenceEmitter,
-    reflector: ReflectionHost,
     compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
   ) {
     super(
@@ -55,7 +62,6 @@ export class TypeCheckFile extends Environment {
         shouldUseSingleQuotes: () => true,
       }),
       refEmitter,
-      reflector,
       ts.createSourceFile(
         compilerHost.getCanonicalFileName(fileName),
         '',
@@ -71,12 +77,14 @@ export class TypeCheckFile extends Environment {
     domSchemaChecker: DomSchemaChecker<unknown>,
     oobRecorder: OutOfBandDiagnosticRecorder<unknown>,
     genericContextBehavior: TcbGenericContextBehavior,
+    reflector: ReflectionHost,
   ): void {
     const fnId = `_tcb${this.nextTcbId++}`;
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
       ref,
       meta,
       this,
+      reflector,
       genericContextBehavior,
     );
     const fn = generateTypeCheckBlock(
@@ -105,7 +113,7 @@ export class TypeCheckFile extends Environment {
     }
 
     const printer = ts.createPrinter();
-    let source = '';
+    let source = this.sourceContent;
 
     const newImports = importChanges.newImports.get(this.contextFile.fileName);
     if (newImports !== undefined) {

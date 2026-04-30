@@ -35,6 +35,7 @@ export abstract class CompilationJob {
     readonly componentName: string,
     readonly pool: ConstantPool,
     readonly mode: TemplateCompilationMode,
+    readonly legacyOptionalChaining: boolean,
   ) {}
 
   kind: CompilationJobKind = CompilationJobKind.Both;
@@ -84,8 +85,9 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly allDeferrableDepsFn: o.ReadVarExpr | null,
     readonly relativeTemplatePath: string | null,
     readonly enableDebugLocations: boolean,
+    legacyOptionalChaining: boolean,
   ) {
-    super(componentName, pool, mode);
+    super(componentName, pool, mode, legacyOptionalChaining);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
   }
@@ -263,8 +265,13 @@ export class ViewCompilationUnit extends CompilationUnit {
  * Compilation-in-progress of a host binding, which contains a single unit for that host binding.
  */
 export class HostBindingCompilationJob extends CompilationJob {
-  constructor(componentName: string, pool: ConstantPool, mode: TemplateCompilationMode) {
-    super(componentName, pool, mode);
+  constructor(
+    componentName: string,
+    pool: ConstantPool,
+    mode: TemplateCompilationMode,
+    legacyOptionalChaining: boolean,
+  ) {
+    super(componentName, pool, mode, legacyOptionalChaining);
     this.root = new HostBindingCompilationUnit(this);
   }
 

@@ -725,6 +725,28 @@
       ]
     },
     {
+      "description": "should support expressions requiring temporary variables inside `track` with legacyOptionalChaining",
+      "inputFiles": ["for_track_by_temporary_variables_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "for_track_by_temporary_variables_template_use_null.js",
+              "generated": "for_track_by_temporary_variables_use_null.js"
+            }
+          ]
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
       "description": "should support `as` expression on `@else if` block",
       "inputFiles": ["else_if_with_alias.ts"],
       "expectations": [

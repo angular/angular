@@ -28,6 +28,7 @@ import {assertNotSame} from '../../util/assert';
 import {handleUncaughtError} from '../instructions/shared';
 import {
   type EventCallback,
+  markEventHandledForElement,
   stashEventListenerImpl,
   type WrappedEventCallback,
 } from '../../event_delegation_utils';
@@ -50,6 +51,14 @@ export function wrapListener(
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
   return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
+    // When a native element is stored on this function (set by listenToDomEvent for
+    // non-global-target listeners), mark the (event, element) pair as handled so that
+    // jsaction does not replay an event already dispatched by the real DOM listener.
+    const nativeEl = (wrapListenerIn_markDirtyAndPreventDefault as any).__ngNativeEl__;
+    if (nativeEl !== undefined) {
+      markEventHandledForElement(event, nativeEl);
+    }
+
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
@@ -162,6 +171,13 @@ export function listenToDomEvent(
 
     stashEventListenerImpl(lView, target, eventName, wrappedListener);
 
+    // For element-local listeners (not global targets like document/window), store the
+    // native element on the wrapped listener so that when it fires it can mark the
+    // (event, element) pair as handled, preventing jsaction from replaying an event that
+    // was already dispatched by the real DOM listener post-hydration (see #67328).
+    if (!eventTargetResolver) {
+      (wrappedListener as any).__ngNativeEl__ = native as unknown as Element;
+    }
     const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
 
     // We skip cleaning up animation event types to ensure leaving animation events can be used.

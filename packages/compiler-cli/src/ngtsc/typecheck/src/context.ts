@@ -30,7 +30,7 @@ import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../../src/ngtsc/diag
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {PerfEvent, PerfRecorder} from '../../perf';
-import {FileUpdate} from '../../program_driver';
+import {FileUpdate, InliningMode} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {
@@ -125,6 +125,11 @@ export interface PendingFileTypeCheckingData {
    * Map of in-progress shim data for shims generated from this input file.
    */
   shimData: Map<AbsoluteFsPath, PendingShimData>;
+
+  /**
+   * The original source file.
+   */
+  sourceFile?: ts.SourceFile;
 }
 
 export interface PendingShimData {
@@ -186,21 +191,6 @@ export interface TypeCheckingHost {
    * is, coverage for the file can be considered complete.
    */
   recordComplete(sfPath: AbsoluteFsPath): void;
-}
-
-/**
- * How a type-checking context should handle operations which would require inlining.
- */
-export enum InliningMode {
-  /**
-   * Use inlining operations when required.
-   */
-  InlineOps,
-
-  /**
-   * Produce diagnostics if an operation would require inlining.
-   */
-  Error,
 }
 
 /**
@@ -285,7 +275,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
         const dirNode = dirRef.node;
 
-        if (!dir.isGeneric || !requiresInlineTypeCtor(dirNode, this.reflector, shimData.file)) {
+        if (
+          !dir.isGeneric ||
+          !requiresInlineTypeCtor(dirNode, this.reflector, (r) => shimData.file.canReferenceType(r))
+        ) {
           // inlining not required
           continue;
         }
@@ -388,11 +381,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     this.perf.eventCount(PerfEvent.GenerateTcb);
     if (
       inliningRequirement !== TcbInliningRequirement.None &&
-      this.inlining === InliningMode.InlineOps
+      (this.inlining === InliningMode.InlineOps || this.inlining === InliningMode.CopySourceToTcb)
     ) {
-      // This class didn't meet the requirements for external type checking, so generate an inline
-      // TCB for the class.
+      // Queue operations for both inline and copy strategy!
+      // The decision on where to apply them will be made in finalize().
       this.addInlineTypeCheckBlock(fileData, shimData, ref, meta);
+
+      if (this.inlining === InliningMode.CopySourceToTcb) {
+        // Still set the original file path to force local references for symbols from this file.
+        shimData.file.copiedSourceOriginPath = absoluteFromSourceFile(sourceFile);
+      }
     } else if (
       inliningRequirement === TcbInliningRequirement.ShouldInlineForGenericBounds &&
       this.inlining === InliningMode.Error
@@ -408,6 +406,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         shimData.domSchemaChecker,
         shimData.oobRecorder,
         TcbGenericContextBehavior.FallbackToAny,
+        this.reflector,
       );
     } else {
       shimData.file.addTypeCheckBlock(
@@ -416,6 +415,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         shimData.domSchemaChecker,
         shimData.oobRecorder,
         TcbGenericContextBehavior.UseEmitter,
+        this.reflector,
       );
     }
   }
@@ -446,18 +446,9 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   }
 
   /**
-   * Transform a `ts.SourceFile` into a version that includes type checking code.
-   *
-   * If this particular `ts.SourceFile` requires changes, the text representing its new contents
-   * will be returned. Otherwise, a `null` return indicates no changes were necessary.
+   * Applies operations to a file.
    */
-  transform(sf: ts.SourceFile): string | null {
-    // If there are no operations pending for this particular file, return `null` to indicate no
-    // changes.
-    if (!this.opMap.has(sf)) {
-      return null;
-    }
-
+  private executeOperations(targetSf: ts.SourceFile, opsSourceSf: ts.SourceFile): string {
     // Use a `ts.Printer` to generate source code.
     const printer = ts.createPrinter({omitTrailingSemicolon: true});
 
@@ -474,39 +465,43 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     // Execute ops.
     // Each Op has a splitPoint index into the text where it needs to be inserted.
     const updates: {pos: number; deletePos?: number; text: string}[] = this.opMap
-      .get(sf)!
+      .get(opsSourceSf)!
       .map((op) => {
         return {
           pos: op.splitPoint,
-          text: op.execute(importManager, sf, this.refEmitter),
+          text: op.execute(importManager, targetSf, this.refEmitter),
         };
       });
 
     const {newImports, updatedImports} = importManager.finalize();
 
     // Capture new imports
-    if (newImports.has(sf.fileName)) {
-      newImports.get(sf.fileName)!.forEach((newImport) => {
+    if (newImports.has(targetSf.fileName)) {
+      newImports.get(targetSf.fileName)!.forEach((newImport) => {
         updates.push({
           pos: 0,
-          text: printer.printNode(ts.EmitHint.Unspecified, newImport, sf),
+          text: printer.printNode(ts.EmitHint.Unspecified, newImport, targetSf),
         });
       });
     }
 
     // Capture updated imports
     for (const [oldBindings, newBindings] of updatedImports.entries()) {
-      if (oldBindings.getSourceFile() !== sf) {
+      if (oldBindings.getSourceFile() !== targetSf) {
         throw new Error('Unexpected updates to unrelated source files.');
       }
       updates.push({
         pos: oldBindings.getStart(),
         deletePos: oldBindings.getEnd(),
-        text: printer.printNode(ts.EmitHint.Unspecified, newBindings, sf),
+        text: printer.printNode(ts.EmitHint.Unspecified, newBindings, targetSf),
       });
     }
 
-    const result = new MagicString(sf.text, {filename: sf.fileName});
+    // TODO: Consider generating a sourcemap here via `result.generateMap()`.
+    // This could be used in `CopySourceToTcb` mode to map positions in the shim file
+    // back to the original source file, helping with language features like "Go to Definition"
+    // and diagnostic translation.
+    const result = new MagicString(targetSf.text, {filename: targetSf.fileName});
     for (const update of updates) {
       if (update.deletePos !== undefined) {
         result.remove(update.pos, update.deletePos);
@@ -516,11 +511,35 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     return result.toString();
   }
 
+  /**
+   * Generates the transformed text for an original source file.
+   */
+  private generateTransformedOriginalFile(sf: ts.SourceFile): string | null {
+    if (this.inlining !== InliningMode.InlineOps || !this.opMap.has(sf)) {
+      return null;
+    }
+    return this.executeOperations(sf, sf);
+  }
+
+  /**
+   * Generates the content for a shim file that copies the source of the original file.
+   */
+  private generateCopiedShimContent(
+    originalSf: ts.SourceFile,
+    shimFileName: string,
+  ): string | null {
+    if (this.inlining !== InliningMode.CopySourceToTcb || !this.opMap.has(originalSf)) {
+      return null;
+    }
+    const fakeSf = ts.createSourceFile(shimFileName, originalSf.text, ts.ScriptTarget.Latest, true);
+    return this.executeOperations(fakeSf, originalSf);
+  }
+
   finalize(): Map<AbsoluteFsPath, FileUpdate> {
     // First, build the map of updates to source files.
     const updates = new Map<AbsoluteFsPath, FileUpdate>();
     for (const originalSf of this.opMap.keys()) {
-      const newText = this.transform(originalSf);
+      const newText = this.generateTransformedOriginalFile(originalSf);
       if (newText !== null) {
         updates.set(absoluteFromSourceFile(originalSf), {
           newText,
@@ -548,6 +567,19 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           path: pendingShimData.file.fileName,
           data: pendingShimData.data,
         });
+
+        // Set the source content on the shim file before rendering!
+        const originalSf = pendingFileData.sourceFile;
+        if (originalSf !== undefined) {
+          const transformedText = this.generateCopiedShimContent(
+            originalSf,
+            pendingShimData.file.fileName,
+          );
+          if (transformedText !== null) {
+            pendingShimData.file.setSourceContent(transformedText);
+          }
+        }
+
         const sfText = pendingShimData.file.render();
         updates.set(pendingShimData.file.fileName, {
           newText: sfText,
@@ -582,6 +614,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         shimData.oobRecorder,
       ),
     );
+
     fileData.hasInlines = true;
   }
 
@@ -594,13 +627,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
           this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
         ),
-        file: new TypeCheckFile(
-          shimPath,
-          this.config,
-          this.refEmitter,
-          this.reflector,
-          this.compilerHost,
-        ),
+        file: new TypeCheckFile(shimPath, this.config, this.refEmitter, this.compilerHost),
         data: new Map<TypeCheckId, TypeCheckData>(),
         shimDiagnostics: null,
       });
@@ -616,6 +643,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         hasInlines: false,
         sourceManager: this.host.getSourceManager(sfPath),
         shimData: new Map(),
+        sourceFile: sf,
       };
       this.fileMap.set(sfPath, data);
     }
@@ -691,14 +719,19 @@ class InlineTcbOp implements Op {
     return this.ref.node.end + 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
-    const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
+  execute(im: ImportManager, tcbSf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
+    const env = new Environment(this.config, im, refEmitter, tcbSf);
+    const originalSf = this.ref.node.getSourceFile();
+    if (tcbSf !== originalSf) {
+      env.copiedSourceOriginPath = absoluteFromSourceFile(originalSf);
+    }
     const fnName = `_tcb_${this.ref.node.pos}`;
 
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
       this.ref,
       this.meta,
       env,
+      this.reflector,
       TcbGenericContextBehavior.CopyClassNodes,
     );
 
@@ -735,7 +768,7 @@ class TypeCtorOp implements Op {
   }
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
-    const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
+    const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, sf);
     return generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
   }
 }

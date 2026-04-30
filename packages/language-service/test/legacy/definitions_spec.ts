@@ -292,7 +292,7 @@ describe('definitions', () => {
 
       expect(definitions.length).toBe(1);
       const [def] = definitions;
-      expect(def.textSpan).toBe('@let value = 42');
+      expect(def.textSpan).toBe('@let value = 42;');
     });
   });
 

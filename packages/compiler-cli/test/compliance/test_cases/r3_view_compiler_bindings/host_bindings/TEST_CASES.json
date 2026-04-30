@@ -32,6 +32,20 @@
       ]
     },
     {
+      "description": "should support host bindings with temporary expressions with legacyOptionalChaining",
+      "inputFiles": ["host_bindings_with_temporaries_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": ["host_bindings_with_temporaries_use_null.js"]
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
       "description": "should support host class bindings with temporary expressions",
       "inputFiles": ["host_class_bindings_with_temporaries.ts"],
       "compilerOptions": {

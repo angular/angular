@@ -127,7 +127,7 @@
         },
         {
           "name": "focusTarget",
-          "type": "InputSignal<HTMLElement | ElementRef<any> | undefined>",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -275,7 +275,7 @@
       "source": {
         "filePath": "src/aria/grid/grid-cell-widget.ts",
         "startLine": 42,
-        "endLine": 135
+        "endLine": 136
       }
     },
     {
@@ -406,6 +406,78 @@
           "jsdocTags": [],
           "inputAlias": "selectionMode",
           "isRequiredInput": false
+        },
+        {
+          "name": "tabIndex",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The tabindex of the grid.",
+          "jsdocTags": [],
+          "inputAlias": "tabIndex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "activeDescendant",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The ID of the active descendant in the grid.",
+          "jsdocTags": []
+        },
+        {
+          "name": "scrollActiveCellIntoView",
+          "signatures": [
+            {
+              "name": "scrollActiveCellIntoView",
+              "entryType": "function",
+              "description": "Scrolls the active cell into view.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "options",
+                  "description": "",
+                  "type": "ScrollIntoViewOptions",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Scrolls the active cell into view. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "options",
+                "description": "",
+                "type": "ScrollIntoViewOptions",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "scrollActiveCellIntoView",
+            "description": "Scrolls the active cell into view.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Scrolls the active cell into view. */"
+          },
+          "entryType": "function",
+          "description": "Scrolls the active cell into view.",
+          "jsdocTags": [],
+          "rawComment": "/** Scrolls the active cell into view. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [],
@@ -432,8 +504,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid.ts",
-        "startLine": 47,
-        "endLine": 157
+        "startLine": 48,
+        "endLine": 173
       }
     },
     {
@@ -450,6 +522,18 @@
           ],
           "description": "A reference to the host element.",
           "jsdocTags": []
+        },
+        {
+          "name": "activated",
+          "type": "EventEmitter<KeyboardEvent>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "output"
+          ],
+          "description": "Emits when the cell is activated via Enter/Space (simple widgets only).",
+          "jsdocTags": [],
+          "outputAlias": "activated"
         },
         {
           "name": "active",
@@ -628,8 +712,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid-cell.ts",
-        "startLine": 43,
-        "endLine": 171
+        "startLine": 45,
+        "endLine": 177
       }
     }
   ],
@@ -679,6 +763,10 @@
       "@angular/core"
     ],
     [
+      "numberAttribute",
+      "@angular/core"
+    ],
+    [
       "Directionality",
       "@angular/cdk/bidi"
     ],
@@ -687,7 +775,15 @@
       "@angular/core"
     ],
     [
+      "EventEmitter",
+      "@angular/core"
+    ],
+    [
       "model",
+      "@angular/core"
+    ],
+    [
+      "Output",
       "@angular/core"
     ],
     [
@@ -819,11 +915,27 @@
       "@angular/aria/grid"
     ],
     [
+      "Grid.tabIndex",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.activeDescendant",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.scrollActiveCellIntoView",
+      "@angular/aria/grid"
+    ],
+    [
       "GridCell",
       "@angular/aria/grid"
     ],
     [
       "GridCell.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.activated",
       "@angular/aria/grid"
     ],
     [

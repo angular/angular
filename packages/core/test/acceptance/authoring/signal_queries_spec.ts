@@ -17,6 +17,7 @@ import {
   ElementRef,
   EnvironmentInjector,
   QueryList,
+  ViewChild,
   viewChild,
   ViewChildren,
   viewChildren,
@@ -666,5 +667,43 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
     });
+  });
+
+  it('should resolve static decorator queries when mixed with signal queries', () => {
+    @Directive({
+      selector: 'div',
+    })
+    class DivDirective {}
+
+    @Component({
+      imports: [DivDirective],
+      template: `
+        <div #templateA>Content A</div>
+        <div #templateB>Content B</div>
+        <div #templateC>Content C</div>
+      `,
+    })
+    class App {
+      @ViewChildren(DivDirective) divs!: QueryList<ElementRef<HTMLDivElement>>;
+      @ViewChild('templateA') elRefA!: ElementRef<HTMLDivElement>;
+      readonly elRefB = viewChild<ElementRef<HTMLDivElement>>('templateB');
+      @ViewChild('templateC') elRefC!: ElementRef<HTMLDivElement>;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const componentInstance = fixture.componentInstance;
+
+    expect(fixture.componentInstance.divs).withContext('divs').toBeDefined();
+    expect(componentInstance.divs.length).toBe(3);
+
+    expect(componentInstance.elRefA).withContext('A').toBeDefined();
+    expect(componentInstance.elRefA.nativeElement.textContent).toBe('Content A');
+
+    expect(fixture.componentInstance.elRefB()).withContext('B').toBeDefined();
+    expect(componentInstance.elRefB()?.nativeElement.textContent).toBe('Content B');
+
+    expect(fixture.componentInstance.elRefC).withContext('C').toBeDefined();
+    expect(componentInstance.elRefC.nativeElement.textContent).toBe('Content C');
   });
 });

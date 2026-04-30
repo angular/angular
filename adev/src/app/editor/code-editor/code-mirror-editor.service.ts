@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, Injectable, inject, signal} from '@angular/core';
+import {DestroyRef, inject, signal, Service} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Subject, Subscription, debounceTime, filter, map} from 'rxjs';
 
@@ -64,7 +64,7 @@ const INITIAL_STATES = {
   createdFile$: undefined,
 };
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class CodeMirrorEditor {
   // TODO: handle files created by the user, e.g. after running `ng generate component`
   readonly files = signal<EditorFile[]>(INITIAL_STATES.files);

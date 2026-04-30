@@ -15,13 +15,13 @@
     "@angular/platform-server": "workspace:*",
     "@angular/localize": "workspace:*",
     "@angular/router": "workspace:*",
-    "@angular/ssr": "22.0.0-next.5",
+    "@angular/ssr": "22.0.0-next.6",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "22.0.0-next.5",
-    "@angular/cli": "22.0.0-next.5",
+    "@angular/build": "22.0.0-next.6",
+    "@angular/cli": "22.0.0-next.6",
     "@angular/compiler-cli": "workspace:*",
     "jsdom": "^29.0.0",
     "typescript": "~6.0.2",

@@ -7,6 +7,17 @@
  */
 import * as o from '@angular/compiler';
 
+function isSafeAccess(ast: o.Expression): boolean {
+  if (ast instanceof o.ReadPropExpr) {
+    return ast.isOptional || isSafeAccess(ast.receiver);
+  } else if (ast instanceof o.ReadKeyExpr) {
+    return ast.isOptional || isSafeAccess(ast.receiver);
+  } else if (ast instanceof o.InvokeFunctionExpr) {
+    return ast.isOptional || isSafeAccess(ast.fn);
+  }
+  return false;
+}
+
 import {
   AstFactory,
   BinaryOperator,
@@ -157,13 +168,13 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
   }
 
   visitInvokeFunctionExpr(ast: o.InvokeFunctionExpr, context: Context): TExpression {
+    const fn = ast.fn.visitExpression(this, context);
+    const args = ast.args.map((arg) => arg.visitExpression(this, context));
     return this.attachComments(
       this.setSourceMapRange(
-        this.factory.createCallExpression(
-          ast.fn.visitExpression(this, context),
-          ast.args.map((arg) => arg.visitExpression(this, context)),
-          ast.pure,
-        ),
+        isSafeAccess(ast)
+          ? this.factory.createCallChain(fn, args, ast.pure, ast.isOptional)
+          : this.factory.createCallExpression(fn, args, ast.pure),
         ast.sourceSpan,
       ),
       ast.leadingComments,
@@ -474,18 +485,22 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
   }
 
   visitReadPropExpr(ast: o.ReadPropExpr, context: Context): TExpression {
+    const receiver = ast.receiver.visitExpression(this, context);
     return this.attachComments(
-      this.factory.createPropertyAccess(ast.receiver.visitExpression(this, context), ast.name),
+      isSafeAccess(ast)
+        ? this.factory.createPropertyAccessChain(receiver, ast.name, ast.isOptional)
+        : this.factory.createPropertyAccess(receiver, ast.name),
       ast.leadingComments,
     );
   }
 
   visitReadKeyExpr(ast: o.ReadKeyExpr, context: Context): TExpression {
+    const receiver = ast.receiver.visitExpression(this, context);
+    const index = ast.index.visitExpression(this, context);
     return this.attachComments(
-      this.factory.createElementAccess(
-        ast.receiver.visitExpression(this, context),
-        ast.index.visitExpression(this, context),
-      ),
+      isSafeAccess(ast)
+        ? this.factory.createElementAccessChain(receiver, index, ast.isOptional)
+        : this.factory.createElementAccess(receiver, index),
       ast.leadingComments,
     );
   }

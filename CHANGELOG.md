@@ -1,3 +1,100 @@
+<a name="22.0.0-next.10"></a>
+# 22.0.0-next.10 (2026-04-29)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [97cac1cf4d](https://github.com/angular/angular/commit/97cac1cf4d0efa49199fdd5736263d01316c7ff3) | fix | prevent focus from scrollToAnchor |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2896c93cc1](https://github.com/angular/angular/commit/2896c93cc1077e1306acd91f4ed62fed4204a26b) | feat | Angular expressions with optional chaining returns `undefined` |
+| [6bd1721662](https://github.com/angular/angular/commit/6bd17216627978d68bb1c153af347b346a5aa503) | fix | let declaration span not including end character |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [444b024d49](https://github.com/angular/angular/commit/444b024d49725afc8b40aec67cfdb63a1f7f23ea) | feat | Add a `injectAsync` helper function |
+| [8c11816490](https://github.com/angular/angular/commit/8c11816490074f9d7dbde2fb854d8225b775a9cb) | fix | fix ordering of view queries metadata in JIT mode |
+| [3583c01bf9](https://github.com/angular/angular/commit/3583c01bf9a14f9e91d5173f8bae72a14ee99736) | fix | guard against non-object events and avoid listener wrapper identity mismatch |
+| [d5fd51e956](https://github.com/angular/angular/commit/d5fd51e9569b44340274c3bd3b77993c0d21da9b) | fix | prevent event replay double-invocation when element hydrates before app stability |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8f8972b0fd](https://github.com/angular/angular/commit/8f8972b0fdea2020800e7df5c6d85938602cb7e7) | feat | model + output migrations |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2a6b6fafb0](https://github.com/angular/angular/commit/2a6b6fafb032b840797625590037bb4f1d8c6261) | fix | ensure origin has a trailing slash when parsing url |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.2.11"></a>
+# 21.2.11 (2026-04-29)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [10ad3c0692](https://github.com/angular/angular/commit/10ad3c06923453ae0ec06b06e664ce05900a4ff6) | fix | prevent focus from scrollToAnchor |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f5d8a2c0b](https://github.com/angular/angular/commit/4f5d8a2c0b5e38d4debc4293945270cea4a9590d) | fix | let declaration span not including end character |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a40e2cebc8](https://github.com/angular/angular/commit/a40e2cebc878965c3e21bfb61658f3f80cbd2ebf) | fix | fix ordering of view queries metadata in JIT mode |
+| [885a1a1d97](https://github.com/angular/angular/commit/885a1a1d9757adfa8766d9b369c848a277438c31) | fix | guard against non-object events and avoid listener wrapper identity mismatch |
+| [7a64aff9b5](https://github.com/angular/angular/commit/7a64aff9b59999077ea915486a7fa0b97a286659) | fix | prevent event replay double-invocation when element hydrates before app stability |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [be1f80a253](https://github.com/angular/angular/commit/be1f80a253b8ee27ed7d8de2287d6895c4821909) | fix | ensure origin has a trailing slash when parsing url |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.0.0-next.9"></a>
+# 22.0.0-next.9 (2026-04-22)
+## Breaking Changes
+### router
+- paramsInheritanceStrategy now defaults to 'always'
+  
+  The default value of paramsInheritanceStrategy has been changed from 'emptyOnly' to 'always'. This means that route parameters are inherited from all parent routes by default. To restore the previous behavior, set paramsInheritanceStrategy to 'emptyOnly' in your router configuration.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8f3d0b9d97](https://github.com/angular/angular/commit/8f3d0b9d97424e058eb7bce57d80833fb68dec4a) | feat | introduce `@Service` decorator |
+| [9f479ae964](https://github.com/angular/angular/commit/9f479ae9641a5c928f8eeab9c7846245002b3eff) | feat | Update Testability to use PendingTasks for stability indicator |
+### docs
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b24b4cb699](https://github.com/angular/angular/commit/b24b4cb699c325fc2ce40681724341baaabf277b) | fix | link formatting in "Animating your Application with CSS" |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b395173cf2](https://github.com/angular/angular/commit/b395173cf206b8c04c5ab74298e640c9086d0bac) | fix | fix NgClass leaving trailing comma after removal |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6eff439546](https://github.com/angular/angular/commit/6eff4395467de51a46656d79d957b448b32dde0c) | fix | restore internal URL on popstate when `browserUrl` is used |
+| [17d10f7a99](https://github.com/angular/angular/commit/17d10f7a9921429d0192df6925d20d7236425c9a) | fix | set default paramsInheritanceStrategy to 'always' |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.2.10"></a>
+# 21.2.10 (2026-04-22)
+### docs
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0d5ee9ae1b](https://github.com/angular/angular/commit/0d5ee9ae1ba4b7acd8f27a059a778f0b4bd8a5bd) | fix | link formatting in "Animating your Application with CSS" |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5533ab4f56](https://github.com/angular/angular/commit/5533ab4f56f574bc9365cf0573c4a34a3ab5aaf1) | fix | fix NgClass leaving trailing comma after removal |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [580212c995](https://github.com/angular/angular/commit/580212c995751c4bf4ce8a49df4167498743e0ea) | fix | restore internal URL on popstate when `browserUrl` is used |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.21"></a>
 # 19.2.21 (2026-04-15)
 ### platform-server
