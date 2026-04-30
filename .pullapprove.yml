@@ -99,7 +99,7 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
@@ -145,7 +145,7 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
@@ -200,7 +200,7 @@ groups:
       users:
         - ~JiaLiPassion
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
@@ -250,7 +250,7 @@ groups:
       users:
         - alan-agius4
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - bencodezen
         - crisbeto
@@ -372,7 +372,7 @@ groups:
         ])
     reviewers:
       users:
-        - AndrewKushnir
+        - ~AndrewKushnir
         - ~alxhub
         - atscott
         - thePunderWoman
@@ -408,7 +408,7 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - kirjs
         - thePunderWoman
@@ -456,7 +456,7 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - andrewseguin
         - dgp1130
         - thePunderWoman
@@ -479,7 +479,7 @@ groups:
         - ~pkozlowski-opensource # Pawel Kozlowski
         - ~alxhub # Alex Rickabaugh
         - thePunderWoman # Jessica Janiuk
-        - AndrewKushnir # Andrew Kushnir
+        - ~AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
 
   # External team required reviews
