@@ -15,7 +15,6 @@ import {
   ElementRef,
   EventEmitter,
   inject,
-  Injectable,
   Injector,
   input,
   Input,
@@ -26,7 +25,6 @@ import {
   Output,
   resource,
   signal,
-  Type,
   viewChild,
   viewChildren,
   ViewContainerRef,
@@ -5322,6 +5320,44 @@ describe('field directive', () => {
         input.dispatchEvent(new Event('input'));
       });
       expect(cmp.f().value()).toBe('abc');
+    });
+
+    it('should sync number with range type input', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="range" [formField]="form.range" />`,
+      })
+      class TestCmp {
+        min = signal<number | undefined>(undefined);
+        max = signal<number | undefined>(undefined);
+
+        form = form(signal({range: 80}), (path) => {
+          min(path.range, this.min);
+          max(path.range, this.max);
+        });
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('80');
+
+      // Model -> View
+      act(() => cmp.form().value.set({range: 150}));
+      // Value is caped to max
+      expect(input.value).toBe('100');
+
+      cmp.min.set(0);
+      cmp.max.set(200);
+
+      act(() => cmp.form().value.set({range: 101}));
+      expect(input.value).toBe('101');
+
+      act(() => cmp.form().value.set({range: 220}));
+      // Value is caped to max
+      expect(input.value).toBe('200');
     });
   });
 
