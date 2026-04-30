@@ -144,12 +144,10 @@ Schematic templates support special syntax to execute code and variable substitu
 
    ```ts {header:projects/my-lib/schematics/my-service/files/__name@dasherize__.service.ts.template (Schematic Template)}
 
-   import { Injectable } from '@angular/core';
+   import { Service } from '@angular/core';
    import { HttpClient } from '@angular/common/http';
 
-   @Injectable({
-      providedIn: 'root'
-   })
+   @Service()
    export class <%= classify(name) %>Service {
       private http = inject(HttpClient);
    }

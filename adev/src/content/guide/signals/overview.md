@@ -43,7 +43,7 @@ Writable signals have the type `WritableSignal`.
 `WritableSignal` provide a `asReadonly()` method that returns a readonly version of the signal. This is useful when you want to expose a signal's value to consumers without allowing them to modify it directly:
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Service()
 export class CounterState {
   // Private writable state
   private readonly _count = signal(0);

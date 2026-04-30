@@ -42,15 +42,15 @@ Angular only searches up the hierarchy, never down. Parent components cannot acc
 **Solution:** Provide the service at a higher level (application or parent component).
 
 ```ts {prefer}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class DataStore {
   // Available everywhere
 }
 ```
 
-TIP: Use `providedIn: 'root'` by default for services that don't need component-specific state. This makes services available everywhere and enables tree-shaking.
+TIP: `@Service` makes services available everywhere and enables tree-shaking. If you don't want to scope it to the entire app, specify `autoProvided: false`.
 
 #### Services and lazy-loaded routes
 
@@ -86,12 +86,12 @@ Lazy-loaded routes create child injectors that are only available after the rout
 
 NOTE: By default, route injectors and their services persist even after navigating away from the route. They are not destroyed until the application is closed. For automatic cleanup of unused route injectors, see [customizing route behavior](guide/routing/customizing-route-behavior#experimental-automatic-cleanup-of-unused-route-injectors).
 
-**Solution:** Use `providedIn: 'root'` for services that need to be shared across lazy boundaries.
+**Solution:** Use `@Service` for services that need to be shared across lazy boundaries.
 
 ```ts {prefer, header: 'Provide at root for shared services'}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class FeatureClient {
   // Available everywhere, including before lazy load
 }
@@ -132,12 +132,12 @@ export class UserSettings {
 
 Each component gets its own `UserClient` instance. Changes in one component don't affect the other.
 
-**Solution:** Use `providedIn: 'root'` for singletons.
+**Solution:** Use `@Service` for singletons.
 
 ```ts {prefer, header: 'Root-level singleton'}
 import {Injectable} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class UserClient {
   // Single instance shared across all components
 }
@@ -517,6 +517,7 @@ Angular searches in this order:
 
 When you see a `NullInjectorError`, the service isn't provided at any level the component can access. Check that:
 
+- The service has `@Service()` or
 - The service has `@Injectable({providedIn: 'root'})`, or
 - The service is in a `providers` array the component can reach
 
@@ -530,9 +531,9 @@ When debugging DI issues, use DevTools to answer these questions:
 
 - **Is the service provided?** Select the component that fails to inject and check if the service appears in the Injector section.
 - **At what level?** Walk up the component tree to find where the service is actually provided (component, route, or application level).
-- **Multiple instances?** If a singleton service appears in multiple component injectors, it's likely provided in component `providers` arrays instead of using `providedIn: 'root'`.
+- **Multiple instances?** If a singleton service appears in multiple component injectors, it's likely provided in component `providers` arrays instead of using `@Service` or `providedIn: 'root'`.
 
-If a service never appears in any injector, verify it has the `@Injectable()` decorator with `providedIn: 'root'` or is listed in a `providers` array.
+If a service never appears in any injector, verify it has the `@Service` decorator or is listed in a `providers` array.
 
 ### Logging and tracing injection
 
@@ -543,9 +544,9 @@ When DevTools isn't enough, use logging to trace injection behavior.
 Add console logs to service constructors to see when services are created.
 
 ```ts
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class UserClient {
   constructor() {
     console.log('UserClient created');
@@ -639,8 +640,8 @@ When DI fails, follow this systematic approach:
 
 **Step 2: Check the basics**
 
-- Does the service have `@Injectable()`?
-- Is `providedIn` set correctly?
+- Does the service have `@Service` or `@Injectable()`?
+- If you use `@Injectable`, is `providedIn` set correctly?
 - Are imports correct?
 - Is the file included in compilation?
 
@@ -681,9 +682,9 @@ NullInjectorError: No provider for UserClient!
 
 The dependency path shows that `App` injected `AuthClient`, which tried to inject `UserClient`, but no provider was found.
 
-#### Missing @Injectable decorator
+#### Missing the `@Service ` or `@Injectable` decorator
 
-The most common cause is forgetting the `@Injectable()` decorator on a service class.
+The most common cause is forgetting the `@Service` or `@Injectable()` decorator on a service class.
 
 ```ts {avoid, header: 'Missing decorator'}
 export class UserClient {
@@ -693,14 +694,12 @@ export class UserClient {
 }
 ```
 
-Angular requires the `@Injectable()` decorator to generate the metadata needed for dependency injection.
+Angular requires the `@Service()` decorator to generate the metadata needed for dependency injection.
 
-```ts {prefer, header: 'Include @Injectable'}
-import {Injectable} from '@angular/core';
+```ts {prefer, header: 'Include @Service'}
+import {Service} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class UserClient {
   getUser() {
     return {name: 'Alice'};
@@ -708,7 +707,7 @@ export class UserClient {
 }
 ```
 
-NOTE: Classes with zero-argument constructors can work without `@Injectable()`, but this is not recommended. Always include the decorator for consistency and to avoid issues when adding dependencies later.
+NOTE: Classes with zero-argument constructors can work without `@Service()`, but this is not recommended. Always include the decorator for consistency and to avoid issues when adding dependencies later.
 
 #### Missing providedIn configuration
 
@@ -725,14 +724,12 @@ export class UserClient {
 }
 ```
 
-Specify `providedIn: 'root'` to make the service available throughout your application.
+Use the `@Service` decorator to make the service available throughout your application.
 
 ```ts {prefer, header: 'Specify providedIn'}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class UserClient {
   getUser() {
     return {name: 'Alice'};
@@ -740,7 +737,7 @@ export class UserClient {
 }
 ```
 
-The `providedIn: 'root'` configuration makes the service available application-wide and enables tree-shaking (the service is removed from the bundle if never injected).
+The `@Service` decorator makes the service available application-wide and enables tree-shaking (the service is removed from the bundle if never injected).
 
 #### Standalone component missing imports
 
@@ -760,7 +757,7 @@ export class UserProfile {
 }
 ```
 
-Ensure the service uses `providedIn: 'root'` or add it to the component's `providers` array.
+Ensure the service uses `@Service` or add it to the component's `providers` array.
 
 ```angular-ts {prefer, header: 'Service uses providedIn: root'}
 import {Component, inject} from '@angular/core';
