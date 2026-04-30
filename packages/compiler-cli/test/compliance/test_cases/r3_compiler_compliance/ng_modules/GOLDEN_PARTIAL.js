@@ -679,3 +679,95 @@ export declare class FooModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<FooModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: all_options.js
+ ****************************************************************************************************/
+import { NgModule, NO_ERRORS_SCHEMA, forwardRef, Component, Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDecl {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDecl, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDecl, isStandalone: false, selector: "[my-decl]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDecl, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-decl]',
+                    standalone: false
+                }]
+        }] });
+export class MyImport {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyImport, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyImport });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyImport });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyImport, decorators: [{
+            type: NgModule,
+            args: [{}]
+        }] });
+export class MyExport {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyExport, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyExport, isStandalone: false, selector: "[my-export]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyExport, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-export]',
+                    standalone: false
+                }]
+        }] });
+export class MyBootstrap {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyBootstrap, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyBootstrap, isStandalone: false, selector: "my-bootstrap", ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyBootstrap, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-bootstrap',
+                    template: '',
+                    standalone: false
+                }]
+        }] });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, bootstrap: [MyBootstrap], declarations: [MyDecl, MyExport], imports: [MyImport], exports: [MyExport], id: 'my-module-id' });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, imports: [MyImport] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{
+                    declarations: [MyDecl, MyExport],
+                    imports: [MyImport],
+                    exports: [MyExport],
+                    bootstrap: [forwardRef(() => MyBootstrap)],
+                    schemas: [NO_ERRORS_SCHEMA],
+                    id: 'my-module-id'
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: all_options.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDecl {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDecl, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDecl, "[my-decl]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyImport {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyImport, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyImport, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyImport>;
+}
+export declare class MyExport {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyExport, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyExport, "[my-export]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyBootstrap {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyBootstrap, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyBootstrap, "my-bootstrap", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyDecl, typeof MyExport], [typeof MyImport], [typeof MyExport]>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
