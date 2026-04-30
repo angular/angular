@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationConfig} from '@angular/core';
+import {ApplicationConfig, inject, provideAppInitializer} from '@angular/core';
 import {ApplicationEnvironment, ApplicationOperations, provideSettings} from '../../../ng-devtools';
+import {KonamiCodeService} from './konami-code.service';
 
+import {FrameManager} from '../../../ng-devtools/src/lib/application-services/frame_manager';
+import {Events, MessageBus, PriorityAwareMessageBus} from '../../../protocol';
 import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
-import {Events, MessageBus, PriorityAwareMessageBus} from '../../../protocol';
-import {FrameManager} from '../../../ng-devtools/src/lib/application-services/frame_manager';
 import {ChromeMessageBus} from './chrome-message-bus';
 
 export const appConfig: ApplicationConfig = {
@@ -36,6 +37,9 @@ export const appConfig: ApplicationConfig = {
         return new PriorityAwareMessageBus(new ChromeMessageBus(port));
       },
     },
+    provideAppInitializer(() => {
+      inject(KonamiCodeService); // Yes you read that right 😇
+    }),
     provideSettings(),
   ],
 };
