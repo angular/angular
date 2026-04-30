@@ -981,7 +981,7 @@ function addCreateAttribute(
 const SECURITY_SENSITIVE_ATTRS: ReadonlySet<string> = /* @__PURE__ */ (() =>
   new Set(
     Object.values(SECURITY_SENSITIVE_ELEMENTS).flatMap((attrs) =>
-      attrs ? Object.keys(attrs) : [],
+      attrs ? [...attrs.keys()] : [],
     ),
   ))();
 
