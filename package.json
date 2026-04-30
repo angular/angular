@@ -145,7 +145,6 @@
     "@bazel/buildifier": "^8.0.0",
     "@bazel/ibazel": "0.28.0",
     "@inquirer/prompts": "^8.0.0",
-    "@octokit/graphql": "^9.0.0",
     "@types/adm-zip": "^0.5.0",
     "@types/cldr": "^7.1.4",
     "@types/cldrjs": "^0.4.22",
@@ -168,8 +167,7 @@
     "tmp": "^0.2.3",
     "ts-node": "^10.9.1",
     "tsec": "0.2.9",
-    "tslint-no-toplevel-property-access": "0.0.2",
-    "typed-graphqlify": "^3.1.1"
+    "tslint-no-toplevel-property-access": "0.0.2"
   },
   "resolutions": {
     "typescript": "6.0.2"
