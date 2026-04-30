@@ -166,7 +166,7 @@ You can optionally specify a timeout in milliseconds that is passed to [`request
 You can customize the `idle` trigger by providing your own `IdleService` implementation and registering it with `provideIdleServiceWith` in your application's providers.
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Service()
 class CustomIdleService implements IdleService {
   requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions) {
     // Custom idle scheduling logic can be implemented here.

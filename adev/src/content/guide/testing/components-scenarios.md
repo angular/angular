@@ -1133,7 +1133,7 @@ There might not be a remote server to call.
 Fortunately, the `HeroDetailService` delegates responsibility for remote data access to an injected `HeroService`.
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Service()
 export class HeroDetailService {
   private heroService = inject(HeroService);
 }

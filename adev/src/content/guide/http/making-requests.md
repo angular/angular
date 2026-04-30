@@ -635,7 +635,7 @@ TIP: Using the `async` pipe or the `toSignal` operation to subscribe to `Observa
 While `HttpClient` can be injected and used directly from components, generally we recommend you create reusable, injectable services which isolate and encapsulate data access logic. For example, this `UserService` encapsulates the logic to request data for a user by their id:
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Service()
 export class UserService {
   private http = inject(HttpClient);
 
