@@ -522,6 +522,8 @@ export class HttpClient {
         context: options.context,
         params,
         reportProgress: options.reportProgress,
+        reportUploadProgress: options.reportUploadProgress,
+        reportDownloadProgress: options.reportDownloadProgress,
         // By default, JSON is assumed to be returned for all calls.
         responseType: options.responseType || 'json',
         withCredentials: options.withCredentials,

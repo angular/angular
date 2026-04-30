@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpEvent, HttpEventType, HttpRequest, HttpResponse} from '../index';
 import {TestBed} from '@angular/core/testing';
 import {Observable, of, Subject} from 'rxjs';
 import {catchError, retry, scan, skip, take, toArray} from 'rxjs/operators';
+import {HttpEvent, HttpEventType, HttpRequest, HttpResponse} from '../index';
 
 import {
   HttpClient,
@@ -20,6 +20,7 @@ import {
   HttpStatusCode,
   provideHttpClient,
 } from '../public_api';
+import {RuntimeErrorCode} from '../src/errors';
 import {FetchBackend, FetchFactory} from '../src/fetch';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
@@ -482,6 +483,34 @@ describe('FetchBackend', () => {
       fetchMock.mockProgressEvent(4);
       fetchMock.mockProgressEvent(8);
       fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'downloaded');
+    });
+
+    it('are emitted when only download progress is requested', (done) => {
+      backend
+        .handle(TEST_POST.clone({reportDownloadProgress: true}))
+        .pipe(toArray())
+        .subscribe((events) => {
+          expect(events.map((event) => event.type)).toEqual([
+            HttpEventType.Sent,
+            HttpEventType.ResponseHeader,
+            HttpEventType.DownloadProgress,
+            HttpEventType.DownloadProgress,
+            HttpEventType.Response,
+          ]);
+          done();
+        });
+      fetchMock.mockProgressEvent(4);
+      fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'downloaded');
+    });
+
+    it('errors when upload progress is requested', (done) => {
+      backend.handle(TEST_POST.clone({reportUploadProgress: true})).subscribe({
+        error: (error: HttpErrorResponse) => {
+          expect(error.error.code).toBe(RuntimeErrorCode.FETCH_UPLOAD_PROGRESS_NOT_SUPPORTED);
+          expect(error.error.message).toContain('does not support upload progress reporting');
+          done();
+        },
+      });
     });
 
     it('include ResponseHeader with headers and status', (done) => {

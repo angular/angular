@@ -12,6 +12,7 @@ import {
   inject,
   Injectable,
   NgZone,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 import {RuntimeErrorCode} from './errors';
@@ -33,6 +34,8 @@ import {
 import type {} from 'zone.js';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
+
+let uploadProgressWarningLogged = false;
 
 /**
  * Uses `fetch` to send requests to a backend server.
@@ -129,7 +132,8 @@ export class FetchBackend implements HttpBackend {
     let status = response.status;
     let body: string | ArrayBuffer | Blob | object | null = null;
 
-    if (request.reportProgress) {
+    const reportDownloadProgress = request.reportProgress || request.reportDownloadProgress;
+    if (reportDownloadProgress) {
       observer.next(new HttpHeaderResponse({headers, status, statusText, url}));
     }
 
@@ -177,7 +181,7 @@ export class FetchBackend implements HttpBackend {
           chunks.push(value);
           receivedLength += value.length;
 
-          if (request.reportProgress) {
+          if (reportDownloadProgress) {
             partialText =
               request.responseType === 'text'
                 ? (partialText ?? '') +
@@ -306,8 +310,15 @@ export class FetchBackend implements HttpBackend {
   }
 
   private createRequestInit(req: HttpRequest<any>): RequestInit {
-    // We could share some of this logic with the XhrBackend
+    if (req.reportUploadProgress) {
+      throw new RuntimeError(
+        RuntimeErrorCode.FETCH_UPLOAD_PROGRESS_NOT_SUPPORTED,
+        ngDevMode &&
+          'The FetchBackend does not support upload progress reporting. Please use `withXhr()` on your `provideHttpClient()` configuration if you want to report upload progress.',
+      );
+    }
 
+    // We could share some of this logic with the XhrBackend
     const headers: Record<string, string> = {};
     let credentials: RequestCredentials | undefined;
 

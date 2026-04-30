@@ -109,7 +109,13 @@ export type HttpTransferCacheRequestOptions = {includeHeaders?: string[]} | bool
 export interface HttpRequestOptions {
   headers?: HttpHeaders;
   context?: HttpContext;
+  /** @deprecated 22.0 Use `reportUploadProgress` and `reportDownloadProgress` instead */
   reportProgress?: boolean;
+  /**
+   * When set to `true` a request emited against the `FetchBackend` will throw an error.
+   */
+  reportUploadProgress?: boolean;
+  reportDownloadProgress?: boolean;
   params?: HttpParams;
   responseType?: HttpResponseType;
   withCredentials?: boolean;
@@ -172,8 +178,17 @@ export class HttpRequest<T> implements HttpRequestOptions {
    *
    * Note: The default `HttpBackend` based on fetch, does not support progress report for uploads.
    * Set the `HttpXhrBackend` with `withXhr()` if you need this feature.
+   *
+   * @deprecated 22.0 Use `reportUploadProgress` and `reportDownloadProgress` instead
    */
   readonly reportProgress: boolean = false;
+
+  /**
+   * When set to `true` a request emited against the `FetchBackend` will throw an error.
+   */
+  readonly reportUploadProgress: boolean = false;
+
+  readonly reportDownloadProgress: boolean = false;
 
   /**
    * Whether this request should be sent with outgoing credentials (cookies).
@@ -302,8 +317,10 @@ export class HttpRequest<T> implements HttpRequestOptions {
 
     // If options have been passed, interpret them.
     if (options) {
-      // Normalize reportProgress and withCredentials.
+      // Normalize progress and credential flags.
       this.reportProgress = !!options.reportProgress;
+      this.reportUploadProgress = !!options.reportUploadProgress;
+      this.reportDownloadProgress = !!options.reportDownloadProgress;
       this.withCredentials = !!options.withCredentials;
       this.keepalive = !!options.keepalive;
 
@@ -545,6 +562,8 @@ export class HttpRequest<T> implements HttpRequestOptions {
     // `false` and `undefined` in the update args.
     const withCredentials = update.withCredentials ?? this.withCredentials;
     const reportProgress = update.reportProgress ?? this.reportProgress;
+    const reportUploadProgress = update.reportUploadProgress ?? this.reportUploadProgress;
+    const reportDownloadProgress = update.reportDownloadProgress ?? this.reportDownloadProgress;
 
     // Headers and params may be appended to if `setHeaders` or
     // `setParams` are used.
@@ -578,6 +597,8 @@ export class HttpRequest<T> implements HttpRequestOptions {
       headers,
       context,
       reportProgress,
+      reportUploadProgress,
+      reportDownloadProgress,
       responseType,
       withCredentials,
       transferCache,
