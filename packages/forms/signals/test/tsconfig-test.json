@@ -1,0 +1,6 @@
+{
+  "extends": "../../../tsconfig-test.json",
+  "compilerOptions": {
+    "lib": ["ES2024", "dom", "dom.iterable"]
+  }
+}
