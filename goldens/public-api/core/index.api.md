@@ -1403,7 +1403,7 @@ export interface OutputRefSubscription {
 
 // @public
 export class PendingTasks {
-    add(): () => void;
+    add(): (() => void) & Disposable;
     run(fn: () => Promise<unknown>): void;
     // (undocumented)
     static ɵprov: _angular_core.ɵɵInjectableDeclaration<PendingTasks>;
