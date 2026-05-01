@@ -5627,6 +5627,44 @@ describe('field directive', () => {
       expect(input.value).toBe('initial');
       expect(cmp.f().value()).toBe('initial');
     });
+
+    it('should reset child control when debounced update is reset at root', async () => {
+      const {promise, resolve} = promiseWithResolvers<void>();
+
+      @Component({
+        imports: [FormField],
+        template: `<input [formField]="f.child" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal({child: 'initial'}), (p) => {
+          debounce(p, () => promise);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input');
+      const cmp = fixture.componentInstance;
+
+      expect(input.value).toBe('initial');
+
+      act(() => {
+        input.value = 'typing';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(input.value).toBe('typing');
+      expect(cmp.f().value()).toEqual({child: 'initial'});
+
+      act(() => cmp.f().reset());
+
+      expect(input.value).toBe('initial');
+      expect(cmp.f().value()).toEqual({child: 'initial'});
+
+      resolve();
+      await promise;
+
+      expect(input.value).toBe('initial');
+      expect(cmp.f().value()).toEqual({child: 'initial'});
+    });
   });
 
   describe('config', () => {
