@@ -932,6 +932,8 @@ export interface HttpResourceRef<T> extends WritableResource<T>, ResourceRef<T> 
     hasValue(): boolean;
     readonly headers: Signal<HttpHeaders | undefined>;
     readonly progress: Signal<HttpProgressEvent | undefined>;
+    readonly redirected: Signal<boolean | undefined>;
+    readonly responseType: Signal<ResponseType | undefined>;
     readonly statusCode: Signal<number | undefined>;
 }
 
