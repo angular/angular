@@ -1186,6 +1186,6 @@ runInEachFileSystem(() => {
   });
 
   function ivyCode(code: ErrorCode): number {
-    return Number('-99' + code.valueOf());
+    return ngErrorCode(code);
   }
 });

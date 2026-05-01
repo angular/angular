@@ -21,8 +21,8 @@ import {
 import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
-  COMPILER_ERRORS_WITH_GUIDES,
-  ERROR_DETAILS_PAGE_BASE_URL,
+  addDiagnosticDetails,
+  errorCodeWithGuideFromDiagnosticCode,
   ErrorCode,
   isFatalDiagnosticError,
   ngErrorCode,
@@ -675,12 +675,11 @@ export class NgCompiler {
    */
   private addMessageTextDetails(diagnostics: ts.Diagnostic[]): ts.Diagnostic[] {
     return diagnostics.map((diag) => {
-      if (diag.code && COMPILER_ERRORS_WITH_GUIDES.has(ngErrorCode(diag.code))) {
+      const errorCode = errorCodeWithGuideFromDiagnosticCode(diag.code);
+      if (errorCode !== null) {
         return {
           ...diag,
-          messageText:
-            diag.messageText +
-            `. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG${ngErrorCode(diag.code)}`,
+          messageText: addDiagnosticDetails(errorCode, diag.messageText),
         };
       }
       return diag;

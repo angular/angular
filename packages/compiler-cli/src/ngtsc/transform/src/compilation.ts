@@ -10,7 +10,7 @@ import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
 import {SourceFileTypeIdentifier} from '../../core/api';
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
 import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
@@ -350,7 +350,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           record.metaDiagnostics = [
             {
               category: ts.DiagnosticCategory.Error,
-              code: Number('-99' + ErrorCode.DECORATOR_COLLISION),
+              code: ngErrorCode(ErrorCode.DECORATOR_COLLISION),
               file: getSourceFile(clazz),
               start: clazz.getStart(undefined, false),
               length: clazz.getWidth(),
@@ -381,7 +381,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         : 'local compilation';
       record.metaDiagnostics = [...nonNgDecoratorsInLocalMode].map((decorator) => ({
         category: ts.DiagnosticCategory.Error,
-        code: Number('-99' + ErrorCode.DECORATOR_UNEXPECTED),
+        code: ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED),
         file: getSourceFile(clazz),
         start: decorator.node.getStart(),
         length: decorator.node.getWidth(),
