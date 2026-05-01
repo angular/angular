@@ -40,8 +40,9 @@ import {HttpParams} from './params';
  * @param includePostRequests Enables caching for POST requests. By default, only GET and HEAD
  *     requests are cached. This option can be enabled if POST requests are used to retrieve data
  *     (for example using GraphQL).
- * @param includeRequestsWithAuthHeaders Enables caching of requests containing either `Authorization`
- *     or `Proxy-Authorization` headers. By default, these requests are excluded from caching.
+ * @param includeRequestsWithAuthHeaders Enables caching of requests containing `Authorization`,
+ *     `Proxy-Authorization`, or `Cookie` headers. By default, these requests are excluded from
+ *     caching.
  *
  * @see [Configuring the caching options](guide/ssr#configuring-the-caching-options)
  *
@@ -133,7 +134,7 @@ function shouldCacheRequest(req: HttpRequest<unknown>, options: CacheOptions): b
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
-    // Do not cache request that require authorization when includeRequestsWithAuthHeaders is falsey
+    // Do not cache requests with authentication or cookie headers unless explicitly enabled.
     (!globalOptions.includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
     globalOptions.filter?.(req) === false
   ) {
@@ -288,9 +289,13 @@ export function transferCacheInterceptorFn(
   return event$;
 }
 
-/** @returns true when the requests contains autorization related headers. */
+/** @returns true when the request contains authentication or cookie headers. */
 function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
-  return req.headers.has('authorization') || req.headers.has('proxy-authorization');
+  return (
+    req.headers.has('authorization') ||
+    req.headers.has('proxy-authorization') ||
+    req.headers.has('cookie')
+  );
 }
 
 function getFilteredHeaders(
