@@ -30,13 +30,21 @@ export interface ServiceDecorator {
    * When `autoProvided` is set to `false`, the service won't be exposed to the dependency
    * injection system automatically. It is up to the user to expose it in a providers list.
    */
-  (options?: {autoProvided: false}): TypeDecorator;
+  (options: {autoProvided: false}): TypeDecorator;
 
   /**
-   * Creates a service that is automatically provided. Passing an optional
-   * `factory` allows for the runtime value to be replaced.
+   * Creates a service that is automatically provided and uses
+   * the value returned from the `factory` function.
    */
-  (options?: {autoProvided?: true; factory?: () => unknown}): TypeDecorator;
+  <T>(options: {
+    autoProvided?: true;
+    factory: () => T;
+  }): <C extends Type<unknown>>(target: C) => Type<T>;
+
+  /**
+   * Creates a service that is automatically provided.
+   */
+  (options?: {autoProvided?: true}): TypeDecorator;
 }
 
 /**
