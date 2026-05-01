@@ -777,7 +777,6 @@
       "isSubscription",
       "isTemplateNode",
       "isTypeProvider",
-      "isValidLink",
       "isValidatorFn",
       "isValueProvider",
       "isWritableSignal",

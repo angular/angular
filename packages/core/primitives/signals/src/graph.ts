@@ -82,6 +82,7 @@ export const REACTIVE_NODE: ReactiveNode = {
 interface ReactiveLink {
   producer: ReactiveNode;
   consumer: ReactiveNode;
+  knownValidAtEpoch: Version | null;
   lastReadVersion: number;
   prevConsumer: ReactiveLink | undefined;
   nextConsumer: ReactiveLink | undefined;
@@ -240,6 +241,10 @@ export function producerAccessed(node: ReactiveNode): void {
       // last read version, update the tail of the producers list of this rerun, and return.
       activeConsumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
+
+      if (!activeConsumer.dirty) {
+        nextProducerLink.knownValidAtEpoch = epoch;
+      }
       return;
     }
   }
@@ -247,26 +252,28 @@ export function producerAccessed(node: ReactiveNode): void {
   const prevConsumerLink = node.consumersTail;
 
   // If the producer we're accessing already has a link to this consumer, we can skip adding a new
-  // link. This can short circuit the creation of a new link in the case where the consumer reads alternating ReeactiveNodes
+  // link. This can short circuit the creation of a new link in the case where the consumer reads alternating ReactiveNodes
   if (
     prevConsumerLink !== undefined &&
     prevConsumerLink.consumer === activeConsumer &&
-    // However, we have to make sure that the link we've discovered isn't from a node that is incrementally rebuilding its producer list
-    (!isRecomputing || isValidLink(prevConsumerLink, activeConsumer))
+    (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
   ) {
-    // If we found an existing link to the consumer we can just return.
     return;
   }
 
   // If we got here, it means that we need to create a new link between the producer and the consumer.
   const isLive = consumerIsLive(activeConsumer);
-  const newLink = {
+  const newLink: ReactiveLink = {
     producer: node,
     consumer: activeConsumer,
     // instead of eagerly destroying the previous link, we delay until we've finished recomputing
     // the producers list, so that we can destroy all of the old links at once.
     nextProducer: nextProducerLink,
     prevConsumer: prevConsumerLink,
+    // If a signal write has occurred that has marked the consumer dirty, subsequent reads of the same consumer cannot
+    // be considered valid as the active consumer may rerun from scratch while still on the same epoch. During that
+    // rerun, the link can therefore not be assumed to be valid based on the epoch counter.
+    knownValidAtEpoch: activeConsumer.dirty ? null : epoch,
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
@@ -557,23 +564,4 @@ export function setPostProducerCreatedFn(fn: ReactiveHookFn | null): ReactiveHoo
   const prev = postProducerCreatedFn;
   postProducerCreatedFn = fn;
   return prev;
-}
-
-// While a ReactiveNode is recomputing, it may not have destroyed previous links
-// This allows us to check if a given link will be destroyed by a reactivenode if it were to finish running immediately without accesing any more producers
-function isValidLink(checkLink: ReactiveLink, consumer: ReactiveNode): boolean {
-  const producersTail = consumer.producersTail;
-  if (producersTail !== undefined) {
-    let link = consumer.producers!;
-    do {
-      if (link === checkLink) {
-        return true;
-      }
-      if (link === producersTail) {
-        break;
-      }
-      link = link.nextProducer!;
-    } while (link !== undefined);
-  }
-  return false;
 }
