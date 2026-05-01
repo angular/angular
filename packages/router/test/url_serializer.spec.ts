@@ -208,6 +208,12 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one?a=foo&a=bar&a=swaz');
   });
 
+  it('should parse query params named hasOwnProperty without throwing', () => {
+    const tree = url.parse('/one?hasOwnProperty=x&next=1');
+    expect(tree.queryParams).toEqual({hasOwnProperty: 'x', next: '1'});
+    expect(url.serialize(tree)).toEqual('/one?hasOwnProperty=x&next=1');
+  });
+
   it('should parse fragment', () => {
     const tree = url.parse('/one#two');
     expect(tree.fragment).toEqual('two');

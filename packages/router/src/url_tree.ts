@@ -630,7 +630,10 @@ class UrlParser {
   }
 
   parseQueryParams(): Params {
-    const params: Params = {};
+    // A null-prototype object is used so that query param names like
+    // `hasOwnProperty` don't shadow Object.prototype methods and cause
+    // TypeErrors when the parser checks for duplicate keys.
+    const params: Params = Object.create(null);
     if (this.consumeOptional('?')) {
       do {
         this.parseQueryParam(params);
@@ -701,7 +704,7 @@ class UrlParser {
   }
 
   private parseMatrixParams(): {[key: string]: string} {
-    const params: {[key: string]: string} = {};
+    const params: {[key: string]: string} = Object.create(null);
     while (this.consumeOptional(';')) {
       this.parseParam(params);
     }
@@ -745,7 +748,7 @@ class UrlParser {
     const decodedKey = decodeQuery(key);
     const decodedVal = decodeQuery(value);
 
-    if (params.hasOwnProperty(decodedKey)) {
+    if (Object.prototype.hasOwnProperty.call(params, decodedKey)) {
       // Append to existing values
       let currentVal = params[decodedKey];
       if (!Array.isArray(currentVal)) {
