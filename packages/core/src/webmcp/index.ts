@@ -7,6 +7,7 @@
  */
 
 export {declareWebMcpTool} from './declare_tool';
+export {provideWebMcpTools} from './provide_tools';
 export type {
   Execute as WebMcpToolExexcute,
   Client as WebMcpClient,
