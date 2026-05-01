@@ -42,8 +42,18 @@ export class FunctionExtractor {
     const overloads = ts.isConstructorDeclaration(this.exportDeclaration)
       ? constructorOverloads(this.exportDeclaration, this.typeChecker)
       : extractCallSignatures(this.name, this.typeChecker, type);
-    const jsdocsTags = extractJsDocTags(implementation);
-    const description = extractJsDocDescription(implementation);
+    const implementationJsDocTags = extractJsDocTags(implementation);
+    const implementationDescription = extractJsDocDescription(implementation);
+    const implementationRawComment = extractRawJsDoc(implementation);
+    const docsForFunctionEntry = extractFunctionEntryDocs(overloads, {
+      description: implementationDescription,
+      jsdocTags: implementationJsDocTags,
+      rawComment: implementationRawComment,
+    }) ?? {
+      description: implementationDescription,
+      jsdocTags: implementationJsDocTags,
+      rawComment: implementationRawComment,
+    };
 
     return {
       name: this.name,
@@ -52,20 +62,39 @@ export class FunctionExtractor {
         params: extractAllParams(implementation.parameters, this.typeChecker),
         isNewType: ts.isConstructSignatureDeclaration(implementation),
         returnType,
-        returnDescription: jsdocsTags.find((tag) => tag.name === 'returns')?.comment,
+        returnDescription: implementationJsDocTags.find((tag) => tag.name === 'returns')?.comment,
         generics: extractGenerics(implementation),
         name: this.name,
-        description,
+        description: implementationDescription,
         entryType: EntryType.Function,
-        jsdocTags: jsdocsTags,
-        rawComment: extractRawJsDoc(implementation),
+        jsdocTags: implementationJsDocTags,
+        rawComment: implementationRawComment,
       },
       entryType: EntryType.Function,
-      description,
-      jsdocTags: jsdocsTags,
-      rawComment: extractRawJsDoc(implementation),
+      description: docsForFunctionEntry.description,
+      jsdocTags: docsForFunctionEntry.jsdocTags,
+      rawComment: docsForFunctionEntry.rawComment,
     };
   }
+}
+
+function extractFunctionEntryDocs(
+  overloads: FunctionSignatureMetadata[],
+  implementationDocs: Pick<FunctionSignatureMetadata, 'description' | 'jsdocTags' | 'rawComment'>,
+): Pick<FunctionSignatureMetadata, 'description' | 'jsdocTags' | 'rawComment'> | null {
+  if (hasJSDocContent(implementationDocs)) {
+    return implementationDocs;
+  }
+
+  return overloads.find((overload) => hasJSDocContent(overload)) ?? null;
+}
+
+function hasJSDocContent(
+  docs: Pick<FunctionSignatureMetadata, 'description' | 'jsdocTags' | 'rawComment'>,
+): boolean {
+  return (
+    docs.description.trim() !== '' || docs.rawComment.trim() !== '' || docs.jsdocTags.length > 0
+  );
 }
 
 function constructorOverloads(
