@@ -20,6 +20,8 @@ ng_project(
         ":directive_forest_utils",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/application-services:deep_link",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/diffing",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter",

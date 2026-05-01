@@ -35,6 +35,7 @@ export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render
 export {inferTagNameFromDefinition as ɵinferTagNameFromDefinition} from './render3/component_ref';
 export {getLContext as ɵgetLContext} from './render3/context_discovery';
 export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
+export {getComponentInstanceId as ɵgetComponentInstanceId} from './render3/debug/chrome_dev_tools_performance';
 export {
   NG_COMP_DEF as ɵNG_COMP_DEF,
   NG_DIR_DEF as ɵNG_DIR_DEF,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, output, signal} from '@angular/core';
+import {Component, computed, effect, inject, output, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
@@ -32,6 +32,7 @@ import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TransferStateComponent} from './transfer-state/transfer-state.component';
 import {TabUpdate} from './tab-update/index';
 import {Settings} from '../application-services/settings';
+import {DEEP_LINK_INSTANCE_ID} from '../application-services/deep_link_service';
 import {SUPPORTED_APIS} from '../application-providers/supported_apis';
 import {ButtonComponent} from '../shared/button/button.component';
 import {APP_DATA} from '../application-providers/app_data';
@@ -70,6 +71,7 @@ export class DevToolsTabsComponent {
   protected readonly applicationEnvironment = inject(ApplicationEnvironment);
   protected readonly supportedApis = inject(SUPPORTED_APIS);
   protected readonly appData = inject(APP_DATA);
+  private readonly deepLinkInstanceId = inject(DEEP_LINK_INSTANCE_ID);
 
   readonly frameSelected = output<Frame>();
 
@@ -134,6 +136,13 @@ export class DevToolsTabsComponent {
         this.providers.set(providers);
       },
     );
+
+    // Deep link: switch to Components tab when a deep link request arrives.
+    effect(() => {
+      if (this.deepLinkInstanceId() !== null) {
+        this.changeTab('Components');
+      }
+    });
 
     if (typeof chrome !== 'undefined' && chrome.runtime !== undefined) {
       this.extensionVersion.set(chrome.runtime.getManifest().version);

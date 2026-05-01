@@ -36,7 +36,7 @@ import {
 } from './injector_discovery_utils';
 import {getSignalGraph} from './signal_debug';
 
-import {enableProfiling} from '../debug/chrome_dev_tools_performance';
+import {enableProfiling, getComponentInstanceId} from '../debug/chrome_dev_tools_performance';
 import {getTransferState} from './transfer_state_utils';
 
 /**
@@ -93,6 +93,7 @@ const globalUtilsFunctions = {
   'isSignal': isSignal,
 
   'enableProfiling': enableProfiling,
+  'ɵgetComponentInstanceId': getComponentInstanceId,
 };
 type CoreGlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
 

@@ -38,6 +38,13 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
+      "js": ["app/devtools_connected_flag_bundle.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": ["<all_urls>"],
       "js": ["app/ng_validate_bundle.js"],
       "run_at": "document_idle",
       "all_frames": true
