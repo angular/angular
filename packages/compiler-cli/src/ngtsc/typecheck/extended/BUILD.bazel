@@ -23,6 +23,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/optional_chain_not_nullable",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/skip_hydration_not_static",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/template_reference_shadows_class_member",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_event_binding",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_text_interpolation",
