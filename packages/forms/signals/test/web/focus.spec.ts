@@ -307,6 +307,28 @@ describe('FieldState focus behavior', () => {
     await act(() => fixture.componentInstance.f().focusBoundControl({preventScroll: true}));
     expect(receivedOptions).toEqual({preventScroll: true});
   });
+
+  it('should handle gracefully a removal+blur on the removed element', async () => {
+    @Component({
+      selector: 'app-root',
+      imports: [FormField],
+      template: `
+        @for (field of form; track field) {
+          <input [formField]="field" />
+        }
+      `,
+    })
+    class App {
+      form = form(signal(['foo']));
+    }
+
+    const fixture = TestBed.createComponent(App);
+
+    await fixture.whenStable();
+
+    fixture.componentInstance.form().value.set([]); // remove
+    document.querySelector('input')!.dispatchEvent(new Event('blur'));
+  });
 });
 
 async function act<T>(fn: () => T): Promise<T> {

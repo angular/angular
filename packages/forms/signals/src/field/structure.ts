@@ -40,6 +40,17 @@ export type ChildNodeCtor = (
   isArray: boolean,
 ) => FieldNode;
 
+export type KeyInParentState =
+  | {
+      type: 'error';
+      error: RuntimeErrorCode;
+      msg: string | false | null;
+    }
+  | {
+      type: 'key';
+      key: string;
+    };
+
 /** Structural component of a `FieldNode` which tracks its path, parent, and children. */
 export abstract class FieldNodeStructure {
   /**
@@ -58,6 +69,9 @@ export abstract class FieldNodeStructure {
    * Attempting to read this for the root field will result in an error being thrown.
    */
   abstract readonly keyInParent: Signal<string>;
+
+  /** Whether this field currently has an associated parent node that considers it a child. */
+  abstract readonly isOrphaned: Signal<boolean>;
 
   /** The field manager responsible for managing this field. */
   abstract readonly fieldManager: FormFieldManager;
@@ -207,30 +221,32 @@ export abstract class FieldNodeStructure {
    * @param initialKeyInParent The initial key in parent (only for child nodes)
    * @returns A signal representing the field's key in its parent
    */
-  protected createKeyInParent(
+  protected createKeyInParentState(
     options: FieldNodeOptions,
     identityInParent: TrackingKey | undefined,
     initialKeyInParent: string | undefined,
-  ): Signal<string> {
+  ): Signal<KeyInParentState> {
     if (options.kind === 'root') {
-      return ROOT_KEY_IN_PARENT;
+      return computed(() => ({key: ROOT_KEY_IN_PARENT(), type: 'key'}));
     }
 
     if (identityInParent === undefined) {
       const key = initialKeyInParent!;
-      return computed(() => {
+      return computed<KeyInParentState>(() => {
         if (this.parent!.structure.getChild(key) !== this.node) {
-          throw new RuntimeError(
-            RuntimeErrorCode.ORPHAN_FIELD_PROPERTY,
-            ngDevMode &&
+          return {
+            type: 'error',
+            error: RuntimeErrorCode.ORPHAN_FIELD_PROPERTY,
+            msg:
+              ngDevMode &&
               `Orphan field, looking for property '${key}' of ${getDebugName(this.parent!)}`,
-          );
+          };
         }
-        return key;
+        return {key, type: 'key'};
       });
     } else {
       let lastKnownKey = initialKeyInParent!;
-      return computed(() => {
+      return computed<KeyInParentState>(() => {
         // TODO(alxhub): future perf optimization: here we depend on the parent's value, but most
         // changes to the value aren't structural - they aren't moving around objects and thus
         // shouldn't affect `keyInParent`. We currently mitigate this issue via `lastKnownKey`
@@ -240,10 +256,11 @@ export abstract class FieldNodeStructure {
           // It should not be possible to encounter this error. It would require the parent to
           // change from an array field to non-array field. However, in the current implementation
           // a field's parent can never change.
-          throw new RuntimeError(
-            RuntimeErrorCode.ORPHAN_FIELD_ARRAY,
-            ngDevMode && `Orphan field, expected ${getDebugName(this.parent!)} to be an array`,
-          );
+          return {
+            type: 'error',
+            error: RuntimeErrorCode.ORPHAN_FIELD_ARRAY,
+            msg: ngDevMode && `Orphan field, expected ${getDebugName(this.parent!)} to be an array`,
+          };
         }
 
         // Check the parent value at the last known key to avoid a scan.
@@ -255,7 +272,7 @@ export abstract class FieldNodeStructure {
           data.hasOwnProperty(this.parent!.structure.identitySymbol) &&
           data[this.parent!.structure.identitySymbol] === identityInParent
         ) {
-          return lastKnownKey;
+          return {key: lastKnownKey, type: 'key'};
         }
 
         // Otherwise, we need to check all the keys in the parent.
@@ -266,14 +283,17 @@ export abstract class FieldNodeStructure {
             data.hasOwnProperty(this.parent!.structure.identitySymbol) &&
             data[this.parent!.structure.identitySymbol] === identityInParent
           ) {
-            return (lastKnownKey = i.toString());
+            lastKnownKey = i.toString();
+            return {key: lastKnownKey, type: 'key'};
           }
         }
 
-        throw new RuntimeError(
-          RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
-          ngDevMode && `Orphan field, can't find element in array ${getDebugName(this.parent!)}`,
-        );
+        return {
+          type: 'error',
+          error: RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
+          msg:
+            ngDevMode && `Orphan field, can't find element in array ${getDebugName(this.parent!)}`,
+        };
       });
     }
   }
@@ -436,6 +456,10 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
     return ROOT_KEY_IN_PARENT;
   }
 
+  override get isOrphaned(): Signal<boolean> {
+    return computed(() => false);
+  }
+
   protected override readonly childrenMap: Signal<ChildrenData | undefined>;
 
   /**
@@ -467,6 +491,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
   override readonly root: FieldNode;
   override readonly pathKeys: Signal<readonly string[]>;
   override readonly keyInParent: Signal<string>;
+  override readonly isOrphaned: Signal<boolean>;
   override readonly value: WritableSignal<unknown>;
   override readonly childrenMap: Signal<ChildrenData | undefined>;
 
@@ -498,7 +523,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
 
     this.root = this.parent.structure.root;
 
-    this.keyInParent = this.createKeyInParent(
+    const keyState = this.createKeyInParentState(
       {
         kind: 'child',
         parent,
@@ -511,6 +536,14 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
       identityInParent,
       initialKeyInParent,
     );
+    this.keyInParent = computed(() => {
+      const s = keyState();
+      if (s.type === 'error') {
+        throw new RuntimeError(s.error, s.msg || false);
+      }
+      return s.key!;
+    });
+    this.isOrphaned = computed(() => keyState().type === 'error');
 
     this.pathKeys = computed(() => [...parent.structure.pathKeys(), this.keyInParent()]);
 
