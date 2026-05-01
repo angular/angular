@@ -1,10 +1,10 @@
 # Lazy loading services
 
+IMPORTANT: For lazy loading to work, the service you load must be auto-provided. Decorate it with either `@Injectable({providedIn: 'root'})` or [`@Service()`](guide/di/creating-and-using-services#using-the-service-decorator). Without auto-provisioning, Angular has no way to construct the service after it loads.
+
 Angular's `injectAsync` function lets you load a service on demand, only when it's actually needed. This is useful when a service depends on a large library or rarely used feature, and you don't want to pay for it on the initial page load.
 
 When you use `injectAsync`, the service's code is split out by your bundler into a separate JavaScript chunk and downloaded the first time you ask for the instance. Once loaded, Angular resolves the service through the regular DI system, so it can still depend on other injectables and behaves like any other singleton.
-
-IMPORTANT: For lazy loading to work, the service you load must be auto-provided. Decorate it with either `@Injectable({providedIn: 'root'})` or [`@Service()`](guide/di/creating-and-using-services#using-the-service-decorator). Without auto-provisioning, Angular has no way to construct the service after it loads.
 
 ## Lazily injecting a service
 
@@ -44,7 +44,7 @@ private exporter = injectAsync(() => import('./report-exporter'));
 
 ## Prefetching the dependency
 
-By default, the lazy chunk is only fetched when you call the returned function. You can start the download earlier by passing a `prefetch` trigger in the options. A trigger is any function that returns a `Promise`, when it resolves, Angular kicks off the loader.
+By default, the lazy chunk is only fetched when you invoke the returned function. You can start the download earlier by passing a `prefetch` trigger in the options. A trigger is any function that returns a `Promise`, when it resolves, Angular kicks off the loader.
 
 Angular ships with `onIdle`, a built-in trigger that waits until the browser becomes idle:
 
