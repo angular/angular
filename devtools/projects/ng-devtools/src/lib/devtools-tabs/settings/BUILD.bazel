@@ -1,0 +1,31 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "settings_styles",
+    src = "settings.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:theme",
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "settings",
+    srcs = [
+        "settings.component.ts",
+    ],
+    angular_assets = [
+        ":settings_styles",
+        "settings.component.html",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_types_lib",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+    ],
+)

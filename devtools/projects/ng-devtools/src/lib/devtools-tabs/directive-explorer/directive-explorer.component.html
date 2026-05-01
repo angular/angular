@@ -19,16 +19,6 @@
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
         />
-        @if (appData().hydration) {
-          <div class="hydration">
-            <input
-              id="show-hydration-overlays"
-              type="checkbox"
-              (change)="toggleHydrationNodesHighlights($event.target.checked)"
-            />
-            <label for="show-hydration-overlays">Show hydration overlays</label>
-          </div>
-        }
         @if (parents()) {
           <ng-breadcrumbs
             (mouseLeaveNode)="unhighlight()"

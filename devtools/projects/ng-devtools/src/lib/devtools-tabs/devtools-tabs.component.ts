@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, output, signal} from '@angular/core';
+import {Component, computed, inject, output, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
 import {MatTooltip} from '@angular/material/tooltip';
 import {
@@ -23,7 +22,6 @@ import {
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
 import {FrameManager} from '../application-services/frame_manager';
-import {ThemeService} from '../application-services/theme_service';
 
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
@@ -35,6 +33,7 @@ import {Settings} from '../application-services/settings';
 import {SUPPORTED_APIS} from '../application-providers/supported_apis';
 import {ButtonComponent} from '../shared/button/button.component';
 import {APP_DATA} from '../application-providers/app_data';
+import {SettingsComponent} from './settings/settings.component';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
@@ -56,17 +55,16 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
     RouterTreeComponent,
     InjectorTreeComponent,
     TransferStateComponent,
-    MatSlideToggle,
+    SettingsComponent,
     ButtonComponent,
   ],
   providers: [TabUpdate],
 })
 export class DevToolsTabsComponent {
   public readonly frameManager = inject(FrameManager);
-  protected readonly themeService = inject(ThemeService);
   private readonly tabUpdate = inject(TabUpdate);
+  private readonly settings = inject(Settings);
   protected readonly messageBus = inject<MessageBus<Events>>(MessageBus);
-  protected readonly settings = inject(Settings);
   protected readonly applicationEnvironment = inject(ApplicationEnvironment);
   protected readonly supportedApis = inject(SUPPORTED_APIS);
   protected readonly appData = inject(APP_DATA);
@@ -75,10 +73,9 @@ export class DevToolsTabsComponent {
 
   readonly inspectorRunning = signal(false);
 
-  protected readonly showCommentNodes = this.settings.showCommentNodes;
-  protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
   protected readonly signalGraphEnabled = () => this.supportedApis().signals;
   protected readonly transferStateEnabled = this.settings.transferStateEnabled;
+  protected readonly showCommentNodes = this.settings.showCommentNodes;
   protected readonly activeTab = this.settings.activeTab;
 
   protected readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
@@ -111,6 +108,7 @@ export class DevToolsTabsComponent {
   protected readonly TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
 
   protected readonly extensionVersion = signal('dev-build');
+  protected readonly settingsOpened = signal(false);
 
   constructor() {
     this.messageBus.on('updateRouterTree', (routes: any[]) => {
@@ -170,19 +168,5 @@ export class DevToolsTabsComponent {
 
   toggleInspectorState(): void {
     this.inspectorRunning.update((state) => !state);
-  }
-
-  toggleTimingAPI(): void {
-    this.timingAPIEnabled.update((state) => !state);
-    this.timingAPIEnabled()
-      ? this.messageBus.emit('enableTimingAPI')
-      : this.messageBus.emit('disableTimingAPI');
-  }
-
-  protected setTransferStateTab(enabled: boolean): void {
-    this.transferStateEnabled.set(enabled);
-    if (!enabled && this.activeTab() === 'Transfer State') {
-      this.activeTab.set('Components');
-    }
   }
 }
