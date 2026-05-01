@@ -117,7 +117,7 @@ export const getLatestComponentState = (
   directiveForest = directiveForest ?? buildDirectiveForest();
 
   const node = queryDirectiveForest(query.selectedElement, directiveForest);
-  if (!node || !node.nativeElement) {
+  if (!node) {
     return;
   }
 
@@ -684,6 +684,21 @@ function discoverNonApplicationRootComponents(element: Element, roots: Set<Eleme
 }
 
 export const buildDirectiveForest = (): ComponentTreeNode[] => {
+  const ng = ngDebugClient();
+  if ((ng as any).getComponentForest) {
+    const forest: ComponentTreeNode[] = (ng as any).getComponentForest();
+    const frontier = [...forest];
+    while (frontier.length) {
+      const node = frontier.pop()!;
+      node.element ??= node.nativeElement?.nodeName.toLowerCase() ?? '';
+      node.hydration ??= null;
+      node.component!.isElement ??= false;
+      for (const child of node.children) {
+        frontier.push(child);
+      }
+    }
+    return forest;
+  }
   return buildDirectiveForestWithStrategy(getRootElements());
 };
 
