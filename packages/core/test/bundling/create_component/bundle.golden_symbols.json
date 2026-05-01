@@ -204,6 +204,7 @@
       "\\u0275\\u0275defineComponent",
       "\\u0275\\u0275defineDirective",
       "\\u0275\\u0275defineInjectable",
+      "\\u0275\\u0275defineService",
       "\\u0275\\u0275directiveInject",
       "\\u0275\\u0275inject",
       "\\u0275\\u0275text",

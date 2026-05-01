@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '../di/injectable';
+import {Service} from '../di';
 import {InjectionToken} from '../di/injection_token';
 import {StaticProvider} from '../di/interface/provider';
 import {Type} from '../interface/type';
@@ -29,7 +29,7 @@ import {NgModuleFactory} from './ng_module_factory';
  * @deprecated
  * Ivy JIT mode doesn't require accessing this symbol.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class Compiler {
   /**
    * Compiles the given NgModule and all of its components. All templates of the components

@@ -7,11 +7,11 @@
  */
 
 import {
-  inject,
-  Injectable,
-  OnDestroy,
-  ɵformatRuntimeError as formatRuntimeError,
   DOCUMENT,
+  ɵformatRuntimeError as formatRuntimeError,
+  inject,
+  OnDestroy,
+  Service,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -38,7 +38,7 @@ interface ObservedImageState {
  *
  * Based on https://web.dev/lcp/#measure-lcp-in-javascript.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class LCPImageObserver implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
   private images = new Map<string, ObservedImageState>();

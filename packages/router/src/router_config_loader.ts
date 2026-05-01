@@ -10,13 +10,13 @@ import {
   Compiler,
   EnvironmentInjector,
   inject,
-  Injectable,
   InjectionToken,
   Injector,
   ɵmaybeUnwrapDefaultExport as maybeUnwrapDefaultExport,
   NgModuleFactory,
   ɵresolveComponentResources as resolveComponentResources,
   runInInjectionContext,
+  Service,
   Type,
 } from '@angular/core';
 
@@ -39,7 +39,7 @@ export const ROUTES = new InjectionToken<Route[][]>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'ROUTES' : '',
 );
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class RouterConfigLoader {
   private componentLoaders = new WeakMap<Route, Promise<Type<unknown>>>();
   private childrenLoaders = new WeakMap<Route, Promise<LoadedRouterConfig>>();

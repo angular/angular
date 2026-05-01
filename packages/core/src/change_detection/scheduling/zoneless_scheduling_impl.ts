@@ -9,7 +9,6 @@
 import {Subscription} from 'rxjs';
 
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
-import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders, Provider} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
@@ -22,6 +21,10 @@ import {
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
 
+import {TracingService} from '../../application/tracing';
+import {Service} from '../../di';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {OnDestroy} from '../lifecycle_hooks';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
@@ -29,9 +32,6 @@ import {
   SCHEDULE_IN_ROOT_ZONE,
   ZONELESS_ENABLED,
 } from './zoneless_scheduling';
-import {TracingService} from '../../application/tracing';
-import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
-import {OnDestroy} from '../lifecycle_hooks';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -56,7 +56,7 @@ function trackMicrotaskNotificationForDebugging() {
   }
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, OnDestroy {
   private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);

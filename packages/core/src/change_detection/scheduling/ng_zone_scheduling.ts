@@ -13,9 +13,9 @@ import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentProviders,
   inject,
-  Injectable,
   InjectionToken,
   makeEnvironmentProviders,
+  Service,
   StaticProvider,
 } from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -33,7 +33,7 @@ import {
   ZONELESS_ENABLED,
 } from './zoneless_scheduling';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class NgZoneChangeDetectionScheduler implements OnDestroy {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
@@ -228,7 +228,7 @@ export function getNgZoneOptions(options?: NgZoneOptions): InternalNgZoneOptions
   };
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ZoneStablePendingTask {
   private readonly subscription = new Subscription();
   private initialized = false;
