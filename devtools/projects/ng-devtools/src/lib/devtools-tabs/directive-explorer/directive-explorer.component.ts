@@ -55,6 +55,8 @@ import {Direction} from '../../shared/split/interface';
 import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../../shared/signal-graph';
 import {APP_DATA} from '../../application-providers/app_data';
+import {SignalTransitiveDepsPaneComponent} from './signal-transitive-deps-pane/signal-transitive-deps-pane.component';
+import {SignalTransitiveDepsEvent} from './signal-transitive-deps-pane/types';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -103,6 +105,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     FormsModule,
     MatSnackBarModule,
     SignalGraphPaneComponent,
+    SignalTransitiveDepsPaneComponent,
     ResponsiveSplitDirective,
   ],
 })
@@ -121,7 +124,12 @@ export class DirectiveExplorerComponent {
   readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
 
-  readonly signalsOpen = signal(false);
+  readonly signalGraphPaneOpen = signal(false);
+  readonly signalTransitiveDepsPaneOpen = signal(false);
+
+  readonly signalPaneOpen = computed(
+    () => this.signalGraphPaneOpen() || this.signalTransitiveDepsPaneOpen(),
+  );
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
@@ -138,6 +146,7 @@ export class DirectiveExplorerComponent {
   protected readonly signalGraph = inject(SignalGraphManager);
 
   protected readonly externallySelectedSignalNodeId = signal<{id: string} | null>(null);
+  protected readonly signalTransitiveDepsData = signal<SignalTransitiveDepsEvent | null>(null);
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -394,7 +403,16 @@ export class DirectiveExplorerComponent {
       // We want to trigger an update each time we intercept an update.
       this.externallySelectedSignalNodeId.set({id: node.id});
     }
-    this.signalsOpen.set(true);
+    this.signalGraphPaneOpen.set(true);
+
+    // Signal graph pane has priority, so we close all
+    // other stacked panes in the signal pane, if any.
+    this.signalTransitiveDepsPaneOpen.set(false);
+  }
+
+  showSignalTransitiveDeps(e: SignalTransitiveDepsEvent) {
+    this.signalTransitiveDepsData.set(e);
+    this.signalTransitiveDepsPaneOpen.set(true);
   }
 
   onResponsiveSplitDirChange(direction: Direction) {

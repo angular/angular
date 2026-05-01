@@ -34,3 +34,19 @@
     padding: 1rem;
   }
 }
+
+.signal-pane-cont {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+
+  ng-signal-graph-pane,
+  ng-signal-transitive-deps-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-background);
+  }
+}

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵDebugSignalGraph} from '@angular/core';
 import {
   ComponentExplorerViewQuery,
   ComponentType,
@@ -57,7 +58,7 @@ import {ComponentTreeNode} from './interfaces';
 import {getRouterCallableConstructRef, parseRoutes, RoutePropertyType} from './router-tree';
 import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
-import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
+import {serializeDirectiveState, serializeSignalNode} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 import {getSupportedApis} from './ng-debug-api/supported-apis';
@@ -110,6 +111,8 @@ export const subscribeToClientEvents = (
   });
 
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
+
+  messageBus.on('getSignalTransitiveDependencies', getSignalTransitiveDependencies(messageBus));
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
@@ -660,19 +663,55 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
 
   const graph = ng.ɵgetSignalGraph?.(injector);
   if (graph) {
-    const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => {
-      return {
-        id: node.id,
-        kind: node.kind,
-        label: node.label,
-        epoch: node.epoch,
-        preview: serializeValue(node.value),
-        debuggable: !!node.debuggableFn,
-      };
-    });
+    const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => serializeSignalNode(node));
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
   }
 };
+
+const getSignalTransitiveDependencies =
+  (messageBus: MessageBus<Events>) => (signals: DebugSignalGraphNode[]) => {
+    // NOTE(hawkgs): This is mock data for testing purposes.
+    // const ng = ngDebugClient();
+    // const graph = ng.ɵgetSignalTransitiveDependencies?.(signals);
+    const [node] = signals;
+    const graph: ɵDebugSignalGraph = {
+      nodes: [
+        {
+          label: 'foo',
+          kind: 'template',
+          epoch: 0,
+          id: '5',
+        },
+        {
+          label: 'bar',
+          value: 0,
+          kind: 'signal',
+          epoch: 1,
+          id: '6',
+        },
+        // Add the source node somewhere for the purposes
+        // of the visualization.
+        {
+          label: node.label,
+          value: node.preview.value,
+          kind: 'signal',
+          epoch: node.epoch,
+          id: node.id,
+        },
+      ],
+      edges: [
+        {
+          consumer: 0,
+          producer: 1,
+        },
+      ],
+    };
+
+    if (graph) {
+      const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => serializeSignalNode(node));
+      messageBus.emit('signalTransitiveDependencies', [{nodes, edges: graph.edges}]);
+    }
+  };
 
 // Route data needs to be serializable to be sent over the message bus.
 export function sanitizeRouteData(route: Route): Route {

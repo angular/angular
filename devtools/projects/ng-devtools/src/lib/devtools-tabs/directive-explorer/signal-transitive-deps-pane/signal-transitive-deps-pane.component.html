@@ -1,0 +1,42 @@
+@let data = this.data();
+@let graph = this.graph();
+
+@if (data && graph) {
+  <h3 class="title">{{ data.signalNode.label }} transitive dependencies</h3>
+
+  <ng-signals-visualizer
+    #visualizer
+    [graph]="graph"
+    [selectedNodeId]="selectedNodeId()"
+    [focusedSelectedNodeId]="data.signalNode.id"
+    (nodeClick)="onNodeClick($event)"
+    (clusterCollapse)="detailsVisible.set(false)"
+  />
+
+  @let node = selectedNode();
+  @if (node && detailsVisible()) {
+    <ng-signal-details
+      [node]="node"
+      [graph]="graph"
+      [availableActions]="{
+        gotoSource: false,
+        expandCluster: true,
+        highlightDownstreamDeps: true,
+        highlightUpstreamDeps: true,
+        showTransitiveDeps: false,
+      }"
+      (expandCluster)="expandCluster($event)"
+      (close)="detailsVisible.set(false)"
+    />
+  }
+}
+
+<button
+  ng-button
+  btnType="icon"
+  (click)="close.emit()"
+  class="close"
+  aria-label="Close transitive dependencies graph"
+>
+  <mat-icon>close</mat-icon>
+</button>

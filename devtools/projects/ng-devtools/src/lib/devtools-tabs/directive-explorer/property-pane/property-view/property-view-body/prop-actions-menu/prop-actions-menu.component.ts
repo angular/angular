@@ -31,7 +31,8 @@ import {FlatNode} from '../../../../../../shared/object-tree-explorer/object-tre
 import {SUPPORTED_APIS} from '../../../../../../application-providers/supported_apis';
 import {DirectivePropertyResolver} from '../../../../property-resolver/directive-property-resolver';
 import {SignalGraphManager} from '../../../../signal-graph-manager/signal-graph-manager';
-import {DevtoolsSignalGraphNode} from '../../../../../../shared/signal-graph';
+import {DevtoolsSignalGraphNode, DevtoolsSignalNode} from '../../../../../../shared/signal-graph';
+import {SignalTransitiveDepsEvent} from '../../../../signal-transitive-deps-pane/types';
 
 // Based on the current design.
 // Update accordingly if that changes.
@@ -75,6 +76,7 @@ const CTX_MENU_POSITIONS: ConnectedPosition[] = [
 interface AvailableActions {
   logToConsole: boolean;
   showSignalGraph: boolean;
+  transitiveDeps: boolean;
 }
 
 @Component({
@@ -98,17 +100,20 @@ export class PropActionsMenuComponent {
   protected readonly node = input.required<FlatNode>();
   protected readonly controller = input.required<DirectivePropertyResolver>();
   protected readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
+  protected readonly showSignalTransitiveDeps = output<SignalTransitiveDepsEvent>();
 
   protected readonly availableActions = computed<AvailableActions>(() => {
     const node = this.node();
     const supportedApis = this.supportedApis();
+    const isSignalNode = !!this.getSignalNode(node);
+    const transitiveDepsSupported =
+      supportedApis.transitiveSignalDepsInspection && supportedApis.signals && isSignalNode;
 
     return {
       logToConsole: node.level === 0,
       showSignalGraph:
-        supportedApis.signalPropertiesInspection &&
-        supportedApis.signals &&
-        !!this.getSignalNode(node),
+        supportedApis.signalPropertiesInspection && supportedApis.signals && isSignalNode,
+      transitiveDeps: transitiveDepsSupported,
     };
   });
 
@@ -158,9 +163,22 @@ export class PropActionsMenuComponent {
     this.ctxMenu()?.close();
   }
 
-  private getSignalNode(node: FlatNode): DevtoolsSignalGraphNode | null {
+  showSigTransitiveDeps(e: Event) {
+    e.stopPropagation();
+
+    const signalNode = this.getSignalNode(this.node())!;
+    this.showSignalTransitiveDeps.emit({
+      signalNode,
+    });
+    this.ctxMenu()?.close();
+  }
+
+  private getSignalNode(node: FlatNode): DevtoolsSignalNode | null {
     if (node.prop.descriptor.containerType?.includes('Signal')) {
-      return this.signalGraph.graph()?.nodes.find((sn) => sn.label === node.prop.name) ?? null;
+      const foundNode = this.signalGraph.graph()?.nodes.find((sn) => sn.label === node.prop.name);
+
+      // The signal node should always be a regular signal node, not a cluster.
+      return (foundNode as DevtoolsSignalNode) ?? null;
     }
     return null;
   }

@@ -45,10 +45,21 @@ export class SignalsVisualizerComponent {
 
   private signalsVisualizer?: SignalsGraphVisualizer;
 
+  /** Graph to render. */
   protected readonly graph = input.required<DevtoolsSignalGraph | null>();
+
+  /** Selected node. */
   protected readonly selectedNodeId = input.required<string | null>();
-  protected readonly externallySelectedNodeId = input<string | null>(null);
-  protected readonly element = input.required<ElementPosition | undefined>();
+
+  /** Should be set in conjuction with `selectedNodeId`. Snaps to/focuses the selected node. */
+  protected readonly focusedSelectedNodeId = input<string | null>(null);
+
+  /**
+   * Provide for a graceful transition between signal graphs of different elements.
+   * It's required for differentiating between a graph update and a new graph.
+   */
+  protected readonly element = input<ElementPosition | undefined>();
+
   protected readonly nodeClick = output<DevtoolsSignalGraphNode>();
   protected readonly clusterCollapse = output<void>();
 
@@ -104,11 +115,11 @@ export class SignalsVisualizerComponent {
           });
 
           effect(() => {
-            const id = this.externallySelectedNodeId();
+            const id = this.focusedSelectedNodeId();
 
-            // Only snap to externally selected node ID.
+            // Only snap to focused selected node ID.
             // We don't want to snap to nodes that were
-            // selected via the visualization itself.
+            // selected in the visualization itself.
             if (id) {
               this.signalsVisualizer!.snapToNode(id);
             }
