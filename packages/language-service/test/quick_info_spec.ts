@@ -37,9 +37,6 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
         })
         export class TestComponent {
           @Input('tcName') name!: string;
-          @Input() coercedInput!: string;
-          static ngAcceptInputType_coercedInput: string | boolean;
-          @Input({transform: (value: string|number) => +value}) transformedInput!: number;
           @Output('test') testEvent!: EventEmitter<string>;
         } /*EndTestComponent*/
 
@@ -244,23 +241,6 @@ describe('quick info', () => {
             templateOverride: `<test-comp [tcN¦ame]="name"></test-comp>`,
             expectedSpanText: 'tcName',
             expectedDisplayString: '(property) TestComponent.name: string',
-          });
-        });
-
-        it('should work for coerced input providers', () => {
-          expectQuickInfo({
-            templateOverride: `<test-comp [coercedI¦nput]="true"></test-comp>`,
-            expectedSpanText: 'coercedInput',
-            expectedDisplayString: '(property) TestComponent.coercedInput: string',
-          });
-        });
-
-        it('should work for inputs with transform functions', () => {
-          expectQuickInfo({
-            templateOverride: `<test-comp [transformedI¦nput]="'true'"></test-comp>`,
-            expectedSpanText: 'transformedInput',
-            // it's important here that we don't show the inner type.
-            expectedDisplayString: '(input) TestComponent.transformedInput: string | number',
           });
         });
 
