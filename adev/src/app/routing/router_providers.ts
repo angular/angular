@@ -38,7 +38,7 @@ export const routerProviders = [
   provideRouter(
     routes,
     withInMemoryScrolling(),
-    withRouterConfig({canceledNavigationResolution: 'computed'}),
+    withRouterConfig({canceledNavigationResolution: 'computed', preserveInitialUrl: true}),
     withNavigationErrorHandler(({error}) => {
       if (error instanceof HttpErrorResponse) {
         // TODO: Redirect to different pages on different response codes? (e.g. 500 page)

@@ -38,6 +38,7 @@ export abstract class StateManager {
   protected location = inject(Location);
   protected urlHandlingStrategy = inject(UrlHandlingStrategy);
   protected urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
+  protected readonly preserveInitialUrl = this.options.preserveInitialUrl ?? false;
 
   protected currentUrlTree = new UrlTree();
   /**
@@ -175,6 +176,7 @@ export class HistoryStateManager extends StateManager {
    */
   private currentPageId: number = 0;
   private lastSuccessfulId: number = -1;
+  private isFirstNavigation = true;
 
   /**
    * The ɵrouterPageId of whatever page is currently active in the browser history. This is
@@ -238,8 +240,23 @@ export class HistoryStateManager extends StateManager {
   private setBrowserUrl(path: string, navigation: Navigation) {
     const {extras, id} = navigation;
     const {replaceUrl, state} = extras;
+    const wasFirst = this.isFirstNavigation;
+    this.isFirstNavigation = false;
 
     if (this.location.isCurrentPathEqualTo(path) || !!replaceUrl) {
+      // Skip the very first replaceState when it's a no-op same-path call with
+      // no caller-provided state. Otherwise it overwrites the current history
+      // entry with a URL derived from `document.URL`, which current Chromium
+      // strips of `:~:text=` directives — wiping the directive from the address
+      // bar and disabling the browser's native scroll-to-text on initial load.
+      if (
+        wasFirst &&
+        this.preserveInitialUrl &&
+        state === undefined &&
+        this.location.isCurrentPathEqualTo(path)
+      ) {
+        return;
+      }
       // replacements do not update the target page
       const currentBrowserPageId = this.browserPageId;
       const newState = {

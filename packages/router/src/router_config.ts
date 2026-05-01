@@ -136,6 +136,25 @@ export interface RouterConfigOptions {
    * if an error occurs.
    */
   resolveNavigationPromiseOnError?: boolean;
+
+  /**
+   * When `true`, the Router skips its initial same-path `replaceState` call so any
+   * browser-applied URL augmentations are preserved on first load. Most notably, this
+   * keeps Chrome's text-fragment directives (`#:~:text=...`) intact in the address
+   * bar and allows the browser's native scroll-to-text behavior to work — current
+   * Chromium strips these directives from `document.URL`, so any `history.replaceState`
+   * call (even with no URL argument) commits the stripped URL into the active history
+   * entry and wipes the directive.
+   *
+   * Trade-off: the initial history entry has `null` state instead of Router's
+   * generated `{ɵrouterPageId, navigationId}` object. Router's internals fall back
+   * to `currentPageId` when state is missing, so navigation tracking continues to
+   * work; but any code that introspects `Location.getState()` directly on the
+   * initial entry will see `null` until the user navigates.
+   *
+   * Defaults to `false` to preserve existing behavior.
+   */
+  preserveInitialUrl?: boolean;
 }
 
 /**
