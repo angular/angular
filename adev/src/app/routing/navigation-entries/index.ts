@@ -322,6 +322,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'updated',
           },
           {
+            label: 'Lazy loading services',
+            path: 'guide/di/lazy-loading-services',
+            contentPath: 'guide/di/lazy-loading-services',
+            status: 'new',
+          },
+          {
             label: 'Defining dependency providers',
             path: 'guide/di/defining-dependency-providers',
             contentPath: 'guide/di/defining-dependency-providers',

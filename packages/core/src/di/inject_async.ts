@@ -42,6 +42,9 @@ type InjectAsyncLoaderResult<T> = ProviderToken<T> | DefaultExport<ProviderToken
  * injectAsync(.., {prefetch: onIdle})
  * ```
  *
+ * @see [Lazy loading services](guide/di/lazy-loading-services)
+ * @see [Injection context](guide/di/dependency-injection-context)
+ *
  * @publicApi 22.0
  */
 export function injectAsync<T>(
@@ -81,6 +84,8 @@ export function injectAsync<T>(
 /**
  * Interface for `options` argument used within `injectAsync` call.
  *
+ * @see [Prefetching the dependency](guide/di/lazy-loading-services#prefetching-the-dependency)
+ *
  * @publicApi 22.0
  */
 export interface InjectAsyncOptions {
@@ -96,6 +101,7 @@ export interface InjectAsyncOptions {
  * the lazy-loaded dependency.
  *
  * @see {@link onIdle}
+ * @see [Prefetching the dependency](guide/di/lazy-loading-services#prefetching-the-dependency)
  *
  * @publicApi 22.0
  */
@@ -105,6 +111,11 @@ export type PrefetchTrigger = () => Promise<void>;
  * A `PrefetchTrigger` helper function to provide the logic of triggering dependency loading
  * when the browser becomes idle.
  *
+ * Internally delegates to the configured {@link IdleService}, whose default implementation uses
+ * [`requestIdleCallback`](https://developer.mozilla.org/docs/Web/API/Window/requestIdleCallback)
+ * when available and falls back to `setTimeout` otherwise. The default behavior can be replaced
+ * with `provideIdleServiceWith`.
+ *
  * @usageNotes
  *
  * ```ts
@@ -113,6 +124,8 @@ export type PrefetchTrigger = () => Promise<void>;
  * // or with custom idle options:
  * injectAsync(import(...), {prefetch: () => onIdle({timeout: 100})})
  * ```
+ *
+ * @see [Prefetching the dependency](guide/di/lazy-loading-services#prefetching-the-dependency)
  *
  * @publicApi 22.0
  */
