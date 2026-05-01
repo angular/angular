@@ -328,6 +328,7 @@
       "animationFailed",
       "appendChild",
       "applyContainer",
+      "applyForeignNodes",
       "applyNodes",
       "applyParamDefaults",
       "applyProjectionRecursive",

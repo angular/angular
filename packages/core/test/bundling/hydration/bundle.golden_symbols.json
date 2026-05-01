@@ -370,6 +370,7 @@
       "applyContainer",
       "applyDeferBlockState",
       "applyDeferBlockStateWithSchedulingImpl",
+      "applyForeignNodes",
       "applyNodes",
       "applyProjectionRecursive",
       "applyRootElementTransform",
