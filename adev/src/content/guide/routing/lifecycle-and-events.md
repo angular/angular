@@ -34,6 +34,7 @@ When you want to run code during specific navigation lifecycle events, you can d
 // Example of subscribing to router events
 import {Component, inject, signal, effect} from '@angular/core';
 import {Event, Router, NavigationStart, NavigationEnd} from '@angular/router';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   /*...*/
