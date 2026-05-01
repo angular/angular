@@ -344,6 +344,9 @@ export function applyWhenValue(
  * into the field as a `ValidationError` on the sub-field indicated by the `fieldTree` property of the
  * submission error.
  *
+ * Concurrent submissions are prohibited. If a submit is already in progress for the given field or any
+ * of its parents, subsequent calls to `submit` will return `false` immediately without running the action.
+ *
  * @example
  * ```ts
  * async function registerNewUser(registrationForm: FieldTree<{username: string, password: string}>) {
@@ -388,6 +391,10 @@ export async function submit<TModel>(
   options?: FormSubmitOptions<unknown, TModel> | FormSubmitOptions<unknown, TModel>['action'],
 ): Promise<boolean> {
   const node = untracked(form) as FieldState<unknown> as FieldNode;
+
+  if (untracked(node.submitState.submitting)) {
+    return false;
+  }
 
   const field = options === undefined ? node.structure.root.fieldProxy : form;
   const detail = {root: node.structure.root.fieldProxy, submitted: form};
