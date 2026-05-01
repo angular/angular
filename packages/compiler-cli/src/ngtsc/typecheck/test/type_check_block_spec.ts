@@ -2970,9 +2970,9 @@ describe('type check blocks', () => {
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
-    it('should generate a string field for a select', () => {
+    it('should generate a string | number | null field for a select', () => {
       const block = tcb('<select [formField]="f"></select>', [FieldMock]);
-      expect(block).toContain('var _t1 = null! as string;');
+      expect(block).toContain('var _t1 = null! as string | number | null;');
       expect(block).toContain('_t1 = ((this).f)().value();');
       expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');

@@ -74,6 +74,21 @@ export function getNativeControlValue(
         return {value: element.valueAsNumber};
       }
       break;
+    case 'select-one':
+      // We can read a `number` or a `string` from a <select>. Prefer whichever is consistent
+      // with the current type.
+      modelValue = untracked(currentValue);
+      if (typeof modelValue === 'number' || modelValue === null) {
+        if (element.value === '') {
+          return {value: null};
+        }
+        const parsed = Number(element.value);
+        if (Number.isNaN(parsed)) {
+          return {error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>};
+        }
+        return {value: parsed};
+      }
+      break;
   }
 
   // For text-like <input> elements, parse numeric values if the model is numeric.
@@ -136,6 +151,17 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
         setNativeNumberControlValue(element, value);
         return;
       }
+      break;
+    case 'select-one':
+      // This input type can receive a `number`, `null`, or `string`.
+      if (typeof value === 'number') {
+        element.value = isNaN(value) ? '' : String(value);
+        return;
+      } else if (value === null) {
+        element.value = '';
+        return;
+      }
+      break;
   }
 
   // For text-like <input> elements, handle numeric and null values.
