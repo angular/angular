@@ -411,9 +411,7 @@ describe('type check blocks', () => {
         },
       ];
       expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
-        'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' +
-          'var _t2 = _ctor1({ "fieldA": (((this).foo)) }); ' +
-          '_t2.fieldA = (_t1 = (((this).foo))) as any;',
+        'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' + '_t1 = (((this).foo));',
       );
     });
   });
@@ -742,7 +740,7 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
       'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_field1; ' +
         'var _t2 = null! as i0.Dir; ' +
-        '_t2.field2 = _t2.field1 = (_t1 = (((this).foo))) as any;',
+        '_t2.field2 = _t1 = (((this).foo));',
     );
   });
 
@@ -781,9 +779,7 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).not.toContain('var _t1 = null! as Dir;');
     expect(block).toContain(
-      'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' +
-        'var _t2 = null! as i0.Dir; ' +
-        '_t2.fieldA = (_t1 = (((this).foo))) as any;',
+      'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' + '_t1 = (((this).foo));',
     );
   });
 
@@ -804,9 +800,7 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).not.toContain('var _t1 = null! as Dir;');
     expect(block).toContain(
-      'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' +
-        'var _t2 = null! as i0.Dir; ' +
-        '_t2.fieldA = (_t1 = (((this).foo))) as any;',
+      'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' + '_t1 = (((this).foo));',
     );
   });
 
@@ -848,11 +842,7 @@ describe('type check blocks', () => {
 
     const block = tcb(TEMPLATE, DIRECTIVES);
 
-    expect(block).toContain(
-      'var _t1 = null! as boolean | string; ' +
-        'var _t2 = null! as i0.Dir; ' +
-        '_t2.fieldA = (_t1 = (((this).expr))) as any;',
-    );
+    expect(block).toContain('var _t1 = null! as boolean | string; ' + '_t1 = (((this).expr));');
   });
 
   it('should handle $any casts', () => {
@@ -975,9 +965,7 @@ describe('type check blocks', () => {
     ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as boolean | string;');
-    expect(block).toContain(
-      '_t2.input = (_t1 = i1.ɵunwrapWritableSignal((((this).value)))) as any;',
-    );
+    expect(block).toContain('_t1 = i1.ɵunwrapWritableSignal((((this).value)));');
   });
 
   describe('experimental DOM checking via lib.dom.d.ts', () => {
