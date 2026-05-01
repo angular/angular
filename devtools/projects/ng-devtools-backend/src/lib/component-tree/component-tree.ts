@@ -53,12 +53,24 @@ import {unwrapSignal} from '../utils';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
-export const idToInjector = new Map<string, Injector>();
-export const injectorsSeen = new Set<string>();
+export const idToInjector = new Map<string, WeakRef<Injector>>();
+const injectorFinalizer = new FinalizationRegistry<string>((id) => {
+  idToInjector.delete(id);
+});
 let injectorId = 0;
 
 export function getInjectorId() {
   return `${injectorId++}`;
+}
+
+function getOrCreateInjectorId(key: Injector | HTMLElement, injector: Injector): string {
+  if (!injectorToId.has(key)) {
+    const newId = getInjectorId();
+    injectorToId.set(key, newId);
+    idToInjector.set(newId, new WeakRef(injector));
+    injectorFinalizer.register(injector, newId);
+  }
+  return injectorToId.get(key)!;
 }
 
 const INTERNAL_TOKENS = [
@@ -172,18 +184,8 @@ export const getLatestComponentState = (
 };
 
 function serializeElementInjectorWithId(injector: Injector): SerializedInjector | null {
-  let id: string;
   const element = getElementInjectorElement(injector);
-
-  if (!injectorToId.has(element)) {
-    id = getInjectorId();
-    injectorToId.set(element, id);
-    idToInjector.set(id, injector);
-  }
-
-  id = injectorToId.get(element)!;
-  idToInjector.set(id, injector);
-  injectorsSeen.add(id);
+  const id = getOrCreateInjectorId(element, injector);
 
   const serializedInjector = serializeInjector(injector);
   if (serializedInjector === null) {
@@ -202,17 +204,7 @@ function serializeInjectorWithId(injector: Injector): SerializedInjector | null 
 }
 
 function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector | null {
-  let id: string;
-
-  if (!injectorToId.has(injector)) {
-    id = getInjectorId();
-    injectorToId.set(injector, id);
-    idToInjector.set(id, injector);
-  }
-
-  id = injectorToId.get(injector)!;
-  idToInjector.set(id, injector);
-  injectorsSeen.add(id);
+  const id = getOrCreateInjectorId(injector, injector);
 
   const serializedInjector = serializeInjector(injector);
   if (serializedInjector === null) {

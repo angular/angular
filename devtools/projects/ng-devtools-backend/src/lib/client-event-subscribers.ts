@@ -40,7 +40,6 @@ import {
   getInjectorResolutionPath,
   getLatestComponentState,
   idToInjector,
-  injectorsSeen,
   isElementInjector,
   getDirectiveCdStrategy,
   logValue,
@@ -145,22 +144,6 @@ const getLatestComponentExplorerViewCallback =
       initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
       ngDebugDependencyInjectionApiIsSupported(),
     );
-
-    // cleanup injector id mappings
-    for (const injectorId of idToInjector.keys()) {
-      if (!injectorsSeen.has(injectorId)) {
-        const injector = idToInjector.get(injectorId)!;
-        if (isElementInjector(injector)) {
-          const element = getElementInjectorElement(injector);
-          if (element) {
-            nodeInjectorToResolutionPath.delete(element);
-          }
-        }
-
-        idToInjector.delete(injectorId);
-      }
-    }
-    injectorsSeen.clear();
 
     if (!query) {
       messageBus.emit('latestComponentExplorerView', [{forest}]);
@@ -479,21 +462,17 @@ function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] 
     nodeInjectorToResolutionPath.set(element, serializeResolutionPath(resolutionPaths));
   }
 
-  const serializedPath = nodeInjectorToResolutionPath.get(element)!;
-  for (const injector of serializedPath) {
-    injectorsSeen.add(injector.id);
-  }
-
-  return serializedPath;
+  return nodeInjectorToResolutionPath.get(element)!;
 }
 
 const getInjectorProvidersCallback =
   (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
-    if (!idToInjector.has(injector.id)) {
+    const resolvedInjector = idToInjector.get(injector.id)?.deref();
+    if (!resolvedInjector) {
       return;
     }
 
-    const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
+    const providerRecords = getInjectorProviders(resolvedInjector);
     const allProviderRecords: SerializedProviderRecord[] = [];
 
     const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
@@ -544,11 +523,10 @@ const logProvider = (
   serializedInjector: SerializedInjector,
   serializedProvider: SerializedProviderRecord,
 ): void => {
-  if (!idToInjector.has(serializedInjector.id)) {
+  const injector = idToInjector.get(serializedInjector.id)?.deref();
+  if (!injector) {
     return;
   }
-
-  const injector = idToInjector.get(serializedInjector.id)!;
 
   const providerRecords = getInjectorProviders(injector);
 
@@ -621,11 +599,11 @@ const getInjectorInstance = (
   serializedInjector: SerializedInjector,
   serializedProvider: SerializedProviderRecord,
 ) => {
-  if (!idToInjector.has(serializedInjector.id)) {
+  const injector = idToInjector.get(serializedInjector.id)?.deref();
+  if (!injector) {
     return;
   }
 
-  const injector = idToInjector.get(serializedInjector.id)!;
   const providerRecords = getInjectorProviders(injector);
 
   if (typeof serializedProvider.index === 'number') {
