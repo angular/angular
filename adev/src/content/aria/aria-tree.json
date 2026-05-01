@@ -498,7 +498,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
+          "type": "InputSignal<undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -626,8 +626,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 65,
-        "endLine": 239
+        "startLine": 70,
+        "endLine": 244
       }
     }
   ],
@@ -687,10 +687,6 @@
     [
       "_IdGenerator",
       "@angular/cdk/a11y"
-    ],
-    [
-      "numberAttribute",
-      "@angular/core"
     ],
     [
       "untracked",

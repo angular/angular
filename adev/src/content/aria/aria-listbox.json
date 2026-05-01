@@ -90,6 +90,72 @@
           ],
           "description": "Whether the option is selected.",
           "jsdocTags": []
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [
@@ -121,7 +187,10 @@
         }
       ],
       "rawComment": "/**\n * A selectable option in an `ngListbox`.\n *\n * This directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n * `ngListbox`. The `value` input is used to identify the option, and the `label` input provides\n * the accessible name for the option.\n *\n * ```html\n * <li ngOption value=\"item-id\" label=\"Item Name\">\n *   Item Name\n * </li>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
-      "implements": [],
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
       "isStandalone": true,
       "selector": "[ngOption]",
       "exportAs": [
@@ -132,8 +201,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/option.ts",
-        "startLine": 34,
-        "endLine": 83
+        "startLine": 43,
+        "endLine": 100
       }
     },
     {
@@ -170,17 +239,6 @@
             "readonly"
           ],
           "description": "A signal wrapper for directionality.",
-          "jsdocTags": []
-        },
-        {
-          "name": "items",
-          "type": "Signal<OptionPattern<V>[]>",
-          "memberType": "property",
-          "memberTags": [
-            "protected",
-            "readonly"
-          ],
-          "description": "The Option UIPatterns of the child Options.",
           "jsdocTags": []
         },
         {
@@ -275,7 +333,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
+          "type": "InputSignal<undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -302,6 +360,39 @@
           ],
           "description": "The ID of the active descendant in the listbox.",
           "jsdocTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
         },
         {
           "name": "scrollActiveItemIntoView",
@@ -415,11 +506,13 @@
         }
       ],
       "rawComment": "/**\n * Represents a container used to display a list of items for a user to select from.\n *\n * The `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\n * selectable list. It supports single and multiple selection modes, as well as various focus and\n * orientation strategies.\n *\n * ```html\n * <ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n *   @for (item of items; track item.id) {\n *     <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n *       {{item.name}}\n *     </li>\n *   }\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
-      "implements": [],
+      "implements": [
+        "OnDestroy"
+      ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 55,
-        "endLine": 223
+        "startLine": 60,
+        "endLine": 236
       }
     }
   ],
@@ -449,6 +542,14 @@
       "@angular/core"
     ],
     [
+      "OnInit",
+      "@angular/core"
+    ],
+    [
+      "OnDestroy",
+      "@angular/core"
+    ],
+    [
       "_IdGenerator",
       "@angular/cdk/a11y"
     ],
@@ -457,15 +558,11 @@
       "@angular/core"
     ],
     [
-      "contentChildren",
+      "afterNextRender",
       "@angular/core"
     ],
     [
       "model",
-      "@angular/core"
-    ],
-    [
-      "numberAttribute",
       "@angular/core"
     ],
     [
@@ -525,6 +622,14 @@
       "@angular/aria/listbox"
     ],
     [
+      "Option.ngOnInit",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.ngOnDestroy",
+      "@angular/aria/listbox"
+    ],
+    [
       "Listbox",
       "@angular/aria/listbox"
     ],
@@ -538,10 +643,6 @@
     ],
     [
       "Listbox.textDirection",
-      "@angular/aria/listbox"
-    ],
-    [
-      "Listbox.items",
       "@angular/aria/listbox"
     ],
     [
@@ -590,6 +691,10 @@
     ],
     [
       "Listbox.activeDescendant",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.ngOnDestroy",
       "@angular/aria/listbox"
     ],
     [
