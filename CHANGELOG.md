@@ -117,7 +117,7 @@
 # 22.0.0-next.8 (2026-04-15)
 ## Breaking Changes
 ### compiler
-- This change will trigger the `nullishCoalescingNotNullable` and `optionalChainNotNullable` diagnostics on exisiting projects.
+- This change will trigger the `nullishCoalescingNotNullable` and `optionalChainNotNullable` diagnostics on existing projects.
   You might want to disable those 2 diagnotiscs in your `tsconfig` temporarily.
 ### compiler
 | Commit | Type | Description |
@@ -1334,7 +1334,7 @@ No user facing changes in this release
 - Using a combination of `provideZoneChangeDetection`
   while also removing ZoneJS polyfills will no longer result in the
   internal scheduler being disabled. All Angular applications now
-  consistenly use the same scheduler, and those with the Zone change detection
+  consistently use the same scheduler, and those with the Zone change detection
   provider include additional automatic scheduling behaviors based on
   NgZone stabilization.
 - - TypeScript versions less than 5.9 are no longer supported.
@@ -2592,7 +2592,7 @@ false` in `configureTestingModule` as a last resort.
   been removed but weren't because DOM removal is delayed until animations
   are flushed.
 - `ApplicationRef.tick` will no longer catch and report
-  errors to the appplication `ErrorHandler`. Errors will instead be thrown out of
+  errors to the application `ErrorHandler`. Errors will instead be thrown out of
   the method and will allow callers to determine how to handle these
   errors, such as aborting follow-up work or reporting the error and
   continuing.
@@ -7064,7 +7064,7 @@ queryParams: newQueryParams})`. In this case, the `relativeTo` property
 | [79cdfeb392](https://github.com/angular/angular/commit/79cdfeb3921687dfbc8fea8d9f7ba4dbb14a7193) | feat | drop support for TypeScript 4.8 ([#49155](https://github.com/angular/angular/pull/49155))                                      |
 | [1407a9aeaf](https://github.com/angular/angular/commit/1407a9aeaf5edf33dfb9b52d7b2baaebef9b80ed) | feat | support multiple configuration files in `extends` ([#49125](https://github.com/angular/angular/pull/49125))                    |
 | [9de1e9da8f](https://github.com/angular/angular/commit/9de1e9da8fc7d102f74389d9a270c4608bf0dd64) | fix  | incorrectly matching directives on attribute bindings ([#49713](https://github.com/angular/angular/pull/49713))                |
-| [6623810e4d](https://github.com/angular/angular/commit/6623810e4d3347edaccbbb214fa883ab6a669936) | fix  | Produce diagnositc if directive used in host binding is not exported ([#49527](https://github.com/angular/angular/pull/49527)) |
+| [6623810e4d](https://github.com/angular/angular/commit/6623810e4d3347edaccbbb214fa883ab6a669936) | fix  | Produce diagnostic if directive used in host binding is not exported ([#49527](https://github.com/angular/angular/pull/49527)) |
 
 ### compiler-cli
 
@@ -7248,7 +7248,7 @@ queryParams: newQueryParams})`. In this case, the `relativeTo` property
 
 | Commit                                                                                           | Type | Description                                                                                                                    |
 | ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------------------------------ |
-| [b0c1a90f55](https://github.com/angular/angular/commit/b0c1a90f55ecfafb4fd5c22cdd1b4a5f12573f22) | fix  | Produce diagnositc if directive used in host binding is not exported ([#49792](https://github.com/angular/angular/pull/49792)) |
+| [b0c1a90f55](https://github.com/angular/angular/commit/b0c1a90f55ecfafb4fd5c22cdd1b4a5f12573f22) | fix  | Produce diagnostic if directive used in host binding is not exported ([#49792](https://github.com/angular/angular/pull/49792)) |
 
 ### compiler-cli
 
@@ -7709,7 +7709,7 @@ Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, Jens
 | Commit                                                                                           | Type | Description                                                                                             |
 | ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------- |
 | [fe50813664](https://github.com/angular/angular/commit/fe50813664809a1177132a77bd2a316ad0858b9e) | feat | Add BrowserPlatformLocation to the public API ([#48488](https://github.com/angular/angular/pull/48488)) |
-| [2f4f0638c7](https://github.com/angular/angular/commit/2f4f0638c74dccfc2d0522f67ab226d3227c0566) | fix  | Add data attribtue to NgOptimizedImage ([#48497](https://github.com/angular/angular/pull/48497))        |
+| [2f4f0638c7](https://github.com/angular/angular/commit/2f4f0638c74dccfc2d0522f67ab226d3227c0566) | fix  | Add data attribute to NgOptimizedImage ([#48497](https://github.com/angular/angular/pull/48497))        |
 
 ### compiler
 
@@ -8922,7 +8922,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 - Queries including + will now actually query for + instead of space.
   Most workarounds involving custom codecs will be unaffected.
   Possible server-side workarounds will need to be undone.
-- JSONP will throw an error when headers are set on a reques
+- JSONP will throw an error when headers are set on a request
 
   JSONP does not support headers being set on requests. Before when
   a request was sent to a JSONP backend that had headers set the headers
@@ -9118,9 +9118,9 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 
 ### devtools tabs
 
-| Commit                                                                                           | Type | Description                        |
-| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------- |
-| [6c284ef32e](https://github.com/angular/angular/commit/6c284ef32e53a8dabbc368b9cf69f1b6f1a377b7) | fix  | stop scroll occuring at tabs level |
+| Commit                                                                                           | Type | Description                         |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------- |
+| [6c284ef32e](https://github.com/angular/angular/commit/6c284ef32e53a8dabbc368b9cf69f1b6f1a377b7) | fix  | stop scroll occurring at tabs level |
 
 ### forms
 
