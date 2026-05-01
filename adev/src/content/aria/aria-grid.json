@@ -409,7 +409,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
+          "type": "InputSignal<undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -417,7 +417,7 @@
           ],
           "description": "The tabindex of the grid.",
           "jsdocTags": [],
-          "inputAlias": "tabIndex",
+          "inputAlias": "tabindex",
           "isRequiredInput": false
         },
         {
@@ -504,8 +504,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid.ts",
-        "startLine": 48,
-        "endLine": 173
+        "startLine": 47,
+        "endLine": 172
       }
     },
     {
@@ -760,10 +760,6 @@
     ],
     [
       "output",
-      "@angular/core"
-    ],
-    [
-      "numberAttribute",
       "@angular/core"
     ],
     [
