@@ -231,6 +231,12 @@ export interface BaseResourceOptions<T, R> {
    * Overrides the `Injector` used by `resource`.
    */
   injector?: Injector;
+
+  /**
+   * Identifier used to cache the resource data in the `TransferState` during server-side rendering and to retrieve it on the client side.
+   * This value value needs to be identical for both the client and server.
+   */
+  id?: string;
 }
 
 /**

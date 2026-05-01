@@ -95,6 +95,7 @@ export {
   withI18nSupport as ɵwithI18nSupport,
   withIncrementalHydration as ɵwithIncrementalHydration,
 } from './hydration/api';
+export {CACHE_ACTIVE as ɵCACHE_ACTIVE} from './hydration/cache';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {
   EVENT_REPLAY_QUEUE as ɵEVENT_REPLAY_QUEUE,
