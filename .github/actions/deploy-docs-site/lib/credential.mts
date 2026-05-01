@@ -8,7 +8,7 @@ let credentialFilePath: undefined | string;
 export function getCredentialFilePath(): string {
   if (credentialFilePath === undefined) {
     const serviceKey = getInput('serviceKey', {required: true});
-    setSecret(serviceKey); // ← mask actual content, not the path
+    setSecret(serviceKey); 
     
     const tmpDir = mkdtempSync(join(tmpdir(), 'credential-'));
     const filePath = join(tmpDir, 'credential.json');
