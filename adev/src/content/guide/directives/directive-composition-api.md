@@ -98,24 +98,28 @@ When `SpecializedMenuWithTooltip` is used in a template, it creates instances of
 , `Tooltip`, and `MenuWithTooltip`. Each of these directives' host bindings apply to the host
 element of `SpecializedMenuWithTooltip`.
 
-```typescript
-@Directive({...})
-export class Menu { }
+```ts
+@Directive({
+  /* ... */
+})
+export class Menu {}
 
-@Directive({...})
-export class Tooltip { }
+@Directive({
+  /* ... */
+})
+export class Tooltip {}
 
 // MenuWithTooltip can compose behaviors from multiple other directives
 @Directive({
   hostDirectives: [Tooltip, Menu],
 })
-export class MenuWithTooltip { }
+export class MenuWithTooltip {}
 
 // CustomWidget can apply the already-composed behaviors from MenuWithTooltip
 @Directive({
   hostDirectives: [MenuWithTooltip],
 })
-export class SpecializedMenuWithTooltip { }
+export class SpecializedMenuWithTooltip {}
 ```
 
 ## Host directive semantics
@@ -189,3 +193,109 @@ providers.
 If a component or directive with `hostDirectives` and those host directives both provide the same
 injection token, the providers defined by class with `hostDirectives` take precedence over providers
 defined by the host directives.
+
+### Host directive de-duplication
+
+When the same directive appears more than once in the resolved host directive tree, it is automatically de-duplicated rather than throwing an error. Two deterministic rules are used to decide which match survives.
+
+#### Template match takes precedence
+
+If a directive matches an element once through a **template selector** and also appears as a
+**host directive**, Angular keeps only the template match and discards all host directive matches.
+
+The mental model is that a host directive match represents `Partial<YourDirective>` , a partial
+application where only the inputs and outputs explicitly listed in `hostDirectives` are exposed,
+while a template match represents the full directive with its complete public API.
+
+```ts
+@Directive({selector: '[hoverable]'})
+export class Hoverable {}
+
+@Component({
+  selector: 'app-button',
+  hostDirectives: [Hoverable],
+})
+export class Button {}
+```
+
+```angular-html
+<!-- Hoverable is matched by selector AND as a host directive of Button. -->
+<!-- Angular keeps only the selector match, which has the full public API. -->
+<app-button hoverable></app-button>
+```
+
+#### Multiple host directive matches are merged
+
+If the same directive appears **more than once as a host directive** , for example, when two
+directives both declare a common dependency in their `hostDirectives` , Angular merges all
+instances into a single directive instance. The input and output mappings from all instances are
+combined.
+
+This resolves the classic [diamond problem](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem) in host directive composition:
+
+```ts
+// A shared behavior that both triggers need
+@Directive({
+  host: {
+    '[attr.data-trigger-id]': 'triggerId',
+  },
+})
+export class TriggerRef {
+  readonly triggerId = `trigger-${crypto.randomUUID()}`;
+}
+
+// Two separate triggers, each declaring TriggerRef as a host directive
+@Directive({
+  selector: '[popoverTrigger]',
+  hostDirectives: [TriggerRef],
+})
+export class PopoverTrigger {
+  readonly triggerRef = inject(TriggerRef);
+}
+
+@Directive({
+  selector: '[dropdownTrigger]',
+  hostDirectives: [TriggerRef],
+})
+export class DropdownTrigger {
+  readonly triggerRef = inject(TriggerRef);
+}
+```
+
+```angular-html
+<!-- Angular keeps one TriggerRef instance, shared by both triggers. -->
+<button popoverTrigger dropdownTrigger>Actions</button>
+```
+
+HELPFUL: Because Angular produces only one instance of the shared directive, both `PopoverTrigger`
+and `DropdownTrigger` receive the same `TriggerRef` instance when they inject it.
+
+#### Conflicting aliases
+
+When Angular merges duplicate host directive matches it also merges their input and output mappings.
+If two instances of the same host directive expose the **same input or output under different
+aliases**, Angular throws an error at compile time ([NG8024](errors/NG8024))
+
+```ts
+@Directive({
+  selector: '[popoverTrigger]',
+  hostDirectives: [{directive: TriggerRef, inputs: ['triggerId: popoverTriggerId']}],
+})
+export class PopoverTrigger {}
+
+@Directive({
+  selector: '[dropdownTrigger]',
+  hostDirectives: [
+    {directive: TriggerRef, inputs: ['triggerId: dropdownTriggerId']}, // different alias!
+  ],
+})
+export class DropdownTrigger {}
+```
+
+```angular-html
+<!-- Error: triggerId is exposed as both "popoverTriggerId" and "dropdownTriggerId". -->
+<button popoverTrigger dropdownTrigger></button>
+```
+
+To resolve this, ensure that both paths expose the shared input or output under the same alias, or
+do not expose it at all.

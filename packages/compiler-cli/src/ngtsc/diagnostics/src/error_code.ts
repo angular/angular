@@ -457,7 +457,7 @@ export enum ErrorCode {
   /**
    * Raised when a host directive input/output is exposed multiple times under the same name.
    */
-  CONFLICTING_HOST_DIRECTIVE_BINDING = 8024,
+  CONFLICTING_HOST_DIRECTIVE_BINDING = -8024,
 
   /**
    * A two way binding in a template has an incorrect syntax,
