@@ -1679,7 +1679,7 @@ export interface ResourceLoaderParams<R> {
     };
 }
 
-// @public (undocumented)
+// @public
 export type ResourceOptions<T, R> = (PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>) & {
     debugName?: string;
 };
@@ -1725,7 +1725,7 @@ export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resol
 // @public
 export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => Signal<ResourceStreamItem<T>> | PromiseLike<Signal<ResourceStreamItem<T>>> | undefined;
 
-// @public (undocumented)
+// @public
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
