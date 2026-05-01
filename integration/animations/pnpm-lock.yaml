@@ -73,8 +73,8 @@ importers:
         specifier: 6.2.0
         version: 6.2.0
       puppeteer:
-        specifier: 24.41.0
-        version: 24.41.0(typescript@6.0.2)
+        specifier: 24.42.0
+        version: 24.42.0(typescript@6.0.2)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.19.39)(typescript@6.0.2)
@@ -3827,12 +3827,12 @@ packages:
   pump@3.0.4:
     resolution: {integrity: sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA==}
 
-  puppeteer-core@24.41.0:
-    resolution: {integrity: sha512-rLIUri7E/NQ3APSEYCCozaSJx0u8Tu9wxO6BJwnvXmIgILSK3L0TombaVh3izp1njAGrO6H2ru0hcIrLF+gWLw==}
+  puppeteer-core@24.42.0:
+    resolution: {integrity: sha512-T4zXokk/izH01fYPhyyev1A4piWiOKrYq7CUFpdoYQxmOnXoV6YjUabmfIjCYkNspSoAXIxRid3Tw+Vg0fthYg==}
     engines: {node: '>=18'}
 
-  puppeteer@24.41.0:
-    resolution: {integrity: sha512-W6Fk0J3TPjjtwjXOyR/qf+YaL0H/Uq8HIgHcXG4mNM/IgbKMCH/HPyK0Fi2qbTU/QpSl9bCte2yBpGHKejTpIw==}
+  puppeteer@24.42.0:
+    resolution: {integrity: sha512-94MoPfFp2eY3eYIMdINkez4IOP5TMHntlZbVx06fHlQTtiQiYgaY0L2Zzfod8PVUkPqP7m3Qlre2v8YS8cudPA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -8623,7 +8623,7 @@ snapshots:
       end-of-stream: 1.4.5
       once: 1.4.0
 
-  puppeteer-core@24.41.0:
+  puppeteer-core@24.42.0:
     dependencies:
       '@puppeteer/browsers': 2.13.0
       chromium-bidi: 14.0.0(devtools-protocol@0.0.1595872)
@@ -8640,13 +8640,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@24.41.0(typescript@6.0.2):
+  puppeteer@24.42.0(typescript@6.0.2):
     dependencies:
       '@puppeteer/browsers': 2.13.0
       chromium-bidi: 14.0.0(devtools-protocol@0.0.1595872)
       cosmiconfig: 9.0.1(typescript@6.0.2)
       devtools-protocol: 0.0.1595872
-      puppeteer-core: 24.41.0
+      puppeteer-core: 24.42.0
       typed-query-selector: 2.12.2
     transitivePeerDependencies:
       - bare-abort-controller
