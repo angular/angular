@@ -2978,6 +2978,22 @@ describe('type check blocks', () => {
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
+    it('should generate a string array field for a multiple select', () => {
+      const block = tcb('<select multiple [formField]="f"></select>', [FieldMock]);
+      expect(block).toContain('var _t1 = null! as string[];');
+      expect(block).toContain('_t1 = ((this).f)().value();');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
+      expect(block).toContain('_t2.field = (((this).f));');
+    });
+
+    it('should generate a union type for a select with a dynamic [multiple] binding', () => {
+      const block = tcb('<select [multiple]="isDynamic" [formField]="f"></select>', [FieldMock]);
+      expect(block).toContain('var _t1 = null! as string | string[];');
+      expect(block).toContain('_t1 = ((this).f)().value();');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
+      expect(block).toContain('_t2.field = (((this).f));');
+    });
+
     it('should generate a custom value control', () => {
       const block = tcb('<custom-control [formField]="f"/>', [
         FieldMock,
