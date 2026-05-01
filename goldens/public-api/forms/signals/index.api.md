@@ -204,7 +204,7 @@ export class FormRoot<T> {
     // (undocumented)
     readonly fieldTree: i0.InputSignal<FieldTree<T>>;
     // (undocumented)
-    protected onSubmit(event: Event): void;
+    protected onSubmit(event: SubmitEvent): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormRoot<any>, "form[formRoot]", never, { "fieldTree": { "alias": "formRoot"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
@@ -216,6 +216,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
     action: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
         root: FieldTree<TRootModel>;
         submitted: FieldTree<TSubmittedModel>;
+        submitEvent?: SubmitEvent;
     }) => Promise<TreeValidationResult>;
     ignoreValidators?: 'pending' | 'none' | 'all';
     onInvalid?: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
@@ -632,10 +633,10 @@ export type Subfields<TModel, TMode extends 'writable' | 'readonly' = 'writable'
 };
 
 // @public
-export function submit<TModel>(form: FieldTree<TModel>, options?: NoInfer<FormSubmitOptions<unknown, TModel>>): Promise<boolean>;
+export function submit<TModel>(form: FieldTree<TModel>, options?: NoInfer<FormSubmitOptions<unknown, TModel>>, submitEvent?: SubmitEvent): Promise<boolean>;
 
 // @public (undocumented)
-export function submit<TModel>(form: FieldTree<TModel>, action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>): Promise<boolean>;
+export function submit<TModel>(form: FieldTree<TModel>, action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>, submitEvent?: SubmitEvent): Promise<boolean>;
 
 // @public
 export function transformedValue<TValue, TRaw>(value: ModelSignal<TValue>, options: TransformedValueOptions<TValue, TRaw>): TransformedValueSignal<TRaw>;
