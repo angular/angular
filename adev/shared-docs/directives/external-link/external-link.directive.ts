@@ -22,7 +22,7 @@ import {isExternalLink} from '../../utils/index';
   },
 })
 export class ExternalLink {
-  private readonly anchor: ElementRef<HTMLAnchorElement> = inject(ElementRef);
+  private readonly anchor = inject<ElementRef<HTMLAnchorElement>>(ElementRef);
   private readonly platformId = inject(PLATFORM_ID);
 
   target?: '_blank' | '_self' | '_parent' | '_top' | '';

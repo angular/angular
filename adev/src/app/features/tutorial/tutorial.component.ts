@@ -9,7 +9,6 @@
 import {isPlatformBrowser, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {
   afterNextRender,
-  ChangeDetectorRef,
   Component,
   computed,
   DestroyRef,
@@ -71,7 +70,6 @@ export default class Tutorial {
   readonly resizer = viewChild.required<ElementRef<HTMLDivElement>>('resizer');
   readonly revealAnswerButton = viewChild<ElementRef<HTMLButtonElement>>('revealAnswerButton');
 
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly elementRef = inject(ElementRef<unknown>);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
@@ -97,7 +95,7 @@ export default class Tutorial {
   nextStepPath: string | undefined;
   previousStepPath: string | undefined;
 
-  embeddedEditorComponent?: Type<unknown>;
+  embeddedEditorComponent = signal<Type<unknown> | null>(null);
 
   canRevealAnswer: Signal<boolean> = signal(false);
   readonly answerRevealed = signal<boolean>(false);
@@ -128,8 +126,7 @@ export default class Tutorial {
       from(this.loadEmbeddedEditorComponent())
         .pipe(takeUntilDestroyed(destroyRef))
         .subscribe((editorComponent) => {
-          this.embeddedEditorComponent = editorComponent;
-          this.changeDetectorRef.markForCheck();
+          this.embeddedEditorComponent.set(editorComponent);
         });
     });
   }

@@ -9,7 +9,7 @@
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {ConnectionPositionPair} from '@angular/cdk/overlay';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {Component, DestroyRef, PLATFORM_ID, inject, signal} from '@angular/core';
+import {Component, PLATFORM_ID, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -38,7 +38,6 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
 })
 export class Navigation {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly navigationState = inject(NavigationState);
@@ -134,7 +133,7 @@ export class Navigation {
   }
 
   private closeMobileNavOnPrimaryRouteChange(): void {
-    this.primaryRouteChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.primaryRouteChanged$.pipe(takeUntilDestroyed()).subscribe(() => {
       this.closeMobileNav();
     });
   }
@@ -146,7 +145,7 @@ export class Navigation {
         map((event) => (event as NavigationEnd).urlAfterRedirects),
       )
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(),
         //using location because router.url will only return "/" here
         startWith(this.location.path()),
       )
@@ -189,7 +188,7 @@ export class Navigation {
   }
 
   private preventToScrollContentWhenSecondaryNavIsOpened(): void {
-    this.isMobileNavigationOpened$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((opened) => {
+    this.isMobileNavigationOpened$.pipe(takeUntilDestroyed()).subscribe((opened) => {
       if (opened) {
         this.document.body.style.overflowY = 'hidden';
       } else {
