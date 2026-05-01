@@ -75,7 +75,7 @@ IMPORTANT: The readonly signals do **not** have any built-in mechanism that woul
 
 ### Computed signals
 
-**Computed signal** are read-only signals that derive their value from other signals. You define computed signals using the `computed` function and specifying a derivation:
+**Computed signals** are read-only signals that derive their value from other signals. You define computed signals using the `computed` function and specifying a derivation:
 
 ```typescript
 const count: WritableSignal<number> = signal(0);
