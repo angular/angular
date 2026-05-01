@@ -7,10 +7,12 @@ let credentialFilePath: undefined | string;
 
 export function getCredentialFilePath(): string {
   if (credentialFilePath === undefined) {
+    const serviceKey = getInput('serviceKey', {required: true});
+    setSecret(serviceKey); // ← mask actual content, not the path
+    
     const tmpDir = mkdtempSync(join(tmpdir(), 'credential-'));
     const filePath = join(tmpDir, 'credential.json');
-    writeFileSync(filePath, getInput('serviceKey', {required: true}));
-    setSecret(filePath);
+    writeFileSync(filePath, serviceKey, {mode: 0o600}); 
     credentialFilePath = filePath;
   }
   return credentialFilePath;
