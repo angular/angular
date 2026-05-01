@@ -43,10 +43,8 @@ function processView(view: ViewCompilationUnit): void {
 const CONTROL_OP_CREATE_KINDS = new Set([
   ir.OpKind.Container,
   ir.OpKind.ContainerStart,
-  ir.OpKind.ContainerEnd,
   ir.OpKind.Element,
   ir.OpKind.ElementStart,
-  ir.OpKind.ElementEnd,
   ir.OpKind.Template,
 ]);
 
@@ -55,16 +53,14 @@ function isRelevantCreateOp(createOp: ir.CreateOp): createOp is ir.CreateOp & {x
 }
 
 function findCreateInstruction(view: ViewCompilationUnit, target: ir.XrefId): ir.CreateOp | null {
-  let lastFoundOp: ir.CreateOp | null = null;
   for (const createOp of view.create) {
     if (!isRelevantCreateOp(createOp) || createOp.xref !== target) {
       continue;
     }
-
-    lastFoundOp = createOp;
+    return createOp;
   }
 
-  return lastFoundOp;
+  return null;
 }
 
 function addControlInstruction(
