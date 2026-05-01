@@ -17,12 +17,12 @@ The functions that control complex animation sequences are:
 
 ## The query() function
 
-Most complex animations rely on the `query()` function to find child elements and apply animations to them, basic examples of such are:
+Most complex animations rely on the `query()` function to find child elements and apply animations to them. Basic examples include:
 
-| Examples                               | Details                                                                                                                                                                                               |
-| :------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `query()` followed by `animate()`      | Used to query simple HTML elements and directly apply animations to them.                                                                                                                             |
-| `query()` followed by `animateChild()` | Used to query child elements, which themselves have animations metadata applied to them and trigger such animation \(which would be otherwise be blocked by the current/parent element's animation\). |
+| Examples                               | Details                                                                                                                                                                                            |
+| :------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `query()` followed by `animate()`      | Used to query simple HTML elements and directly apply animations to them.                                                                                                                          |
+| `query()` followed by `animateChild()` | Used to query child elements, which themselves have animation metadata applied to them and trigger such animations \(which would otherwise be blocked by the current/parent element's animation\). |
 
 The first argument of `query()` is a [css selector](https://developer.mozilla.org/docs/Web/CSS/CSS_Selectors) string which can also contain the following Angular-specific tokens:
 
@@ -43,7 +43,7 @@ You can also see an illustration of this in the animations example \(introduced 
 
 ## Animate multiple elements using query() and stagger() functions
 
-After having queried child elements via `query()`, the `stagger()` function lets you define a timing gap between each queried item that is animated and thus animates elements with a delay between them.
+After querying child elements via `query()`, the `stagger()` function lets you define a timing gap between each item, animating elements with a delay between them.
 
 The following example demonstrates how to use the `query()` and `stagger()` functions to animate a list \(of heroes\) adding each in sequence, with a slight delay, from top to bottom.
 
