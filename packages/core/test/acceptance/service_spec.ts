@@ -28,7 +28,7 @@ describe('@Service decorator', () => {
   it('should be able to provide an alternate implementation using `factory`', () => {
     @Service({factory: () => ({value: 'alternate'})})
     class MyService {
-      readonly value = 'MyService';
+      value = 'MyService';
     }
 
     @Component({template: ''})
@@ -43,7 +43,7 @@ describe('@Service decorator', () => {
   it('should be able to provide an alternate implementation using `factory` when `autoProvided` is set to true', () => {
     @Service({autoProvided: true, factory: () => ({value: 'alternate'})})
     class MyService {
-      readonly value = 'MyService';
+      value = 'MyService';
     }
 
     @Component({template: ''})
@@ -60,7 +60,7 @@ describe('@Service decorator', () => {
 
     @Service({factory: () => ({value: inject(token)})})
     class MyService {
-      readonly value = 'MyService';
+      value = 'MyService';
     }
 
     @Component({template: ''})
@@ -153,7 +153,7 @@ describe('@Service decorator', () => {
   it('should be able to override a service that has a factory', () => {
     @Service({factory: () => ({value: 'factory'})})
     class MyService {
-      readonly value = 'MyService';
+      value = 'MyService';
     }
 
     @Service()

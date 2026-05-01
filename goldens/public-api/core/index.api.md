@@ -1802,12 +1802,15 @@ export const Service: ServiceDecorator;
 // @public
 export interface ServiceDecorator {
     (): TypeDecorator;
-    (options?: {
+    (options: {
         autoProvided: false;
     }): TypeDecorator;
+    <T>(options: {
+        autoProvided?: true;
+        factory: () => T;
+    }): <C extends Type<unknown>>(target: C) => Type<T>;
     (options?: {
         autoProvided?: true;
-        factory?: () => unknown;
     }): TypeDecorator;
 }
 
