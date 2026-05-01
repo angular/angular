@@ -312,8 +312,9 @@ function getFilteredHeaders(
   return headersMap;
 }
 
-function sortAndConcatParams(params: HttpParams | URLSearchParams): string {
-  return [...params.keys()]
+/** Exported for testing. */
+export function sortAndConcatParams(params: HttpParams | URLSearchParams): string {
+  return Array.from(new Set(params.keys()))
     .sort()
     .map((k) => `${k}=${params.getAll(k)}`)
     .join('&');

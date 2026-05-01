@@ -19,7 +19,7 @@ import {TestBed} from '@angular/core/testing';
 import {useAutoTick, timeout, withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
-import {HttpClient, HttpResponse, provideHttpClient} from '../public_api';
+import {HttpClient, HttpParams, HttpResponse, provideHttpClient} from '../public_api';
 import {
   BODY,
   HEADERS,
@@ -29,6 +29,7 @@ import {
   STATUS_TEXT,
   REQ_URL,
   withHttpTransferCache,
+  sortAndConcatParams,
 } from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '../../src/platform_id';
@@ -690,6 +691,18 @@ describe('TransferCache', () => {
             });
         });
       });
+    });
+  });
+
+  describe('sortAndConcatParams', () => {
+    it('should normalize HttpParams', () => {
+      let params = new HttpParams({fromString: 'foo=1&bar=2&foo=3'});
+      expect(sortAndConcatParams(params)).toBe('bar=2&foo=1,3');
+    });
+
+    it('should normalize search params', () => {
+      const params = new URLSearchParams('foo=1&bar=2&foo=3');
+      expect(sortAndConcatParams(params)).toBe('bar=2&foo=1,3');
     });
   });
 });
