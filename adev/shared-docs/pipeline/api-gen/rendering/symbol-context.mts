@@ -15,6 +15,16 @@ import {getSymbolUrl as sharedGetSymbolUrl} from '../../shared/linking.mjs';
 
 let symbols: Record<string, string> = {};
 
+/**
+ * Index of known members per symbol for the currently processed package. Populated alongside
+ * `symbols` so we can validate `#member` fragments in `{@link /api/<module>/<Symbol>#<member>}`
+ * tags at build time.
+ *
+ * Per-package scope: only symbols belonging to the package currently being rendered are present;
+ * cross-package member fragments are not validated here.
+ */
+let symbolMembers: Map<string, Set<string>> = new Map();
+
 // This is used to store the currently processed symbol (usually a class or an interface)
 let currentSymbol: string | undefined;
 export function setCurrentSymbol(symbol: string): void {
@@ -38,6 +48,16 @@ export function getCurrentSymbol(): string | undefined {
 
 export function setSymbols(newSymbols: Record<string, string>): void {
   symbols = newSymbols;
+}
+
+/** Set the index of known members per symbol for the currently processed package. */
+export function setSymbolMembers(newSymbolMembers: Map<string, Set<string>>): void {
+  symbolMembers = newSymbolMembers;
+}
+
+/** Get the set of known members for a symbol, or `undefined` if the symbol isn't tracked. */
+export function getSymbolMembers(symbol: string): Set<string> | undefined {
+  return symbolMembers.get(symbol);
 }
 
 export function getSymbolUrl(symbol: string): string | undefined {

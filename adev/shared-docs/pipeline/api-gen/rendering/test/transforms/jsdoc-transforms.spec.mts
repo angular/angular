@@ -8,15 +8,25 @@
 
 import {initHighlighter} from '../../../../shared/shiki.mjs';
 import {setHighlighterInstance} from '../../shiki/shiki.mjs';
-import {setCurrentSymbol, setSymbols} from '../../symbol-context.mjs';
+import {setCurrentSymbol, setSymbolMembers, setSymbols} from '../../symbol-context.mjs';
+import {setDefinedRoutes} from '../../defined-routes-context.mjs';
 import {
   addHtmlAdditionalLinks,
   addHtmlDescription,
+  addHtmlUsageNotes,
   setEntryFlags,
 } from '../../transforms/jsdoc-transforms.mjs';
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 describe('jsdoc transforms', () => {
+  beforeAll(async () => {
+    setHighlighterInstance(await initHighlighter());
+  });
+
+  afterEach(() => {
+    setDefinedRoutes([]);
+  });
+
   describe('addHtmlAdditionalLinks', () => {
     it('should transform links', () => {
       setCurrentSymbol('Router');
@@ -214,14 +224,251 @@ describe('jsdoc transforms', () => {
           moduleName: 'test',
         });
 
-      expect(entryFn).toThrowError(/Broken @link.*Did you mean \/api\/router\/RouterModule/);
+      expect(entryFn).toThrowError(/Broken link.*Did you mean \/api\/router\/RouterModule/);
+    });
+
+    it('should throw on an unknown #member fragment for a known API symbol', () => {
+      setSymbols({RouterModule: 'router'});
+      setSymbolMembers(new Map([['RouterModule', new Set(['forRoot', 'forChild'])]]));
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '{@link /api/router/RouterModule#forBogus forBogus}',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(/Broken link.*RouterModule has no member named 'forBogus'/);
+    });
+
+    it('should throw on a miscased #member fragment for a known API symbol', () => {
+      setSymbols({RouterModule: 'router'});
+      setSymbolMembers(new Map([['RouterModule', new Set(['forRoot', 'forChild'])]]));
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '{@link /api/router/RouterModule#forroot forRoot}',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(/Broken link.*Did you mean #forRoot/);
+    });
+
+    it('should accept a valid #member fragment', () => {
+      setSymbols({RouterModule: 'router'});
+      setSymbolMembers(new Map([['RouterModule', new Set(['forRoot', 'forChild'])]]));
+
+      const entry = addHtmlAdditionalLinks({
+        jsdocTags: [
+          {
+            name: 'see',
+            comment: '{@link /api/router/RouterModule#forRoot forRoot}',
+          },
+        ],
+        moduleName: 'test',
+      });
+
+      expect(entry.additionalLinks[0]).toEqual({
+        label: 'forRoot',
+        url: '/api/router/RouterModule#forRoot',
+      });
+    });
+
+    it('should accept known API section anchors as valid fragments', () => {
+      // `#usage-notes`, `#description`, `#api`, `#pipe-usage` are emitted by the API page
+      // template (`SectionHeading`) and are always present, even if they aren't members.
+      setSymbols({ChangeDetectorRef: 'core'});
+      setSymbolMembers(
+        new Map([['ChangeDetectorRef', new Set(['detectChanges', 'markForCheck'])]]),
+      );
+
+      const entry = addHtmlAdditionalLinks({
+        jsdocTags: [
+          {
+            name: 'see',
+            comment: '{@link /api/core/ChangeDetectorRef#usage-notes Change detection usage}',
+          },
+        ],
+        moduleName: 'test',
+      });
+
+      expect(entry.additionalLinks[0].url).toBe('/api/core/ChangeDetectorRef#usage-notes');
+    });
+
+    it('should throw on a /guide/ link to an unknown page', () => {
+      setDefinedRoutes(['guide/signals/effect', 'guide/signals/effect#use-cases-for-effects']);
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '{@link /guide/signals/non-existent Effect}',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(/Broken link.*Unknown guide page guide\/signals\/non-existent/);
+    });
+
+    it('should throw on a /guide/ link with an unknown #fragment', () => {
+      setDefinedRoutes([
+        'guide/signals/effect',
+        'guide/signals/effect#use-cases-for-effects',
+        'guide/signals/effect#injection-context',
+      ]);
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '{@link /guide/signals/effect#effect-cleanup-functions Effect cleanup}',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(
+        /Broken link.*Page guide\/signals\/effect has no heading with id 'effect-cleanup-functions'/,
+      );
+    });
+
+    it('should throw on a /guide/ link with a miscased #fragment and suggest the correct id', () => {
+      setDefinedRoutes(['guide/signals/effect', 'guide/signals/effect#use-cases-for-effects']);
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '{@link /guide/signals/effect#Use-Cases-For-Effects Use cases}',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(/Broken link.*Did you mean #use-cases-for-effects/);
+    });
+
+    it('should accept a valid /guide/ link with a known #fragment', () => {
+      setDefinedRoutes([
+        'guide/signals/effect',
+        'guide/signals/effect#use-cases-for-effects',
+        'guide/signals/effect#injection-context',
+      ]);
+
+      const entry = addHtmlAdditionalLinks({
+        jsdocTags: [
+          {
+            name: 'see',
+            comment: '{@link /guide/signals/effect#injection-context Injection context}',
+          },
+        ],
+        moduleName: 'test',
+      });
+
+      expect(entry.additionalLinks[0].url).toBe('/guide/signals/effect#injection-context');
+    });
+
+    it('should throw on a markdown @see link to an unknown /guide/ page', () => {
+      setDefinedRoutes(['guide/di', 'guide/di/creating-and-using-services']);
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '[No Existing services guide](guide/di/non-existent-page)',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(/Broken link.*Unknown guide page guide\/di\/non-existent-page/);
+    });
+
+    it('should throw on a markdown @see link with an unknown #fragment', () => {
+      setDefinedRoutes(['guide/di', 'guide/di#dependency-injection-in-angular']);
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '[DI guide](guide/di#non-existent-section)',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(
+        /Broken link.*Page guide\/di has no heading with id 'non-existent-section'/,
+      );
     });
   });
 
   describe('addHtmlDescription', () => {
-    it('should parse markdown in descriptions', async () => {
-      setHighlighterInstance(await initHighlighter());
+    it('should throw on a broken markdown /guide/ link in the description', () => {
+      setDefinedRoutes([
+        'guide/directives/structural-directives',
+        'guide/directives/structural-directives#structural-directive-shorthand',
+      ]);
 
+      const entryFn = () =>
+        addHtmlDescription({
+          description:
+            'See the [shorthand form](guide/directives/structural-directives#bogus-anchor) for details.',
+          moduleName: 'common',
+        });
+
+      expect(entryFn).toThrowError(
+        /Broken link.*Page guide\/directives\/structural-directives has no heading with id 'bogus-anchor'/,
+      );
+    });
+
+    it('should throw on a broken markdown /guide/ link in @usageNotes', () => {
+      setDefinedRoutes(['guide/signals', 'guide/signals#computed-signals']);
+
+      const entryFn = () =>
+        addHtmlUsageNotes({
+          jsdocTags: [
+            {
+              name: 'usageNotes',
+              comment: 'Read the [signals guide](guide/signals/non-existent) for context.',
+            },
+          ],
+        });
+
+      expect(entryFn).toThrowError(/Broken link.*Unknown guide page guide\/signals\/non-existent/);
+    });
+
+    it('should accept a valid markdown /guide/ link in the description', () => {
+      setDefinedRoutes([
+        'guide/directives/structural-directives',
+        'guide/directives/structural-directives#structural-directive-shorthand',
+      ]);
+
+      const entry = addHtmlDescription({
+        description:
+          'See the [shorthand form](guide/directives/structural-directives#structural-directive-shorthand) for details.',
+        moduleName: 'common',
+      });
+
+      expect(entry.htmlDescription).toContain('shorthand form');
+    });
+
+    it('should parse markdown in descriptions', () => {
       setSymbols(
         Object.fromEntries([
           ['Route', 'test'],
