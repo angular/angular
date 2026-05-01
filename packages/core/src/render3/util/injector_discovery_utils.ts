@@ -38,6 +38,7 @@ import {INJECTOR, LView, TVIEW} from '../interfaces/view';
 
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
 import {getNativeByTNode} from './view_utils';
+import {getAllSpecialProviders} from '../debug/special_providers';
 
 /**
  * Discovers the dependencies of an injectable instance. Provides DI information about each
@@ -218,7 +219,15 @@ function getProviderImportsContainer(injector: Injector): Type<unknown> | null {
 function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
   const diResolver = getNodeInjectorTNode(injector);
   const {resolverToProviders} = getFrameworkDIDebugData();
-  return resolverToProviders.get(diResolver as TNode) ?? [];
+  const existingProviders = resolverToProviders.get(diResolver as TNode) ?? [];
+
+  const specialProviders: ProviderRecord[] = Array.from(getAllSpecialProviders()).map((token) => ({
+    token: token as any,
+    isViewProvider: false,
+    provider: token as any,
+  }));
+
+  return [...existingProviders, ...specialProviders];
 }
 
 /**
