@@ -12,7 +12,7 @@ export function getCredentialFilePath(): string {
     
     const tmpDir = mkdtempSync(join(tmpdir(), 'credential-'));
     const filePath = join(tmpDir, 'credential.json');
-    writeFileSync(filePath, serviceKey, {mode: 0o600}); 
+    writeFileSync(filePath, serviceKey, {mode: 0o600}); // restrict permissions
     credentialFilePath = filePath;
   }
   return credentialFilePath;
