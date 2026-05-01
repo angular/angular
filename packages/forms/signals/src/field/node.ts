@@ -313,9 +313,22 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   private _reset(value?: unknown) {
+    // Abort the pending debounce. pendingSync.set(undefined) is NOT enough — it
+    // doesn't call .abort(), so debounceSync's `controller.signal.aborted` stays
+    // false and sync() fires after the debounce, overwriting the reset.
+    this.pendingSync()?.abort();
+
     if (value !== undefined) {
       this.value.set(value);
     }
+
+    // controlValue is a linkedSignal that only auto-resets when value *changes*.
+    // When the reset value equals the current value (or no value was passed),
+    // controlValue retains the typed text. Force it to match value.
+    // markAsDirty() is a side-effect of controlValue.set() but is immediately
+    // undone by markAsPristine() below, and the spawned debounce is a no-op
+    // since controlValue and value are already equal.
+    this.controlValue.set(this.value());
 
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();

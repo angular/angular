@@ -8,6 +8,7 @@
 
 import {Component, computed, effect, Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {FieldNode} from '../../src/field/node';
 import {
   apply,
   applyEach,
@@ -1497,6 +1498,71 @@ describe('FieldNode', () => {
       expect(f().dirty()).toBe(false);
       expect(f.a().dirty()).toBe(false);
       expect(f.a.b().dirty()).toBe(false);
+    });
+
+    it('should immediately update value on reset even if a debounce is pending', async () => {
+      let resolveDebounce: (value: void | PromiseLike<void>) => void;
+      const debouncePromise = new Promise<void>((resolve) => {
+        resolveDebounce = resolve;
+      });
+
+      const model = signal('initial');
+      const f = form(
+        model,
+        (p) => {
+          debounce(p, () => debouncePromise);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // 1. Simulate user input
+      f().controlValue.set('user input');
+
+      // Value should still be 'initial' because of debounce
+      expect(f().value()).toBe('initial');
+
+      // 2. Call reset with a new value
+      f().reset('reset value');
+
+      // Value should be 'reset value' immediately
+      expect(f().value()).toBe('reset value');
+      expect(f().controlValue()).toBe('reset value');
+
+      // 3. Resolve the debounce
+      resolveDebounce!();
+      await Promise.resolve(); // Wait for promise microtasks
+
+      // Value should STILL be 'reset value', not 'user input'
+      expect(f().value()).toBe('reset value');
+    });
+
+    it('should immediately update value on reset when "blur" debounce is pending (Escape key scenario)', () => {
+      const model = signal('initial');
+      const f = form(
+        model,
+        (p) => {
+          debounce(p, 'blur');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Simulate typing: controlValue is updated, but model value is not (pending blur)
+      f().controlValue.set('user input');
+      expect(f().value()).toBe('initial');
+      expect(f().controlValue()).toBe('user input');
+
+      // Simulate Escape key: call reset
+      f().reset('initial');
+
+      // Value should be reset immediately and controlValue should match
+      expect(f().value()).toBe('initial');
+      expect(f().controlValue()).toBe('initial');
+
+      // Simulate blur later
+      f().markAsTouched();
+
+      // Value should still be 'initial'
+      expect(f().value()).toBe('initial');
     });
   });
 });
