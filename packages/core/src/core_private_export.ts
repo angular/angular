@@ -153,6 +153,7 @@ export {
   SharedStylesHost as ɵSharedStylesHost,
 } from './render3/interfaces/shared_styles_host';
 export {
+  chain as ɵchain,
   encapsulateResourceError as ɵencapsulateResourceError,
   ResourceImpl as ɵResourceImpl,
 } from './resource/resource';
