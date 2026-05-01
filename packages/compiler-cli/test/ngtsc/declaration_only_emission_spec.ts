@@ -289,7 +289,7 @@ runInEachFileSystem(() => {
       expect(errors.length).toBe(1);
       expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
       expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+        'In experimental declaration-only emission mode, host directive cannot use indirect external identifiers. Use a direct external identifier instead',
       );
     });
 
@@ -318,7 +318,7 @@ runInEachFileSystem(() => {
       expect(errors.length).toBe(1);
       expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
       expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+        'In experimental declaration-only emission mode, host directive cannot use indirect external identifiers. Use a direct external identifier instead',
       );
     });
 
@@ -344,7 +344,7 @@ runInEachFileSystem(() => {
       expect(errors.length).toBe(1);
       expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
       expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+        'In experimental declaration-only emission mode, host directive cannot use indirect external identifiers. Use a direct external identifier instead',
       );
     });
 
@@ -372,7 +372,7 @@ runInEachFileSystem(() => {
       expect(errors.length).toBe(1);
       expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
       expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+        'In experimental declaration-only emission mode, host directive cannot use indirect external identifiers. Use a direct external identifier instead',
       );
     });
 
