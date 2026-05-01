@@ -23,8 +23,8 @@ import type {FormField} from './form_field';
 import {InputValidityMonitor} from './input_validity_monitor';
 import {
   getNativeControlValue,
-  isInput,
   inputRequiresValidityTracking,
+  isInput,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -91,10 +91,6 @@ export function nativeControlCreate(
 
   return () => {
     const state = parent.state();
-    const controlValue = state.controlValue();
-    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
-      setNativeControlValue(input, controlValue);
-    }
 
     for (const name of CONTROL_BINDING_NAMES) {
       const value = readFieldStateBindingValue(state, name);
@@ -104,6 +100,12 @@ export function nativeControlCreate(
           setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
         }
       }
+    }
+
+    // We need to update the value after setting the attributes as some attributes like min/max might prevent from setting the value
+    const controlValue = state.controlValue();
+    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
+      setNativeControlValue(input, controlValue);
     }
 
     updateMode = true;
