@@ -16,6 +16,7 @@ import {
   EnvironmentInjector,
   inject,
   Injectable,
+  untracked,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
   PendingTasks,
@@ -117,14 +118,15 @@ export class HttpInterceptorHandler implements HttpHandler {
       );
     }
 
+    const chain = this.chain;
     if (this.contributeToStability) {
       const removeTask = this.pendingTasks.add();
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
+      return untracked(() =>
+        chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
       ).pipe(finalize(removeTask));
     } else {
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
+      return untracked(() =>
+        chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
       );
     }
   }
