@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, ResourceRef, ResourceSnapshot, Signal, debounced} from '@angular/core';
+import {
+  computed,
+  DebounceTimer,
+  ResourceRef,
+  ResourceSnapshot,
+  Signal,
+  debounced,
+  ɵchain,
+} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -127,7 +135,8 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     (_state, params) => {
       if (opts.debounce !== undefined) {
         const debouncedResource = debounced(() => params(), opts.debounce);
-        return opts.factory(debouncedResource.value);
+        const wrappedParams = computed(() => ɵchain(debouncedResource));
+        return opts.factory(wrappedParams);
       }
       return opts.factory(params);
     },

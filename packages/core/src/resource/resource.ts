@@ -598,19 +598,21 @@ class ResourceWrappedError extends Error {
  * of the other resource if it is available, or propagating the status to the current resource if it
  * is not.
  */
+export function chain<T>(resource: Resource<T>): T {
+  switch (resource.status()) {
+    case 'idle':
+      throw ResourceParamsStatus.IDLE;
+    case 'error':
+      throw new ResourceDependencyError(resource);
+    case 'loading':
+    case 'reloading':
+      throw ResourceParamsStatus.LOADING;
+  }
+  return resource.value();
+}
+
 export const paramsContext: ResourceParamsContext = {
-  chain<T>(resource: Resource<T>): T {
-    switch (resource.status()) {
-      case 'idle':
-        throw ResourceParamsStatus.IDLE;
-      case 'error':
-        throw new ResourceDependencyError(resource);
-      case 'loading':
-      case 'reloading':
-        throw ResourceParamsStatus.LOADING;
-    }
-    return resource.value();
-  },
+  chain,
 };
 
 let inParamsFunction = false;
