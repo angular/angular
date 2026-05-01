@@ -13,18 +13,16 @@ Angular components, directives, and services automatically participate in DI.
 
 ## Services
 
-A **service** is the most common way to share data and functionality across an application. It is a TypeScript class decorated with `@Injectable()`.
+A **service** is the most common way to share data and functionality across an application. It is a TypeScript class decorated with `@Service()`.
 
 ### Creating a Service
 
-Use the `providedIn: 'root'` option in the `@Injectable` decorator to make the service a singleton available throughout the entire application. This is the recommended approach for most services.
+Use the `@Service` decorator to make the service a singleton available throughout the entire application. This is the recommended approach for most services.
 
 ```ts
 import {Injectable} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root', // Makes this a singleton available everywhere
-})
+@Service() // Makes this a singleton available everywhere
 export class AnalyticsLogger {
   trackEvent(category: string, value: string) {
     console.log('Analytics event logged:', {category, value});
@@ -107,7 +105,7 @@ export class MyDirective {
 }
 
 // 3. In a Service
-@Injectable({providedIn: 'root'})
+@Service()
 export class MyService {
   private http = inject(HttpClient); // ✅ Field initializer
 }

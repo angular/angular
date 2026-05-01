@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject, linkedSignal, signal} from '@angular/core';
-import {NavigationItem} from '../interfaces/index';
+import {Service, inject, linkedSignal, signal} from '@angular/core';
 import {Router} from '@angular/router';
+import {NavigationItem} from '../interfaces/index';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class NavigationState {
   private readonly router = inject(Router);
 

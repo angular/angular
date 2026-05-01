@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 import {Diagnostic} from '@codemirror/lint';
 import {BehaviorSubject, distinctUntilChanged} from 'rxjs';
 
@@ -15,9 +15,7 @@ export interface DiagnosticWithLocation extends Diagnostic {
   characterPosition: number;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class DiagnosticsState {
   private readonly _diagnostics$ = new BehaviorSubject<DiagnosticWithLocation[]>([]);
 
