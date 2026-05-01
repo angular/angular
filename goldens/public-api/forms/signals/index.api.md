@@ -48,7 +48,7 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
     readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
-    readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
+    readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams | undefined;
 }
 
 // @public
