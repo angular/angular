@@ -7,7 +7,15 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {inject, Injectable, InjectionToken, NgZone, OnDestroy, untracked} from '@angular/core';
+import {
+  inject,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  OnDestroy,
+  untracked,
+  ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
+} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {
@@ -35,6 +43,9 @@ export class RouterScroller implements OnDestroy {
   private lastSource: NavigationTrigger | undefined = IMPERATIVE_NAVIGATION;
   private restoredId = 0;
   private store: {[key: string]: [number, number]} = {};
+  private initialNavigationConsumed = false;
+
+  private readonly isHydrating = inject(IS_HYDRATION_DOM_REUSE_ENABLED, {optional: true}) ?? false;
 
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly zone = inject(NgZone);
@@ -101,8 +112,13 @@ export class RouterScroller implements OnDestroy {
         if (e.anchor && this.options.anchorScrolling === 'enabled') {
           this.viewportScroller.scrollToAnchor(e.anchor);
         } else if (this.options.scrollPositionRestoration !== 'disabled') {
-          this.viewportScroller.scrollToPosition([0, 0]);
+          // skip scrolling to top on the initial navigation when hydrating—the
+          // user may have already scrolled on the SSR-rendered page.
+          if (!this.isHydrating || this.initialNavigationConsumed) {
+            this.viewportScroller.scrollToPosition([0, 0]);
+          }
         }
+        this.initialNavigationConsumed = true;
       }
     });
   }
