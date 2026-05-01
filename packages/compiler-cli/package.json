@@ -40,7 +40,7 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "typescript": "6.0.2",
+    "typescript": "6.0.3",
     "@types/convert-source-map": "^2.0.0"
   },
   "peerDependencies": {
