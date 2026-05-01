@@ -43,7 +43,10 @@ export const PRECOMMIT_HANDLER_SUPPORTED = new InjectionToken<boolean>('', {
  *
  * @experimental 21.0.0
  */
-@Injectable({providedIn: 'platform', useFactory: () => (window as any).navigation})
+@Injectable({
+  providedIn: 'platform',
+  useFactory: () => (typeof window !== 'undefined' ? (window as any).navigation : undefined),
+})
 export abstract class PlatformNavigation implements Navigation {
   abstract entries(): NavigationHistoryEntry[];
   abstract currentEntry: NavigationHistoryEntry | null;

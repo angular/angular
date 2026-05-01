@@ -398,7 +398,11 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
       // we would need to perform a replaceState under the hood, and that would cancel/reject
       // the traversal NavigateEvent and break scroll and focus restoration.
       if (browserAPI === 'history') {
-        expect((location.getState() as any).navigationId).toBeDefined();
+        // Router prefers `navigation.currentEntry.getState()` when available
+        // (writes via `navigation.updateCurrentEntry` for same-path entries).
+        const navState = TestBed.inject(PlatformNavigation).currentEntry?.getState() as any;
+        const state = navState ?? (location.getState() as any);
+        expect(state.navigationId).toBeDefined();
       }
     });
 

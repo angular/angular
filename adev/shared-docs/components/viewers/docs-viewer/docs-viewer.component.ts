@@ -84,6 +84,7 @@ export class DocViewer {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private countOfExamples = 0;
+  private firstContentRenderHandled = false;
 
   constructor() {
     effect(async () => {
@@ -97,7 +98,15 @@ export class DocViewer {
     const contentContainer = this.elementRef.nativeElement;
 
     if (content) {
-      if (this.isBrowser && !(this.document as any).startViewTransition) {
+      // On the very first non-empty render, the SSG/SSR pass has already put the
+      // same markdown into the container. Replacing `innerHTML` with identical
+      // content destroys the existing text nodes — and any browser-applied state
+      // anchored to them, notably the `Range` backing a `:~:text=` highlight.
+      // Reuse the existing DOM on this first tick instead.
+      const reuseSsgDom = !this.firstContentRenderHandled && contentContainer.childElementCount > 0;
+      this.firstContentRenderHandled = true;
+
+      if (this.isBrowser && !reuseSsgDom && !(this.document as any).startViewTransition) {
         // Apply a special class to the host node to trigger animation.
         // Note: when a page is hydrated, the `content` would be empty,
         // so we don't trigger an animation to avoid a content flickering
@@ -105,7 +114,9 @@ export class DocViewer {
         this.animateContent = true;
       }
 
-      contentContainer.innerHTML = content;
+      if (!reuseSsgDom) {
+        contentContainer.innerHTML = content;
+      }
     }
 
     if (this.isBrowser) {

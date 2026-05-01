@@ -105,6 +105,15 @@ export class Location implements OnDestroy {
 
   /**
    * Reports the current state of the location history.
+   *
+   * Note: this returns `history.state`. When the Navigation API is available,
+   * `Router` may write same-path state via `navigation.updateCurrentEntry` to
+   * avoid rewriting the URL (which preserves browser-applied augmentations
+   * like `:~:text=` text-fragment directives). State written that way lives
+   * on `navigation.currentEntry` and is **not** reflected here. Read it with
+   * `navigation.currentEntry?.getState()` instead, or use Router's own state
+   * APIs which already account for the split.
+   *
    * @returns The current value of the `history.state` object.
    */
   getState(): unknown {

@@ -616,13 +616,13 @@ export class FakeNavigation implements Navigation {
 
   set oncurrententrychange(
     _handler: // tslint:disable-next-line:no-any
-    ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
+      ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
   ) {
     throw new Error('unimplemented');
   }
 
   get oncurrententrychange(): // tslint:disable-next-line:no-any
-  ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
+    ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
     throw new Error('unimplemented');
   }
 
@@ -659,8 +659,16 @@ export class FakeNavigation implements Navigation {
     return this._transition;
   }
 
-  updateCurrentEntry(_options: NavigationUpdateCurrentEntryOptions): void {
-    throw new Error('unimplemented');
+  updateCurrentEntry(options: NavigationUpdateCurrentEntryOptions): void {
+    // Spec: updates the current entry's state in place without changing the URL,
+    // and synchronously fires `currententrychange` with `navigationType: null`
+    // and `from === currentEntry`.
+    this.currentEntry._setStateForTesting(options.state);
+    const event = createFakeNavigationCurrentEntryChangeEvent({
+      from: this.currentEntry,
+      navigationType: null as unknown as NavigationTypeString,
+    });
+    this.eventTarget.dispatchEvent(event);
   }
 
   reload(_options?: NavigationReloadOptions): NavigationResult {
@@ -686,7 +694,7 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
   readonly id: string;
   readonly key: string;
   readonly index: number;
-  private readonly state: unknown;
+  private state: unknown;
   private readonly historyState: unknown;
 
   // tslint:disable-next-line:no-any
@@ -722,6 +730,11 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
   getState(): unknown {
     // Budget copy.
     return this.state ? (JSON.parse(JSON.stringify(this.state)) as unknown) : this.state;
+  }
+
+  /** @internal */
+  _setStateForTesting(state: unknown): void {
+    this.state = state;
   }
 
   getHistoryState(): unknown {

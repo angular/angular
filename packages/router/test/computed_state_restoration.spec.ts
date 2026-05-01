@@ -25,9 +25,13 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       const entries = navigation.entries();
       expect(entries.indexOf(navigation.currentEntry!)).toBe(index);
     } else {
-      expect(TestBed.inject(Location).getState()).toEqual(
-        jasmine.objectContaining({ɵrouterPageId: index}),
-      );
+      // Router prefers `navigation.currentEntry.getState()` when available
+      // (writes via `navigation.updateCurrentEntry` to keep browser-applied
+      // URL augmentations like `:~:text=` directives intact). Fall back to
+      // `Location.getState()` otherwise.
+      const navState = TestBed.inject(PlatformNavigation).currentEntry?.getState();
+      const state = navState ?? TestBed.inject(Location).getState();
+      expect(state).toEqual(jasmine.objectContaining({ɵrouterPageId: index}));
     }
   };
 
