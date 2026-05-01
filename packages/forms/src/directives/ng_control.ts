@@ -20,7 +20,7 @@ import {
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import type {AbstractControl} from '../model/abstract_model';
+import {FormResetEvent, type AbstractControl} from '../model/abstract_model';
 import type {FormControl} from '../model/form_control';
 
 import {AbstractControlDirective} from './abstract_control_directive';
@@ -29,17 +29,20 @@ import {ControlValueAccessor} from './control_value_accessor';
 import {isNativeFormElement, setNativeDomProperty, type NativeFormControl} from './native';
 import {ReactiveValidationError} from './reactive_validation_error';
 import {RequiredValidator, ValidationErrors, ValidatorFn} from './validators';
-import {selectValueAccessor, ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS} from './shared';
+import {selectValueAccessor, ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION} from './shared';
 
 type ParseError = {readonly kind: string};
 
-export const NG_CONTROL_PARSE_ERRORS_PROVIDER: Provider = {
-  provide: FORM_FIELD_PARSE_ERRORS,
+export const NG_CONTROL_INTEGRATION_PROVIDER: Provider = {
+  provide: FORM_CONTROL_INTEGRATION,
   useFactory: () => {
     const control = inject(NgControl, {self: true});
     return {
-      set: (source: Signal<ReadonlyArray<ParseError>> | undefined) => {
+      setParseErrors: (source: Signal<ReadonlyArray<ParseError>> | undefined) => {
         control.setParseErrorSource(source);
+      },
+      set onReset(callback: (value?: unknown) => void) {
+        control.onReset = callback;
       },
     };
   },
@@ -74,6 +77,26 @@ export abstract class NgControl extends AbstractControlDirective {
   valueAccessor: ControlValueAccessor | null = null;
 
   protected isCustomControlBased = false;
+
+  private userOnReset?: (value?: unknown) => void;
+  private resetSubscription?: Subscription;
+
+  /** @internal */
+  set onReset(callback: (value?: unknown) => void) {
+    this.userOnReset = callback;
+
+    this.resetSubscription?.unsubscribe();
+    this.resetSubscription = undefined;
+
+    if (this.control) {
+      this.resetSubscription = this.control.events.subscribe((event) => {
+        if (event instanceof FormResetEvent && this.control) {
+          this.userOnReset?.(this.control.value);
+        }
+      });
+      this.subscription?.add(this.resetSubscription);
+    }
+  }
   private isNativeFormElement = false;
 
   /**
@@ -162,6 +185,18 @@ export abstract class NgControl extends AbstractControlDirective {
 
     this.subscription.add(this.control.valueChanges.subscribe(markForCheck));
     this.subscription.add(this.control.statusChanges.subscribe(markForCheck));
+
+    this.resetSubscription?.unsubscribe();
+    this.resetSubscription = undefined;
+    if (this.userOnReset) {
+      this.resetSubscription = this.control.events.subscribe((event) => {
+        if (event instanceof FormResetEvent && this.control) {
+          this.userOnReset?.(this.control.value);
+        }
+      });
+      this.subscription.add(this.resetSubscription);
+    }
+
     // Add parseErrors validator if present
     if (this.parseErrorsValidator) {
       this.control.addValidators(this.parseErrorsValidator);

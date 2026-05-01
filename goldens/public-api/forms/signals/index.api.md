@@ -172,6 +172,7 @@ export class FormField<T> {
     focus(options?: FocusOptions): void;
     readonly injector: Injector;
     registerAsBinding(bindingOptions?: FormFieldBindingOptions): void;
+    reset(): void;
     readonly state: Signal<FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", ["formField"], { "field": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
@@ -190,6 +191,7 @@ export interface FormFieldBinding {
 // @public (undocumented)
 export interface FormFieldBindingOptions {
     readonly focus?: (focusOptions?: FocusOptions) => void;
+    readonly reset?: () => void;
 }
 
 // @public
@@ -242,6 +244,7 @@ export interface FormUiControl {
     readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    reset?(): void;
     readonly touch?: OutputRef<void>;
     readonly touched?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
 }

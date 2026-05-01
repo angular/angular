@@ -16,7 +16,7 @@ import {
 import {createParser} from '../util/parser';
 import type {ValidationError} from './rules';
 import type {OneOrMany} from './types';
-import {ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS} from '@angular/forms';
+import {ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION} from '@angular/forms';
 
 /**
  * Result of parsing a raw value into a model value.
@@ -118,12 +118,6 @@ export function transformedValue<TValue, TRaw>(
   const {parse, format} = options;
   const parser = createParser(value, value.set, parse);
 
-  // Wire up the parse errors from the parser to the form field.
-  const formFieldParseErrors = inject(FORM_FIELD_PARSE_ERRORS, {self: true, optional: true});
-  if (formFieldParseErrors) {
-    formFieldParseErrors.set(parser.errors);
-  }
-
   // Create the result signal with overridden set/update and a `parseErrors` property.
   const rawValue = linkedSignal(() => format(value()));
   const result = rawValue as WritableSignal<TRaw> & {
@@ -131,6 +125,17 @@ export function transformedValue<TValue, TRaw>(
   };
   result.parseErrors = parser.errors;
   const originalSet = result.set.bind(result);
+
+  // Wire up the integration with the form control (parse errors and reset handling).
+  const integration = inject(FORM_CONTROL_INTEGRATION, {self: true, optional: true});
+  if (integration) {
+    integration.setParseErrors(parser.errors);
+    integration.onReset = (resetValue) => {
+      parser.reset();
+      const modelValue = resetValue !== undefined ? resetValue : value();
+      originalSet(format(modelValue));
+    };
+  }
 
   // Notify the parser when `set` or `update` is called on the raw value
   result.set = (newRawValue: TRaw) => {

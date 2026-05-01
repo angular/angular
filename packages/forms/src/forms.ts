@@ -51,7 +51,8 @@ export {
 export {
   selectValueAccessor as ɵselectValueAccessor,
   SetDisabledStateOption,
-  ɵFORM_FIELD_PARSE_ERRORS,
+  ɵFORM_CONTROL_INTEGRATION,
+  ɵFormControlIntegration,
 } from './directives/shared';
 export {
   AsyncValidator,

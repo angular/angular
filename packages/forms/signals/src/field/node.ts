@@ -338,6 +338,10 @@ export class FieldNode implements FieldState<unknown> {
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();
 
+    for (const binding of this.formFieldBindings()) {
+      binding.reset();
+    }
+
     for (const child of this.structure.materializedChildren()) {
       child._reset();
     }
@@ -370,16 +374,20 @@ export class FieldNode implements FieldState<unknown> {
    */
   private controlValueSignal(): ControlValueSignal<unknown> {
     const controlValue = linkedSignal(this.value) as ControlValueSignal<unknown>;
-    const {set, update} = controlValue;
 
-    controlValue.rawSet = set;
+    controlValue.rawSet = controlValue.set;
     controlValue.set = (newValue) => {
-      set(newValue);
+      // We intentionally allow same-value updates here to ensure that setting the control value
+      // (even to the same value) still marks the control as dirty.
+      controlValue.rawSet(newValue);
       this.markAsDirty();
       this.debounceSync();
     };
+    const rawUpdate = controlValue.update;
     controlValue.update = (updateFn) => {
-      update(updateFn);
+      // We intentionally allow same-value updates here to ensure that updating the control value
+      // (even to the same value) still marks the control as dirty.
+      rawUpdate(updateFn);
       this.markAsDirty();
       this.debounceSync();
     };

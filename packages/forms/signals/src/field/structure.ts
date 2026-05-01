@@ -122,13 +122,16 @@ export abstract class FieldNodeStructure {
    *
    * This is useful for iterating over children without triggering materialization of children
    * that haven't been accessed yet.
+   *
+   * Note: This method assumes it is called within an untracked context (or in a non-reactive context)
+   * as it reads signals without wrapping them in `untracked()`.
    */
   materializedChildren(): readonly FieldNode[] {
-    const map = untracked(() => this.childrenMap());
+    const map = this.childrenMap();
     if (map === undefined) {
       return [];
     }
-    return Array.from(map.byPropertyKey.values()).map((child) => untracked(child.reader)!);
+    return Array.from(map.byPropertyKey.values()).map((child) => child.node);
   }
 
   /**

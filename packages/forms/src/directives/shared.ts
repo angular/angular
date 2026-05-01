@@ -25,13 +25,19 @@ import type {FormArrayName} from './reactive_directives/form_group_name';
 import {ngModelWarning} from './reactive_errors';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
+export interface ɵFormControlIntegration {
+  readonly setParseErrors: (
+    value: Signal<ReadonlyArray<{readonly kind: string}>> | undefined,
+  ) => void;
+  onReset?: (value?: any) => void;
+}
+
 /**
- * DI token that provides a writable signal that controls can use to set the signal of parse errors
- * for the `FormField` directive or reactive directives. Used internally by `transformedValue`.
+ * DI token that provides the ɵFormControlIntegration context for FVC/UI controls.
  */
-export const ɵFORM_FIELD_PARSE_ERRORS = new InjectionToken<{
-  readonly set: (value: Signal<ReadonlyArray<{readonly kind: string}>> | undefined) => void;
-}>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_FIELD_PARSE_ERRORS' : '');
+export const ɵFORM_CONTROL_INTEGRATION = new InjectionToken<ɵFormControlIntegration>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_CONTROL_INTEGRATION' : '',
+);
 
 /**
  * Token to provide to allow SetDisabledState to always be called when a CVA is added, regardless of

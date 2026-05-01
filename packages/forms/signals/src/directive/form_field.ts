@@ -27,10 +27,9 @@ import {
 } from '@angular/core';
 import {
   type ControlValueAccessor,
-  NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   NgControl,
-  ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS,
+  ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION,
   ɵselectValueAccessor as selectValueAccessor,
 } from '@angular/forms';
 import {type ValidationError} from '../api/rules';
@@ -39,6 +38,7 @@ import {InteropNgControl} from '../controls/interop_ng_control';
 import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
+import type {FormUiControl} from '../api/control';
 import {shallowArrayEquals} from '../util/array';
 import {bindingUpdated, type ControlBindingKey, createBindings} from './bindings';
 import {customControlCreate} from './control_custom';
@@ -62,6 +62,10 @@ export interface FormFieldBindingOptions {
    * asked to focus this binding.
    */
   readonly focus?: (focusOptions?: FocusOptions) => void;
+  /**
+   * Resets the binding.
+   */
+  readonly reset?: () => void;
 }
 
 /**
@@ -100,8 +104,8 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
     {provide: FORM_FIELD, useExisting: FormField},
     {provide: NgControl, useFactory: () => inject(FormField).interopNgControl},
     {
-      provide: FORM_FIELD_PARSE_ERRORS,
-      useFactory: () => inject(FormField).parseErrorsSource,
+      provide: FORM_CONTROL_INTEGRATION,
+      useFactory: () => inject(FORM_FIELD, {self: true}),
     },
   ],
 })
@@ -195,6 +199,28 @@ export class FormField<T> {
   private isFieldBinding = false;
 
   /**
+   * Current reset implementation, set by `registerAsBinding`.
+   */
+  private resetter = () => {};
+
+  private parseErrorsResetCallback?: (value?: unknown) => void;
+
+  /** @internal */
+  setParseErrors(source: Signal<ReadonlyArray<{readonly kind: string}>> | undefined): void {
+    this.parseErrorsSource.set(source);
+  }
+
+  /** @internal */
+  set onReset(callback: ((value?: unknown) => void) | undefined) {
+    this.parseErrorsResetCallback = callback;
+  }
+
+  /** @internal */
+  get onReset(): ((value?: unknown) => void) | undefined {
+    return this.parseErrorsResetCallback;
+  }
+
+  /**
    * A `ControlValueAccessor`, if configured, for the host component.
    *
    * @internal
@@ -258,6 +284,14 @@ export class FormField<T> {
   }
 
   /**
+   * Resets the bound control.
+   */
+  reset(): void {
+    this.resetter();
+    this.parseErrorsResetCallback?.(this.state().value());
+  }
+
+  /**
    * Registers this `FormField` as a binding on its associated `FieldState`.
    *
    * This method should be called at most once for a given `FormField`. A `FormField` placed on a
@@ -278,6 +312,10 @@ export class FormField<T> {
 
     if (bindingOptions?.focus) {
       this.focuser = (focusOptions?: FocusOptions) => bindingOptions.focus!(focusOptions);
+    }
+
+    if (bindingOptions?.reset) {
+      this.resetter = () => bindingOptions.reset!();
     }
 
     // Register this control on the field state it is currently bound to. We do this at the end of

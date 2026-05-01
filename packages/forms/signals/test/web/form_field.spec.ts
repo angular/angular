@@ -57,6 +57,7 @@ import {
   required,
   requiredError,
   validateAsync,
+  transformedValue,
   type DisabledReason,
   type Field,
   type FormCheckboxControl,
@@ -5772,6 +5773,7 @@ describe('field directive', () => {
       expect(input.classList.contains('ng-invalid')).toBe(false);
 
       // Make it dirty
+      input.value = 'dirty';
       act(() => input.dispatchEvent(new Event('input')));
       expect(input.classList.contains('ng-dirty')).toBe(true);
       expect(input.classList.contains('ng-pristine')).toBe(false);
@@ -5898,6 +5900,170 @@ describe('field directive', () => {
 
     const select = fixture.debugElement.parent!.nativeElement.querySelector('select');
     expect(select.value).toBe('us');
+  });
+
+  describe('reset', () => {
+    it('should call reset on bound custom control', () => {
+      let resetCalled = false;
+
+      @Component({
+        selector: 'custom-control',
+        template: '',
+      })
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model.required<string>();
+        reset() {
+          resetCalled = true;
+        }
+      }
+
+      @Component({
+        template: ` <custom-control [formField]="f.child" /> `,
+        imports: [CustomControl, FormField],
+      })
+      class TestCmp {
+        readonly data = signal({child: 'initial'});
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const comp = fixture.componentInstance;
+
+      expect(resetCalled).toBe(false);
+
+      act(() => comp.f().reset());
+
+      expect(resetCalled).toBe(true);
+    });
+
+    it('should automatically reset transformedValue on field reset', () => {
+      // --- 1. Component Setup ---
+      // A custom UI control using the FVC pattern and `transformedValue` to validate parses.
+      @Component({
+        selector: 'custom-control',
+        template: `<input #i [value]="rawValue()" (input)="rawValue.set(i.value)" />`,
+      })
+      class CustomControl implements FormValueControl<number | null> {
+        readonly value = model.required<number | null>();
+        // The `transformedValue` acts as the local view model. It isolates UI string states
+        // from numeric model states and hooks up parse validation.
+        protected readonly rawValue = transformedValue(this.value, {
+          parse: (val) => {
+            if (val === '') return {value: null};
+            const num = Number(val);
+            if (Number.isNaN(num)) {
+              return {error: {kind: 'parse', message: `${val} is not numeric`}};
+            }
+            return {value: num};
+          },
+          format: (val) => val?.toString() ?? '',
+        });
+        getRawValueSignal() {
+          return this.rawValue;
+        }
+      }
+
+      @Component({
+        template: ` <custom-control [formField]="f" /> `,
+        imports: [CustomControl, FormField],
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(10);
+        readonly f = form(this.data);
+        readonly control = viewChild.required(CustomControl);
+      }
+
+      // --- 2. Initial Expectations ---
+      // Model-to-UI successfully initializes both DOM value and validator states to valid.
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const comp = fixture.componentInstance;
+      const fvc = comp.control;
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      expect(input.value).toBe('10');
+      expect(comp.f().errors().length).toBe(0);
+
+      // --- 3. Simulating Parsing Error in UI ---
+      // User types "abc" (invalid number string) in the input element.
+      act(() => {
+        input.value = 'abc';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      // Parse Validation expected outcomes:
+      // - DOM element retains the invalid UI string.
+      // - Model value retains the last valid state (remains 10).
+      // - Parser flags a parsing validation error that surfaces to the field's active errors list.
+      expect(input.value).toBe('abc');
+      expect(comp.data()).toBe(10);
+      expect(comp.f().errors().length).toBe(1);
+      expect(comp.f().errors()[0].kind).toBe('parse');
+
+      // --- 4. Execute Imperative Field Reset ---
+      // Reset the field. Because we reset to the current model value (10), this verifies
+      // the case where the model doesn't change, but the UI was out of sync with a parse error!
+      act(() => comp.f().reset());
+
+      // Model-to-UI Reset expected outcomes:
+      // - The parse validation state and error lists are automatically cleared.
+      // - The UI rawValue signal is cleanly forced back to the formatted model value (10).
+      // - The DOM element value accurately reflects the model value, resolving the out-of-sync state.
+      // - The reset callback operates under the hood utilizing the native original set, ensuring
+      //   no UI-to-model write loopbacks happen to trigger redundant output events or re-sync loops.
+      expect(comp.f().errors().length).toBe(0);
+      expect(fvc().getRawValueSignal()()).toBe('10');
+      expect(input.value).toBe('10');
+    });
+
+    it('should automatically reset native control parser errors on field reset', () => {
+      // --- 1. Component Setup ---
+      // A native <input> with a text-like binding mapped to a numeric model signal field.
+      // This verifies the built-in text-to-numeric native element parser flow inside the framework.
+      @Component({
+        template: `<input type="text" [formField]="f" />`,
+        imports: [FormField],
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(10);
+        readonly f = form(this.data);
+      }
+
+      // --- 2. Initial Expectations ---
+      // Model value successfully initializes the native DOM element and validates to true.
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const comp = fixture.componentInstance;
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      expect(input.value).toBe('10');
+      expect(comp.f().errors().length).toBe(0);
+
+      // --- 3. Simulating Parsing Error in UI ---
+      // User types "abc" in the numeric text element.
+      act(() => {
+        input.value = 'abc';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      // Native Parse Validation expected outcomes:
+      // - DOM retains the invalid user input.
+      // - Model retains valid state (remains 10).
+      // - Native parser flags a parsing validation error on the native input directive.
+      expect(input.value).toBe('abc');
+      expect(comp.data()).toBe(10);
+      expect(comp.f().errors().length).toBe(1);
+      expect(comp.f().errors()[0].kind).toBe('parse');
+
+      // --- 4. Execute Imperative Field Reset ---
+      // Reset the field back to 10 (resetting to the same model value).
+      act(() => comp.f().reset());
+
+      // Native Reset expected outcomes:
+      // - Native parser errors are successfully cleared and the field returns to valid status.
+      // - The DOM value is immediately synchronized back to 10, forcing the DOM and model into
+      //   sync even when change detection skips re-writing (as the model value didn't change!).
+      expect(comp.f().errors().length).toBe(0);
+      expect(input.value).toBe('10');
+    });
   });
 });
 

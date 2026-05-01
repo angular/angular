@@ -53,6 +53,12 @@ export function nativeControlCreate(
   );
 
   parseErrorsSource.set(parser.errors);
+  parent.onReset = () => {
+    parser.reset();
+    const value = parent.state().value();
+    bindings['controlValue'] = value;
+    setNativeControlValue(input, value);
+  };
   // Pass undefined as the raw value since the parse function doesn't care about it.
   host.listenToDom('input', () => parser.setRawValue(undefined));
   host.listenToDom('blur', () => parent.state().markAsTouched());
