@@ -130,7 +130,7 @@
     "tinyglobby": "^0.2.12",
     "tslib": "^2.3.0",
     "tslint": "6.1.3",
-    "typescript": "6.0.2",
+    "typescript": "6.0.3",
     "ws": "^8.15.0",
     "yargs": "^18.0.0",
     "zone.js": "0.16.1"
@@ -168,7 +168,7 @@
     "tslint-no-toplevel-property-access": "0.0.2"
   },
   "resolutions": {
-    "typescript": "6.0.2"
+    "typescript": "6.0.3"
   },
   "pnpm": {
     "patchedDependencies": {},
