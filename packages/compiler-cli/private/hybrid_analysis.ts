@@ -28,3 +28,4 @@ export {
   SymbolBoundTarget,
   SymbolDirectiveMeta,
 } from '../src/ngtsc/typecheck/src/template_symbol_builder';
+export {analyzeTemplateForSelectorless} from '../src/ngtsc/annotations/component/src/selectorless';
