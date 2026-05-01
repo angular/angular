@@ -476,7 +476,8 @@ function trackTrigger(
   if (allTriggers[name]) {
     errors.push(new ParseError(trigger.sourceSpan, `Duplicate "${name}" trigger is not allowed`));
   } else {
-    allTriggers[name] = trigger as any;
+    (allTriggers as Record<keyof t.DeferredBlockTriggers, t.DeferredTrigger | undefined>)[name] =
+      trigger;
   }
 }
 
