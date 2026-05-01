@@ -78,7 +78,13 @@ export function cvaControlCreate(
     );
   }
 
-  parent.registerAsBinding();
+  parent.registerAsBinding({
+    reset: () => {
+      const value = parent.state().value();
+      bindings['controlValue'] = value;
+      untracked(() => parent.controlValueAccessor!.writeValue(value));
+    },
+  });
 
   return () => {
     const fieldState = parent.state();
