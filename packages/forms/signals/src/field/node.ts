@@ -320,6 +320,10 @@ export class FieldNode implements FieldState<unknown> {
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();
 
+    for (const binding of this.formFieldBindings()) {
+      binding.reset();
+    }
+
     for (const child of this.structure.children()) {
       child._reset();
     }

@@ -123,6 +123,10 @@ export interface FormUiControl {
    * when asked to focus this control.
    */
   focus?(options?: FocusOptions): void;
+  /**
+   * Resets the UI control to its pristine state.
+   */
+  reset?(): void;
 }
 
 // Verify that `FormUiControl` implements `FormFieldBindingOptions`.

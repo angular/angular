@@ -23,6 +23,10 @@ export interface Parser<TRaw> {
    * Parses the given raw value and updates the underlying model value if successful.
    */
   setRawValue: (rawValue: TRaw) => void;
+  /**
+   * Resets the parser errors.
+   */
+  readonly reset: () => void;
 }
 
 /**
@@ -54,5 +58,9 @@ export function createParser<TValue, TRaw>(
     errors.set(normalizeErrors(result.error));
   };
 
-  return {errors: errors.asReadonly(), setRawValue};
+  const reset = () => {
+    errors.set([]);
+  };
+
+  return {errors: errors.asReadonly(), setRawValue, reset};
 }
