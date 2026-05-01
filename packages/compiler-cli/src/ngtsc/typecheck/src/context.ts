@@ -746,7 +746,9 @@ class InlineTcbOp implements Op {
       this.oobRecorder,
     );
 
-    return fn;
+    // A leading newline is required so that the generated TCB isn't accidentally
+    // appended as part of a trailing single-line comment (e.g. `// comment`).
+    return `\n${fn}`;
   }
 }
 
