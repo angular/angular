@@ -285,6 +285,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * destroyed and replaced.
    */
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective | null>>();
+  private generatedRangeCache = new Map<AbsoluteFsPath, ts.TextRange[]>();
 
   private isComplete = false;
   private priorResultsAdopted = false;
@@ -595,6 +596,58 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.ensureAllShimsForAllFiles();
   }
 
+  private getGeneratedCodeRanges(sf: ts.SourceFile): ts.TextRange[] {
+    const shimPath = absoluteFromSourceFile(sf);
+    if (this.generatedRangeCache.has(shimPath)) {
+      return this.generatedRangeCache.get(shimPath)!;
+    }
+
+    const ranges: ts.TextRange[] = [];
+    const visit = (node: ts.Node) => {
+      if (ts.isFunctionDeclaration(node) && node.name !== undefined) {
+        const name = node.name.text;
+        if (name.startsWith('_tcb') || name.startsWith('_ctor') || name.startsWith('_pipe')) {
+          ranges.push({pos: node.getFullStart(), end: node.getEnd()});
+          return;
+        }
+      }
+      if (
+        ts.isMethodDeclaration(node) &&
+        ts.isIdentifier(node.name) &&
+        node.name.text === 'ngTypeCtor'
+      ) {
+        ranges.push({pos: node.getFullStart(), end: node.getEnd()});
+        return;
+      }
+      if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+        const name = node.name.text;
+        if (name.startsWith('_ctor') || name.startsWith('_pipe')) {
+          ranges.push({pos: node.getFullStart(), end: node.getEnd()});
+          return;
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    ts.forEachChild(sf, visit);
+
+    this.generatedRangeCache.set(shimPath, ranges);
+    return ranges;
+  }
+
+  private filterShimDiagnostics(
+    shimSf: ts.SourceFile,
+    semanticDiagnostics: readonly ts.Diagnostic[],
+  ): readonly ts.Diagnostic[] {
+    if (this.programDriver.inliningMode !== InliningMode.CopySourceToTcb) {
+      return semanticDiagnostics;
+    }
+    const ranges = this.getGeneratedCodeRanges(shimSf);
+    return semanticDiagnostics.filter((diag) => {
+      if (diag.start === undefined) return true;
+      return ranges.some((range) => diag.start! >= range.pos && diag.start! < range.end);
+    });
+  }
+
   /**
    * Retrieve type-checking and template parse diagnostics from the given `ts.SourceFile` using the
    * most recent type-checking program.
@@ -629,31 +682,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
         const semanticDiagnostics = typeCheckProgram.getSemanticDiagnostics(shimSf);
 
-        let tcbStart: number | null = null;
-        if (this.programDriver.inliningMode === InliningMode.CopySourceToTcb) {
-          for (const stmt of shimSf.statements) {
-            if (
-              ts.isFunctionDeclaration(stmt) &&
-              stmt.name !== undefined &&
-              stmt.name.text.startsWith('_tcb')
-            ) {
-              tcbStart = stmt.getFullStart();
-              break;
-            }
-          }
-        }
-
-        // Filter out diagnostics that fall within the copied source content.
-        // We only keep diagnostics that are within a known TCB range.
-        // We use `InliningMode.CopySourceToTcb` as a signal that this shim
-        // contains copied source content.
-        const filteredDiagnostics =
-          this.programDriver.inliningMode === InliningMode.CopySourceToTcb
-            ? semanticDiagnostics.filter((diag) => {
-                if (diag.start === undefined) return true;
-                return tcbStart !== null && diag.start >= tcbStart;
-              })
-            : semanticDiagnostics;
+        const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
 
         diagnostics.push(
           ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
@@ -738,10 +767,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
+      const semanticDiagnostics = typeCheckProgram.getSemanticDiagnostics(shimSf);
+      const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
+
       diagnostics.push(
-        ...typeCheckProgram
-          .getSemanticDiagnostics(shimSf)
-          .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+        ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
       );
       diagnostics.push(...shimRecord.genesisDiagnostics);
 
@@ -853,6 +883,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const id = fileData.sourceManager.getTypeCheckId(clazz);
 
     fileData.shimData.delete(shimPath);
+    this.generatedRangeCache.delete(shimPath);
     fileData.isComplete = false;
 
     this.isComplete = false;

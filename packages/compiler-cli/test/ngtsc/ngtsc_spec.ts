@@ -9789,7 +9789,8 @@ runInEachFileSystem((os: string) => {
           import {Directive} from '@angular/core';
 
           @Directive({
-            selector: '[test]'
+            selector: '[test]',
+            standalone: false,
           })
           class TestDirective {}
         `,
@@ -9801,7 +9802,46 @@ runInEachFileSystem((os: string) => {
         expect(jsContents).toContain('Directive({');
       });
 
+      it('should emit directive definitions for non-exported standalone classes by default', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[test]'
+          })
+          class TestDirective {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('defineDirective(');
+      });
+
       it('should not emit component definitions for non-exported classes if configured', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: 'hello',
+            standalone: false,
+          })
+          class TestComponent {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).not.toContain('defineComponent(');
+        expect(jsContents).toContain('Component({');
+      });
+
+      it('should emit component definitions for non-exported standalone classes by default', () => {
         env.write(
           'test.ts',
           `
@@ -9817,8 +9857,7 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).not.toContain('defineComponent(');
-        expect(jsContents).toContain('Component({');
+        expect(jsContents).toContain('defineComponent(');
       });
 
       it('should not emit module definitions for non-exported classes if configured', () => {
@@ -9840,6 +9879,44 @@ runInEachFileSystem((os: string) => {
         expect(jsContents).toContain('NgModule({');
       });
 
+      it('should not emit pipe definitions for non-exported classes if configured', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({
+            name: 'test',
+            standalone: false,
+          })
+          class TestPipe {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).not.toContain('definePipe(');
+        expect(jsContents).toContain('Pipe({');
+      });
+
+      it('should emit pipe definitions for non-exported standalone classes by default', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Pipe} from '@angular/core';
+
+          @Pipe({
+            name: 'test'
+          })
+          class TestPipe {}
+        `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('definePipe(');
+      });
+
       it('should still compile a class that is indirectly exported', () => {
         env.write(
           'test.ts',
@@ -9849,6 +9926,7 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'test-cmp',
             template: 'Test Cmp',
+            standalone: false,
           })
           class TestCmp {}
 

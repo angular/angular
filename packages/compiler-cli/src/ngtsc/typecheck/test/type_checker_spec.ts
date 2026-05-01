@@ -186,6 +186,53 @@ runInEachFileSystem(() => {
         expect(block).not.toBeNull();
         expect(block!.getText()).toContain(`Cmp`);
       });
+
+      it('should filter out diagnostics from copied source in CopySourceToTcb mode', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              source: `
+                abstract class Cmp {
+                  value: string = 1; // Semantic error
+                }
+              `,
+              templates: {'Cmp': '<div></div>'},
+            },
+          ],
+          {inliningMode: InliningMode.CopySourceToTcb},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        // The semantic error in the copied source should be filtered out.
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not filter out template errors in CopySourceToTcb mode', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              source: `
+                abstract class Cmp {
+                  value: string = 'hello';
+                }
+              `,
+              templates: {'Cmp': '<div>{{nonExisting}}</div>'},
+            },
+          ],
+          {inliningMode: InliningMode.CopySourceToTcb},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        // The template error should NOT be filtered out.
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          "Property 'nonExisting' does not exist on type 'Cmp'",
+        );
+      });
     });
 
     describe('getTemplateOfComponent()', () => {
