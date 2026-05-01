@@ -54,21 +54,6 @@ Create a file named `.cursor/mcp.json` in your project's root and add the follow
 }
 ```
 
-### Firebase Studio
-
-Create a file named `.idx/mcp.json` in your project's root and add the following configuration:
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
 ### Gemini CLI
 
 Create a file named `.gemini/settings.json` in your project's root and add the following configuration:
