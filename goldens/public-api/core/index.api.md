@@ -1518,6 +1518,9 @@ export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 export function provideStabilityDebugging(): EnvironmentProviders;
 
 // @public
+export function provideWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
+
+// @public
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
 
 // @public

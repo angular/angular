@@ -14,6 +14,8 @@ ts_project(
         "//packages/core:node_modules/@mcp-b/webmcp-polyfill",
         "//packages/core/testing",
         "//packages/core/third_party/@mcp-b/webmcp-types",
+        "//packages/router",
+        "//packages/router/testing",
     ],
 )
 
