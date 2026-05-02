@@ -1500,6 +1500,40 @@ class HiddenModule {}
             mock.expectOne('http://localhost/testing').flush('success!');
           });
         });
+
+        it('should not resolve protocol-relative URLs (SSRF protection)', async () => {
+          ref.injector.get(NgZone).run(() => {
+            // Protocol-relative URLs (//evil.com/path) should NOT be resolved
+            // to external domains - they should be passed through as-is
+            http.get('//external-attacker.com/malicious').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            // The request should be made to the original URL (not resolved)
+            mock.expectOne('//external-attacker.com/malicious').flush('success!');
+          });
+        });
+
+        it('should not resolve backslash-prefixed URLs (SSRF protection)', async () => {
+          ref.injector.get(NgZone).run(() => {
+            // Backslash-prefixed URLs (\evil.com/path) should be passed through
+            http.get('\\external-attacker.com/malicious').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            // The request should be made to the original URL (not resolved)
+            mock.expectOne('\\external-attacker.com/malicious').flush('success!');
+          });
+        });
+
+        it('should correctly resolve relative URLs to absolute', async () => {
+          ref.injector.get(NgZone).run(() => {
+            // Relative URLs should still be resolved to the base URL
+            http.get('/api/data').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            // Should be resolved to http://localhost:4000/api/data
+            mock.expectOne('http://localhost:4000/api/data').flush('success!');
+          });
+        });
       });
     });
   });
