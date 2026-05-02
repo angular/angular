@@ -12,7 +12,9 @@ import ts from 'typescript';
  * origin source file into a type reference that is valid in the desired source file. If the type
  * cannot be translated to the desired source file, then null can be returned.
  */
-export type TypeReferenceTranslator = (type: ts.TypeReferenceNode) => ts.TypeReferenceNode | null;
+export type TypeReferenceTranslator = <T extends ts.TypeReferenceNode | ts.TypeQueryNode>(
+  type: T,
+) => T | null;
 
 /**
  * A marker to indicate that a type reference is ineligible for emitting. This needs to be truthy
@@ -33,7 +35,7 @@ const INELIGIBLE: INELIGIBLE = {} as INELIGIBLE;
  */
 export function canEmitType(
   type: ts.TypeNode,
-  canEmit: (type: ts.TypeReferenceNode) => boolean,
+  canEmit: (type: ts.TypeReferenceNode | ts.TypeQueryNode) => boolean,
 ): boolean {
   return canEmitTypeWorker(type);
 
@@ -54,24 +56,28 @@ export function canEmitType(
       return INELIGIBLE;
     }
 
-    // Emitting a type reference node in a different context requires that an import for the type
+    // Emitting a type reference node or type query node in a different context requires that an import for the type
     // can be created. If a type reference node cannot be emitted, `INELIGIBLE` is returned to stop
     // the walk.
-    if (ts.isTypeReferenceNode(node) && !canEmitTypeReference(node)) {
+    if ((ts.isTypeReferenceNode(node) || ts.isTypeQueryNode(node)) && !canEmitTypeReference(node)) {
       return INELIGIBLE;
     } else {
       return ts.forEachChild(node, visitNode);
     }
   }
 
-  function canEmitTypeReference(type: ts.TypeReferenceNode): boolean {
+  function canEmitTypeReference(type: ts.TypeReferenceNode | ts.TypeQueryNode): boolean {
     if (!canEmit(type)) {
       return false;
     }
 
     // The type can be emitted if either it does not have any type arguments, or all of them can be
     // emitted.
-    return type.typeArguments === undefined || type.typeArguments.every(canEmitTypeWorker);
+    return (
+      !ts.isTypeReferenceNode(type) ||
+      type.typeArguments === undefined ||
+      type.typeArguments.every(canEmitTypeWorker)
+    );
   }
 }
 
@@ -114,7 +120,7 @@ export class TypeEmitter {
           throw new Error('Unable to emit import type');
         }
 
-        if (ts.isTypeReferenceNode(node)) {
+        if (ts.isTypeReferenceNode(node) || ts.isTypeQueryNode(node)) {
           return this.emitTypeReference(node);
         } else if (ts.isLiteralExpression(node)) {
           // TypeScript would typically take the emit text for a literal expression from the source
@@ -150,21 +156,29 @@ export class TypeEmitter {
     return ts.transform(type, [typeReferenceTransformer]).transformed[0];
   }
 
-  private emitTypeReference(type: ts.TypeReferenceNode): ts.TypeNode {
-    // Determine the reference that the type corresponds with.
-    const translatedType = this.translator(type);
-    if (translatedType === null) {
-      throw new Error('Unable to emit an unresolved reference');
-    }
+  private emitTypeReference(type: ts.TypeReferenceNode | ts.TypeQueryNode): ts.TypeNode {
+    if (ts.isTypeReferenceNode(type)) {
+      const translatedType = this.translator(type);
+      if (translatedType === null) {
+        throw new Error('Unable to emit an unresolved reference');
+      }
 
-    // Emit the type arguments, if any.
-    let typeArguments: ts.NodeArray<ts.TypeNode> | undefined = undefined;
-    if (type.typeArguments !== undefined) {
-      typeArguments = ts.factory.createNodeArray(
-        type.typeArguments.map((typeArg) => this.emitType(typeArg)),
-      );
-    }
+      // Emit the type arguments, if any.
+      let typeArguments: ts.NodeArray<ts.TypeNode> | undefined = undefined;
+      if (type.typeArguments !== undefined) {
+        typeArguments = ts.factory.createNodeArray(
+          type.typeArguments.map((typeArg) => this.emitType(typeArg)),
+        );
+      }
 
-    return ts.factory.updateTypeReferenceNode(type, translatedType.typeName, typeArguments);
+      return ts.factory.updateTypeReferenceNode(type, translatedType.typeName, typeArguments);
+    } else {
+      const translatedType = this.translator(type);
+      if (translatedType === null) {
+        throw new Error('Unable to emit an unresolved reference');
+      }
+
+      return ts.factory.updateTypeQueryNode(type, translatedType.exprName);
+    }
   }
 }
