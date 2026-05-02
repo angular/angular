@@ -53,7 +53,7 @@ export class Registration {
         const username = value();
         return username ? `/api/users/check?username=${username}` : undefined;
       },
-      onSuccess: (response) => {
+      onSuccess: (response: {available: boolean}) => {
         return response.available
           ? null
           : {
@@ -114,7 +114,7 @@ export class Registration {
 
         return `/api/users/check?username=${username}`;
       },
-      onSuccess: (response, {value}) => {
+      onSuccess: (response: {available: boolean}, {value}) => {
         if (response.available) {
           // Cache successful validations
           this.validatedUsernames.add(value());
@@ -149,7 +149,7 @@ request: ({value}) => ({
 The `onSuccess` function receives the HTTP response and returns validation errors or `undefined` for valid values:
 
 ```ts
-onSuccess: (response) => {
+onSuccess: (response: { valid: boolean; message?: string }) => {
   if (response.valid) return undefined;
 
   return {
@@ -162,7 +162,7 @@ onSuccess: (response) => {
 Return multiple errors when needed:
 
 ```ts
-onSuccess: (response) => {
+onSuccess: (response: { usernameTaken: boolean; profanity: boolean }) => {
   const errors = [];
   if (response.usernameTaken) {
     errors.push({
@@ -207,7 +207,7 @@ validateHttp(schemaPath.field, {
     }),
     timeout: 5000,
   },
-  onSuccess: (response) =>
+  onSuccess: (response: {valid: boolean}) =>
     response.valid
       ? null
       : {
@@ -281,7 +281,7 @@ export class Registration {
     validateAsync(schemaPath.username, {
       params: ({value}) => {
         const username = value();
-        return username.length >= 3 ? username : undefined;
+        return username.length >= 3 ? username : undefined!;
       },
       factory: this.createUsernameResource,
       onSuccess: (result) => {
@@ -390,7 +390,7 @@ export class Registration {
         // Skip the request for blank values
         return username ? `/api/users/check?username=${username}` : undefined;
       },
-      onSuccess: (response) =>
+      onSuccess: (response: {available: boolean}) =>
         response.available ? null : {kind: 'usernameTaken', message: 'Username is already taken'},
       onError: () => ({
         kind: 'serverError',
@@ -447,7 +447,7 @@ const shorterWhenLonger: Debouncer<string> = ({value}, abortSignal) => {
   });
 };
 
-form(this.registrationModel, (schemaPath) => {
+const registrationForm = form(registrationModel, (schemaPath) => {
   debounce(schemaPath.username, shorterWhenLonger);
 });
 ```
@@ -468,7 +468,7 @@ form(this.registrationModel, (schemaPath) => {
       // Skip the request for blank values
       return username ? `/api/users/check?username=${username}` : undefined;
     },
-    onSuccess: (response) =>
+    onSuccess: (response: {available: boolean}) =>
       response.available ? null : {kind: 'usernameTaken', message: 'Username is already taken'},
     onError: () => ({
       kind: 'serverError',
@@ -512,7 +512,7 @@ export class Registration {
       params: ({value}) => {
         const username = value();
         // Skip validation for short usernames
-        return username.length >= 3 ? username : undefined;
+        return username.length >= 3 ? username : undefined!;
       },
       debounce: 300,
       // Reference to the factory defined above
@@ -627,7 +627,7 @@ form(model, (schemaPath) => {
   // 2. This async validation rule only runs if synchronous validation passes
   validateHttp(schemaPath.username, {
     request: ({value}) => `/api/check?username=${value()}`,
-    onSuccess: (result) =>
+    onSuccess: (result: {valid: boolean}) =>
       result.valid
         ? null
         : {
@@ -665,7 +665,7 @@ form(model, (schemaPath) => {
   // Then check availability
   validateHttp(schemaPath.email, {
     request: ({value}) => `/api/emails/check?email=${value()}`,
-    onSuccess: (result) =>
+    onSuccess: (result: {available: boolean}) =>
       result.available
         ? null
         : {
@@ -695,7 +695,7 @@ validateHttp(schemaPath.username, {
 
     return `/api/users/check?username=${username}`;
   },
-  onSuccess: (result) =>
+  onSuccess: (result: {valid: boolean}) =>
     result.valid
       ? null
       : {
@@ -718,7 +718,7 @@ import {validateHttp} from '@angular/forms/signals';
 
 validateHttp(schemaPath.field, {
   request: ({value}) => `/api/validate?field=${value()}`,
-  onSuccess: (result) => {
+  onSuccess: (result: {valid: boolean; message?: string}) => {
     if (result.valid) return null;
     // Use server message when available
     return {
