@@ -51,14 +51,33 @@ function relativeUrlsTransformerInterceptorFn(
     return next(request);
   }
 
+  const requestUrl = request.url;
+
+  // Reject protocol-relative URLs (e.g., //evil.com) and backslash-prefixed
+  // URLs (e.g., \evil.com) to prevent SSRF attacks. These URLs can resolve to
+  // external domains when the URL constructor processes them, potentially
+  // allowing attackers to make the server make requests to arbitrary domains.
+  if (requestUrl.startsWith('//') || requestUrl.startsWith('\\')) {
+    return next(request);
+  }
+
   let urlPrefix = `${protocol}//${hostname}`;
   if (port) {
     urlPrefix += `:${port}`;
   }
 
   const baseHref = platformLocation.getBaseHrefFromDOM() || href;
-  const baseUrl = new URL(baseHref, urlPrefix);
-  const newUrl = new URL(request.url, baseUrl).toString();
+
+  // Use URL.canParse for absolute URLs to avoid using a base URL,
+  // similar to the fix in location.ts parseUrl function.
+  let newUrl: string;
+  if (URL.canParse(requestUrl)) {
+    newUrl = new URL(requestUrl).toString();
+  } else {
+    // For relative URLs, construct the base URL and resolve.
+    const baseUrl = new URL(baseHref, urlPrefix);
+    newUrl = new URL(requestUrl, baseUrl).toString();
+  }
 
   return next(request.clone({url: newUrl}));
 }
