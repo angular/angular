@@ -7,7 +7,7 @@
  */
 
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
-import {assertInInjectionContext, inject, Injector} from '../di';
+import {assertInInjectionContext, inject, Injector, runInInjectionContext} from '../di';
 import type {ModelContext, ToolDescriptor} from './types';
 import {DestroyRef} from '../linker';
 
@@ -16,6 +16,9 @@ import {DestroyRef} from '../linker';
  *
  * The tool is immediately registered and automatically unregistered when
  * the associated injection context is destroyed.
+ *
+ * The `tool.execute` function is invoked in the injection context of the provided
+ * {@link Injector}, or the injection context of `declareWebMcpTool` itself.
  *
  * @param tool The tool to register and execute when invoked by an AI agent.
  * @param injector Optional {@link Injector} which will automatically
@@ -40,9 +43,10 @@ export function declareWebMcpTool<const InputSchema extends JsonSchemaForInferen
     if (!injector) assertInInjectionContext(declareWebMcpTool);
   }
 
-  // Inject the `DestroyRef` immediately, so if it fails we abort before
-  // causing any side effects.
-  const destroyRef = injector ? injector.get(DestroyRef) : inject(DestroyRef);
+  // Inject the `DestroyRef` and `Injector` immediately, so if it fails we abort
+  // before causing any side effects.
+  const currentInjector = injector ?? inject(Injector);
+  const destroyRef = currentInjector.get(DestroyRef);
 
   // Wrap the input tool with an `AbortSignal` which aborts when the
   // injection context is destroyed.
@@ -50,10 +54,12 @@ export function declareWebMcpTool<const InputSchema extends JsonSchemaForInferen
   const wrappedTool: ToolDescriptor<InputSchema> = {
     ...tool,
     execute: (args, client) =>
-      tool.execute(args, {
-        ...client,
-        signal: abortCtrl.signal,
-      }),
+      runInInjectionContext(currentInjector, () =>
+        tool.execute(args, {
+          ...client,
+          signal: abortCtrl.signal,
+        }),
+      ),
   };
 
   modelContext.registerTool(wrappedTool, {signal: abortCtrl.signal});

@@ -8,7 +8,7 @@
 
 import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
-import {Injector, runInInjectionContext} from '../../src/di';
+import {inject, Injectable, InjectionToken, Injector, runInInjectionContext} from '../../src/di';
 import {declareWebMcpTool} from '../../src/webmcp/declare_tool';
 import {Execute} from '../../src/webmcp/types';
 import {RuntimeErrorCode} from '../../src/errors';
@@ -164,6 +164,33 @@ describe('declareWebMcpTool', () => {
 
     injector.destroy();
     expect(signal.aborted).toBeTrue();
+  });
+
+  it('should run `execute` in an injection context', async () => {
+    @Injectable()
+    class TestService {}
+
+    const injector = Injector.create({
+      providers: [TestService],
+    });
+
+    let injectedService!: TestService;
+    declareWebMcpTool(
+      {
+        name: 'testTool',
+        description: 'A test tool',
+        inputSchema: {type: 'object', properties: {}},
+        execute: () => {
+          injectedService = inject(TestService);
+          return {content: [{type: 'text', text: ''}]};
+        },
+      },
+      injector,
+    );
+
+    await globalThis.navigator.modelContextTesting!.executeTool('testTool', '{}');
+
+    expect(injectedService).toBeInstanceOf(TestService);
   });
 
   it('should infer correct types from schema', () => {
