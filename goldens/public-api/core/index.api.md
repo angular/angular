@@ -540,6 +540,9 @@ export class DebugNode {
 }
 
 // @public
+export function declareWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): void;
+
+// @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
 
 // @public
@@ -1514,6 +1517,9 @@ export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 export function provideStabilityDebugging(): EnvironmentProviders;
 
 // @public
+export function provideWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
+
+// @public
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
 
 // @public
@@ -2117,6 +2123,22 @@ export abstract class ViewRef extends ChangeDetectorRef {
     abstract get destroyed(): boolean;
     abstract onDestroy(callback: Function): void;
 }
+
+// @public
+export interface WebMcpClient {
+    signal: AbortSignal;
+}
+
+// @public
+export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
+    description?: string;
+    execute: WebMcpToolExexcute<InputSchema>;
+    inputSchema: InputSchema;
+    name: string;
+}
+
+// @public
+export type WebMcpToolExexcute<InputSchema extends JsonSchemaForInference> = (args: InferArgsFromInputSchema<InputSchema>, client: WebMcpClient) => unknown;
 
 // @public
 export interface WritableResource<T> extends Resource<T> {
