@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, signal, ApplicationRef, effect, untracked} from '@angular/core';
+import {ApplicationRef, effect, Injector, signal, untracked} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form} from '../../public_api';
 
@@ -15,6 +15,48 @@ describe('FieldTree proxy', () => {
     const f = form(signal(new Date()), {injector: TestBed.inject(Injector)});
     // @ts-expect-error
     expect(f.getDate).toBe(undefined as any);
+  });
+
+  it('should preserve prototype methods on model objects read from value()', () => {
+    class Pet {
+      constructor(public name: string) {}
+
+      getName(): string {
+        return this.name;
+      }
+    }
+
+    const model = signal({
+      pet: new Pet('pirojok'),
+    });
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    // Update via child control so the form rebuilds parent objects.
+    f.pet.name().controlValue.set('murzik');
+    f.pet.name().markAsTouched();
+
+    // This expectation is intended to catch prototype stripping.
+    expect(f().value().pet.getName()).toBe('murzik');
+  });
+
+  it('should preserve prototype methods after nested reset()', () => {
+    class Pet {
+      constructor(public name: string) {}
+
+      getName(): string {
+        return this.name;
+      }
+    }
+
+    const model = signal({
+      pet: new Pet('pirojok'),
+    });
+    const f = form(model, {injector: TestBed.inject(Injector)});
+
+    // Resetting a nested child value rebuilds parent objects.
+    f.pet.name().reset('murzik');
+
+    expect(f().value().pet.getName()).toBe('murzik');
   });
 
   it('should allow spreading field arrays', () => {

@@ -51,6 +51,21 @@ function valueForWrite(sourceValue: unknown, newPropValue: unknown, prop: Proper
     newValue[prop as number] = newPropValue;
     return newValue;
   } else {
-    return {...(sourceValue as object), [prop]: newPropValue};
+    if (typeof sourceValue === 'object' && sourceValue !== null) {
+      const proto = Object.getPrototypeOf(sourceValue);
+      // Fast path for standard plain objects (majority of form models)
+      if (proto === Object.prototype || proto === null) {
+        return {...sourceValue, [prop]: newPropValue};
+      }
+
+      const clone = Object.assign(
+        Object.create(Object.getPrototypeOf(sourceValue)),
+        sourceValue,
+      ) as Record<PropertyKey, unknown>;
+      clone[prop] = newPropValue;
+      return clone;
+    }
+
+    return {[prop]: newPropValue};
   }
 }
