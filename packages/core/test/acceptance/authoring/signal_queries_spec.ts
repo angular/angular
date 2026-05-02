@@ -14,9 +14,12 @@ import {
   contentChildren,
   createComponent,
   Directive,
+  effect,
   ElementRef,
   EnvironmentInjector,
+  input,
   QueryList,
+  signal,
   ViewChild,
   viewChild,
   ViewChildren,
@@ -473,6 +476,46 @@ describe('queries as signals', () => {
       expect(
         (queryComponent.contentChildRequiredQuery[SIGNAL] as {debugName: string}).debugName,
       ).toBe('contentChildRequiredQuery');
+    });
+
+    it('should populate before firing the effect', () => {
+      @Directive({selector: '[appModel]'})
+      class ModelDirective {
+        readonly appModel = input.required();
+      }
+
+      @Component({
+        selector: 'app-form-field',
+        template: `<ng-content />`,
+      })
+      class FormFieldComponent {
+        private readonly directive = contentChild(ModelDirective);
+
+        constructor() {
+          effect(() => {
+            // Directive is instantiated, but input aren't set yet.
+            this.directive()?.appModel();
+          });
+        }
+      }
+
+      @Component({
+        selector: 'app-root',
+        imports: [ModelDirective, FormFieldComponent],
+        template: `
+          <app-form-field>
+            <!-- Error fired only when the projected content is withing a block-->
+            @if (true) {
+              <div [appModel]="value()"></div>
+            }
+          </app-form-field>
+        `,
+      })
+      class App {
+        protected readonly value = signal(3);
+      }
+
+      TestBed.createComponent(App).detectChanges();
     });
   });
 
