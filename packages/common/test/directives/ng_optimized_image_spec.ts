@@ -32,6 +32,87 @@ import {
   resetImagePriorityCount,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
+import {getUrl, isAbsoluteUrl, extractHostname} from '../../src/directives/ng_optimized_image/url';
+
+describe('URL utility functions', () => {
+  describe('isAbsoluteUrl', () => {
+    it('should return true for https:// URLs', () => {
+      expect(isAbsoluteUrl('https://example.com/image.png')).toBe(true);
+    });
+
+    it('should return true for http:// URLs', () => {
+      expect(isAbsoluteUrl('http://example.com/image.png')).toBe(true);
+    });
+
+    it('should return true for protocol-relative URLs (//)', () => {
+      expect(isAbsoluteUrl('//example.com/image.png')).toBe(true);
+    });
+
+    it('should return false for relative URLs', () => {
+      expect(isAbsoluteUrl('image.png')).toBe(false);
+    });
+
+    it('should return false for absolute path URLs', () => {
+      expect(isAbsoluteUrl('/assets/image.png')).toBe(false);
+    });
+  });
+
+  describe('getUrl', () => {
+    const mockWindow = {
+      location: {href: 'https://angular.dev/page'},
+    } as unknown as Window;
+
+    it('should return the URL directly for https:// URLs', () => {
+      const url = getUrl('https://example.com/image.png', mockWindow);
+      expect(url.href).toBe('https://example.com/image.png');
+    });
+
+    it('should return the URL directly for http:// URLs', () => {
+      const url = getUrl('http://example.com/image.png', mockWindow);
+      expect(url.href).toBe('http://example.com/image.png');
+    });
+
+    it('should reject protocol-relative URLs (//)', () => {
+      expect(() => getUrl('//example.com/image.png', mockWindow)).toThrowError(
+        /Protocol-relative URLs are not allowed/,
+      );
+    });
+
+    it('should resolve relative URLs against base URL', () => {
+      const url = getUrl('assets/image.png', mockWindow);
+      expect(url.href).toBe('https://angular.dev/assets/image.png');
+    });
+
+    it('should resolve absolute path URLs against base URL', () => {
+      const url = getUrl('/assets/image.png', mockWindow);
+      expect(url.href).toBe('https://angular.dev/assets/image.png');
+    });
+  });
+
+  describe('extractHostname', () => {
+    it('should extract hostname from https:// URLs', () => {
+      expect(extractHostname('https://example.com/image.png')).toBe('example.com');
+    });
+
+    it('should extract hostname from http:// URLs', () => {
+      expect(extractHostname('http://example.com/image.png')).toBe('example.com');
+    });
+
+    it('should reject protocol-relative URLs (//)', () => {
+      expect(() => extractHostname('//example.com/image.png')).toThrowError(
+        /Protocol-relative URLs are not allowed/,
+      );
+    });
+
+    it('should return relative URLs as-is', () => {
+      expect(extractHostname('image.png')).toBe('image.png');
+    });
+
+    it('should return absolute path URLs as-is', () => {
+      expect(extractHostname('/assets/image.png')).toBe('/assets/image.png');
+    });
+  });
+});
 
 describe('Image directive', () => {
   const PLACEHOLDER_BLUR_AMOUNT = 15;
