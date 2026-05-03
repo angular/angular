@@ -13,18 +13,6 @@
         }
       </select>
     </li>
-
-    @if (supportedApis().transferState) {
-      <li>
-        <input
-          id="enable-transfer-state"
-          type="checkbox"
-          (change)="settings.transferStateEnabled.set($event.target.checked)"
-          [checked]="settings.transferStateEnabled()"
-        />
-        <label for="enable-transfer-state">Enable Transfer State tab</label>
-      </li>
-    }
   </ul>
 
   <h3>Components</h3>

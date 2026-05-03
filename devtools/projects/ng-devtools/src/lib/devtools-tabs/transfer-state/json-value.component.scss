@@ -1,0 +1,97 @@
+@use '../../../styles/typography';
+
+:host {
+  display: block;
+  @extend %monospaced;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+.json-primitive {
+  &.json-string {
+    color: var(--dynamic-green-01);
+  }
+  &.json-number,
+  &.json-bigint {
+    color: var(--dynamic-purple-01);
+  }
+  &.json-boolean {
+    color: var(--dynamic-red-01);
+  }
+  &.json-null,
+  &.json-undefined {
+    color: var(--quaternary-contrast);
+    font-style: italic;
+  }
+}
+
+.json-container {
+  display: inline-block;
+  width: 100%;
+}
+
+.json-toggle {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--secondary-contrast);
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dynamic-blue-02);
+    outline-offset: 1px;
+    border-radius: 0.125rem;
+  }
+}
+
+.json-preview {
+  cursor: pointer;
+  color: var(--secondary-contrast);
+  user-select: none;
+  margin-left: 0.125rem;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+.json-children {
+  list-style: none;
+  margin: 0 0 0 0.25rem;
+  padding: 0 0 0 0.75rem;
+  border-left: 1px dashed var(--color-separator);
+}
+
+.json-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  padding: 0.0625rem 0;
+  flex-wrap: wrap;
+
+  ng-json-value {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.json-key {
+  color: var(--color-tree-node-element-name);
+  flex-shrink: 0;
+}

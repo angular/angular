@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,21 +10,55 @@ sass_binary(
     ],
 )
 
+sass_binary(
+    name = "json_value_component_styles",
+    src = "json-value.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
 ng_project(
     name = "transfer-state",
     srcs = [
+        "json-value.component.ts",
         "transfer-state.component.ts",
     ],
     angular_assets = [
         ":transfer-state.component.html",
         ":transfer_state_component_styles",
+        ":json_value_component_styles",
     ],
     deps = [
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
         "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/ng-devtools/src/lib/shared/utils",
         "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "transfer_state_test",
+    srcs = [
+        "transfer-state.component.spec.ts",
+    ],
+    visibility = [
+        "//visibility:private",
+    ],
+    deps = [
+        ":transfer-state",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":transfer_state_test",
     ],
 )

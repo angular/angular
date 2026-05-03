@@ -74,7 +74,6 @@ export class DevToolsTabsComponent {
   readonly inspectorRunning = signal(false);
 
   protected readonly signalGraphEnabled = () => this.supportedApis().signals;
-  protected readonly transferStateEnabled = this.settings.transferStateEnabled;
   protected readonly showCommentNodes = this.settings.showCommentNodes;
   protected readonly activeTab = this.settings.activeTab;
 
@@ -95,9 +94,7 @@ export class DevToolsTabsComponent {
     if (supportedApis.routes && this.routes().length > 0) {
       tabs.push('Router Tree');
     }
-    if (supportedApis.transferState && this.transferStateEnabled()) {
-      tabs.push('Transfer State');
-    }
+    tabs.push('Transfer State');
 
     return tabs;
   });
