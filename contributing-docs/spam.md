@@ -21,5 +21,5 @@ limited resources across all contributors and projects.
 ## Exceptions
 
 If you plan to undertake more significant work that you anticipate will generate
-many individual PRs, please reach out to the team in a Github issue first to
+many individual PRs, please reach out to the team in a GitHub issue first to
 validate that Angular will be able to support and accept your contributions.

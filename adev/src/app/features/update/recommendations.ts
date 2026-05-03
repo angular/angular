@@ -787,7 +787,7 @@ export const RECOMMENDATIONS: Step[] = [
     possibleIn: 1000,
     necessaryAsOf: 1000,
     level: ApplicationComplexity.Basic,
-    step: 'v10 NodeJS 12',
+    step: 'v10 Node.js 12',
     action: 'Make sure you are using [Node 12 or later](https://nodejs.org/dist/latest-v12.x/).',
   },
   {
@@ -852,7 +852,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'closure-jsdoc-comments',
     action:
-      "Angular's NPM packages no longer contain jsdoc comments, which are necessary for use with closure compiler (extremely uncommon). This support was experimental and only worked in some use cases. There will be an alternative recommended path announced shortly.",
+      "Angular's npm packages no longer contain jsdoc comments, which are necessary for use with closure compiler (extremely uncommon). This support was experimental and only worked in some use cases. There will be an alternative recommended path announced shortly.",
   },
   {
     possibleIn: 1000,

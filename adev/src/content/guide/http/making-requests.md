@@ -247,7 +247,7 @@ Each `HttpEvent` reported in the event stream has a `type` which distinguishes w
 | `HttpEventType.ResponseHeader`   | The head of the response has been received, including status and headers           |
 | `HttpEventType.DownloadProgress` | An `HttpDownloadProgressEvent` reporting progress on downloading the response body |
 | `HttpEventType.Response`         | The entire response has been received, including the response body                 |
-| `HttpEventType.User`             | A custom event from an Http interceptor.                                           |
+| `HttpEventType.User`             | A custom event from an HTTP interceptor.                                           |
 
 ## Handling request failure
 
@@ -614,7 +614,7 @@ IMPORTANT: The `integrity` option requires an exact match between the response c
 
 TIP: Use subresource integrity when loading critical resources from external sources to ensure they haven't been modified. Generate hashes using tools like `openssl`.
 
-## Http `Observable`s
+## HTTP `Observable`s
 
 Each request method on `HttpClient` constructs and returns an `Observable` of the requested response type. Understanding how these `Observable`s work is important when using `HttpClient`.
 

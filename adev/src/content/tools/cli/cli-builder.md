@@ -56,7 +56,7 @@ To create a builder, use the `createBuilder()` CLI Builder function, and return 
 <docs-code header="src/my-builder.ts (builder skeleton)" path="adev/src/content/examples/cli-builder/src/my-builder.ts" region="builder-skeleton"/>
 
 Now let's add some logic to it.
-The following code retrieves the source and destination file paths from user options and copies the file from the source to the destination \(using the [Promise version of the built-in NodeJS `copyFile()` function](https://nodejs.org/api/fs.html#fs_fspromises_copyfile_src_dest_mode)\).
+The following code retrieves the source and destination file paths from user options and copies the file from the source to the destination \(using the [Promise version of the built-in Node.js `copyFile()` function](https://nodejs.org/api/fs.html#fs_fspromises_copyfile_src_dest_mode)\).
 If the copy operation fails, it returns an error with a message about the underlying problem.
 
 <docs-code header="src/my-builder.ts (builder)" path="adev/src/content/examples/cli-builder/src/my-builder.ts" region="builder"/>

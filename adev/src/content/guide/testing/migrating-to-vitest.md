@@ -92,7 +92,7 @@ Choose one of the following browser providers based on your needs:
 
 - **Playwright**: `@vitest/browser-playwright` for Chromium, Firefox, and WebKit.
 - **WebdriverIO**: `@vitest/browser-webdriverio` for Chrome, Firefox, Safari, and Edge.
-- **Preview**: `@vitest/browser-preview` for Webcontainer environments (like StackBlitz).
+- **Preview**: `@vitest/browser-preview` for WebContainer environments (like StackBlitz).
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">

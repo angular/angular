@@ -188,7 +188,7 @@ Choose one of the following browser providers based on your needs:
 
 ### Preview
 
-The `@vitest/browser-preview` provider is designed for Webcontainer environments like StackBlitz and is not intended for use in CI/CD.
+The `@vitest/browser-preview` provider is designed for WebContainer environments like StackBlitz and is not intended for use in CI/CD.
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">
