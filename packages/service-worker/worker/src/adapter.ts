@@ -91,6 +91,13 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
    * Parse a URL into its different parts, such as `origin`, `path` and `search`.
    */
   parseUrl(url: string, relativeTo?: string): {origin: string; path: string; search: string} {
+    // Reject protocol-relative URLs to prevent URL injection attacks.
+    // Protocol-relative URLs (e.g., //evil.com) can resolve to external domains
+    // when the URL constructor processes them.
+    if (url.startsWith('//') || url.startsWith('\\')) {
+      throw new Error('Protocol-relative URLs are not allowed in Service Worker');
+    }
+
     // Workaround a Safari bug, see
     // https://github.com/angular/angular/issues/31061#issuecomment-503637978
     const parsed = !relativeTo ? new URL(url) : new URL(url, relativeTo);

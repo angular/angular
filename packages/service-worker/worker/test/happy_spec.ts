@@ -811,6 +811,50 @@ import {envIsSupported} from '../testing/utils';
             );
             expect(scope.clients.openWindow).toHaveBeenCalledWith(`${scope.registration.scope}`);
           });
+
+          it('should not open window for protocol-relative URLs (security)', async () => {
+            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+            spyOn(scope.clients, 'openWindow');
+
+            await driver.initialized;
+            await scope.handleClick(
+              {
+                title: 'Malicious notification',
+                body: 'Test body with malicious url',
+                data: {
+                  onActionClick: {
+                    default: {operation: 'openWindow', url: '//attacker.com/phishing'},
+                  },
+                },
+              },
+              'default',
+            );
+            // Should NOT call openWindow with malicious URL
+            expect(scope.clients.openWindow).not.toHaveBeenCalled();
+          });
+
+          it('should not open window for backslash-prefixed URLs (security)', async () => {
+            expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+
+            spyOn(scope.clients, 'openWindow');
+
+            await driver.initialized;
+            await scope.handleClick(
+              {
+                title: 'Malicious notification',
+                body: 'Test body with malicious url',
+                data: {
+                  onActionClick: {
+                    default: {operation: 'openWindow', url: '\\attacker.com/phishing'},
+                  },
+                },
+              },
+              'default',
+            );
+            // Should NOT call openWindow with malicious URL
+            expect(scope.clients.openWindow).not.toHaveBeenCalled();
+          });
         });
 
         describe('`focusLastFocusedOrOpen` operation', () => {
