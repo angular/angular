@@ -170,6 +170,29 @@ npx source-map-explorer dist/my-app/browser/*.js
 
 Identifies large dependencies and verifies code-splitting boundaries for lazy routes.
 
-### Change detection profiling
+### Change detection profiling with Angular DevTools
 
-Angular DevTools → **Profiler** tab → record an interaction → inspect which components checked and how long each took.
+Install the **Angular DevTools** browser extension from the Chrome Web Store, then open Chrome DevTools → **Angular** tab.
+
+**Profiler** — records which components were checked and how long each check took:
+
+1. Open the **Profiler** tab
+2. Click **Record**
+3. Interact with the page (click a button, type in a field)
+4. Click **Stop**
+5. Inspect the flame chart: components in red take the most time; components that shouldn't be checking (missing `OnPush`) appear unexpectedly
+
+See: [Debug change detection and OnPush components](https://next.angular.dev/tools/devtools/profiler#debug-change-detection-and-onpush-components)
+
+### Rendering timestamps with Chrome DevTools
+
+Chrome DevTools **Performance** panel records per-component and per-directive rendering timestamps via Angular's built-in performance marks:
+
+1. Open Chrome DevTools → **Performance** tab
+2. Click **Record**
+3. Interact with the page
+4. Stop and inspect the **Timings** row — Angular emits marks for each component template execution and change detection cycle
+
+This reveals which specific templates are slow during a real interaction, complementing the Angular DevTools profiler.
+
+See: [Recording a profile](https://next.angular.dev/best-practices/profiling-with-chrome-devtools#recording-a-profile)

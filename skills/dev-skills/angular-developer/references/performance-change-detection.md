@@ -98,13 +98,21 @@ Remove `zone.js` from `polyfills` in `angular.json` when opting in on older vers
 
 ## Angular DevTools — Change Detection Profiler
 
-The Angular DevTools browser extension includes a change detection profiler. Use it to:
+Install the **Angular DevTools** extension from the Chrome Web Store, then open Chrome DevTools → **Angular** tab.
 
+**Profiler** tab workflow:
+
+1. Click **Record**
+2. Interact with the page (click, type, scroll)
+3. Click **Stop**
+4. Inspect the flame chart: each bar is a component check; red bars are slow; unexpected bars indicate missing `OnPush`
+
+Use it to:
 - Identify which components check most frequently
-- Find components with Default strategy that should use OnPush
-- Measure the milliseconds spent in each CD cycle
+- Find components with Default strategy that should use `OnPush`
+- Measure milliseconds spent per CD cycle and per component
 
-Install: Chrome Web Store → "Angular DevTools"
+See: [Debug change detection and OnPush components](https://next.angular.dev/tools/devtools/profiler#debug-change-detection-and-onpush-components)
 
 ## Anti-Patterns
 
