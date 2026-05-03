@@ -17,6 +17,7 @@ import {unwrapRNode} from '../render3/util/view_utils';
 import {readPatchedData} from '../render3/context_discovery';
 import {markRNodeAsHavingHydrationMismatch} from './utils';
 import {DOC_PAGE_BASE_URL} from '../../../core/src/error_details_base_url';
+import {getKnownMismatchPatternHint} from './known_mismatch_patterns';
 
 const AT_THIS_LOCATION = '<-- AT THIS LOCATION';
 
@@ -51,6 +52,21 @@ function getFriendlyStringFromTNodeType(tNodeType: TNodeType): string {
       // This should not happen as we cover all possible TNode types above.
       return '<unknown>';
   }
+}
+
+/**
+ * Walks up the TNode parent chain and returns the tag name of the
+ * nearest enclosing element, or `null` if none.
+ */
+function getExpectedParentTagName(tNode: TNode | null): string | null {
+  let parent = tNode?.parent ?? null;
+  while (parent !== null) {
+    if (parent.type === TNodeType.Element && typeof parent.value === 'string') {
+      return parent.value.toLowerCase();
+    }
+    parent = parent.parent;
+  }
+  return null;
 }
 
 /**
@@ -103,8 +119,17 @@ export function validateMatchingNode(
       markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom);
     }
 
+    const knownPatternHint = getKnownMismatchPatternHint(
+      nodeType,
+      tagName ? tagName.toLowerCase() : null,
+      node,
+      tNode.type ? getParentRElement(lView[TVIEW], tNode, lView) : null,
+      getExpectedParentTagName(tNode),
+    );
+
     const footer = getHydrationErrorFooter(componentClassName);
-    let message = header + expected + actual + getHydrationAttributeNote() + footer;
+    let message =
+      header + expected + actual + knownPatternHint + getHydrationAttributeNote() + footer;
 
     // Check both when a mismatching node is found AND when the expected node is missing,
     // since third-party scripts can both inject extra nodes and remove existing ones.
@@ -149,10 +174,23 @@ export function validateNodeExists(
     const header =
       'During hydration, Angular expected an element to be present at this location.\n\n';
     let expected = '';
+    let knownPatternHint = '';
     let footer = '';
     if (lView !== null && tNode !== null) {
       expected = describeExpectedDom(lView, tNode, false);
       footer = getHydrationErrorFooter();
+
+      const expectedTagName =
+        tNode.type === TNodeType.Element && typeof tNode.value === 'string'
+          ? tNode.value.toLowerCase()
+          : null;
+      knownPatternHint = getKnownMismatchPatternHint(
+        Node.ELEMENT_NODE,
+        expectedTagName,
+        null,
+        null,
+        getExpectedParentTagName(tNode),
+      );
 
       // Since the node is missing, we use the closest node to attach the error to
       markRNodeAsHavingHydrationMismatch(unwrapRNode(lView[HOST]!), expected, '');
@@ -160,7 +198,7 @@ export function validateNodeExists(
 
     throw new RuntimeError(
       RuntimeErrorCode.HYDRATION_MISSING_NODE,
-      `${header}${expected}\n\n${footer}`,
+      `${header}${expected}\n\n${knownPatternHint}${footer}`,
     );
   }
 }
