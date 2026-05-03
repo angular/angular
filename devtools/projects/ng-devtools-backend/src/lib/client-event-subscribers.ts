@@ -589,32 +589,26 @@ const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
     return;
   }
 
-  const rootNode = forest[0];
-  if (!rootNode || !rootNode.nativeElement) {
-    messageBus.emit('transferStateData', [null]);
-    return;
+  const merged: Record<string, TransferStateValue> = {};
+  let collected = false;
+
+  for (const rootNode of forest) {
+    if (!rootNode?.nativeElement) continue;
+
+    const injector = getInjectorFromElementNode(rootNode.nativeElement);
+    if (!injector) continue;
+
+    const rootData = ng.ɵgetTransferState?.(injector) as
+      | Record<string, TransferStateValue>
+      | null
+      | undefined;
+    if (rootData && typeof rootData === 'object') {
+      Object.assign(merged, rootData);
+      collected = true;
+    }
   }
 
-  const injector = getInjectorFromElementNode(rootNode.nativeElement);
-  if (!injector) {
-    messageBus.emit('transferStateData', [null]);
-    return;
-  }
-
-  const transferStateData = (ng.ɵgetTransferState?.(injector) ?? null) as Record<
-    string,
-    TransferStateValue
-  > | null;
-
-  if (
-    transferStateData &&
-    typeof transferStateData === 'object' &&
-    Object.keys(transferStateData).length > 0
-  ) {
-    messageBus.emit('transferStateData', [transferStateData]);
-  } else {
-    messageBus.emit('transferStateData', [null]);
-  }
+  messageBus.emit('transferStateData', [collected ? merged : null]);
 };
 
 const getInjectorInstance = (

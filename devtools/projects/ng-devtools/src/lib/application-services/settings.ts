@@ -27,12 +27,6 @@ export class Settings {
     initialValue: false,
   });
 
-  readonly transferStateEnabled = this.settingsStore.create({
-    key: 'transfer_state_enabled',
-    category: 'general',
-    initialValue: false,
-  });
-
   readonly theme = this.settingsStore.create<ThemePreference>({
     key: 'theme',
     category: 'general',
