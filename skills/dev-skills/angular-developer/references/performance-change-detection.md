@@ -1,6 +1,6 @@
 # Change Detection Performance
 
-Change detection determines when Angular updates the DOM. The default strategy checks the entire component tree on every event. The following approaches reduce this work significantly.
+Change detection determines when Angular updates the DOM. From Angular v22, `OnPush` is the default strategy — components re-render only when their inputs change, a signal they read updates, or an event fires within them. In earlier versions the default strategy checks the entire component tree on every event. The following approaches reduce change detection cost in all versions.
 
 ## OnPush Strategy
 

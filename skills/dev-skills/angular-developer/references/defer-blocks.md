@@ -22,8 +22,8 @@ Every `@defer` block should include a `@placeholder`. Omitting it causes the spa
 
 | Trigger | When the block loads |
 |---|---|
-| `on viewport` | Element enters the viewport |
-| `on idle` | Browser is idle (`requestIdleCallback`) |
+| `on viewport` | Element enters the viewport (supports Intersection Observer options from v21: `rootMargin`, `threshold`) |
+| `on idle` | Browser is idle (`requestIdleCallback`); accepts `timeout` to cap the wait (v22+) |
 | `on interaction` | User clicks or focuses the placeholder |
 | `on timer(2s)` | After a fixed delay |
 | `on immediate` | Immediately after rendering (still lazy — defers from initial bundle) |
@@ -86,14 +86,21 @@ Prefetch the chunk before the trigger fires to reduce latency:
 
 ## `@defer` and Incremental Hydration (SSR)
 
-In SSR apps, `@defer` blocks can be used to defer hydration of server-rendered HTML:
+In SSR apps, `@defer` blocks defer hydration of server-rendered HTML — the block renders on the server but hydrates lazily in the browser, reducing Time to Interactive.
+
+From Angular v22, incremental hydration is enabled by default:
 
 ```ts
-// app.config.ts
-provideClientHydration(withIncrementalHydration())
+// app.config.ts (v22+)
+provideClientHydration()
 ```
 
-The block renders on the server but hydrates lazily in the browser, reducing Time to Interactive.
+On Angular v21 and earlier, opt in explicitly:
+
+```ts
+// app.config.ts (v21 and earlier)
+provideClientHydration(withIncrementalHydration())
+```
 
 ## Anti-Patterns
 
@@ -120,4 +127,4 @@ The block renders on the server but hydrates lazily in the browser, reducing Tim
 | Entire page / feature area | Lazy route (`loadComponent`) |
 | Part of a page (sidebar, chart, comment section) | `@defer (on viewport)` or `@defer (on idle)` |
 | Dialog / modal triggered by user action | `@defer (on interaction)` |
-| Incrementally hydrating an SSR section | `@defer` with `withIncrementalHydration()` |
+| Incrementally hydrating an SSR section | `@defer` (automatic in v22+; requires `withIncrementalHydration()` in v21 and earlier) |
