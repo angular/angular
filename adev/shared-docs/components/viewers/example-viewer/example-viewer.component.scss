@@ -85,6 +85,19 @@
       }
     }
 
+    button[docs-copy-source-code] {
+      position: relative;
+      top: auto;
+      right: auto;
+      background: transparent;
+      border: 0;
+      padding: 0;
+
+      .docs-check {
+        top: 0;
+      }
+    }
+
     .docs-example-code-toggle {
       display: flex;
       align-items: center;
@@ -101,17 +114,12 @@
 
 // Example viewer code
 .docs-example-viewer-code-wrapper {
-  position: relative;
   font-size: 0.875rem;
   // TODO: only show this if there is a preview
   // border-block-end: 1px solid var(--senary-contrast);
   transition: border-color 0.3s ease;
   container: viewerblock / inline-size;
   background-color: var(--octonary-contrast);
-
-  button[docs-copy-source-code] {
-    top: 0.31rem;
-  }
 
   .docs-example-code-block {
     overflow: auto;

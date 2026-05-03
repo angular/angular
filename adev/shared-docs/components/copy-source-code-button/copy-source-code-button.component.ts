@@ -15,6 +15,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import {MatTooltip} from '@angular/material/tooltip';
 import {IconComponent} from '../icon/icon.component';
 
 export const REMOVED_LINE_CLASS_NAME = '.line.remove';
@@ -24,10 +25,15 @@ export const CONFIRMATION_DISPLAY_TIME_MS = 2000;
   selector: 'button[docs-copy-source-code]',
   imports: [IconComponent],
   templateUrl: './copy-source-code-button.component.html',
+  hostDirectives: [
+    {
+      directive: MatTooltip,
+      inputs: ['matTooltip', 'matTooltipPosition'],
+    },
+  ],
   host: {
     'type': 'button',
     'aria-label': 'Copy example source to clipboard',
-    'title': 'Copy example source',
     '(click)': 'copySourceCode()',
     '[class.docs-copy-source-code-button-success]': 'showCopySuccess()',
     '[class.docs-copy-source-code-button-failed]': 'showCopyFailure()',
@@ -43,9 +49,10 @@ export class CopySourceCodeButton {
 
   copySourceCode(): void {
     try {
-      const codeElement = this.elementRef.nativeElement.parentElement.querySelector(
-        'code',
-      ) as HTMLElement;
+      const host =
+        this.elementRef.nativeElement.closest('.docs-code, .docs-example-viewer') ??
+        this.elementRef.nativeElement.parentElement;
+      const codeElement = host!.querySelector('code') as HTMLElement;
       const sourceCode = this.getSourceCode(codeElement);
       this.clipboard.copy(sourceCode);
       this.showResult(this.showCopySuccess);

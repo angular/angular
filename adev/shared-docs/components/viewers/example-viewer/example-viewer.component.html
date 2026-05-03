@@ -14,6 +14,13 @@
     }
 
     <div class="docs-example-viewer-icons">
+      @if (showCode()) {
+        <button
+          docs-copy-source-code
+          matTooltip="Copy example source"
+          matTooltipPosition="above"
+        ></button>
+      }
       <button
         type="button"
         role="switch"
@@ -100,7 +107,6 @@
 
   @if (showCode()) {
     <div class="docs-example-viewer-code-wrapper" [class.shell]="snippetCode()?.shell">
-      <button docs-copy-source-code></button>
       @if (snippetCode()?.sanitizedContent; as content) {
         <div class="docs-example-code-block" [innerHTML]="content"></div>
       }
