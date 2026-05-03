@@ -6653,6 +6653,128 @@ describe('platform-server full application hydration integration', () => {
         }
       });
 
+      it(
+        'should produce a known-pattern hint when a <table> is missing an explicit ' +
+          '<tbody> and the browser auto-inserted one',
+        async () => {
+          @Component({
+            selector: 'app',
+            template: `<table>
+              <tr>
+                <td>cell</td>
+              </tr>
+            </table>`,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          // Simulate the browser's HTML parser auto-inserting a <tbody> element
+          // around table rows that were declared as direct children of <table>.
+          const mutatedHtml = html.replace('<tr', '<tbody><tr').replace('</tr>', '</tr></tbody>');
+
+          resetTViewsFor(SimpleComponent);
+
+          await prepareEnvironmentAndHydrate(doc, mutatedHtml, SimpleComponent, {
+            envProviders: [withNoopErrorHandler()],
+          }).catch((err: Error) => {
+            const message = err.message;
+            expect(message).toContain('During hydration Angular expected <tr> but found <tbody>');
+            expect(message).toContain(
+              'When a <table> contains a <tr> as a direct child without an ' + 'explicit <tbody>',
+            );
+            expect(message).toContain(
+              "wrap the table rows in an explicit <tbody> element in the component's template",
+            );
+            verifyNodeHasMismatchInfo(doc);
+          });
+        },
+      );
+
+      it(
+        'should produce a known-pattern hint when an <a> is nested inside another <a> ' +
+          'and the browser auto-closed the outer one',
+        async () => {
+          @Component({
+            selector: 'app',
+            template: `<a href="/outer"><a href="/inner">link</a></a>`,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          // Simulate the browser's HTML parser auto-closing the outer <a> when
+          // it encounters the inner one (anchors cannot be nested).
+          const mutatedHtml = html.replace(
+            '<a href="/outer"><a href="/inner">link</a></a>',
+            '<a href="/outer"></a><a href="/inner">link</a>',
+          );
+
+          resetTViewsFor(SimpleComponent);
+
+          await prepareEnvironmentAndHydrate(doc, mutatedHtml, SimpleComponent, {
+            envProviders: [withNoopErrorHandler()],
+          }).catch((err: Error) => {
+            const message = err.message;
+            expect(message).toContain('An <a> element cannot be nested inside another <a> element');
+            expect(message).toContain(
+              'restructure your template so that the <a> elements are siblings',
+            );
+            verifyNodeHasMismatchInfo(doc);
+          });
+        },
+      );
+
+      it(
+        'should produce a known-pattern hint when a <div> is rendered inside a <p> ' +
+          'and the browser auto-closed the <p>',
+        async () => {
+          @Component({
+            selector: 'block-child',
+            template: `<div>block</div>`,
+          })
+          class BlockChildComponent {}
+
+          @Component({
+            selector: 'app',
+            imports: [BlockChildComponent],
+            template: `<p><block-child /></p>`,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          // Simulate the browser's HTML parser auto-closing the <p> when it
+          // encounters a block-level descendant rendered by the child component.
+          const mutatedHtml = html.replace(
+            /<p><block-child([\s\S]*?)<div>block<\/div><\/block-child><\/p>/,
+            '<p></p><block-child$1<div>block</div></block-child><p></p>',
+          );
+
+          resetTViewsFor(SimpleComponent, BlockChildComponent);
+
+          await prepareEnvironmentAndHydrate(doc, mutatedHtml, SimpleComponent, {
+            envProviders: [withNoopErrorHandler()],
+          }).catch((err: Error) => {
+            const message = err.message;
+            expect(message).toContain(
+              'A block-level descendant is not allowed inside a <p> element',
+            );
+            expect(message).toContain('replace the surrounding <p> with a non-paragraph');
+            verifyNodeHasMismatchInfo(doc);
+          });
+        },
+      );
+
       it('should log a warning when there was no hydration info in the TransferState', async () => {
         @Component({
           selector: 'app',
