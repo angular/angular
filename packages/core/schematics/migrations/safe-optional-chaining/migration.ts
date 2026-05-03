@@ -65,7 +65,7 @@ export interface CompilationUnitData {
 
 export interface MigrationConfig {
   /**
-   * Whether to migrate this component template to self-closing tags.
+   * Whether to migrate this component template.
    */
   shouldMigrate?: (containingFile: ProjectFile) => boolean;
 }
@@ -256,9 +256,7 @@ class HostBindingVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitBoundAttribute(attribute: TmplAstBoundAttribute) {
-    if (attribute.name === 'ngForOf') {
-      // skip
-    } else if (isClassStyleOrAttrBinding(attribute)) {
+    if (isClassStyleOrAttrBinding(attribute)) {
       // Class/style/attr bindings use truthiness — not null-sensitive by default.
       // Safe navs inside function calls or pipes will still be wrapped by the migrator.
       attribute.value.visit(this.hostExprMigrator, false);
@@ -407,8 +405,8 @@ class ExpressionMigrator extends RecursiveAstVisitor {
       // In all other strict comparisons, propagate the parent's null-sensitivity.
       const leftIsNullish = isNullishLiteralAST(ast.left);
       const rightIsNullish = isNullishLiteralAST(ast.right);
-      this.visit(ast.left, rightIsNullish ? true : nullSensitive);
-      this.visit(ast.right, leftIsNullish ? true : nullSensitive);
+      this.visit(ast.left, rightIsNullish);
+      this.visit(ast.right, leftIsNullish);
     } else {
       // All other binary operators (<, >, +, -, …): propagate the parent's null-sensitivity
       // because null and undefined can produce different numeric results (null → 0,
@@ -525,53 +523,11 @@ class NullCheckVisitor extends RecursiveAstVisitor {
       const isRightNullish = isNullishLiteralAST(node.right);
       if (isLeftNullish || isRightNullish) {
         this.hasNullCheck = true;
+        return;
       }
     }
     super.visitBinary(node, context);
   }
-}
-
-/**
- * Returns true if any of the ngSwitchCase / *ngSwitchCase bindings on `nodes`
- * (or their recursive child hosts) contain a strict null check or a null literal,
- * meaning the switch expression must use legacy null semantics.
- */
-function hasNullCheckInNgSwitchCases(nodes: Array<TmplAstElement | TmplAstTemplate>): boolean {
-  for (const node of nodes) {
-    for (const input of node.inputs) {
-      if (
-        input.name === 'ngSwitchCase' &&
-        input.value &&
-        (hasNullCheckInAST(input.value) || isNullishLiteralAST(input.value))
-      ) {
-        return true;
-      }
-    }
-
-    if (node instanceof TmplAstTemplate) {
-      for (const attr of node.templateAttrs) {
-        if (
-          attr instanceof TmplAstBoundAttribute &&
-          attr.name === 'ngSwitchCase' &&
-          attr.value &&
-          (hasNullCheckInAST(attr.value) || isNullishLiteralAST(attr.value))
-        ) {
-          return true;
-        }
-      }
-    }
-
-    const childHosts = node.children.filter(
-      (child): child is TmplAstElement | TmplAstTemplate =>
-        child instanceof TmplAstElement || child instanceof TmplAstTemplate,
-    );
-
-    if (hasNullCheckInNgSwitchCases(childHosts)) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 // ---------------------------------------------------------------------------
@@ -580,11 +536,6 @@ function hasNullCheckInNgSwitchCases(nodes: Array<TmplAstElement | TmplAstTempla
 
 class TmplVisitor extends TmplAstRecursiveVisitor {
   private migratableSwitchCases = new WeakSet<TmplAstSwitchBlockCase>();
-  /**
-   * Stack tracking whether the current ngSwitch context should be migrated
-   * (i.e. at least one *ngSwitchCase within it compares against null/undefined).
-   */
-  private ngSwitchContextStack: boolean[] = [];
 
   constructor(private exprMigrator: ExpressionMigrator) {
     super();
@@ -600,10 +551,6 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
     );
   }
 
-  private shouldMigrateCurrentNgSwitchContext(): boolean {
-    return this.ngSwitchContextStack[this.ngSwitchContextStack.length - 1] ?? true;
-  }
-
   override visitElement(element: TmplAstElement) {
     const hasNgSwitch = this.hasNgSwitchBinding(element);
     if (hasNgSwitch) {
@@ -611,14 +558,9 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
         (child): child is TmplAstElement | TmplAstTemplate =>
           child instanceof TmplAstElement || child instanceof TmplAstTemplate,
       );
-      this.ngSwitchContextStack.push(hasNullCheckInNgSwitchCases(childHosts));
     }
 
     super.visitElement(element);
-
-    if (hasNgSwitch) {
-      this.ngSwitchContextStack.pop();
-    }
   }
 
   override visitBoundAttribute(attribute: TmplAstBoundAttribute) {
@@ -631,9 +573,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
       // itself contains a strict null comparison (handled inside ExpressionMigrator).
       attribute.value.visit(this.exprMigrator, false);
     } else if (attribute.name === 'ngSwitch' || attribute.name === 'ngSwitchCase') {
-      if (this.shouldMigrateCurrentNgSwitchContext()) {
-        attribute.value.visit(this.exprMigrator, true);
-      }
+      attribute.value.visit(this.exprMigrator, true);
     } else if (isClassStyleOrAttrBinding(attribute)) {
       // Class/style/attr bindings use truthiness — not null-sensitive by default.
       attribute.value.visit(this.exprMigrator, false);
@@ -669,7 +609,6 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
         (child): child is TmplAstElement | TmplAstTemplate =>
           child instanceof TmplAstElement || child instanceof TmplAstTemplate,
       );
-      this.ngSwitchContextStack.push(hasNullCheckInNgSwitchCases(childHosts));
     }
 
     for (const attr of template.templateAttrs) {
@@ -680,9 +619,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
       if (attr.name === 'ngIf') {
         attr.value.visit(this.exprMigrator, false);
       } else if (attr.name === 'ngSwitch' || attr.name === 'ngSwitchCase') {
-        if (this.shouldMigrateCurrentNgSwitchContext()) {
-          attr.value.visit(this.exprMigrator, true);
-        }
+        attr.value.visit(this.exprMigrator, true);
       } else if (attr.name === 'ngForOf') {
         // ngFor microsyntax expressions are not null-sensitive by default.
         // Still visit so nested null-sensitive sinks are handled.
@@ -693,10 +630,6 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
     }
 
     super.visitTemplate(template);
-
-    if (hasNgSwitch) {
-      this.ngSwitchContextStack.pop();
-    }
   }
 
   override visitIfBlockBranch(block: TmplAstIfBlockBranch) {
@@ -708,7 +641,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitForLoopBlock(block: TmplAstForLoopBlock) {
-    // Don't visit block.expression or trackBy — only recurse into the block body.
+    block.trackBy.visit(this.exprMigrator, false);
     super.visitForLoopBlock(block);
   }
 
@@ -727,14 +660,10 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
         (hasNullCheckInAST(switchCase.expression) || isNullishLiteralAST(switchCase.expression)),
     );
 
-    if (shouldMigrate && block.expression) {
-      block.expression.visit(this.exprMigrator, true);
-    }
+    block.expression.visit(this.exprMigrator, true);
 
-    if (shouldMigrate) {
-      for (const switchCase of switchCases) {
-        this.migratableSwitchCases.add(switchCase);
-      }
+    for (const switchCase of switchCases) {
+      this.migratableSwitchCases.add(switchCase);
     }
 
     super.visitSwitchBlock(block);

@@ -117,8 +117,6 @@ describe('SafeOptionalChainingMigration', () => {
     <div *ngIf="foo?.bar === undefined"></div>
     @if(foo?.bar !== undefined) {}
   `);
-    // These expectations will FAIL without fix #2
-    // The actual result will remain unchanged (skipped) because hasNullCheckInAST returns false.
     expect(actual).toContain(
       '<div *ngIf="$safeNavigationMigration(foo?.bar) === undefined"></div>',
     );
@@ -160,6 +158,15 @@ describe('SafeOptionalChainingMigration', () => {
       @for (item of items; track item?.id) {}
     `);
     expect(actual).toContain('@for (item of items; track item?.id) {}');
+  });
+
+  it('should migrate a track function that contains an expression', async () => {
+    const actual = await migrateInlineTemplate(`
+      @for (item of items; track compute(item?.id)) {}
+    `);
+    expect(actual).toContain(
+      '@for (item of items; track compute($safeNavigationMigration(item?.id))) {}',
+    );
   });
 
   it('should migrate @let declarations', async () => {
@@ -296,7 +303,7 @@ describe('SafeOptionalChainingMigration', () => {
     );
   });
 
-  it('should skip ngSwitch/@switch if none of the cases checks for null', async () => {
+  it('should all expressions in ngSwitch/@switch', async () => {
     const actual = await migrateInlineTemplate(`
       <div [ngSwitch]="foo?.bar">
         <span *ngSwitchCase="foo?.bar"></span>
@@ -308,11 +315,10 @@ describe('SafeOptionalChainingMigration', () => {
       }
     `);
 
-    expect(actual).toContain('<div [ngSwitch]="foo?.bar">');
-    expect(actual).toContain('<span *ngSwitchCase="foo?.bar"></span>');
-    expect(actual).toContain('@switch (foo?.bar) {');
-    expect(actual).toContain('@case (foo?.baz) {}');
-    expect(actual).not.toContain('$safeNavigationMigration');
+    expect(actual).toContain('<div [ngSwitch]="$safeNavigationMigration(foo?.bar)">');
+    expect(actual).toContain('<span *ngSwitchCase="$safeNavigationMigration(foo?.bar)"></span>');
+    expect(actual).toContain('@switch ($safeNavigationMigration(foo?.bar)) {');
+    expect(actual).toContain('@case ($safeNavigationMigration(foo?.baz)) {}');
   });
 
   it('should migrate ngSwitch/@switch if at least one case checks for null', async () => {
