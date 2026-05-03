@@ -4,9 +4,9 @@ The `@for` block repeatedly renders content of a block for each item in a collec
 
 ```angular-html
 @for (item of items; track item.name) {
-<li>{{ item.name }}</li>
+  <li>{{ item.name }}</li>
 } @empty {
-<li>There are no items.</li>
+  <li>There are no items.</li>
 }
 ```
 
@@ -35,7 +35,28 @@ For collections that remain static , `track $index` provides a straightforward t
 collections experiencing additions, deletions, or reordering, opt for a
 unique property of each item as the tracking key.
 
-Track expressions can only reference `$index`, the item, and fields from the component class. If the `let` segment of the `@for` block introduced an alias for `$index`, that alias may also be referenced.
+Track expressions can only reference `$index`, the item, and members of the component class. If the `let` segment of the `@for` block introduced an alias for `$index`, that alias may also be referenced.
+
+A track expression may reference component methods.
+
+```angular-ts
+@Component({
+  template: `
+    @for (item of items; track trackByName(item)) {
+      <li>{{ item.name }}</li>
+    }
+  `,
+})
+class Items {
+  items: Item[] = [
+    /* ... */
+  ];
+
+  protected trackByName(item: Item): string {
+    return item.name;
+  }
+}
+```
 
 ### `$index` and other contextual variables
 
@@ -54,7 +75,7 @@ These variables are always available with these names, but can be aliased via a 
 
 ```angular-html
 @for (item of items; track item.id; let idx = $index, e = $even) {
-Item #{{ idx }}: {{ item.name }}
+  Item #{{ idx }}: {{ item.name }}
 }
 ```
 
