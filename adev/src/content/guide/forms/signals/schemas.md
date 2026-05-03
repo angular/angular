@@ -173,14 +173,14 @@ function isBankTransfer(value: PaymentMethod): value is BankTransfer {
 }
 
 paymentForm = form(this.paymentModel, (schemaPath) => {
-  applyWhenValue(schemaPath.payment, isCreditCard, (payment) => {
+  applyWhenValue(schemaPath, isCreditCard, (payment) => {
     // TypeScript knows payment is scoped to CreditCard
     required(payment.cardNumber);
     required(payment.expiry);
     required(payment.cvv);
   });
 
-  applyWhenValue(schemaPath.payment, isBankTransfer, (payment) => {
+  applyWhenValue(schemaPath, isBankTransfer, (payment) => {
     // TypeScript knows payment is scoped to BankTransfer
     required(payment.accountNumber);
     required(payment.routingNumber);
