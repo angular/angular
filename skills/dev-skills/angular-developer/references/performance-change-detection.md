@@ -22,7 +22,7 @@ export class UserCard {
 }
 ```
 
-**Always use `OnPush` on new components.** The default strategy runs a full tree check on every browser event — `OnPush` makes Angular skip subtrees that cannot have changed.
+**Use `OnPush` on every component.** From v22, it is the default for new components. In earlier versions it must be set explicitly. The default strategy runs a full tree check on every browser event — `OnPush` makes Angular skip subtrees that cannot have changed.
 
 ## Signals + OnPush
 
@@ -42,6 +42,8 @@ export class Counter {
 Do not call `markForCheck()` in signal-based components. Signals handle scheduling internally.
 
 ## NgZone.runOutsideAngular()
+
+> **Zone-based apps only.** Angular v21+ apps are zoneless by default — zone.js is not included and `NgZone` is a no-op. This pattern applies to apps on v20 or earlier, or apps that explicitly opted into zone.js.
 
 Angular's zone.js patches browser APIs (setTimeout, addEventListener, etc.) and triggers change detection after every callback. Code that does not produce UI changes should run outside the zone.
 
@@ -69,10 +71,14 @@ Use `runOutsideAngular` for: map libraries, WebGL/canvas animation loops, third-
 
 ## Zoneless Angular
 
-Zoneless mode removes zone.js entirely. Angular relies purely on signals and explicit scheduling to know when to update the DOM. Available and stable in Angular 20+.
+Zoneless mode removes zone.js entirely. Angular relies purely on signals and explicit scheduling to know when to update the DOM.
+
+**From Angular v21, zoneless is the default for new projects.** Zone.js is not included unless explicitly added back via `provideZoneChangeDetection()`.
+
+For apps on Angular v20 or earlier, opt in explicitly:
 
 ```ts
-// app.config.ts
+// app.config.ts (v20 and earlier)
 export const appConfig: ApplicationConfig = {
   providers: [
     provideExperimentalZonelessChangeDetection()
@@ -80,11 +86,11 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-Remove `zone.js` from `polyfills` in `angular.json` after enabling zoneless.
+Remove `zone.js` from `polyfills` in `angular.json` when opting in on older versions.
 
 **Benefits**: Smaller bundle (~12 KB removed), faster initial parse, no accidental change detection from third-party code, better SSR compatibility.
 
-**Migration path from zone.js**:
+**Migration path from zone.js** (for apps upgrading from v20 or earlier):
 1. Enable `provideExperimentalZonelessChangeDetection()` alongside `provideZoneChangeDetection()` during transition
 2. Audit all components for manual `detectChanges()` or `markForCheck()` calls — replace with signals
 3. Ensure all async state flows through signals or `AsyncPipe`
@@ -106,4 +112,4 @@ Install: Chrome Web Store → "Angular DevTools"
 
 **Calling `markForCheck()` in signal components.** Signals schedule their own updates. Manual `markForCheck()` is redundant and can mask missing signal reads.
 
-**Running animation loops inside the zone.** `requestAnimationFrame` loops inside Angular's zone trigger change detection at 60fps. Always wrap animation code in `runOutsideAngular()`.
+**Running animation loops inside the zone (zone-based apps).** `requestAnimationFrame` loops inside Angular's zone trigger change detection at 60fps. Always wrap animation code in `runOutsideAngular()`. In zoneless apps (default from v21) this is not an issue.

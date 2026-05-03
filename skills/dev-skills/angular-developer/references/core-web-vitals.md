@@ -44,19 +44,20 @@ INP measures the time from a user interaction (click, keypress, tap) to the next
 
 ### What affects INP in Angular
 
-**Change detection cost**: The default strategy checks the entire component tree on every event. In large apps this can block the main thread for tens or hundreds of milliseconds.
+**Change detection cost**: The default strategy checks the entire component tree on every event. In large apps this can block the main thread for tens or hundreds of milliseconds. From v22, `OnPush` is the default for new components.
 
-**Zone.js overhead**: zone.js intercepts every event and triggers Angular's change detection after it completes. Third-party libraries that fire many events (maps, charts) compound this.
+**Zone.js overhead**: In Angular v21+, apps are zoneless by default — zone.js is no longer included. In older or zone-based apps, zone.js intercepts every event and triggers change detection after it completes. Third-party libraries that fire many events (maps, charts) compound this.
 
 **Long event handlers**: Synchronous work in a click handler — API calls, complex calculations, DOM measurements — blocks the main thread and delays the next paint.
 
 ### INP improvements
 
 ```ts
-// 1. OnPush on every component
+// 1. OnPush on every component (default from v22; opt-in for v21 and earlier)
 @Component({ changeDetection: ChangeDetectionStrategy.OnPush })
 
-// 2. Move expensive work outside Angular's zone
+// 2. Zone-based apps only: move expensive work outside Angular's zone
+// Not needed in zoneless apps (default from v21)
 this.ngZone.runOutsideAngular(() => {
   chart.on('mousemove', handler);
 });
@@ -71,10 +72,10 @@ async handleClick() {
 
 ### INP checklist
 
-- [ ] `OnPush` on every component
-- [ ] Third-party event-heavy libraries use `runOutsideAngular()`
+- [ ] `OnPush` on every component (automatic from v22)
+- [ ] Zone-based apps: third-party event-heavy libraries use `runOutsideAngular()`
 - [ ] Long event handlers yield with `scheduler.yield()` or `setTimeout(0)`
-- [ ] Consider zoneless Angular for new projects (`provideExperimentalZonelessChangeDetection()`)
+- [ ] New projects use zoneless Angular (default from v21)
 
 ---
 
