@@ -281,7 +281,7 @@ export class Registration {
     validateAsync(schemaPath.username, {
       params: ({value}) => {
         const username = value();
-        return username.length >= 3 ? username : '';
+        return username.length >= 3 ? username : undefined!;
       },
       factory: this.createUsernameResource,
       onSuccess: (result) => {
@@ -512,7 +512,7 @@ export class Registration {
       params: ({value}) => {
         const username = value();
         // Skip validation for short usernames
-        return username.length >= 3 ? username : '';
+        return username.length >= 3 ? username : undefined!;
       },
       debounce: 300,
       // Reference to the factory defined above
