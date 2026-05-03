@@ -238,7 +238,7 @@ $code-font-size: 0.875rem;
   button[docs-copy-source-code] {
     padding: 0.375rem 0.4rem 0.15rem 0.5rem;
     position: absolute;
-    top: 3.1rem;
+    top: 0.2rem;
     right: 0.2rem;
     border-radius: 0.25rem;
     cursor: pointer;
@@ -264,7 +264,7 @@ $code-font-size: 0.875rem;
       color: var(--primary-contrast);
       position: absolute;
       inset: 0;
-      top: 0.35rem;
+      top: 0.1rem;
       path {
         transition: fill 0.3s ease;
       }
@@ -308,11 +308,26 @@ $code-font-size: 0.875rem;
 
   .docs-code-header {
     display: flex;
+    align-items: center;
     padding: 0.75rem;
 
     background: var(--subtle-purple);
     border-radius: 0.25rem 0.25rem 0 0;
     transition: background 0.3s ease;
+
+    button[docs-copy-source-code] {
+      position: relative;
+      margin-inline-start: auto;
+      top: auto;
+      right: auto;
+      padding: 0;
+      background: transparent;
+      border: 0;
+
+      .docs-check {
+        top: 0;
+      }
+    }
 
     .docs-code-avoid &,
     .docs-code-prefer & {
@@ -352,14 +367,6 @@ $code-font-size: 0.875rem;
           content: 'dangerous';
         }
       }
-    }
-  }
-
-  // Single line docs-code elements, without headers, shell code
-  .docs-code:not(:has(.docs-code-header)) {
-    button[docs-copy-source-code] {
-      top: 0.2rem;
-      right: 0.2rem;
     }
   }
 

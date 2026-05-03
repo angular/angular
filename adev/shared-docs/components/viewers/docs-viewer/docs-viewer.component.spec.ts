@@ -181,6 +181,32 @@ describe('DocViewer', () => {
     expect(copySourceCodeButton).toBeTruthy();
   });
 
+  it('should mount copy source code button inside .docs-code-header when present', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.componentRef.setInput(
+      'docContent',
+      `<div class="docs-code">
+        <div class="docs-code-header"><h3>file.ts</h3></div>
+        <code></code>
+      </div>`,
+    );
+
+    await fixture.whenStable();
+
+    const button = fixture.nativeElement.querySelector('button[docs-copy-source-code]');
+    expect(button.parentElement).toHaveClass('docs-code-header');
+  });
+
+  it('should mount copy source code button on .docs-code root when no header is present', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.componentRef.setInput('docContent', `<div class="docs-code"><code></code></div>`);
+
+    await fixture.whenStable();
+
+    const button = fixture.nativeElement.querySelector('button[docs-copy-source-code]');
+    expect(button.parentElement).toHaveClass('docs-code');
+  });
+
   it('should render ToC', async () => {
     const fixture = TestBed.createComponent(DocViewer);
     const renderComponentSpy = spyOn(fixture.componentInstance, 'renderComponent' as any);

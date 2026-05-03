@@ -264,8 +264,8 @@ export class DocViewer {
     };
   }
 
-  // If the content contains static code snippets, we should add buttons to copy
-  // the code
+  // Mount the copy button inside `.docs-code-header` when present so it doesn't
+  // overlap horizontally-scrollable code.
   private loadCopySourceCodeButtons(): void {
     const staticCodeSnippets = <Element[]>(
       Array.from(
@@ -277,7 +277,10 @@ export class DocViewer {
 
     for (let codeSnippet of staticCodeSnippets) {
       const copySourceCodeButton = this.viewContainer.createComponent(CopySourceCodeButton);
-      codeSnippet.appendChild(copySourceCodeButton.location.nativeElement);
+      copySourceCodeButton.setInput('matTooltip', 'Copy example source');
+      copySourceCodeButton.setInput('matTooltipPosition', 'above');
+      const header = codeSnippet.querySelector('.docs-code-header');
+      (header ?? codeSnippet).appendChild(copySourceCodeButton.location.nativeElement);
     }
   }
 
