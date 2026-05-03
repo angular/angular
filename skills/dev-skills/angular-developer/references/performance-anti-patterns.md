@@ -70,9 +70,10 @@ A consolidated reference of Angular performance anti-patterns. Each entry covers
 
 **Impact**: Change detection triggered at animation frame rate (60fps), high INP  
 **Why**: zone.js patches `requestAnimationFrame` and `addEventListener`. Any callback fires Angular's change detection.  
-**Fix**: Wrap third-party code in `NgZone.runOutsideAngular()`.
+**Fix**: In zone-based apps (v20 and earlier), wrap third-party code in `NgZone.runOutsideAngular()`. In zoneless apps (default from v21), zone.js is absent and this anti-pattern does not apply.
 
 ```ts
+// Zone-based apps only (v20 and earlier)
 this.ngZone.runOutsideAngular(() => {
   requestAnimationFrame(this.animationLoop.bind(this));
 });
@@ -99,22 +100,37 @@ fullName = computed(() => `${this.first()} ${this.last()}`);
 ### Reading signals after `await` in reactive contexts
 
 **Impact**: Stale data, missed updates — the reactive context is lost after an async boundary  
-**Why**: Angular's reactive context (template, `computed`, `effect`) tracks signal reads synchronously. Reads after `await` happen outside this context.  
-**Fix**: Read all signals before the first `await`.
+**Why**: Angular's reactive context (template, `computed`, `effect`) tracks signal reads synchronously. Any signal read after the first `await` happens outside this context and is not tracked.  
+**Fix**: Read all signals before the first `await`, or use `resource()` to keep async data loading reactive.
 
 ```ts
-// WRONG
-async loadUser() {
-  const data = await fetch('/api/user');
-  const id = this.userId(); // read after await — not tracked
-}
+@Component({ template: `<p>{{ user().name }}</p>` })
+class UserComponent {
+  userId = input.required<string>();
 
-// CORRECT
-async loadUser() {
-  const id = this.userId(); // read before await — tracked
-  const data = await fetch(`/api/user/${id}`);
+  // WRONG: userId() read after await — not tracked, changes ignored
+  async loadUser() {
+    const data = await fetch('/api/user');
+    const id = this.userId();
+    return data;
+  }
+
+  // CORRECT: read all signals before any await
+  async loadUser() {
+    const id = this.userId(); // tracked — read before await
+    const data = await fetch(`/api/user/${id}`);
+    return data;
+  }
+
+  // PREFERRED: use resource() — stays reactive to signal changes
+  user = resource({
+    request: () => this.userId(),
+    loader: ({ request: id }) => fetch(`/api/user/${id}`).then(r => r.json()),
+  });
 }
 ```
+
+See: [Reactive context and async operations](https://angular.dev/guide/signals#reactive-context-and-async-operations)
 
 ---
 

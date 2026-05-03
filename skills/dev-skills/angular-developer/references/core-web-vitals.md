@@ -44,7 +44,7 @@ INP measures the time from a user interaction (click, keypress, tap) to the next
 
 ### What affects INP in Angular
 
-**Change detection cost**: The default strategy checks the entire component tree on every event. In large apps this can block the main thread for tens or hundreds of milliseconds. From v22, `OnPush` is the default for new components.
+**Change detection cost**: In Angular v22+, `OnPush` is the default strategy — only components with changed inputs or updated signals are checked. In earlier versions, the default strategy checks the entire component tree on every event, which can block the main thread for tens or hundreds of milliseconds in large apps.
 
 **Zone.js overhead**: In Angular v21+, apps are zoneless by default — zone.js is no longer included. In older or zone-based apps, zone.js intercepts every event and triggers change detection after it completes. Third-party libraries that fire many events (maps, charts) compound this.
 
