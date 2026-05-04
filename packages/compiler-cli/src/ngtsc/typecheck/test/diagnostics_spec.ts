@@ -187,6 +187,21 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should disallow binding to event properties starting with on', () => {
+      const messages = diagnose(
+        `<div [onclick]="handler"></div>`,
+        `
+      class TestComponent {
+        handler: any;
+      }`,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 6): Binding to event property 'onclick' is disallowed for security reasons, please use (click)=...
+If 'onclick' is a directive input, make sure the directive is imported by the current module.`,
+      ]);
+    });
+
     it('checks text attributes that are consumed by bindings with literal string types', () => {
       const messages = diagnose(
         `<div dir mode="drak"></div><div dir mode="light"></div>`,
