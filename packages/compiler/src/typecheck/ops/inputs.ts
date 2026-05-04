@@ -124,7 +124,35 @@ export class TcbDirectiveInputsOp extends TcbOp {
           const id = new TcbExpr(this.tcb.allocateId());
           this.scope.addStatement(declareVariable(id, type));
 
-          target = id;
+          // The expression is assigned to the temporary variable to perform the type check.
+          // The result is then cast to `any` and assigned to the actual property. This avoids
+          // type mismatch errors (e.g., when assigning a string to a boolean input) while also
+          // providing a TCB node that the Language Service can resolve to the actual class property.
+          assignment = new TcbExpr(`(${id.print()} = ${assignment.print()}) as any`);
+
+          if (dirId === null) {
+            dirId = this.scope.resolve(this.node, this.dir);
+          }
+
+          // If strict checking of access modifiers is disabled and the field is restricted
+          // (i.e. private/protected/readonly), generate an assignment into a temporary variable
+          // that has the type of the field. This achieves type-checking but circumvents the access
+          // modifiers.
+          if (
+            !this.tcb.env.config.honorAccessModifiersForInputBindings &&
+            this.dir.restrictedInputFields.has(fieldName)
+          ) {
+            const targetId = new TcbExpr(this.tcb.allocateId());
+            const targetType = new TcbExpr(
+              `(typeof ${dirId.print()})[${TcbExpr.quoteAndEscape(fieldName)}]`,
+            );
+            this.scope.addStatement(declareVariable(targetId, targetType));
+            target = targetId;
+          } else {
+            target = this.dir.stringLiteralInputFields.has(fieldName)
+              ? new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(fieldName)}]`)
+              : new TcbExpr(`${dirId.print()}.${fieldName}`);
+          }
         } else if (this.dir.undeclaredInputFields.has(fieldName)) {
           // If no coercion declaration is present nor is the field declared (i.e. the input is
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
