@@ -828,7 +828,7 @@ function prepareDeclarations(
   const directives: DirectiveMeta[] = [];
   const registerDirective = (decl: TestDirective) => {
     const meta = getDirectiveMetaFromDeclaration(decl, resolveDeclaration);
-    directives.push(meta as DirectiveMeta);
+    directives.push(meta);
     metadataRegistry.set(decl.name, meta);
     decl.hostDirectives?.forEach((hostDecl) => registerDirective(hostDecl.directive));
   };
@@ -883,7 +883,7 @@ export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.C
 function getDirectiveMetaFromDeclaration(
   decl: TestDirective,
   resolveDeclaration: DeclarationResolver,
-) {
+): DirectiveMeta {
   return {
     name: decl.name,
     ref: new Reference(resolveDeclaration(decl), decl.bestGuessOwningModule),
@@ -910,7 +910,7 @@ function getDirectiveMetaFromDeclaration(
     ngContentSelectors: decl.ngContentSelectors || null,
     preserveWhitespaces: decl.preserveWhitespaces ?? false,
     isExplicitlyDeferred: false,
-    imports: decl.imports,
+    imports: decl.imports!,
     rawImports: null,
     matchSource: MatchSource.Selector,
     hostDirectives:
@@ -921,9 +921,18 @@ function getDirectiveMetaFromDeclaration(
               directive: new Reference(resolveDeclaration(hostDecl.directive)),
               inputs: parseInputOutputMappingArray(hostDecl.inputs || []),
               outputs: parseInputOutputMappingArray(hostDecl.outputs || []),
+              isForwardReference: false,
             };
           }),
-  } as TypeCheckableDirectiveMeta;
+    assumedToExportProviders: false,
+    deferredImports: null,
+    selectorlessEnabled: false,
+    localReferencedSymbols: null,
+    isPoisoned: false,
+    inputFieldNamesFromMetadataArray: null,
+    kind: MetaKind.Directive,
+    schemas: [],
+  };
 }
 
 /**
