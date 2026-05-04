@@ -12,6 +12,10 @@
     "@standard-schema/spec": "^1.0.0",
     "zod": "^4.0.10"
   },
+  "devDependencies": {
+    "@mcp-b/webmcp-polyfill": "^2.2.0",
+    "@mcp-b/webmcp-types": "^2.2.0"
+  },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
