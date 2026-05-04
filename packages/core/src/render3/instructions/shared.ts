@@ -49,6 +49,7 @@ import {
   LViewFlags,
   RENDERER,
   TData,
+  TVIEW,
   TView,
 } from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
@@ -469,7 +470,6 @@ export function elementAttributeInternal(
 ) {
   if (ngDevMode) {
     assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
-    validateAgainstEventAttributes(name);
     assertTNodeType(
       tNode,
       TNodeType.Element,
@@ -477,6 +477,11 @@ export function elementAttributeInternal(
         `Host bindings are not valid on ng-container or ng-template.`,
     );
   }
+
+  if (lView[TVIEW].firstUpdatePass) {
+    validateAgainstEventAttributes(name);
+  }
+
   const element = getNativeByTNode(tNode, lView) as RElement;
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
 }

@@ -265,10 +265,12 @@ export function validateAgainstEventProperties(name: string) {
 
 export function validateAgainstEventAttributes(name: string) {
   if (name.toLowerCase().startsWith('on')) {
-    const errorMessage =
-      `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-      `please use (${name.slice(2)})=...`;
-    throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_EVENT_BINDING,
+      ngDevMode &&
+        `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+          `please use (${name.slice(2)})=...`,
+    );
   }
 }
 
@@ -283,7 +285,7 @@ const attributeName: ReadonlySet<string> = new Set(['attributename']);
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>> = {
+export const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>> = {
   'iframe': new Set([
     'sandbox',
     'allow',
@@ -305,11 +307,7 @@ const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>>
  * @param tagName The name of the tag.
  * @param attributeName The name of the attribute.
  */
-export function ɵɵvalidateAttribute(
-  value: unknown,
-  tagName: string,
-  attributeName: string,
-): unknown {
+export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
   if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.has(lowerCaseAttrName)) {
