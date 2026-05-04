@@ -407,10 +407,6 @@ const getDependenciesForDirective = (
         resolutionPath: dependencyResolutionPath,
       };
 
-      if (dependency.token && isInjectionToken(dependency.token)) {
-        service.token = dependency.token!.toString();
-      }
-
       serializedInjectedServices.push(service);
     }
 
@@ -422,7 +418,14 @@ const getDependenciesForDirective = (
 
 const valueToLabel = (value: any): string => {
   if (isInjectionToken(value)) {
-    return value.toString();
+    const token = value.toString();
+
+    // This logic relies on the current InjectionToken.toString implementation.
+    if (token.startsWith('InjectionToken')) {
+      const tokenName = token.replace('InjectionToken', '').trim();
+      return `InjectionToken (${tokenName})`;
+    }
+    return token;
   }
 
   if (typeof value === 'object') {
