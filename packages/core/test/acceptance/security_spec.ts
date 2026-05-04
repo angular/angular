@@ -752,7 +752,7 @@ describe('iframe processing', () => {
           },
         );
 
-        it('should work when a security-sensitive attributes are marked for translation', () => {
+        it('should error when security-sensitive attributes are marked for translation', () => {
           @Component({
             selector: 'my-comp',
             template: ` <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox=""> </iframe> `,
@@ -761,7 +761,9 @@ describe('iframe processing', () => {
           })
           class IframeComp {}
 
-          expectIframeToBeCreated(IframeComp, {src: TEST_IFRAME_URL});
+          expect(() => TestBed.createComponent(IframeComp)).toThrowError(
+            /Translating attribute 'sandbox' is disallowed for security reasons./,
+          );
         });
       });
     });
