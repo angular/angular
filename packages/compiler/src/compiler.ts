@@ -229,6 +229,7 @@ export {
   MaybeForwardRefExpression,
   R3CompiledExpression,
   R3Reference,
+  isUnsafeObjectKey,
 } from './render3/util';
 export * from './render3/view/api';
 export {

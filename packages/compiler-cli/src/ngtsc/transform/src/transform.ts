@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ConstantPool} from '@angular/compiler';
+import {ConstantPool, isUnsafeObjectKey} from '@angular/compiler';
 import ts from 'typescript';
 import {
   DefaultImportTracker,
@@ -195,7 +195,7 @@ class IvyTransformationVisitor extends Visitor {
 
       const property = ts.factory.createPropertyDeclaration(
         [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)],
-        field.name,
+        isUnsafeObjectKey(field.name) ? ts.factory.createStringLiteral(field.name) : field.name,
         undefined,
         typeNode,
         exprNode,

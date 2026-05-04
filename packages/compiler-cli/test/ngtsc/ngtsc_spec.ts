@@ -11301,6 +11301,24 @@ runInEachFileSystem((os: string) => {
           'static ngAcceptInputType_element: HTMLElement | i0.ElementRef<HTMLElement>;',
         );
       });
+
+      it('should compile an input with a transform function and whose name needs to be quoted', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @Input({transform: (value: string) => value}) 'aria-label': string = '';
+          }
+        `,
+        );
+
+        env.driveMain();
+        const dtsContents = env.getContents('test.d.ts');
+        expect(dtsContents).toContain('static "ngAcceptInputType_aria-label": string;');
+      });
     });
 
     describe('debug info', () => {
