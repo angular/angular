@@ -631,9 +631,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
       // itself contains a strict null comparison (handled inside ExpressionMigrator).
       attribute.value.visit(this.exprMigrator, false);
     } else if (attribute.name === 'ngSwitch' || attribute.name === 'ngSwitchCase') {
-      if (this.shouldMigrateCurrentNgSwitchContext()) {
-        attribute.value.visit(this.exprMigrator, true);
-      }
+      attribute.value.visit(this.exprMigrator, this.shouldMigrateCurrentNgSwitchContext());
     } else if (isClassStyleOrAttrBinding(attribute)) {
       // Class/style/attr bindings use truthiness — not null-sensitive by default.
       attribute.value.visit(this.exprMigrator, false);
@@ -680,9 +678,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
       if (attr.name === 'ngIf') {
         attr.value.visit(this.exprMigrator, false);
       } else if (attr.name === 'ngSwitch' || attr.name === 'ngSwitchCase') {
-        if (this.shouldMigrateCurrentNgSwitchContext()) {
-          attr.value.visit(this.exprMigrator, true);
-        }
+        attr.value.visit(this.exprMigrator, this.shouldMigrateCurrentNgSwitchContext());
       } else if (attr.name === 'ngForOf') {
         // ngFor microsyntax expressions are not null-sensitive by default.
         // Still visit so nested null-sensitive sinks are handled.
