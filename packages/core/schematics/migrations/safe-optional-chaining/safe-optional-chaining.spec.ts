@@ -153,6 +153,15 @@ describe('SafeOptionalChainingMigration', () => {
     );
   });
 
+  it('should migrate @for expressions when needed', async () => {
+    const actual = await migrateInlineTemplate(`
+      @for (item of repository?.project | users; track item.id) {}
+    `);
+    expect(actual).toContain(
+      '@for (item of $safeNavigationMigration(repository?.project) | users; track item.id) {}',
+    );
+  });
+
   it('should not migrate the @for track function', async () => {
     const actual = await migrateInlineTemplate(`
       @for (item of items; track item?.id) {}
@@ -303,7 +312,7 @@ describe('SafeOptionalChainingMigration', () => {
     );
   });
 
-  it('should all expressions in ngSwitch/@switch', async () => {
+  it('should migrate all expressions in ngSwitch/@switch', async () => {
     const actual = await migrateInlineTemplate(`
       <div [ngSwitch]="foo?.bar">
         <span *ngSwitchCase="foo?.bar"></span>

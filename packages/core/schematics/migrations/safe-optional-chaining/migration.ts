@@ -402,7 +402,6 @@ class ExpressionMigrator extends RecursiveAstVisitor {
     } else if (ast.operation === '===' || ast.operation === '!==') {
       // A strict comparison with a nullish literal makes the other side null-sensitive
       // (null === null is true but undefined === null is false).
-      // In all other strict comparisons, propagate the parent's null-sensitivity.
       const leftIsNullish = isNullishLiteralAST(ast.left);
       const rightIsNullish = isNullishLiteralAST(ast.right);
       this.visit(ast.left, rightIsNullish);
@@ -641,6 +640,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitForLoopBlock(block: TmplAstForLoopBlock) {
+    block.expression.visit(this.exprMigrator, false);
     block.trackBy.visit(this.exprMigrator, false);
     super.visitForLoopBlock(block);
   }
