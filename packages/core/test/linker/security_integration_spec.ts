@@ -273,5 +273,23 @@ describe('security integration tests', function () {
         /Translating attribute 'innerHTML' is disallowed for security reasons./,
       );
     });
+
+    it('should throw error on static URL attributes', () => {
+      const template = `<a href="/safe" i18n-href>Link</a>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'href' is disallowed for security reasons./,
+      );
+    });
+
+    it('should throw error on static form action attributes', () => {
+      const template = `<form action="/safe" i18n-action></form>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'action' is disallowed for security reasons./,
+      );
+    });
   });
 });
