@@ -38,14 +38,12 @@ class OnPrefixDir {
 
 describe('security integration tests', function () {
   beforeEach(() => {
+    // Disable logging for these tests.
+    spyOn(console, 'log').and.callFake(() => {});
+
     TestBed.configureTestingModule({
       declarations: [SecuredComponent, OnPrefixDir],
     });
-  });
-
-  beforeEach(() => {
-    // Disable logging for these tests.
-    spyOn(console, 'log').and.callFake(() => {});
   });
 
   describe('events', () => {
@@ -56,8 +54,7 @@ describe('security integration tests', function () {
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
       expect(() => {
-        const cmp = TestBed.createComponent(SecuredComponent);
-        cmp.detectChanges();
+        TestBed.createComponent(SecuredComponent);
       }).toThrowError(
         /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../,
       );
@@ -97,6 +94,44 @@ describe('security integration tests', function () {
       expect(div.nativeElement.onclick).not.toBe(value);
       expect(div.nativeElement.hasAttribute('onclick')).toEqual(false);
     });
+
+    for (const ngDevModeValue of [true, false]) {
+      it(`should disallow binding to attr.on* in host bindings with ngDevMode=${ngDevModeValue}`, () => {
+        const originalNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = ngDevModeValue;
+
+        @Directive({
+          selector: '[dirOnclick]',
+          standalone: false,
+        })
+        class LocalHostOnclickDirective {
+          @HostBinding('attr.onclick') @Input() dirOnclick: string | undefined;
+        }
+
+        @Component({
+          selector: 'local-comp',
+          template: `<button [dirOnclick]="ctxProp"></button>`,
+          standalone: false,
+        })
+        class LocalSecuredComponent {
+          ctxProp: any = 'some value';
+        }
+
+        try {
+          TestBed.configureTestingModule({
+            declarations: [LocalSecuredComponent, LocalHostOnclickDirective],
+          });
+
+          expect(() => {
+            TestBed.createComponent(LocalSecuredComponent);
+          }).toThrowError(
+            /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../,
+          );
+        } finally {
+          (globalThis as any).ngDevMode = originalNgDevMode;
+        }
+      });
+    }
   });
 
   describe('safe HTML values', function () {

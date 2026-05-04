@@ -908,12 +908,6 @@ function extractHostBindings(
   // First parse the declarations from the metadata.
   const bindings = parseHostBindings(host || {});
 
-  // After that check host bindings for errors
-  const errors = verifyHostBindings(bindings, sourceSpan);
-  if (errors.length) {
-    throw new Error(errors.map((error: ParseError) => error.msg).join('\n'));
-  }
-
   // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
@@ -931,6 +925,12 @@ function extractHostBindings(
         }
       });
     }
+  }
+
+  // After that check host bindings for errors
+  const errors = verifyHostBindings(bindings, sourceSpan);
+  if (errors.length) {
+    throw new Error(errors.map((error: ParseError) => error.msg).join('\n'));
   }
 
   return bindings;
