@@ -49,6 +49,7 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
+    readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 // @public
@@ -98,7 +99,9 @@ export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (context: FieldContext<TValue, TPathKind>, abortSignal: AbortSignal) => Promise<void> | void;
 
 // @public
-export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>): void;
+export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, configOrLogic?: {
+    when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
+} | string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>): void;
 
 // @public
 export interface DisabledReason {
@@ -259,7 +262,9 @@ export interface FormValueControl<TValue> extends FormUiControl<TValue> {
 }
 
 // @public
-export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, configOrLogic: {
+    when: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+} | NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
@@ -268,6 +273,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly options?: HttpResourceOptions<TResult, unknown>;
     readonly request: ((ctx: FieldContext<TValue, TPathKind>) => string | undefined) | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
+    readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 // @public
@@ -538,7 +544,9 @@ export class PatternValidationError extends BaseNgValidationError {
 export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
 
 // @public
-export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
+export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, configOrLogic?: {
+    when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+} | NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
 export interface ReadonlyArrayLike<T> {
