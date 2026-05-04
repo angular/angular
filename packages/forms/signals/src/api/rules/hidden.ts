@@ -23,7 +23,8 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * ```
  *
  * @param path The target path to add the hidden logic to.
- * @param logic A reactive function that returns `true` when the field is hidden.
+ * @param config Options object containing the `when` condition.
+ *  - `when`: A reactive function that returns `true` when the field is hidden.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
@@ -32,10 +33,10 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
+  config: {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.builder.addHiddenRule(logic);
+  pathNode.builder.addHiddenRule(config.when);
 }

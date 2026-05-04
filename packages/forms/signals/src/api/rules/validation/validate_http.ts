@@ -10,10 +10,11 @@ import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/c
 import {DebounceTimer, ResourceSnapshot, Signal} from '@angular/core';
 import {
   FieldContext,
-  SchemaPath,
+  LogicFn,
   PathKind,
-  TreeValidationResult,
+  SchemaPath,
   SchemaPathRules,
+  TreeValidationResult,
 } from '../../types';
 import {MapToErrorsFn, validateAsync} from './validate_async';
 
@@ -68,6 +69,10 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    * returns a promise that resolves when the update should proceed.
    */
   readonly debounce?: DebounceTimer<string | HttpResourceRequest | undefined>;
+  /**
+   * A function that receives the field context and returns true if the async validation should be run.
+   */
+  readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 /**
@@ -96,5 +101,6 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
     factory: (request: Signal<any>) => httpResource(request, opts.options),
     onSuccess: opts.onSuccess,
     onError: opts.onError,
+    when: opts.when,
   });
 }

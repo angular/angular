@@ -227,7 +227,7 @@ describe('extractValue', () => {
         signal(model),
         (p) => {
           applyEach(p.items, (item) => {
-            disabled(item, ({value}) => value() === 2 || value() === 4);
+            disabled(item, {when: ({value}) => value() === 2 || value() === 4});
           });
         },
         {injector},
@@ -242,7 +242,7 @@ describe('extractValue', () => {
         signal(model),
         (p) => {
           applyEach(p.items, (item) => {
-            disabled(item, ({value}) => value() !== 30);
+            disabled(item, {when: ({value}) => value() !== 30});
           });
         },
         {injector},

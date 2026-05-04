@@ -15,8 +15,9 @@ import type {FieldContext, LogicFn, PathKind, SchemaPath, SchemaPathRules} from 
  * validation, touched/dirty, or other state of its parent field.
  *
  * @param path The target path to add the disabled logic to.
- * @param logic A reactive function that returns `true` (or a string reason) when the field is disabled,
- *   and `false` when it is not disabled.
+ * @param config Optional configuration object.
+ *  - `when`: A reactive function that returns `true` (or a string reason) when the field is disabled,
+ *    and `false` when it is not disabled. Can also be a static string reason.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
@@ -25,17 +26,17 @@ import type {FieldContext, LogicFn, PathKind, SchemaPath, SchemaPathRules} from 
  */
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>,
+  config?: {when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>},
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.builder.addDisabledReasonRule((ctx) => {
     let result: boolean | string = true;
-    if (typeof logic === 'string') {
-      result = logic;
-    } else if (logic) {
-      result = logic(ctx as FieldContext<TValue, TPathKind>);
+    if (typeof config?.when === 'string') {
+      result = config.when;
+    } else if (config?.when) {
+      result = config.when(ctx as FieldContext<TValue, TPathKind>);
     }
     if (typeof result === 'string') {
       return {fieldTree: ctx.fieldTree, message: result};

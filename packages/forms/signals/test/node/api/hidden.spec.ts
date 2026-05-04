@@ -16,8 +16,10 @@ describe('hidden', () => {
     const f = form(
       cat,
       (p) => {
-        hidden(p, ({value}) => {
-          return value.name === 'hidden-cat';
+        hidden(p, {
+          when: ({value}) => {
+            return value.name === 'hidden-cat';
+          },
         });
       },
       {injector: TestBed.inject(Injector)},
@@ -32,8 +34,10 @@ describe('hidden', () => {
     const f = form(
       cat,
       (p) => {
-        hidden(p.name, ({value}) => {
-          return value() === 'hidden-cat';
+        hidden(p.name, {
+          when: ({value}) => {
+            return value() === 'hidden-cat';
+          },
         });
       },
       {injector: TestBed.inject(Injector)},
@@ -48,8 +52,10 @@ describe('hidden', () => {
     const f = form(
       cat,
       (p) => {
-        hidden(p, ({value}) => {
-          return value().name === 'hidden-cat';
+        hidden(p, {
+          when: ({value}) => {
+            return value().name === 'hidden-cat';
+          },
         });
       },
       {injector: TestBed.inject(Injector)},
@@ -65,8 +71,10 @@ describe('hidden', () => {
     const f = form(
       cat,
       (p) => {
-        hidden(p.name, ({value}) => {
-          return value() === 'hidden-cat';
+        hidden(p.name, {
+          when: ({value}) => {
+            return value() === 'hidden-cat';
+          },
         });
 
         validate(p.name, () => {
@@ -94,8 +102,10 @@ describe('hidden', () => {
     const f = form(
       cat,
       (p) => {
-        hidden(p.name, ({value}) => {
-          return value() === 'hidden-cat';
+        hidden(p.name, {
+          when: ({value}) => {
+            return value() === 'hidden-cat';
+          },
         });
       },
       {injector: TestBed.inject(Injector)},

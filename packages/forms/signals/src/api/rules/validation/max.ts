@@ -38,15 +38,18 @@ export function max<TValue extends number | null, TPathKind extends PathKind = P
   const MAX_MEMO = createMetadataKey<number | undefined>();
 
   // Memoize the maximum valid value.
-  metadata(path, MAX_MEMO, (ctx) => (typeof maxValue === 'function' ? maxValue(ctx) : maxValue));
+  metadata(path, MAX_MEMO, (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof maxValue === 'function' ? maxValue(ctx) : maxValue;
+  });
 
   // Publish the memoized maximum value for aggregation.
   metadata(path, MAX_NUMBER, ({state}) => state.metadata(MAX_MEMO)!());
 
   // Use `MAX_NUMBER` to define the `max` property of the field.
   metadata(path, MAX, () => MAX_NUMBER as LimitKey<TValue>);
-
-  // Validate that the field value is not greater than the maximum value.
   validate(path, (ctx) => {
     const value = ctx.value();
     if (value === null || Number.isNaN(value)) {

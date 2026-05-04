@@ -63,6 +63,9 @@ export function email<TPathKind extends PathKind = PathKind.Root>(
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
   validate(path, (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
     if (isEmpty(ctx.value())) {
       return undefined;
     }

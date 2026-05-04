@@ -324,7 +324,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
         }
 
@@ -359,7 +359,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(false), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly customControl = viewChild.required(CustomControlDir);
         }
@@ -400,7 +400,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(false), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly customControl = viewChild.required(BaseControlDir);
         }
@@ -431,7 +431,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(false), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly customControl = viewChild.required(CustomControl);
         }
@@ -456,7 +456,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(false), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly customControl = viewChild.required(CustomControl);
         }
@@ -482,7 +482,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(false), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly customControl = viewChild.required(CustomControl);
         }
@@ -509,7 +509,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -541,7 +541,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(false), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -620,7 +620,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly customControl = viewChild.required(CustomControl);
         }
@@ -663,7 +663,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly data = signal('');
           readonly f = form(this.data, (p) => {
-            disabled(p, () => 'Currently unavailable');
+            disabled(p, {when: () => 'Currently unavailable'});
           });
           readonly customControl = viewChild.required(CustomControlDir);
         }
@@ -694,7 +694,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly data = signal('');
           readonly f = form(this.data, (p) => {
-            disabled(p, () => 'Currently unavailable');
+            disabled(p, {when: () => 'Currently unavailable'});
           });
           readonly customControl = viewChild.required(CustomControl);
         }
@@ -724,7 +724,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly data = signal('');
           readonly f = form(this.data, (p) => {
-            disabled(p, () => 'Currently unavailable');
+            disabled(p, {when: () => 'Currently unavailable'});
           });
           readonly customControl = viewChild.required(CustomControl);
         }
@@ -750,8 +750,10 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, () => {
-              return this.disabled() ? 'b' : false;
+            disabled(p, {
+              when: () => {
+                return this.disabled() ? 'b' : false;
+              },
             });
           });
           readonly dir = viewChild.required(TestDir);
@@ -790,8 +792,10 @@ describe('field directive', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, () => {
-              return this.disabled() ? 'b' : false;
+            disabled(p, {
+              when: () => {
+                return this.disabled() ? 'b' : false;
+              },
             });
           });
           readonly dir = viewChild.required(TestDir);
@@ -822,7 +826,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal({x: '', y: ''}), (p) => {
-            disabled(p.x, () => 'Currently unavailable');
+            disabled(p.x, {when: () => 'Currently unavailable'});
           });
           readonly field = signal(this.f.x);
           readonly customControl = viewChild.required(CustomControl);
@@ -1053,7 +1057,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(''), (p) => {
-            hidden(p, () => !visible());
+            hidden(p, {when: () => !visible()});
           });
           readonly field = signal(this.f);
           readonly customControl = viewChild.required(CustomControlDir);
@@ -1086,7 +1090,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(''), (p) => {
-            hidden(p, () => !visible());
+            hidden(p, {when: () => !visible()});
           });
           readonly field = signal(this.f);
           readonly customControl = viewChild.required(CustomControl);
@@ -1115,7 +1119,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(''), (p) => {
-            hidden(p, () => !visible());
+            hidden(p, {when: () => !visible()});
           });
           readonly field = signal(this.f);
           readonly customControl = viewChild.required(CustomControl);
@@ -1142,7 +1146,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly hidden = signal(false);
           readonly f = form(signal(''), (p) => {
-            hidden(p, this.hidden);
+            hidden(p, {when: this.hidden});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -1174,7 +1178,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly hidden = signal(false);
           readonly f = form(signal(''), (p) => {
-            hidden(p, this.hidden);
+            hidden(p, {when: this.hidden});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -1201,7 +1205,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal({x: 'a', y: 'b'}), (p) => {
-            hidden(p.x, () => true);
+            hidden(p.x, {when: () => true});
           });
           readonly field = signal(this.f.x);
           readonly customControl = viewChild.required(CustomControl);
@@ -1223,7 +1227,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(''), (p) => {
-            hidden(p, () => true);
+            hidden(p, {when: () => true});
           });
         }
 
@@ -1246,7 +1250,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(''), (p) => {
-            hidden(p, isHidden);
+            hidden(p, {when: isHidden});
           });
         }
 
@@ -1866,7 +1870,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly readonly = signal(true);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.readonly);
+            readonly(p, {when: this.readonly});
           });
         }
 
@@ -1901,7 +1905,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly readonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.readonly);
+            readonly(p, {when: this.readonly});
           });
           readonly child = viewChild.required(CustomControlDir);
         }
@@ -1932,7 +1936,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly readonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.readonly);
+            readonly(p, {when: this.readonly});
           });
           readonly customControl = viewChild.required(CustomControl);
         }
@@ -1959,7 +1963,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly readonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.readonly);
+            readonly(p, {when: this.readonly});
           });
           readonly child = viewChild.required(CustomControl);
         }
@@ -1985,7 +1989,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly readonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.readonly);
+            readonly(p, {when: this.readonly});
           });
         }
 
@@ -2011,7 +2015,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly readonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.readonly);
+            readonly(p, {when: this.readonly});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -2043,7 +2047,7 @@ describe('field directive', () => {
         class TestCmp {
           readonly readonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.readonly);
+            readonly(p, {when: this.readonly});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -4690,7 +4694,7 @@ describe('field directive', () => {
       `,
     })
     class TestCmp {
-      f = form(signal(''), (p) => hidden(p, ({value}) => value() === ''));
+      f = form(signal(''), (p) => hidden(p, {when: ({value}) => value() === ''}));
       select = viewChild<ElementRef<HTMLSelectElement>>('select');
       options = ['one', 'two', 'three'];
     }
@@ -4721,7 +4725,7 @@ describe('field directive', () => {
       `,
     })
     class TestCmp {
-      f = form(signal(''), (p) => hidden(p, ({value}) => value() === ''));
+      f = form(signal(''), (p) => hidden(p, {when: ({value}) => value() === ''}));
       select = viewChild<ElementRef<HTMLSelectElement>>('select');
       options = ['one', 'two', 'three'];
     }
@@ -4934,7 +4938,7 @@ describe('field directive', () => {
       myInput = viewChild.required<CustomInput>(CustomInput);
       data = signal('');
       f = form(this.data, (p) => {
-        disabled(p, () => 'Currently unavailable');
+        disabled(p, {when: () => 'Currently unavailable'});
       });
     }
 
@@ -4991,7 +4995,7 @@ describe('field directive', () => {
       myInput = viewChild.required<CustomInput>(CustomInput);
       data = signal('');
       f = form(this.data, (p) => {
-        hidden(p, ({value}) => value() === '');
+        hidden(p, {when: ({value}) => value() === ''});
       });
     }
 
@@ -5164,7 +5168,7 @@ describe('field directive', () => {
       model = signal('');
       f = form(this.model, (p) => {
         required(p, {message: 'schema error'});
-        disabled(p, ({value}) => (value() === 'disabled' ? 'schema disabled' : false));
+        disabled(p, {when: ({value}) => (value() === 'disabled' ? 'schema disabled' : false)});
       });
       disabledReasons = [{message: 'manual disabled'}];
       errors = [{kind: 'error', message: 'manual error'}];

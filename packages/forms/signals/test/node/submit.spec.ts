@@ -423,7 +423,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Disable first name when last name is empty.
-        disabled(name.first, ({valueOf}) => valueOf(name.last) === '');
+        disabled(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -448,7 +448,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Hide first name when last name is empty.
-        hidden(name.first, ({valueOf}) => valueOf(name.last) === '');
+        hidden(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -473,7 +473,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Make first name readonly when last name is empty.
-        readonly(name.first, ({valueOf}) => valueOf(name.last) === '');
+        readonly(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );

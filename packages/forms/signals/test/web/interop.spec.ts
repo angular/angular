@@ -388,7 +388,7 @@ describe('ControlValueAccessor', () => {
     })
     class TestCmp {
       f = form<string>(signal('test'), (p) => {
-        disabled(p, () => !enabled());
+        disabled(p, {when: () => !enabled()});
       });
     }
 
@@ -516,7 +516,7 @@ describe('ControlValueAccessor', () => {
     class App {
       disabled = signal(false);
       readonly f = form(signal('test'), (f) => {
-        disabled(f, () => this.disabled());
+        disabled(f, {when: () => this.disabled()});
       });
     }
 
@@ -622,7 +622,7 @@ describe('ControlValueAccessor', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -644,7 +644,7 @@ describe('ControlValueAccessor', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, this.disabled);
+            disabled(p, {when: this.disabled});
           });
         }
 
@@ -725,8 +725,10 @@ describe('ControlValueAccessor', () => {
         class TestCmp {
           readonly disabled = signal(false);
           readonly f = form(signal(''), (p) => {
-            disabled(p, () => {
-              return this.disabled() ? 'Test reason' : false;
+            disabled(p, {
+              when: () => {
+                return this.disabled() ? 'Test reason' : false;
+              },
             });
           });
           readonly dir = viewChild.required(TestDir);
@@ -787,7 +789,7 @@ describe('ControlValueAccessor', () => {
         class TestCmp {
           readonly hidden = signal(false);
           readonly f = form(signal(''), (p) => {
-            hidden(p, this.hidden);
+            hidden(p, {when: this.hidden});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -923,7 +925,7 @@ describe('ControlValueAccessor', () => {
         class TestCmp {
           readonly isReadonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.isReadonly);
+            readonly(p, {when: this.isReadonly});
           });
           readonly dir = viewChild.required(TestDir);
         }
@@ -945,7 +947,7 @@ describe('ControlValueAccessor', () => {
         class TestCmp {
           readonly isReadonly = signal(false);
           readonly f = form(signal(''), (p) => {
-            readonly(p, this.isReadonly);
+            readonly(p, {when: this.isReadonly});
           });
         }
 

@@ -38,15 +38,18 @@ export function min<TValue extends number | null, TPathKind extends PathKind = P
   const MIN_MEMO = createMetadataKey<number | undefined>();
 
   // Memomize the minimum valid.
-  metadata(path, MIN_MEMO, (ctx) => (typeof minValue === 'function' ? minValue(ctx) : minValue));
+  metadata(path, MIN_MEMO, (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof minValue === 'function' ? minValue(ctx) : minValue;
+  });
 
   // Publish the memoized mininum value for aggregation.
   metadata(path, MIN_NUMBER, ({state}) => state.metadata(MIN_MEMO)!());
 
   // Use `MIN_NUMBER` to define the `min` property of the field.
   metadata(path, MIN, () => MIN_NUMBER as LimitKey<TValue>);
-
-  // Validate that the field value is not less than the minimum value.
   validate(path, (ctx) => {
     const value = ctx.value();
     if (value === null || Number.isNaN(value)) {

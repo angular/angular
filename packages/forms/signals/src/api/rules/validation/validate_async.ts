@@ -21,6 +21,7 @@ import {FieldPathNode} from '../../../schema/path_node';
 import {assertPathIsCurrent} from '../../../schema/schema';
 import {
   FieldContext,
+  LogicFn,
   PathKind,
   SchemaPath,
   SchemaPathRules,
@@ -107,6 +108,10 @@ export interface AsyncValidatorOptions<
    *   If a field is not given, the error is assumed to apply to the field being validated.
    */
   readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
+  /**
+   * A function that receives the field context and returns true if the async validation should be run.
+   */
+  readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 /**
@@ -147,6 +152,9 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     const node = ctx.stateOf(path) as FieldNode;
     const validationState = node.validationState;
     if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
+      return undefined;
+    }
+    if (opts.when && !opts.when(ctx)) {
       return undefined;
     }
     return opts.params(ctx);

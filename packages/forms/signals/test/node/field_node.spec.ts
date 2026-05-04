@@ -288,7 +288,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          hidden(p, () => true);
+          hidden(p, {when: () => true});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -353,7 +353,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          readonly(p, isReadonly);
+          readonly(p, {when: isReadonly});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -537,7 +537,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          hidden(p, () => true);
+          hidden(p, {when: () => true});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -602,7 +602,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          hidden(p, isHidden);
+          hidden(p, {when: isHidden});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -669,11 +669,13 @@ describe('FieldNode', () => {
         signal({names: [{name: 'Alex'}, {name: 'Miles'}]}),
         (p) => {
           applyEach(p.names, (a) => {
-            disabled(a.name, ({value, fieldTreeOf}) => {
-              const el = fieldTreeOf(a);
-              expect(el().value().name).toBe(value());
-              expect([...fieldTreeOf(p).names].findIndex((e: any) => e === el)).not.toBe(-1);
-              return true;
+            disabled(a.name, {
+              when: ({value, fieldTreeOf}) => {
+                const el = fieldTreeOf(a);
+                expect(el().value().name).toBe(value());
+                expect([...fieldTreeOf(p).names].findIndex((e: any) => e === el)).not.toBe(-1);
+                return true;
+              },
             });
           });
         },
@@ -689,7 +691,7 @@ describe('FieldNode', () => {
         (p) => {
           applyEach(p, (a) => {
             a;
-            disabled(a, ({value}) => value() % 2 === 0);
+            disabled(a, {when: ({value}) => value() % 2 === 0});
           });
         },
         {injector: TestBed.inject(Injector)},
@@ -706,7 +708,7 @@ describe('FieldNode', () => {
         (p) => {
           applyEach(p, (el) => {
             // Disabled if even.
-            disabled(el, ({value}) => value() % 2 === 0);
+            disabled(el, {when: ({value}) => value() % 2 === 0});
           });
         },
         {injector: TestBed.inject(Injector)},
@@ -802,7 +804,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p.a, ({value}) => value() !== 2);
+          disabled(p.a, {when: ({value}) => value() !== 2});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -820,7 +822,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p.a, () => 'a cannot be changed');
+          disabled(p.a, {when: () => 'a cannot be changed'});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -838,7 +840,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p.a, ({value}) => (value() > 5 ? 'a cannot be changed' : false));
+          disabled(p.a, {when: ({value}) => (value() > 5 ? 'a cannot be changed' : false)});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -861,7 +863,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p, () => 'form unavailable');
+          disabled(p, {when: () => 'form unavailable'});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -887,7 +889,7 @@ describe('FieldNode', () => {
         signal({a: '', b: ''}),
         (p) => {
           disabled(p.a);
-          disabled(p.b, 'disabled!');
+          disabled(p.b, {when: 'disabled!'});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -925,7 +927,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          readonly(p.a, ({value}) => value() > 10);
+          readonly(p.a, {when: ({value}) => value() > 10});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -955,7 +957,7 @@ describe('FieldNode', () => {
       const f = form(
         signal(''),
         (p) => {
-          readonly(p, isReadonly);
+          readonly(p, {when: isReadonly});
           required(p);
         },
         {injector: TestBed.inject(Injector)},
@@ -1390,7 +1392,7 @@ describe('FieldNode', () => {
       }
 
       const addressSchema: SchemaOrSchemaFn<Address> = (p) => {
-        disabled(p.street, () => true);
+        disabled(p.street, {when: () => true});
       };
 
       const data = signal<{name: string; address: Address}>({
@@ -1430,7 +1432,7 @@ describe('FieldNode', () => {
 
     it('should resolve predefined schema paths within the local context', () => {
       const s = schema<{a: string; b: string}>((p) => {
-        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+        disabled(p.b, {when: ({valueOf}) => valueOf(p.a) === 'disable-b'});
       });
 
       const f = form(
@@ -1448,7 +1450,7 @@ describe('FieldNode', () => {
 
     it('should resolve predefined schema paths deeply nested within the schema', () => {
       const s = schema<{a: string; b: string}>((p) => {
-        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+        disabled(p.b, {when: ({valueOf}) => valueOf(p.a) === 'disable-b'});
       });
 
       const f = form(
@@ -1472,9 +1474,11 @@ describe('FieldNode', () => {
       const f = form(
         signal(''),
         (p) => {
-          disabled(p, ({fieldTreeOf}) => {
-            fieldTreeOf(otherP);
-            return true;
+          disabled(p, {
+            when: ({fieldTreeOf}) => {
+              fieldTreeOf(otherP);
+              return true;
+            },
           });
         },
         {injector: TestBed.inject(Injector)},
