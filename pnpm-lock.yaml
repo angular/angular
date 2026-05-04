@@ -1071,6 +1071,13 @@ importers:
       zod:
         specifier: ^4.0.10
         version: 4.4.3
+    devDependencies:
+      '@mcp-b/webmcp-polyfill':
+        specifier: ^2.2.0
+        version: 2.3.1
+      '@mcp-b/webmcp-types':
+        specifier: ^2.2.0
+        version: 2.3.1
 
   packages/language-service: {}
 
