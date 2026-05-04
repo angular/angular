@@ -418,6 +418,10 @@ export class FieldNode implements FieldState<unknown> {
       }
     }
 
+    if (this.structure.isOrphaned()) {
+      return;
+    }
+
     this.sync();
   }
 

@@ -364,7 +364,11 @@ export class FieldValidationState implements ValidationState {
    * or readonly.
    */
   readonly shouldSkipValidation = computed(
-    () => this.node.hidden() || this.node.disabled() || this.node.readonly(),
+    () =>
+      this.node.hidden() ||
+      this.node.disabled() ||
+      this.node.readonly() ||
+      this.node.structure.isOrphaned(),
   );
 }
 
