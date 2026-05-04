@@ -345,6 +345,11 @@ export interface BazelAndG3Options {
    * Defaults to `false`.
    */
   legacyOptionalChaining?: boolean;
+
+  /**
+   * Internal option for enabling template source location metadata.
+   */
+  enableTemplateSourceLocations?: boolean;
 }
 
 /**
