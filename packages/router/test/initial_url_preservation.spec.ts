@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Location, PlatformNavigation} from '@angular/common';
+import {Location} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {timeout} from '@angular/private/testing';
@@ -16,32 +16,30 @@ import {provideRouter, Router} from '../index';
 class Empty {}
 
 describe('same-path navigation state writes', () => {
-  it('uses `navigation.updateCurrentEntry` instead of `replaceState` when path is unchanged', async () => {
+  it('uses `Location.updateCurrentEntry` instead of `replaceState` when path is unchanged', async () => {
     TestBed.configureTestingModule({
       providers: [provideRouter([{path: '**', component: Empty}])],
     });
-    const navigation = TestBed.inject(PlatformNavigation);
-    const updateSpy = spyOn(navigation, 'updateCurrentEntry').and.callThrough();
-    const replaceSpy = spyOn(TestBed.inject(Location), 'replaceState').and.callThrough();
+    const location = TestBed.inject(Location);
+    const updateSpy = spyOn(location, 'updateCurrentEntry' as any).and.callThrough();
+    const replaceSpy = spyOn(location, 'replaceState').and.callThrough();
 
     await TestBed.inject(Router).navigateByUrl('/');
 
-    expect(updateSpy).toHaveBeenCalledWith(jasmine.objectContaining({state: jasmine.any(Object)}));
+    expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Object));
     expect(replaceSpy).not.toHaveBeenCalled();
   });
 
-  it('writes `extras.state` into the new entry state via `updateCurrentEntry`', async () => {
+  it('writes `extras.state` into the entry state via `updateCurrentEntry`', async () => {
     TestBed.configureTestingModule({
       providers: [provideRouter([{path: '**', component: Empty}])],
     });
-    const navigation = TestBed.inject(PlatformNavigation);
-    const updateSpy = spyOn(navigation, 'updateCurrentEntry').and.callThrough();
+    const location = TestBed.inject(Location);
+    const updateSpy = spyOn(location, 'updateCurrentEntry' as any).and.callThrough();
 
     await TestBed.inject(Router).navigateByUrl('/', {state: {custom: 'value'}});
 
-    expect(updateSpy).toHaveBeenCalledWith({
-      state: jasmine.objectContaining({custom: 'value'}),
-    });
+    expect(updateSpy).toHaveBeenCalledWith(jasmine.objectContaining({custom: 'value'}));
   });
 
   it('uses the regular `Location.go` path for cross-path navigations', async () => {
@@ -54,9 +52,9 @@ describe('same-path navigation state writes', () => {
       ],
     });
     const router = TestBed.inject(Router);
-    const navigation = TestBed.inject(PlatformNavigation);
-    const goSpy = spyOn(TestBed.inject(Location), 'go').and.callThrough();
-    const updateSpy = spyOn(navigation, 'updateCurrentEntry').and.callThrough();
+    const location = TestBed.inject(Location);
+    const goSpy = spyOn(location, 'go').and.callThrough();
+    const updateSpy = spyOn(location, 'updateCurrentEntry' as any).and.callThrough();
 
     await router.navigateByUrl('/');
     updateSpy.calls.reset();
@@ -68,11 +66,10 @@ describe('same-path navigation state writes', () => {
   });
 
   it('preserves Router state across a back-traversal to a same-path entry', async () => {
-    // Regression coverage: writes via `navigation.updateCurrentEntry` do not
-    // populate `history.state`, so scroll restoration / `restoredState()` must
-    // still recover Router state by reading from the navigation entry on
-    // popstate. If this stops working, scroll restoration to the initial entry
-    // breaks too.
+    // Regression coverage: same-path writes go through `updateCurrentEntry` and
+    // do not populate `history.state`, so `Location.getState()` must reconcile
+    // the navigation entry. If this stops working, scroll restoration to the
+    // initial entry breaks too.
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
@@ -83,28 +80,17 @@ describe('same-path navigation state writes', () => {
     });
     const router = TestBed.inject(Router);
     const location = TestBed.inject(Location);
-    const navigation = TestBed.inject(PlatformNavigation);
 
-    // Initial nav: state written via updateCurrentEntry — only on the
-    // navigation entry, not in `history.state`.
     await router.navigateByUrl('/');
-    const initialNavState = navigation.currentEntry?.getState() as {
-      navigationId: number;
-    } | null;
-    expect(initialNavState?.navigationId).toBeDefined();
-    expect(location.getState()).toBeNull();
+    const initialState = location.getState() as {navigationId: number} | null;
+    expect(initialState?.navigationId).toBeDefined();
 
-    // Cross-path nav populates the next entry (via pushState).
     await router.navigateByUrl('/next');
 
-    // Back-traverse. Router's `restoredState()` should recover the original
-    // Router state from the navigation entry, not from `history.state`.
     location.back();
     await timeout();
 
-    const restored = navigation.currentEntry?.getState() as {
-      navigationId: number;
-    } | null;
-    expect(restored?.navigationId).toBe(initialNavState!.navigationId);
+    const restored = location.getState() as {navigationId: number} | null;
+    expect(restored?.navigationId).toBe(initialState!.navigationId);
   });
 });

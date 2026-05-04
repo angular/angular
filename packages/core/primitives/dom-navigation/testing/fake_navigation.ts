@@ -660,9 +660,10 @@ export class FakeNavigation implements Navigation {
   }
 
   updateCurrentEntry(options: NavigationUpdateCurrentEntryOptions): void {
-    // Spec: updates the current entry's state in place without changing the URL,
-    // and synchronously fires `currententrychange` with `navigationType: null`
-    // and `from === currentEntry`.
+    // Per https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigation-updatecurrententry,
+    // updates the current entry's state in place without changing the URL, and
+    // synchronously fires `currententrychange` with `navigationType: null` and
+    // `from === currentEntry`.
     this.currentEntry._setStateForTesting(options.state);
     const event = createFakeNavigationCurrentEntryChangeEvent({
       from: this.currentEntry,

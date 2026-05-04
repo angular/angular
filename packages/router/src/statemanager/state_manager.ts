@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Location, PlatformNavigation} from '@angular/common';
+import {Location} from '@angular/common';
 import {EnvironmentInjector, inject, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
@@ -38,7 +38,6 @@ export abstract class StateManager {
   protected location = inject(Location);
   protected urlHandlingStrategy = inject(UrlHandlingStrategy);
   protected urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
-  protected readonly platformNavigation = inject(PlatformNavigation, {optional: true});
 
   protected currentUrlTree = new UrlTree();
   /**
@@ -138,20 +137,9 @@ export abstract class StateManager {
     };
   }
 
-  /**
-   * Returns the state on `navigation.currentEntry` if the Navigation API is
-   * available, since same-path writes go through `updateCurrentEntry` and
-   * never reach `history.state`.
-   */
-  protected navigationEntryState(): RestoredState | null | undefined {
-    return this.platformNavigation?.currentEntry?.getState() as RestoredState | null | undefined;
-  }
-
   /** Returns the current state stored by the browser for the current history entry. */
   restoredState(): RestoredState | null | undefined {
-    return (
-      this.navigationEntryState() ?? (this.location.getState() as RestoredState | null | undefined)
-    );
+    return this.location.getState() as RestoredState | null | undefined;
   }
 
   /**
@@ -213,9 +201,9 @@ export class HistoryStateManager extends StateManager {
         // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
         // hybrid apps.
         setTimeout(() => {
-          // Fall back to the navigation entry state — same reasoning as `restoredState()`.
-          const state =
-            (event.state as RestoredState | null | undefined) ?? this.navigationEntryState();
+          // Same-path writes via `updateCurrentEntry` only land on the navigation
+          // entry, not `event.state`; `Location.getState()` reconciles the two.
+          const state = (event.state as RestoredState | null | undefined) ?? this.restoredState();
           listener(event['url']!, state, 'popstate', {replaceUrl: true});
         });
       }
@@ -261,10 +249,10 @@ export class HistoryStateManager extends StateManager {
         ...this.generateNgRouterState(id, currentBrowserPageId, navigation),
       };
 
-      // Same-path writes use `updateCurrentEntry` to avoid having
-      // `replaceState` commit a `:~:text=`-stripped `document.URL`.
-      if (samePath && this.platformNavigation) {
-        this.platformNavigation.updateCurrentEntry({state: newState});
+      // Same-path writes use `Location.updateCurrentEntry` (when available) to
+      // avoid having `replaceState` commit a `:~:text=`-stripped `document.URL`.
+      if (samePath && this.location.updateCurrentEntry) {
+        this.location.updateCurrentEntry(newState);
       } else {
         this.location.replaceState(path, '', newState);
       }

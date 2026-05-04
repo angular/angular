@@ -35,6 +35,8 @@ export class SpyLocation implements Location {
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
   /** @internal */
   _urlChangeSubscription: SubscriptionLike | null = null;
+  /** @internal */
+  _platformNavigation = null;
 
   /** @docs-private */
   ngOnDestroy(): void {

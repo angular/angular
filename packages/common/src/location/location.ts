@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, OnDestroy, ɵɵinject} from '@angular/core';
+import {inject, Injectable, OnDestroy, ɵɵinject} from '@angular/core';
 import {Subject, SubscriptionLike} from 'rxjs';
 
+import {PlatformNavigation} from '../navigation/platform_navigation';
 import {LocationStrategy} from './location_strategy';
 import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
 
@@ -64,8 +65,25 @@ export class Location implements OnDestroy {
   /** @internal */
   _urlChangeSubscription: SubscriptionLike | null = null;
 
+  /** @internal */
+  _platformNavigation = inject(PlatformNavigation, {optional: true});
+
+  /**
+   * Updates the state of the current history entry without changing the URL.
+   *
+   * Only present when the [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API)
+   * is available; consumers should check for its existence before calling.
+   */
+  updateCurrentEntry?: (state: unknown) => void;
+
   constructor(locationStrategy: LocationStrategy) {
     this._locationStrategy = locationStrategy;
+    if (this._platformNavigation) {
+      const navigation = this._platformNavigation;
+      this.updateCurrentEntry = (state: unknown) => {
+        navigation.updateCurrentEntry({state});
+      };
+    }
     const baseHref = this._locationStrategy.getBaseHref();
     // Note: This class's interaction with base HREF does not fully follow the rules
     // outlined in the spec https://www.freesoft.org/CIE/RFC/1808/18.htm.
@@ -106,18 +124,11 @@ export class Location implements OnDestroy {
   /**
    * Reports the current state of the location history.
    *
-   * Note: this returns `history.state`. When the Navigation API is available,
-   * `Router` may write same-path state via `navigation.updateCurrentEntry` to
-   * avoid rewriting the URL (which preserves browser-applied augmentations
-   * like `:~:text=` text-fragment directives). State written that way lives
-   * on `navigation.currentEntry` and is **not** reflected here. Read it with
-   * `navigation.currentEntry?.getState()` instead, or use Router's own state
-   * APIs which already account for the split.
-   *
-   * @returns The current value of the `history.state` object.
+   * @returns The state from the Navigation API's current entry when available,
+   *     otherwise `history.state`.
    */
   getState(): unknown {
-    return this._locationStrategy.getState();
+    return this._platformNavigation?.currentEntry?.getState() ?? this._locationStrategy.getState();
   }
 
   /**
