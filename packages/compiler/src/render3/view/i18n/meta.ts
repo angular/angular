@@ -12,7 +12,11 @@ import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
 import {ParseTreeResult} from '../../../ml_parser/parser';
+import {splitNsName} from '../../../ml_parser/tags';
+import {TokenType} from '../../../ml_parser/tokens';
 import * as o from '../../../output/output_ast';
+import {SecurityContext} from '../../../core';
+import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
 import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
 
 import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
@@ -48,6 +52,29 @@ const setI18nRefs = (originalNodeMap: Map<html.Node, html.Node>): VisitNodeFn =>
     return i18nNode;
   };
 };
+
+const domSchema = new DomElementSchemaRegistry();
+
+function getElementName(node: html.Element | html.Component): string | null {
+  const tagName = node instanceof html.Component ? node.tagName : node.name;
+  return tagName === null ? null : splitNsName(tagName)[1];
+}
+
+function isStaticAttributeValue(attr: html.Attribute): boolean {
+  return !attr.valueTokens?.some((token) => token.type === TokenType.ATTR_VALUE_INTERPOLATION);
+}
+
+function isStaticUrlAttribute(node: html.Element | html.Component, attr: html.Attribute): boolean {
+  const elementName = getElementName(node);
+  if (elementName === null) {
+    return false;
+  }
+
+  return (
+    isStaticAttributeValue(attr) &&
+    domSchema.securityContext(elementName, attr.name, true) === SecurityContext.URL
+  );
+}
 
 /**
  * This visitor walks over HTML parse tree and converts information stored in
@@ -201,12 +228,9 @@ export class I18nMetaVisitor implements html.Visitor {
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
           // 'i18n-*' attributes
           const name = attr.name.slice(I18N_ATTR_PREFIX.length);
-          let isTrustedType: boolean;
-          if (node instanceof html.Component) {
-            isTrustedType = node.tagName === null ? false : isTrustedTypesSink(node.tagName, name);
-          } else {
-            isTrustedType = isTrustedTypesSink(node.name, name);
-          }
+          const elementName = getElementName(node);
+          const isTrustedType =
+            elementName === null ? false : isTrustedTypesSink(elementName, name);
 
           if (isTrustedType) {
             this._reportError(
@@ -228,7 +252,14 @@ export class I18nMetaVisitor implements html.Visitor {
           const meta = attrsMeta[attr.name];
           // do not create translation for empty attributes
           if (meta !== undefined && attr.value) {
-            attr.i18n = this._generateI18nMessage([attr], attr.i18n || meta);
+            if (isStaticUrlAttribute(node, attr)) {
+              this._reportError(
+                attr,
+                `Translating attribute '${attr.name}' is disallowed for security reasons.`,
+              );
+            } else {
+              attr.i18n = this._generateI18nMessage([attr], attr.i18n || meta);
+            }
           }
         }
       }
