@@ -63,6 +63,7 @@ import {
   getCurrentTNode,
   getElementDepthCount,
   getSelectedIndex,
+  getTView,
   increaseElementDepthCount,
   isCurrentTNodeParent,
   isInCheckNoChangesMode,
@@ -514,7 +515,10 @@ export function elementAttributeInternal(
     );
   }
 
-  validateAgainstEventAttributes(name);
+  if (getTView().firstUpdatePass) {
+    validateAgainstEventAttributes(name);
+  }
+
   const element = getNativeByTNode(tNode, lView) as RElement;
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
 }
