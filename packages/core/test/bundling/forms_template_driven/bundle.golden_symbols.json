@@ -1014,7 +1014,6 @@
       "updateControl",
       "updateMicroTaskStatus",
       "updateStyling",
-      "validateAgainstEventAttributes",
       "viewAttachedToChangeDetector",
       "viewAttachedToContainer",
       "viewShouldHaveReactiveConsumer",

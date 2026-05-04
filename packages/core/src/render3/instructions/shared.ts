@@ -12,10 +12,8 @@ import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {ViewEncapsulation} from '../../metadata/view';
-import {
-  validateAgainstEventAttributes,
-  validateAgainstEventProperties,
-} from '../../sanitization/sanitization';
+import {validateAgainstEventProperties} from '../../sanitization/sanitization';
+
 import {assertIndexInRange, assertNotSame} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
@@ -293,7 +291,9 @@ export function setDomProperty<T>(
     const element = getNativeByTNode(tNode, lView) as RElement | RComment;
 
     if (ngDevMode) {
-      validateAgainstEventProperties(propName);
+      if (lView[TVIEW].firstUpdatePass) {
+        validateAgainstEventProperties(propName);
+      }
       if (!isPropertyValid(element, propName, tNode.value, lView[TVIEW].schemas)) {
         handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
       }
@@ -511,7 +511,6 @@ export function elementAttributeInternal(
     );
   }
 
-  validateAgainstEventAttributes(name);
   const element = getNativeByTNode(tNode, lView) as RElement;
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
 }

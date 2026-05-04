@@ -46,8 +46,7 @@ describe('security integration tests', function () {
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
       expect(() => {
-        const cmp = TestBed.createComponent(SecuredComponent);
-        cmp.detectChanges();
+        TestBed.createComponent(SecuredComponent);
       }).toThrowError(
         /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../,
       );
@@ -116,9 +115,10 @@ describe('security integration tests', function () {
           });
 
           expect(() => {
-            const cmp = TestBed.createComponent(LocalSecuredComponent);
-            cmp.detectChanges();
-          }).toThrowError(/NG0306/);
+            TestBed.createComponent(LocalSecuredComponent);
+          }).toThrowError(
+            /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../,
+          );
         } finally {
           (globalThis as any).ngDevMode = originalNgDevMode;
         }

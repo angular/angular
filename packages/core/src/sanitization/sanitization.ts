@@ -263,17 +263,6 @@ export function validateAgainstEventProperties(name: string) {
   }
 }
 
-export function validateAgainstEventAttributes(name: string) {
-  if (name.toLowerCase().startsWith('on')) {
-    throw new RuntimeError(
-      RuntimeErrorCode.INVALID_EVENT_BINDING,
-      ngDevMode &&
-        `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-          `please use (${name.slice(2)})=...`,
-    );
-  }
-}
-
 function getSanitizer(): Sanitizer | null {
   const lView = getLView();
   return lView && lView[ENVIRONMENT].sanitizer;

@@ -1140,7 +1140,6 @@
       "updateSegmentGroup",
       "updateSegmentGroupChildren",
       "updateTextNode",
-      "validateAgainstEventAttributes",
       "validateCommands",
       "viewAttachedToChangeDetector",
       "viewAttachedToContainer",
