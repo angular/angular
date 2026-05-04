@@ -23,7 +23,7 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * ```
  *
  * @param path The target path to add the hidden logic to.
- * @param config Options object containing the `when` condition.
+ * @param configOrLogic Options object containing the `when` condition, or the logic function directly (deprecated).
  *  - `when`: A reactive function that returns `true` when the field is hidden.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
@@ -33,10 +33,25 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  config: {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
+  configOrLogic:
+    | {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>}
+    | NoInfer<LogicFn<TValue, boolean, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.builder.addHiddenRule(config.when);
+
+  let logic: LogicFn<TValue, boolean, TPathKind>;
+  if (typeof configOrLogic === 'function') {
+    logic = configOrLogic;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.warn(
+        `[Signal Forms] Passing a function directly to 'hidden' is deprecated. Use '{ when: ... }' instead.`,
+      );
+    }
+  } else {
+    logic = configOrLogic.when;
+  }
+
+  pathNode.builder.addHiddenRule(logic);
 }
