@@ -330,6 +330,23 @@ describe('SafeOptionalChainingMigration', () => {
     expect(actual).toContain('@case ($safeNavigationMigration(foo?.baz)) {}');
   });
 
+  it('should not migrate ngSwitch/@switch when all cases are non-null literals', async () => {
+    const actual = await migrateInlineTemplate(`
+      <div [ngSwitch]="foo?.bar">
+        <span *ngSwitchCase="'hello'"></span>
+        <span *ngSwitchCase="42"></span>
+      </div>
+
+      @switch (foo?.bar) {
+        @case ('world') {}
+        @case (0) {}
+        @default {}
+      }
+    `);
+
+    expect(actual).not.toContain('$safeNavigationMigration');
+  });
+
   it('should migrate ngSwitch/@switch if at least one case checks for null', async () => {
     const actual = await migrateInlineTemplate(`
       <div [ngSwitch]="foo?.bar">
@@ -490,6 +507,35 @@ describe('SafeOptionalChainingMigration', () => {
 
     expect(content).toContain('{{ compute($safeNavigationMigration(foo?.bar)) }}');
     expect(content).toContain('<div *ngIf="$safeNavigationMigration(foo?.bar) !== null"></div>');
+  });
+
+  it('should be idempotent — running twice does not double-wrap expressions', async () => {
+    const input = `
+      {{ compute(foo?.bar) }}
+      {{ foo?.bar | json }}
+      <div [id]="user?.id"></div>
+      <div *ngIf="foo?.bar === null"></div>
+    `;
+
+    // First pass: migrate fresh code
+    const firstPass = await migrateInlineTemplate(input);
+
+    // Verify all expressions are wrapped correctly on first pass
+    expect(firstPass).toContain('{{ compute($safeNavigationMigration(foo?.bar)) }}');
+    expect(firstPass).toContain('{{ $safeNavigationMigration(foo?.bar) | json }}');
+    expect(firstPass).toContain('<div [id]="$safeNavigationMigration(user?.id)"></div>');
+    expect(firstPass).toContain('<div *ngIf="$safeNavigationMigration(foo?.bar) === null"></div>');
+
+    // Second pass: run migration again on already-migrated code
+    const secondPass = await migrateInlineTemplate(firstPass);
+
+    // Verify no double-wrapping occurred
+    expect(secondPass).not.toContain('$safeNavigationMigration($safeNavigationMigration');
+    // The already-wrapped expressions should remain unchanged
+    expect(secondPass).toContain('{{ compute($safeNavigationMigration(foo?.bar)) }}');
+    expect(secondPass).toContain('{{ $safeNavigationMigration(foo?.bar) | json }}');
+    expect(secondPass).toContain('<div [id]="$safeNavigationMigration(user?.id)"></div>');
+    expect(secondPass).toContain('<div *ngIf="$safeNavigationMigration(foo?.bar) === null"></div>');
   });
 });
 
