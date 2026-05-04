@@ -273,5 +273,27 @@ describe('security integration tests', function () {
         /Translating attribute 'innerHTML' is disallowed for security reasons./,
       );
     });
+
+    it('should throw error on security-sensitive SVG animation attributes', () => {
+      const template = `
+        <svg>
+          <a href="/safe">
+            <set
+              attributeName="display"
+              i18n-attributeName
+              to="inline"
+              i18n-to
+              begin="0s"
+              fill="freeze">
+            </set>
+          </a>
+        </svg>
+      `;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'attributeName' is disallowed for security reasons./,
+      );
+    });
   });
 });
