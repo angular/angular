@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {type ɵControlDirectiveHost as ControlDirectiveHost, type Renderer2} from '@angular/core';
 import type {ReadonlyFieldState} from '../api/types';
+import {setNativeDomProperty, type NativeFormControl} from './native';
 
 /**
  * Branded type for the public name of an input we bind on control components or DOM elements.
@@ -67,6 +69,22 @@ export function readFieldStateBindingValue(
 export const CONTROL_BINDING_NAMES = /* @__PURE__ */ (() =>
   Object.values(FIELD_STATE_KEY_TO_CONTROL_BINDING))() as Array<ControlBindingKey>;
 
+/** The subset of native property names that Signal Forms can write via the Renderer. */
+type NativeDomPropertyName = Parameters<typeof setNativeDomProperty>[2];
+
+/**
+ * Structural interface describing the pieces of `FormField` that `applyControlStateBindings`
+ * needs. Using a structural type avoids a circular import between `bindings.ts` and
+ * `form_field.ts`.
+ */
+export interface ControlStateBindingTarget {
+  readonly renderer: Renderer2;
+  readonly nativeFormElement: NativeFormControl;
+  elementAcceptsNativeProperty(
+    name: ControlBindingKey,
+  ): name is ControlBindingKey & NativeDomPropertyName;
+}
+
 export function createBindings<TKey extends string>(): {[K in TKey]?: unknown} {
   return {};
 }
@@ -81,4 +99,31 @@ export function bindingUpdated<TKey extends string>(
     return true;
   }
   return false;
+}
+
+/**
+ * Iterates over all control binding names, computes each value from field state, and applies
+ * any changed bindings to both the directive inputs and the native DOM element. Shared by
+ * native and select-multiple control implementations.
+ */
+export function applyControlStateBindings(
+  bindings: {[key: string]: unknown},
+  state: ReadonlyFieldState<unknown>,
+  host: ControlDirectiveHost,
+  parent: ControlStateBindingTarget,
+): void {
+  for (const name of CONTROL_BINDING_NAMES) {
+    const value = readFieldStateBindingValue(state, name);
+    if (bindingUpdated(bindings, name, value)) {
+      host.setInputOnDirectives(name, value);
+      if (parent.elementAcceptsNativeProperty(name)) {
+        setNativeDomProperty(
+          parent.renderer,
+          parent.nativeFormElement,
+          name,
+          value as string | number | undefined,
+        );
+      }
+    }
+  }
 }

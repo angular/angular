@@ -3923,6 +3923,42 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('two');
   });
 
+  it('synchronizes with a multiple select', () => {
+    @Component({
+      imports: [FormField],
+      template: `
+        <select #select multiple [formField]="f">
+          <option value="one">One</option>
+          <option value="two">Two</option>
+          <option value="three">Three</option>
+        </select>
+      `,
+    })
+    class TestCmp {
+      f = form(signal<string[]>(['two']));
+      select = viewChild.required<ElementRef<HTMLSelectElement>>('select');
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const select = fix.componentInstance.select().nativeElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    expect(Array.from(select.selectedOptions, (option) => option.value)).toEqual(['two']);
+
+    // Model -> View
+    act(() => cmp.f().value.set(['one', 'three']));
+    expect(Array.from(select.selectedOptions, (option) => option.value)).toEqual(['one', 'three']);
+
+    // View -> Model
+    act(() => {
+      for (const option of Array.from(select.options)) {
+        option.selected = option.value !== 'three';
+      }
+      select.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toEqual(['one', 'two']);
+  });
+
   it('synchronizes with a custom value control', () => {
     @Component({
       selector: 'my-input',

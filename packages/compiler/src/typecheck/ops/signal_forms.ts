@@ -142,8 +142,15 @@ export class TcbNativeFieldOp extends TcbOp {
   }
 
   private getExpectedTypeFromDomNode(node: Element): string | null {
-    if (node.name === 'textarea' || node.name === 'select') {
-      // `<textarea>` and `<select>` are always strings.
+    if (node.name === 'textarea') {
+      // `<textarea>` is always a string.
+      return 'string';
+    }
+
+    if (node.name === 'select') {
+      const mode = getSelectMultipleMode(node);
+      if (mode === 'static') return 'string[]';
+      if (mode === 'dynamic') return 'string | string[]';
       return 'string';
     }
 
@@ -194,6 +201,22 @@ export class TcbNativeFieldOp extends TcbOp {
   private getUnsupportedType(): string {
     return 'never';
   }
+}
+
+function getSelectMultipleMode(node: Element): 'static' | 'dynamic' | 'none' {
+  if (node.attributes.some((attr) => attr.name.toLowerCase() === 'multiple')) {
+    return 'static';
+  }
+  if (
+    node.inputs.some(
+      (input) =>
+        (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+        input.name.toLowerCase() === 'multiple',
+    )
+  ) {
+    return 'dynamic';
+  }
+  return 'none';
 }
 
 /**

@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
+  ɵRuntimeError as RuntimeError,
   type ɵControlDirectiveHost as ControlDirectiveHost,
   type Signal,
   type WritableSignal,
 } from '@angular/core';
 import type {ValidationError} from '../api/rules';
+import {RuntimeErrorCode} from '../errors';
 import {createParser} from '../util/parser';
 import {
+  applyControlStateBindings,
   bindingUpdated,
-  CONTROL_BINDING_NAMES,
   createBindings,
-  readFieldStateBindingValue,
   type ControlBindingKey,
 } from './bindings';
 import type {FormField} from './form_field';
@@ -26,7 +27,6 @@ import {
   isInput,
   inputRequiresValidityTracking,
   setNativeControlValue,
-  setNativeDomProperty,
 } from './native';
 import {observeSelectMutations} from './select';
 
@@ -90,21 +90,28 @@ export function nativeControlCreate(
   const bindings = createBindings<ControlBindingKey | 'controlValue'>();
 
   return () => {
+    if (
+      ngDevMode &&
+      !updateMode &&
+      input.tagName === 'SELECT' &&
+      (input as HTMLSelectElement).multiple
+    ) {
+      throw new RuntimeError(
+        RuntimeErrorCode.DYNAMIC_SELECT_MULTIPLE_BINDING,
+        ngDevMode &&
+          `Signal Forms does not support dynamic [multiple] bindings on <select>. ` +
+            `Use the static 'multiple' attribute instead.`,
+      );
+    }
+
     const state = parent.state();
     const controlValue = state.controlValue();
+
     if (bindingUpdated(bindings, 'controlValue', controlValue)) {
       setNativeControlValue(input, controlValue);
     }
 
-    for (const name of CONTROL_BINDING_NAMES) {
-      const value = readFieldStateBindingValue(state, name);
-      if (bindingUpdated(bindings, name, value)) {
-        host.setInputOnDirectives(name, value);
-        if (parent.elementAcceptsNativeProperty(name)) {
-          setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
-        }
-      }
-    }
+    applyControlStateBindings(bindings, state, host, parent);
 
     updateMode = true;
   };
