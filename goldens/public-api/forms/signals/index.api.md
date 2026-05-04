@@ -6,6 +6,7 @@
 
 import { AbstractControl } from '@angular/forms';
 import { DebounceTimer } from '@angular/core';
+import { EnvironmentProviders } from '@angular/core';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -205,6 +206,10 @@ export interface FormFieldBindingOptions {
 
 // @public
 export interface FormOptions<TModel> {
+    experimentalWebMcpTool?: {
+        name: string;
+        description: string;
+    };
     injector?: Injector;
     name?: string;
     submission?: FormSubmitOptions<TModel, unknown>;
@@ -545,6 +550,9 @@ export class PatternValidationError extends BaseNgValidationError {
     // (undocumented)
     readonly pattern: RegExp;
 }
+
+// @public
+export function provideExperimentalWebMcpForms(): EnvironmentProviders;
 
 // @public
 export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
