@@ -52,6 +52,32 @@ export function createDollarAnyQuickInfo(node: Call): ts.QuickInfo {
   );
 }
 
+export function isDollarSafeNavigationMigration(node: TmplAstNode | AST): node is Call {
+  return (
+    node instanceof Call &&
+    node.receiver instanceof PropertyRead &&
+    node.receiver.receiver instanceof ImplicitReceiver &&
+    node.receiver.name === '$safeNavigationMigration' &&
+    node.args.length === 1
+  );
+}
+
+export function createDollarSafeNavigationMigration(node: Call): ts.QuickInfo {
+  return createQuickInfo(
+    '$safeNavigationMigration',
+    DisplayInfoKind.METHOD,
+    getTextSpanOfNode(node.receiver),
+    /** containerName */ undefined,
+    'null',
+    [
+      {
+        kind: SYMBOL_TEXT,
+        text: 'function to use legacy optional chaining behavior, where ?. yields `null` rather than `undefined`',
+      },
+    ],
+  );
+}
+
 // TODO(atscott): Create special `ts.QuickInfo` for `ng-template` and `ng-container` as well.
 export function createNgTemplateQuickInfo(node: TmplAstNode | AST): ts.QuickInfo {
   return createQuickInfo(
