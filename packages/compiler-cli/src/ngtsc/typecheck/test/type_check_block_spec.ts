@@ -414,6 +414,32 @@ describe('type check blocks', () => {
         'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' + '_t1 = (((this).foo));',
       );
     });
+
+    it('should handle coercion type that needs to be quoted on a generic directive', () => {
+      const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {
+            fieldA: 'inputA',
+            'aria-label': 'aria-label',
+          },
+          coercedInputFields: ['aria-label'],
+          isGeneric: true,
+        },
+      ];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+
+      expect(block).toContain(
+        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "fieldA"> & ' +
+          '{ "aria-label": typeof i0.Dir["ngAcceptInputType_aria-label"]; }) => i0.Dir<T> = null!;',
+      );
+      expect(block).toContain(
+        'var _t1 = _ctor1({ "fieldA": (((this).foo)), "aria-label": 0 as any });',
+      );
+    });
   });
 
   it('should only generate code for DOM elements that are actually referenced', () => {
@@ -966,6 +992,25 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as boolean | string;');
     expect(block).toContain('_t1 = i1.ɵunwrapWritableSignal((((this).value)));');
+  });
+
+  it('should handle an input binding to a coerced field that needs to be quoted', () => {
+    const TEMPLATE = `<div dir [aria-label]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          'aria-label': 'aria-label',
+        },
+        coercedInputFields: ['aria-label'],
+      },
+    ];
+
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain('var _t1 = null! as typeof i0.Dir["ngAcceptInputType_aria-label"];');
+    expect(block).toContain('_t1 = (((this).foo));');
   });
 
   describe('experimental DOM checking via lib.dom.d.ts', () => {

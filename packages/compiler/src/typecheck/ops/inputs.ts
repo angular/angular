@@ -26,6 +26,7 @@ import {
 } from './signal_forms';
 import {getBoundAttributes, widenBinding} from './bindings';
 import {LocalSymbol} from './references';
+import {isUnsafeObjectKey} from '../../render3/util';
 
 /**
  * Translates the given attribute binding to a `ts.Expression`.
@@ -118,12 +119,15 @@ export class TcbDirectiveInputsOp extends TcbOp {
             // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
             // target of the assignment.
             const dirTypeRef = this.tcb.env.referenceTcbValue(this.dir.ref);
-            type = new TcbExpr(`typeof ${dirTypeRef.print()}.ngAcceptInputType_${fieldName}`);
+            const propName = `ngAcceptInputType_${fieldName}`;
+            const access = isUnsafeObjectKey(fieldName)
+              ? `[${TcbExpr.quoteAndEscape(propName)}]`
+              : `.${propName}`;
+            type = new TcbExpr(`typeof ${dirTypeRef.print()}${access}`);
           }
 
           const id = new TcbExpr(this.tcb.allocateId());
           this.scope.addStatement(declareVariable(id, type));
-
           target = id;
         } else if (this.dir.undeclaredInputFields.has(fieldName)) {
           // If no coercion declaration is present nor is the field declared (i.e. the input is

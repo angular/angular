@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {R3Identifiers, TcbExpr, TcbTypeParameter, TypeCtorMetadata} from '@angular/compiler';
+import {
+  isUnsafeObjectKey,
+  R3Identifiers,
+  TcbExpr,
+  TcbTypeParameter,
+  TypeCtorMetadata,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -127,12 +133,15 @@ function constructTypeCtorParameter(
     } else if (!meta.coercedInputFields.has(classPropertyName)) {
       plainKeys.push(TcbExpr.quoteAndEscape(classPropertyName));
     } else {
+      const propName = `ngAcceptInputType_${classPropertyName}`;
+      const isUnsafe = isUnsafeObjectKey(classPropertyName);
+      const access = isUnsafe ? `[${TcbExpr.quoteAndEscape(propName)}]` : `.${propName}`;
       const coercionType =
-        transformType !== undefined
-          ? transformType
-          : `typeof ${typeRef}.ngAcceptInputType_${classPropertyName}`;
+        transformType !== undefined ? transformType : `typeof ${typeRef}${access}`;
 
-      coercedKeys.push(`${classPropertyName}: ${coercionType}`);
+      coercedKeys.push(
+        `${isUnsafe ? TcbExpr.quoteAndEscape(classPropertyName) : classPropertyName}: ${coercionType}`,
+      );
     }
   }
 
