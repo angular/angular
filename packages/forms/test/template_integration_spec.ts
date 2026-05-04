@@ -2861,6 +2861,60 @@ describe('template-driven forms integration tests', () => {
       });
     });
   });
+
+  describe('ngModel duplicate name attribute values', () => {
+    beforeEach(() => {
+      spyOn(console, 'warn');
+    });
+
+    it('should warn after finding inputs with identical name attributes', async () => {
+      const fixture = initTest(NgModelDuplicateName);
+      fixture.detectChanges();
+      await timeout();
+
+      expect(console.warn).toHaveBeenCalledWith(jasmine.stringContaining('NG01355'));
+    });
+
+    it('should not warn for radio inputs with identical name attributes', async () => {
+      const fixture = initTest(NgModelDuplicateNameRadio);
+      fixture.detectChanges();
+      await timeout();
+
+      expect(console.warn).not.toHaveBeenCalled();
+    });
+
+    it('should warn after finding mixed inputs with identical name attributes', async () => {
+      const fixture = initTest(NgModelDuplicateNameMixed);
+      fixture.detectChanges();
+      await timeout();
+
+      expect(console.warn).toHaveBeenCalledWith(jasmine.stringContaining('NG01355'));
+    });
+
+    it('should warn for identical name attributes within ngModelGroup', async () => {
+      const fixture = initTest(NgModelDuplicateNameNested);
+      fixture.detectChanges();
+      await timeout();
+
+      expect(console.warn).toHaveBeenCalledWith(jasmine.stringContaining('NG01355'));
+    });
+
+    it('should not warn for identical name attributes in different ngModelGroup', async () => {
+      const fixture = initTest(NgModelDuplicateNameDifferentModelGroup);
+      fixture.detectChanges();
+      await timeout();
+
+      expect(console.warn).not.toHaveBeenCalled();
+    });
+
+    it('should warn when two @for items have the same static name', async () => {
+      const fixture = initTest(NgModelDuplicateNameForStatic);
+      fixture.detectChanges();
+      await timeout();
+
+      expect(console.warn).toHaveBeenCalledWith(jasmine.stringContaining('NG01355'));
+    });
+  });
 });
 
 @Component({
@@ -3347,3 +3401,93 @@ class NgModelCvaWithInternalNgModel implements ControlValueAccessor {
   standalone: false,
 })
 class NgModelCvaHostParent {}
+
+@Component({
+  selector: 'ng-model-duplicate-name',
+  template: `
+    <form>
+      <input ngModel name="name" />
+      <input ngModel name="name" />
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class NgModelDuplicateName {}
+
+@Component({
+  selector: 'ng-model-duplicate-name-radio',
+  template: `
+    <form>
+      <input ngModel type="radio" name="size" value="small" />
+      <input ngModel type="radio" name="size" value="large" />
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class NgModelDuplicateNameRadio {}
+
+@Component({
+  selector: 'ng-model-duplicate-name-mixed',
+  template: `
+    <form>
+      <input ngModel type="radio" name="size" value="small" />
+      <input ngModel type="text" name="size" />
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class NgModelDuplicateNameMixed {}
+
+@Component({
+  selector: 'ng-model-duplicate-name-nested',
+  template: `
+    <form>
+      <ng-container ngModelGroup="user">
+        <input ngModel name="name" />
+        <input ngModel name="name" />
+      </ng-container>
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class NgModelDuplicateNameNested {}
+
+@Component({
+  selector: 'ng-model-duplicate-name-different-model-group',
+  template: `
+    <form>
+      <ng-container ngModelGroup="a">
+        <input ngModel name="name" />
+      </ng-container>
+      <ng-container ngModelGroup="b">
+        <input ngModel name="name" />
+      </ng-container>
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class NgModelDuplicateNameDifferentModelGroup {}
+
+@Component({
+  selector: 'ng-model-duplicate-name-for-static',
+  template: `
+    <form>
+      @for (item of items; track item.id) {
+        <input [(ngModel)]="item.value" name="item" />
+      }
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class NgModelDuplicateNameForStatic {
+  items: {id: string; value: string}[] = [
+    {id: 'first', value: ''},
+    {id: 'last', value: ''},
+  ];
+}

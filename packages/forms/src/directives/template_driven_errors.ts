@@ -90,3 +90,13 @@ export function modelGroupParentException(): Error {
     ${ngModelGroupExample}`,
   );
 }
+
+export function duplicateNgModelNameWarning(name: string): string {
+  return formatRuntimeError(
+    RuntimeErrorCode.NGMODEL_DUPLICATE_NAME,
+    `
+    The "${name}" name is used for multiple ngModel bindings in this form.
+    Make sure that elements with ngModel bindings in this form group have
+    unique "name" attribute values.`,
+  );
+}

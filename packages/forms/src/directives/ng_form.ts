@@ -44,6 +44,8 @@ import {
   syncPendingControls,
 } from './shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {RadioControlValueAccessor} from './radio_control_value_accessor';
+import {duplicateNgModelNameWarning} from './template_driven_errors';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,
@@ -227,11 +229,25 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
+      const {control} = dir;
       (dir as Writable<NgModel>).control = <FormControl>(
         container.registerControl(dir.name, dir.control)
       );
       dir._setupWithForm(this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
+      if (ngDevMode && dir.control !== control) {
+        if (!(dir.valueAccessor instanceof RadioControlValueAccessor)) {
+          console.warn(duplicateNgModelNameWarning(dir.name));
+        } else {
+          const existingDirective = Array.from(this._directives).find(
+            (directive) => directive.control === dir.control,
+          );
+
+          if (!(existingDirective?.valueAccessor instanceof RadioControlValueAccessor)) {
+            console.warn(duplicateNgModelNameWarning(dir.name));
+          }
+        }
+      }
       this._directives.add(dir);
     });
   }
