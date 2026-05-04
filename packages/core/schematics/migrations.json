@@ -34,6 +34,11 @@
       "version": "22.0.0",
       "description": "Migrate broken duplicate outputs",
       "factory": "./bundles/model-output.cjs#migrate"
+    },
+    "safe-optional-chaining": {
+      "version": "22.0.0",
+      "description": "Wraps optional chaining expressions in $safeNavigationMigration().",
+      "factory": "./bundles/safe-optional-chaining.cjs#migrate"
     }
   }
 }
