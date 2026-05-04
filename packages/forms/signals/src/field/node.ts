@@ -261,6 +261,9 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   markAsTouched(options?: MarkAsTouchedOptions): void {
+    if (this.structure.isOrphaned()) {
+      return;
+    }
     untracked(() => {
       this.markAsTouchedInternal(options);
       this.flushSync();
@@ -268,6 +271,9 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   markAsTouchedInternal(options?: MarkAsTouchedOptions): void {
+    if (this.structure.isOrphaned()) {
+      return;
+    }
     if (this.validationState.shouldSkipValidation()) {
       return;
     }

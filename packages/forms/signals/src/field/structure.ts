@@ -27,6 +27,9 @@ import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
 import type {FieldNode, ParentFieldNode} from './node';
 
+const ORPHAN_TOKEN = Symbol(typeof ngDevMode !== 'undefined' && ngDevMode ? 'ORPHAN_TOKEN' : '');
+const FALSE_SIGNAL = computed(() => false);
+
 /**
  * Key by which a parent `FieldNode` tracks its children.
  *
@@ -49,6 +52,8 @@ export abstract class FieldNodeStructure {
    * value changes structurally (fields added/removed/moved).
    */
   protected abstract readonly childrenMap: Signal<ChildrenData | undefined>;
+
+  abstract readonly isOrphaned: Signal<boolean>;
 
   /** The field's value. */
   abstract readonly value: WritableSignal<unknown>;
@@ -196,86 +201,74 @@ export abstract class FieldNodeStructure {
   }
 
   /**
-   * Creates a keyInParent signal for a field node.
-   *
-   * For root nodes, returns ROOT_KEY_IN_PARENT which throws when accessed.
-   * For child nodes, creates a computed that tracks the field's current key in its parent,
-   * with special handling for tracked array elements.
-   *
-   * @param options The field node options
-   * @param identityInParent The tracking identity (only for tracked array children)
-   * @param initialKeyInParent The initial key in parent (only for child nodes)
-   * @returns A signal representing the field's key in its parent
+   * Creates signals for keyInParent and isOrphaned status for a field node.
    */
-  protected createKeyInParent(
-    options: FieldNodeOptions,
+  protected createKeyOrOrphanSignals(
+    kind: 'child' | 'root',
     identityInParent: TrackingKey | undefined,
     initialKeyInParent: string | undefined,
-  ): Signal<string> {
-    if (options.kind === 'root') {
-      return ROOT_KEY_IN_PARENT;
+  ): {keyInParent: Signal<string>; isOrphaned: Signal<boolean>} {
+    if (kind === 'root') {
+      return {keyInParent: ROOT_KEY_IN_PARENT, isOrphaned: FALSE_SIGNAL};
     }
 
-    if (identityInParent === undefined) {
-      const key = initialKeyInParent!;
-      return computed(() => {
-        if (this.parent!.structure.getChild(key) !== this.node) {
+    const parent = this.parent!;
+    let lastKnownKey = initialKeyInParent!;
+
+    const keyOrOrphan = computed(() => {
+      if (parent.structure.isOrphaned()) {
+        return ORPHAN_TOKEN;
+      }
+
+      const map = parent.structure.childrenMap();
+      if (!map) {
+        return ORPHAN_TOKEN;
+      }
+
+      // Fast path: check last known key
+      const lastKnownChild = map.byPropertyKey.get(lastKnownKey);
+      if (lastKnownChild && lastKnownChild.node === this.node) {
+        return lastKnownKey;
+      }
+
+      if (identityInParent === undefined) {
+        // Object property: if not at last known key, it's orphaned
+        return ORPHAN_TOKEN;
+      } else {
+        // Array element: scan for node in childrenMap
+        for (const [key, child] of map.byPropertyKey) {
+          if (child.node === this.node) {
+            return (lastKnownKey = key);
+          }
+        }
+        return ORPHAN_TOKEN;
+      }
+    });
+
+    const isOrphaned = computed(() => keyOrOrphan() === ORPHAN_TOKEN);
+
+    const keyInParent = computed(() => {
+      const key = keyOrOrphan();
+      if (key === ORPHAN_TOKEN) {
+        if (identityInParent === undefined) {
           throw new RuntimeError(
             RuntimeErrorCode.ORPHAN_FIELD_PROPERTY,
             ngDevMode &&
-              `Orphan field, looking for property '${key}' of ${getDebugName(this.parent!)}`,
+              `Orphan field, looking for property '${initialKeyInParent}' of ${getDebugName(
+                parent,
+              )}`,
           );
-        }
-        return key;
-      });
-    } else {
-      let lastKnownKey = initialKeyInParent!;
-      return computed(() => {
-        // TODO(alxhub): future perf optimization: here we depend on the parent's value, but most
-        // changes to the value aren't structural - they aren't moving around objects and thus
-        // shouldn't affect `keyInParent`. We currently mitigate this issue via `lastKnownKey`
-        // which avoids a search.
-        const parentValue = this.parent!.structure.value();
-        if (!isArray(parentValue)) {
-          // It should not be possible to encounter this error. It would require the parent to
-          // change from an array field to non-array field. However, in the current implementation
-          // a field's parent can never change.
+        } else {
           throw new RuntimeError(
-            RuntimeErrorCode.ORPHAN_FIELD_ARRAY,
-            ngDevMode && `Orphan field, expected ${getDebugName(this.parent!)} to be an array`,
+            RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
+            ngDevMode && `Orphan field, can't find element in array ${getDebugName(parent)}`,
           );
         }
+      }
+      return key;
+    });
 
-        // Check the parent value at the last known key to avoid a scan.
-        // Note: lastKnownKey is a string, but we pretend to typescript like its a number,
-        // since accessing someArray['1'] is the same as accessing someArray[1]
-        const data = parentValue[lastKnownKey as unknown as number];
-        if (
-          isObject(data) &&
-          data.hasOwnProperty(this.parent!.structure.identitySymbol) &&
-          data[this.parent!.structure.identitySymbol] === identityInParent
-        ) {
-          return lastKnownKey;
-        }
-
-        // Otherwise, we need to check all the keys in the parent.
-        for (let i = 0; i < parentValue.length; i++) {
-          const data = parentValue[i];
-          if (
-            isObject(data) &&
-            data.hasOwnProperty(this.parent!.structure.identitySymbol) &&
-            data[this.parent!.structure.identitySymbol] === identityInParent
-          ) {
-            return (lastKnownKey = i.toString());
-          }
-        }
-
-        throw new RuntimeError(
-          RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
-          ngDevMode && `Orphan field, can't find element in array ${getDebugName(this.parent!)}`,
-        );
-      });
-    }
+    return {keyInParent, isOrphaned};
   }
 
   protected createChildrenMap(): Signal<ChildrenData | undefined> {
@@ -436,7 +429,10 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
     return ROOT_KEY_IN_PARENT;
   }
 
-  protected override readonly childrenMap: Signal<ChildrenData | undefined>;
+  override readonly isOrphaned = FALSE_SIGNAL;
+
+  /** @internal */
+  override readonly childrenMap: Signal<ChildrenData | undefined>;
 
   /**
    * Creates the structure for the root node of a field tree.
@@ -470,6 +466,8 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
   override readonly value: WritableSignal<unknown>;
   override readonly childrenMap: Signal<ChildrenData | undefined>;
 
+  override readonly isOrphaned: Signal<boolean>;
+
   override get fieldManager(): FormFieldManager {
     return this.root.structure.fieldManager;
   }
@@ -498,19 +496,10 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
 
     this.root = this.parent.structure.root;
 
-    this.keyInParent = this.createKeyInParent(
-      {
-        kind: 'child',
-        parent,
-        pathNode: undefined!,
-        logic,
-        initialKeyInParent,
-        identityInParent,
-        fieldAdapter: undefined!,
-      },
-      identityInParent,
-      initialKeyInParent,
-    );
+    const signals = this.createKeyOrOrphanSignals('child', identityInParent, initialKeyInParent);
+
+    this.isOrphaned = signals.isOrphaned;
+    this.keyInParent = signals.keyInParent;
 
     this.pathKeys = computed(() => [...parent.structure.pathKeys(), this.keyInParent()]);
 
