@@ -49,6 +49,7 @@ import {
   LViewFlags,
   RENDERER,
   TData,
+  TVIEW,
   TView,
 } from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
@@ -477,7 +478,10 @@ export function elementAttributeInternal(
     );
   }
 
-  validateAgainstEventAttributes(name);
+  if (lView[TVIEW].firstUpdatePass) {
+    validateAgainstEventAttributes(name);
+  }
+
   const element = getNativeByTNode(tNode, lView) as RElement;
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
 }
