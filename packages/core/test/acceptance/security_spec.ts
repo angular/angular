@@ -298,6 +298,25 @@ describe('iframe processing', () => {
         });
       });
 
+      it('should error when a translated security-sensitive attribute contains bindings', () => {
+        @Component({
+          selector: 'my-comp',
+          template: `
+            <iframe
+              src="${TEST_IFRAME_URL}"
+              i18n-sandbox
+              sandbox="allow-forms {{ extraPrivileges }}"
+            >
+            </iframe>
+          `,
+        })
+        class IframeComp {
+          extraPrivileges = 'allow-scripts allow-same-origin';
+        }
+
+        expectIframeCreationToFail(IframeComp);
+      });
+
       it('should work when a directive sets a security-sensitive attribute as a static attribute', () => {
         @Directive({
           selector: '[dir]',

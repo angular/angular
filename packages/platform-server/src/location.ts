@@ -24,12 +24,16 @@ import {INITIAL_CONFIG, PlatformConfig} from './tokens';
  * @param origin The origin to use for resolving the URL.
  * @returns The parsed URL.
  */
-function parseUrl(urlStr: string, origin: string): URL {
-  // If the URL is empty or start with a `/` it is a pathname relative to the origin
-  // otherwise it's an absolute URL.
-  const urlToParse = urlStr.length === 0 || urlStr[0] === '/' ? origin + urlStr : urlStr;
+export function parseUrl(urlStr: string, origin: string): URL {
+  if (URL.canParse(urlStr)) {
+    return new URL(urlStr);
+  }
 
-  return new URL(urlToParse);
+  if (urlStr && urlStr[0] !== '/') {
+    urlStr = `/${urlStr}`;
+  }
+
+  return new URL(origin + urlStr);
 }
 
 /**
