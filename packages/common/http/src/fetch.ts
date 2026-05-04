@@ -10,9 +10,9 @@ import {
   DestroyRef,
   ɵformatRuntimeError as formatRuntimeError,
   inject,
-  Injectable,
   NgZone,
   ɵRuntimeError as RuntimeError,
+  Service,
 } from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 import {RuntimeErrorCode} from './errors';
@@ -48,7 +48,7 @@ let uploadProgressWarningLogged = false;
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class FetchBackend implements HttpBackend {
   // We use an arrow function to always reference the current global implementation of `fetch`.
   // This is helpful for cases when the global `fetch` implementation is modified by external code,

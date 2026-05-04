@@ -21,8 +21,7 @@ import {
 import {ProfilerEvent} from '../../primitives/devtools';
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
-import {inject} from '../di';
-import {Injectable} from '../di/injectable';
+import {inject, Service} from '../di';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
@@ -251,7 +250,7 @@ export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class ApplicationRef {
   /** @internal */
   _runningTick: boolean = false;

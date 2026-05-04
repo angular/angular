@@ -299,6 +299,7 @@
       "\\u0275\\u0275defineInjectable",
       "\\u0275\\u0275defineInjector",
       "\\u0275\\u0275defineNgModule",
+      "\\u0275\\u0275defineService",
       "\\u0275\\u0275directiveInject",
       "\\u0275\\u0275element",
       "\\u0275\\u0275elementEnd",

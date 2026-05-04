@@ -7,11 +7,11 @@
  */
 
 import {
-  inject,
-  Injectable,
-  Renderer2,
-  ɵformatRuntimeError as formatRuntimeError,
   DOCUMENT,
+  ɵformatRuntimeError as formatRuntimeError,
+  inject,
+  Renderer2,
+  Service,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -26,7 +26,7 @@ import {DEFAULT_PRELOADED_IMAGES_LIMIT, PRELOADED_IMAGES} from './tokens';
  * In dev mode this service will validate that the number of preloaded images does not exceed the
  * configured default preloaded images limit: {@link DEFAULT_PRELOADED_IMAGES_LIMIT}.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class PreloadLinkCreator {
   private readonly preloadedImages = inject(PRELOADED_IMAGES);
   private readonly document = inject(DOCUMENT);

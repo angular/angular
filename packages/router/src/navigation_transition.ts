@@ -11,9 +11,9 @@ import {
   DestroyRef,
   EnvironmentInjector,
   inject,
-  Injectable,
   InjectionToken,
   runInInjectionContext,
+  Service,
   signal,
   Type,
   untracked,
@@ -53,7 +53,6 @@ import {
   QueryParamsHandling,
   RedirectCommand,
   Route,
-  Routes,
 } from './models';
 import {
   isNavigationCancelingError,
@@ -66,6 +65,7 @@ import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
 import {TitleStrategy} from './page_title_strategy';
+import type {Router} from './router';
 import {ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -80,10 +80,9 @@ import {
 import type {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree} from './url_tree';
+import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
-import {abortSignalToObservable} from './utils/abort_signal_to_observable';
-import type {Router} from './router';
 
 /**
  * @description
@@ -337,7 +336,7 @@ export const NAVIGATION_ERROR_HANDLER = new InjectionToken<
   (error: NavigationError) => unknown | RedirectCommand
 >(typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '');
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class NavigationTransitions {
   // Some G3 targets expect the navigation object to be mutated (and not getting a new reference on changes).
   currentNavigation = signal<Navigation | null>(null, {equal: () => false});
