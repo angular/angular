@@ -24,6 +24,6 @@ export function extractRegions(token: CodeToken) {
     if (!region) {
       throw new Error(`Cannot find ${token.region} in ${token.path}!`);
     }
-    token.code = region.lines.join('\n').trim();
+    token.code = region.lines.join('\n');
   }
 }

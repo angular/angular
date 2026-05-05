@@ -59,7 +59,7 @@ export const docsCodeExtension = {
       const classes = classRule.exec(attr);
       const style = preferRule.exec(attr);
 
-      let code = match[2]?.trim() ?? '';
+      let code = match[2] ?? '';
       if (path && path[1]) {
         code = loadWorkspaceRelativeFile(path[1]);
         // Remove ESLint Comments

@@ -14,3 +14,9 @@ const form = {
 </docs-code>
 
 <docs-code hideDollar code="echo 'hello world'" />
+
+<docs-code language="typescript">
+  if (foo) {
+    // bar
+  }
+</docs-code>
