@@ -159,7 +159,8 @@ export class PropActionsMenuComponent {
   }
 
   private getSignalNode(node: FlatNode): DevtoolsSignalGraphNode | null {
-    if (node.prop.descriptor.containerType?.includes('Signal')) {
+    const containerType = node.prop.descriptor.containerType;
+    if (containerType === 'WritableSignal' || containerType === 'ReadonlySignal') {
       return this.signalGraph.graph()?.nodes.find((sn) => sn.label === node.prop.name) ?? null;
     }
     return null;

@@ -18,10 +18,12 @@ ng_project(
     angular_assets = [
         "property-editor.component.html",
         ":property-editor_styles",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer/prop-value-highlighter:styles",
     ],
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/forms",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer/prop-value-highlighter",
     ],
 )

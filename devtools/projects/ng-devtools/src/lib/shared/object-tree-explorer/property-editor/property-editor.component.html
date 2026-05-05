@@ -1,6 +1,8 @@
 @switch (currentPropertyState()) {
   @case (readState) {
-    <span class="editable">{{ property().descriptor.preview }}</span>
+    <span class="editable" [ngPropValueHighlighter]="property()">{{
+      property().descriptor.preview
+    }}</span>
   }
   @case (writeState) {
     <div class="value-input">
