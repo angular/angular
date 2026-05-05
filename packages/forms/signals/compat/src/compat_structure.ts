@@ -8,10 +8,10 @@
 
 import {
   computed,
+  ɵRuntimeError as RuntimeError,
   Signal,
   signal,
   WritableSignal,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {RuntimeErrorCode} from '../../src/errors';
 import {FormFieldManager} from '../../src/field/manager';
@@ -109,6 +109,7 @@ function getControlValueSignal<T>(options: CompatFieldNodeOptions) {
 export class CompatStructure extends FieldNodeStructure {
   override value: WritableSignal<unknown>;
   override keyInParent: Signal<string>;
+  override isOrphaned: Signal<boolean>;
   override root: FieldNode;
   override pathKeys: Signal<readonly string[]>;
   override readonly children = signal([]);
@@ -130,7 +131,15 @@ export class CompatStructure extends FieldNodeStructure {
 
     const identityInParent = options.kind === 'child' ? options.identityInParent : undefined;
     const initialKeyInParent = options.kind === 'child' ? options.initialKeyInParent : undefined;
-    this.keyInParent = this.createKeyInParent(options, identityInParent, initialKeyInParent);
+    const keyState = this.createKeyInParentState(options, identityInParent, initialKeyInParent);
+    this.keyInParent = computed(() => {
+      const s = keyState();
+      if (s.type === 'error') {
+        throw new RuntimeError(s.error, s.msg);
+      }
+      return s.key;
+    });
+    this.isOrphaned = computed(() => keyState().type === 'error');
 
     this.pathKeys = computed(() =>
       this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],

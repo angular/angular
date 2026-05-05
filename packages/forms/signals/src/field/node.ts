@@ -164,6 +164,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.keyInParent;
   }
 
+  get isOrphaned(): Signal<boolean> {
+    return this.structure.isOrphaned;
+  }
+
   get errors(): Signal<ValidationError.WithFieldTree[]> {
     return this.validationState.errors;
   }

@@ -7,7 +7,7 @@
  */
 
 import type {ɵControlDirectiveHost as ControlDirectiveHost} from '@angular/core';
-import type {FormField} from './form_field';
+import {FormUiControl} from '../api/control';
 import {
   bindingUpdated,
   CONTROL_BINDING_NAMES,
@@ -15,15 +15,19 @@ import {
   createBindings,
   readFieldStateBindingValue,
 } from './bindings';
+import type {FormField} from './form_field';
 import {setNativeDomProperty} from './native';
-import {FormUiControl} from '../api/control';
 
 export function customControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
 ): () => void {
-  host.listenToCustomControlModel((value) => parent.state().controlValue.set(value));
-  host.listenToCustomControlOutput('touch', () => parent.state().markAsTouched());
+  host.listenToCustomControlModel((value) => {
+    if (!parent.state().isOrphaned()) parent.state().controlValue.set(value);
+  });
+  host.listenToCustomControlOutput('touch', () => {
+    if (!parent.state().isOrphaned()) parent.state().markAsTouched();
+  });
 
   parent.registerAsBinding(host.customControl as FormUiControl);
 

@@ -463,6 +463,11 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
   readonly keyInParent: Signal<TKey>;
 
   /**
+   * A signal indicating whether the field is orphaned.
+   */
+  readonly isOrphaned: Signal<boolean>;
+
+  /**
    * The {@link FormField} directives that bind this field to a UI control.
    */
   readonly formFieldBindings: Signal<readonly FormFieldBinding[]>;

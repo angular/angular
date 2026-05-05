@@ -23,8 +23,8 @@ import type {FormField} from './form_field';
 import {InputValidityMonitor} from './input_validity_monitor';
 import {
   getNativeControlValue,
-  isInput,
   inputRequiresValidityTracking,
+  isInput,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -54,8 +54,12 @@ export function nativeControlCreate(
 
   parseErrorsSource.set(parser.errors);
   // Pass undefined as the raw value since the parse function doesn't care about it.
-  host.listenToDom('input', () => parser.setRawValue(undefined));
-  host.listenToDom('blur', () => parent.state().markAsTouched());
+  host.listenToDom('input', () => {
+    if (!parent.state().isOrphaned()) parser.setRawValue(undefined);
+  });
+  host.listenToDom('blur', () => {
+    if (!parent.state().isOrphaned()) parent.state().markAsTouched();
+  });
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
