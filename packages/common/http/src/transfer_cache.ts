@@ -368,17 +368,17 @@ function getFilteredHeaders(
 }
 
 function sortAndConcatParams(params: HttpParams | URLSearchParams): string {
-  return [...params.keys()]
-    .sort()
-    .map((k) => `${k}=${params.getAll(k)}`)
-    .join('&');
+  const searchParams = new URLSearchParams(
+    params instanceof URLSearchParams ? params : params.toString(),
+  );
+  searchParams.sort();
+  return searchParams.toString();
 }
 
 function makeCacheKey(
   request: HttpRequest<any>,
   mappedRequestUrl: string,
 ): StateKey<TransferHttpResponse> {
-  // make the params encoded same as a url so it's easy to identify
   const {params, method, responseType} = request;
   const encodedParams = sortAndConcatParams(params);
 
