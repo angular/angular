@@ -19,7 +19,14 @@ import {TestBed} from '@angular/core/testing';
 import {useAutoTick, timeout, withBody} from '@angular/private/testing';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 
-import {HttpClient, HttpHeaders, HttpRequest, HttpResponse, provideHttpClient} from '../public_api';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpRequest,
+  HttpResponse,
+  provideHttpClient,
+} from '../public_api';
 import {
   BODY,
   CACHE_OPTIONS,
@@ -430,6 +437,38 @@ describe('TransferCache', () => {
       await expectAsync(TestBed.inject(HttpClient).get('/test-1?foo=1').toPromise()).toBeResolvedTo(
         'foo',
       );
+    });
+
+    it('should differentiate repeated parameters from scalar comma parameters', () => {
+      let scalarResponse!: string;
+      TestBed.inject(HttpClient)
+        .get('/test-params', {params: new HttpParams().set('role', 'user,admin')})
+        .subscribe((response) => (scalarResponse = response as string));
+      TestBed.inject(HttpTestingController)
+        .expectOne('/test-params?role=user,admin')
+        .flush('scalar');
+
+      let repeatedResponse!: string;
+      TestBed.inject(HttpClient)
+        .get('/test-params', {
+          params: new HttpParams().append('role', 'user').append('role', 'admin'),
+        })
+        .subscribe((response) => (repeatedResponse = response as string));
+      TestBed.inject(HttpTestingController)
+        .expectOne('/test-params?role=user&role=admin')
+        .flush('repeated');
+
+      let repeatedCachedResponse!: string;
+      TestBed.inject(HttpClient)
+        .get('/test-params', {
+          params: new HttpParams().append('role', 'user').append('role', 'admin'),
+        })
+        .subscribe((response) => (repeatedCachedResponse = response as string));
+      TestBed.inject(HttpTestingController).expectNone('/test-params?role=user&role=admin');
+
+      expect(scalarResponse).toBe('scalar');
+      expect(repeatedResponse).toBe('repeated');
+      expect(repeatedCachedResponse).toBe('repeated');
     });
 
     it('should skip cache when specified', () => {
