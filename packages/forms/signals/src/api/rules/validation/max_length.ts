@@ -34,7 +34,7 @@ import {maxLengthError} from './validation_errors';
  *
  * @see [Signal Form Max Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function maxLength<
   TValue extends ValueWithLengthOrSize,

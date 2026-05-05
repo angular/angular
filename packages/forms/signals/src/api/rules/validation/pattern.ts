@@ -26,7 +26,7 @@ import {patternError} from './validation_errors';
  *
  * @see [Signal Form Pattern Validation](guide/forms/signals/validation#pattern)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function pattern<TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,

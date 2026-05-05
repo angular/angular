@@ -35,7 +35,7 @@ export interface ParseResult<TValue> {
 /**
  * Options for `transformedValue`.
  *
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export interface TransformedValueOptions<TValue, TRaw> {
   /**
@@ -58,7 +58,7 @@ export interface TransformedValueOptions<TValue, TRaw> {
  * via parse/format transformations.
  *
  * @category control
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export interface TransformedValueSignal<TRaw> extends WritableSignal<TRaw> {
   /**
@@ -86,7 +86,7 @@ export interface TransformedValueSignal<TRaw> extends WritableSignal<TRaw> {
  * @param value The model signal to synchronize with.
  * @param options Configuration including `parse` and `format` functions.
  * @returns A `TransformedValueSignal` representing the raw value with parse error tracking.
- * @experimental 21.2.0
+ * @publicApi 22.0
  *
  * @example
  * ```ts

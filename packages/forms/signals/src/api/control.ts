@@ -15,7 +15,7 @@ import type {DisabledReason} from './types';
  * The base set of properties shared by all form control contracts.
  *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface FormUiControl {
   /**
@@ -144,7 +144,7 @@ type FormUiControlImplementsFormFieldBindingOptions = Check<
  * @template TValue The type of `FieldTree` that the implementing component can edit.
  *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface FormValueControl<TValue> extends FormUiControl {
   /**
@@ -173,7 +173,7 @@ export interface FormValueControl<TValue> extends FormUiControl {
  * `Field` directive.
  *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 // TODO: should we make this generic extends `boolean | null` so people can use `null` for parse error?
 export interface FormCheckboxControl extends FormUiControl {

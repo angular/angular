@@ -28,8 +28,7 @@ import {FieldNode} from '../field/node';
  * </form>
  * ```
  *
- * @publicApi
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 @Directive({
   selector: 'form[formRoot]',

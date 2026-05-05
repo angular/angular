@@ -20,7 +20,7 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category logic
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

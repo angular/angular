@@ -21,7 +21,7 @@ import type {Debouncer, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * @param config A debounce configuration, which can be either a debounce duration in milliseconds,
  *     `'blur'` to debounce until the field is blurred, or a custom {@link Debouncer} function.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

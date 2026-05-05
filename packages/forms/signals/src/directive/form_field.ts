@@ -68,7 +68,7 @@ export interface FormFieldBindingOptions {
  * Lightweight DI token provided by the {@link FormField} directive.
  *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_FIELD' : '',
@@ -91,7 +91,7 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
  *    forms.
  *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 @Directive({
   selector: '[formField]',

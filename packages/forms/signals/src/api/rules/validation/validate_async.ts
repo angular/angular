@@ -42,7 +42,7 @@ import {IS_ASYNC_VALIDATION_RESOURCE, createManagedMetadataKey, metadata} from '
  * @template TResult The type of result returned by the async operation
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (
   result: TResult,
@@ -59,7 +59,7 @@ export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface AsyncValidatorOptions<
   TValue,
@@ -122,7 +122,7 @@ export interface AsyncValidatorOptions<
  *
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

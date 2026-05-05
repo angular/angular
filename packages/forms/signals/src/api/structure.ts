@@ -43,7 +43,7 @@ import type {
  * Options that may be specified when creating a form.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface FormOptions<TModel> {
   /**
@@ -81,7 +81,7 @@ export interface FormOptions<TModel> {
  * @template TModel The type of the data model.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
@@ -128,7 +128,7 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  * @template TValue The type of the data model.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function form<TModel>(
   model: WritableSignal<TModel>,
@@ -176,7 +176,7 @@ export function form<TModel>(
  * @template TModel The type of the data model.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function form<TModel>(
   model: WritableSignal<TModel>,
@@ -220,7 +220,7 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
  * @template TValue The data type of the item field to apply the schema to.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyEach<TValue extends ReadonlyArray<any>>(
   path: SchemaPath<TValue>,
@@ -259,7 +259,7 @@ export function applyEach<TValue extends Object>(
  * @template TValue The data type of the field to apply the schema to.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function apply<TValue>(
   path: SchemaPath<TValue>,
@@ -280,7 +280,7 @@ export function apply<TValue>(
  * @template TValue The data type of the field to apply the schema to.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyWhen<TValue>(
   path: SchemaPath<TValue>,
@@ -304,7 +304,7 @@ export function applyWhen<TValue>(
  * @template TNarrowed The data type of the schema (a narrowed type of TValue).
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
   path: SchemaPath<TValue>,
@@ -322,7 +322,7 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  * @template TValue The data type of the field to apply the schema to.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyWhenValue<TValue>(
   path: SchemaPath<TValue>,
@@ -376,7 +376,7 @@ export function applyWhenValue(
  * @template TModel The data type of the field being submitted.
  *
  * @category submission
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
@@ -443,7 +443,7 @@ export async function submit<TModel>(
  * @template TValue The value type of a `FieldTree` that this schema binds to.
  *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
   return SchemaImpl.create(fn) as unknown as Schema<TValue>;

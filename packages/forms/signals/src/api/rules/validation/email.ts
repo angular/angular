@@ -56,7 +56,7 @@ const EMAIL_REGEXP =
  *
  * @see [Signal Form Email Validation](guide/forms/signals/validation#email)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function email<TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,

@@ -26,7 +26,7 @@ import {MapToErrorsFn, validateAsync} from './validate_async';
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
   /**
@@ -82,7 +82,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  *
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

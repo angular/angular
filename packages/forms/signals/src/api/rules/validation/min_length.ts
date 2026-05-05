@@ -34,7 +34,7 @@ import {minLengthError} from './validation_errors';
  *
  * @see [Signal Form Min Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minLength<
   TValue extends ValueWithLengthOrSize,

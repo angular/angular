@@ -25,7 +25,7 @@ import type {FieldState, LogicFn, PathKind, SchemaPath, SchemaPathRules} from '.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category logic
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function metadata<
   TValue,
@@ -49,7 +49,7 @@ export function metadata<
  *
  * @template TAcc The accumulated type of the reduce operation.
  * @template TItem The type of the individual items that are reduced over.
- * @experimental 21.0.2
+ * @publicApi 22.0
  */
 export interface MetadataReducer<TAcc, TItem> {
   /** The reduce function. */
@@ -125,7 +125,7 @@ function override<T>(getInitial?: () => T): MetadataReducer<T | undefined, T> {
  * A symbol used to tag a `MetadataKey` as representing an asynchronous validation resource.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol = Symbol('IS_ASYNC_VALIDATION_RESOURCE');
 
@@ -139,7 +139,7 @@ export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol = Symbol('IS_ASYNC_VALI
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export class MetadataKey<TRead, TWrite, TAcc> {
   private brand!: [TRead, TWrite, TAcc];
@@ -159,7 +159,7 @@ export class MetadataKey<TRead, TWrite, TAcc> {
  *
  * @template TKey The `MetadataKey` type
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export type MetadataSetterType<TKey> =
   TKey extends MetadataKey<any, infer TWrite, any> ? TWrite : never;
@@ -170,7 +170,7 @@ export type MetadataSetterType<TKey> =
  *
  * @template TWrite The type written to this key using the `metadata()` rule
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createMetadataKey<TWrite>(): MetadataKey<
   Signal<TWrite | undefined>,
@@ -184,7 +184,7 @@ export function createMetadataKey<TWrite>(): MetadataKey<
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createMetadataKey<TWrite, TAcc>(
   reducer: MetadataReducer<TAcc, TWrite>,
@@ -208,7 +208,7 @@ export function createMetadataKey<TWrite, TAcc>(
  * @template TRead The type read from the `FieldState` for this key
  * @template TWrite The type written to this key using the `metadata()` rule
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createManagedMetadataKey<TRead, TWrite>(
   create: (state: FieldState<unknown>, data: Signal<TWrite | undefined>) => TRead,
@@ -226,7 +226,7 @@ export function createManagedMetadataKey<TRead, TWrite>(
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createManagedMetadataKey<TRead, TWrite, TAcc>(
   create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
@@ -246,7 +246,7 @@ export function createManagedMetadataKey<TRead, TWrite, TAcc>(
  * A {@link MetadataKey} representing whether the field is required.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMetadataKey(
   MetadataReducer.or(),
@@ -256,7 +256,7 @@ export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMe
  * A {@link MetadataKey} representing the min value of the field.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const MIN: MetadataKey<
   Signal<number | undefined>,
@@ -268,7 +268,7 @@ export const MIN: MetadataKey<
  * A {@link MetadataKey} representing the max value of the field.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const MAX: MetadataKey<
   Signal<number | undefined>,
@@ -280,7 +280,7 @@ export const MAX: MetadataKey<
  * A {@link MetadataKey} representing the min length of the field.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const MIN_LENGTH: MetadataKey<
   Signal<number | undefined>,
@@ -292,7 +292,7 @@ export const MIN_LENGTH: MetadataKey<
  * A {@link MetadataKey} representing the max length of the field.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const MAX_LENGTH: MetadataKey<
   Signal<number | undefined>,
@@ -304,7 +304,7 @@ export const MAX_LENGTH: MetadataKey<
  * A {@link MetadataKey} representing the patterns the field must match.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const PATTERN: MetadataKey<
   Signal<RegExp[]>,
