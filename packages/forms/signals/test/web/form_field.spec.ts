@@ -2403,7 +2403,8 @@ describe('field directive', () => {
         expect(element.max).toBe('2026-11-01');
       });
 
-      it('should bind maxDate to native month control as string', () => {
+      // Firefox doesn't support <input type="month">
+      (!isFirefox() ? it : xit)('should bind maxDate to native month control as string', () => {
         @Component({
           imports: [FormField],
           template: `<input type="month" [formField]="f" />`,
@@ -2849,7 +2850,8 @@ describe('field directive', () => {
         expect(element.min).toBe('2026-02-01');
       });
 
-      it('should bind minDate to native month control as string', () => {
+      // Firefox doesn't support <input type="month">
+      (!isFirefox() ? it : xit)('should bind minDate to native month control as string', () => {
         @Component({
           imports: [FormField],
           template: `<input type="month" [formField]="f" />`,
