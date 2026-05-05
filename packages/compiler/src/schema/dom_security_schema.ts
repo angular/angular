@@ -130,6 +130,9 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'script|xlink:href',
       'use|href',
       'use|xlink:href',
+      // HTMLMediaElement: audio/video src is a resource-loading sink
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/src
+      'media|src',
     ]);
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts

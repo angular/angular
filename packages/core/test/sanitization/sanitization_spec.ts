@@ -189,6 +189,10 @@ describe('sanitization', () => {
         'href',
       ).toString(),
     ).toEqual('http://safe.com');
+    // media|src should also use ResourceURL sanitizer — sync with compiler schema
+    expect(() =>
+      ɵɵsanitizeUrlOrResourceUrl('http://attacker.com/audio.mp3', 'media', 'src'),
+    ).toThrowError(ERROR);
   });
 
   it('should only trust constant strings from template literal tags without interpolation', () => {

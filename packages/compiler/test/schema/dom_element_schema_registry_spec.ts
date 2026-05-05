@@ -176,6 +176,8 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext('th', 'background', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('use', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
     expect(registry.securityContext('use', 'xlink:href', false)).toBe(SecurityContext.RESOURCE_URL);
+    // media|src: compiler schema must match runtime RESOURCE_MAP
+    expect(registry.securityContext('media', 'src', false)).toBe(SecurityContext.RESOURCE_URL);
   });
 
   it('should detect properties on namespaced elements', () => {
