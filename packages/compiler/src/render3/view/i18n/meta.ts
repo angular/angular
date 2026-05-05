@@ -12,7 +12,10 @@ import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
 import {ParseTreeResult} from '../../../ml_parser/parser';
+import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
+import {SecurityContext} from '../../../core';
+import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
 import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
 
 import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
@@ -48,6 +51,25 @@ const setI18nRefs = (originalNodeMap: Map<html.Node, html.Node>): VisitNodeFn =>
     return i18nNode;
   };
 };
+
+const domSchema = new DomElementSchemaRegistry();
+
+function isSecuritySensitiveI18nAttribute(
+  node: html.Element | html.Component,
+  attrName: string,
+): boolean {
+  const tagName = node instanceof html.Component ? node.tagName : node.name;
+  if (tagName === null) {
+    return false;
+  }
+
+  const elementName = splitNsName(tagName)[1];
+  return (
+    isTrustedTypesSink(elementName, attrName) ||
+    domSchema.securityContext(elementName, attrName, /* isAttribute */ true) ===
+      SecurityContext.RESOURCE_URL
+  );
+}
 
 /**
  * This visitor walks over HTML parse tree and converts information stored in
@@ -201,14 +223,8 @@ export class I18nMetaVisitor implements html.Visitor {
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
           // 'i18n-*' attributes
           const name = attr.name.slice(I18N_ATTR_PREFIX.length);
-          let isTrustedType: boolean;
-          if (node instanceof html.Component) {
-            isTrustedType = node.tagName === null ? false : isTrustedTypesSink(node.tagName, name);
-          } else {
-            isTrustedType = isTrustedTypesSink(node.name, name);
-          }
 
-          if (isTrustedType) {
+          if (isSecuritySensitiveI18nAttribute(node, name)) {
             this._reportError(
               attr,
               `Translating attribute '${name}' is disallowed for security reasons.`,
