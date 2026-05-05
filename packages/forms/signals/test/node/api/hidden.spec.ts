@@ -128,24 +128,15 @@ describe('hidden', () => {
 
   it('supports deprecated function syntax', () => {
     const cat = signal({name: 'Pirojok-the-cat', age: 5});
-    const spy = jasmine.createSpy('console.warn');
-    const originalWarn = console.warn;
-    console.warn = spy;
+    const f = form(
+      cat,
+      (p) => {
+        hidden(p.name, ((ctx: any) => ctx.value() === 'hidden-cat') as any);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
 
-    try {
-      const f = form(
-        cat,
-        (p) => {
-          hidden(p.name, ((ctx: any) => ctx.value() === 'hidden-cat') as any);
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      f.name().value.set('hidden-cat');
-      expect(f.name().hidden()).toBe(true);
-      expect(spy).toHaveBeenCalled();
-    } finally {
-      console.warn = originalWarn;
-    }
+    f.name().value.set('hidden-cat');
+    expect(f.name().hidden()).toBe(true);
   });
 });

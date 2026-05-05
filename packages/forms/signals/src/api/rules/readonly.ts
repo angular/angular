@@ -15,7 +15,7 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * the validation, touched/dirty, or other state of its parent field.
  *
  * @param path The target path to make readonly.
- * @param configOrLogic Optional configuration object containing `when`, or the logic directly (deprecated).
+ * @param config Optional configuration object.
  *  - `when`: A reactive function that returns `true` when the field is readonly.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
@@ -23,6 +23,21 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * @category logic
  * @publicApi 22.0
  */
+export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  config?: {when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
+): void;
+
+/**
+ * Adds logic to a field to conditionally make it readonly.
+ *
+ * @deprecated Passing a function directly to `readonly` is deprecated. Use `{ when: ... }` instead.
+ */
+export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
+): void;
+
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   configOrLogic?:
@@ -38,11 +53,6 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
     logic = configOrLogic.when ?? (() => true);
   } else if (typeof configOrLogic === 'function') {
     logic = configOrLogic;
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      console.warn(
-        `[Signal Forms] Passing a function directly to 'readonly' is deprecated. Use '{ when: ... }' instead.`,
-      );
-    }
   } else {
     logic = () => true;
   }

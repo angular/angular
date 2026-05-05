@@ -23,7 +23,7 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * ```
  *
  * @param path The target path to add the hidden logic to.
- * @param configOrLogic Options object containing the `when` condition, or the logic function directly (deprecated).
+ * @param config Options object containing the `when` condition.
  *  - `when`: A reactive function that returns `true` when the field is hidden.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
@@ -31,6 +31,21 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * @category logic
  * @publicApi 22.0
  */
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  config: {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
+): void;
+
+/**
+ * Adds logic to a field to conditionally hide it.
+ *
+ * @deprecated Passing a function directly to `hidden` is deprecated. Use `{ when: ... }` instead.
+ */
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
+): void;
+
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   configOrLogic:
@@ -41,17 +56,7 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  let logic: LogicFn<TValue, boolean, TPathKind>;
-  if (typeof configOrLogic === 'function') {
-    logic = configOrLogic;
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      console.warn(
-        `[Signal Forms] Passing a function directly to 'hidden' is deprecated. Use '{ when: ... }' instead.`,
-      );
-    }
-  } else {
-    logic = configOrLogic.when;
-  }
+  const logic = typeof configOrLogic === 'function' ? configOrLogic : configOrLogic.when;
 
   pathNode.builder.addHiddenRule(logic);
 }

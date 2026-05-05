@@ -15,7 +15,7 @@ import type {FieldContext, LogicFn, PathKind, SchemaPath, SchemaPathRules} from 
  * validation, touched/dirty, or other state of its parent field.
  *
  * @param path The target path to add the disabled logic to.
- * @param configOrLogic Optional configuration object containing `when`, or the logic directly (deprecated).
+ * @param config Optional configuration object.
  *  - `when`: A reactive function that returns `true` (or a string reason) when the field is disabled,
  *    and `false` when it is not disabled. Can also be a static string reason.
  * @template TValue The type of value stored in the field the logic is bound to.
@@ -24,6 +24,21 @@ import type {FieldContext, LogicFn, PathKind, SchemaPath, SchemaPathRules} from 
  * @category logic
  * @publicApi 22.0
  */
+export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  config?: {when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>},
+): void;
+
+/**
+ * Adds logic to a field to conditionally disable it.
+ *
+ * @deprecated Passing a function or string directly to `disabled` is deprecated. Use `{ when: ... }` instead.
+ */
+export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>,
+): void;
+
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   configOrLogic?:
@@ -38,15 +53,8 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   let logic: string | LogicFn<TValue, boolean | string, TPathKind> | undefined;
   if (typeof configOrLogic === 'function' || typeof configOrLogic === 'string') {
     logic = configOrLogic;
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      console.warn(
-        `[Signal Forms] Passing a function or string directly to 'disabled' is deprecated. Use '{ when: ... }' instead.`,
-      );
-    }
-  } else if (configOrLogic !== undefined) {
-    logic = configOrLogic.when;
   } else {
-    logic = undefined;
+    logic = configOrLogic?.when;
   }
 
   pathNode.builder.addDisabledReasonRule((ctx) => {
