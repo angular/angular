@@ -60,7 +60,6 @@ describe('markdown to html', () => {
 
   it('should deindent inline code blocks correctly', () => {
     const codeBlock = markdownDocument.querySelectorAll('.docs-code')[6]?.querySelector('code');
-    expect(codeBlock?.textContent).not.toContain('    // bar');
-    expect(codeBlock?.textContent).toContain('  // bar');
+    expect(codeBlock?.textContent).toMatch(/^  \/\/ bar/m);
   });
 });
