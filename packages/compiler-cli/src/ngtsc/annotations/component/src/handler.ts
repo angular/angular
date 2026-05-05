@@ -142,6 +142,7 @@ import {
   getProviderDiagnostics,
   InjectableClassRegistry,
   isExpressionForwardReference,
+  parseStandaloneOption,
   readBaseClass,
   ReferencesRegistry,
   removeIdentifierReferences,
@@ -153,6 +154,7 @@ import {
   ResourceLoader,
   toFactoryMetadata,
   tryUnwrapForwardRef,
+  unwrapExpression,
   UndecoratedMetadataExtractor,
   validateHostDirectives,
   wrapFunctionExpressionsInParens,
@@ -351,6 +353,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     } else {
       return undefined;
     }
+  }
+
+  isStandalone(decorator: Readonly<Decorator>): boolean {
+    return parseStandaloneOption(decorator, this.evaluator, this.implicitStandaloneValue);
   }
 
   preanalyze(node: ClassDeclaration, decorator: Readonly<Decorator>): Promise<void> | undefined {

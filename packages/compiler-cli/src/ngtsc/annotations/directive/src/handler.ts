@@ -48,6 +48,7 @@ import {
   ClassMemberKind,
   Decorator,
   ReflectionHost,
+  reflectObjectLiteral,
 } from '../../../reflection';
 import {LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
 import {
@@ -72,11 +73,13 @@ import {
   getUndecoratedClassWithAngularFeaturesDiagnostic,
   InjectableClassRegistry,
   isAngularDecorator,
+  parseStandaloneOption,
   readBaseClass,
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toFactoryMetadata,
   UndecoratedMetadataExtractor,
+  unwrapExpression,
   validateHostDirectives,
 } from '../../common';
 
@@ -192,6 +195,10 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
       const decorator = findAngularDecorator(decorators, 'Directive', this.isCore);
       return decorator ? {trigger: decorator.node, decorator, metadata: decorator} : undefined;
     }
+  }
+
+  isStandalone(decorator: Readonly<Decorator | null>): boolean {
+    return parseStandaloneOption(decorator, this.evaluator, this.implicitStandaloneValue);
   }
 
   analyze(

@@ -93,6 +93,12 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol | null, R> {
   detect(node: ClassDeclaration, decorators: Decorator[] | null): DetectResult<D> | undefined;
 
   /**
+   * Determine whether a given class with the detected metadata is standalone.
+   * This is used to skip compilation of non-exported, non-standalone classes early.
+   */
+  isStandalone?(metadata: Readonly<D>): boolean;
+
+  /**
    * Asynchronously perform pre-analysis on the decorator/class combination.
    *
    * `preanalyze` is optional and is not guaranteed to be called through all compilation flows. It
