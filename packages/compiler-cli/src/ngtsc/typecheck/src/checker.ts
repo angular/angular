@@ -52,7 +52,7 @@ import {
   PipeMeta,
 } from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
-import {ProgramDriver, UpdateMode} from '../../program_driver';
+import {ProgramDriver, UpdateMode, InliningMode} from '../../program_driver';
 import {
   ClassDeclaration,
   DeclarationNode,
@@ -285,6 +285,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * destroyed and replaced.
    */
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective | null>>();
+  private generatedRangeCache = new WeakMap<ts.SourceFile, ts.TextRange[]>();
 
   private isComplete = false;
   private priorResultsAdopted = false;
@@ -595,6 +596,51 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.ensureAllShimsForAllFiles();
   }
 
+  private getGeneratedCodeRanges(sf: ts.SourceFile): ts.TextRange[] {
+    if (this.generatedRangeCache.has(sf)) {
+      return this.generatedRangeCache.get(sf)!;
+    }
+
+    const ranges: ts.TextRange[] = [];
+    const visit = (node: ts.Node) => {
+      if (ts.isInterfaceDeclaration(node)) {
+        return;
+      }
+      if (ts.isFunctionDeclaration(node)) {
+        if (node.name !== undefined) {
+          const name = node.name.text;
+          if (name.startsWith('_tcb')) {
+            ranges.push({pos: node.getStart(), end: node.getEnd()});
+            // TCBs never contain other TCBs or generated utilities, so we can skip traversing inside them.
+            return;
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+
+    // We do a full AST traversal because TCBs can be generated inside closures (e.g. `it` blocks in tests)
+    // so a shallow scan of top-level statements is insufficient.
+    ts.forEachChild(sf, visit);
+
+    this.generatedRangeCache.set(sf, ranges);
+    return ranges;
+  }
+
+  private filterShimDiagnostics(
+    shimSf: ts.SourceFile,
+    semanticDiagnostics: readonly ts.Diagnostic[],
+  ): readonly ts.Diagnostic[] {
+    if (this.programDriver.inliningMode !== InliningMode.CopySourceToTcb) {
+      return semanticDiagnostics;
+    }
+    const ranges = this.getGeneratedCodeRanges(shimSf);
+    return semanticDiagnostics.filter((diag) => {
+      if (diag.start === undefined) return true;
+      return ranges.some((range) => diag.start! >= range.pos && diag.start! < range.end);
+    });
+  }
+
   /**
    * Retrieve type-checking and template parse diagnostics from the given `ts.SourceFile` using the
    * most recent type-checking program.
@@ -626,14 +672,13 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       for (const [shimPath, shimRecord] of fileRecord.shimData) {
-        // TODO(atscott): Filter out diagnostics from original source in CopySourceToTcb
-        // We don't want to duplicate diagnostics from original source when copying to tcb
-
         const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
+        const semanticDiagnostics = typeCheckProgram.getSemanticDiagnostics(shimSf);
+
+        const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
+
         diagnostics.push(
-          ...typeCheckProgram
-            .getSemanticDiagnostics(shimSf)
-            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+          ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
         );
         diagnostics.push(...shimRecord.genesisDiagnostics);
 
@@ -715,10 +760,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
+      const semanticDiagnostics = typeCheckProgram.getSemanticDiagnostics(shimSf);
+      const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
+
       diagnostics.push(
-        ...typeCheckProgram
-          .getSemanticDiagnostics(shimSf)
-          .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+        ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
       );
       diagnostics.push(...shimRecord.genesisDiagnostics);
 

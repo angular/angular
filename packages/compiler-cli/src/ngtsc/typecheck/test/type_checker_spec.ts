@@ -9,6 +9,7 @@
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {InliningMode} from '../../program_driver';
 import {OptimizeFor} from '../api';
 
 import {getClass, setup, TestDeclaration} from '../testing';
@@ -171,7 +172,11 @@ runInEachFileSystem(() => {
           [
             {
               fileName,
-              source: `abstract class Cmp {} // not exported, so requires inline`,
+              source: `
+                abstract class Cmp {
+                  value: string = 'hello';
+                }
+              `,
               templates: {'Cmp': '<div></div>'},
             },
           ],
@@ -181,6 +186,75 @@ runInEachFileSystem(() => {
         const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TCB_REQUIRED));
+      });
+
+      it('should generate TCB in shim file when inlining is unsupported but required', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              source: `abstract class Cmp {} // not exported, so requires inline`,
+              templates: {'Cmp': '<div></div>'},
+            },
+          ],
+          {inliningMode: InliningMode.CopySourceToTcb},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        expect(diags.length).toBe(0);
+
+        const cmp = getClass(sf, 'Cmp');
+        const block = templateTypeChecker.getTypeCheckBlock(cmp);
+        expect(block).not.toBeNull();
+        expect(block!.getText()).toContain(`Cmp`);
+      });
+
+      it('should filter out diagnostics from copied source in CopySourceToTcb mode', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              source: `
+                abstract class Cmp {
+                  value: string = 1; // Semantic error
+                }
+              `,
+              templates: {'Cmp': '<div></div>'},
+            },
+          ],
+          {inliningMode: InliningMode.CopySourceToTcb},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        // The semantic error in the copied source should be filtered out.
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not filter out template errors in CopySourceToTcb mode', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              source: `
+                abstract class Cmp {
+                  value: string = 'hello';
+                }
+              `,
+              templates: {'Cmp': '<div>{{nonExisting}}</div>'},
+            },
+          ],
+          {inliningMode: InliningMode.CopySourceToTcb},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        // The template error should NOT be filtered out.
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          "Property 'nonExisting' does not exist on type 'Cmp'",
+        );
       });
     });
 

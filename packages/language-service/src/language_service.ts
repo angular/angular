@@ -1036,8 +1036,7 @@ function detectAngularCoreVersion(
 
 function createProgramDriver(project: ts.server.Project): ProgramDriver {
   return {
-    // TODO: switch to CopySourceToTcb
-    inliningMode: InliningMode.Error,
+    inliningMode: InliningMode.CopySourceToTcb,
     supportsInlineOperations: false,
     getProgram(): ts.Program {
       const program = project.getLanguageService().getProgram();
