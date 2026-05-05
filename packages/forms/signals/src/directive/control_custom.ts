@@ -15,8 +15,7 @@ import {
   createBindings,
   readFieldStateBindingValue,
 } from './bindings';
-import {setNativeDomProperty} from './native';
-import {FormUiControl} from '../api/control';
+import {formatDateForMinMax, setNativeDomProperty} from './native';
 
 export function customControlCreate(
   host: ControlDirectiveHost,
@@ -50,11 +49,12 @@ export function customControlCreate(
         // If the host node is a native control, we can bind field state properties to native
         // properties for any that weren't defined as inputs on the custom control.
         if (parent.elementAcceptsNativeProperty(name) && !host.customControlHasInput(name)) {
+          const domValue = formatDateForMinMax(name, value, parent.nativeFormElement.type);
           setNativeDomProperty(
             parent.renderer,
-            parent.nativeFormElement!,
+            parent.nativeFormElement,
             name,
-            value as string | number | undefined,
+            domValue as string | number | boolean | undefined,
           );
         }
       }

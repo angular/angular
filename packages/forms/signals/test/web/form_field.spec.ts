@@ -2383,6 +2383,102 @@ describe('field directive', () => {
         expect(element.max).toBe('5');
       });
 
+      it('should bind maxDate to native control as string', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly max = signal(new Date('2026-12-31T00:00:00Z'));
+          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+            maxDate(p, this.max);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.max).toBe('2026-12-31');
+
+        act(() => fixture.componentInstance.max.set(new Date('2026-11-01T00:00:00Z')));
+        expect(element.max).toBe('2026-11-01');
+      });
+
+      it('should bind maxDate to native month control as string', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="month" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly max = signal(new Date('2026-12-01T00:00:00Z'));
+          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+            maxDate(p, this.max);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.max).toBe('2026-12');
+
+        act(() => fixture.componentInstance.max.set(new Date('2026-11-01T00:00:00Z')));
+        expect(element.max).toBe('2026-11');
+      });
+
+      it('should allow string binding to max in template', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" max="2026-12-31" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(new Date('2026-01-15')));
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.max).toBe('2026-12-31');
+      });
+
+      it('should allow string binding to max in template with dynamic type', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input [type]="inputType()" [formField]="f" max="2026-12-31" />`,
+        })
+        class TestCmp {
+          readonly inputType = signal('date');
+          readonly f = form(signal(new Date('2026-01-15')));
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.max).toBe('2026-12-31');
+      });
+
+      it('should bind max to custom control', () => {
+        @Component({
+          selector: 'custom-control',
+          template: '',
+        })
+        class CustomControl implements FormValueControl<Date> {
+          readonly value = model.required<Date>();
+          readonly max = input<Date>();
+        }
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly max = signal(new Date('2026-12-31'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+            maxDate(p, this.max);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().max()).toEqual(new Date('2026-12-31'));
+      });
+
       it('should validate max on native text input', async () => {
         @Component({
           imports: [FormField],
@@ -2731,6 +2827,102 @@ describe('field directive', () => {
         const input = fixture.nativeElement.firstChild as HTMLInputElement;
 
         expect(input.min).toBe('10');
+      });
+
+      it('should bind minDate to native control as string', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly min = signal(new Date('2026-01-01T00:00:00Z'));
+          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+            minDate(p, this.min);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.min).toBe('2026-01-01');
+
+        act(() => fixture.componentInstance.min.set(new Date('2026-02-01T00:00:00Z')));
+        expect(element.min).toBe('2026-02-01');
+      });
+
+      it('should bind minDate to native month control as string', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="month" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly min = signal(new Date('2026-01-01T00:00:00Z'));
+          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+            minDate(p, this.min);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.min).toBe('2026-01');
+
+        act(() => fixture.componentInstance.min.set(new Date('2026-02-01T00:00:00Z')));
+        expect(element.min).toBe('2026-02');
+      });
+
+      it('should allow string binding to min in template', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="date" [formField]="f" min="2026-01-01" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(new Date('2026-01-15')));
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.min).toBe('2026-01-01');
+      });
+
+      it('should allow string binding to min in template with dynamic type', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input [type]="inputType()" [formField]="f" min="2026-01-01" />`,
+        })
+        class TestCmp {
+          readonly inputType = signal('date');
+          readonly f = form(signal(new Date('2026-01-15')));
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.min).toBe('2026-01-01');
+      });
+
+      it('should bind min to custom control', () => {
+        @Component({
+          selector: 'custom-control',
+          template: '',
+        })
+        class CustomControl implements FormValueControl<Date> {
+          readonly value = model.required<Date>();
+          readonly min = input<Date>();
+        }
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly min = signal(new Date('2026-01-01'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
+            minDate(p, this.min);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().min()).toEqual(new Date('2026-01-01'));
       });
 
       it('should validate min on native text input', async () => {

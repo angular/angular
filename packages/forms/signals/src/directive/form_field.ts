@@ -45,8 +45,8 @@ import {customControlCreate} from './control_custom';
 import {cvaControlCreate} from './control_cva';
 import {nativeControlCreate} from './control_native';
 import {
+  elementAcceptsMinMax,
   isNativeFormElement,
-  isNumericFormElement,
   isTextualFormElement,
   type NativeFormControl,
 } from './native';
@@ -135,7 +135,7 @@ export class FormField<T> {
   // Compute some helper booleans about the type of element we're sitting on.
   private readonly elementIsNativeFormElement = isNativeFormElement(this.element);
   private readonly elementAcceptsTextualValues = isTextualFormElement(this.element);
-  private _elementAcceptsNumericValues: boolean | undefined;
+  private _elementAcceptsMinMax: boolean | undefined;
 
   /**
    * Utility that casts `this.element` to `NativeFormControl` to avoid repeated type guards. Only
@@ -378,8 +378,7 @@ export class FormField<T> {
     switch (key) {
       case 'min':
       case 'max':
-        return (this._elementAcceptsNumericValues ??= isNumericFormElement(this.element));
-
+        return (this._elementAcceptsMinMax ??= elementAcceptsMinMax(this.element));
       case 'minLength':
       case 'maxLength':
         return this.elementAcceptsTextualValues;
