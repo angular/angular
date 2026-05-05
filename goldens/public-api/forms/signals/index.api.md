@@ -99,9 +99,12 @@ export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (context: FieldContext<TValue, TPathKind>, abortSignal: AbortSignal) => Promise<void> | void;
 
 // @public
-export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, configOrLogic?: {
+export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
-} | string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>): void;
+}): void;
+
+// @public @deprecated
+export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>): void;
 
 // @public
 export interface DisabledReason {
@@ -262,9 +265,12 @@ export interface FormValueControl<TValue> extends FormUiControl<TValue> {
 }
 
 // @public
-export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, configOrLogic: {
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config: {
     when: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
-} | NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
+}): void;
+
+// @public @deprecated
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
@@ -544,9 +550,12 @@ export class PatternValidationError extends BaseNgValidationError {
 export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
 
 // @public
-export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, configOrLogic?: {
+export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
-} | NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
+}): void;
+
+// @public @deprecated
+export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
 export interface ReadonlyArrayLike<T> {
