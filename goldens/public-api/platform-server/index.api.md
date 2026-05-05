@@ -50,6 +50,7 @@ export function renderApplication(bootstrap: (context: BootstrapContext) => Prom
     document?: string | Document;
     url?: string;
     platformProviders?: Provider[];
+    allowedHosts?: Readonly<string>[];
 }): Promise<string>;
 
 // @public
@@ -57,6 +58,7 @@ export function renderModule<T>(moduleType: Type<T>, options: {
     document?: string | Document;
     url?: string;
     extraProviders?: StaticProvider[];
+    allowedHosts?: Readonly<string>[];
 }): Promise<string>;
 
 // @public

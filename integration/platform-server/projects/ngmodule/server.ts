@@ -42,6 +42,7 @@ app.use((req, res) => {
 
   renderModule(AppServerModule, {
     document: indexHtml,
+    allowedHosts: ['localhost'],
     url: `${protocol}://${headers.host}${originalUrl}`,
     extraProviders: [{provide: APP_BASE_HREF, useValue: baseUrl}],
   }).then((response: string) => {
