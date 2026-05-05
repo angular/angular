@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
+
 import {runInEachFileSystem} from '../../file_system/testing';
 import {
   resetParseTemplateAsSourceFileForTest,
   setParseTemplateAsSourceFileForTest,
 } from '../diagnostics';
 import {diagnose, ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts} from '../testing';
+import {Reference} from '../../imports';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -1390,6 +1393,112 @@ class TestComponent {
             },
           },
         ],
+      );
+
+      expect(messages).toEqual([]);
+    });
+  });
+
+  describe('input with modifiers', () => {
+    it('should report readonly @input() with transform when honorAccessModifiersForInputBindings', () => {
+      const messages = diagnose(
+        `<div dir [input]="true"></div>`,
+        `
+        class Dir {
+          @Input()
+          readonly input: string;
+        }
+        class TestComponent {}
+      `,
+        [
+          {
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            coercedInputFields: ['input'],
+            restrictedInputFields: ['input'],
+            inputs: {
+              input: {
+                classPropertyName: 'input',
+                bindingPropertyName: 'input',
+                required: false,
+                isSignal: false,
+                transform: {
+                  node: ts.factory.createFunctionDeclaration(
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    [],
+                    undefined,
+                    undefined,
+                  ),
+                  type: new Reference(
+                    ts.factory.createUnionTypeNode([
+                      ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+                      ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                    ]),
+                  ),
+                },
+              },
+            },
+          },
+        ],
+        [],
+        {honorAccessModifiersForInputBindings: true},
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 11): Cannot assign to 'input' because it is a read-only property.`,
+      ]);
+    });
+
+    it('should not report readonly @input() with transform when honorAccessModifiersForInputBindings is false', () => {
+      const messages = diagnose(
+        `<div dir [input]="true"></div>`,
+        `
+        class Dir {
+          @Input()
+          readonly input: string;
+        }
+        class TestComponent {}
+      `,
+        [
+          {
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            coercedInputFields: ['input'],
+            restrictedInputFields: ['input'],
+            inputs: {
+              input: {
+                classPropertyName: 'input',
+                bindingPropertyName: 'input',
+                required: false,
+                isSignal: false,
+                transform: {
+                  node: ts.factory.createFunctionDeclaration(
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    [],
+                    undefined,
+                    undefined,
+                  ),
+                  type: new Reference(
+                    ts.factory.createUnionTypeNode([
+                      ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+                      ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                    ]),
+                  ),
+                },
+              },
+            },
+          },
+        ],
+        [],
+        {honorAccessModifiersForInputBindings: false},
       );
 
       expect(messages).toEqual([]);
