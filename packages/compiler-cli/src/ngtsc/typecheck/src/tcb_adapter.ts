@@ -45,6 +45,7 @@ import {generateTcbTypeParameters} from './tcb_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import ts from 'typescript';
+import {absoluteFromSourceFile} from '../../file_system';
 
 /**
  * Adapts the compiler's `TypeCheckBlockMetadata` (which includes full TS AST nodes)
@@ -334,7 +335,7 @@ function extractReferenceMetadata(
   // it identifies that the class is local because its text was copied to this shim,
   // and it ensures we just output the class name directly rather than an import.
   if (env.copiedSourceOriginPath !== undefined) {
-    const refFile = ref.node.getSourceFile().fileName;
+    const refFile = absoluteFromSourceFile(ref.node.getSourceFile());
     if (refFile === env.copiedSourceOriginPath) {
       const nodeName = ref.node?.name as ts.Identifier | undefined;
       const nodeNameSpan = nodeName
@@ -382,7 +383,8 @@ function extractReferenceMetadata(
   const nodeNameSpan = nodeName
     ? new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd())
     : undefined;
-  const nodeFilePath = nodeName?.getSourceFile().fileName;
+  const nodeFilePath =
+    nodeName !== undefined ? absoluteFromSourceFile(nodeName.getSourceFile()) : undefined;
   let key: TcbReferenceKey;
 
   if (nodeFilePath !== undefined && nodeNameSpan !== undefined) {

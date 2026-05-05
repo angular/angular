@@ -117,6 +117,9 @@ export class TypeCheckFile extends Environment {
 
     const newImports = importChanges.newImports.get(this.contextFile.fileName);
     if (newImports !== undefined) {
+      if (source.length > 0 && !source.endsWith('\n')) {
+        source += '\n';
+      }
       source += newImports
         .map((i) => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
         .join('\n');
