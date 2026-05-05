@@ -25,11 +25,11 @@ import {
 } from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
-import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
-import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
+import {_sanitizeUrl} from './url_sanitizer';
 
 /**
  * An `html` sanitizer which converts untrusted `html` **string** into trusted string by removing
@@ -321,11 +321,7 @@ export const SECURITY_SENSITIVE_ELEMENTS: Record<
  * @param tagName The name of the tag.
  * @param attributeName The name of the attribute.
  */
-export function ɵɵvalidateAttribute(
-  value: unknown,
-  tagName: string,
-  attributeName: string,
-): unknown {
+export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
   const validationConfig = SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.[lowerCaseAttrName];

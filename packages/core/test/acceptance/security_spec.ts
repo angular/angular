@@ -9,6 +9,7 @@
 import {NgIf} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
 import {
+  ChangeDetectionStrategy,
   Component,
   Directive,
   inject,

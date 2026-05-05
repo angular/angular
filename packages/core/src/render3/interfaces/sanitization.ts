@@ -13,6 +13,6 @@ import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/
  */
 export type SanitizerFn = (
   value: any,
-  tagName?: string,
-  propName?: string,
+  tagName: string,
+  propName: string,
 ) => string | TrustedHTML | TrustedScript | TrustedScriptURL;
