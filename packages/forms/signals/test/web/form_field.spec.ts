@@ -2389,8 +2389,8 @@ describe('field directive', () => {
           template: `<input type="date" [formField]="f" />`,
         })
         class TestCmp {
-          readonly max = signal(new Date('2026-12-31T00:00:00Z'));
-          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+          readonly max = signal(new Date('2026-12-31'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
             maxDate(p, this.max);
           });
         }
@@ -2399,7 +2399,7 @@ describe('field directive', () => {
         const element = fixture.nativeElement.firstChild as HTMLInputElement;
         expect(element.max).toBe('2026-12-31');
 
-        act(() => fixture.componentInstance.max.set(new Date('2026-11-01T00:00:00Z')));
+        act(() => fixture.componentInstance.max.set(new Date('2026-11-01')));
         expect(element.max).toBe('2026-11-01');
       });
 
@@ -2410,8 +2410,8 @@ describe('field directive', () => {
           template: `<input type="month" [formField]="f" />`,
         })
         class TestCmp {
-          readonly max = signal(new Date('2026-12-01T00:00:00Z'));
-          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+          readonly max = signal(new Date('2026-12-01'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
             maxDate(p, this.max);
           });
         }
@@ -2420,7 +2420,7 @@ describe('field directive', () => {
         const element = fixture.nativeElement.firstChild as HTMLInputElement;
         expect(element.max).toBe('2026-12');
 
-        act(() => fixture.componentInstance.max.set(new Date('2026-11-01T00:00:00Z')));
+        act(() => fixture.componentInstance.max.set(new Date('2026-11-01')));
         expect(element.max).toBe('2026-11');
       });
 
@@ -2836,8 +2836,8 @@ describe('field directive', () => {
           template: `<input type="date" [formField]="f" />`,
         })
         class TestCmp {
-          readonly min = signal(new Date('2026-01-01T00:00:00Z'));
-          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+          readonly min = signal(new Date('2026-01-01'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
             minDate(p, this.min);
           });
         }
@@ -2846,7 +2846,7 @@ describe('field directive', () => {
         const element = fixture.nativeElement.firstChild as HTMLInputElement;
         expect(element.min).toBe('2026-01-01');
 
-        act(() => fixture.componentInstance.min.set(new Date('2026-02-01T00:00:00Z')));
+        act(() => fixture.componentInstance.min.set(new Date('2026-02-01')));
         expect(element.min).toBe('2026-02-01');
       });
 
@@ -2857,8 +2857,8 @@ describe('field directive', () => {
           template: `<input type="month" [formField]="f" />`,
         })
         class TestCmp {
-          readonly min = signal(new Date('2026-01-01T00:00:00Z'));
-          readonly f = form(signal(new Date('2026-01-15T00:00:00Z')), (p) => {
+          readonly min = signal(new Date('2026-01-01'));
+          readonly f = form(signal(new Date('2026-01-15')), (p) => {
             minDate(p, this.min);
           });
         }
@@ -2867,7 +2867,7 @@ describe('field directive', () => {
         const element = fixture.nativeElement.firstChild as HTMLInputElement;
         expect(element.min).toBe('2026-01');
 
-        act(() => fixture.componentInstance.min.set(new Date('2026-02-01T00:00:00Z')));
+        act(() => fixture.componentInstance.min.set(new Date('2026-02-01')));
         expect(element.min).toBe('2026-02');
       });
 
