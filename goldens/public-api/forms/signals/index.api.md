@@ -284,10 +284,10 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
 export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number] : T[keyof T];
 
 // @public
-export type LimitKey<TLimit> = MetadataKey<Signal<TLimit | undefined>, TLimit | undefined, TLimit | undefined>;
+export type LimitKey<TLimit> = MetadataKey<Signal<NonNullable<TLimit> | undefined>, NonNullable<TLimit> | undefined, NonNullable<TLimit> | undefined>;
 
 // @public
-export type LimitSelectionKey = MetadataKey<Signal<LimitKey<any> | undefined>, LimitKey<any>, LimitKey<any> | undefined> & {
+export type LimitSelectionKey = MetadataKey<Signal<LimitKey<unknown> | undefined>, LimitKey<unknown>, LimitKey<unknown> | undefined> & {
     [LIMIT_SELECTION_KEY]: true;
 };
 

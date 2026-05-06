@@ -167,9 +167,9 @@ export class MetadataKey<TRead, TWrite, TAcc> {
  * @experimental 22.0.0
  */
 export type LimitKey<TLimit> = MetadataKey<
-  Signal<TLimit | undefined>,
-  TLimit | undefined,
-  TLimit | undefined
+  Signal<NonNullable<TLimit> | undefined>,
+  NonNullable<TLimit> | undefined,
+  NonNullable<TLimit> | undefined
 >;
 
 /**
@@ -186,9 +186,9 @@ declare const LIMIT_SELECTION_KEY: unique symbol;
  * @experimental 22.0.0
  */
 export type LimitSelectionKey = MetadataKey<
-  Signal<LimitKey<any> | undefined>,
-  LimitKey<any>,
-  LimitKey<any> | undefined
+  Signal<LimitKey<unknown> | undefined>,
+  LimitKey<unknown>,
+  LimitKey<unknown> | undefined
 > & {
   [LIMIT_SELECTION_KEY]: true;
 };
