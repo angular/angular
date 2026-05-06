@@ -504,7 +504,8 @@ runInEachFileSystem(() => {
         );
         expect(record).not.toBeNull();
         expect(record!.traits.length).toBe(1);
-        expect(record!.traits[0].state).toBe(TraitState.Skipped);
+        expect(record!.traits[0].state).toBe(TraitState.Analyzed);
+        expect((record!.traits[0] as {analysis: unknown}).analysis).toBeNull();
       });
 
       it('should not skip non-exported standalone components', () => {

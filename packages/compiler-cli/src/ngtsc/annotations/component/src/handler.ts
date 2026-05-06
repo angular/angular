@@ -355,10 +355,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     }
   }
 
-  isStandalone(decorator: Readonly<Decorator>): boolean {
-    return parseStandaloneOption(decorator, this.evaluator, this.implicitStandaloneValue);
-  }
-
   preanalyze(node: ClassDeclaration, decorator: Readonly<Decorator>): Promise<void> | undefined {
     // In preanalyze, resource URLs associated with the component are asynchronously preloaded via
     // the resourceLoader. This is the only time async operations are allowed for a component.

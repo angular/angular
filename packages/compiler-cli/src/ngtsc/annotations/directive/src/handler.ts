@@ -197,10 +197,6 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
     }
   }
 
-  isStandalone(decorator: Readonly<Decorator | null>): boolean {
-    return parseStandaloneOption(decorator, this.evaluator, this.implicitStandaloneValue);
-  }
-
   analyze(
     node: ClassDeclaration,
     decorator: Readonly<Decorator | null>,

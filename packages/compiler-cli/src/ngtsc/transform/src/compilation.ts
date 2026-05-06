@@ -420,18 +420,6 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
 
     for (const trait of traits) {
-      if (!this.reflector.isStaticallyExported(clazz) && !this.compileNonExportedClasses) {
-        const isStandalone =
-          trait.handler.isStandalone !== undefined
-            ? trait.handler.isStandalone(trait.detected.metadata)
-            : false;
-        if (!isStandalone) {
-          // Only compile standalone things when not exported.
-          trait.toSkipped();
-          continue;
-        }
-      }
-
       const analyze = () => this.analyzeTrait(clazz, trait);
 
       let preanalysis: Promise<void> | null = null;
@@ -485,10 +473,20 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
 
     const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
-    if (result.analysis !== undefined && trait.handler.register !== undefined) {
+
+    const isStaticallyExported = this.reflector.isStaticallyExported(clazz);
+    const isStandalone = (result.analysis as any)?.meta?.isStandalone ?? false;
+
+    const shouldSkipResolution =
+      !isStaticallyExported && !this.compileNonExportedClasses && !isStandalone;
+
+    let analysisResult = result.analysis ?? null;
+    if (shouldSkipResolution) {
+      analysisResult = null;
+    } else if (result.analysis !== undefined && trait.handler.register !== undefined) {
       trait.handler.register(clazz, result.analysis);
     }
-    trait = trait.toAnalyzed(result.analysis ?? null, result.diagnostics ?? null, symbol);
+    trait = trait.toAnalyzed(analysisResult, result.diagnostics ?? null, symbol);
   }
 
   resolve(): void {
