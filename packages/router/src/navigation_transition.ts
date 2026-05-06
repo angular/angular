@@ -444,6 +444,7 @@ export class NavigationTransitions {
 
       // Using switchMap so we cancel executing navigations when a new one comes in
       switchMap((overallTransitionState) => {
+        let abortable = true;
         let completedOrAborted = false;
         const abortController = new AbortController();
         const shouldContinueNavigation = () => {
@@ -739,6 +740,20 @@ export class NavigationTransitions {
             return loaders.length === 0 ? of(t) : from(Promise.all(loaders).then(() => t));
           }),
 
+          switchMap((t: NavigationTransition) => {
+            const targetRouterState = createRouterState(
+              router.routeReuseStrategy,
+              t.targetSnapshot!,
+              t.currentRouterState,
+            );
+            this.currentTransition = overallTransitionState = t = {...t, targetRouterState};
+            this.currentNavigation.update((nav) => {
+              nav!.targetRouterState = targetRouterState;
+              return nav;
+            });
+            return of(t);
+          }),
+
           switchTap(() => this.afterPreactivation()),
 
           // TODO(atscott): Move this into the last block below.
@@ -763,17 +778,7 @@ export class NavigationTransitions {
           take(1),
 
           switchMap((t: NavigationTransition) => {
-            const targetRouterState = createRouterState(
-              router.routeReuseStrategy,
-              t.targetSnapshot!,
-              t.currentRouterState,
-            );
-            this.currentTransition = overallTransitionState = t = {...t, targetRouterState};
-            this.currentNavigation.update((nav) => {
-              nav!.targetRouterState = targetRouterState;
-              return nav;
-            });
-
+            abortable = false;
             this.events.next(new BeforeActivateRoutes());
             const deferred = overallTransitionState.beforeActivateHandler.deferredHandle;
             return deferred ? from(deferred.then(() => t)) : of(t);
@@ -812,7 +817,7 @@ export class NavigationTransitions {
           takeUntil(
             abortSignalToObservable(abortController.signal).pipe(
               // Ignore aborts if we are already completed, canceled, or are in the activation stage (we have targetRouterState)
-              filter(() => !completedOrAborted && !overallTransitionState.targetRouterState),
+              filter(() => !completedOrAborted && abortable),
               tap(() => {
                 this.cancelNavigationTransition(
                   overallTransitionState,
