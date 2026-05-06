@@ -118,6 +118,7 @@ import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder, SymbolDirectiveMeta, SymbolBoundTarget} from './template_symbol_builder';
 import {findAllMatchingNodes} from './comments';
+import {TCB_FUNCTION_PREFIX} from './type_check_file';
 
 export class TypeCheckableDirectiveMetaAdapter implements SymbolDirectiveMeta {
   constructor(
@@ -609,7 +610,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       if (ts.isFunctionDeclaration(node)) {
         if (node.name !== undefined) {
           const name = node.name.text;
-          if (name.startsWith('_tcb')) {
+          if (name.startsWith(TCB_FUNCTION_PREFIX)) {
             ranges.push({pos: node.getStart(), end: node.getEnd()});
             // TCBs never contain other TCBs or generated utilities, so we can skip traversing inside them.
             return;

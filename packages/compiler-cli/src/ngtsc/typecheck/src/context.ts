@@ -52,7 +52,7 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
-import {TypeCheckFile} from './type_check_file';
+import {TCB_FUNCTION_PREFIX, TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
 
 export interface ShimTypeCheckingData {
@@ -725,7 +725,7 @@ class InlineTcbOp implements Op {
     if (tcbSf !== originalSf) {
       env.copiedSourceOriginPath = absoluteFromSourceFile(originalSf);
     }
-    const fnName = `_tcb_${this.ref.node.pos}`;
+    const fnName = `${TCB_FUNCTION_PREFIX}_${this.ref.node.pos}`;
 
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
       this.ref,
