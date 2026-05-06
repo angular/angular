@@ -72,6 +72,8 @@ import {
   SemanticDepGraphUpdater,
 } from '../../../incremental/semantic_graph';
 import {IndexingContext} from '../../../indexer';
+import {AbstractBoundTemplate} from '../../../indexer/src/api';
+
 import {
   DirectiveMeta,
   extractDirectiveTypeCheckMeta,
@@ -1130,10 +1132,31 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     const binder = new R3TargetBinder<DirectiveMeta>(matcher);
     const boundTemplate = binder.bind({template: analysis.template.diagNodes});
 
+    const abstractBoundTemplate: AbstractBoundTemplate<DeclarationNode> = {
+      getDirectivesOfNode(node) {
+        return boundTemplate.getDirectivesOfNode(node);
+      },
+      getReferenceTarget(node) {
+        return boundTemplate.getReferenceTarget(node);
+      },
+      getExpressionTarget(ast) {
+        return boundTemplate.getExpressionTarget(ast);
+      },
+      getUsedDirectives() {
+        return boundTemplate.getUsedDirectives().map((dir) => ({
+          ref: {node: dir.ref.node},
+          isComponent: dir.isComponent,
+        }));
+      },
+      getTemplateAst() {
+        return boundTemplate.target.template;
+      },
+    };
+
     context.addComponent({
       declaration: node,
       selector,
-      boundTemplate,
+      boundTemplate: abstractBoundTemplate,
       templateMeta: {
         isInline: analysis.template.declaration.isInline,
         file: analysis.template.file,

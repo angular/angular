@@ -64,6 +64,7 @@ import {
 } from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
+import {NodeAdapter} from '../../indexer/src/api';
 import {
   CompoundMetadataReader,
   CompoundMetadataRegistry,
@@ -919,7 +920,20 @@ export class NgCompiler {
     const compilation = this.ensureAnalyzed();
     const context = new IndexingContext();
     compilation.traitCompiler.index(context);
-    return generateAnalysis(context);
+
+    const adapter: NodeAdapter<DeclarationNode> = {
+      getName(node: DeclarationNode): string {
+        return ts.isClassDeclaration(node) && node.name ? node.name.getText() : '';
+      },
+      getFileName(node: DeclarationNode): string {
+        return node.getSourceFile().fileName;
+      },
+      getContent(node: DeclarationNode): string {
+        return node.getSourceFile().getFullText();
+      },
+    };
+
+    return generateAnalysis(context, adapter);
   }
 
   /**
