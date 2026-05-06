@@ -74,8 +74,7 @@ As part of this project, we'll explore the requirement space of cross framework 
   In Angular v21, we landed an experimental version of Signal Forms. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. Next, our plans include promoting Signal Forms to stable and enhancing interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
   </docs-card>
   <docs-card title="Reactivity">
-  We introduced experimental signal APIs, resource() and httpResource(), for flexible asynchronous data handling. We plan to promote these APIs to developer preview/stable based on community feedback.
-  We are also evaluating new APIs for unhandled use cases, considering community benefits and tradeoffs before implementation after careful consideration.
+  We are evaluating new signal APIs for unhandled use cases, considering community benefits and tradeoffs before implementation after careful consideration.
   </docs-card>
   <docs-card title="Change Detection">
   With Zoneless being stable and default, we are also planning to shift the default change detection strategy to OnPush, to follow current best practices. [See the RFC discussion for details](https://github.com/angular/angular/discussions/66779).
@@ -128,6 +127,8 @@ In v19 we shipped the incremental hydration in developer preview mode, powered b
 This project rethinks the Angular reactivity model by introducing Signals as a reactivity primitive. The initial planning resulted in hundreds of discussions, conversations with developers, feedback sessions, user experience studies, and a series of RFCs, which received over 1,000 comments.
 
 In Angular v20 we graduated all the fundamental reactivity primitives to stable including signal, effect, linkedSignal, signal-based queries, and inputs.
+
+In Angular v22 we graduated `resource()`, `rxResource()`, and `httpResource()` to stable, extending signal-based reactivity to asynchronous data.
 </docs-card>
 <docs-card title="Support two-dimensional drag-and-drop" link="Completed in Q2 2024" href="https://github.com/angular/components/issues/13372">
 As part of this project, we implemented mixed orientation support for the Angular CDK drag and drop. This is one of the repository's most highly requested features.
