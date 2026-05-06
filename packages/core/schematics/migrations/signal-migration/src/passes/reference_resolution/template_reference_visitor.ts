@@ -25,6 +25,7 @@ import {
   TmplAstBoundText,
   TmplAstDeferredBlock,
   TmplAstForLoopBlock,
+  TmplAstIcu,
   TmplAstIfBlockBranch,
   TmplAstLetDeclaration,
   TmplAstNode,
@@ -227,6 +228,17 @@ export class TemplateReferenceVisitor<
 
   override visitLetDeclaration(decl: TmplAstLetDeclaration): void {
     this.checkExpressionForReferencedFields(decl, decl.value);
+  }
+
+  override visitIcu(icu: TmplAstIcu): void {
+    for (const v of Object.values(icu.vars)) {
+      this.checkExpressionForReferencedFields(icu, v.value);
+    }
+    for (const p of Object.values(icu.placeholders)) {
+      if (p instanceof TmplAstBoundText) {
+        this.checkExpressionForReferencedFields(icu, p.value);
+      }
+    }
   }
 }
 
