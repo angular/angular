@@ -216,7 +216,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
     action: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
         root: FieldTree<TRootModel>;
         submitted: FieldTree<TSubmittedModel>;
-    }) => Promise<TreeValidationResult>;
+    }) => TreeValidationResult | Promise<TreeValidationResult>;
     ignoreValidators?: 'pending' | 'none' | 'all';
     onInvalid?: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
         root: FieldTree<TRootModel>;
