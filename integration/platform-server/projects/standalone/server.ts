@@ -43,6 +43,7 @@ app.get('*', (req, res) => {
 
   renderApplication(bootstrap, {
     document: indexHtml,
+    allowedHosts: ['localhost'],
     url: `${protocol}://${headers.host}${originalUrl}`,
     platformProviders: [{provide: APP_BASE_HREF, useValue: baseUrl}],
   }).then((response: string) => {
