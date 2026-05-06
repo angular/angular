@@ -1,0 +1,10 @@
+load("//tools:defaults.bzl", "ts_config")
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    visibility = ["//packages/forms/signals/test:__subpackages__"],
+    deps = [
+        "//packages:tsconfig_test",
+    ],
+)
