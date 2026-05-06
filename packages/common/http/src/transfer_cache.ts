@@ -313,7 +313,9 @@ function getFilteredHeaders(
 }
 
 function sortAndConcatParams(params: HttpParams | URLSearchParams): string {
-  const searchParams = new URLSearchParams(params instanceof URLSearchParams ? params : params.toString());
+  const searchParams = new URLSearchParams(
+    params instanceof URLSearchParams ? params : params.toString(),
+  );
   searchParams.sort();
   return searchParams.toString();
 }
