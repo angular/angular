@@ -143,6 +143,7 @@ extension_package(
         "//devtools/projects/shell-browser/src/app:background_bundle",
         "//devtools/projects/shell-browser/src/app:content_script_bundle",
         "//devtools/projects/shell-browser/src/app:detect_angular_bundle",
+        "//devtools/projects/shell-browser/src/app:devtools_connected_flag_bundle",
         "//devtools/projects/shell-browser/src/app:ng_validate_bundle",
         "//devtools/projects/shell-browser/src/assets",
         "//devtools/projects/shell-browser/src/popups",

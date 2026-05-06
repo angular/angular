@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, signal, WritableSignal} from '@angular/core';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
 import {Subject} from 'rxjs';
 import {Events, MessageBus} from '../../../../protocol';
 
 import {ApplicationEnvironment} from '../application-environment';
 import {ThemeService} from '../application-services/theme_service';
+import {DEEP_LINK_INSTANCE_ID} from '../application-services/deep_link_service';
+import {APP_DATA} from '../application-providers/app_data';
 
 import {FrameManager} from '../application-services/frame_manager';
 import {SETTINGS_MOCK} from '../application-services/test-utils/settings_mock';
@@ -103,5 +105,64 @@ describe('DevtoolsTabsComponent', () => {
     } as unknown as Event);
 
     expect(comp.frameSelected.emit).toHaveBeenCalledWith(comp.frameManager.frames()[0]);
+  });
+
+  describe('deep link from Performance panel', () => {
+    let deepLinkInstanceId: WritableSignal<number | null>;
+    let fixture: ComponentFixture<DevToolsTabsComponent>;
+
+    function setupWithDeepLink(): void {
+      const busMock = jasmine.createSpyObj<MessageBus<Events>>('messageBus', [
+        'on',
+        'once',
+        'emit',
+        'destroy',
+      ]);
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [MatMenuModule, DevToolsTabsComponent],
+        providers: [
+          TabUpdate,
+          SETTINGS_MOCK,
+          {provide: ThemeService, useFactory: () => ({currentTheme: signal('light')})},
+          {provide: MessageBus, useValue: busMock},
+          {provide: ApplicationEnvironment, useValue: applicationEnvironmentMock},
+          {provide: FrameManager, useFactory: () => FrameManager.initialize(456)},
+        ],
+      }).overrideComponent(DevToolsTabsComponent, {
+        remove: {imports: [DirectiveExplorerComponent]},
+        add: {imports: [MockDirectiveExplorerComponent]},
+      });
+
+      fixture = TestBed.createComponent(DevToolsTabsComponent);
+      deepLinkInstanceId = TestBed.inject(DEEP_LINK_INSTANCE_ID);
+      const appData = TestBed.inject(APP_DATA);
+      appData.init({version: '19.0.0', devMode: true, ivy: true, hydration: false});
+    }
+
+    it('should switch to Components tab on deep link request', () => {
+      setupWithDeepLink();
+
+      // Switch to a different tab first.
+      fixture.componentInstance.changeTab('Profiler');
+      expect(fixture.componentInstance['activeTab']()).toBe('Profiler');
+
+      // Trigger a deep link request.
+      deepLinkInstanceId.set(42);
+      TestBed.tick();
+
+      // The deep link effect should have switched to the Components tab.
+      expect(fixture.componentInstance['activeTab']()).toBe('Components');
+    });
+
+    it('should not change tab when no deep link is pending', () => {
+      setupWithDeepLink();
+
+      fixture.componentInstance.changeTab('Profiler');
+      TestBed.tick();
+
+      expect(fixture.componentInstance['activeTab']()).toBe('Profiler');
+    });
   });
 });
