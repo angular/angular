@@ -37,9 +37,12 @@ export function maxDate<TValue extends Date | null, TPathKind extends PathKind =
   const MAX_MEMO = createMetadataKey<Date | undefined>();
 
   // Memoize the maximum valid date.
-  metadata(path, MAX_MEMO, (ctx) =>
-    typeof maxDateValue === 'function' ? maxDateValue(ctx) : maxDateValue,
-  );
+  metadata(path, MAX_MEMO, (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof maxDateValue === 'function' ? maxDateValue(ctx) : maxDateValue;
+  });
 
   // Publish the memoized maximum date for aggregation.
   metadata(path, MAX_DATE, ({state}) => state.metadata(MAX_MEMO)!());

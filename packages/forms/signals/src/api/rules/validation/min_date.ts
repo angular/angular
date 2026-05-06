@@ -37,9 +37,12 @@ export function minDate<TValue extends Date | null, TPathKind extends PathKind =
   const MIN_MEMO = createMetadataKey<Date | undefined>();
 
   // Memoize the minimum valid date.
-  metadata(path, MIN_MEMO, (ctx) =>
-    typeof minDateValue === 'function' ? minDateValue(ctx) : minDateValue,
-  );
+  metadata(path, MIN_MEMO, (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof minDateValue === 'function' ? minDateValue(ctx) : minDateValue;
+  });
 
   // Publish the memoized minimum date for aggregation.
   metadata(path, MIN_DATE, ({state}) => state.metadata(MIN_MEMO)!());
