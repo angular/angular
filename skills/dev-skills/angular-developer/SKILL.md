@@ -82,6 +82,12 @@ When implementing dependency injection in Angular, follow these guidelines:
 - **Injection Context**: Where `inject()` is allowed, `runInInjectionContext`, and `assertInInjectionContext`. Read [injection-context.md](references/injection-context.md)
 - **Hierarchical Injectors**: The `EnvironmentInjector` vs `ElementInjector`, resolution rules, modifiers (`optional`, `skipSelf`), and `providers` vs `viewProviders`. Read [hierarchical-injectors.md](references/hierarchical-injectors.md)
 
+## Pipes
+
+When working with Angular pipes, consult the following reference:
+
+- **Pipes**: Using built-in pipes in templates, creating custom pipes. Read [pipes.md](references/pipes.md)
+
 ## Angular Aria
 
 When building accessible custom components for any of the following patterns: Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid, consult the following reference:
