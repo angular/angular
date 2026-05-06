@@ -164,6 +164,7 @@ export class MetadataKey<TRead, TWrite, TAcc> {
  * Represents metadata that is used to define a valid limit for a field.
  *
  * @template TLimit The type the limit value.
+ * @experimental 22.0.0
  */
 export type LimitKey<TLimit> = MetadataKey<
   Signal<TLimit | undefined>,
@@ -182,7 +183,7 @@ declare const LIMIT_SELECTION_KEY: unique symbol;
  * This indirection allows rules to bind a {@link LimitKey} of a specific limit type (e.g. `number`
  * or `Date`) matching the field's type to a generic {@link MetadataKey}.
  *
- * @experimental 21.3.0
+ * @experimental 22.0.0
  */
 export type LimitSelectionKey = MetadataKey<
   Signal<LimitKey<any> | undefined>,
@@ -283,7 +284,7 @@ export function createManagedMetadataKey<TRead, TWrite, TAcc>(
 /**
  * Creates a {@link LimitSelectionKey}.
  *
- * @experimental 21.3.0
+ * @experimental 22.0.0
  */
 export function createLimitSelectionKey(): LimitSelectionKey {
   return createMetadataKey() as LimitSelectionKey;
@@ -314,7 +315,7 @@ export const MIN: LimitSelectionKey = createLimitSelectionKey();
  * A {@link MetadataKey} representing the minimum valid value of a date field.
  *
  * @category validation
- * @experimental 21.3.0
+ * @experimental 22.0.0
  */
 export const MIN_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.max());
 
@@ -322,7 +323,7 @@ export const MIN_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.max())
  * A {@link MetadataKey} representing the minimum valid value of a number field.
  *
  * @category validation
- * @experimental 21.3.0
+ * @experimental 22.0.0
  */
 export const MIN_NUMBER: LimitKey<number> = createMetadataKey(MetadataReducer.max());
 
@@ -333,7 +334,7 @@ export const MIN_NUMBER: LimitKey<number> = createMetadataKey(MetadataReducer.ma
  * own reducers, such as {@link MAX_DATE} and {@link MAX_NUMBER}.
  *
  * @category validation
- * @experimental 21.3.0
+ * @experimental 21.0.0
  */
 export const MAX: LimitSelectionKey = createLimitSelectionKey();
 
@@ -341,7 +342,7 @@ export const MAX: LimitSelectionKey = createLimitSelectionKey();
  * A {@link MetadataKey} representing the maximum valid value of a date field.
  *
  * @category validation
- * @experimental 21.3.0
+ * @experimental 22.0.0
  */
 export const MAX_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.min());
 
@@ -349,7 +350,7 @@ export const MAX_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.min())
  * A {@link MetadataKey} representing the maximum valid value of a number field.
  *
  * @category validation
- * @experimental 21.3.0
+ * @experimental 22.0.0
  */
 export const MAX_NUMBER: LimitKey<number> = createMetadataKey(MetadataReducer.min());
 
