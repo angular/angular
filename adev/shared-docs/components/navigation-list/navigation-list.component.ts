@@ -13,6 +13,7 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
 import {NavigationItem} from '../../interfaces/index';
 import {IsActiveNavigationItem} from '../../pipes';
 import {NavigationState} from '../../services/index';
+import {isMobile} from '../../utils';
 import {IconComponent} from '../icon/icon.component';
 
 @Component({
@@ -44,6 +45,8 @@ export class NavigationList {
   private readonly crossCategoryOrigin = this.navigationState.crossCategoryOrigin;
 
   readonly activeItem = this.navigationState.activeNavigationItem;
+
+  protected readonly isMobile = isMobile;
 
   toggle(item: NavigationItem): void {
     if (
