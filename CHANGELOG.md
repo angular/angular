@@ -1,3 +1,22 @@
+<a name="20.3.20"></a>
+
+# 20.3.20 (2026-05-06)
+
+### core
+
+| Commit                                                                                           | Type | Description                                                                                                                  |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------------------------------------------------------------- |
+| [a9bcffdbc7](https://github.com/angular/angular/commit/a9bcffdbc7697715f3d4fa91d924a5b905d637b0) | fix  | disallow event attribute bindings in host bindings unconditionally ([#68468](https://github.com/angular/angular/pull/68468)) |
+| [97eeb45cfa](https://github.com/angular/angular/commit/97eeb45cfa5fbd89013d75b5d862095d34b8ba58) | fix  | validate security-sensitive attributes in i18n bindings ([#68468](https://github.com/angular/angular/pull/68468))            |
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                                                                                                   |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------------- |
+| [25e4e07238](https://github.com/angular/angular/commit/25e4e07238021a3641f96bb5f5648d74a83f1712) | fix  | ensure origin has a trailing slash when parsing url ([#68468](https://github.com/angular/angular/pull/68468)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.19"></a>
 
 # 20.3.19 (2026-04-15)
