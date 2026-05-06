@@ -268,11 +268,32 @@ class NgStyleCollector extends RecursiveVisitor {
       if (attr.name !== '[ngStyle]' && attr.name !== 'ngStyle') {
         continue;
       }
+
+      if (attr.name === '[ngStyle]' && !attr.valueSpan) {
+        this.replacements.push({
+          start: attr.sourceSpan.start.offset,
+          end: attr.sourceSpan.end.offset,
+          replacement: '',
+        });
+
+        continue;
+      }
+
       if (attr.name === '[ngStyle]' && attr.valueSpan) {
         const expr = this.originalTemplate.slice(
           attr.valueSpan.start.offset,
           attr.valueSpan.end.offset,
         );
+
+        if (expr === 'null' || expr === 'undefined') {
+          this.replacements.push({
+            start: attr.sourceSpan.start.offset,
+            end: attr.sourceSpan.end.offset,
+            replacement: '',
+          });
+
+          continue;
+        }
 
         const staticMatch = parseStaticObjectLiteral(expr);
 

@@ -139,6 +139,73 @@ describe('NgStyle migration', () => {
       expect(content).toContain('<div ></div>');
     });
 
+    it('should remove ngStyle with no input', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgStyle} from '@angular/common';
+        @Component({
+        imports: [NgStyle],
+        template: \`
+          <div [ngStyle]></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div ></div>');
+    });
+
+    it('should remove ngStyle with undefined input', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgStyle} from '@angular/common';
+        @Component({
+        imports: [NgStyle],
+        template: \`
+          <div [ngStyle]="undefined"></div>
+          <span [ngStyle]=undefined></span>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div ></div>');
+      expect(content).toContain('<span ></span>');
+    });
+
+    it('should remove ngStyle with null input', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgStyle} from '@angular/common';
+        @Component({
+        imports: [NgStyle],
+        template: \`
+          <div [ngStyle]="null"></div>
+          <span [ngStyle]=null></span>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div ></div>');
+      expect(content).toContain('<span ></span>');
+    });
+
     it('should remove ngStyle with empty string', async () => {
       writeFile(
         '/app.component.ts',
