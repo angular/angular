@@ -27,6 +27,15 @@ import {
 import {HttpXhrBackend} from './xhr';
 import {XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
 
+// Token for a factory that lazy-loads the `xhr2` module on the server.
+// Provided by `withXhr()` only in server mode so that the dynamic `import('xhr2')` is
+// absent from SSR bundles unless XHR is explicitly opted into. This allows bundlers
+// running in restricted environments (e.g. Cloudflare Workers, V8 isolates)
+// to process SSR bundles without needing to resolve Node.js-only packages.
+export const SERVER_XHR2_LOADER = new InjectionToken<() => Promise<any>>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'SERVER_XHR2_LOADER' : '',
+);
+
 /**
  * Identifies a particular kind of `HttpFeature`.
  *
@@ -313,8 +322,22 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
  * @publicApi
  */
 export function withXhr(): HttpFeature<HttpFeatureKind.Xhr> {
-  return makeHttpFeature(HttpFeatureKind.Xhr, [
+  const providers: Provider[] = [
     HttpXhrBackend,
     {provide: HttpBackend, useExisting: HttpXhrBackend},
-  ]);
+  ];
+
+  // In server mode, register the xhr2 loader so `ServerXhr` can lazy-load the XHR
+  // implementation. The `ngServerMode` guard keeps `import('xhr2')` tree-shakable:
+  // absent from browser bundles and from SSR bundles that use the default FetchBackend,
+  // which is required for bundlers in restricted environments such as Cloudflare Workers
+  // or V8 isolates that cannot resolve Node.js-only packages.
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    providers.push({
+      provide: SERVER_XHR2_LOADER,
+      useValue: () => import('xhr2').then((m) => m.default),
+    });
+  }
+
+  return makeHttpFeature(HttpFeatureKind.Xhr, providers);
 }

@@ -12,22 +12,25 @@ import {
   HttpHandlerFn,
   HttpRequest,
   ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
+  ɵSERVER_XHR2_LOADER as SERVER_XHR2_LOADER,
 } from '@angular/common/http';
 import {inject, Injectable, Provider} from '@angular/core';
 import {Observable} from 'rxjs';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
-  private xhrImpl: typeof import('xhr2') | undefined;
+  private readonly loader = inject(SERVER_XHR2_LOADER, {optional: true});
+  private xhrImpl: any;
 
-  // The `xhr2` dependency has a side-effect of accessing and modifying a
-  // global scope. Loading `xhr2` dynamically allows us to delay the loading
-  // and start the process once the global scope is established by the underlying
-  // server platform (via shims, etc).
-  private async ɵloadImpl(): Promise<void> {
-    if (!this.xhrImpl) {
-      const {default: xhr} = await import('xhr2');
-      this.xhrImpl = xhr;
+  // `xhr2` has a side-effect of accessing and modifying the global scope. Lazy-loading
+  // it via the injected loader delays that until the server platform (via shims, etc.)
+  // has established the global scope. The loader is provided by `withXhr()` only in
+  // server mode, so `import('xhr2')` is absent from SSR bundles that use the default
+  // FetchBackend — a requirement for bundlers in restricted environments such as
+  // Cloudflare Workers or V8 isolates.
+  async ɵloadImpl(): Promise<void> {
+    if (!this.xhrImpl && this.loader) {
+      this.xhrImpl = await this.loader();
     }
   }
 
