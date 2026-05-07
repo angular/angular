@@ -5,44 +5,7 @@
   "normalizedModuleName": "angular_aria_combobox",
   "entries": [
     {
-      "name": "ComboboxPopupContainer",
-      "isAbstract": false,
-      "entryType": "undecorated_class",
-      "members": [],
-      "generics": [],
-      "description": "A structural directive that marks the `ng-template` to be used as the popup\nfor a combobox. This content is conditionally rendered.\n\nThe content of the popup can be a `ngListbox`, `ngTree`, or `role=\"dialog\"`, allowing for\nflexible and complex combobox implementations. The consumer is responsible for\nimplementing the filtering logic based on the `ngComboboxInput`'s value.\n\n```html\n<ng-template ngComboboxPopupContainer>\n  <div ngListbox [(value)]=\"selectedValue\">\n    <!-- ... options ... -->\n  </div>\n</ng-template>\n```\n\nWhen using CdkOverlay, this directive can be replaced by `cdkConnectedOverlay`.\n\n```html\n<ng-template\n    [cdkConnectedOverlay]=\"{origin: inputElement, usePopover: 'inline' matchWidth: true}\"\n    [cdkConnectedOverlayOpen]=\"combobox.expanded()\">\n  <div ngListbox [(value)]=\"selectedValue\">\n    <!-- ... options ... -->\n  </div>\n</ng-template>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Combobox](guide/aria/combobox)"
-        },
-        {
-          "name": "see",
-          "comment": "[Select](guide/aria/select)"
-        },
-        {
-          "name": "see",
-          "comment": "[Multiselect](guide/aria/multiselect)"
-        },
-        {
-          "name": "see",
-          "comment": "[Autocomplete](guide/aria/autocomplete)"
-        }
-      ],
-      "rawComment": "/**\n * A structural directive that marks the `ng-template` to be used as the popup\n * for a combobox. This content is conditionally rendered.\n *\n * The content of the popup can be a `ngListbox`, `ngTree`, or `role=\"dialog\"`, allowing for\n * flexible and complex combobox implementations. The consumer is responsible for\n * implementing the filtering logic based on the `ngComboboxInput`'s value.\n *\n * ```html\n * <ng-template ngComboboxPopupContainer>\n *   <div ngListbox [(value)]=\"selectedValue\">\n *     <!-- ... options ... -->\n *   </div>\n * </ng-template>\n * ```\n *\n * When using CdkOverlay, this directive can be replaced by `cdkConnectedOverlay`.\n *\n * ```html\n * <ng-template\n *     [cdkConnectedOverlay]=\"{origin: inputElement, usePopover: 'inline' matchWidth: true}\"\n *     [cdkConnectedOverlayOpen]=\"combobox.expanded()\">\n *   <div ngListbox [(value)]=\"selectedValue\">\n *     <!-- ... options ... -->\n *   </div>\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Combobox](guide/aria/combobox)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n * @see [Autocomplete](guide/aria/autocomplete)\n */",
-      "implements": [],
-      "source": {
-        "filePath": "src/aria/combobox/combobox-popup-container.ts",
-        "startLine": 47,
-        "endLine": 52
-      }
-    },
-    {
-      "name": "ComboboxInput",
+      "name": "ComboboxWidget",
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -53,178 +16,37 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A reference to the input element.",
+          "description": "A reference to the popup widget element.",
           "jsdocTags": []
         },
         {
-          "name": "combobox",
-          "type": "Combobox<any>",
+          "name": "popupId",
+          "type": "WritableSignal<string | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "The combobox that the input belongs to.",
+          "description": "The ID of the popup widget.",
           "jsdocTags": []
         },
         {
-          "name": "value",
-          "type": "ModelSignal<string>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input",
-            "output"
-          ],
-          "description": "The value of the input.",
-          "jsdocTags": [],
-          "inputAlias": "value",
-          "isRequiredInput": false,
-          "outputAlias": "valueChange"
-        }
-      ],
-      "generics": [],
-      "description": "An input that is part of a combobox. It is responsible for displaying the\ncurrent value and handling user input for filtering and selection.\n\nThis directive should be applied to an `<input>` element within an `ngCombobox`\ncontainer. It automatically handles keyboard interactions, such as opening the\npopup and navigating through the options.\n\n```html\n<input\n  ngComboboxInput\n  placeholder=\"Search...\"\n  [(value)]=\"searchString\"\n/>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Combobox](guide/aria/combobox)"
-        },
-        {
-          "name": "see",
-          "comment": "[Select](guide/aria/select)"
-        },
-        {
-          "name": "see",
-          "comment": "[Multiselect](guide/aria/multiselect)"
-        },
-        {
-          "name": "see",
-          "comment": "[Autocomplete](guide/aria/autocomplete)"
-        }
-      ],
-      "rawComment": "/**\n * An input that is part of a combobox. It is responsible for displaying the\n * current value and handling user input for filtering and selection.\n *\n * This directive should be applied to an `<input>` element within an `ngCombobox`\n * container. It automatically handles keyboard interactions, such as opening the\n * popup and navigating through the options.\n *\n * ```html\n * <input\n *   ngComboboxInput\n *   placeholder=\"Search...\"\n *   [(value)]=\"searchString\"\n * />\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Combobox](guide/aria/combobox)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n * @see [Autocomplete](guide/aria/autocomplete)\n */",
-      "implements": [],
-      "isStandalone": true,
-      "selector": "input[ngComboboxInput]",
-      "exportAs": [
-        "ngComboboxInput"
-      ],
-      "aliases": [
-        "ngComboboxInput"
-      ],
-      "source": {
-        "filePath": "src/aria/combobox/combobox-input.ts",
-        "startLine": 44,
-        "endLine": 92
-      }
-    },
-    {
-      "name": "ComboboxPopup",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "combobox",
-          "type": "Combobox<V> | null",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The combobox that the popup belongs to.",
-          "jsdocTags": []
-        }
-      ],
-      "generics": [
-        {
-          "name": "V"
-        }
-      ],
-      "description": "Identifies an element as a popup for an `ngCombobox`.\n\nThis directive acts as a bridge, allowing the `ngCombobox` to discover and interact\nwith the underlying control (e.g., `ngListbox`, `ngTree`, or `ngComboboxDialog`) that\nmanages the options. It's primarily used as a host directive and is responsible for\nexposing the popup's control pattern to the parent combobox.",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Combobox](guide/aria/combobox)"
-        },
-        {
-          "name": "see",
-          "comment": "[Select](guide/aria/select)"
-        },
-        {
-          "name": "see",
-          "comment": "[Multiselect](guide/aria/multiselect)"
-        },
-        {
-          "name": "see",
-          "comment": "[Autocomplete](guide/aria/autocomplete)"
-        }
-      ],
-      "rawComment": "/**\n * Identifies an element as a popup for an `ngCombobox`.\n *\n * This directive acts as a bridge, allowing the `ngCombobox` to discover and interact\n * with the underlying control (e.g., `ngListbox`, `ngTree`, or `ngComboboxDialog`) that\n * manages the options. It's primarily used as a host directive and is responsible for\n * exposing the popup's control pattern to the parent combobox.\n *\n * @developerPreview 21.0\n *\n * @see [Combobox](guide/aria/combobox)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n * @see [Autocomplete](guide/aria/autocomplete)\n */",
-      "implements": [],
-      "isStandalone": true,
-      "selector": "[ngComboboxPopup]",
-      "exportAs": [
-        "ngComboboxPopup"
-      ],
-      "aliases": [
-        "ngComboboxPopup"
-      ],
-      "source": {
-        "filePath": "/src/aria/combobox/combobox-popup.ts",
-        "startLine": 29,
-        "endLine": 44
-      }
-    },
-    {
-      "name": "ComboboxDialog",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLDialogElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the dialog element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "combobox",
-          "type": "Combobox<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The combobox that the dialog belongs to.",
-          "jsdocTags": []
-        },
-        {
-          "name": "id",
-          "type": "InputSignal<any>",
+          "name": "activeDescendant",
+          "type": "InputSignal<string | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
             "input"
           ],
-          "description": "The unique identifier for the trigger.",
+          "description": "The ID of the active descendant in the widget.",
           "jsdocTags": [],
-          "inputAlias": "id",
+          "inputAlias": "activeDescendant",
           "isRequiredInput": false
         },
         {
-          "name": "close",
+          "name": "ngOnInit",
           "signatures": [
             {
-              "name": "close",
+              "name": "ngOnInit",
               "entryType": "function",
               "description": "",
               "generics": [],
@@ -240,7 +62,272 @@
             "isNewType": false,
             "returnType": "void",
             "generics": [],
-            "name": "close",
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "onFocusin",
+          "signatures": [
+            {
+              "name": "onFocusin",
+              "entryType": "function",
+              "description": "Handles focus in events for the widget.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Handles focus in events for the widget. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onFocusin",
+            "description": "Handles focus in events for the widget.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Handles focus in events for the widget. */"
+          },
+          "entryType": "function",
+          "description": "Handles focus in events for the widget.",
+          "jsdocTags": [],
+          "rawComment": "/** Handles focus in events for the widget. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "onFocusout",
+          "signatures": [
+            {
+              "name": "onFocusout",
+              "entryType": "function",
+              "description": "Handles focus out events for the widget.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "event",
+                  "description": "",
+                  "type": "FocusEvent",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Handles focus out events for the widget. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "event",
+                "description": "",
+                "type": "FocusEvent",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onFocusout",
+            "description": "Handles focus out events for the widget.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Handles focus out events for the widget. */"
+          },
+          "entryType": "function",
+          "description": "Handles focus out events for the widget.",
+          "jsdocTags": [],
+          "rawComment": "/** Handles focus out events for the widget. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "Identifies an element as a widget within a combobox popup.\n\nThis directive should be applied to the element that contains the options or content\nof the popup. It handles the communication of ID and active descendant information\nto the combobox.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * Identifies an element as a widget within a combobox popup.\n *\n * This directive should be applied to the element that contains the options or content\n * of the popup. It handles the communication of ID and active descendant information\n * to the combobox.\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[ngComboboxWidget]",
+      "exportAs": [
+        "ngComboboxWidget"
+      ],
+      "aliases": [
+        "ngComboboxWidget"
+      ],
+      "source": {
+        "filePath": "/src/aria/combobox/combobox-widget.ts",
+        "startLine": 19,
+        "endLine": 78
+      }
+    },
+    {
+      "name": "ComboboxPopup",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "combobox",
+          "type": "InputSignal<Combobox>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The combobox that the popup belongs to.",
+          "jsdocTags": [],
+          "inputAlias": "combobox",
+          "isRequiredInput": true
+        },
+        {
+          "name": "controlTarget",
+          "type": "Signal<HTMLElement | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The element that serves as the control target for the popup.",
+          "jsdocTags": []
+        },
+        {
+          "name": "popupId",
+          "type": "Signal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The ID of the popup.",
+          "jsdocTags": []
+        },
+        {
+          "name": "activeDescendant",
+          "type": "Signal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The ID of the active descendant in the popup.",
+          "jsdocTags": []
+        },
+        {
+          "name": "popupType",
+          "type": "InputSignal<\"listbox\" | \"tree\" | \"grid\" | \"dialog\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The type of the popup (e.g., listbox, tree, grid, dialog).",
+          "jsdocTags": [],
+          "inputAlias": "popupType",
+          "isRequiredInput": false
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
             "description": "",
             "entryType": "function",
             "jsdocTags": [],
@@ -255,61 +342,32 @@
         }
       ],
       "generics": [],
-      "description": "Integrates a native `<dialog>` element with the combobox, allowing for\na modal or non-modal popup experience. It handles the opening and closing of the dialog\nbased on the combobox's expanded state.\n\n```html\n<ng-template ngComboboxPopupContainer>\n  <dialog ngComboboxDialog class=\"example-dialog\">\n    <!-- ... dialog content ... -->\n  </dialog>\n</ng-template>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Combobox](guide/aria/combobox)"
-        },
-        {
-          "name": "see",
-          "comment": "[Select](guide/aria/select)"
-        },
-        {
-          "name": "see",
-          "comment": "[Multiselect](guide/aria/multiselect)"
-        },
-        {
-          "name": "see",
-          "comment": "[Autocomplete](guide/aria/autocomplete)"
-        }
+      "description": "A structural directive that marks the `ng-template` to be used as the popup\nfor a combobox. This content is conditionally rendered.\n\nThe content of the popup can be any element with the `ngComboboxWidget` directive.\n\n```html\n<ng-template ngComboboxPopup>\n  <div ngComboboxWidget>\n    <!-- ... options ... -->\n  </div>\n</ng-template>\n```",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A structural directive that marks the `ng-template` to be used as the popup\n * for a combobox. This content is conditionally rendered.\n *\n * The content of the popup can be any element with the `ngComboboxWidget` directive.\n *\n * ```html\n * <ng-template ngComboboxPopup>\n *   <div ngComboboxWidget>\n *     <!-- ... options ... -->\n *   </div>\n * </ng-template>\n * ```\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
       ],
-      "rawComment": "/**\n * Integrates a native `<dialog>` element with the combobox, allowing for\n * a modal or non-modal popup experience. It handles the opening and closing of the dialog\n * based on the combobox's expanded state.\n *\n * ```html\n * <ng-template ngComboboxPopupContainer>\n *   <dialog ngComboboxDialog class=\"example-dialog\">\n *     <!-- ... dialog content ... -->\n *   </dialog>\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Combobox](guide/aria/combobox)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n * @see [Autocomplete](guide/aria/autocomplete)\n */",
-      "implements": [],
       "isStandalone": true,
-      "selector": "dialog[ngComboboxDialog]",
+      "selector": "ng-template[ngComboboxPopup]",
       "exportAs": [
-        "ngComboboxDialog"
+        "ngComboboxPopup"
       ],
       "aliases": [
-        "ngComboboxDialog"
+        "ngComboboxPopup"
       ],
       "source": {
-        "filePath": "src/aria/combobox/combobox-dialog.ts",
-        "startLine": 35,
-        "endLine": 84
+        "filePath": "src/aria/combobox/combobox-popup.ts",
+        "startLine": 29,
+        "endLine": 79
       }
     },
     {
       "name": "Combobox",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
-        {
-          "name": "textDirection",
-          "type": "Signal<Direction>",
-          "memberType": "property",
-          "memberTags": [
-            "protected",
-            "readonly"
-          ],
-          "description": "A signal wrapper for directionality.",
-          "jsdocTags": []
-        },
         {
           "name": "element",
           "type": "HTMLElement",
@@ -317,27 +375,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A reference to the combobox element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "popup",
-          "type": "Signal<ComboboxPopup<V> | undefined>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The combobox popup.",
-          "jsdocTags": []
-        },
-        {
-          "name": "filterMode",
-          "type": "InputSignal<\"manual\" | \"auto-select\" | \"highlight\">",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The filter mode for the combobox.\n- `manual`: The consumer is responsible for filtering the options.\n- `auto-select`: The combobox automatically selects the first matching option.\n- `highlight`: The combobox highlights matching text in the options without changing selection.",
+          "description": "A reference to the input element.",
           "jsdocTags": []
         },
         {
@@ -345,172 +383,178 @@
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the combobox is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
         },
         {
-          "name": "readonly",
+          "name": "softDisabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
-          "description": "Whether the combobox is read-only.",
-          "jsdocTags": []
-        },
-        {
-          "name": "firstMatch",
-          "type": "InputSignal<V | undefined>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The value of the first matching item in the popup.",
-          "jsdocTags": []
-        },
-        {
-          "name": "expanded",
-          "type": "Signal<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the combobox is expanded.",
-          "jsdocTags": []
+          "description": "Whether the combobox is soft disabled (remains focusable).",
+          "jsdocTags": [],
+          "inputAlias": "softDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "alwaysExpanded",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
-          "description": "Whether the combobox popup should always be expanded, regardless of user interaction.",
-          "jsdocTags": []
+          "description": "Whether the combobox should always remain expanded.",
+          "jsdocTags": [],
+          "inputAlias": "alwaysExpanded",
+          "isRequiredInput": false
         },
         {
-          "name": "inputElement",
-          "type": "Signal<any>",
+          "name": "tabIndex",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
-          "description": "Input element connected to the combobox, if any.",
+          "description": "The tabindex of the combobox.",
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "expanded",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "Whether the combobox is expanded.",
+          "jsdocTags": [],
+          "inputAlias": "expanded",
+          "isRequiredInput": false,
+          "outputAlias": "expandedChange"
+        },
+        {
+          "name": "value",
+          "type": "ModelSignal<string>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "The value of the combobox input.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": false,
+          "outputAlias": "valueChange"
+        },
+        {
+          "name": "inlineSuggestion",
+          "type": "InputSignal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "An inline suggestion to be displayed in the input.",
+          "jsdocTags": [],
+          "inputAlias": "inlineSuggestion",
+          "isRequiredInput": false
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "contentVisible",
+          "type": "WritableSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
+          ],
+          "description": "",
           "jsdocTags": []
         },
         {
-          "name": "open",
-          "signatures": [
-            {
-              "name": "open",
-              "entryType": "function",
-              "description": "Opens the combobox to the selected item.",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "/** Opens the combobox to the selected item. */",
-              "returnType": "void"
-            }
+          "name": "preserveContent",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
           ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "open",
-            "description": "Opens the combobox to the selected item.",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": "/** Opens the combobox to the selected item. */"
-          },
-          "entryType": "function",
-          "description": "Opens the combobox to the selected item.",
-          "jsdocTags": [],
-          "rawComment": "/** Opens the combobox to the selected item. */",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "close",
-          "signatures": [
-            {
-              "name": "close",
-              "entryType": "function",
-              "description": "Closes the combobox.",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "/** Closes the combobox. */",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "close",
-            "description": "Closes the combobox.",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": "/** Closes the combobox. */"
-          },
-          "entryType": "function",
-          "description": "Closes the combobox.",
-          "jsdocTags": [],
-          "rawComment": "/** Closes the combobox. */",
-          "memberType": "method",
-          "memberTags": []
+          "description": "",
+          "jsdocTags": []
         }
       ],
-      "generics": [
-        {
-          "name": "V"
-        }
+      "generics": [],
+      "description": "The container element that wraps a combobox input and popup, and orchestrates its behavior.\n\nThe `ngCombobox` directive is the main entry point for creating a combobox and customizing its\nbehavior. It coordinates the interactions between the input and the popup.\n\n```html\n<div ngCombobox [(expanded)]=\"expanded\">\n  <input ngComboboxInput />\n\n  <ng-template ngComboboxPopup>\n    <div ngComboboxWidget>\n      <!-- ... options ... -->\n    </div>\n  </ng-template>\n</div>\n```",
+      "jsdocTags": [],
+      "rawComment": "/**\n * The container element that wraps a combobox input and popup, and orchestrates its behavior.\n *\n * The `ngCombobox` directive is the main entry point for creating a combobox and customizing its\n * behavior. It coordinates the interactions between the input and the popup.\n *\n * ```html\n * <div ngCombobox [(expanded)]=\"expanded\">\n *   <input ngComboboxInput />\n *\n *   <ng-template ngComboboxPopup>\n *     <div ngComboboxWidget>\n *       <!-- ... options ... -->\n *     </div>\n *   </ng-template>\n * </div>\n * ```\n */",
+      "extends": "DeferredContentAware",
+      "implements": [
+        "OnInit"
       ],
-      "description": "The container element that wraps a combobox input and popup, and orchestrates its behavior.\n\nThe `ngCombobox` directive is the main entry point for creating a combobox and customizing its\nbehavior. It coordinates the interactions between the `ngComboboxInput` and the popup, which\nis defined by a `ng-template` with the `ngComboboxPopupContainer` directive. If using the\n`CdkOverlay`, the `cdkConnectedOverlay` directive takes the place of `ngComboboxPopupContainer`.\n\n```html\n<div ngCombobox filterMode=\"highlight\">\n  <input\n    ngComboboxInput\n    placeholder=\"Search for a state...\"\n    [(value)]=\"searchString\"\n  />\n\n  <ng-template ngComboboxPopupContainer>\n    <div ngListbox [(value)]=\"selectedValue\">\n      @for (option of filteredOptions(); track option) {\n        <div ngOption [value]=\"option\" [label]=\"option\">\n          <span>{{option}}</span>\n        </div>\n      }\n    </div>\n  </ng-template>\n</div>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Combobox](guide/aria/combobox)"
-        },
-        {
-          "name": "see",
-          "comment": "[Select](guide/aria/select)"
-        },
-        {
-          "name": "see",
-          "comment": "[Multiselect](guide/aria/multiselect)"
-        },
-        {
-          "name": "see",
-          "comment": "[Autocomplete](guide/aria/autocomplete)"
-        }
+      "isStandalone": true,
+      "selector": "[ngCombobox]",
+      "exportAs": [
+        "ngCombobox"
       ],
-      "rawComment": "/**\n * The container element that wraps a combobox input and popup, and orchestrates its behavior.\n *\n * The `ngCombobox` directive is the main entry point for creating a combobox and customizing its\n * behavior. It coordinates the interactions between the `ngComboboxInput` and the popup, which\n * is defined by a `ng-template` with the `ngComboboxPopupContainer` directive. If using the\n * `CdkOverlay`, the `cdkConnectedOverlay` directive takes the place of `ngComboboxPopupContainer`.\n *\n * ```html\n * <div ngCombobox filterMode=\"highlight\">\n *   <input\n *     ngComboboxInput\n *     placeholder=\"Search for a state...\"\n *     [(value)]=\"searchString\"\n *   />\n *\n *   <ng-template ngComboboxPopupContainer>\n *     <div ngListbox [(value)]=\"selectedValue\">\n *       @for (option of filteredOptions(); track option) {\n *         <div ngOption [value]=\"option\" [label]=\"option\">\n *           <span>{{option}}</span>\n *         </div>\n *       }\n *     </div>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Combobox](guide/aria/combobox)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n * @see [Autocomplete](guide/aria/autocomplete)\n */",
-      "implements": [],
+      "aliases": [
+        "ngCombobox"
+      ],
       "source": {
         "filePath": "/src/aria/combobox/combobox.ts",
-        "startLine": 60,
-        "endLine": 164
+        "startLine": 43,
+        "endLine": 143
       }
     }
   ],
   "symbols": [
     [
       "Directive",
-      "@angular/core"
-    ],
-    [
-      "afterRenderEffect",
       "@angular/core"
     ],
     [
@@ -522,15 +566,15 @@
       "@angular/core"
     ],
     [
-      "model",
+      "input",
       "@angular/core"
     ],
     [
-      "untracked",
+      "OnDestroy",
       "@angular/core"
     ],
     [
-      "WritableSignal",
+      "OnInit",
       "@angular/core"
     ],
     [
@@ -538,35 +582,47 @@
       "@angular/core"
     ],
     [
-      "input",
+      "computed",
       "@angular/core"
     ],
     [
-      "_IdGenerator",
-      "@angular/cdk/a11y"
+      "DeferredContent",
+      "@angular/aria/private"
+    ],
+    [
+      "ComboboxPopupPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "afterRenderEffect",
+      "@angular/core"
     ],
     [
       "booleanAttribute",
       "@angular/core"
     ],
     [
-      "computed",
+      "model",
       "@angular/core"
     ],
     [
-      "contentChild",
+      "Renderer2",
       "@angular/core"
     ],
     [
-      "Directionality",
-      "@angular/cdk/bidi"
+      "DeferredContentAware",
+      "@angular/aria/private"
     ],
     [
-      "ComboboxPopupContainer",
-      "@angular/aria/combobox"
+      "ComboboxPattern",
+      "@angular/aria/private"
     ],
     [
-      "ComboboxInput",
+      "tabIndexTransform",
+      "@angular/aria/private"
+    ],
+    [
+      "ComboboxWidget",
       "@angular/aria/combobox"
     ],
     [
@@ -574,31 +630,39 @@
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxDialog",
-      "@angular/aria/combobox"
-    ],
-    [
       "Combobox",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxPopupContainer",
+      "ComboboxWidget",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxInput",
+      "ComboboxWidget.element",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxInput.element",
+      "ComboboxWidget.popupId",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxInput.combobox",
+      "ComboboxWidget.activeDescendant",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxInput.value",
+      "ComboboxWidget.ngOnInit",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxWidget.ngOnDestroy",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxWidget.onFocusin",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxWidget.onFocusout",
       "@angular/aria/combobox"
     ],
     [
@@ -610,23 +674,27 @@
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxDialog",
+      "ComboboxPopup.controlTarget",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxDialog.element",
+      "ComboboxPopup.popupId",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxDialog.combobox",
+      "ComboboxPopup.activeDescendant",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxDialog.id",
+      "ComboboxPopup.popupType",
       "@angular/aria/combobox"
     ],
     [
-      "ComboboxDialog.close",
+      "ComboboxPopup.ngOnInit",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxPopup.ngOnDestroy",
       "@angular/aria/combobox"
     ],
     [
@@ -634,19 +702,7 @@
       "@angular/aria/combobox"
     ],
     [
-      "Combobox.textDirection",
-      "@angular/aria/combobox"
-    ],
-    [
       "Combobox.element",
-      "@angular/aria/combobox"
-    ],
-    [
-      "Combobox.popup",
-      "@angular/aria/combobox"
-    ],
-    [
-      "Combobox.filterMode",
       "@angular/aria/combobox"
     ],
     [
@@ -654,15 +710,7 @@
       "@angular/aria/combobox"
     ],
     [
-      "Combobox.readonly",
-      "@angular/aria/combobox"
-    ],
-    [
-      "Combobox.firstMatch",
-      "@angular/aria/combobox"
-    ],
-    [
-      "Combobox.expanded",
+      "Combobox.softDisabled",
       "@angular/aria/combobox"
     ],
     [
@@ -670,15 +718,31 @@
       "@angular/aria/combobox"
     ],
     [
-      "Combobox.inputElement",
+      "Combobox.tabIndex",
       "@angular/aria/combobox"
     ],
     [
-      "Combobox.open",
+      "Combobox.expanded",
       "@angular/aria/combobox"
     ],
     [
-      "Combobox.close",
+      "Combobox.value",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.inlineSuggestion",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.ngOnInit",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.contentVisible",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.preserveContent",
       "@angular/aria/combobox"
     ]
   ]

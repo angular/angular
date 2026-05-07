@@ -387,14 +387,14 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree-item.ts",
-        "startLine": 44,
-        "endLine": 174
+        "startLine": 43,
+        "endLine": 169
       }
     },
     {
       "name": "Tree",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "element",
@@ -411,110 +411,145 @@
           "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "A unique identifier for the tree.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "orientation",
           "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Orientation of the tree.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "orientation",
+          "isRequiredInput": false
         },
         {
           "name": "multi",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether multi-selection is allowed.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "multi",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the tree is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
         },
         {
           "name": "selectionMode",
           "type": "InputSignal<\"explicit\" | \"follow\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The selection strategy used by the tree.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).\n- `follow`: The focused item is automatically selected.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "selectionMode",
+          "isRequiredInput": false
         },
         {
           "name": "focusMode",
           "type": "InputSignal<\"roving\" | \"activedescendant\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The focus strategy used by the tree.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the tree container, and `aria-activedescendant` is used to indicate the active item.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "focusMode",
+          "isRequiredInput": false
         },
         {
           "name": "wrap",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether navigation wraps.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
         },
         {
           "name": "softDisabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "softDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "typeaheadDelay",
           "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The delay in seconds before the typeahead search is reset.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "typeaheadDelay",
+          "isRequiredInput": false
         },
         {
           "name": "tabIndex",
           "type": "InputSignal<undefined>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The tabindex of the tree.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
         },
         {
           "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input",
+            "output"
           ],
           "description": "The values of the currently selected items.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": false,
+          "outputAlias": "valueChange"
         },
         {
           "name": "textDirection",
@@ -531,20 +566,26 @@
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the tree is in navigation mode.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "nav",
+          "isRequiredInput": false
         },
         {
           "name": "currentType",
           "type": "InputSignal<\"page\" | \"step\" | \"location\" | \"date\" | \"time\" | \"true\" | \"false\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The `aria-current` type. It can be used in navigation trees to indicate the currently active item.\nSee https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current for more details.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "currentType",
+          "isRequiredInput": false
         },
         {
           "name": "activeDescendant",
@@ -555,6 +596,39 @@
           ],
           "description": "The ID of the active descendant in the tree.",
           "jsdocTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
         },
         {
           "name": "scrollActiveItemIntoView",
@@ -623,11 +697,21 @@
         }
       ],
       "rawComment": "/**\n * A container that transforms nested lists into an accessible, ARIA-compliant tree structure.\n * It manages the overall state of the tree, including selection, expansion, and keyboard\n * navigation.\n *\n * ```html\n * <ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n *   <ng-template\n *     [ngTemplateOutlet]=\"treeNodes\"\n *     [ngTemplateOutletContext]=\"{nodes: treeData, parent: tree}\"\n *   />\n * </ul>\n *\n * <ng-template #treeNodes let-nodes=\"nodes\" let-parent=\"parent\">\n *   @for (node of nodes; track node.name) {\n *     <li ngTreeItem [parent]=\"parent\" [value]=\"node.name\" [label]=\"node.name\">\n *       {{ node.name }}\n *       @if (node.children) {\n *         <ul role=\"group\">\n *           <ng-template ngTreeItemGroup [ownedBy]=\"treeItem\" #group=\"ngTreeItemGroup\">\n *             <ng-template\n *               [ngTemplateOutlet]=\"treeNodes\"\n *               [ngTemplateOutletContext]=\"{nodes: node.children, parent: group}\"\n *             />\n *           </ng-template>\n *         </ul>\n *       }\n *     </li>\n *   }\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tree](guide/aria/tree)\n */",
-      "implements": [],
+      "implements": [
+        "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[ngTree]",
+      "exportAs": [
+        "ngTree"
+      ],
+      "aliases": [
+        "ngTree"
+      ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 70,
-        "endLine": 244
+        "startLine": 65,
+        "endLine": 210
       }
     }
   ],
@@ -681,12 +765,12 @@
       "@angular/core"
     ],
     [
-      "afterNextRender",
-      "@angular/core"
-    ],
-    [
       "_IdGenerator",
       "@angular/cdk/a11y"
+    ],
+    [
+      "afterNextRender",
+      "@angular/core"
     ],
     [
       "untracked",
@@ -862,6 +946,10 @@
     ],
     [
       "Tree.activeDescendant",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.ngOnDestroy",
       "@angular/aria/tree"
     ],
     [

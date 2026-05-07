@@ -208,17 +208,20 @@
     {
       "name": "Listbox",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "id",
           "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "A unique identifier for the listbox.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "element",
@@ -246,110 +249,145 @@
           "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the list is vertically or horizontally oriented.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "orientation",
+          "isRequiredInput": false
         },
         {
           "name": "multi",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether multiple items in the list can be selected at once.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "multi",
+          "isRequiredInput": false
         },
         {
           "name": "wrap",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether focus should wrap when navigating.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
         },
         {
           "name": "softDisabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "softDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "focusMode",
           "type": "InputSignal<\"roving\" | \"activedescendant\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The focus strategy used by the list.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the listbox container, and `aria-activedescendant` is used to indicate the active item.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "focusMode",
+          "isRequiredInput": false
         },
         {
           "name": "selectionMode",
           "type": "InputSignal<\"follow\" | \"explicit\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The selection strategy used by the list.\n- `follow`: The focused item is automatically selected.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "selectionMode",
+          "isRequiredInput": false
         },
         {
           "name": "typeaheadDelay",
           "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The amount of time before the typeahead search is reset.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "typeaheadDelay",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the listbox is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
         },
         {
           "name": "readonly",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the listbox is readonly.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "readonly",
+          "isRequiredInput": false
         },
         {
           "name": "tabIndex",
           "type": "InputSignal<undefined>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The tabindex of the listbox.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
         },
         {
           "name": "value",
           "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input",
+            "output"
           ],
           "description": "The values of the currently selected items.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": false,
+          "outputAlias": "valueChange"
         },
         {
           "name": "activeDescendant",
@@ -509,10 +547,18 @@
       "implements": [
         "OnDestroy"
       ],
+      "isStandalone": true,
+      "selector": "[ngListbox]",
+      "exportAs": [
+        "ngListbox"
+      ],
+      "aliases": [
+        "ngListbox"
+      ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 60,
-        "endLine": 236
+        "startLine": 54,
+        "endLine": 218
       }
     }
   ],
