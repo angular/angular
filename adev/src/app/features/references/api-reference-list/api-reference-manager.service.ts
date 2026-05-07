@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, signal} from '@angular/core';
+import {Service, signal} from '@angular/core';
 // This file is generated at build-time, error is expected here.
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {getApiUrl} from '../helpers/manifest.helper';
@@ -16,9 +16,7 @@ import {ApiItem} from '../interfaces/api-item';
 
 const manifest = API_MANIFEST_JSON as ApiManifest;
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class ApiReferenceManager {
   apiGroups = signal<ApiItemsGroup[]>(this.mapManifestToApiGroups());
 

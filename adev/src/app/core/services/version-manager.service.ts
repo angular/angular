@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, Injectable, VERSION, computed, inject} from '@angular/core';
+import {DOCUMENT, Service, VERSION, computed, inject} from '@angular/core';
 import {httpResource} from '@angular/common/http';
 
 import versionJson from '../../../assets/others/versions.json';
@@ -30,9 +30,7 @@ type VersionJson = {version: string; url: string};
  * To have an up-to-date list of versions, it will fetch a json from the deployed website.
  * As fallback it will use a local json file that is bundled with the app.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class VersionManager {
   private document = inject(DOCUMENT);
 

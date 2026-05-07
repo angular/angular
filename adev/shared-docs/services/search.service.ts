@@ -7,9 +7,9 @@
  */
 
 import {
-  Injectable,
   InjectionToken,
   Provider,
+  Service,
   debounced,
   inject,
   linkedSignal,
@@ -40,9 +40,7 @@ export const provideAlgoliaSearchClient = (config: Environment): Provider => {
   };
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class Search {
   readonly searchQuery = signal('');
 
