@@ -299,12 +299,12 @@ There are two distribution formats to use when publishing a library:
 
 | Distribution formats        | Details                                                                                                                                                                                                                                                                                                                                  |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Partial-Ivy \(recommended\) | Contains portable code that can be consumed by Ivy applications built with any version of Angular from v12 onwards.                                                                                                                                                                                                                      |
-| Full-Ivy                    | Contains private Angular Ivy instructions, which are not guaranteed to work across different versions of Angular. This format requires that the library and application are built with the _exact_ same version of Angular. This format is useful for environments where all library and application code is built directly from source. |
+| Partial-Ivy \(recommended\) | Contains portable code that can be consumed by Ivy applications built with any version of Angular from v12 onwards.                                                                                                                                                                                                                                                                                                                                  |
+| Full-Ivy                    | Contains private Angular Ivy instructions. The compiler ABI (the internal runtime APIs called by these instructions) is stable across patch versions but may change between minor versions. This format requires that the library and application are built with the same minor version of Angular. This format is useful for environments where all library and application code is built from source or shared in a microfrontend architecture. |
 
 For publishing to npm use the partial-Ivy format as it is stable between patch versions of Angular.
 
-Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions are not part of Angular's public API, and so might change between patch versions.
+Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions depend on the compiler ABI, which might change between minor versions.
 
 ## Ensuring library version compatibility
 
@@ -316,7 +316,7 @@ If you intend to publish your library to npm, compile with partial-Ivy code by s
 This partial format is stable between different versions of Angular, so is safe to publish to npm.
 Code with this format is processed during the application build using the same version of the Angular compiler, ensuring that the application and all of its libraries use a single version of Angular.
 
-Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions are not part of Angular's public API, and so might change between patch versions.
+Avoid compiling libraries with full-Ivy code if you are publishing to npm because the generated Ivy instructions depend on the compiler ABI, which might change between minor versions.
 
 If you've never published a package in npm before, you must create a user account.
 Read more in [Publishing npm Packages](https://docs.npmjs.com/getting-started/publishing-npm-packages).
