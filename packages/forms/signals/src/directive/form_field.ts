@@ -184,6 +184,7 @@ export class FormField<T> {
         fieldTree: untracked(this.state).fieldTree,
         formField: this as FormField<unknown>,
       })) ?? [],
+    {equal: shallowArrayEquals},
   );
 
   /** Errors associated with this form field. */
