@@ -23,7 +23,7 @@ import {
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators';
 import {SUB_NAVIGATION_DATA} from '../../../routing/sub-navigation-data';
-import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
+import {PRIMARY_NAV_ID, SEARCH_DIALOG_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {PAGE_PREFIX} from '../../constants/pages';
 
 export const ANIMATION_DURATION = 500;
@@ -56,6 +56,7 @@ export class SecondaryNavigation {
 
   protected readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   protected readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+  protected readonly SEARCH_DIALOG_ID = SEARCH_DIALOG_ID;
 
   private readonly routeMap: Record<string, NavigationItem[]> = {
     [PAGE_PREFIX.REFERENCE]: getNavigationItemsTree(SUB_NAVIGATION_DATA.reference, (tree) =>
