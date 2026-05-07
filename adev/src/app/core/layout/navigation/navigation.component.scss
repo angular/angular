@@ -175,6 +175,7 @@
 
     // version dropdown button
     .adev-version-button {
+      anchor-name: --version-trigger;
       border: 1px solid var(--senary-contrast);
       border-radius: 0.25rem;
       width: fit-content;
