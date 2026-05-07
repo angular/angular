@@ -255,7 +255,7 @@
             "readonly",
             "input"
           ],
-          "description": "The value of the menu item, used as the default aria-label",
+          "description": "The value of the menu item.",
           "jsdocTags": [],
           "inputAlias": "value",
           "isRequiredInput": true
@@ -413,7 +413,7 @@
           "name": "V"
         }
       ],
-      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenu (itemSelected)=\"doAction()\">\n  <div ngMenuItem >Action Item</div>\n  <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n</div>\n```",
+      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenu (itemSelected)=\"doAction()\">\n  <div ngMenuItem>Action Item</div>\n  <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
@@ -428,7 +428,7 @@
           "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenu (itemSelected)=\"doAction()\">\n *   <div ngMenuItem >Action Item</div>\n *   <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
+      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenu (itemSelected)=\"doAction()\">\n *   <div ngMenuItem>Action Item</div>\n *   <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngMenuItem]",
@@ -441,7 +441,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-item.ts",
         "startLine": 34,
-        "endLine": 109
+        "endLine": 108
       }
     },
     {
