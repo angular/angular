@@ -57,8 +57,6 @@ import {
 } from '../../utils/tsurge';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 
-import('@angular/compiler');
-
 export interface CompilationUnitData {
   replacements: Replacement[];
 }
