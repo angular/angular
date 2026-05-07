@@ -95,6 +95,7 @@ export class LTreeStrategy {
         directives: [],
         component: null,
         controlFlowBlock: null, // neither there will be any control flow block
+        static: false,
       };
     }
     for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
@@ -120,6 +121,7 @@ export class LTreeStrategy {
       directives,
       component,
       controlFlowBlock: null, // neither there will be any control flow block
+      static: false,
     };
   }
 

@@ -29,6 +29,7 @@ const mockIndexedNode: IndexedNode = {
     },
   ],
   controlFlowBlock: null,
+  static: false,
   hasNativeElement: true,
   children: [],
   tagName: 'foo',

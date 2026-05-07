@@ -34,6 +34,7 @@ const indexTree = (
     hydration: node.hydration,
     controlFlowBlock: node.controlFlowBlock,
     changeDetection: node.changeDetection,
+    static: node.static,
     hasNativeElement: (node as any).hasNativeElement,
     injector: node.injector,
   };

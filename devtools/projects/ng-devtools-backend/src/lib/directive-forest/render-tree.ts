@@ -61,6 +61,7 @@ function extractViewTree(
     tagName: domNode.nodeName.toLowerCase(),
     nativeElement: domNode,
     hydration: hydrationStatus(domNode),
+    static: false,
     controlFlowBlock: null,
   };
 
@@ -88,9 +89,9 @@ function extractViewTree(
 
   const childrenResult = isDisplayableNode ? componentTreeNode.children : result;
 
-  for (const node of domNode.childNodes) {
-    if (!nodesToSkip.has(node)) {
-      extractViewTree(node, childrenResult, ctx, nodesToSkip);
+  for (const child of domNode.childNodes) {
+    if (!nodesToSkip.has(child)) {
+      extractViewTree(child, childrenResult, ctx, nodesToSkip);
     }
   }
 }
@@ -110,7 +111,8 @@ function groupControlFlowBlocksChildren(
   }
 
   ctx.blocksIterator.advance();
-  // It's important to store the here index before the recursive call.
+  // It's important to store the current index before the recursive call
+  // because it might change at the time of the passing to `createControlFlowTreeNode`.
   const iteratorCurrentIdx = ctx.blocksIterator.currentIndex;
 
   const childrenTree: ComponentTreeNode[] = [];
@@ -119,6 +121,20 @@ function groupControlFlowBlocksChildren(
     if (!nodesToSkip.has(child)) {
       extractViewTree(child, childrenTree, ctx, nodesToSkip);
     }
+  }
+
+  // If the there isn't a children tree (i.e. child components)
+  // but the block has root nodes, we create a static node that
+  // informs the user that the control flow block
+  // has HTML-only content.
+  if (!childrenTree.length && currentBlock.rootNodes.length) {
+    childrenTree.push({
+      tagName: '<html_content>',
+      static: true,
+      controlFlowBlock: null,
+      component: null,
+      children: [],
+    });
   }
 
   const blockTreeNode = createControlFlowTreeNode(

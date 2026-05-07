@@ -35,6 +35,8 @@ export interface FlatNode {
   hydration?: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
   changeDetection?: ChangeDetection;
+  collapsedByDefault: boolean;
+  static: boolean;
   hasNativeElement: boolean;
 }
 
@@ -110,8 +112,10 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         level,
         hydration: node.hydration,
         controlFlowBlock: node.controlFlowBlock,
+        static: node.static,
         changeDetection: node.changeDetection,
         hasNativeElement: node.hasNativeElement,
+        collapsedByDefault: node.children.every((n) => n.static),
       };
       this._nodeToFlat.set(node, flatNode);
       return flatNode;

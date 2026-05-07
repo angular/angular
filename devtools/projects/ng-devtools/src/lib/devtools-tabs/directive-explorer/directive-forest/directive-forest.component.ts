@@ -188,6 +188,10 @@ export class DirectiveForestComponent {
   }
 
   select(node: FlatNode): void {
+    if (node.static) {
+      return;
+    }
+
     this.populateParents(node.position);
     this.selectNode.emit(node.original);
     this.selectedNode.set(node);
@@ -347,13 +351,23 @@ export class DirectiveForestComponent {
     this.forestRoot = this.dataSource.data[0];
 
     if (!this.initialized && forest && forest.length) {
-      this.treeControl.expandAll();
+      for (const n of this.treeControl.dataNodes) {
+        if (!n.collapsedByDefault) {
+          this.treeControl.expand(n);
+        } else {
+          this.treeControl.collapse(n);
+        }
+      }
+
       this.initialized = true;
       result.newItems.forEach((item) => (item.newItem = false));
     }
-    // We want to expand them once they are rendered.
+    // We want to expand them once they are rendered unless
+    // they are `collapsedByDefault`.
     result.newItems.forEach((item) => {
-      this.treeControl.expand(item);
+      if (!item.collapsedByDefault) {
+        this.treeControl.expand(item);
+      }
     });
     return result;
   }

@@ -128,6 +128,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'component': {'name': 'app-root', 'isElement': false, 'id': 0},
           'directives': [],
           'controlFlowBlock': null,
+          'static': false,
           'children': [
             {
               'tagName': 'router-outlet',
@@ -142,11 +143,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
               ],
               'controlFlowBlock': null,
+              'static': false,
             },
             {
               'tagName': 'app-demo-component',
               'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
               'controlFlowBlock': null,
+              'static': false,
               'directives': [],
               'children': [
                 {
@@ -165,12 +168,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
                 {
                   'tagName': 'app-todo-demo',
                   'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
                   'directives': [],
                   'controlFlowBlock': null,
+                  'static': false,
                   'children': [
                     {
                       'tagName': 'a',
@@ -191,6 +196,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                     {
                       'tagName': 'a',
@@ -211,6 +217,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                     {
                       'tagName': 'router-outlet',
@@ -231,11 +238,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                     {
                       'tagName': 'app-todos',
                       'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [],
                       'children': [
                         {
@@ -260,6 +269,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                           ],
                           'controlFlowBlock': null,
+                          'static': false,
                         },
                         {
                           'tagName': 'a',
@@ -283,6 +293,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                           ],
                           'controlFlowBlock': null,
+                          'static': false,
                         },
                         {
                           'tagName': 'a',
@@ -306,6 +317,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                           ],
                           'controlFlowBlock': null,
+                          'static': false,
                         },
                         {
                           'tagName': 'app-todo',
@@ -336,6 +348,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                               ],
                               'controlFlowBlock': null,
+                              'static': false,
                             },
                           ],
                           'resolutionPath': [
@@ -356,12 +369,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                           ],
                           'controlFlowBlock': null,
+                          'static': false,
                         },
                         {
                           'tagName': 'app-todo',
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                           'directives': [{'name': '_TooltipDirective', 'id': 16}],
                           'controlFlowBlock': null,
+                          'static': false,
                           'children': [
                             {
                               'tagName': 'div',
@@ -387,6 +402,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                               ],
                               'controlFlowBlock': null,
+                              'static': false,
                             },
                           ],
                           'resolutionPath': [
@@ -429,6 +445,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                           ],
                           'controlFlowBlock': null,
+                          'static': false,
                         },
                       ],
                       'resolutionPath': [
@@ -477,6 +494,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
               ],
               'resolutionPath': [
@@ -504,6 +522,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 1}],
           'children': [],
           'resolutionPath': [
@@ -521,6 +540,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'app-demo-component',
           'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
           'controlFlowBlock': null,
+          'static': false,
           'directives': [],
           'children': [
             {
@@ -539,11 +559,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
               ],
               'controlFlowBlock': null,
+              'static': false,
             },
             {
               'tagName': 'app-todo-demo',
               'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
               'controlFlowBlock': null,
+              'static': false,
               'directives': [],
               'children': [
                 {
@@ -565,6 +587,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
                 {
                   'tagName': 'a',
@@ -585,6 +608,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
                 {
                   'tagName': 'router-outlet',
@@ -605,11 +629,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
                 {
                   'tagName': 'app-todos',
                   'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [],
                   'children': [
                     {
@@ -634,6 +660,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                     {
                       'tagName': 'a',
@@ -657,6 +684,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                     {
                       'tagName': 'a',
@@ -680,12 +708,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                     {
                       'tagName': 'app-todo',
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                       'directives': [{'name': '_TooltipDirective', 'id': 13}],
                       'controlFlowBlock': null,
+                      'static': false,
                       'children': [
                         {
                           'tagName': 'div',
@@ -711,6 +741,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                           ],
                           'controlFlowBlock': null,
+                          'static': false,
                         },
                       ],
                       'resolutionPath': [
@@ -736,6 +767,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                       'directives': [{'name': '_TooltipDirective', 'id': 16}],
                       'controlFlowBlock': null,
+                      'static': false,
                       'children': [
                         {
                           'tagName': 'div',
@@ -761,6 +793,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                           ],
                           'controlFlowBlock': null,
+                          'static': false,
                         },
                       ],
                       'resolutionPath': [
@@ -803,6 +836,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                   ],
                   'resolutionPath': [
@@ -851,6 +885,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
               ],
               'controlFlowBlock': null,
+              'static': false,
             },
           ],
           'resolutionPath': [
@@ -874,6 +909,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'component': null,
           'directives': [{'name': '_RouterOutlet', 'id': 3}],
           'controlFlowBlock': null,
+          'static': false,
           'children': [],
           'resolutionPath': [
             {'id': '5', 'type': 'element', 'name': '_RouterOutlet'},
@@ -896,6 +932,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'app-todo-demo',
           'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
           'controlFlowBlock': null,
+          'static': false,
           'directives': [],
           'children': [
             {
@@ -917,6 +954,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
               ],
               'controlFlowBlock': null,
+              'static': false,
             },
             {
               'tagName': 'a',
@@ -937,6 +975,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
               ],
               'controlFlowBlock': null,
+              'static': false,
             },
             {
               'tagName': 'router-outlet',
@@ -957,12 +996,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                 {'id': '4', 'type': 'null', 'name': 'Null Injector'},
               ],
               'controlFlowBlock': null,
+              'static': false,
             },
             {
               'tagName': 'app-todos',
               'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
               'directives': [],
               'controlFlowBlock': null,
+              'static': false,
               'children': [
                 {
                   'tagName': 'a',
@@ -986,6 +1027,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
                 {
                   'tagName': 'a',
@@ -1009,6 +1051,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
                 {
                   'tagName': 'a',
@@ -1032,12 +1075,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
                 {
                   'tagName': 'app-todo',
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                   'directives': [{'name': '_TooltipDirective', 'id': 13}],
                   'controlFlowBlock': null,
+                  'static': false,
                   'children': [
                     {
                       'tagName': 'div',
@@ -1063,6 +1108,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                   ],
                   'resolutionPath': [
@@ -1088,6 +1134,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                   'directives': [{'name': '_TooltipDirective', 'id': 16}],
                   'controlFlowBlock': null,
+                  'static': false,
                   'children': [
                     {
                       'tagName': 'div',
@@ -1113,6 +1160,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                       ],
                       'controlFlowBlock': null,
+                      'static': false,
                     },
                   ],
                   'resolutionPath': [
@@ -1155,6 +1203,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     {'id': '4', 'type': 'null', 'name': 'Null Injector'},
                   ],
                   'controlFlowBlock': null,
+                  'static': false,
                 },
               ],
               'resolutionPath': [
@@ -1198,6 +1247,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 5}],
           'children': [],
           'resolutionPath': [
@@ -1240,6 +1290,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
             {'id': '4', 'type': 'null', 'name': 'Null Injector'},
           ],
           'controlFlowBlock': null,
+          'static': false,
         },
         'path': [
           {'id': '1', 'type': 'element', 'name': '_AppComponent'},
@@ -1252,6 +1303,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 7}],
           'children': [],
           'resolutionPath': [
@@ -1280,11 +1332,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
           'directives': [],
           'controlFlowBlock': null,
+          'static': false,
           'children': [
             {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 9}],
               'children': [],
               'resolutionPath': [
@@ -1308,6 +1362,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 10}],
               'children': [],
               'resolutionPath': [
@@ -1331,6 +1386,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 11}],
               'children': [],
               'resolutionPath': [
@@ -1355,12 +1411,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
               'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
               'directives': [{'name': '_TooltipDirective', 'id': 13}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [
                 {
                   'tagName': 'div',
                   'component': null,
                   'directives': [{'name': '_TooltipDirective', 'id': 14}],
                   'controlFlowBlock': null,
+                  'static': false,
                   'children': [],
                   'resolutionPath': [
                     {'id': '18', 'type': 'element', 'name': '_TooltipDirective'},
@@ -1405,12 +1463,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
               'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
               'directives': [{'name': '_TooltipDirective', 'id': 16}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [
                 {
                   'tagName': 'div',
                   'component': null,
                   'directives': [{'name': '_TooltipDirective', 'id': 17}],
                   'controlFlowBlock': null,
+                  'static': false,
                   'children': [],
                   'resolutionPath': [
                     {'id': '21', 'type': 'element', 'name': '_TooltipDirective'},
@@ -1455,6 +1515,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
               'component': null,
               'directives': [{'name': '_NgForOf', 'id': 18}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [],
               'resolutionPath': [
                 {'id': '20', 'type': 'element', 'name': '_NgForOf'},
@@ -1502,6 +1563,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 9}],
           'children': [],
           'resolutionPath': [
@@ -1533,6 +1595,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 10}],
           'children': [],
           'resolutionPath': [
@@ -1564,6 +1627,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 11}],
           'children': [],
           'resolutionPath': [
@@ -1596,12 +1660,14 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
           'directives': [{'name': '_TooltipDirective', 'id': 13}],
           'controlFlowBlock': null,
+          'static': false,
           'children': [
             {
               'tagName': 'div',
               'component': null,
               'directives': [{'name': '_TooltipDirective', 'id': 14}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [],
               'resolutionPath': [
                 {'id': '18', 'type': 'element', 'name': '_TooltipDirective'},
@@ -1654,6 +1720,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 14}],
           'children': [],
           'resolutionPath': [
@@ -1690,6 +1757,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
           'directives': [{'name': '_TooltipDirective', 'id': 16}],
           'controlFlowBlock': null,
+          'static': false,
           'children': [
             {
               'tagName': 'div',
@@ -1697,6 +1765,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
               'directives': [{'name': '_TooltipDirective', 'id': 17}],
               'children': [],
               'controlFlowBlock': null,
+              'static': false,
               'resolutionPath': [
                 {'id': '21', 'type': 'element', 'name': '_TooltipDirective'},
                 {'id': '22', 'type': 'element', 'name': '_TodoComponent'},
@@ -1748,6 +1817,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 17}],
           'children': [],
           'resolutionPath': [
@@ -1783,6 +1853,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
           'tagName': '#comment',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_NgForOf', 'id': 18}],
           'children': [],
           'resolutionPath': [
@@ -1813,6 +1884,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
         'node': {
           'tagName': 'app-heavy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
           'directives': [],
           'children': [],
@@ -1848,6 +1920,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
             node: {
               'tagName': 'app-root',
               controlFlowBlock: null,
+              static: false,
               component: {name: 'app-root', isElement: false, id: 0},
               directives: [],
               children: [
@@ -1855,6 +1928,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                   'tagName': 'router-outlet',
                   component: null,
                   controlFlowBlock: null,
+                  static: false,
                   directives: [{name: '_RouterOutlet', id: 1}],
                   children: [],
                   resolutionPath: [
@@ -1870,11 +1944,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                   component: {name: 'app-demo-component', isElement: false, id: 2},
                   directives: [],
                   controlFlowBlock: null,
+                  static: false,
                   children: [
                     {
                       'tagName': 'router-outlet',
                       component: null,
                       controlFlowBlock: null,
+                      static: false,
                       directives: [{name: '_RouterOutlet', id: 3}],
                       children: [],
                       resolutionPath: [
@@ -1893,11 +1969,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                       component: {name: 'app-todo-demo', isElement: false, id: 4},
                       directives: [],
                       controlFlowBlock: null,
+                      static: false,
                       children: [
                         {
                           'tagName': 'a',
                           component: null,
                           controlFlowBlock: null,
+                          static: false,
                           directives: [{name: '_RouterLink', id: 5}],
                           children: [],
                           resolutionPath: [
@@ -1918,6 +1996,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           'tagName': 'a',
                           component: null,
                           controlFlowBlock: null,
+                          static: false,
                           directives: [{name: '_RouterLink', id: 6}],
                           children: [],
                           resolutionPath: [
@@ -1938,6 +2017,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           'tagName': 'router-outlet',
                           component: null,
                           controlFlowBlock: null,
+                          static: false,
                           directives: [{name: '_RouterOutlet', id: 7}],
                           children: [],
                           resolutionPath: [
@@ -1959,11 +2039,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           component: {name: 'app-todos', isElement: false, id: 8},
                           directives: [],
                           controlFlowBlock: null,
+                          static: false,
                           children: [
                             {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 9}],
                               children: [],
                               resolutionPath: [
@@ -1987,6 +2069,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 10}],
                               children: [],
                               resolutionPath: [
@@ -2010,6 +2093,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 11}],
                               children: [],
                               resolutionPath: [
@@ -2034,11 +2118,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 12},
                               directives: [{name: '_TooltipDirective', id: 13}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 14}],
                                   children: [],
                                   resolutionPath: [
@@ -2084,11 +2170,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 15},
                               directives: [{name: '_TooltipDirective', id: 16}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 17}],
                                   children: [],
                                   resolutionPath: [
@@ -2134,6 +2222,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: null,
                               directives: [{name: '_NgForOf', id: 18}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [],
                               resolutionPath: [
                                 {id: '20', type: 'element', name: '_NgForOf'},
@@ -2189,6 +2278,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                       directives: [],
                       children: [],
                       controlFlowBlock: null,
+                      static: false,
                       resolutionPath: [
                         {id: '24', type: 'element', name: '_HeavyComponent'},
                         {id: '6', type: 'element', name: '_DemoAppComponent'},
@@ -2232,6 +2322,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                   component: {name: 'app-demo-component', isElement: false, id: 2},
                   directives: [],
                   controlFlowBlock: null,
+                  static: false,
                   children: [
                     {
                       'tagName': 'router-outlet',
@@ -2239,6 +2330,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                       directives: [{name: '_RouterOutlet', id: 3}],
                       children: [],
                       controlFlowBlock: null,
+                      static: false,
                       resolutionPath: [
                         {id: '5', type: 'element', name: '_RouterOutlet'},
                         {id: '6', type: 'element', name: '_DemoAppComponent'},
@@ -2255,11 +2347,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                       component: {name: 'app-todo-demo', isElement: false, id: 4},
                       directives: [],
                       controlFlowBlock: null,
+                      static: false,
                       children: [
                         {
                           'tagName': 'a',
                           component: null,
                           controlFlowBlock: null,
+                          static: false,
                           directives: [{name: '_RouterLink', id: 5}],
                           children: [],
                           resolutionPath: [
@@ -2282,6 +2376,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           directives: [{name: '_RouterLink', id: 6}],
                           children: [],
                           controlFlowBlock: null,
+                          static: false,
                           resolutionPath: [
                             {id: '11', type: 'element', name: '_RouterLink'},
                             {id: '9', type: 'element', name: '_AppTodoComponent'},
@@ -2302,6 +2397,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           directives: [{name: '_RouterOutlet', id: 7}],
                           children: [],
                           controlFlowBlock: null,
+                          static: false,
                           resolutionPath: [
                             {id: '12', type: 'element', name: '_RouterOutlet'},
                             {id: '9', type: 'element', name: '_AppTodoComponent'},
@@ -2321,6 +2417,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           component: {name: 'app-todos', isElement: false, id: 8},
                           directives: [],
                           controlFlowBlock: null,
+                          static: false,
                           children: [
                             {
                               'tagName': 'a',
@@ -2328,6 +2425,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               directives: [{name: '_RouterLink', id: 9}],
                               children: [],
                               controlFlowBlock: null,
+                              static: false,
                               resolutionPath: [
                                 {id: '13', type: 'element', name: '_RouterLink'},
                                 {id: '14', type: 'element', name: '_TodosComponent'},
@@ -2351,6 +2449,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               directives: [{name: '_RouterLink', id: 10}],
                               children: [],
                               controlFlowBlock: null,
+                              static: false,
                               resolutionPath: [
                                 {id: '16', type: 'element', name: '_RouterLink'},
                                 {id: '14', type: 'element', name: '_TodosComponent'},
@@ -2374,6 +2473,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               directives: [{name: '_RouterLink', id: 11}],
                               children: [],
                               controlFlowBlock: null,
+                              static: false,
                               resolutionPath: [
                                 {id: '17', type: 'element', name: '_RouterLink'},
                                 {id: '14', type: 'element', name: '_TodosComponent'},
@@ -2396,6 +2496,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 12},
                               directives: [{name: '_TooltipDirective', id: 13}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
@@ -2403,6 +2504,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                                   directives: [{name: '_TooltipDirective', id: 14}],
                                   children: [],
                                   controlFlowBlock: null,
+                                  static: false,
                                   resolutionPath: [
                                     {id: '18', type: 'element', name: '_TooltipDirective'},
                                     {id: '19', type: 'element', name: '_TodoComponent'},
@@ -2446,11 +2548,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 15},
                               directives: [{name: '_TooltipDirective', id: 16}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 17}],
                                   children: [],
                                   resolutionPath: [
@@ -2497,6 +2601,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               directives: [{name: '_NgForOf', id: 18}],
                               children: [],
                               controlFlowBlock: null,
+                              static: false,
                               resolutionPath: [
                                 {id: '20', type: 'element', name: '_NgForOf'},
                                 {id: '14', type: 'element', name: '_TodosComponent'},
@@ -2549,6 +2654,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                       'tagName': 'app-heavy',
                       component: {name: 'app-heavy', isElement: false, id: 20},
                       controlFlowBlock: null,
+                      static: false,
                       directives: [],
                       children: [],
                       resolutionPath: [
@@ -2585,6 +2691,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                       'tagName': 'app-todo-demo',
                       component: {name: 'app-todo-demo', isElement: false, id: 4},
                       controlFlowBlock: null,
+                      static: false,
                       directives: [],
                       children: [
                         {
@@ -2593,6 +2700,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           directives: [{name: '_RouterLink', id: 5}],
                           children: [],
                           controlFlowBlock: null,
+                          static: false,
                           resolutionPath: [
                             {id: '8', type: 'element', name: '_RouterLink'},
                             {id: '9', type: 'element', name: '_AppTodoComponent'},
@@ -2613,6 +2721,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           directives: [{name: '_RouterLink', id: 6}],
                           children: [],
                           controlFlowBlock: null,
+                          static: false,
                           resolutionPath: [
                             {id: '11', type: 'element', name: '_RouterLink'},
                             {id: '9', type: 'element', name: '_AppTodoComponent'},
@@ -2631,6 +2740,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           'tagName': 'router-outlet',
                           component: null,
                           controlFlowBlock: null,
+                          static: false,
                           directives: [{name: '_RouterOutlet', id: 7}],
                           children: [],
                           resolutionPath: [
@@ -2652,11 +2762,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                           component: {name: 'app-todos', isElement: false, id: 8},
                           directives: [],
                           controlFlowBlock: null,
+                          static: false,
                           children: [
                             {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 9}],
                               children: [],
                               resolutionPath: [
@@ -2680,6 +2792,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 10}],
                               children: [],
                               resolutionPath: [
@@ -2704,6 +2817,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: null,
                               directives: [{name: '_RouterLink', id: 11}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [],
                               resolutionPath: [
                                 {id: '17', type: 'element', name: '_RouterLink'},
@@ -2727,11 +2841,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 12},
                               directives: [{name: '_TooltipDirective', id: 13}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 14}],
                                   children: [],
                                   resolutionPath: [
@@ -2777,11 +2893,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 15},
                               directives: [{name: '_TooltipDirective', id: 16}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 17}],
                                   children: [],
                                   resolutionPath: [
@@ -2827,6 +2945,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: null,
                               directives: [{name: '_NgForOf', id: 18}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [],
                               resolutionPath: [
                                 {id: '20', type: 'element', name: '_NgForOf'},
@@ -2887,6 +3006,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                         node: {
                           'tagName': 'app-todos',
                           controlFlowBlock: null,
+                          static: false,
                           component: {name: 'app-todos', isElement: false, id: 8},
                           directives: [],
                           children: [
@@ -2894,6 +3014,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 9}],
                               children: [],
                               resolutionPath: [
@@ -2917,6 +3038,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 10}],
                               children: [],
                               resolutionPath: [
@@ -2940,6 +3062,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               'tagName': 'a',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_RouterLink', id: 11}],
                               children: [],
                               resolutionPath: [
@@ -2964,11 +3087,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 12},
                               directives: [{name: '_TooltipDirective', id: 13}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 14}],
                                   children: [],
                                   resolutionPath: [
@@ -3014,11 +3139,13 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               component: {name: 'app-todo', isElement: false, id: 15},
                               directives: [{name: '_TooltipDirective', id: 16}],
                               controlFlowBlock: null,
+                              static: false,
                               children: [
                                 {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 17}],
                                   children: [],
                                   resolutionPath: [
@@ -3063,6 +3190,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                               'tagName': '#comment',
                               component: null,
                               controlFlowBlock: null,
+                              static: false,
                               directives: [{name: '_NgForOf', id: 18}],
                               children: [],
                               resolutionPath: [
@@ -3110,6 +3238,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             node: {
                               'tagName': 'app-todo',
                               controlFlowBlock: null,
+                              static: false,
                               component: {name: 'app-todo', isElement: false, id: 12},
                               directives: [{name: '_TooltipDirective', id: 13}],
                               children: [
@@ -3117,6 +3246,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 14}],
                                   children: [],
                                   resolutionPath: [
@@ -3169,6 +3299,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 14}],
                                   children: [],
                                   resolutionPath: [
@@ -3204,6 +3335,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                             node: {
                               'tagName': 'app-todo',
                               controlFlowBlock: null,
+                              static: false,
                               component: {name: 'app-todo', isElement: false, id: 15},
                               directives: [{name: '_TooltipDirective', id: 16}],
                               children: [
@@ -3211,6 +3343,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 17}],
                                   children: [],
                                   resolutionPath: [
@@ -3263,6 +3396,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                                   'tagName': 'div',
                                   component: null,
                                   controlFlowBlock: null,
+                                  static: false,
                                   directives: [{name: '_TooltipDirective', id: 17}],
                                   children: [],
                                   resolutionPath: [
@@ -3302,6 +3436,7 @@ describe('transformInjectorResolutionPathsIntoTree', () => {
                     node: {
                       'tagName': 'app-heavy',
                       controlFlowBlock: null,
+                      static: false,
                       component: {name: 'app-heavy', isElement: false, id: 20},
                       directives: [],
                       children: [],
@@ -3337,6 +3472,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-root',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-root', 'isElement': false, 'id': 0},
           'directives': [],
           'children': [
@@ -3345,6 +3481,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'component': null,
               'directives': [{'name': '_RouterOutlet', 'id': 1}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [],
               'resolutionPath': [
                 {'id': '0', 'type': 'element', 'name': '_RouterOutlet'},
@@ -3357,6 +3494,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-demo-component',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
               'directives': [],
               'children': [
@@ -3366,6 +3504,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'directives': [{'name': '_RouterOutlet', 'id': 3}],
                   'children': [],
                   'controlFlowBlock': null,
+                  'static': false,
                   'resolutionPath': [
                     {'id': '5', 'type': 'element', 'name': '_RouterOutlet'},
                     {'id': '6', 'type': 'element', 'name': '_DemoAppComponent'},
@@ -3380,6 +3519,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo-demo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
                   'directives': [],
                   'children': [
@@ -3387,6 +3527,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 5}],
                       'children': [],
                       'resolutionPath': [
@@ -3407,6 +3548,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 6}],
                       'children': [],
                       'resolutionPath': [
@@ -3427,6 +3569,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'router-outlet',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterOutlet', 'id': 7}],
                       'children': [],
                       'resolutionPath': [
@@ -3446,6 +3589,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todos',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                       'directives': [],
                       'children': [
@@ -3453,6 +3597,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 9}],
                           'children': [],
                           'resolutionPath': [
@@ -3476,6 +3621,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 10}],
                           'children': [],
                           'resolutionPath': [
@@ -3499,6 +3645,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 11}],
                           'children': [],
                           'resolutionPath': [
@@ -3521,6 +3668,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                         {
                           'tagName': 'app-todo',
                           'controlFlowBlock': null,
+                          'static': false,
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                           'directives': [{'name': '_TooltipDirective', 'id': 13}],
                           'children': [
@@ -3528,6 +3676,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 14}],
                               'children': [],
                               'resolutionPath': [
@@ -3571,6 +3720,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                         {
                           'tagName': 'app-todo',
                           'controlFlowBlock': null,
+                          'static': false,
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                           'directives': [{'name': '_TooltipDirective', 'id': 16}],
                           'children': [
@@ -3578,6 +3728,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 17}],
                               'children': [],
                               'resolutionPath': [
@@ -3622,6 +3773,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': '#comment',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_NgForOf', 'id': 18}],
                           'children': [],
                           'resolutionPath': [
@@ -3675,6 +3827,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-zippy',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
                   'directives': [],
                   'children': [],
@@ -3689,6 +3842,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-heavy',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
                   'directives': [],
                   'children': [],
@@ -3732,6 +3886,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 1}],
           'children': [],
           'resolutionPath': [
@@ -3751,6 +3906,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-demo-component',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
           'directives': [],
           'children': [
@@ -3758,6 +3914,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 3}],
               'children': [],
               'resolutionPath': [
@@ -3774,6 +3931,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todo-demo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
               'directives': [],
               'children': [
@@ -3781,6 +3939,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 5}],
                   'children': [],
                   'resolutionPath': [
@@ -3801,6 +3960,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 6}],
                   'children': [],
                   'resolutionPath': [
@@ -3821,6 +3981,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'router-outlet',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterOutlet', 'id': 7}],
                   'children': [],
                   'resolutionPath': [
@@ -3840,6 +4001,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todos',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                   'directives': [],
                   'children': [
@@ -3847,6 +4009,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 9}],
                       'children': [],
                       'resolutionPath': [
@@ -3870,6 +4033,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 10}],
                       'children': [],
                       'resolutionPath': [
@@ -3893,6 +4057,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 11}],
                       'children': [],
                       'resolutionPath': [
@@ -3915,6 +4080,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                       'directives': [{'name': '_TooltipDirective', 'id': 13}],
                       'children': [
@@ -3922,6 +4088,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 14}],
                           'children': [],
                           'resolutionPath': [
@@ -3965,6 +4132,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                       'directives': [{'name': '_TooltipDirective', 'id': 16}],
                       'children': [
@@ -3972,6 +4140,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 17}],
                           'children': [],
                           'resolutionPath': [
@@ -4016,6 +4185,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': '#comment',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_NgForOf', 'id': 18}],
                       'children': [],
                       'resolutionPath': [
@@ -4069,6 +4239,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-zippy',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
               'directives': [],
               'children': [],
@@ -4083,6 +4254,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-heavy',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
               'directives': [],
               'children': [],
@@ -4120,6 +4292,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 3}],
           'children': [],
           'resolutionPath': [
@@ -4144,6 +4317,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo-demo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
           'directives': [],
           'children': [
@@ -4151,6 +4325,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 5}],
               'children': [],
               'resolutionPath': [
@@ -4171,6 +4346,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 6}],
               'children': [],
               'resolutionPath': [
@@ -4191,6 +4367,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 7}],
               'children': [],
               'resolutionPath': [
@@ -4212,11 +4389,13 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
               'directives': [],
               'controlFlowBlock': null,
+              'static': false,
               'children': [
                 {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 9}],
                   'children': [],
                   'resolutionPath': [
@@ -4240,6 +4419,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 10}],
                   'children': [],
                   'resolutionPath': [
@@ -4263,6 +4443,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 11}],
                   'children': [],
                   'resolutionPath': [
@@ -4285,6 +4466,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                   'directives': [{'name': '_TooltipDirective', 'id': 13}],
                   'children': [
@@ -4292,6 +4474,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 14}],
                       'children': [],
                       'resolutionPath': [
@@ -4335,6 +4518,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                   'directives': [{'name': '_TooltipDirective', 'id': 16}],
                   'children': [
@@ -4342,6 +4526,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 17}],
                       'children': [],
                       'resolutionPath': [
@@ -4386,6 +4571,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': '#comment',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_NgForOf', 'id': 18}],
                   'children': [],
                   'resolutionPath': [
@@ -4450,6 +4636,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 5}],
           'children': [],
           'resolutionPath': [
@@ -4480,6 +4667,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 6}],
           'children': [],
           'resolutionPath': [
@@ -4510,6 +4698,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 7}],
           'children': [],
           'resolutionPath': [
@@ -4539,6 +4728,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todos',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
           'directives': [],
           'children': [
@@ -4546,6 +4736,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 9}],
               'children': [],
               'resolutionPath': [
@@ -4569,6 +4760,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 10}],
               'children': [],
               'resolutionPath': [
@@ -4592,6 +4784,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 11}],
               'children': [],
               'resolutionPath': [
@@ -4614,6 +4807,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
               'directives': [{'name': '_TooltipDirective', 'id': 13}],
               'children': [
@@ -4621,6 +4815,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'div',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_TooltipDirective', 'id': 14}],
                   'children': [],
                   'resolutionPath': [
@@ -4664,6 +4859,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
               'directives': [{'name': '_TooltipDirective', 'id': 16}],
               'children': [
@@ -4671,6 +4867,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'div',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_TooltipDirective', 'id': 17}],
                   'children': [],
                   'resolutionPath': [
@@ -4715,6 +4912,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': '#comment',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_NgForOf', 'id': 18}],
               'children': [],
               'resolutionPath': [
@@ -4767,6 +4965,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 9}],
           'children': [],
           'resolutionPath': [
@@ -4802,6 +5001,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 10}],
           'children': [],
           'resolutionPath': [
@@ -4837,6 +5037,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 11}],
           'children': [],
           'resolutionPath': [
@@ -4871,6 +5072,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
           'directives': [{'name': '_TooltipDirective', 'id': 13}],
           'children': [
@@ -4878,6 +5080,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 14}],
               'children': [],
               'resolutionPath': [
@@ -4935,6 +5138,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 14}],
           'children': [],
           'resolutionPath': [
@@ -4973,6 +5177,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
           'directives': [{'name': '_TooltipDirective', 'id': 16}],
           'children': [
@@ -4980,6 +5185,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 17}],
               'children': [],
               'resolutionPath': [
@@ -5037,6 +5243,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 17}],
           'children': [],
           'resolutionPath': [
@@ -5076,6 +5283,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': '#comment',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_NgForOf', 'id': 18}],
           'children': [],
           'resolutionPath': [
@@ -5110,6 +5318,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-zippy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
           'directives': [],
           'children': [],
@@ -5131,6 +5340,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-heavy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
           'directives': [],
           'children': [],
@@ -5160,6 +5370,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-root',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-root', 'isElement': false, 'id': 0},
           'directives': [],
           'children': [
@@ -5167,6 +5378,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 1}],
               'children': [],
               'resolutionPath': [
@@ -5180,6 +5392,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-demo-component',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
               'directives': [],
               'children': [
@@ -5187,6 +5400,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'router-outlet',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterOutlet', 'id': 3}],
                   'children': [],
                   'resolutionPath': [
@@ -5203,6 +5417,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo-demo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
                   'directives': [],
                   'children': [
@@ -5210,6 +5425,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 5}],
                       'children': [],
                       'resolutionPath': [
@@ -5230,6 +5446,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 6}],
                       'children': [],
                       'resolutionPath': [
@@ -5250,6 +5467,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'router-outlet',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterOutlet', 'id': 7}],
                       'children': [],
                       'resolutionPath': [
@@ -5269,6 +5487,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todos',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                       'directives': [],
                       'children': [
@@ -5276,6 +5495,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 9}],
                           'children': [],
                           'resolutionPath': [
@@ -5299,6 +5519,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 10}],
                           'children': [],
                           'resolutionPath': [
@@ -5322,6 +5543,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 11}],
                           'children': [],
                           'resolutionPath': [
@@ -5344,6 +5566,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                         {
                           'tagName': 'app-todo',
                           'controlFlowBlock': null,
+                          'static': false,
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                           'directives': [{'name': '_TooltipDirective', 'id': 13}],
                           'children': [
@@ -5351,6 +5574,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 14}],
                               'children': [],
                               'resolutionPath': [
@@ -5394,6 +5618,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                         {
                           'tagName': 'app-todo',
                           'controlFlowBlock': null,
+                          'static': false,
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                           'directives': [{'name': '_TooltipDirective', 'id': 16}],
                           'children': [
@@ -5401,6 +5626,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 17}],
                               'children': [],
                               'resolutionPath': [
@@ -5445,6 +5671,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': '#comment',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_NgForOf', 'id': 18}],
                           'children': [],
                           'resolutionPath': [
@@ -5498,6 +5725,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-zippy',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
                   'directives': [],
                   'children': [],
@@ -5512,6 +5740,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-heavy',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
                   'directives': [],
                   'children': [],
@@ -5552,6 +5781,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 1}],
           'children': [],
           'resolutionPath': [
@@ -5570,11 +5800,13 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
           'directives': [],
           'controlFlowBlock': null,
+          'static': false,
           'children': [
             {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 3}],
               'children': [],
               'resolutionPath': [
@@ -5592,12 +5824,14 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'app-todo-demo',
               'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
               'controlFlowBlock': null,
+              'static': false,
               'directives': [],
               'children': [
                 {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 5}],
                   'children': [],
                   'resolutionPath': [
@@ -5618,6 +5852,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 6}],
                   'children': [],
                   'resolutionPath': [
@@ -5638,6 +5873,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'router-outlet',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterOutlet', 'id': 7}],
                   'children': [],
                   'resolutionPath': [
@@ -5658,12 +5894,14 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'app-todos',
                   'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [],
                   'children': [
                     {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 9}],
                       'children': [],
                       'resolutionPath': [
@@ -5687,6 +5925,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 10}],
                       'children': [],
                       'resolutionPath': [
@@ -5710,6 +5949,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 11}],
                       'children': [],
                       'resolutionPath': [
@@ -5732,6 +5972,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                       'directives': [{'name': '_TooltipDirective', 'id': 13}],
                       'children': [
@@ -5739,6 +5980,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 14}],
                           'children': [],
                           'resolutionPath': [
@@ -5782,6 +6024,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                       'directives': [{'name': '_TooltipDirective', 'id': 16}],
                       'children': [
@@ -5789,6 +6032,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 17}],
                           'children': [],
                           'resolutionPath': [
@@ -5833,6 +6077,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': '#comment',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_NgForOf', 'id': 18}],
                       'children': [],
                       'resolutionPath': [
@@ -5889,6 +6134,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'directives': [],
               'children': [],
               'controlFlowBlock': null,
+              'static': false,
               'resolutionPath': [
                 {'id': '23', 'type': 'element', 'name': '_ZippyComponent'},
                 {'id': '7', 'type': 'environment', 'name': '_DemoAppModule'},
@@ -5903,6 +6149,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'directives': [],
               'children': [],
               'controlFlowBlock': null,
+              'static': false,
               'resolutionPath': [
                 {'id': '24', 'type': 'element', 'name': '_HeavyComponent'},
                 {'id': '6', 'type': 'element', 'name': '_DemoAppComponent'},
@@ -5934,6 +6181,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'router-outlet',
           'controlFlowBlock': null,
+          'static': false,
           'component': null,
           'directives': [{'name': '_RouterOutlet', 'id': 3}],
           'children': [],
@@ -5957,6 +6205,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo-demo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
           'directives': [],
           'children': [
@@ -5964,6 +6213,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 5}],
               'children': [],
               'resolutionPath': [
@@ -5984,6 +6234,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 6}],
               'children': [],
               'resolutionPath': [
@@ -6004,6 +6255,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 7}],
               'children': [],
               'resolutionPath': [
@@ -6023,6 +6275,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todos',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
               'directives': [],
               'children': [
@@ -6030,6 +6283,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 9}],
                   'children': [],
                   'resolutionPath': [
@@ -6053,6 +6307,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 10}],
                   'children': [],
                   'resolutionPath': [
@@ -6076,6 +6331,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 11}],
                   'children': [],
                   'resolutionPath': [
@@ -6098,6 +6354,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                   'directives': [{'name': '_TooltipDirective', 'id': 13}],
                   'children': [
@@ -6105,6 +6362,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 14}],
                       'children': [],
                       'resolutionPath': [
@@ -6148,6 +6406,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                   'directives': [{'name': '_TooltipDirective', 'id': 16}],
                   'children': [
@@ -6155,6 +6414,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 17}],
                       'children': [],
                       'resolutionPath': [
@@ -6199,6 +6459,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': '#comment',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_NgForOf', 'id': 18}],
                   'children': [],
                   'resolutionPath': [
@@ -6259,6 +6520,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'a',
           'controlFlowBlock': null,
+          'static': false,
           'component': null,
           'directives': [{'name': '_RouterLink', 'id': 5}],
           'children': [],
@@ -6287,6 +6549,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 6}],
           'children': [],
           'resolutionPath': [
@@ -6314,6 +6577,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 7}],
           'children': [],
           'resolutionPath': [
@@ -6340,6 +6604,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todos',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
           'directives': [],
           'children': [
@@ -6347,6 +6612,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 9}],
               'children': [],
               'resolutionPath': [
@@ -6370,6 +6636,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 10}],
               'children': [],
               'resolutionPath': [
@@ -6393,6 +6660,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 11}],
               'children': [],
               'resolutionPath': [
@@ -6417,11 +6685,13 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
               'directives': [{'name': '_TooltipDirective', 'id': 13}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [
                 {
                   'tagName': 'div',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_TooltipDirective', 'id': 14}],
                   'children': [],
                   'resolutionPath': [
@@ -6467,12 +6737,14 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
               'directives': [{'name': '_TooltipDirective', 'id': 16}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [
                 {
                   'tagName': 'div',
                   'component': null,
                   'directives': [{'name': '_TooltipDirective', 'id': 17}],
                   'controlFlowBlock': null,
+                  'static': false,
                   'children': [],
                   'resolutionPath': [
                     {'id': '21', 'type': 'element', 'name': '_TooltipDirective'},
@@ -6517,6 +6789,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'component': null,
               'directives': [{'name': '_NgForOf', 'id': 18}],
               'controlFlowBlock': null,
+              'static': false,
               'children': [],
               'resolutionPath': [
                 {'id': '20', 'type': 'element', 'name': '_NgForOf'},
@@ -6564,6 +6837,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 9}],
           'children': [],
           'resolutionPath': [
@@ -6595,6 +6869,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 10}],
           'children': [],
           'resolutionPath': [
@@ -6626,6 +6901,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 11}],
           'children': [],
           'resolutionPath': [
@@ -6656,6 +6932,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
           'directives': [{'name': '_TooltipDirective', 'id': 13}],
           'children': [
@@ -6663,6 +6940,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 14}],
               'children': [],
               'resolutionPath': [
@@ -6716,6 +6994,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 14}],
           'children': [],
           'resolutionPath': [
@@ -6752,11 +7031,13 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
           'directives': [{'name': '_TooltipDirective', 'id': 16}],
           'controlFlowBlock': null,
+          'static': false,
           'children': [
             {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 17}],
               'children': [],
               'resolutionPath': [
@@ -6810,6 +7091,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 17}],
           'children': [],
           'resolutionPath': [
@@ -6845,6 +7127,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': '#comment',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_NgForOf', 'id': 18}],
           'children': [],
           'resolutionPath': [
@@ -6875,6 +7158,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-zippy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
           'directives': [],
           'children': [],
@@ -6892,6 +7176,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-heavy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
           'directives': [],
           'children': [],
@@ -6919,6 +7204,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-root',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-root', 'isElement': false, 'id': 0},
           'directives': [],
           'children': [
@@ -6926,6 +7212,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 1}],
               'children': [],
               'resolutionPath': [
@@ -6940,6 +7227,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'app-demo-component',
               'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
               'controlFlowBlock': null,
+              'static': false,
               'directives': [],
               'children': [
                 {
@@ -6947,6 +7235,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'component': null,
                   'directives': [{'name': '_RouterOutlet', 'id': 3}],
                   'controlFlowBlock': null,
+                  'static': false,
                   'children': [],
                   'resolutionPath': [
                     {'id': '5', 'type': 'element', 'name': '_RouterOutlet'},
@@ -6962,6 +7251,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo-demo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
                   'directives': [],
                   'children': [
@@ -6969,6 +7259,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 5}],
                       'children': [],
                       'resolutionPath': [
@@ -6989,6 +7280,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 6}],
                       'children': [],
                       'resolutionPath': [
@@ -7009,6 +7301,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'router-outlet',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterOutlet', 'id': 7}],
                       'children': [],
                       'resolutionPath': [
@@ -7028,6 +7321,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todos',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                       'directives': [],
                       'children': [
@@ -7035,6 +7329,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 9}],
                           'children': [],
                           'resolutionPath': [
@@ -7058,6 +7353,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 10}],
                           'children': [],
                           'resolutionPath': [
@@ -7081,6 +7377,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 11}],
                           'children': [],
                           'resolutionPath': [
@@ -7103,6 +7400,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                         {
                           'tagName': 'app-todo',
                           'controlFlowBlock': null,
+                          'static': false,
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                           'directives': [{'name': '_TooltipDirective', 'id': 13}],
                           'children': [
@@ -7110,6 +7408,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 14}],
                               'children': [],
                               'resolutionPath': [
@@ -7155,11 +7454,13 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                           'directives': [{'name': '_TooltipDirective', 'id': 16}],
                           'controlFlowBlock': null,
+                          'static': false,
                           'children': [
                             {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 17}],
                               'children': [],
                               'resolutionPath': [
@@ -7204,6 +7505,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': '#comment',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_NgForOf', 'id': 18}],
                           'children': [],
                           'resolutionPath': [
@@ -7257,6 +7559,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-zippy',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
                   'directives': [],
                   'children': [],
@@ -7272,6 +7575,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'app-heavy',
                   'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [],
                   'children': [],
                   'resolutionPath': [
@@ -7311,6 +7615,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 1}],
           'children': [],
           'resolutionPath': [
@@ -7327,6 +7632,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-demo-component',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
           'directives': [],
           'children': [
@@ -7334,6 +7640,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 3}],
               'children': [],
               'resolutionPath': [
@@ -7350,6 +7657,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todo-demo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
               'directives': [],
               'children': [
@@ -7357,6 +7665,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 5}],
                   'children': [],
                   'resolutionPath': [
@@ -7377,6 +7686,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 6}],
                   'children': [],
                   'resolutionPath': [
@@ -7397,6 +7707,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'router-outlet',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterOutlet', 'id': 7}],
                   'children': [],
                   'resolutionPath': [
@@ -7417,12 +7728,14 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'app-todos',
                   'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [],
                   'children': [
                     {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 9}],
                       'children': [],
                       'resolutionPath': [
@@ -7446,6 +7759,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 10}],
                       'children': [],
                       'resolutionPath': [
@@ -7469,6 +7783,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 11}],
                       'children': [],
                       'resolutionPath': [
@@ -7491,6 +7806,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                       'directives': [{'name': '_TooltipDirective', 'id': 13}],
                       'children': [
@@ -7498,6 +7814,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 14}],
                           'children': [],
                           'resolutionPath': [
@@ -7541,6 +7858,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                       'directives': [{'name': '_TooltipDirective', 'id': 16}],
                       'children': [
@@ -7548,6 +7866,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 17}],
                           'children': [],
                           'resolutionPath': [
@@ -7592,6 +7911,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': '#comment',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_NgForOf', 'id': 18}],
                       'children': [],
                       'resolutionPath': [
@@ -7645,6 +7965,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-zippy',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
               'directives': [],
               'children': [],
@@ -7659,6 +7980,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-heavy',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
               'directives': [],
               'children': [],
@@ -7693,6 +8015,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'router-outlet',
           'controlFlowBlock': null,
+          'static': false,
           'component': null,
           'directives': [{'name': '_RouterOutlet', 'id': 3}],
           'children': [],
@@ -7716,6 +8039,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo-demo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
           'directives': [],
           'children': [
@@ -7723,6 +8047,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 5}],
               'children': [],
               'resolutionPath': [
@@ -7743,6 +8068,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 6}],
               'children': [],
               'resolutionPath': [
@@ -7763,6 +8089,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 7}],
               'children': [],
               'resolutionPath': [
@@ -7782,6 +8109,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todos',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
               'directives': [],
               'children': [
@@ -7789,6 +8117,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 9}],
                   'children': [],
                   'resolutionPath': [
@@ -7812,6 +8141,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 10}],
                   'children': [],
                   'resolutionPath': [
@@ -7835,6 +8165,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 11}],
                   'children': [],
                   'resolutionPath': [
@@ -7857,6 +8188,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                   'directives': [{'name': '_TooltipDirective', 'id': 13}],
                   'children': [
@@ -7864,6 +8196,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 14}],
                       'children': [],
                       'resolutionPath': [
@@ -7907,6 +8240,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                   'directives': [{'name': '_TooltipDirective', 'id': 16}],
                   'children': [
@@ -7914,6 +8248,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 17}],
                       'children': [],
                       'resolutionPath': [
@@ -7958,6 +8293,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': '#comment',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_NgForOf', 'id': 18}],
                   'children': [],
                   'resolutionPath': [
@@ -8019,6 +8355,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 5}],
           'children': [],
           'resolutionPath': [
@@ -8046,6 +8383,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 6}],
           'children': [],
           'resolutionPath': [
@@ -8072,6 +8410,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'router-outlet',
           'controlFlowBlock': null,
+          'static': false,
           'component': null,
           'directives': [{'name': '_RouterOutlet', 'id': 7}],
           'children': [],
@@ -8099,6 +8438,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todos',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
           'directives': [],
           'children': [
@@ -8106,6 +8446,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 9}],
               'children': [],
               'resolutionPath': [
@@ -8129,6 +8470,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 10}],
               'children': [],
               'resolutionPath': [
@@ -8152,6 +8494,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 11}],
               'children': [],
               'resolutionPath': [
@@ -8174,6 +8517,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
               'directives': [{'name': '_TooltipDirective', 'id': 13}],
               'children': [
@@ -8181,6 +8525,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'div',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_TooltipDirective', 'id': 14}],
                   'children': [],
                   'resolutionPath': [
@@ -8224,6 +8569,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
             {
               'tagName': 'app-todo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
               'directives': [{'name': '_TooltipDirective', 'id': 16}],
               'children': [
@@ -8231,6 +8577,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
                   'tagName': 'div',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_TooltipDirective', 'id': 17}],
                   'children': [],
                   'resolutionPath': [
@@ -8275,6 +8622,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': '#comment',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_NgForOf', 'id': 18}],
               'children': [],
               'resolutionPath': [
@@ -8323,6 +8671,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 9}],
           'children': [],
           'resolutionPath': [
@@ -8354,6 +8703,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 10}],
           'children': [],
           'resolutionPath': [
@@ -8385,6 +8735,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 11}],
           'children': [],
           'resolutionPath': [
@@ -8415,6 +8766,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
           'directives': [{'name': '_TooltipDirective', 'id': 13}],
           'children': [
@@ -8422,6 +8774,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 14}],
               'children': [],
               'resolutionPath': [
@@ -8474,6 +8827,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 14}],
           'children': [],
           'resolutionPath': [
@@ -8506,6 +8860,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-todo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
           'directives': [{'name': '_TooltipDirective', 'id': 16}],
           'children': [
@@ -8513,6 +8868,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 17}],
               'children': [],
               'resolutionPath': [
@@ -8565,6 +8921,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 17}],
           'children': [],
           'resolutionPath': [
@@ -8598,6 +8955,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
           'tagName': '#comment',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_NgForOf', 'id': 18}],
           'children': [],
           'resolutionPath': [
@@ -8628,6 +8986,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-zippy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
           'directives': [],
           'children': [],
@@ -8648,6 +9007,7 @@ describe('splitInjectorPathsIntoElementAndEnvironmentPaths', () => {
         'node': {
           'tagName': 'app-heavy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
           'directives': [],
           'children': [],
@@ -8762,6 +9122,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
       {
         'tagName': 'app-root',
         'controlFlowBlock': null,
+        'static': false,
         'component': {'name': 'app-root', 'isElement': false, 'id': 0},
         'directives': [],
         'children': [
@@ -8769,6 +9130,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             'tagName': 'router-outlet',
             'component': null,
             'controlFlowBlock': null,
+            'static': false,
             'directives': [{'name': '_RouterOutlet', 'id': 1}],
             'children': [],
             'resolutionPath': [
@@ -8782,6 +9144,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           {
             'tagName': 'app-demo-component',
             'controlFlowBlock': null,
+            'static': false,
             'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
             'directives': [],
             'children': [
@@ -8789,6 +9152,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                 'tagName': 'router-outlet',
                 'component': null,
                 'controlFlowBlock': null,
+                'static': false,
                 'directives': [{'name': '_RouterOutlet', 'id': 3}],
                 'children': [],
                 'resolutionPath': [
@@ -8805,6 +9169,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               {
                 'tagName': 'app-todo-demo',
                 'controlFlowBlock': null,
+                'static': false,
                 'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
                 'directives': [],
                 'children': [
@@ -8812,6 +9177,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                     'tagName': 'a',
                     'component': null,
                     'controlFlowBlock': null,
+                    'static': false,
                     'directives': [{'name': '_RouterLink', 'id': 5}],
                     'children': [],
                     'resolutionPath': [
@@ -8832,6 +9198,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                     'tagName': 'a',
                     'component': null,
                     'controlFlowBlock': null,
+                    'static': false,
                     'directives': [{'name': '_RouterLink', 'id': 6}],
                     'children': [],
                     'resolutionPath': [
@@ -8852,6 +9219,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                     'tagName': 'router-outlet',
                     'component': null,
                     'controlFlowBlock': null,
+                    'static': false,
                     'directives': [{'name': '_RouterOutlet', 'id': 7}],
                     'children': [],
                     'resolutionPath': [
@@ -8873,11 +9241,13 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                     'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                     'directives': [],
                     'controlFlowBlock': null,
+                    'static': false,
                     'children': [
                       {
                         'tagName': 'a',
                         'component': null,
                         'controlFlowBlock': null,
+                        'static': false,
                         'directives': [{'name': '_RouterLink', 'id': 9}],
                         'children': [],
                         'resolutionPath': [
@@ -8901,6 +9271,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                         'tagName': 'a',
                         'component': null,
                         'controlFlowBlock': null,
+                        'static': false,
                         'directives': [{'name': '_RouterLink', 'id': 10}],
                         'children': [],
                         'resolutionPath': [
@@ -8924,6 +9295,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                         'tagName': 'a',
                         'component': null,
                         'controlFlowBlock': null,
+                        'static': false,
                         'directives': [{'name': '_RouterLink', 'id': 11}],
                         'children': [],
                         'resolutionPath': [
@@ -8946,6 +9318,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       {
                         'tagName': 'app-todo',
                         'controlFlowBlock': null,
+                        'static': false,
                         'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                         'directives': [{'name': '_TooltipDirective', 'id': 13}],
                         'children': [
@@ -8953,6 +9326,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                             'tagName': 'div',
                             'component': null,
                             'controlFlowBlock': null,
+                            'static': false,
                             'directives': [{'name': '_TooltipDirective', 'id': 14}],
                             'children': [],
                             'resolutionPath': [
@@ -8996,6 +9370,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       {
                         'tagName': 'app-todo',
                         'controlFlowBlock': null,
+                        'static': false,
                         'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                         'directives': [{'name': '_TooltipDirective', 'id': 16}],
                         'children': [
@@ -9003,6 +9378,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                             'tagName': 'div',
                             'component': null,
                             'controlFlowBlock': null,
+                            'static': false,
                             'directives': [{'name': '_TooltipDirective', 'id': 17}],
                             'children': [],
                             'resolutionPath': [
@@ -9047,6 +9423,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                         'tagName': '#comment',
                         'component': null,
                         'controlFlowBlock': null,
+                        'static': false,
                         'directives': [{'name': '_NgForOf', 'id': 18}],
                         'children': [],
                         'resolutionPath': [
@@ -9100,6 +9477,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               {
                 'tagName': 'app-zippy',
                 'controlFlowBlock': null,
+                'static': false,
                 'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
                 'directives': [],
                 'children': [],
@@ -9114,6 +9492,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               {
                 'tagName': 'app-heavy',
                 'controlFlowBlock': null,
+                'static': false,
                 'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
                 'directives': [],
                 'children': [],
@@ -9154,6 +9533,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-root',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-root', 'isElement': false, 'id': 0},
           'directives': [],
           'children': [
@@ -9161,6 +9541,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 1}],
               'children': [],
               'resolutionPath': [
@@ -9174,6 +9555,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             {
               'tagName': 'app-demo-component',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
               'directives': [],
               'children': [
@@ -9181,6 +9563,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'router-outlet',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterOutlet', 'id': 3}],
                   'children': [],
                   'resolutionPath': [
@@ -9197,6 +9580,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                 {
                   'tagName': 'app-todo-demo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
                   'directives': [],
                   'children': [
@@ -9204,6 +9588,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 5}],
                       'children': [],
                       'resolutionPath': [
@@ -9224,6 +9609,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 6}],
                       'children': [],
                       'resolutionPath': [
@@ -9244,6 +9630,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'router-outlet',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterOutlet', 'id': 7}],
                       'children': [],
                       'resolutionPath': [
@@ -9263,6 +9650,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                     {
                       'tagName': 'app-todos',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                       'directives': [],
                       'children': [
@@ -9270,6 +9658,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 9}],
                           'children': [],
                           'resolutionPath': [
@@ -9293,6 +9682,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 10}],
                           'children': [],
                           'resolutionPath': [
@@ -9316,6 +9706,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                           'tagName': 'a',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_RouterLink', 'id': 11}],
                           'children': [],
                           'resolutionPath': [
@@ -9338,6 +9729,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                         {
                           'tagName': 'app-todo',
                           'controlFlowBlock': null,
+                          'static': false,
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                           'directives': [{'name': '_TooltipDirective', 'id': 13}],
                           'children': [
@@ -9345,6 +9737,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 14}],
                               'children': [],
                               'resolutionPath': [
@@ -9388,6 +9781,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                         {
                           'tagName': 'app-todo',
                           'controlFlowBlock': null,
+                          'static': false,
                           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                           'directives': [{'name': '_TooltipDirective', 'id': 16}],
                           'children': [
@@ -9395,6 +9789,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                               'tagName': 'div',
                               'component': null,
                               'controlFlowBlock': null,
+                              'static': false,
                               'directives': [{'name': '_TooltipDirective', 'id': 17}],
                               'children': [],
                               'resolutionPath': [
@@ -9439,6 +9834,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                           'tagName': '#comment',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_NgForOf', 'id': 18}],
                           'children': [],
                           'resolutionPath': [
@@ -9492,6 +9888,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                 {
                   'tagName': 'app-zippy',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
                   'directives': [],
                   'children': [],
@@ -9506,6 +9903,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                 {
                   'tagName': 'app-heavy',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
                   'directives': [],
                   'children': [],
@@ -9550,6 +9948,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'router-outlet',
           'controlFlowBlock': null,
+          'static': false,
           'component': null,
           'directives': [{'name': '_RouterOutlet', 'id': 1}],
           'children': [],
@@ -9573,6 +9972,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-demo-component',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-demo-component', 'isElement': false, 'id': 2},
           'directives': [],
           'children': [
@@ -9580,6 +9980,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 3}],
               'children': [],
               'resolutionPath': [
@@ -9596,6 +9997,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             {
               'tagName': 'app-todo-demo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
               'directives': [],
               'children': [
@@ -9603,6 +10005,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 5}],
                   'children': [],
                   'resolutionPath': [
@@ -9623,6 +10026,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 6}],
                   'children': [],
                   'resolutionPath': [
@@ -9643,6 +10047,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'router-outlet',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterOutlet', 'id': 7}],
                   'children': [],
                   'resolutionPath': [
@@ -9662,6 +10067,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                 {
                   'tagName': 'app-todos',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
                   'directives': [],
                   'children': [
@@ -9669,6 +10075,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 9}],
                       'children': [],
                       'resolutionPath': [
@@ -9692,6 +10099,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 10}],
                       'children': [],
                       'resolutionPath': [
@@ -9715,6 +10123,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'a',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_RouterLink', 'id': 11}],
                       'children': [],
                       'resolutionPath': [
@@ -9737,6 +10146,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                       'directives': [{'name': '_TooltipDirective', 'id': 13}],
                       'children': [
@@ -9744,6 +10154,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 14}],
                           'children': [],
                           'resolutionPath': [
@@ -9787,6 +10198,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                     {
                       'tagName': 'app-todo',
                       'controlFlowBlock': null,
+                      'static': false,
                       'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                       'directives': [{'name': '_TooltipDirective', 'id': 16}],
                       'children': [
@@ -9794,6 +10206,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                           'tagName': 'div',
                           'component': null,
                           'controlFlowBlock': null,
+                          'static': false,
                           'directives': [{'name': '_TooltipDirective', 'id': 17}],
                           'children': [],
                           'resolutionPath': [
@@ -9838,6 +10251,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': '#comment',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_NgForOf', 'id': 18}],
                       'children': [],
                       'resolutionPath': [
@@ -9891,6 +10305,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             {
               'tagName': 'app-zippy',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
               'directives': [],
               'children': [],
@@ -9905,6 +10320,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             {
               'tagName': 'app-heavy',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
               'directives': [],
               'children': [],
@@ -9945,6 +10361,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 3}],
           'children': [],
           'resolutionPath': [
@@ -9973,6 +10390,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-todo-demo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo-demo', 'isElement': false, 'id': 4},
           'directives': [],
           'children': [
@@ -9980,6 +10398,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 5}],
               'children': [],
               'resolutionPath': [
@@ -10000,6 +10419,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 6}],
               'children': [],
               'resolutionPath': [
@@ -10020,6 +10440,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'router-outlet',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterOutlet', 'id': 7}],
               'children': [],
               'resolutionPath': [
@@ -10039,6 +10460,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             {
               'tagName': 'app-todos',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
               'directives': [],
               'children': [
@@ -10046,6 +10468,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 9}],
                   'children': [],
                   'resolutionPath': [
@@ -10069,6 +10492,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 10}],
                   'children': [],
                   'resolutionPath': [
@@ -10092,6 +10516,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'a',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_RouterLink', 'id': 11}],
                   'children': [],
                   'resolutionPath': [
@@ -10114,6 +10539,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
                   'directives': [{'name': '_TooltipDirective', 'id': 13}],
                   'children': [
@@ -10121,6 +10547,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 14}],
                       'children': [],
                       'resolutionPath': [
@@ -10164,6 +10591,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                 {
                   'tagName': 'app-todo',
                   'controlFlowBlock': null,
+                  'static': false,
                   'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
                   'directives': [{'name': '_TooltipDirective', 'id': 16}],
                   'children': [
@@ -10171,6 +10599,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                       'tagName': 'div',
                       'component': null,
                       'controlFlowBlock': null,
+                      'static': false,
                       'directives': [{'name': '_TooltipDirective', 'id': 17}],
                       'children': [],
                       'resolutionPath': [
@@ -10215,6 +10644,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': '#comment',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_NgForOf', 'id': 18}],
                   'children': [],
                   'resolutionPath': [
@@ -10282,6 +10712,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'a',
           'controlFlowBlock': null,
+          'static': false,
           'component': null,
           'directives': [{'name': '_RouterLink', 'id': 5}],
           'children': [],
@@ -10318,6 +10749,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 6}],
           'children': [],
           'resolutionPath': [
@@ -10353,6 +10785,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': 'router-outlet',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterOutlet', 'id': 7}],
           'children': [],
           'resolutionPath': [
@@ -10387,6 +10820,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-todos',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todos', 'isElement': false, 'id': 8},
           'directives': [],
           'children': [
@@ -10394,6 +10828,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 9}],
               'children': [],
               'resolutionPath': [
@@ -10417,6 +10852,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 10}],
               'children': [],
               'resolutionPath': [
@@ -10440,6 +10876,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'a',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_RouterLink', 'id': 11}],
               'children': [],
               'resolutionPath': [
@@ -10462,6 +10899,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             {
               'tagName': 'app-todo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
               'directives': [{'name': '_TooltipDirective', 'id': 13}],
               'children': [
@@ -10469,6 +10907,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'div',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_TooltipDirective', 'id': 14}],
                   'children': [],
                   'resolutionPath': [
@@ -10512,6 +10951,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
             {
               'tagName': 'app-todo',
               'controlFlowBlock': null,
+              'static': false,
               'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
               'directives': [{'name': '_TooltipDirective', 'id': 16}],
               'children': [
@@ -10519,6 +10959,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
                   'tagName': 'div',
                   'component': null,
                   'controlFlowBlock': null,
+                  'static': false,
                   'directives': [{'name': '_TooltipDirective', 'id': 17}],
                   'children': [],
                   'resolutionPath': [
@@ -10563,6 +11004,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': '#comment',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_NgForOf', 'id': 18}],
               'children': [],
               'resolutionPath': [
@@ -10620,6 +11062,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 9}],
           'children': [],
           'resolutionPath': [
@@ -10661,6 +11104,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 10}],
           'children': [],
           'resolutionPath': [
@@ -10702,6 +11146,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': 'a',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_RouterLink', 'id': 11}],
           'children': [],
           'resolutionPath': [
@@ -10742,6 +11187,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-todo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo', 'isElement': false, 'id': 12},
           'directives': [{'name': '_TooltipDirective', 'id': 13}],
           'children': [
@@ -10749,6 +11195,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 14}],
               'children': [],
               'resolutionPath': [
@@ -10812,6 +11259,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': 'div',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_TooltipDirective', 'id': 14}],
           'children': [],
           'resolutionPath': [
@@ -10856,6 +11304,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-todo',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-todo', 'isElement': false, 'id': 15},
           'directives': [{'name': '_TooltipDirective', 'id': 16}],
           'children': [
@@ -10863,6 +11312,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
               'tagName': 'div',
               'component': null,
               'controlFlowBlock': null,
+              'static': false,
               'directives': [{'name': '_TooltipDirective', 'id': 17}],
               'children': [],
               'resolutionPath': [
@@ -10925,6 +11375,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'div',
           'controlFlowBlock': null,
+          'static': false,
           'component': null,
           'directives': [{'name': '_TooltipDirective', 'id': 17}],
           'children': [],
@@ -10971,6 +11422,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
           'tagName': '#comment',
           'component': null,
           'controlFlowBlock': null,
+          'static': false,
           'directives': [{'name': '_NgForOf', 'id': 18}],
           'children': [],
           'resolutionPath': [
@@ -11011,6 +11463,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-zippy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-zippy', 'isElement': true, 'id': 19},
           'directives': [],
           'children': [],
@@ -11034,6 +11487,7 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
         'node': {
           'tagName': 'app-heavy',
           'controlFlowBlock': null,
+          'static': false,
           'component': {'name': 'app-heavy', 'isElement': false, 'id': 20},
           'directives': [],
           'children': [],
