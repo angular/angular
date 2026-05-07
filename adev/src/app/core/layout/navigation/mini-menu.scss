@@ -4,6 +4,7 @@
 // ul
 .adev-mini-menu {
   padding: 0;
+  margin-block: 0;
   color: var(--primary-contrast);
   background-color: var(--page-background);
   border: 1px solid var(--senary-contrast);
@@ -86,11 +87,8 @@
 
 .adev-version-picker {
   overflow-y: auto;
-  max-height: 90vh;
-  top: 30px;
-  left: 10px;
-  position: absolute;
-  bottom: auto;
+  max-height: 70dvh;
+  margin-inline-start: 10px;
 
   li {
     padding-inline: 0;
@@ -101,9 +99,11 @@
   }
 
   @include mq.for-tablet {
-    top: 30px;
-    left: auto;
-    bottom: auto;
+    position: fixed;
+    position-anchor: --version-trigger;
+    inset-block-start: calc(anchor(bottom) + 8px);
+    justify-self: anchor-center;
+    margin-inline-start: 0;
   }
 }
 
