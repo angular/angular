@@ -168,13 +168,50 @@ Please check that 1) the type for the parameter at index ${index} is correct and
 }
 
 /**
+ * @param token A class whose instance is to be injected.
+ * @returns the injected instance.
+ * @throws if called outside of a supported context.
+ *
+ * @publicApi
+ */
+export function inject<T>(token: abstract new (...args: any[]) => T): T;
+/**
+ * @param token A class whose instance is to be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected instance.
+ * @throws if called outside of a supported context, or if the token is not found.
+ *
+ * @publicApi
+ */
+export function inject<T>(
+  token: abstract new (...args: any[]) => T,
+  options: InjectOptions & {optional?: false},
+): T;
+/**
+ * @param token A class whose instance is to be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected instance, or `null` if optional and not found.
+ * @throws if called outside of a supported context, or if the token is not found and optional
+ *     injection was not requested.
+ *
+ * @publicApi
+ */
+export function inject<T>(
+  token: abstract new (...args: any[]) => T,
+  options: InjectOptions,
+): T | null;
+/**
  * @param token A token that represents a dependency that should be injected.
  * @returns the injected value if operation is successful, `null` otherwise.
  * @throws if called outside of a supported context.
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T>): T;
+export function inject<T>(token: InjectionToken<T>): T;
 /**
  * @param token A token that represents a dependency that should be injected.
  * @param options Control how injection is executed. Options correspond to injection strategies
@@ -185,7 +222,7 @@ export function inject<T>(token: ProviderToken<T>): T;
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {optional?: false}): T;
+export function inject<T>(token: InjectionToken<T>, options: InjectOptions & {optional?: false}): T;
 /**
  * @param token A token that represents a dependency that should be injected.
  * @param options Control how injection is executed. Options correspond to injection strategies
@@ -198,7 +235,7 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {opt
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T | null;
+export function inject<T>(token: InjectionToken<T>, options: InjectOptions): T | null;
 /**
  * @param token A token that represents a static attribute on the host node that should be injected.
  * @returns Value of the attribute if it exists.

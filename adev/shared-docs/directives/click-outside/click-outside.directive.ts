@@ -24,7 +24,7 @@ export class ClickOutside {
 
   onClick(event: MouseEvent): void {
     if (
-      !this.elementRef.nativeElement.contains(event.target) &&
+      !this.elementRef.nativeElement.contains(event.target as HTMLElement) &&
       !this.wasClickedOnIgnoredElement(event)
     ) {
       this.clickOutside.emit();
