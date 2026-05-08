@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, ɵRuntimeError as RuntimeError, Service, Signal} from '@angular/core';
+import {computed, Injectable, ɵRuntimeError as RuntimeError, Signal} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import type {Router} from './router';
@@ -417,7 +417,7 @@ export function mapChildrenIntoArray<T>(
  *
  * @publicApi
  */
-@Service({factory: () => new DefaultUrlSerializer()})
+@Injectable({providedIn: 'root', useFactory: () => new DefaultUrlSerializer()})
 export abstract class UrlSerializer {
   /** Parse a url into a `UrlTree` */
   abstract parse(url: string): UrlTree;

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentRef, inject, Service} from '@angular/core';
+import {ComponentRef, inject, Injectable, Service} from '@angular/core';
 
-import {Route} from './models';
 import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
+import {Route} from './models';
 import {TreeNode} from './utils/tree';
 
 /**
@@ -64,7 +64,7 @@ export interface ExperimentalRouteReuseStrategy {
  *
  * @publicApi
  */
-@Service({factory: () => inject(DefaultRouteReuseStrategy)})
+@Injectable({providedIn: 'root', useFactory: () => inject(DefaultRouteReuseStrategy)})
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;

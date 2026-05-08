@@ -7,7 +7,6 @@
  */
 import {
   ANIMATION_MODULE_TYPE,
-  ɵAnimationRendererType as AnimationRendererType,
   DOCUMENT,
   Inject,
   inject,
@@ -15,9 +14,9 @@ import {
   Renderer2,
   RendererFactory2,
   RendererType2,
-  ɵRuntimeError as RuntimeError,
-  Service,
   ViewEncapsulation,
+  ɵAnimationRendererType as AnimationRendererType,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {AnimationMetadata, AnimationOptions, sequence} from './animation_metadata';
@@ -72,7 +71,7 @@ import {AnimationPlayer} from './players/animation_player';
  *
  * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
-@Service({factory: () => inject(BrowserAnimationBuilder)})
+@Injectable({providedIn: 'root', useFactory: () => inject(BrowserAnimationBuilder)})
 export abstract class AnimationBuilder {
   /**
    * Builds a factory for producing a defined animation.

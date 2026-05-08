@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Service} from '@angular/core';
+import {inject, Injectable, Service} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions} from './model/abstract_model';
@@ -415,7 +415,10 @@ export class FormBuilder {
  *
  * @publicApi
  */
-@Service({factory: () => inject(FormBuilder).nonNullable})
+@Injectable({
+  providedIn: 'root',
+  useFactory: () => inject(FormBuilder).nonNullable,
+})
 export abstract class NonNullableFormBuilder {
   /**
    * Similar to `FormBuilder#group`, except any implicitly constructed `FormControl`

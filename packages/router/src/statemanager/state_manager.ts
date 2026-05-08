@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {EnvironmentInjector, inject, Service} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, Service} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
 import {
@@ -29,7 +29,7 @@ import {createEmptyState, RouterState} from '../router_state';
 import {UrlHandlingStrategy} from '../url_handling_strategy';
 import {UrlSerializer, UrlTree} from '../url_tree';
 
-@Service({factory: () => inject(HistoryStateManager)})
+@Injectable({providedIn: 'root', useFactory: () => inject(HistoryStateManager)})
 export abstract class StateManager {
   protected readonly urlSerializer = inject(UrlSerializer);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
