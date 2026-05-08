@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
 import {compileService} from './jit/service';
 
@@ -39,7 +39,9 @@ export interface ServiceDecorator {
   <T>(options: {
     autoProvided?: true;
     factory: () => T;
-  }): <C extends Type<unknown>>(target: C) => Type<T>;
+  }): <C extends Type<unknown> | AbstractType<unknown>>(
+    target: C,
+  ) => C extends Type<unknown> ? Type<T> : abstract new (...args: any[]) => T;
 
   /**
    * Creates a service that is automatically provided.

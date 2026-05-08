@@ -1815,7 +1815,7 @@ export interface ServiceDecorator {
     <T>(options: {
         autoProvided?: true;
         factory: () => T;
-    }): <C extends Type<unknown>>(target: C) => Type<T>;
+    }): <C extends Type<unknown> | AbstractType<unknown>>(target: C) => C extends Type<unknown> ? Type<T> : abstract new (...args: any[]) => T;
     (options?: {
         autoProvided?: true;
     }): TypeDecorator;
