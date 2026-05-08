@@ -1338,9 +1338,7 @@ export interface OnDestroy {
 }
 
 // @public
-export function onIdle(options?: {
-    timeout?: number;
-}): Promise<void>;
+export function onIdle(options?: IdleRequestOptions): Promise<void>;
 
 // @public
 export interface OnInit {

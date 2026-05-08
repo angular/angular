@@ -129,7 +129,7 @@ export type PrefetchTrigger = () => Promise<void>;
  *
  * @publicApi 22.0
  */
-export function onIdle(options?: {timeout?: number}): Promise<void> {
+export function onIdle(options?: IdleRequestOptions): Promise<void> {
   if (ngDevMode) {
     assertInInjectionContext(injectAsync);
   }
