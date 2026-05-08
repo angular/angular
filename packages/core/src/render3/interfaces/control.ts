@@ -79,9 +79,4 @@ export interface ControlDirectiveHost<_TPassthroughInput extends string | undefi
    * itself.
    */
   setInputOnDirectives(inputName: string, value: unknown): boolean;
-
-  /**
-   * Listens to a DOM event on the host element.
-   */
-  listenToDom(eventName: string, listener: (event: Event) => void): void;
 }

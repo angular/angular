@@ -23,12 +23,14 @@ import {
   numberAttribute,
   output,
   Output,
+  provideZonelessChangeDetection,
   resource,
   signal,
   viewChild,
   viewChildren,
   ViewContainerRef,
   ViewEncapsulation,
+  ɵChangeDetectionScheduler,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
@@ -5094,6 +5096,42 @@ describe('field directive', () => {
     });
 
     expect(field().touched()).toBe(true);
+  });
+
+  it('should not notify the change detection scheduler on blur when control is already touched', () => {
+    // provideZonelessChangeDetection is required so that ChangeDetectionScheduler is
+    // wired into the LView environment. In zone mode the scheduler slot is null and
+    // markViewDirty never calls notify(), making the test meaningless without it.
+    TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+
+    @Component({
+      imports: [FormField],
+      template: `<input [formField]="f" />`,
+    })
+    class TestCmp {
+      f = form(signal(''));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const inputEl = fixture.nativeElement.firstChild as HTMLInputElement;
+    const field = fixture.componentInstance.f;
+
+    // Put the control into the already-touched state so the next blur is a no-op.
+    act(() => field().markAsTouched());
+    expect(field().touched()).toBe(true);
+
+    const scheduler = TestBed.inject(ɵChangeDetectionScheduler);
+    const notifySpy = spyOn(scheduler, 'notify');
+
+    // Blur when already touched — nothing changed, so CD must not be scheduled.
+    //
+    // Regression: when the blur listener was registered via host.listenToDom('blur', ...),
+    // wrapListener called markViewDirty unconditionally before running the callback, which
+    // called scheduler.notify(NotificationSource.Listener) even when selfTouched was
+    // already true and the signal write was a no-op.
+    inputEl.dispatchEvent(new Event('blur'));
+
+    expect(notifySpy).not.toHaveBeenCalled();
   });
 
   it('should synchronize with custom control touched status', () => {
