@@ -2348,6 +2348,71 @@ describe('template-driven forms integration tests', () => {
         verifyValidatorAttrValues({min: null, max: null});
         verifyFormState({isValid: true});
       });
+
+      // Regression test for https://github.com/angular/angular/issues/14189
+      // Two-input setup faithful to the original plnkr repro: typing in the minLen
+      // input dynamically re-validates the actual input. Parent template bindings
+      // reading the actual input's validity must reflect the new state within the
+      // same CD pass, not one tick later.
+      it('reflects dynamic validator changes on parent bindings within one CD pass', async () => {
+        @Component({
+          template: `
+            <form>
+              <input name="ml" ngModel #ml="ngModel">
+              <div class="status"
+                   [class.is-valid]="ip.valid"
+                   [class.is-invalid]="ip.invalid"></div>
+              <input name="field" ngModel [minlength]="ml.value" #ip="ngModel">
+            </form>
+          `,
+          standalone: false,
+          changeDetection: ChangeDetectionStrategy.OnPush,
+        })
+        class DynamicMinLenComponent {}
+
+        const fixture = initTest(DynamicMinLenComponent);
+        fixture.detectChanges();
+        await timeout();
+
+        const minLenInput = fixture.debugElement.query(By.css('input[name=ml]')).nativeElement;
+        const fieldInput = fixture.debugElement.query(By.css('input[name=field]')).nativeElement;
+        const status = fixture.debugElement.query(By.css('div.status')).nativeElement;
+        const ngForm = fixture.debugElement.children[0].injector.get(NgForm);
+        const fieldCtrl = ngForm.control.get('field')!;
+
+        // Set minLen=1 and type 'ab' into the field input.
+        minLenInput.value = '1';
+        dispatchEvent(minLenInput, 'input');
+        fixture.detectChanges();
+        await timeout();
+        fieldInput.value = 'ab';
+        dispatchEvent(fieldInput, 'input');
+        fixture.detectChanges();
+        await timeout();
+        expect(fieldCtrl.status).toBe('VALID');
+        expect(status.classList.contains('is-valid'))
+          .withContext('field="ab", minLen="1" -> valid')
+          .toBe(true);
+
+        // Raise minLen to "12" by typing into the minLen input — same as the original
+        // plnkr repro where the user types "2" after "1". A SINGLE detectChanges()
+        // must propagate the new validity to the parent template binding.
+        minLenInput.value = '12';
+        dispatchEvent(minLenInput, 'input');
+        fixture.detectChanges();
+        await timeout();
+
+        expect(fieldCtrl.status)
+          .withContext('field re-validated to INVALID after minLen="12"')
+          .toBe('INVALID');
+        expect(fieldInput.classList.contains('ng-invalid'))
+          .withContext('field input ng-invalid (NgControlStatus host binding)')
+          .toBe(true);
+        expect(status.classList.contains('is-invalid'))
+          .withContext('parent div is-invalid via ip.invalid (must match input state)')
+          .toBe(true);
+        expect(status.classList.contains('is-valid')).toBe(false);
+      });
     });
 
     ['number', 'string'].forEach((inputType: string) => {

@@ -617,7 +617,7 @@ export abstract class AbstractControl<
    * both valid AND invalid or invalid AND disabled.
    */
   get status(): FormControlStatus {
-    return untracked(this.statusReactive)!;
+    return this._status()!;
   }
   private set status(v: FormControlStatus) {
     untracked(() => this.statusReactive.set(v));
