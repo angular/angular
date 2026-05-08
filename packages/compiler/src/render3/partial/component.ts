@@ -235,6 +235,8 @@ function compileUsedDependenciesMetadata(
         ngModuleMeta.set('kind', o.literal('ngmodule'));
         ngModuleMeta.set('type', wrapType(decl.type));
         return ngModuleMeta.toLiteralMap();
+      case R3TemplateDependencyKind.ForeignComponent:
+        throw new Error('Foreign components are not supported in partial compilation');
     }
   });
 }

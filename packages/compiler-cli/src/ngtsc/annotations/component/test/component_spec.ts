@@ -121,7 +121,7 @@ function setup(
     metaReader,
     scopeRegistry,
     {
-      getCanonicalFileName: (fileName) => fileName,
+      getCanonicalFileName: (fileName: string) => fileName,
     },
     scopeRegistry,
     typeCheckScopeRegistry,
@@ -1041,6 +1041,52 @@ runInEachFileSystem(() => {
         const {diagnostics} = handler.analyze(TestCmp, detected.metadata);
 
         expect(diagnostics).toBeUndefined();
+      });
+
+      it('should populate foreignImports with ForeignComponents', () => {
+        const {program, options, host} = makeProgram([
+          {
+            name: _('/node_modules/@angular/core/index.d.ts'),
+            contents: `
+              export const Component: any;
+              export interface ForeignComponent { ɵrender: (...args: any[]) => any }
+            `,
+          },
+          {
+            name: _('/entry.ts'),
+            contents: `
+              import {Component, ForeignComponent} from '@angular/core';
+
+              function ForeignButton() {}
+
+              function foreignImport(component: unknown): ForeignComponent {
+                const foreignComponent = component as ForeignComponent;
+                foreignComponent.ɵrender ??= () => {};
+                return foreignComponent;
+              }
+
+              @Component({
+                selector: 'main',
+                template: '',
+                foreignImports: [foreignImport(ForeignButton)],
+              }) class TestCmp {}
+            `,
+          },
+        ]);
+        const {reflectionHost, handler} = setup(program, options, host);
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+        const detected = handler.detect(
+          TestCmp,
+          reflectionHost.getDecoratorsOfDeclaration(TestCmp),
+        );
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+        const {analysis, diagnostics} = handler.analyze(TestCmp, detected.metadata);
+
+        expect(diagnostics).toBeUndefined();
+        expect(analysis?.foreignImports?.length).toBe(1);
+        expect(analysis?.foreignImports![0].node.name.text).toBe('ForeignButton');
       });
 
       it('should produce diagnostic for imports in non-standalone component', () => {

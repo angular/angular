@@ -201,7 +201,9 @@ import {
   collectLegacyAnimationNames,
   legacyAnimationTriggerResolver,
   validateAndFlattenComponentImports,
+  validateAndFlattenForeignImports,
 } from './util';
+import {foreignComponentResolver} from './resolver';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -605,16 +607,22 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     }
 
     let resolvedImports: Reference<ClassDeclaration>[] | null = null;
+    let foreignImports: Reference<ClassDeclaration>[] | null = null;
     let resolvedDeferredImports: Reference<ClassDeclaration>[] | null = null;
 
     let rawImports: ts.Expression | null = component.get('imports') ?? null;
     let rawDeferredImports: ts.Expression | null = component.get('deferredImports') ?? null;
+    let rawForeignImports: ts.Expression | null = component.get('foreignImports') ?? null;
 
-    if ((rawImports || rawDeferredImports) && !metadata.isStandalone) {
+    if ((rawImports || rawDeferredImports || rawForeignImports) && !metadata.isStandalone) {
       if (diagnostics === undefined) {
         diagnostics = [];
       }
-      const importsField = rawImports ? 'imports' : 'deferredImports';
+      const importsField = rawImports
+        ? 'imports'
+        : rawDeferredImports
+          ? 'deferredImports'
+          : 'foreignImports';
       diagnostics.push(
         makeDiagnostic(
           ErrorCode.COMPONENT_NOT_STANDALONE,
@@ -631,41 +639,55 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       // Poison the component so that we don't spam further template type-checking errors that
       // result from misconfigured imports.
       isPoisoned = true;
-    } else if (
-      this.compilationMode !== CompilationMode.LOCAL &&
-      (rawImports || rawDeferredImports)
-    ) {
-      const importResolvers = combineResolvers([
-        createModuleWithProvidersResolver(this.reflector, this.isCore),
-        createForwardRefResolver(this.isCore),
-      ]);
-
+    } else if (rawImports || rawDeferredImports || rawForeignImports) {
       const importDiagnostics: ts.Diagnostic[] = [];
 
-      if (rawImports) {
-        const expr = rawImports;
-        const imported = this.evaluator.evaluate(expr, importResolvers);
-        const {imports: flattened, diagnostics} = validateAndFlattenComponentImports(
+      if (rawForeignImports) {
+        const foreignImportResolvers = combineResolvers([
+          createForwardRefResolver(this.isCore),
+          foreignComponentResolver,
+        ]);
+        const expr = rawForeignImports;
+        const imported = this.evaluator.evaluate(expr, foreignImportResolvers);
+        const {foreignImports: flattened, diagnostics} = validateAndFlattenForeignImports(
           imported,
           expr,
-          false /* isDeferred */,
         );
         importDiagnostics.push(...diagnostics);
-        resolvedImports = flattened;
-        rawImports = expr;
+        foreignImports = flattened;
       }
 
-      if (rawDeferredImports) {
-        const expr = rawDeferredImports;
-        const imported = this.evaluator.evaluate(expr, importResolvers);
-        const {imports: flattened, diagnostics} = validateAndFlattenComponentImports(
-          imported,
-          expr,
-          true /* isDeferred */,
-        );
-        importDiagnostics.push(...diagnostics);
-        resolvedDeferredImports = flattened;
-        rawDeferredImports = expr;
+      if (this.compilationMode !== CompilationMode.LOCAL && (rawImports || rawDeferredImports)) {
+        const importResolvers = combineResolvers([
+          createModuleWithProvidersResolver(this.reflector, this.isCore),
+          createForwardRefResolver(this.isCore),
+        ]);
+
+        if (rawImports) {
+          const expr = rawImports;
+          const imported = this.evaluator.evaluate(expr, importResolvers);
+          const {imports: flattened, diagnostics} = validateAndFlattenComponentImports(
+            imported,
+            expr,
+            false /* isDeferred */,
+          );
+          importDiagnostics.push(...diagnostics);
+          resolvedImports = flattened;
+          rawImports = expr;
+        }
+
+        if (rawDeferredImports) {
+          const expr = rawDeferredImports;
+          const imported = this.evaluator.evaluate(expr, importResolvers);
+          const {imports: flattened, diagnostics} = validateAndFlattenComponentImports(
+            imported,
+            expr,
+            true /* isDeferred */,
+          );
+          importDiagnostics.push(...diagnostics);
+          resolvedDeferredImports = flattened;
+          rawDeferredImports = expr;
+        }
       }
 
       if (importDiagnostics.length > 0) {
@@ -1032,6 +1054,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         legacyAnimationTriggerNames: legacyAnimationTriggerNames,
         rawImports,
         resolvedImports,
+        foreignImports,
         rawDeferredImports,
         resolvedDeferredImports,
         explicitlyDeferredTypes,
@@ -1083,6 +1106,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
       imports: analysis.resolvedImports,
+      foreignImports: analysis.foreignImports,
       rawImports: analysis.rawImports,
       deferredImports: analysis.resolvedDeferredImports,
       animationTriggerNames: analysis.legacyAnimationTriggerNames,

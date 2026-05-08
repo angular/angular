@@ -19,7 +19,11 @@ import {
   ResolvedValueMap,
   SyntheticValue,
 } from '../../../partial_evaluator';
-import {ClassDeclaration, isNamedClassDeclaration} from '../../../reflection';
+import {
+  ClassDeclaration,
+  isNamedClassDeclaration,
+  isNamedFunctionDeclaration,
+} from '../../../reflection';
 import {createValueHasWrongTypeError, getOriginNodeForDiagnostics} from '../../common';
 
 /**
@@ -143,24 +147,12 @@ export function validateAndFlattenComponentImports(
         ),
       );
     } else {
-      let diagnosticNode: ts.Node;
-      let diagnosticValue: ResolvedValue;
-
-      // Reporting a diagnostic on the entire array can be noisy, especially if the user has a
-      // large array. Attempt to determine the most accurate position within the `imports` expression to report the
-      // diagnostic on.
-      if (ref instanceof DynamicValue && isWithinExpression(ref.node, expr)) {
-        // Use the dynamic value position itself if it occurs within the `imports` expression.
-        diagnosticNode = ref.node;
-        diagnosticValue = ref;
-      } else if (refExpr !== expr) {
-        // The reference comes from a specific element in `expr`, so use that element to report the diagnostic on.
-        diagnosticNode = refExpr;
-        diagnosticValue = ref;
-      } else {
-        diagnosticNode = expr;
-        diagnosticValue = imports;
-      }
+      const {node: diagnosticNode, value: diagnosticValue} = getDiagnosticOrigin(
+        ref,
+        expr,
+        refExpr,
+        imports,
+      );
 
       diagnostics.push(
         createValueHasWrongTypeError(diagnosticNode, diagnosticValue, errorMessage).toDiagnostic(),
@@ -169,6 +161,83 @@ export function validateAndFlattenComponentImports(
   }
 
   return {imports: flattened, diagnostics};
+}
+
+export function validateAndFlattenForeignImports(
+  imports: ResolvedValue,
+  expr: ts.Expression,
+): {
+  foreignImports: Reference<ClassDeclaration>[];
+  diagnostics: ts.Diagnostic[];
+} {
+  const flattened: Reference<ClassDeclaration>[] = [];
+  const errorMessage = `'foreignImports' must be an array of ForeignComponents.`;
+
+  if (!Array.isArray(imports)) {
+    const error = createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic();
+    return {
+      foreignImports: [],
+      diagnostics: [error],
+    };
+  }
+
+  const diagnostics: ts.Diagnostic[] = [];
+
+  for (let i = 0; i < imports.length; i++) {
+    const ref = imports[i];
+    let refExpr = expr;
+    if (
+      ts.isArrayLiteralExpression(expr) &&
+      expr.elements.length === imports.length &&
+      !expr.elements.some(ts.isSpreadAssignment)
+    ) {
+      refExpr = expr.elements[i];
+    }
+
+    if (Array.isArray(ref)) {
+      const {foreignImports: childForeignImports, diagnostics: childDiagnostics} =
+        validateAndFlattenForeignImports(ref, refExpr);
+      flattened.push(...childForeignImports);
+      diagnostics.push(...childDiagnostics);
+    } else if (ref instanceof Reference && isNamedFunctionDeclaration(ref.node)) {
+      flattened.push(ref as Reference<ClassDeclaration>);
+    } else {
+      const {node: diagnosticNode, value: diagnosticValue} = getDiagnosticOrigin(
+        ref,
+        expr,
+        refExpr,
+        imports,
+      );
+
+      diagnostics.push(
+        createValueHasWrongTypeError(diagnosticNode, diagnosticValue, errorMessage).toDiagnostic(),
+      );
+    }
+  }
+
+  return {foreignImports: flattened, diagnostics};
+}
+
+/**
+ * Reporting a diagnostic on the entire array can be noisy, especially if the user has a
+ * large array. Attempt to determine the most accurate position within the array expression to report the
+ * diagnostic on.
+ */
+function getDiagnosticOrigin(
+  ref: ResolvedValue,
+  expr: ts.Expression,
+  refExpr: ts.Expression,
+  fallbackValue: ResolvedValue,
+): {node: ts.Node; value: ResolvedValue} {
+  if (ref instanceof DynamicValue && isWithinExpression(ref.node, expr)) {
+    // Use the dynamic value position itself if it occurs within the expression.
+    return {node: ref.node, value: ref};
+  } else if (refExpr !== expr) {
+    // The reference comes from a specific element in `expr`, so use that element to report the diagnostic on.
+    return {node: refExpr, value: ref};
+  } else {
+    return {node: expr, value: fallbackValue};
+  }
 }
 
 function isWithinExpression(node: ts.Node, expr: ts.Expression): boolean {

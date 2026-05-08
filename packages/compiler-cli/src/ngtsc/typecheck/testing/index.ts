@@ -966,6 +966,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         isSignal: false,
         imports: null,
+        foreignImports: null,
         rawImports: null,
         deferredImports: null,
         schemas: null,

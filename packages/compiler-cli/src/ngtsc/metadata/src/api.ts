@@ -251,6 +251,14 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   imports: Reference<ClassDeclaration>[] | null;
 
   /**
+   * For standalone components, the list of imported foreign components.
+   *
+   * Note that while a foreign import is not likely to be a class, this type is used
+   * because it includes the expected identifier we'll need, making further code simpler.
+   */
+  foreignImports: Reference<ClassDeclaration>[] | null;
+
+  /**
    * Node declaring the `imports` of a standalone component. Used to produce diagnostics.
    */
   rawImports: ts.Expression | null;
