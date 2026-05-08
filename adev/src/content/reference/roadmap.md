@@ -163,7 +163,7 @@ In v17 we shipped a vite and esbuild-based application builder and enabled it fo
 <docs-card title="Make Angular.dev the official home for Angular developers" link="Completed in Q2 2024" href="https://goo.gle/angular-dot-dev">
 Angular.dev is the new site, domain and home for Angular development. The new site contains updated documentation, tutorials and guidance that will help developers build with Angular’s latest features.
 </docs-card>
-<docs-card title="Introduce built-in control flow" link="Completed in Q2 2024" href="https://next.angular.dev/essentials/conditionals-and-loops">
+<docs-card title="Introduce built-in control flow" link="Completed in Q2 2024" href="guide/templates/control-flow">
 In v17 we shipped a developer preview version of a new control flow. It brings significant performance improvements and better ergonomics for template authoring. We also provided a migration of existing `*ngIf`, `*ngFor`, and `*ngSwitch` which you can run to move your project to the new implementation. As of v18 the built-in control flow is now stable.
 </docs-card>
 <docs-card title="Modernize getting started tutorial" link="Completed Q4 2023">
@@ -175,7 +175,7 @@ In Angular v16, we released a developer preview of an esbuild-based builder with
 <docs-card title="Introduce dependency injection debugging APIs" link="Completed Q4 2023" href="tools/devtools">
 To improve the debugging utilities of Angular and Angular DevTools, we'll work on APIs that provide access to the dependency injection runtime. As part of the project, we'll expose debugging methods that allow us to explore the injector hierarchy and the dependencies across their associated providers. As of v17, we shipped a feature that enables us to plug into the dependency injection life-cycle. We also launched a visualization of the injector tree and inspection of the providers declared inside each individual node,
 </docs-card>
-<docs-card title="Improve documentation and schematics for standalone components" link="Completed Q4 2023" href="components">
+<docs-card title="Improve documentation and schematics for standalone components" link="Completed Q4 2023" href="essentials/components">
 We released a developer preview of the `ng new --standalone` schematics collection, allowing you to create apps free of NgModules. In v17 we switched the new application authoring format to standalone APIs and changed the documentation to reflect the recommendation. Additionally, we shipped schematics which support updating existing applications to standalone components, directives, and pipes. Even though NgModules will stick around for foreseeable future, we recommend you to explore the benefits of the new APIs to improve developer experience and benefit from the new features we build for them.
 </docs-card>
 <docs-card title="Explore hydration and server-side rendering improvements" link="Completed Q4 2023">
