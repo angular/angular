@@ -223,14 +223,19 @@ export class UserProfile {
 
 Prefer `class` and `style` bindings over using the [`NgClass`](/api/common/NgClass) and [`NgStyle`](/api/common/NgStyle) directives.
 
+When you set classes or styles one at a time, use a key-specific binding:
+
 ```html {prefer}
 <div [class.admin]="isAdmin" [class.dense]="density === 'high'">
-  <div [style.color]="textColor" [style.background-color]="backgroundColor">
-    <!-- OR -->
-    <div [class]="{admin: isAdmin, dense: density === 'high'}">
-      <div [style]="{'color': textColor, 'background-color': backgroundColor}"></div>
-    </div>
-  </div>
+  <div [style.color]="textColor" [style.background-color]="backgroundColor"></div>
+</div>
+```
+
+When you set several at once, pass an object:
+
+```html {prefer}
+<div [class]="{admin: isAdmin, dense: density === 'high'}">
+  <div [style]="{'color': textColor, 'background-color': backgroundColor}"></div>
 </div>
 ```
 
