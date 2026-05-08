@@ -1271,17 +1271,21 @@ import {Component, input} from '@angular/core';
 @Component({
   template: `
     <input [(ngModel)]="inputA()" />
-    <div (click)="inputB = false()"></div>
+    <input [(ngModel)]="inputB().prop.prop" />
+    <input (ngModelChange)="inputC() = $event" />
+    <input (ngModelChange)="inputD().prop = $event + inputF()" />
   `,
   host: {
-    '(click)': 'inputC = true()',
+    '(click)': 'inputE() = true',
   },
 })
 class TwoWayBinding {
   readonly inputA = input('');
-  readonly inputB = input(true);
-  readonly inputC = input(false);
-  readonly inputD = input(false);
+  readonly inputB = input({ prop: { prop: '' } });
+  readonly inputC = input('');
+  readonly inputD = input({ prop: '' });
+  readonly inputE = input(false);
+  readonly inputF = input('');
 }
 @@@@@@ temporary_variables.ts @@@@@@
 
