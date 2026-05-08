@@ -1,3 +1,21 @@
+<a name="22.0.0-next.12"></a>
+# 22.0.0-next.12 (2026-05-08)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ebae1de33](https://github.com/angular/angular/commit/8ebae1de330729f945391283e25661aada11b4ed) | fix | allow service with factory on abstract classes |
+| [6f525245cd](https://github.com/angular/angular/commit/6f525245cd97a934b2b5ea888ee9d52c26c58cb5) | fix | disallow event attribute bindings in host bindings unconditionally |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0f2160c410](https://github.com/angular/angular/commit/0f2160c4105a53ef6488d2c799dda9c0959ce7dc) | fix | remove compiler import from safe optional chaining migration |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a451a1d66e](https://github.com/angular/angular/commit/a451a1d66ee4bf52b24b06dc9d35a7b7ae7b7eb5) | fix | add `allowedHosts` option to `renderModule` and `renderApplication` |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-next.11"></a>
 # 22.0.0-next.11 (2026-05-06)
 ## Breaking Changes
