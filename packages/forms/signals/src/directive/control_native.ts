@@ -62,7 +62,16 @@ export function nativeControlCreate(
   };
   // Pass undefined as the raw value since the parse function doesn't care about it.
   host.listenToDom('input', () => parser.setRawValue(undefined));
-  host.listenToDom('blur', () => parent.state().markAsTouched());
+
+  // Use addEventListener directly so the blur handler does not unconditionally call
+  // markViewDirty. When the control is already touched, markAsTouched() is a no-op signal
+  // write and no CD should be scheduled; when it isn't, the signal write itself schedules CD.
+  // In a large application, every avoided change detection cycle is a win: fewer things
+  // Angular has to check, less time spent traversing the component tree.
+  const nativeEl = host.nativeElement;
+  const blurListener = () => parent.state().markAsTouched();
+  nativeEl.addEventListener('blur', blurListener);
+  parent.destroyRef.onDestroy(() => nativeEl.removeEventListener('blur', blurListener));
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
