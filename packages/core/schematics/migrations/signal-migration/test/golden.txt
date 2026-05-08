@@ -1317,10 +1317,12 @@ import {Component, Input, input} from '@angular/core';
 @Component({
   template: `
     <input [(ngModel)]="inputA" />
-    <div (click)="inputB = false"></div>
+    <input [(ngModel)]="inputB.prop.prop" />
+    <input (ngModelChange)="inputC = $event" />
+    <input (ngModelChange)="inputD.prop = $event + inputF()" />
   `,
   host: {
-    '(click)': 'inputC = true',
+    '(click)': 'inputE = true',
   },
 })
 class TwoWayBinding {
@@ -1329,11 +1331,17 @@ class TwoWayBinding {
   @Input() inputA = '';
   // TODO: Skipped for migration because:
   //  Your application code writes to the input. This prevents migration.
-  @Input() inputB = true;
+  @Input() inputB = {prop: {prop: ''}};
   // TODO: Skipped for migration because:
   //  Your application code writes to the input. This prevents migration.
-  @Input() inputC = false;
-  readonly inputD = input(false);
+  @Input() inputC = '';
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() inputD = {prop: ''};
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() inputE = false;
+  readonly inputF = input('');
 }
 @@@@@@ temporary_variables.ts @@@@@@
 
