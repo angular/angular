@@ -92,6 +92,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_INJECTION_TOKEN = -204,
     // (undocumented)
+    INVALID_ISOLATED_SHADOW_DOM_CONTENT_PROJECTION = 318,
+    // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
     // (undocumented)
     INVALID_RESOURCE_CREATION_IN_PARAMS = 992,
