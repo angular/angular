@@ -18,7 +18,7 @@ import {DestroyRef} from '../linker';
  * the associated injection context is destroyed.
  *
  * The `tool.execute` function is invoked in the injection context of the provided
- * {@link Injector}, or the injection context of `declareWebMcpTool` itself.
+ * {@link Injector}, or the injection context of `declareExperimentalWebMcpTool` itself.
  *
  * @param tool The tool to register and execute when invoked by an AI agent.
  * @param injector Optional {@link Injector} which will automatically
@@ -28,7 +28,7 @@ import {DestroyRef} from '../linker';
  *     `injector` argument provided.
  * @experimental
  */
-export function declareWebMcpTool<const InputSchema extends JsonSchemaForInference>(
+export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(
   tool: ToolDescriptor<InputSchema>,
   injector?: Injector,
 ): void {
@@ -40,7 +40,7 @@ export function declareWebMcpTool<const InputSchema extends JsonSchemaForInferen
   if (!modelContext) return;
 
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    if (!injector) assertInInjectionContext(declareWebMcpTool);
+    if (!injector) assertInInjectionContext(declareExperimentalWebMcpTool);
   }
 
   // Inject the `DestroyRef` and `Injector` immediately, so if it fails we abort

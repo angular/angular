@@ -10,11 +10,11 @@ import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-pol
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 import {Component, createEnvironmentInjector, EnvironmentInjector} from '../../src/core';
 import {provideRouter, Router, withExperimentalAutoCleanupInjectors} from '@angular/router';
-import {provideWebMcpTools} from '../../src/webmcp/provide_tools';
+import {provideExperimentalWebMcpTools} from '../../src/webmcp/provide_tools';
 import {Execute} from '../../src/webmcp/types';
 import {TestBed} from '../../testing';
 
-describe('provideWebMcpTools', () => {
+describe('provideExperimentalWebMcpTools', () => {
   beforeEach(() => {
     initializeWebMCPPolyfill({installTestingShim: true});
   });
@@ -30,7 +30,7 @@ describe('provideWebMcpTools', () => {
 
     const envInjector = createEnvironmentInjector(
       [
-        provideWebMcpTools([
+        provideExperimentalWebMcpTools([
           {
             name: 'testTool',
             description: 'A test tool',
@@ -55,7 +55,7 @@ describe('provideWebMcpTools', () => {
   it('should unregister tools when the injector is destroyed', () => {
     const envInjector = createEnvironmentInjector(
       [
-        provideWebMcpTools([
+        provideExperimentalWebMcpTools([
           {
             name: 'testTool',
             description: 'A test tool',
@@ -92,7 +92,7 @@ describe('provideWebMcpTools', () => {
               path: 'test',
               component: TestComp,
               providers: [
-                provideWebMcpTools([
+                provideExperimentalWebMcpTools([
                   {
                     name: 'routeTool',
                     description: 'A route tool',

@@ -541,7 +541,7 @@ export class DebugNode {
 }
 
 // @public
-export function declareWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): void;
+export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): void;
 
 // @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
@@ -1500,6 +1500,9 @@ export function provideCheckNoChangesConfig(options: {
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
+export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
+
+// @public
 export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;
 
 // @public
@@ -1516,9 +1519,6 @@ export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 
 // @public
 export function provideStabilityDebugging(): EnvironmentProviders;
-
-// @public
-export function provideWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
 
 // @public
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;

@@ -8,7 +8,7 @@
 
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 import {EnvironmentProviders, makeEnvironmentProviders, provideEnvironmentInitializer} from '../di';
-import {declareWebMcpTool} from './declare_tool';
+import {declareExperimentalWebMcpTool} from './declare_tool';
 import type {ToolDescriptor} from './types';
 
 /**
@@ -25,12 +25,12 @@ import type {ToolDescriptor} from './types';
  *     or route providers.
  * @experimental
  */
-export function provideWebMcpTools<const InputSchema extends JsonSchemaForInference>(
+export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(
   tools: ToolDescriptor<InputSchema>[],
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideEnvironmentInitializer(() => {
-      for (const tool of tools) declareWebMcpTool(tool);
+      for (const tool of tools) declareExperimentalWebMcpTool(tool);
     }),
   ]);
 }

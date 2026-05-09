@@ -8,8 +8,8 @@
 
 import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
-import {inject, Injectable, InjectionToken, Injector, runInInjectionContext} from '../../src/di';
-import {declareWebMcpTool} from '../../src/webmcp/declare_tool';
+import {inject, Injectable, Injector, runInInjectionContext} from '../../src/di';
+import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
 import {Execute} from '../../src/webmcp/types';
 import {RuntimeErrorCode} from '../../src/errors';
 
@@ -19,7 +19,7 @@ type IsAny<T> = 0 extends 1 & T ? true : false;
 // Whether or not the type has an index signature.
 type HasIndexSignature<T> = string extends keyof T ? true : false;
 
-describe('declareWebMcpTool', () => {
+describe('declareExperimentalWebMcpTool', () => {
   beforeEach(() => {
     initializeWebMCPPolyfill({installTestingShim: true});
   });
@@ -33,7 +33,7 @@ describe('declareWebMcpTool', () => {
       content: [{type: 'text', text: 'Hello!'}],
     });
 
-    declareWebMcpTool(
+    declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -65,7 +65,7 @@ describe('declareWebMcpTool', () => {
   it('should throw if the tool is already registered', () => {
     const injector = Injector.create({providers: []});
 
-    declareWebMcpTool(
+    declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -76,7 +76,7 @@ describe('declareWebMcpTool', () => {
     );
 
     expect(() => {
-      declareWebMcpTool(
+      declareExperimentalWebMcpTool(
         {
           name: 'testTool',
           description: 'Another test tool',
@@ -91,7 +91,7 @@ describe('declareWebMcpTool', () => {
   it('should unregister the tool when its `Injector` is destroyed', () => {
     const injector = Injector.create({providers: []});
 
-    declareWebMcpTool(
+    declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -114,7 +114,7 @@ describe('declareWebMcpTool', () => {
     const injector = Injector.create({providers: []});
 
     runInInjectionContext(injector, () => {
-      declareWebMcpTool({
+      declareExperimentalWebMcpTool({
         name: 'testTool',
         description: 'A test tool',
         inputSchema: {type: 'object', properties: {}},
@@ -133,7 +133,7 @@ describe('declareWebMcpTool', () => {
 
   it('should throw when called outside an injection context and no `injector` is provided', () => {
     expect(() => {
-      declareWebMcpTool({
+      declareExperimentalWebMcpTool({
         name: 'testTool',
         description: 'A test tool',
         inputSchema: {type: 'object', properties: {}},
@@ -148,7 +148,7 @@ describe('declareWebMcpTool', () => {
       .createSpy<Execute<JsonSchemaForInference>>('execute')
       .and.returnValue({content: []});
 
-    declareWebMcpTool(
+    declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -175,7 +175,7 @@ describe('declareWebMcpTool', () => {
     });
 
     let injectedService!: TestService;
-    declareWebMcpTool(
+    declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -196,7 +196,7 @@ describe('declareWebMcpTool', () => {
   it('should infer correct types from schema', () => {
     // Type-only test, only needs to compile, not execute.
     () => {
-      declareWebMcpTool(
+      declareExperimentalWebMcpTool(
         {
           name: 'testTool',
           description: 'A test tool',
