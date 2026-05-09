@@ -40,6 +40,27 @@ function removeElements(elements: Iterable<HTMLElement>): void {
   }
 }
 
+function isStyleOrLinkElement(node: ChildNode): boolean {
+  return (
+    node.nodeName === 'STYLE' ||
+    (node.nodeName === 'LINK' && (node as HTMLLinkElement).rel === 'stylesheet')
+  );
+}
+
+function getStyleInsertionReference(host: Node): ChildNode | null {
+  let child = host.firstChild;
+
+  while (child && isStyleOrLinkElement(child)) {
+    child = child.nextSibling;
+  }
+
+  return child;
+}
+
+function normalizeCss(value: string): string {
+  return value.replace(/\s/g, '').replace(/\[_ng(?:content|host)-[^\]]+\]/g, '');
+}
+
 /**
  * Creates a `style` element with the provided inline style content.
  * @param style A string of the inline style content.
@@ -120,6 +141,17 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
   private readonly external = new Map<string /** URL */, UsageRecord<HTMLLinkElement>>();
 
   /**
+   * Tracks style usage for additional, non-registered hosts such as isolated shadow roots.
+   * These roots must mirror component lifecycle independently from the global registered hosts.
+   */
+  private readonly inlineByHost = new Map<Node, Map<string, UsageRecord<HTMLStyleElement>>>();
+
+  /**
+   * Tracks external stylesheet usage for additional, non-registered hosts.
+   */
+  private readonly externalByHost = new Map<Node, Map<string, UsageRecord<HTMLLinkElement>>>();
+
+  /**
    * Set of host DOM nodes that will have styles attached.
    */
   private readonly hosts = new Set<Node>();
@@ -136,30 +168,42 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
     if (added) this.hosts.add(doc.head);
   }
 
-  addStyles(styles: string[], urls?: string[]): void {
+  addStyles(styles: string[], urls?: string[], hostNode?: Node): void {
     for (const value of styles) {
-      this.addUsage(value, this.inline, createStyleElement);
+      this.addUsage(value, this.inline, createStyleElement, hostNode, this.inlineByHost);
     }
 
-    urls?.forEach((value) => this.addUsage(value, this.external, createLinkElement));
+    urls?.forEach((value) =>
+      this.addUsage(value, this.external, createLinkElement, hostNode, this.externalByHost),
+    );
   }
 
   /**
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
    */
-  removeStyles(styles: string[], urls?: string[]): void {
+  removeStyles(styles: string[], urls?: string[], hostNode?: Node): void {
     for (const value of styles) {
       this.removeUsage(value, this.inline);
+      if (hostNode && !this.hosts.has(hostNode)) {
+        this.removeUsageFromHost(hostNode, value, this.inlineByHost);
+      }
     }
 
-    urls?.forEach((value) => this.removeUsage(value, this.external));
+    urls?.forEach((value) => {
+      this.removeUsage(value, this.external);
+      if (hostNode && !this.hosts.has(hostNode)) {
+        this.removeUsageFromHost(hostNode, value, this.externalByHost);
+      }
+    });
   }
 
   protected addUsage<T extends HTMLElement>(
     value: string,
     usages: Map<string, UsageRecord<T>>,
     creator: (value: string, doc: Document) => T,
+    hostNode?: Node,
+    usageByHost?: Map<Node, Map<string, UsageRecord<T>>>,
   ): void {
     // Attempt to get any current usage of the value
     const record = usages.get(value);
@@ -172,13 +216,52 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
         record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));
       }
       record.usage++;
+      if (hostNode && !this.hosts.has(hostNode) && usageByHost) {
+        this.addUsageToHost(hostNode, value, usageByHost, creator);
+      }
     } else {
       // Otherwise, create an entry to track the elements and add element for each host
       usages.set(value, {
         usage: 1,
         elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
       });
+      if (hostNode && !this.hosts.has(hostNode) && usageByHost) {
+        this.addUsageToHost(hostNode, value, usageByHost, creator);
+      }
     }
+  }
+
+  private addUsageToHost<T extends HTMLElement>(
+    hostNode: Node,
+    value: string,
+    usageByHost: Map<Node, Map<string, UsageRecord<T>>>,
+    creator: (value: string, doc: Document) => T,
+  ): void {
+    const hostUsages = this.getHostUsageMap(usageByHost, hostNode);
+    const hostRecord = hostUsages.get(value);
+
+    if (hostRecord) {
+      hostRecord.usage++;
+    } else {
+      hostUsages.set(value, {
+        usage: 1,
+        elements: [this.addElement(hostNode, creator(value, this.doc), true)],
+      });
+    }
+  }
+
+  private getHostUsageMap<T extends HTMLElement>(
+    usageByHost: Map<Node, Map<string, UsageRecord<T>>>,
+    hostNode: Node,
+  ): Map<string, UsageRecord<T>> {
+    let hostUsages = usageByHost.get(hostNode);
+
+    if (!hostUsages) {
+      hostUsages = new Map<string, UsageRecord<T>>();
+      usageByHost.set(hostNode, hostUsages);
+    }
+
+    return hostUsages;
   }
 
   protected removeUsage<T extends HTMLElement>(
@@ -199,16 +282,64 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
     }
   }
 
+  private removeUsageFromHost<T extends HTMLElement>(
+    hostNode: Node,
+    value: string,
+    usageByHost: Map<Node, Map<string, UsageRecord<T>>>,
+  ): void {
+    const hostUsages = usageByHost.get(hostNode);
+    const record = hostUsages?.get(value);
+
+    if (!hostUsages || !record) {
+      this.removeUntrackedUsageFromHost(hostNode, value);
+      return;
+    }
+
+    record.usage--;
+    if (record.usage <= 0) {
+      removeElements(record.elements);
+      this.removeUntrackedUsageFromHost(hostNode, value);
+      hostUsages.delete(value);
+      if (hostUsages.size === 0) {
+        usageByHost.delete(hostNode);
+      }
+    }
+  }
+
+  private removeUntrackedUsageFromHost(hostNode: Node, value: string): void {
+    const normalizedValue = normalizeCss(value);
+
+    for (const child of Array.from(hostNode.childNodes)) {
+      if (child.nodeName === 'STYLE' && normalizeCss(child.textContent ?? '') === normalizedValue) {
+        child.remove();
+      } else if (
+        child.nodeName === 'LINK' &&
+        (child as HTMLLinkElement).rel === 'stylesheet' &&
+        (child as HTMLLinkElement).getAttribute('href') === value
+      ) {
+        child.remove();
+      }
+    }
+  }
+
   ngOnDestroy(): void {
     for (const [, {elements}] of [...this.inline, ...this.external]) {
       removeElements(elements);
     }
+    for (const hostUsages of [...this.inlineByHost.values(), ...this.externalByHost.values()]) {
+      for (const [, {elements}] of hostUsages) {
+        removeElements(elements);
+      }
+    }
     this.hosts.clear();
+    this.inlineByHost.clear();
+    this.externalByHost.clear();
   }
 
   addHost(hostNode: Node): void {
     if (this.hosts.has(hostNode)) return;
 
+    this.removeHostUsage(hostNode);
     this.hosts.add(hostNode);
 
     // Add existing styles to new host
@@ -234,9 +365,26 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
       }
       record.elements = remaining;
     }
+    this.removeHostUsage(hostNode);
   }
 
-  private addElement<T extends HTMLElement>(host: Node, element: T): T {
+  clearHostStyles(hostNode: Node): void {
+    this.removeHostUsage(hostNode);
+  }
+
+  private removeHostUsage(hostNode: Node): void {
+    for (const usageByHost of [this.inlineByHost, this.externalByHost]) {
+      const hostUsages = usageByHost.get(hostNode);
+      if (hostUsages) {
+        for (const [, {elements}] of hostUsages) {
+          removeElements(elements);
+        }
+        usageByHost.delete(hostNode);
+      }
+    }
+  }
+
+  private addElement<T extends HTMLElement>(host: Node, element: T, beforeContent = false): T {
     // Add a nonce if present
     if (this.nonce) {
       element.setAttribute('nonce', this.nonce);
@@ -248,6 +396,8 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
     }
 
     // Insert the element into the DOM with the host node as parent
-    return host.appendChild(element);
+    return beforeContent
+      ? host.insertBefore(element, getStyleInsertionReference(host))
+      : host.appendChild(element);
   }
 }
