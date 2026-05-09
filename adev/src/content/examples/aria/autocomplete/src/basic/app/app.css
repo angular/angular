@@ -23,7 +23,7 @@
   color: var(--quaternary-contrast);
 }
 
-[ngComboboxInput] {
+[ngCombobox] input {
   width: 13rem;
   font-size: 1rem;
   border-radius: 0.25rem;
@@ -34,7 +34,7 @@
   background-color: var(--page-background);
 }
 
-[ngComboboxInput]::placeholder {
+[ngCombobox] input::placeholder {
   color: var(--quaternary-contrast);
 }
 

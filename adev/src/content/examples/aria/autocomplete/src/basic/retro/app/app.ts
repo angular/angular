@@ -1,4 +1,4 @@
-import {Combobox, ComboboxInput, ComboboxPopupContainer} from '@angular/aria/combobox';
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
 import {Listbox, Option} from '@angular/aria/listbox';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {
@@ -15,15 +15,7 @@ import {FormsModule} from '@angular/forms';
   selector: 'app-root',
   templateUrl: 'app.html',
   styleUrl: 'app.css',
-  imports: [
-    Combobox,
-    ComboboxInput,
-    ComboboxPopupContainer,
-    Listbox,
-    Option,
-    OverlayModule,
-    FormsModule,
-  ],
+  imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule, FormsModule],
 })
 export class App {
   /** The combobox listbox popup. */
@@ -33,7 +25,7 @@ export class App {
   options = viewChildren<Option<string>>(Option);
 
   /** A reference to the ng aria combobox. */
-  combobox = viewChild<Combobox<string>>(Combobox);
+  combobox = viewChild(Combobox);
 
   /** The query string used to filter the list of countries. */
   query = signal('');

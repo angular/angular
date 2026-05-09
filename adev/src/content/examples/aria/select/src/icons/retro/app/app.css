@@ -50,7 +50,7 @@
   background-color: color-mix(in srgb, var(--retro-button-color) 60%, var(--gray-50));
 }
 
-.select:has([ngComboboxInput][aria-disabled='true']) {
+.select:has(input[aria-disabled='true']) {
   opacity: 0.6;
   cursor: default;
 }
@@ -59,7 +59,7 @@
   font-size: 1.25rem;
 }
 
-[ngComboboxInput] {
+[ngCombobox] input {
   opacity: 0;
   cursor: pointer;
   padding: 0 4rem;
@@ -67,7 +67,7 @@
   border: none;
 }
 
-.select:has([ngComboboxInput][aria-expanded='false']):focus-within {
+.select:has(input[aria-expanded='false']):focus-within {
   outline-offset: 8px;
   outline: 4px dashed var(--hot-pink);
 }
@@ -88,7 +88,7 @@
   transition: transform 150ms ease-in-out;
 }
 
-[ngComboboxInput][aria-expanded='true'] ~ .example-arrow {
+[ngCombobox] input[aria-expanded='true'] ~ .example-arrow {
   transform: rotate(180deg);
 }
 
@@ -116,7 +116,7 @@
   flex-direction: column;
 }
 
-[ngCombobox]:has([ngComboboxInput][aria-expanded='false']) .example-popup-container {
+[ngCombobox]:has(input[aria-expanded='false']) .example-popup-container {
   max-height: 0;
   opacity: 0;
   visibility: hidden;
@@ -126,7 +126,7 @@
     opacity 150ms ease-in;
 }
 
-[ngCombobox]:has([ngComboboxInput][aria-expanded='true']) [ngListbox] {
+[ngCombobox]:has(input[aria-expanded='true']) [ngListbox] {
   display: flex;
 }
 

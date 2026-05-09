@@ -43,7 +43,7 @@
   z-index: 1;
 }
 
-[ngComboboxInput] {
+[ngCombobox] input {
   width: 15rem;
   font-size: 0.6rem;
   border-radius: 0;
@@ -56,12 +56,12 @@
   background-color: var(--retro-button-color);
 }
 
-[ngComboboxInput]::placeholder {
+[ngCombobox] input::placeholder {
   color: #000;
   opacity: 0.7;
 }
 
-[ngComboboxInput]:focus {
+[ngCombobox] input:focus {
   outline: none;
   transform: translate(1px, 1px);
   box-shadow: var(--retro-pressed-shadow);

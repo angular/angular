@@ -25,7 +25,7 @@
     0px -4px 0px 0px var(--tertiary-contrast), 0px 0px 0px 0px var(--tertiary-contrast);
 }
 
-[ngComboboxInput] {
+[ngCombobox] input {
   width: 15rem;
   font-size: 0.6rem;
   border-radius: 0;
@@ -36,7 +36,7 @@
   border: none;
 }
 
-[ngComboboxInput]::placeholder {
+[ngCombobox] input::placeholder {
   color: #000;
   opacity: 0.7;
 }
@@ -53,12 +53,12 @@
   align-items: center;
 }
 
-[ngComboboxInput][readonly='true'] {
+[ngCombobox] input[readonly='true'] {
   cursor: pointer;
   padding: 0.7rem 1rem;
 }
 
-[ngCombobox]:focus-within [ngComboboxInput] {
+[ngCombobox]:focus-within input {
   outline: none;
   box-shadow: none;
 }
@@ -88,7 +88,7 @@
   color: #000;
 }
 
-[ngComboboxInput][aria-expanded='true'] + .arrow-icon {
+[ngCombobox] input[aria-expanded='true'] + .arrow-icon {
   transform: rotate(180deg);
 }
 
@@ -174,11 +174,11 @@
   border: none;
 }
 
-.dialog [ngComboboxInput] {
+.dialog input {
   border-bottom: 4px solid var(--tertiary-contrast, #374151);
 }
 
-[ngCombobox]:focus-within [ngComboboxInput]:not(.combobox-input) {
+[ngCombobox]:focus-within input:not(.combobox-input) {
   outline: 1.5px solid var(--vivid-pink);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
 }

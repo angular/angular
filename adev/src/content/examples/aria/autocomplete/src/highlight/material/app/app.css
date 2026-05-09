@@ -24,7 +24,7 @@
   color: var(--quaternary-contrast);
 }
 
-[ngComboboxInput] {
+[ngCombobox] input {
   width: 13rem;
   font-size: 1rem;
   border-radius: 3rem;
@@ -35,11 +35,11 @@
   background-color: var(--page-background);
 }
 
-[ngComboboxInput]::placeholder {
+[ngCombobox] input::placeholder {
   color: var(--quaternary-contrast);
 }
 
-[ngCombobox]:focus-within [ngComboboxInput] {
+[ngCombobox]:focus-within input {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }

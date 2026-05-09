@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Combobox,
-  ComboboxDialog,
-  ComboboxInput,
-  ComboboxPopupContainer,
-} from '@angular/aria/combobox';
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
 import {Listbox, Option} from '@angular/aria/listbox';
 import {
   afterRenderEffect,
@@ -35,15 +30,7 @@ export interface SelectOption {
 
 @Component({
   selector: 'docs-select',
-  imports: [
-    Combobox,
-    ComboboxDialog,
-    ComboboxInput,
-    ComboboxPopupContainer,
-    FormsModule,
-    Listbox,
-    Option,
-  ],
+  imports: [Combobox, ComboboxPopup, ComboboxWidget, FormsModule, Listbox, Option],
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
 })
@@ -55,9 +42,9 @@ export class Select implements FormValueControl<string | null> {
   readonly options = input.required<SelectOption[]>();
   readonly disabled = input(false);
 
-  readonly dialog = viewChild(ComboboxDialog);
+  readonly dialog = viewChild<ComboboxWidget>('dialogWidget');
   readonly listbox = viewChild<Listbox<SelectOptionValue>>(Listbox);
-  readonly combobox = viewChild<Combobox<SelectOptionValue>>(Combobox);
+  readonly combobox = viewChild(Combobox);
 
   readonly searchString = signal('');
 
@@ -91,7 +78,7 @@ export class Select implements FormValueControl<string | null> {
     afterRenderEffect(() => {
       const selected = this.selectedValues();
       if (selected.length > 0) {
-        untracked(() => this.dialog()?.close());
+        untracked(() => this.combobox()?.expanded.set(false));
         this.value.set(selected[0] as string);
         this.searchString.set('');
       }
@@ -108,7 +95,7 @@ export class Select implements FormValueControl<string | null> {
       return;
     }
 
-    const comboboxRect = combobox.inputElement()?.getBoundingClientRect();
+    const comboboxRect = combobox.element.getBoundingClientRect();
     const scrollY = window.scrollY;
 
     if (comboboxRect) {
