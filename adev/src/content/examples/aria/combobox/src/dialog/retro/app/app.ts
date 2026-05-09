@@ -1,9 +1,4 @@
-import {
-  Combobox,
-  ComboboxDialog,
-  ComboboxInput,
-  ComboboxPopupContainer,
-} from '@angular/aria/combobox';
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
 import {Listbox, Option} from '@angular/aria/listbox';
 import {afterRenderEffect, Component, computed, signal, untracked, viewChild} from '@angular/core';
 import {FormsModule} from '@angular/forms';
@@ -12,20 +7,12 @@ import {FormsModule} from '@angular/forms';
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
-  imports: [
-    ComboboxDialog,
-    Combobox,
-    ComboboxInput,
-    ComboboxPopupContainer,
-    Listbox,
-    Option,
-    FormsModule,
-  ],
+  imports: [ComboboxWidget, Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, FormsModule],
 })
 export class App {
-  dialog = viewChild(ComboboxDialog);
+  dialog = viewChild<ComboboxWidget>('dialogWidget');
   listbox = viewChild<Listbox<string>>(Listbox);
-  combobox = viewChild<Combobox<string>>(Combobox);
+  combobox = viewChild(Combobox);
 
   value = signal('');
   searchString = signal('');
@@ -48,7 +35,7 @@ export class App {
 
     afterRenderEffect(() => {
       if (this.selectedCountries().length > 0) {
-        untracked(() => this.dialog()?.close());
+        untracked(() => this.combobox()?.expanded.set(false));
         this.value.set(this.selectedCountries()[0]);
         this.searchString.set('');
       }
@@ -60,14 +47,14 @@ export class App {
   // TODO(wagnermaciel): Switch to using the CDK for positioning.
 
   positionDialog() {
-    const dialog = this.dialog()!;
+    const dialog = this.dialog();
     const combobox = this.combobox()!;
 
-    const comboboxRect = combobox.inputElement()?.getBoundingClientRect();
+    const comboboxRect = combobox.element.getBoundingClientRect();
 
     const scrollY = window.scrollY;
 
-    if (comboboxRect) {
+    if (dialog && comboboxRect) {
       dialog.element.style.width = `${comboboxRect.width}px`;
       dialog.element.style.top = `${comboboxRect.bottom + scrollY + 4}px`;
       dialog.element.style.left = `${comboboxRect.left - 1}px`;

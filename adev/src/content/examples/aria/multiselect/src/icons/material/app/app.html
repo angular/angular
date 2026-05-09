@@ -1,4 +1,4 @@
-<div ngCombobox class="material-select" readonly>
+<div ngCombobox #combobox="ngCombobox" class="material-select">
   <div #origin class="select">
     <span class="combobox-label">
       <span
@@ -9,19 +9,23 @@
       >
       <span class="selected-label-text">{{ displayValue() }}</span>
     </span>
-    <input aria-label="Label dropdown" placeholder="Select a label" ngComboboxInput />
+    <input aria-label="Label dropdown" placeholder="Select a label" />
     <span class="example-arrow material-symbols-outlined" translate="no" aria-hidden="true"
       >arrow_drop_down</span
     >
   </div>
 
-  <ng-template ngComboboxPopupContainer>
+  <ng-template ngComboboxPopup [combobox]="combobox">
     <ng-template
       [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
       [cdkConnectedOverlayOpen]="true"
     >
-      <div class="example-popup-container">
-        <div ngListbox multi>
+      <div
+        ngComboboxWidget
+        [activeDescendant]="listbox.activeDescendant()"
+        class="example-popup-container"
+      >
+        <div ngListbox #listbox="ngListbox" multi>
           @for (label of labels; track label.value) {
             <div ngOption [value]="label.value" [label]="label.value">
               <span

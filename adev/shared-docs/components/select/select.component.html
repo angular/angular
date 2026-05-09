@@ -1,7 +1,6 @@
-<div ngCombobox #outerCombobox="ngCombobox" [readonly]="true" [disabled]="disabled()">
+<div ngCombobox #outerCombobox="ngCombobox" [disabled]="disabled()">
   <div class="docs-select-input-container">
     <input
-      ngComboboxInput
       [attr.id]="id()"
       [attr.name]="name()"
       [value]="displayValue()"
@@ -13,49 +12,44 @@
     >
   </div>
 
-  <ng-template ngComboboxPopupContainer>
-    <dialog ngComboboxDialog class="docs-select-dialog">
-      <div ngCombobox #innerCombobox="ngCombobox" filterMode="manual" [alwaysExpanded]="true">
-        <div class="docs-select-search-container">
-          <span
-            class="material-symbols-outlined docs-select-search-icon"
-            translate="no"
-            aria-hidden="true"
-            >search</span
-          >
-          <input
-            ngComboboxInput
-            class="docs-select-search-input"
-            placeholder="Search..."
-            [(value)]="searchString"
-          />
-        </div>
-
-        <ng-template ngComboboxPopupContainer>
-          @if (filteredOptions().length === 0) {
-            <div class="docs-select-no-results">No results found</div>
-          }
-
-          <div ngListbox [(value)]="selectedValues" class="docs-select-listbox">
-            @for (option of filteredOptions(); track option.value) {
-              <div
-                ngOption
-                [value]="option.value"
-                [label]="option.label"
-                class="docs-select-option"
-              >
-                <span class="docs-select-option-label">{{ option.label }}</span>
-                <span
-                  class="material-symbols-outlined docs-select-check-icon"
-                  translate="no"
-                  aria-hidden="true"
-                  >check</span
-                >
-              </div>
-            }
-          </div>
-        </ng-template>
+  <ng-template ngComboboxPopup [combobox]="outerCombobox">
+    <dialog ngComboboxWidget #dialogWidget="ngComboboxWidget" class="docs-select-dialog">
+      <div class="docs-select-search-container">
+        <span
+          class="material-symbols-outlined docs-select-search-icon"
+          translate="no"
+          aria-hidden="true"
+          >search</span
+        >
+        <input
+          ngCombobox
+          #innerCombobox="ngCombobox"
+          [alwaysExpanded]="true"
+          class="docs-select-search-input"
+          placeholder="Search..."
+          [(value)]="searchString"
+        />
       </div>
+
+      <ng-template ngComboboxPopup [combobox]="innerCombobox">
+        @if (filteredOptions().length === 0) {
+          <div class="docs-select-no-results">No results found</div>
+        }
+
+        <div ngListbox ngComboboxWidget [(value)]="selectedValues" class="docs-select-listbox">
+          @for (option of filteredOptions(); track option.value) {
+            <div ngOption [value]="option.value" [label]="option.label" class="docs-select-option">
+              <span class="docs-select-option-label">{{ option.label }}</span>
+              <span
+                class="material-symbols-outlined docs-select-check-icon"
+                translate="no"
+                aria-hidden="true"
+                >check</span
+              >
+            </div>
+          }
+        </div>
+      </ng-template>
     </dialog>
   </ng-template>
 </div>

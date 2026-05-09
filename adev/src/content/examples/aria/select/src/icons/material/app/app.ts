@@ -1,9 +1,4 @@
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxPopup,
-  ComboboxPopupContainer,
-} from '@angular/aria/combobox';
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
 import {Listbox, Option} from '@angular/aria/listbox';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {afterRenderEffect, Component, computed, viewChild, viewChildren} from '@angular/core';
@@ -12,15 +7,7 @@ import {afterRenderEffect, Component, computed, viewChild, viewChildren} from '@
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
-  imports: [
-    Combobox,
-    ComboboxInput,
-    ComboboxPopup,
-    ComboboxPopupContainer,
-    Listbox,
-    Option,
-    OverlayModule,
-  ],
+  imports: [Combobox, ComboboxPopup, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule],
 })
 export class App {
   /** The combobox listbox popup. */
@@ -30,7 +17,7 @@ export class App {
   options = viewChildren<Option<string>>(Option);
 
   /** A reference to the ng aria combobox. */
-  combobox = viewChild<Combobox<string>>(Combobox);
+  combobox = viewChild(Combobox);
 
   /** The icon that is displayed in the combobox. */
   displayIcon = computed(() => {
