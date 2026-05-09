@@ -50,6 +50,20 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('');
     });
 
+    it('should track additional host usage separately from registered hosts', () => {
+      ssh.addHost(doc.head);
+      ssh.addStyles(['a {};']);
+      ssh.addStyles(['a {};'], undefined, someHost);
+
+      expect(doc.head.querySelectorAll('style')).toHaveSize(1);
+      expect(someHost.querySelectorAll('style')).toHaveSize(1);
+
+      ssh.removeStyles(['a {};'], undefined, someHost);
+
+      expect(doc.head.querySelectorAll('style')).toHaveSize(1);
+      expect(someHost.querySelectorAll('style')).toHaveSize(0);
+    });
+
     it(`should add 'nonce' attribute when a nonce value is provided`, () => {
       ssh = new SharedStylesHost(doc, 'app-id', '{% nonce %}');
       ssh.addStyles(['a {};']);
