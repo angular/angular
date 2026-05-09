@@ -10730,6 +10730,70 @@ runInEachFileSystem((os: string) => {
         });
       });
 
+      describe('ExperimentalIsolatedShadowDom content projection diagnostics', () => {
+        it('should emit a diagnostic when using ng-content', () => {
+          env.write(
+            'test.ts',
+            `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '<ng-content></ng-content>',
+              selector: 'test-cmp',
+              encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom
+            })
+            export class TestCmp {}
+          `,
+          );
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toBe(
+            'ng-content projection is not supported with ViewEncapsulation.ExperimentalIsolatedShadowDom. ' +
+              'Use native <slot> elements instead. Content will remain in the light DOM and be projected via slots.',
+          );
+        });
+
+        it('should emit a diagnostic when using ng-content in control flow', () => {
+          env.write(
+            'test.ts',
+            `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '@if (true) { <ng-content></ng-content> }',
+              selector: 'test-cmp',
+              encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom
+            })
+            export class TestCmp {}
+          `,
+          );
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toBe(
+            'ng-content projection is not supported with ViewEncapsulation.ExperimentalIsolatedShadowDom. ' +
+              'Use native <slot> elements instead. Content will remain in the light DOM and be projected via slots.',
+          );
+        });
+
+        it('should allow native slot elements', () => {
+          env.write(
+            'test.ts',
+            `
+            import {Component, ViewEncapsulation} from '@angular/core';
+            @Component({
+              template: '<slot name="content"></slot>',
+              selector: 'test-cmp',
+              encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom
+            })
+            export class TestCmp {}
+          `,
+          );
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(0);
+        });
+      });
+
       describe('i18n errors', () => {
         it('reports a diagnostics on nested i18n sections', () => {
           env.write(

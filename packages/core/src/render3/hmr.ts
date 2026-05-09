@@ -244,12 +244,10 @@ function recreateLView(
   const recreate = () => {
     // If we're recreating a component with shadow DOM encapsulation, it will have attached a
     // shadow root. The browser will throw if we attempt to attach another one and there's no way
-    // to detach it. Our only option is to make a clone only of the root node, replace the node
-    // with the clone and use it for the newly-created LView.
-    if (
-      oldDef.encapsulation === ViewEncapsulation.ShadowDom ||
-      oldDef.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom
-    ) {
+    // to detach it. Our only option is to clone the host, replace the node and use the clone for
+    // the newly-created LView. ExperimentalIsolatedShadowDom reuses the existing host and shadow
+    // root because its native slot content remains in the host's light DOM.
+    if (oldDef.encapsulation === ViewEncapsulation.ShadowDom) {
       const newHost = host.cloneNode(false) as HTMLElement;
       host.replaceWith(newHost);
       host = newHost;
