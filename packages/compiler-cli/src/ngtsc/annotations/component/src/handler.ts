@@ -43,6 +43,8 @@ import {
   SelectorlessMatcher,
   SelectorMatcher,
   TmplAstDeferredBlock,
+  TmplAstContent,
+  TmplAstNode,
   TypeCheckId,
   ViewEncapsulation,
 } from '@angular/compiler';
@@ -910,6 +912,24 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             ErrorCode.COMPONENT_INVALID_SHADOW_DOM_SELECTOR,
             component.get('selector')!,
             selectorError,
+          ),
+        );
+      }
+    }
+
+    // Check for ng-content in ExperimentalIsolatedShadowDom components
+    if (encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) {
+      const contentNode = findContentNode(template.nodes);
+      if (contentNode !== null) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.ISOLATED_SHADOW_DOM_INVALID_CONTENT_PROJECTION,
+            component.get('template') ?? node.name,
+            `ng-content projection is not supported with ViewEncapsulation.ExperimentalIsolatedShadowDom. ` +
+              `Use native <slot> elements instead. Content will remain in the light DOM and be projected via slots.`,
           ),
         );
       }
@@ -2665,4 +2685,24 @@ function validateStandaloneImports(
 /** Returns whether an ImportDeclaration is a default import. */
 function isDefaultImport(node: ts.ImportDeclaration): boolean {
   return node.importClause !== undefined && node.importClause.namedBindings === undefined;
+}
+
+/**
+ * Recursively searches through template nodes to find a Content node (ng-content).
+ * Returns the first Content node found, or null if none exist.
+ */
+function findContentNode(nodes: TmplAstNode[]): TmplAstContent | null {
+  for (const node of nodes) {
+    if (node instanceof TmplAstContent) {
+      return node;
+    }
+    const children = 'children' in node ? (node as {children: TmplAstNode[]}).children : null;
+    if (children !== null && children.length > 0) {
+      const found = findContentNode(children);
+      if (found !== null) {
+        return found;
+      }
+    }
+  }
+  return null;
 }
