@@ -5,7 +5,7 @@
 
 An accessible input field that filters and suggests options as users type, helping them find and select values from a list.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts"/>
@@ -29,7 +29,7 @@ An accessible input field that filters and suggests options as users type, helpi
       <docs-code header="app.css" path="adev/src/content/examples/aria/autocomplete/src/basic/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 ## Usage
 
@@ -63,7 +63,7 @@ Angular's autocomplete provides a fully accessible combobox implementation with:
 
 Users typing partial text expect immediate confirmation that their input matches an available option. Auto-select mode updates the input value to match the first filtered option as users type, reducing the number of keystrokes needed and providing instant feedback that their search is on the right track.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts"/>
@@ -87,13 +87,13 @@ Users typing partial text expect immediate confirmation that their input matches
       <docs-code header="app.css" path="adev/src/content/examples/aria/autocomplete/src/basic/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 ### Manual selection mode
 
 Manual selection mode keeps the typed text unchanged while users navigate the suggestion list, preventing confusion from automatic updates. The input only changes when users explicitly confirm their choice with Enter or a click.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/manual/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/autocomplete/src/manual/app/app.ts"/>
@@ -117,13 +117,13 @@ Manual selection mode keeps the typed text unchanged while users navigate the su
       <docs-code header="app.css" path="adev/src/content/examples/aria/autocomplete/src/manual/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 ### Highlight mode
 
 Highlight mode allows the user to navigate options with arrow keys without changing the input value as they browse until they explicitly select a new option with Enter or click.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/highlight/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/autocomplete/src/highlight/app/app.ts"/>
@@ -147,7 +147,7 @@ Highlight mode allows the user to navigate options with arrow keys without chang
       <docs-code header="app.css" path="adev/src/content/examples/aria/autocomplete/src/highlight/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 ## APIs
 

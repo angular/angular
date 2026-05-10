@@ -1,8 +1,6 @@
 :host {
   --border-color: color-mix(in srgb, var(--full-contrast) 20%, var(--page-background));
-}
 
-[ngCombobox] {
   position: relative;
   width: 100%;
   display: flex;
@@ -16,20 +14,34 @@
   position: relative;
   align-items: center;
   border-radius: 0.25rem;
-}
 
-[ngComboboxInput] {
-  border-radius: 0.25rem;
-}
+  input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    padding: 0.7rem 1rem 0.7rem;
+    background-color: var(--septenary-contrast);
+    color: var(--primary-contrast);
 
-[ngComboboxInput][readonly='true'] {
-  cursor: pointer;
-  padding: 0.7rem 1rem;
+    &[readonly] {
+      cursor: pointer;
+      padding: 0.7rem 1rem;
+    }
+
+    &[aria-expanded='true'] + .docs-select-arrow {
+      transform: rotate(180deg);
+    }
+  }
 }
 
 [ngCombobox]:focus-within [ngComboboxInput]:not(.docs-select-search-input) {
   outline: 1.5px solid var(--vivid-pink);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
+}
+
+.docs-select-popover {
+  width: 100%;
 }
 
 .docs-select-arrow {
@@ -46,16 +58,11 @@
   transition: transform 0.2s ease;
 }
 
-[ngComboboxInput][aria-expanded='true'] + .docs-select-arrow {
-  transform: rotate(180deg);
-}
-
-[ngComboboxInput] {
-  width: 100%;
+[ngComboboxInput] [ngCombobox] {
   border: none;
   outline: none;
   font-size: 1rem;
-  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  padding: 0.7rem 1rem 0.7rem;
   background-color: var(--septenary-contrast);
   color: var(--primary-contrast);
 }

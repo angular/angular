@@ -10,7 +10,7 @@
 
 A directive that coordinates a text input with a popup, providing the primitive directive for autocomplete, select, and multiselect patterns.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts"/>
@@ -34,7 +34,7 @@ A directive that coordinates a text input with a popup, providing the primitive 
       <docs-code header="app.css" path="adev/src/content/examples/aria/autocomplete/src/basic/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 ## Usage
 
@@ -70,7 +70,7 @@ Angular's combobox provides a fully accessible input-popup coordination system w
 
 An accessible input field that filters and suggests options as users type, helping them find and select values from a list.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.ts"/>
@@ -94,7 +94,7 @@ An accessible input field that filters and suggests options as users type, helpi
       <docs-code header="app.css" path="adev/src/content/examples/aria/autocomplete/src/basic/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 The `filterMode="manual"` setting gives complete control over filtering and selection. The input updates a signal that filters the options list. Users navigate with arrow keys and select with Enter or click. This mode provides the most flexibility for custom filtering logic. See the [Autocomplete guide](guide/aria/autocomplete) for complete filtering patterns and examples.
 
@@ -102,7 +102,7 @@ The `filterMode="manual"` setting gives complete control over filtering and sele
 
 A pattern that combines a readonly combobox with listbox to create single-selection dropdowns with keyboard navigation and screen reader support.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/select/src/icons/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/select/src/icons/app/app.ts"/>
@@ -126,7 +126,7 @@ A pattern that combines a readonly combobox with listbox to create single-select
       <docs-code header="app.css" path="adev/src/content/examples/aria/select/src/icons/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 The `readonly` attribute prevents typing in the input field. The popup opens on click or arrow keys. Users navigate options with keyboard and select with Enter or click.
 
@@ -136,7 +136,7 @@ This configuration provides the foundation for the [Select](guide/aria/select) a
 
 Popups sometimes need modal behavior with a backdrop and focus trap. The combobox dialog directive provides this pattern for specialized use cases.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/combobox/src/dialog/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/combobox/src/dialog/app/app.ts"/>
@@ -160,7 +160,7 @@ Popups sometimes need modal behavior with a backdrop and focus trap. The combobo
       <docs-code header="app.css" path="adev/src/content/examples/aria/combobox/src/dialog/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 The `ngComboboxDialog` directive creates a modal popup using the native dialog element. This provides backdrop behavior and focus trapping. Use dialog popups when the selection interface requires modal interaction or when the popup content is complex enough to warrant full-screen focus.
 
