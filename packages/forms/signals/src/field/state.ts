@@ -182,14 +182,15 @@ export class FieldNodeState {
       return this.node.structure.parent?.nodeState.debouncer?.();
     });
 
-  /** Whether this field is considered non-interactive.
+  /**
+   * Whether this field is considered non-interactive.
    *
    * A field is considered non-interactive if one of the following is true:
    * - It is hidden
    * - It is disabled
    * - It is readonly
    */
-  private readonly isNonInteractive = computed(
+  readonly isNonInteractive: Signal<boolean> = computed(
     () => this.hidden() || this.disabled() || this.readonly(),
   );
 }
