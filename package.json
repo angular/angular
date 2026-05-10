@@ -6,11 +6,11 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "packageManager": "pnpm@10.33.4",
+  "packageManager": "pnpm@11.0.9",
   "engines": {
     "npm": "Please use pnpm instead of NPM to install dependencies",
     "yarn": "Please use pnpm instead of Yarn to install dependencies",
-    "pnpm": "10.33.4"
+    "pnpm": "11.0.9"
   },
   "repository": {
     "type": "git",
@@ -169,18 +169,5 @@
   },
   "resolutions": {
     "typescript": "6.0.3"
-  },
-  "pnpm": {
-    "patchedDependencies": {},
-    "packageExtensions": {
-      "grpc-gcp": {
-        "peerDependencies": {
-          "protobufjs": "*"
-        }
-      }
-    },
-    "onlyBuiltDependencies": [
-      "cypress"
-    ]
   }
 }

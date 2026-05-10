@@ -110,7 +110,11 @@ npm.npm_translate_lock(
         "//tools/bazel/rules_angular_store:package.json",
         "//vscode-ng-language-service/integration/project:package.json",
     ],
-    npmrc = "//:.npmrc",
+    lifecycle_hooks = {
+        # sleep requires node-gyp rebuild but the native module is not needed in Bazel;
+        # disable the install hook to avoid failing builds when node-gyp is unavailable.
+        "sleep": [],
+    },
     pnpm_lock = "//:pnpm-lock.yaml",
 )
 use_repo(npm, "npm")

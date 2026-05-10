@@ -32,6 +32,23 @@ packages:
   - vscode-ng-language-service/server
   - vscode-ng-language-service/integration/project
 
+allowBuilds:
+  '@bazel/concatjs': false
+  '@firebase/util': false
+  '@parcel/watcher': false
+  '@vscode/vsce-sign': false
+  bufferutil: false
+  cypress: true
+  esbuild: false
+  keytar: false
+  lmdb: false
+  msgpackr-extract: false
+  protobufjs: false
+  re2: false
+  sleep: false
+  unrs-resolver: false
+  utf-8-validate: false
+
 allowedDeprecatedVersions:
   angular: '*'
   tslint: '*'
@@ -54,3 +71,19 @@ minimumReleaseAgeExclude:
 peerDependencyRules:
   allowAny:
     - '@angular/*'
+patchedDependencies: {}
+packageExtensions:
+  grpc-gcp:
+    peerDependencies:
+      protobufjs: '*'
+engineStrict: false
+
+# Disabling pnpm [hoisting](https://pnpm.io/settings#hoist) by setting `hoist:false` is recommended on
+# projects using rules_js so that pnpm outside of Bazel lays out a node_modules tree similar to what
+# rules_js lays out under Bazel (without a hidden node_modules/.pnpm/node_modules)
+hoist: false
+
+# Avoid pnpm auto-installing peer dependencies. We want to be explicit about our versions used
+# for peer dependencies, avoiding potential mismatches. In addition, it ensures we can continue
+# to rely on peer dependency placeholders substituted via Bazel.
+autoInstallPeers: false

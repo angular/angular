@@ -29,7 +29,6 @@
       "matchManagers": ["bazel", "bazel-module", "bazelisk", "npm"],
       "postUpgradeTasks": {
         "commands": [
-          "git restore .npmrc",
           "pnpm install --frozen-lockfile",
           "pnpm ng-dev misc sync-module-bazel",
           "pnpm bazel run //.github/actions/deploy-docs-site:main",
