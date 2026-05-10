@@ -2,8 +2,6 @@
 
 Angular provides three approaches to building forms: Signal Forms, Reactive Forms, and Template-driven Forms. Each has distinct patterns for managing state, validation, and data flow. This guide helps you understand the differences and choose the right approach for your project.
 
-NOTE: Signal Forms are [experimental](reference/releases#experimental) as of Angular v21. The API may change before stabilizing.
-
 ## Quick comparison
 
 | Feature          | Signal Forms                       | Reactive Forms                        | Template-driven Forms   |
@@ -15,7 +13,7 @@ NOTE: Signal Forms are [experimental](reference/releases#experimental) as of Ang
 | Setup            | Signal + schema function           | FormControl tree                      | NgModel in template     |
 | Best for         | Signal-based apps                  | Complex forms                         | Simple forms            |
 | Learning curve   | Medium                             | Medium-High                           | Low                     |
-| Status           | Experimental (v21+)                | Stable                                | Stable                  |
+| Status           | Stable (v22+)                      | Stable                                | Stable                  |
 
 ## By example: Login form
 
@@ -132,9 +130,8 @@ TypeScript understands your component properties but has no knowledge of form st
 
 ### Use Signal Forms if:
 
-- You're building new signal-based applications (Angular v21+)
+- You're building new signal-based applications (Angular v22+)
 - You want type safety inferred from your model structure
-- You're comfortable working with experimental features
 - Schema-based validation appeals to you
 - Your team is familiar with signals
 

@@ -8,7 +8,7 @@ Angular provides two different approaches to handling user input through forms: 
 
 Both capture user input events from the view, validate the input, create a form and data model, and provide a way to track changes.
 
-TIP: If you're looking for the new experimental Signal Forms, check out our [essential Signal Forms guide](/essentials/signal-forms)!
+TIP: If you're looking for the new Signal Forms, check out our [essential Signal Forms guide](/essentials/signal-forms)!
 
 This guide provides information to help you decide which type of form works best for your situation.
 It introduces the common building blocks used by both approaches.

@@ -1,8 +1,5 @@
 # Async Reactivity with `resource`
 
-> [!IMPORTANT]
-> The `resource` API is currently experimental in Angular.
-
 A `Resource` incorporates asynchronous data fetching into Angular's signal-based reactivity. It executes an async loader function whenever its dependencies change, exposing the status and result as synchronous signals.
 
 ## Basic Usage
