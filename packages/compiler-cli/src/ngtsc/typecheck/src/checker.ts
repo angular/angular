@@ -9,6 +9,7 @@
 import {
   AST,
   BoundTarget,
+  ForeignComponentMeta,
   CssSelector,
   DomElementSchemaRegistry,
   ExternalExpr,
@@ -466,6 +467,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   ): TypeCheckableDirectiveMeta[] | null {
     return (
       this.getLatestComponentState(component).data?.boundTarget.getDirectivesOfNode(node) ?? null
+    );
+  }
+
+  getForeignComponent(
+    component: ts.ClassDeclaration,
+    element: TmplAstElement,
+  ): ForeignComponentMeta | null {
+    return (
+      this.getLatestComponentState(component).data?.boundTarget.getForeignComponent(element) ?? null
     );
   }
 

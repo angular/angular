@@ -8,7 +8,7 @@
 
 import * as e from '../../../src/expression_parser/ast';
 import * as a from '../../../src/render3/r3_ast';
-import {DirectiveMeta, MatchSource} from '../../../src/render3/view/t2_api';
+import {DirectiveMeta, MatchSource, ForeignComponentMeta} from '../../../src/render3/view/t2_api';
 import {ClassPropertyMapping} from '../../../src/property_mapping';
 import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate, ParseTemplateOptions} from '../../../src/render3/view/template';
@@ -1594,6 +1594,34 @@ describe('t2 binding', () => {
       expect(mergedHost.matchSource).toBe(MatchSource.HostDirective);
       expect(mergedHost.outputs.toDirectMappedObject()).toEqual({one: 'oneAlias'});
       expect(res.getConflictingHostDirectiveBindings(element)).toBe(null);
+    });
+
+    it('should match foreign components by tag name', () => {
+      const template = parseTemplate('<FancyButton></FancyButton>', '', {});
+      const registry = new Map<string, ForeignComponentMeta[]>();
+      registry.set('FancyButton', [{name: 'FancyButton', ref: {key: 'FancyButtonKey'}}]);
+      const foreignMatcher = new SelectorlessMatcher(registry);
+
+      const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>(), foreignMatcher);
+      const res = binder.bind({template: template.nodes});
+
+      const el = template.nodes[0] as a.Element;
+      const foreignComp = res.getForeignComponent(el);
+      expect(foreignComp).not.toBeNull();
+      expect(foreignComp?.name).toBe('FancyButton');
+    });
+
+    it('should throw an error when tag matches both directive and foreign component', () => {
+      const template = parseTemplate('<comp></comp>', '', {});
+      const registry = new Map<string, ForeignComponentMeta[]>();
+      registry.set('comp', [{name: 'comp', ref: {key: 'compKey'}}]);
+      const foreignMatcher = new SelectorlessMatcher(registry);
+
+      const binder = new R3TargetBinder(makeSelectorMatcher(), foreignMatcher);
+
+      expect(() => binder.bind({template: template.nodes})).toThrowError(
+        "Conflict: Element 'comp' matches both an Angular directive and a foreign component.",
+      );
     });
   });
 });

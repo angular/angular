@@ -194,6 +194,7 @@ export function adaptTypeCheckBlockMetadata(
       const dirs = meta.boundTarget.getDirectivesOfNode(node);
       return dirs ? dirs.map(convertDir) : null;
     },
+    getForeignComponent: (element) => meta.boundTarget.getForeignComponent(element),
     getReferenceTarget: (ref) => {
       const target = meta.boundTarget.getReferenceTarget(ref);
       if (target && 'directive' in target) {

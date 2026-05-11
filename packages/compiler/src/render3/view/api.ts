@@ -341,7 +341,6 @@ export enum R3TemplateDependencyKind {
   Directive = 0,
   Pipe = 1,
   NgModule = 2,
-  ForeignComponent = 3,
 }
 
 /**
@@ -362,8 +361,7 @@ export interface R3TemplateDependency {
 export type R3TemplateDependencyMetadata =
   | R3DirectiveDependencyMetadata
   | R3PipeDependencyMetadata
-  | R3NgModuleDependencyMetadata
-  | R3ForeignComponentDependencyMetadata;
+  | R3NgModuleDependencyMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public
@@ -406,18 +404,6 @@ export interface R3PipeDependencyMetadata extends R3TemplateDependency {
 
 export interface R3NgModuleDependencyMetadata extends R3TemplateDependency {
   kind: R3TemplateDependencyKind.NgModule;
-}
-
-/**
- * Information about a foreign component that is used in a component template.
- */
-export interface R3ForeignComponentDependencyMetadata extends R3TemplateDependency {
-  kind: R3TemplateDependencyKind.ForeignComponent;
-
-  /**
-   * The foreign component's name.
-   */
-  name: string;
 }
 
 /**

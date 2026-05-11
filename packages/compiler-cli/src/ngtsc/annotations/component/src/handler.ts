@@ -44,6 +44,7 @@ import {
   SelectorMatcher,
   TmplAstDeferredBlock,
   TypeCheckId,
+  ForeignComponentMeta,
   ViewEncapsulation,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -85,6 +86,7 @@ import {
   PipeMeta,
   Resource,
   ResourceRegistry,
+  createForeignComponentMatcher,
 } from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
@@ -1206,7 +1208,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       return;
     }
 
-    const binder = new R3TargetBinder<TypeCheckableDirectiveMeta>(scope.matcher);
+    const binder = new R3TargetBinder<TypeCheckableDirectiveMeta>(
+      scope.matcher,
+      scope.foreignMatcher,
+    );
     const templateContext: TemplateContext = {
       nodes: meta.template.diagNodes,
       pipes: scope.pipes,
@@ -1810,7 +1815,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     }
 
     // Set up the R3TargetBinder.
-    const binder = new R3TargetBinder(createMatcherFromScope(scope, this.hostDirectivesResolver));
+    const binder = new R3TargetBinder(
+      createMatcherFromScope(scope, this.hostDirectivesResolver),
+      createForeignComponentMatcher(analysis.foreignImports),
+    );
     let allDependencies = dependencies;
     let deferBlockBinder = binder;
 

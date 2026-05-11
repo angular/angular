@@ -561,8 +561,18 @@ export class Scope {
       if (node instanceof Element) {
         this.opQueue.push(
           new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
-          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
         );
+
+        // Skip DOM schema checks for elements matched as foreign components.
+        // An element can never match both an Angular directive and a foreign component
+        // without throwing a fatal error, so we are guaranteed that directives is empty
+        // and we only need to intercept in this directiveless block.
+        const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+        if (!isForeign) {
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
+          );
+        }
       }
       return;
     }
@@ -843,7 +853,12 @@ export class Scope {
             }
           }
         }
-        this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs));
+        const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+        if (!isForeign) {
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
+          );
+        }
       }
 
       this.appendDeepSchemaChecks(node.children);

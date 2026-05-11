@@ -58,6 +58,7 @@ import {
   ConflictingHostDirectiveBinding,
   DirectiveMeta,
   DirectiveOwner,
+  ForeignComponentMeta,
   MatchSource,
   ReferenceTarget,
   ScopedNode,
@@ -170,7 +171,10 @@ export type DirectiveMatcher<DirectiveT extends DirectiveMeta> =
  * target.
  */
 export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetBinder<DirectiveT> {
-  constructor(private directiveMatcher: DirectiveMatcher<DirectiveT> | null) {}
+  constructor(
+    private directiveMatcher: DirectiveMatcher<DirectiveT> | null,
+    private foreignComponentMatcher: SelectorlessMatcher<ForeignComponentMeta> | null = null,
+  ) {}
 
   /**
    * Perform a binding operation on the given `Target` and return a `BoundTarget` which contains
@@ -182,6 +186,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     }
 
     const directives: MatchedDirectives<DirectiveT> = new Map();
+    const foreignComponents = new Map<Element, ForeignComponentMeta>();
     const eagerDirectives: DirectiveT[] = [];
     const missingDirectives = new Set<string>();
     const bindings: BindingsMap<DirectiveT> = new Map();
@@ -214,7 +219,9 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
       DirectiveBinder.apply(
         target.template,
         this.directiveMatcher,
+        this.foreignComponentMatcher,
         directives,
+        foreignComponents,
         eagerDirectives,
         missingDirectives,
         bindings,
@@ -255,6 +262,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     return new R3BoundTarget(
       target,
       directives,
+      foreignComponents,
       eagerDirectives,
       missingDirectives,
       bindings,
@@ -516,7 +524,9 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
   private constructor(
     private directiveMatcher: DirectiveMatcher<DirectiveT> | null,
+    private foreignMatcher: SelectorlessMatcher<ForeignComponentMeta> | null,
     private directives: MatchedDirectives<DirectiveT>,
+    private foreignComponents: Map<Element, ForeignComponentMeta>,
     private eagerDirectives: DirectiveT[],
     private missingDirectives: Set<string>,
     private bindings: BindingsMap<DirectiveT>,
@@ -542,7 +552,9 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   static apply<DirectiveT extends DirectiveMeta>(
     template: Node[],
     directiveMatcher: DirectiveMatcher<DirectiveT> | null,
+    foreignMatcher: SelectorlessMatcher<ForeignComponentMeta> | null,
     directives: MatchedDirectives<DirectiveT>,
+    foreignComponents: Map<Element, ForeignComponentMeta>,
     eagerDirectives: DirectiveT[],
     missingDirectives: Set<string>,
     bindings: BindingsMap<DirectiveT>,
@@ -554,7 +566,9 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   ): void {
     const matcher = new DirectiveBinder(
       directiveMatcher,
+      foreignMatcher,
       directives,
+      foreignComponents,
       eagerDirectives,
       missingDirectives,
       bindings,
@@ -665,17 +679,31 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   private visitElementOrTemplate(node: Element | Template): void {
+    const matchedDirectives: DirectiveT[] = [];
+
     if (this.directiveMatcher instanceof SelectorMatcher) {
-      const directives: DirectiveT[] = [];
       const cssSelector = createCssSelectorFromNode(node);
-      this.directiveMatcher.match(cssSelector, (_, results) => directives.push(...results));
-      this.trackSelectorBasedBindingsAndDirectives(node, directives);
+      this.directiveMatcher.match(cssSelector, (_, results) => matchedDirectives.push(...results));
+      this.trackSelectorBasedBindingsAndDirectives(node, matchedDirectives);
     } else {
       node.references.forEach((ref) => {
         if (ref.value.trim() === '') {
           this.references.set(ref, node);
         }
       });
+    }
+
+    if (this.foreignMatcher && node instanceof Element) {
+      const foreignMatches = this.foreignMatcher.match(node.name);
+      if (foreignMatches.length > 0) {
+        if (matchedDirectives.length > 0) {
+          throw new Error(
+            `Conflict: Element '${node.name}' matches both an Angular directive and a foreign component.`,
+          );
+        }
+        // We assume at most one foreign component matches by name.
+        this.foreignComponents.set(node, foreignMatches[0]);
+      }
     }
 
     node.directives.forEach((directive) => directive.visit(this));
@@ -1182,6 +1210,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
   constructor(
     readonly target: Target<DirectiveT>,
     private directives: MatchedDirectives<DirectiveT>,
+    private foreignComponents: Map<Element, ForeignComponentMeta>,
     private eagerDirectives: DirectiveT[],
     private missingDirectives: Set<string>,
     private bindings: BindingsMap<DirectiveT>,
@@ -1208,6 +1237,10 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
 
   getDirectivesOfNode(node: DirectiveOwner): DirectiveT[] | null {
     return this.directives.get(node) || null;
+  }
+
+  getForeignComponent(element: Element): ForeignComponentMeta | null {
+    return this.foreignComponents.get(element) || null;
   }
 
   getReferenceTarget(ref: Reference): ReferenceTarget<DirectiveT> | null {
