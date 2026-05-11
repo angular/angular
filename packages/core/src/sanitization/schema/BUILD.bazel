@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "ts_project", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "schema",
+    srcs = [
+        "dom_security_schema.ts",
+        "security.ts",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":schema",
+    tsconfig = "//packages/core:tsconfig_build",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = [
+        "dom_security_schema.ts",
+        "security.ts",
+    ],
+    visibility = ["//visibility:public"],
+)

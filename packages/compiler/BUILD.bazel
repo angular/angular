@@ -10,6 +10,9 @@ ts_project(
             "src/**/*.ts",
         ],
     ),
+    deps = [
+        "//packages/core/src/sanitization/schema",
+    ],
 )
 
 tsec_test(

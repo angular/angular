@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SecurityContext} from '../core';
+import {SecurityContext} from './security';
 
 // =================================================================================================
 // =================================================================================================
@@ -18,9 +18,15 @@ import {SecurityContext} from '../core';
 //
 // =================================================================================================
 
-/** Map from tagName|propertyName to SecurityContext. Properties applying to all tags use '*'. */
+/**
+ *  Map from tagName|propertyName to SecurityContext. Properties applying to all tags use '*'.
+ */
 let _SECURITY_SCHEMA!: {[k: string]: SecurityContext};
 
+/**
+ * @remarks Keep is a copy of DOM Security Schema.
+ * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
+ */
 export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
   if (!_SECURITY_SCHEMA) {
     _SECURITY_SCHEMA = {};

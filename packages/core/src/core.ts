@@ -115,7 +115,7 @@ export {createEnvironmentInjector, createNgModule} from './render3/ng_module_ref
 export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
 export * from './resource';
 export {Sanitizer} from './sanitization/sanitizer';
-export {SecurityContext} from './sanitization/security';
+export {SecurityContext} from './sanitization/schema/security';
 export {
   GetTestability,
   setTestabilityGetter,
