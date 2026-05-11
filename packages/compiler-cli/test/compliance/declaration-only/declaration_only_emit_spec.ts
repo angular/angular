@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import * as nodeFs from 'fs';
+import * as path from 'path';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {getReferenceFileForTypeDeclaration} from '../test_helpers/check_type_declarations';
 import {CompileResult, compileTest} from '../test_helpers/compile_test';
@@ -21,20 +23,7 @@ runTests('declaration-only emit', emitDeclarationOnlyTest, {emitDeclarationOnly:
  * @param test The compliance test whose input files should be compiled.
  */
 function emitDeclarationOnlyTest(fs: FileSystem, test: ComplianceTest): CompileResult {
-  const {emittedFiles} = compileTest(
-    fs,
-    test.inputFiles,
-    test.compilerOptions,
-    test.angularCompilerOptions,
-  );
-  const emittedTypeDeclarations = emittedFiles.filter((file) => file.endsWith('.d.ts'));
-  for (const emittedTypeDeclaration of emittedTypeDeclarations) {
-    fs.moveFile(
-      emittedTypeDeclaration,
-      getReferenceFileForTypeDeclaration(fs, emittedTypeDeclaration),
-    );
-  }
-  return compileTest(
+  const result = compileTest(
     fs,
     test.inputFiles,
     {
@@ -47,4 +36,23 @@ function emitDeclarationOnlyTest(fs: FileSystem, test: ComplianceTest): CompileR
       _experimentalAllowEmitDeclarationOnly: true,
     },
   );
+
+  const {emittedFiles} = result;
+  const emittedTypeDeclarations = emittedFiles.filter((file) => file.endsWith('.d.ts'));
+
+  for (const emittedTypeDeclaration of emittedTypeDeclarations) {
+    const baseName = fs.basename(emittedTypeDeclaration, '.d.ts');
+    const goldenFileName = baseName + '_isolated.golden.d.ts';
+    const goldenPath = fs.resolve('/', goldenFileName);
+
+    if (fs.exists(goldenPath)) {
+      const goldenContent = fs.readFile(goldenPath);
+      const refPath = getReferenceFileForTypeDeclaration(fs, emittedTypeDeclaration);
+      fs.writeFile(refPath, goldenContent);
+    } else {
+      throw new Error(`Missing golden file for ${emittedTypeDeclaration} at ${goldenPath}`);
+    }
+  }
+
+  return result;
 }
