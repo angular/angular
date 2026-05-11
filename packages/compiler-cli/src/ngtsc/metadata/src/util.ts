@@ -31,7 +31,13 @@ import {
   PipeMeta,
 } from './api';
 import {TypeEntityToDeclarationError} from '../../reflection/src/typescript';
-import {ClassPropertyMapping, ClassPropertyName, TemplateGuardMeta} from '@angular/compiler';
+import {
+  ClassPropertyMapping,
+  ClassPropertyName,
+  TemplateGuardMeta,
+  SelectorlessMatcher,
+  ForeignComponentMeta,
+} from '@angular/compiler';
 
 export function extractReferencesFromType(
   checker: ts.TypeChecker,
@@ -354,4 +360,19 @@ export function isHostDirectiveMetaForGlobalMode(
   hostDirectiveMeta: HostDirectiveMeta,
 ): hostDirectiveMeta is HostDirectiveMetaForGlobalMode {
   return hostDirectiveMeta.directive instanceof Reference;
+}
+
+/** Extracts foreign component names from foreignImports and creates a SelectorlessMatcher. */
+export function createForeignComponentMatcher(
+  foreignImports: Reference<ClassDeclaration>[] | null,
+): SelectorlessMatcher<ForeignComponentMeta> | null {
+  if (foreignImports === null || foreignImports.length === 0) {
+    return null;
+  }
+  const registry = new Map<string, ForeignComponentMeta[]>();
+  for (const ref of foreignImports) {
+    const name = ref.node.name.getText();
+    registry.set(name, [{name, ref}]);
+  }
+  return new SelectorlessMatcher(registry);
 }

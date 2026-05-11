@@ -460,6 +460,11 @@ export enum ErrorCode {
   CONFLICTING_HOST_DIRECTIVE_BINDING = -8024,
 
   /**
+   * Raised when a foreign component node has an unsupported Angular binding.
+   */
+  FOREIGN_COMPONENT_UNSUPPORTED_BINDING = 8025,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
