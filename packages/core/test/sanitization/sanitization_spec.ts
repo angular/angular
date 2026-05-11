@@ -28,7 +28,7 @@ import {
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
 } from '../../src/sanitization/sanitization';
-import {SecurityContext} from '../../src/sanitization/security';
+import {SecurityContext} from '../../src/sanitization/schema/security';
 
 function fakeLView(): LView {
   const fake = [null, {}] as LView;

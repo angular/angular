@@ -37,7 +37,7 @@ import {
   ɵɵsanitizeUrl,
 } from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/security';
+import {SecurityContext} from '../../src/sanitization/schema/security';
 
 import {ViewFixture} from './view_fixture';
 

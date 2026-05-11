@@ -7,6 +7,7 @@
  */
 
 import {type ConstantPool} from '../../../../constant_pool';
+import {SecurityContext} from '../../../../core';
 import * as i18n from '../../../../i18n/i18n_ast';
 import {mapLiteral} from '../../../../output/map_util';
 import * as o from '../../../../output/output_ast';
@@ -76,6 +77,8 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
 
   // Context Xref -> Extracted Attribute Ops
   const extractedAttributesByI18nContext = new Map<ir.XrefId, ir.ExtractedAttributeOp[]>();
+  // Element/ElementStart Xref -> Tag Name
+  const tagNamesByElement = new Map<ir.XrefId, string>();
   // Element/ElementStart Xref -> I18n Attributes config op
   const i18nAttributesByElement = new Map<ir.XrefId, ir.I18nAttributesOp>();
   // Element/ElementStart Xref -> All I18n Expression ops for attrs on that target
@@ -85,6 +88,9 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
 
   for (const unit of job.units) {
     for (const op of unit.ops()) {
+      if (op.kind === ir.OpKind.ElementStart || op.kind === ir.OpKind.Template) {
+        tagNamesByElement.set(op.xref, (op as any).tag ?? '');
+      }
       if (op.kind === ir.OpKind.ExtractedAttribute && op.i18nContext !== null) {
         const attributes = extractedAttributesByI18nContext.get(op.i18nContext) ?? [];
         attributes.push(op);
@@ -140,7 +146,31 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
             const attributesForMessage = extractedAttributesByI18nContext.get(op.i18nContext);
             if (attributesForMessage !== undefined) {
               for (const attr of attributesForMessage) {
-                attr.expression = mainVar.clone();
+                let expr: o.Expression = mainVar.clone();
+                const tagName = tagNamesByElement.get(attr.target) ?? '';
+                switch (attr.securityContext) {
+                  case SecurityContext.HTML:
+                    expr = o.importExpr(Identifiers.sanitizeHtml).callFn([expr]);
+                    break;
+                  case SecurityContext.STYLE:
+                    expr = o.importExpr(Identifiers.sanitizeStyle).callFn([expr]);
+                    break;
+                  case SecurityContext.SCRIPT:
+                    expr = o.importExpr(Identifiers.sanitizeScript).callFn([expr]);
+                    break;
+                  case SecurityContext.URL:
+                    expr = o.importExpr(Identifiers.sanitizeUrl).callFn([expr]);
+                    break;
+                  case SecurityContext.RESOURCE_URL:
+                    expr = o.importExpr(Identifiers.sanitizeResourceUrl).callFn([expr]);
+                    break;
+                  case SecurityContext.ATTRIBUTE_NO_BINDING:
+                    expr = o
+                      .importExpr(Identifiers.validateAttribute)
+                      .callFn([expr, o.literal(tagName), o.literal(attr.name)]);
+                    break;
+                }
+                attr.expression = expr;
               }
             }
           }
