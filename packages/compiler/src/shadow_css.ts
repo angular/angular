@@ -192,16 +192,10 @@ export class ShadowCss {
       return COMMENT_PLACEHOLDER;
     });
 
-    cssText = this._insertDirectives(cssText);
     const scopedCssText = this._scopeCssText(cssText, selector, hostSelector);
     // Add back comments at the original position.
     let commentIdx = 0;
     return scopedCssText.replace(_commentWithHashPlaceHolderRe, () => comments[commentIdx++]);
-  }
-
-  private _insertDirectives(cssText: string): string {
-    cssText = this._insertPolyfillDirectivesInCssText(cssText);
-    return this._insertPolyfillRulesInCssText(cssText);
   }
 
   /**
@@ -410,48 +404,6 @@ export class ShadowCss {
     return {...rule, content};
   }
 
-  /*
-   * Process styles to convert native ShadowDOM rules that will trip
-   * up the css parser; we rely on decorating the stylesheet with inert rules.
-   *
-   * For example, we convert this rule:
-   *
-   * polyfill-next-selector { content: ':host menu-item'; }
-   * ::content menu-item {
-   *
-   * to this:
-   *
-   * scopeName menu-item {
-   *
-   **/
-  private _insertPolyfillDirectivesInCssText(cssText: string): string {
-    return cssText.replace(_cssContentNextSelectorRe, function (...m: string[]) {
-      return m[2] + '{';
-    });
-  }
-
-  /*
-   * Process styles to add rules which will only apply under the polyfill
-   *
-   * For example, we convert this rule:
-   *
-   * polyfill-rule {
-   *   content: ':host menu-item';
-   * ...
-   * }
-   *
-   * to this:
-   *
-   * scopeName menu-item {...}
-   *
-   **/
-  private _insertPolyfillRulesInCssText(cssText: string): string {
-    return cssText.replace(_cssContentRuleRe, (...m: string[]) => {
-      const rule = m[0].replace(m[1], '').replace(m[2], '');
-      return m[4] + rule;
-    });
-  }
-
   /* Ensure styles are scoped. Pseudo-scoping takes a rule like:
    *
    *  .foo {... }
@@ -461,7 +413,6 @@ export class ShadowCss {
    *  scopeName .foo { ... }
    */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
-    const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
     // replace :host and :host-context with -shadowcsshost and -shadowcsshostcontext respectively
     cssText = this._insertPolyfillHostInCssText(cssText);
     cssText = this._convertColonHost(cssText);
@@ -471,34 +422,7 @@ export class ShadowCss {
       cssText = this._scopeKeyframesRelatedCss(cssText, scopeSelector);
       cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
     }
-    cssText = cssText + '\n' + unscopedRules;
     return cssText.trim();
-  }
-
-  /*
-   * Process styles to add rules which will only apply under the polyfill
-   * and do not process via CSSOM. (CSSOM is destructive to rules on rare
-   * occasions, e.g. -webkit-calc on Safari.)
-   * For example, we convert this rule:
-   *
-   * @polyfill-unscoped-rule {
-   *   content: 'menu-item';
-   * ... }
-   *
-   * to this:
-   *
-   * menu-item {...}
-   *
-   **/
-  private _extractUnscopedRulesFromCssText(cssText: string): string {
-    let r = '';
-    let m: RegExpExecArray | null;
-    _cssContentUnscopedRuleRe.lastIndex = 0;
-    while ((m = _cssContentUnscopedRuleRe.exec(cssText)) !== null) {
-      const rule = m[0].replace(m[2], '').replace(m[1], m[4]);
-      r += rule + '\n\n';
-    }
-    return r;
   }
 
   /*
@@ -1062,11 +986,6 @@ class SafeSelector {
 
 const _cssScopedPseudoFunctionPrefix = '(:(where|is)\\()?';
 const _cssPrefixWithPseudoSelectorFunction = /:(where|is)\(/gi;
-const _cssContentNextSelectorRe =
-  /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
-const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
-const _cssContentUnscopedRuleRe =
-  /(polyfill-unscoped-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
 const _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';
