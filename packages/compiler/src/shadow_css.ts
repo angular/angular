@@ -367,7 +367,7 @@ export class ShadowCss {
     unscopedKeyframesSet: ReadonlySet<string>,
   ): CssRule {
     let content = rule.content.replace(
-      /((?:^|\s+|;)(?:-webkit-)?animation\s*:\s*),*([^;]+)/g,
+      /((?:^|\s+|;)(?:-webkit-)?animation\s*:\s*)([^;]+)/g,
       (_, start, animationDeclarations) =>
         start +
         animationDeclarations.replace(
