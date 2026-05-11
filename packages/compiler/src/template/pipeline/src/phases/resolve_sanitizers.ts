@@ -70,7 +70,6 @@ export function resolveSanitizers(job: CompilationJob): void {
             sanitizerFn = Identifiers.sanitizeUrlOrResourceUrl;
           } else if (
             Array.isArray(op.securityContext) &&
-            op.securityContext.length > 1 &&
             op.securityContext.includes(SecurityContext.SCRIPT)
           ) {
             // Same reason as above: text-like properties of `<script>` (HTML or SVG) are in
