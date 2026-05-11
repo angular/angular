@@ -322,11 +322,6 @@ describe('ShadowCss', () => {
     expect(shim('.pr\\fc fung {}', 'contenta')).toEqual('.pr\\fc fung[contenta] {}');
   });
 
-  it('should handle ::shadow', () => {
-    const css = shim('x::shadow > y {}', 'contenta');
-    expect(css).toEqualCss('x[contenta] > y[contenta] {}');
-  });
-
   it('should leave calc() unchanged', () => {
     const styleStr = 'div {height:calc(100% - 55px);}';
     const css = shim(styleStr, 'contenta');

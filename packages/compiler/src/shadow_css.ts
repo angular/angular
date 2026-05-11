@@ -466,7 +466,6 @@ export class ShadowCss {
     cssText = this._insertPolyfillHostInCssText(cssText);
     cssText = this._convertColonHost(cssText);
     cssText = this._convertColonHostContext(cssText);
-    cssText = this._convertShadowDOMSelectors(cssText);
     if (scopeSelector) {
       cssText = this._scopeKeyframesRelatedCss(cssText, scopeSelector);
       cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
@@ -664,14 +663,6 @@ export class ShadowCss {
         )
         .join(', ');
     });
-  }
-
-  /*
-   * Convert combinators like ::shadow and pseudo-elements like ::content
-   * by replacing with space.
-   */
-  private _convertShadowDOMSelectors(cssText: string): string {
-    return _shadowDOMSelectorsRe.reduce((result, pattern) => result.replace(pattern, ' '), cssText);
   }
 
   // change a selector like 'div' to 'name div'
@@ -1092,13 +1083,6 @@ const _polyfillHostNoCombinatorOutsidePseudoFunction = new RegExp(
   'g',
 );
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s,]*)/;
-const _shadowDOMSelectorsRe = [
-  /::shadow/g,
-  /::content/g,
-  // Deprecated selectors
-  /\/shadow-deep\//g,
-  /\/shadow\//g,
-];
 
 // The deep combinator is deprecated in the CSS spec
 // Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
