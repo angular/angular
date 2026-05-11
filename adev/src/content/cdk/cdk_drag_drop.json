@@ -2405,8 +2405,8 @@
       ],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-drop-registry.ts",
-        "startLine": 59,
-        "endLine": 333
+        "startLine": 57,
+        "endLine": 331
       }
     },
     {
@@ -6315,10 +6315,6 @@
     ],
     [
       "ChangeDetectorRef",
-      "@angular/core"
-    ],
-    [
-      "ChangeDetectionStrategy",
       "@angular/core"
     ],
     [
