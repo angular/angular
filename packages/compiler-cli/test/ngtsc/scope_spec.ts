@@ -253,6 +253,250 @@ runInEachFileSystem(() => {
           expect(error.code).toEqual(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
           expect(diagnosticToNode(error, ts.isIdentifier).text).toEqual('NotAClass');
         });
+
+        it('should resolve an `imports` entry that references a constant resolving to a tuple of modules in a .d.ts dependency', () => {
+          env.write(
+            'dep.d.ts',
+            `
+            import {ɵɵNgModuleDeclaration, ɵɵComponentDeclaration} from '@angular/core';
+            export declare class CompA {
+              static ɵcmp: ɵɵComponentDeclaration<CompA, 'comp-a', never, {}, {}, never, never, true, never>;
+            }
+            export declare class ModuleA {
+              static ɵmod: ɵɵNgModuleDeclaration<ModuleA, [typeof CompA], never, [typeof CompA]>;
+            }
+            export declare const FOO: readonly [typeof ModuleA];
+          `,
+          );
+          env.write(
+            'lib.d.ts',
+            `
+            import {ɵɵNgModuleDeclaration} from '@angular/core';
+            import {FOO} from './dep';
+            export declare class LibModule {
+              static ɵmod: ɵɵNgModuleDeclaration<LibModule, never, never, typeof FOO>;
+            }
+          `,
+          );
+          env.write(
+            'test.ts',
+            `
+            import {Component, NgModule} from '@angular/core';
+            import {LibModule} from './lib';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<comp-a></comp-a>',
+              standalone: false,
+            })
+            export class TestCmp {}
+
+            @NgModule({
+              declarations: [TestCmp],
+              imports: [LibModule],
+            })
+            export class AppModule {}
+          `,
+          );
+
+          expect(env.driveDiagnostics().length).toBe(0);
+        });
+
+        it('should resolve `ReturnType<typeof Foo.forRoot>` entries from a .d.ts dependency', () => {
+          env.write(
+            'dep.d.ts',
+            `
+            import {ɵɵNgModuleDeclaration, ɵɵComponentDeclaration, ModuleWithProviders} from '@angular/core';
+            export declare class CompA {
+              static ɵcmp: ɵɵComponentDeclaration<CompA, 'comp-a', never, {}, {}, never, never, true, never>;
+            }
+            export declare class ModuleA {
+              static ɵmod: ɵɵNgModuleDeclaration<ModuleA, [typeof CompA], never, [typeof CompA]>;
+            }
+            export declare class FooModule {
+              static forRoot(): ModuleWithProviders<ModuleA>;
+            }
+          `,
+          );
+          env.write(
+            'lib.d.ts',
+            `
+            import {ɵɵNgModuleDeclaration} from '@angular/core';
+            import {FooModule} from './dep';
+            export declare class LibModule {
+              static ɵmod: ɵɵNgModuleDeclaration<LibModule, never, never, [ReturnType<typeof FooModule.forRoot>]>;
+            }
+          `,
+          );
+          env.write(
+            'test.ts',
+            `
+            import {Component, NgModule} from '@angular/core';
+            import {LibModule} from './lib';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<comp-a></comp-a>',
+              standalone: false,
+            })
+            export class TestCmp {}
+
+            @NgModule({
+              declarations: [TestCmp],
+              imports: [LibModule],
+            })
+            export class AppModule {}
+          `,
+          );
+
+          expect(env.driveDiagnostics().length).toBe(0);
+        });
+
+        it('should resolve `ReturnType<typeof Foo.forRoot>` when `ModuleWithProviders` wraps an `import(...)` type', () => {
+          env.write(
+            'module_a.d.ts',
+            `
+            import {ɵɵNgModuleDeclaration, ɵɵComponentDeclaration} from '@angular/core';
+            export declare class CompA {
+              static ɵcmp: ɵɵComponentDeclaration<CompA, 'comp-a', never, {}, {}, never, never, true, never>;
+            }
+            export declare class ModuleA {
+              static ɵmod: ɵɵNgModuleDeclaration<ModuleA, [typeof CompA], never, [typeof CompA]>;
+            }
+          `,
+          );
+          env.write(
+            'dep.d.ts',
+            `
+            import {ModuleWithProviders} from '@angular/core';
+            export declare class FooModule {
+              static forRoot(): ModuleWithProviders<import("./module_a").ModuleA>;
+            }
+          `,
+          );
+          env.write(
+            'lib.d.ts',
+            `
+            import {ɵɵNgModuleDeclaration} from '@angular/core';
+            import {FooModule} from './dep';
+            export declare class LibModule {
+              static ɵmod: ɵɵNgModuleDeclaration<LibModule, never, never, [ReturnType<typeof FooModule.forRoot>]>;
+            }
+          `,
+          );
+          env.write(
+            'test.ts',
+            `
+            import {Component, NgModule} from '@angular/core';
+            import {LibModule} from './lib';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<comp-a></comp-a>',
+              standalone: false,
+            })
+            export class TestCmp {}
+
+            @NgModule({
+              declarations: [TestCmp],
+              imports: [LibModule],
+            })
+            export class AppModule {}
+          `,
+          );
+
+          expect(env.driveDiagnostics().length).toBe(0);
+        });
+
+        describe('ReturnType failures', () => {
+          it('should produce an error when `ReturnType` references a function returning an invalid type', () => {
+            env.write(
+              'dep.d.ts',
+              `
+              export declare class FooModule {
+                static forRoot(): string;
+              }
+            `,
+            );
+            env.write(
+              'lib.d.ts',
+              `
+              import {ɵɵNgModuleDeclaration} from '@angular/core';
+              import {FooModule} from './dep';
+              export declare class LibModule {
+                static ɵmod: ɵɵNgModuleDeclaration<LibModule, never, never, [ReturnType<typeof FooModule.forRoot>]>;
+              }
+            `,
+            );
+            env.write(
+              'test.ts',
+              `
+              import {Component, NgModule} from '@angular/core';
+              import {LibModule} from './lib';
+
+              @Component({
+                selector: 'test-cmp',
+                template: '...',
+                standalone: false,
+              })
+              export class TestCmp {}
+
+              @NgModule({
+                declarations: [TestCmp],
+                imports: [LibModule],
+              })
+              export class AppModule {}
+            `,
+            );
+
+            const diags = env.driveDiagnostics();
+            expect(diags.length).toBe(1);
+            expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NGMODULE_INVALID_IMPORT));
+          });
+
+          it('should produce an error when `ReturnType` references a non-function', () => {
+            env.write(
+              'dep.d.ts',
+              `
+              export declare const FooModule: string;
+            `,
+            );
+            env.write(
+              'lib.d.ts',
+              `
+              import {ɵɵNgModuleDeclaration} from '@angular/core';
+              import {FooModule} from './dep';
+              export declare class LibModule {
+                static ɵmod: ɵɵNgModuleDeclaration<LibModule, never, never, [ReturnType<typeof FooModule>]>;
+              }
+            `,
+            );
+            env.write(
+              'test.ts',
+              `
+              import {Component, NgModule} from '@angular/core';
+              import {LibModule} from './lib';
+
+              @Component({
+                selector: 'test-cmp',
+                template: '...',
+                standalone: false,
+              })
+              export class TestCmp {}
+
+              @NgModule({
+                declarations: [TestCmp],
+                imports: [LibModule],
+              })
+              export class AppModule {}
+            `,
+            );
+
+            const diags = env.driveDiagnostics();
+            expect(diags.length).toBe(1);
+            expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NGMODULE_INVALID_IMPORT));
+          });
+        });
       });
 
       describe('exports', () => {
