@@ -477,6 +477,10 @@ export class Identifiers {
     name: 'ɵɵsanitizeUrlOrResourceUrl',
     moduleName: CORE,
   };
+  static sanitizeMaybeScript: o.ExternalReference = {
+    name: 'ɵɵsanitizeMaybeScript',
+    moduleName: CORE,
+  };
   static trustConstantHtml: o.ExternalReference = {name: 'ɵɵtrustConstantHtml', moduleName: CORE};
   static trustConstantResourceUrl: o.ExternalReference = {
     name: 'ɵɵtrustConstantResourceUrl',

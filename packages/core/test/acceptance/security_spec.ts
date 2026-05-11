@@ -852,3 +852,58 @@ describe('innerHTML processing', () => {
     expect(fixture.nativeElement.innerHTML).not.toContain('action');
   });
 });
+
+describe('SVG <script> bindings', () => {
+  const SCRIPT_TEXT_PROPS = ['text', 'textContent', 'innerText', 'innerHTML', 'outerHTML'];
+
+  for (const propName of SCRIPT_TEXT_PROPS) {
+    it(`should error when '${propName}' is bound on an SVG <script>`, () => {
+      @Component({
+        template: `<svg><script [${propName}]="code"></script></svg>`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TestCmp {
+        code = '/* xss */';
+      }
+
+      expect(() => {
+        const fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+      }).toThrowError(/NG0905/);
+    });
+
+    it(`should error when '${propName}' is bound on an SVG <script> via host binding`, () => {
+      @Directive({selector: '[scriptHost]', host: {[`[${propName}]`]: 'code'}})
+      class ScriptHostDir {
+        code = '/* xss */';
+      }
+
+      @Component({
+        template: '<svg><script scriptHost></script></svg>',
+        imports: [ScriptHostDir],
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TestCmp {}
+
+      expect(() => {
+        const fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+      }).toThrowError(/NG0905/);
+    });
+  }
+
+  it('should allow values trusted via DomSanitizer.bypassSecurityTrustScript', () => {
+    @Component({
+      template: '<svg><script [textContent]="code"></script></svg>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {
+      private readonly sanitizer = inject(DomSanitizer);
+      code = this.sanitizer.bypassSecurityTrustScript('/* trusted */');
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('script').textContent).toContain('/* trusted */');
+  });
+});

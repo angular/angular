@@ -118,19 +118,30 @@ export function ingestHostBinding(
     if (property.isAnimation) {
       bindingKind = ir.BindingKind.Animation;
     }
-    const securityContexts = bindingParser
-      .calcPossibleSecurityContexts(
-        input.componentSelector,
-        property.name,
-        bindingKind === ir.BindingKind.Attribute,
-      )
-      .filter((context) => context !== SecurityContext.NONE);
+    const rawSecurityContexts = bindingParser.calcPossibleSecurityContexts(
+      input.componentSelector,
+      property.name,
+      bindingKind === ir.BindingKind.Attribute,
+    );
+    // Preserve `NONE` when it co-occurs with `SCRIPT` so the host element's tag can be
+    // disambiguated at runtime by the `ɵɵsanitizeMaybeScript` dispatcher; otherwise filter
+    // `NONE` out as a non-sensitive context.
+    const keepNone = rawSecurityContexts.includes(SecurityContext.SCRIPT);
+    const securityContexts = rawSecurityContexts.filter(
+      (context) => keepNone || context !== SecurityContext.NONE,
+    );
     ingestDomProperty(job, property, bindingKind, securityContexts);
   }
   for (const [name, expr] of Object.entries(input.attributes) ?? []) {
-    const securityContexts = bindingParser
-      .calcPossibleSecurityContexts(input.componentSelector, name, true)
-      .filter((context) => context !== SecurityContext.NONE);
+    const rawSecurityContexts = bindingParser.calcPossibleSecurityContexts(
+      input.componentSelector,
+      name,
+      true,
+    );
+    const keepNone = rawSecurityContexts.includes(SecurityContext.SCRIPT);
+    const securityContexts = rawSecurityContexts.filter(
+      (context) => keepNone || context !== SecurityContext.NONE,
+    );
     ingestHostAttribute(job, name, expr, securityContexts);
   }
   for (const event of input.events ?? []) {

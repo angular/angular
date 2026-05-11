@@ -28,7 +28,18 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
 
     registerContext(SecurityContext.HTML, ['iframe|srcdoc', '*|innerHTML', '*|outerHTML']);
     registerContext(SecurityContext.STYLE, ['*|style']);
-    // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
+    // Writes to text-like properties of a `<script>` element become live script source. SVG
+    // `<script>` is preserved by the template parser (`mergeNsAndName('svg', 'script')` produces
+    // `:svg:script`, which `preparseElement` does not strip), so this matters at runtime even
+    // though top-level HTML `<script>` is stripped at compile time. The binding parser performs
+    // schema lookups using the local tag name (`script`).
+    registerContext(SecurityContext.SCRIPT, [
+      'script|innerHTML',
+      'script|outerHTML',
+      'script|text',
+      'script|textContent',
+      'script|innerText',
+    ]);
     registerContext(SecurityContext.URL, [
       '*|formAction',
       'area|href',

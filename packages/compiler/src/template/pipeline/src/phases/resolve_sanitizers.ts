@@ -68,6 +68,15 @@ export function resolveSanitizers(job: CompilationJob): void {
             // sanitization function and select the actual sanitizer at runtime based on a tag name
             // that is provided while invoking sanitization function.
             sanitizerFn = Identifiers.sanitizeUrlOrResourceUrl;
+          } else if (
+            Array.isArray(op.securityContext) &&
+            op.securityContext.length > 1 &&
+            op.securityContext.includes(SecurityContext.SCRIPT)
+          ) {
+            // Same reason as above: text-like properties of `<script>` (HTML or SVG) are in
+            // SecurityContext.SCRIPT, but the same property name on any other tag is HTML or NONE.
+            // Defer the choice to runtime via a dispatcher that inspects the tag name.
+            sanitizerFn = Identifiers.sanitizeMaybeScript;
           } else {
             sanitizerFn = sanitizerFns.get(getOnlySecurityContext(op.securityContext)) ?? null;
           }

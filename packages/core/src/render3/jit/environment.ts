@@ -190,6 +190,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵvalidateAttribute': sanitization.ɵɵvalidateAttribute,
   'ɵɵsanitizeUrl': sanitization.ɵɵsanitizeUrl,
   'ɵɵsanitizeUrlOrResourceUrl': sanitization.ɵɵsanitizeUrlOrResourceUrl,
+  'ɵɵsanitizeMaybeScript': sanitization.ɵɵsanitizeMaybeScript,
   'ɵɵtrustConstantHtml': sanitization.ɵɵtrustConstantHtml,
   'ɵɵtrustConstantResourceUrl': sanitization.ɵɵtrustConstantResourceUrl,
 

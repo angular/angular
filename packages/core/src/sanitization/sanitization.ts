@@ -257,6 +257,24 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
   return getUrlSanitizer(tag, prop)(unsafeUrl);
 }
 
+/**
+ * Sanitizes a value bound to a property whose security context depends on the host tag — used
+ * for host bindings where the host element is unknown at compile time and the property may be a
+ * script-source sink on `<script>` or otherwise an HTML/text sink on any other tag.
+ *
+ * @codeGenApi
+ */
+export function ɵɵsanitizeMaybeScript(unsafeValue: any, tag: string, prop: string): any {
+  if (tag.toLowerCase() === 'script') {
+    return ɵɵsanitizeScript(unsafeValue);
+  }
+  const lowerProp = prop.toLowerCase();
+  if (lowerProp === 'innerhtml' || lowerProp === 'outerhtml') {
+    return ɵɵsanitizeHtml(unsafeValue);
+  }
+  return unsafeValue;
+}
+
 export function validateAgainstEventProperties(name: string) {
   if (name.toLowerCase().startsWith('on')) {
     const errorMessage =

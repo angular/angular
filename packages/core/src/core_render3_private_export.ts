@@ -306,6 +306,7 @@ export {
 } from './sanitization/bypass';
 export {
   ɵɵsanitizeHtml,
+  ɵɵsanitizeMaybeScript,
   ɵɵsanitizeResourceUrl,
   ɵɵsanitizeScript,
   ɵɵsanitizeStyle,
