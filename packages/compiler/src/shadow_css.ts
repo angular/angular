@@ -1081,7 +1081,7 @@ const nthRegex = new RegExp(String.raw`(:nth-[-\w]+)` + _parenSuffix, 'g');
 const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix + '?([^,{]*)', 'gim');
 // note: :host-context patterns are terminated with `{`, as opposed to :host which
 // is both `{` and `,` because :host-context handles top-level commas differently.
-const _hostContextPattern = _polyfillHostContext + _parenSuffix + '?([^{]*)';
+const _hostContextPattern = _polyfillHostContext + _parenSuffix + '([^{]*)';
 const _cssColonHostContextReGlobal = new RegExp(
   `${_cssScopedPseudoFunctionPrefix}(${_hostContextPattern})`,
   'gim',
@@ -1106,8 +1106,8 @@ const _shadowDOMSelectorsRe = [
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
 const _selectorReSuffix = '([>\\s~+[.,{:][\\s\\S]*)?$';
 const _polyfillHostRe = /-shadowcsshost/gim;
-const _colonHostRe = /:host/gim;
-const _colonHostContextRe = /:host-context/gim;
+const _colonHostRe = /:host(?!\-context)/gim;
+const _colonHostContextRe = /:host-context(?=\(\s*[^)\s])/gim;
 
 const _newLinesRe = /\r?\n/g;
 const _commentRe = /\/\*[\s\S]*?\*\//g;

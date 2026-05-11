@@ -262,18 +262,17 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
-    // It is not clear what the behavior should be for a `:host-context` with no selectors.
     // This test is checking that the result is backward compatible with previous behavior.
     // Arguably it should actually be an error that should be reported.
     it('should handle :host-context with no ancestor selectors', () => {
       expect(shim(':host-context .inner {}', 'contenta', 'a-host')).toEqualCss(
-        '[a-host] .inner[contenta] {}',
+        '[contenta]:host-context .inner[contenta] {}',
       );
       expect(shim(':host-context() .inner {}', 'contenta', 'a-host')).toEqualCss(
-        '[a-host] .inner[contenta] {}',
+        '[contenta]:host-context() .inner[contenta] {}',
       );
       expect(shim(':host-context :host-context(.a) {}', 'contenta', 'host-a')).toEqualCss(
-        '.a[host-a], .a [host-a] {}',
+        ':host-context .a[host-a], .a [host-a] {}',
       );
     });
 
