@@ -103,7 +103,7 @@ groups:
         - atscott
         - crisbeto
         - devversion
-        - thePunderWoman
+        - ~thePunderWoman
         - kirjs
         - JoostK
         - ~amishne
@@ -150,7 +150,7 @@ groups:
         - crisbeto
         - devversion
         - kirjs
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - JeanMeche
         - ~amishne
@@ -205,7 +205,7 @@ groups:
         - crisbeto
         - devversion
         - kirjs
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - ~amishne
         - ~leonsenft
@@ -256,7 +256,7 @@ groups:
         - crisbeto
         - kirjs
         - JeanMeche
-        - thePunderWoman
+        - ~thePunderWoman
         - devversion
         - josephperrott
         - ~pkozlowski-opensource
@@ -372,7 +372,7 @@ groups:
         - ~AndrewKushnir
         - ~alxhub
         - atscott
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
         - crisbeto
@@ -408,7 +408,7 @@ groups:
         - ~AndrewKushnir
         - atscott
         - kirjs
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - ~amishne
         - ~leonsenft
@@ -456,7 +456,7 @@ groups:
         - ~AndrewKushnir
         - andrewseguin
         - dgp1130
-        - thePunderWoman
+        - ~thePunderWoman
         - josephperrott
 
   # =========================================================
@@ -475,7 +475,7 @@ groups:
       users:
         - ~pkozlowski-opensource # Pawel Kozlowski
         - ~alxhub # Alex Rickabaugh
-        - thePunderWoman # Jessica Janiuk
+        - ~thePunderWoman # Jessica Janiuk
         - ~AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
 
