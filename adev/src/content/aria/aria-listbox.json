@@ -166,10 +166,6 @@
       "description": "A selectable option in an `ngListbox`.\n\nThis directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n`ngListbox`. The `value` input is used to identify the option, and the `label` input provides\nthe accessible name for the option.\n\n```html\n<li ngOption value=\"item-id\" label=\"Item Name\">\n  Item Name\n</li>\n```",
       "jsdocTags": [
         {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
           "name": "see",
           "comment": "[Listbox](guide/aria/listbox)"
         },
@@ -186,7 +182,7 @@
           "comment": "[Multiselect](guide/aria/multiselect)"
         }
       ],
-      "rawComment": "/**\n * A selectable option in an `ngListbox`.\n *\n * This directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n * `ngListbox`. The `value` input is used to identify the option, and the `label` input provides\n * the accessible name for the option.\n *\n * ```html\n * <li ngOption value=\"item-id\" label=\"Item Name\">\n *   Item Name\n * </li>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
+      "rawComment": "/**\n * A selectable option in an `ngListbox`.\n *\n * This directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n * `ngListbox`. The `value` input is used to identify the option, and the `label` input provides\n * the accessible name for the option.\n *\n * ```html\n * <li ngOption value=\"item-id\" label=\"Item Name\">\n *   Item Name\n * </li>\n * ```\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
@@ -201,8 +197,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/option.ts",
-        "startLine": 43,
-        "endLine": 100
+        "startLine": 41,
+        "endLine": 98
       }
     },
     {
@@ -523,10 +519,6 @@
       "description": "Represents a container used to display a list of items for a user to select from.\n\nThe `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\nselectable list. It supports single and multiple selection modes, as well as various focus and\norientation strategies.\n\n```html\n<ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n  @for (item of items; track item.id) {\n    <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n      {{item.name}}\n    </li>\n  }\n</ul>\n```",
       "jsdocTags": [
         {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
           "name": "see",
           "comment": "[Listbox](guide/aria/listbox)"
         },
@@ -543,7 +535,7 @@
           "comment": "[Multiselect](guide/aria/multiselect)"
         }
       ],
-      "rawComment": "/**\n * Represents a container used to display a list of items for a user to select from.\n *\n * The `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\n * selectable list. It supports single and multiple selection modes, as well as various focus and\n * orientation strategies.\n *\n * ```html\n * <ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n *   @for (item of items; track item.id) {\n *     <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n *       {{item.name}}\n *     </li>\n *   }\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
+      "rawComment": "/**\n * Represents a container used to display a list of items for a user to select from.\n *\n * The `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\n * selectable list. It supports single and multiple selection modes, as well as various focus and\n * orientation strategies.\n *\n * ```html\n * <ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n *   @for (item of items; track item.id) {\n *     <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n *       {{item.name}}\n *     </li>\n *   }\n * </ul>\n * ```\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
       "implements": [
         "OnDestroy"
       ],
@@ -557,8 +549,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 54,
-        "endLine": 218
+        "startLine": 52,
+        "endLine": 216
       }
     }
   ],
