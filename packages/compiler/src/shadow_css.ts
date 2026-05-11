@@ -511,20 +511,20 @@ export class ShadowCss {
   private _convertColonHost(cssText: string): string {
     return cssText.replace(_cssColonHostRe, (_, hostSelectors: string, otherSelectors: string) => {
       if (hostSelectors) {
-        const convertedSelectors: string[] = [];
-        for (const hostSelector of this._splitOnTopLevelCommas(hostSelectors, true)) {
-          const trimmedHostSelector = hostSelector.trim();
-          if (!trimmedHostSelector) break;
-          const convertedSelector =
+        const parts = [...this._splitOnTopLevelCommas(hostSelectors, true)];
+        if (parts.length > 1) {
+          return ':host(' + hostSelectors + ')' + otherSelectors;
+        }
+        const trimmedHostSelector = parts[0].trim();
+        if (trimmedHostSelector) {
+          return (
             _polyfillHostNoCombinator +
             trimmedHostSelector.replace(_polyfillHost, '') +
-            otherSelectors;
-          convertedSelectors.push(convertedSelector);
+            otherSelectors
+          );
         }
-        return convertedSelectors.join(',');
-      } else {
-        return _polyfillHostNoCombinator + otherSelectors;
       }
+      return _polyfillHostNoCombinator + otherSelectors;
     });
   }
 
