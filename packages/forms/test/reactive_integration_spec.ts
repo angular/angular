@@ -1108,6 +1108,96 @@ describe('reactive forms integration tests', () => {
       form.reset();
       expect(loginEl.value).toBe('');
     });
+
+    describe('awaitAsyncValidators', () => {
+      let pendingSubject: Subject<null>;
+
+      beforeEach(() => {
+        pendingSubject = new Subject<null>();
+      });
+
+      it('should emit ngSubmit immediately when awaitAsyncValidators is false (default)', () => {
+        const asyncValidator = () => pendingSubject.asObservable();
+        const fixture = initTest(FormGroupComp);
+        fixture.componentInstance.form = new FormGroup(
+          {'login': new FormControl('', null, asyncValidator)},
+        );
+        fixture.detectChanges();
+
+        const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+        const submitted: Event[] = [];
+        formGroupDir.ngSubmit.subscribe((e: Event) => submitted.push(e));
+
+        expect(fixture.componentInstance.form.status).toBe('PENDING');
+
+        dispatchEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+        fixture.detectChanges();
+
+        expect(submitted.length)
+          .withContext('Expected ngSubmit to fire immediately when awaitAsyncValidators is false')
+          .toBe(1);
+      });
+
+      it('should defer ngSubmit until async validators complete when awaitAsyncValidators is true', async () => {
+        const asyncValidator = () => pendingSubject.asObservable();
+        const fixture = initTest(FormGroupComp);
+        fixture.componentInstance.form = new FormGroup(
+          {'login': new FormControl('', null, asyncValidator)},
+        );
+        fixture.detectChanges();
+
+        const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+        formGroupDir.awaitAsyncValidators = true;
+
+        const submitted: Event[] = [];
+        formGroupDir.ngSubmit.subscribe((e: Event) => submitted.push(e));
+
+        expect(fixture.componentInstance.form.status).toBe('PENDING');
+
+        dispatchEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+        fixture.detectChanges();
+
+        expect(submitted.length)
+          .withContext('Expected ngSubmit not to fire while form is PENDING')
+          .toBe(0);
+
+        pendingSubject.next(null);
+        await timeout();
+        fixture.detectChanges();
+
+        expect(submitted.length)
+          .withContext('Expected ngSubmit to fire after async validators complete')
+          .toBe(1);
+      });
+
+      it('should emit ngSubmit immediately when awaitAsyncValidators is true but form is not PENDING', async () => {
+        const asyncValidator = () => pendingSubject.asObservable();
+        const fixture = initTest(FormGroupComp);
+        fixture.componentInstance.form = new FormGroup(
+          {'login': new FormControl('', null, asyncValidator)},
+        );
+        fixture.detectChanges();
+
+        const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+        formGroupDir.awaitAsyncValidators = true;
+
+        pendingSubject.next(null);
+        await timeout();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.form.status).not.toBe('PENDING');
+
+        const submitted: Event[] = [];
+        formGroupDir.ngSubmit.subscribe((e: Event) => submitted.push(e));
+
+        dispatchEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+        fixture.detectChanges();
+
+        expect(submitted.length)
+          .withContext('Expected ngSubmit to fire immediately when form is not PENDING')
+          .toBe(1);
+      });
+    });
   });
 
   describe('value changes and status changes', () => {
