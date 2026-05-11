@@ -29,7 +29,7 @@ import {
 } from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {merge, NEVER, Observable, of, Subject, Subscription, timer} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {map, take, tap} from 'rxjs/operators';
 import {
   AbstractControl,
   AsyncValidator,
@@ -1117,11 +1117,11 @@ describe('reactive forms integration tests', () => {
       });
 
       it('should emit ngSubmit immediately when awaitAsyncValidators is false (default)', () => {
-        const asyncValidator = () => pendingSubject.asObservable();
+        const asyncValidator = () => pendingSubject.asObservable().pipe(take(1));
         const fixture = initTest(FormGroupComp);
-        fixture.componentInstance.form = new FormGroup(
-          {'login': new FormControl('', null, asyncValidator)},
-        );
+        fixture.componentInstance.form = new FormGroup({
+          'login': new FormControl('', null, asyncValidator),
+        });
         fixture.detectChanges();
 
         const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
@@ -1139,11 +1139,11 @@ describe('reactive forms integration tests', () => {
       });
 
       it('should defer ngSubmit until async validators complete when awaitAsyncValidators is true', async () => {
-        const asyncValidator = () => pendingSubject.asObservable();
+        const asyncValidator = () => pendingSubject.asObservable().pipe(take(1));
         const fixture = initTest(FormGroupComp);
-        fixture.componentInstance.form = new FormGroup(
-          {'login': new FormControl('', null, asyncValidator)},
-        );
+        fixture.componentInstance.form = new FormGroup({
+          'login': new FormControl('', null, asyncValidator),
+        });
         fixture.detectChanges();
 
         const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
@@ -1171,11 +1171,11 @@ describe('reactive forms integration tests', () => {
       });
 
       it('should emit ngSubmit immediately when awaitAsyncValidators is true but form is not PENDING', async () => {
-        const asyncValidator = () => pendingSubject.asObservable();
+        const asyncValidator = () => pendingSubject.asObservable().pipe(take(1));
         const fixture = initTest(FormGroupComp);
-        fixture.componentInstance.form = new FormGroup(
-          {'login': new FormControl('', null, asyncValidator)},
-        );
+        fixture.componentInstance.form = new FormGroup({
+          'login': new FormControl('', null, asyncValidator),
+        });
         fixture.detectChanges();
 
         const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);

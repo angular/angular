@@ -20,8 +20,8 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import {Subject, Subscription} from 'rxjs';
-import {filter, map, of, switchMap, take} from 'rxjs/operators';
+import {of, Subject, Subscription} from 'rxjs';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 
 import {FormGroup} from '../../model/form_group';
 import {FormArray} from '../../model/form_array';
@@ -139,11 +139,15 @@ export abstract class AbstractFormDirective
       .pipe(
         switchMap((event) =>
           this.awaitAsyncValidators && this.form.status === 'PENDING'
-            ? this.form.statusChanges.pipe(
-                filter((status) => status !== 'PENDING'),
-                take(1),
-                map(() => event),
-              )
+            ? (() => {
+                const statusChanges$ = this.form.statusChanges.pipe(
+                  filter((status) => status !== 'PENDING'),
+                  take(1),
+                  map(() => event),
+                );
+                this.form._updateTreeValidity({emitEvent: true});
+                return statusChanges$;
+              })()
             : of(event),
         ),
       )

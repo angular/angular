@@ -21,6 +21,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {dispatchEvent, sortedClassList, timeout, useAutoTick} from '@angular/private/testing';
 import {merge, Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
 import {
   AbstractControl,
   AsyncValidator,
@@ -3218,7 +3219,7 @@ class NgPendingAsyncValidator implements AsyncValidator {
   static subject = new Subject<null>();
 
   validate(_c: AbstractControl) {
-    return NgPendingAsyncValidator.subject.asObservable();
+    return NgPendingAsyncValidator.subject.asObservable().pipe(take(1));
   }
 }
 

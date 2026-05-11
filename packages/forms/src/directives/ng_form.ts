@@ -22,8 +22,8 @@ import {
   untracked,
   ɵWritable as Writable,
 } from '@angular/core';
-import {Subject, Subscription} from 'rxjs';
-import {filter, map, of, switchMap, take} from 'rxjs/operators';
+import {of, Subject, Subscription} from 'rxjs';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 
 import {AbstractControl, FormHooks, FormSubmittedEvent} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -201,11 +201,15 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit, OnD
       .pipe(
         switchMap((event) =>
           this.awaitAsyncValidators && this.form.status === 'PENDING'
-            ? this.form.statusChanges.pipe(
-                filter((status) => status !== 'PENDING'),
-                take(1),
-                map(() => event),
-              )
+            ? (() => {
+                const statusChanges$ = this.form.statusChanges.pipe(
+                  filter((status) => status !== 'PENDING'),
+                  take(1),
+                  map(() => event),
+                );
+                this.form._updateTreeValidity({emitEvent: true});
+                return statusChanges$;
+              })()
             : of(event),
         ),
       )
