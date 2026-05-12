@@ -5,7 +5,7 @@
 
 A pattern that combines readonly combobox with multi-enabled listbox to create multiple-selection dropdowns with keyboard navigation and screen reader support.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/multiselect/src/icons/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/multiselect/src/icons/app/app.ts"/>
@@ -29,7 +29,7 @@ A pattern that combines readonly combobox with multi-enabled listbox to create m
       <docs-code header="app.css" path="adev/src/content/examples/aria/multiselect/src/icons/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 ## Usage
 
@@ -67,7 +67,7 @@ The multiselect pattern combines [Combobox](guide/aria/combobox) and [Listbox](g
 
 Users need to select multiple items from a list of options. A readonly combobox paired with a multi-enabled listbox provides familiar multiselect functionality with full accessibility support.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/multiselect/src/basic/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/multiselect/src/basic/app/app.ts"/>
@@ -91,7 +91,7 @@ Users need to select multiple items from a list of options. A readonly combobox 
       <docs-code header="app.css" path="adev/src/content/examples/aria/multiselect/src/basic/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 The `multi` attribute on `ngListbox` enables multiple selection. Press Space to toggle options, and the popup remains open for additional selections. The display shows the first selected item plus a count of remaining selections.
 
@@ -99,7 +99,7 @@ The `multi` attribute on `ngListbox` enables multiple selection. Press Space to 
 
 Options often need visual indicators like icons or colors to help users identify choices. Custom templates within options allow rich formatting while the display value shows a compact summary.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/multiselect/src/icons/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/multiselect/src/icons/app/app.ts"/>
@@ -123,7 +123,7 @@ Options often need visual indicators like icons or colors to help users identify
       <docs-code header="app.css" path="adev/src/content/examples/aria/multiselect/src/icons/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 Each option displays an icon alongside its label. The display value updates to show the first selection's icon and text, followed by a count of additional selections. Selected options show a checkmark for clear visual feedback.
 
@@ -131,7 +131,7 @@ Each option displays an icon alongside its label. The display value updates to s
 
 Forms sometimes need to limit the number of selections or validate user choices. Programmatic control over selection enables these constraints while maintaining accessibility.
 
-<docs-tab-group>
+<!-- <docs-tab-group>
   <docs-tab label="Basic">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/multiselect/src/limited/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/multiselect/src/limited/app/app.ts"/>
@@ -155,7 +155,7 @@ Forms sometimes need to limit the number of selections or validate user choices.
       <docs-code header="app.css" path="adev/src/content/examples/aria/multiselect/src/limited/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
-</docs-tab-group>
+</docs-tab-group> -->
 
 This example limits selections to three items. When the limit is reached, unselected options become disabled, preventing additional selections. A message informs users about the constraint.
 

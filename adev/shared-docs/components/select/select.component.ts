@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -6,13 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Combobox,
-  ComboboxDialog,
-  ComboboxInput,
-  ComboboxPopupContainer,
-} from '@angular/aria/combobox';
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
 import {Listbox, Option} from '@angular/aria/listbox';
+import {OverlayModule} from '@angular/cdk/overlay';
 import {
   afterRenderEffect,
   Component,
@@ -20,13 +16,11 @@ import {
   input,
   model,
   signal,
-  untracked,
   viewChild,
 } from '@angular/core';
-import {FormsModule} from '@angular/forms';
 import {FormValueControl} from '@angular/forms/signals';
 
-type SelectOptionValue = string | number | boolean;
+type SelectOptionValue = string;
 
 export interface SelectOption {
   label: string;
@@ -35,17 +29,9 @@ export interface SelectOption {
 
 @Component({
   selector: 'docs-select',
-  imports: [
-    Combobox,
-    ComboboxDialog,
-    ComboboxInput,
-    ComboboxPopupContainer,
-    FormsModule,
-    Listbox,
-    Option,
-  ],
-  templateUrl: './select.component.html',
-  styleUrls: ['./select.component.scss'],
+  templateUrl: 'select.component.html',
+  styleUrl: 'select.component.css',
+  imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule],
 })
 export class Select implements FormValueControl<string | null> {
   readonly value = model<string | null>(null);
@@ -55,12 +41,12 @@ export class Select implements FormValueControl<string | null> {
   readonly options = input.required<SelectOption[]>();
   readonly disabled = input(false);
 
-  readonly dialog = viewChild(ComboboxDialog);
-  readonly listbox = viewChild<Listbox<SelectOptionValue>>(Listbox);
-  readonly combobox = viewChild<Combobox<SelectOptionValue>>(Combobox);
+  readonly listbox = viewChild(Listbox);
+  readonly combobox = viewChild(Combobox);
 
   readonly searchString = signal('');
 
+  readonly popupExpanded = signal(false);
   readonly filteredOptions = computed(() => {
     const search = this.searchString().toLowerCase();
     if (!search) {
@@ -82,39 +68,36 @@ export class Select implements FormValueControl<string | null> {
 
   constructor() {
     afterRenderEffect(() => {
-      if (this.dialog() && this.combobox()?.expanded()) {
-        untracked(() => this.listbox()?.gotoFirst());
-        this.positionDialog();
-      }
+      this.listbox()?.scrollActiveItemIntoView();
     });
-
-    afterRenderEffect(() => {
-      const selected = this.selectedValues();
-      if (selected.length > 0) {
-        untracked(() => this.dialog()?.close());
-        this.value.set(selected[0] as string);
-        this.searchString.set('');
-      }
-    });
-
-    afterRenderEffect(() => this.listbox()?.scrollActiveItemIntoView());
   }
-  // TODO: Improve once CDK overlay is fixed https://github.com/angular/components/issues/32504
-  private positionDialog(): void {
-    const dialog = this.dialog();
-    const combobox = this.combobox();
 
-    if (!dialog || !combobox) {
-      return;
+  onCommit() {
+    const values = this.selectedValues();
+    if (values.length) {
+      this.value.set(values[0]);
+      //this.popupExpanded.set(false);
     }
+  }
 
-    const comboboxRect = combobox.inputElement()?.getBoundingClientRect();
-    const scrollY = window.scrollY;
+  /** Dismisses the dialog overlay on Escape key. */
+  onSearchEscape(event: Event) {
+    this.popupExpanded.set(false);
+    this.combobox()?.element.focus();
+  }
 
-    if (comboboxRect) {
-      dialog.element.style.width = `${comboboxRect.width}px`;
-      dialog.element.style.top = `${comboboxRect.bottom + scrollY + 4}px`;
-      dialog.element.style.left = `${comboboxRect.left}px`;
+  /** Handles keydown events on the clear button. */
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.clear();
+      this.popupExpanded.set(false);
+      event.stopPropagation();
     }
+  }
+
+  /** Clears the search query and all selected options. */
+  clear(): void {
+    this.searchString.set('');
+    this.value.set(null);
   }
 }
