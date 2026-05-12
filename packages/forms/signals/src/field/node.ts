@@ -52,6 +52,7 @@ import {
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
+import {formDebugObj} from '../util/debug';
 
 export interface ControlValueSignal<T> extends WritableSignal<T> {
   rawSet(value: T): void;
@@ -78,6 +79,7 @@ export class FieldNode implements FieldState<unknown> {
   readonly submitState: FieldSubmitState;
   readonly fieldAdapter: FieldAdapter;
   readonly controlValue: ControlValueSignal<unknown>;
+  readonly debugName: string | undefined;
 
   private _context: FieldContext<unknown> | undefined = undefined;
   get context(): FieldContext<unknown> {
@@ -90,7 +92,26 @@ export class FieldNode implements FieldState<unknown> {
   readonly fieldProxy = new Proxy(() => this, FIELD_PROXY_HANDLER) as unknown as FieldTree<any>;
   private readonly pathNode: FieldPathNode;
 
+  /**
+   * The `AbortController` for the currently debounced sync, or `undefined` if there is none.
+   *
+   * This is used to cancel a pending debounced sync when {@link setControlValue} is called again
+   * before the pending debounced sync resolves. It will also cancel any pending debounced sync
+   * automatically when recomputed due to `value` being set directly from others sources.
+   */
+  private readonly pendingSync: WritableSignal<AbortController | undefined>;
+
   constructor(options: FieldNodeOptions) {
+    this.debugName = options.debugName;
+    this.pendingSync = linkedSignal({
+      source: () => this.value(),
+      computation: (_source, previous) => {
+        previous?.value?.abort();
+        return undefined;
+      },
+      ...(ngDevMode ? formDebugObj(this.debugName, 'pendingSync') : undefined),
+    });
+
     this.pathNode = options.pathNode;
     this.fieldAdapter = options.fieldAdapter;
     this.structure = this.fieldAdapter.createStructure(this, options);
@@ -136,21 +157,6 @@ export class FieldNode implements FieldState<unknown> {
       .map((child) => child.getBindingForFocus())
       .reduce(firstInDom, undefined);
   }
-
-  /**
-   * The `AbortController` for the currently debounced sync, or `undefined` if there is none.
-   *
-   * This is used to cancel a pending debounced sync when {@link setControlValue} is called again
-   * before the pending debounced sync resolves. It will also cancel any pending debounced sync
-   * automatically when recomputed due to `value` being set directly from others sources.
-   */
-  private readonly pendingSync: WritableSignal<AbortController | undefined> = linkedSignal({
-    source: () => this.value(),
-    computation: (_source, previous) => {
-      previous?.value?.abort();
-      return undefined;
-    },
-  });
 
   get fieldTree(): FieldTree<unknown> {
     return this.fieldProxy;
@@ -247,11 +253,17 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   get pattern(): Signal<readonly RegExp[]> {
-    return this.metadata(PATTERN) ?? EMPTY;
+    return (
+      this.metadata(PATTERN) ??
+      (ngDevMode ? computed(() => [], formDebugObj(this.debugName, 'EMPTY')) : EMPTY)
+    );
   }
 
   get required(): Signal<boolean> {
-    return this.metadata(REQUIRED) ?? FALSE;
+    return (
+      this.metadata(REQUIRED) ??
+      (ngDevMode ? computed(() => false, formDebugObj(this.debugName, 'FALSE')) : FALSE)
+    );
   }
 
   metadata<M>(key: MetadataKey<M, any, any>): M | undefined {
@@ -375,7 +387,10 @@ export class FieldNode implements FieldState<unknown> {
    * Creates a linked signal that initiates a {@link debounceSync} when set.
    */
   private controlValueSignal(): ControlValueSignal<unknown> {
-    const controlValue = linkedSignal(this.value) as ControlValueSignal<unknown>;
+    const controlValue = linkedSignal(
+      this.value,
+      ngDevMode ? formDebugObj(this.debugName, 'controlValue') : undefined,
+    ) as ControlValueSignal<unknown>;
 
     controlValue.rawSet = controlValue.set;
     controlValue.set = (newValue) => {
@@ -456,8 +471,9 @@ export class FieldNode implements FieldState<unknown> {
     value: WritableSignal<T>,
     pathNode: FieldPathNode,
     adapter: FieldAdapter,
+    debugName?: string,
   ): FieldNode {
-    return adapter.newRoot(fieldManager, value, pathNode, adapter);
+    return adapter.newRoot(fieldManager, value, pathNode, adapter, debugName);
   }
 
   createStructure(options: FieldNodeOptions) {
@@ -502,6 +518,7 @@ export class FieldNode implements FieldState<unknown> {
       initialKeyInParent: key,
       identityInParent: trackingId,
       fieldAdapter: this.fieldAdapter,
+      debugName: this.debugName,
     });
   }
 }

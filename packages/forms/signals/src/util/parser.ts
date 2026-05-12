@@ -10,6 +10,7 @@ import {type Signal, linkedSignal} from '@angular/core';
 import type {ValidationError} from '../api/rules';
 import {normalizeErrors} from '../api/rules/validation/util';
 import type {ParseResult} from '../api/transformed_value';
+import {formFieldDebugObj} from './debug';
 
 /**
  * An object that handles parsing raw UI values into model values.
@@ -41,10 +42,12 @@ export function createParser<TValue, TRaw>(
   getValue: () => TValue,
   setValue: (value: TValue) => void,
   parse: (raw: TRaw) => ParseResult<TValue>,
+  debugFormFieldName?: string,
 ): Parser<TRaw> {
   const errors = linkedSignal({
     source: getValue,
     computation: () => [] as readonly ValidationError.WithoutFieldTree[],
+    ...(ngDevMode ? formFieldDebugObj(debugFormFieldName, 'errors') : undefined),
   });
 
   const setRawValue = (rawValue: TRaw) => {

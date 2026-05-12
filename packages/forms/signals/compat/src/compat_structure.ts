@@ -18,6 +18,7 @@ import {FormFieldManager} from '../../src/field/manager';
 import {FieldNode, ParentFieldNode} from '../../src/field/node';
 import {
   ChildFieldNodeOptions,
+  ChildrenData,
   FieldNodeOptions,
   FieldNodeStructure,
   RootFieldNodeOptions,
@@ -27,6 +28,7 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {AbstractControl} from '@angular/forms';
 import {map, takeUntil} from 'rxjs/operators';
 import {extractControlPropToSignal} from './compat_field_node';
+import {formDebugObj} from '../../src/util/debug';
 
 /**
  * Child Field Node options also exposing control property.
@@ -86,6 +88,7 @@ function getControlValueSignal<T>(options: CompatFieldNodeOptions) {
       ),
       {
         initialValue: control.getRawValue(),
+        ...(ngDevMode ? formDebugObj(options.debugName, 'value') : undefined),
       },
     );
   }) as WritableSignal<T>;
@@ -111,8 +114,8 @@ export class CompatStructure extends FieldNodeStructure {
   override keyInParent: Signal<string>;
   override root: FieldNode;
   override pathKeys: Signal<readonly string[]>;
-  override readonly children = signal([]);
-  override readonly childrenMap = computed(() => undefined);
+  override readonly children: WritableSignal<FieldNode[]>;
+  override readonly childrenMap: Signal<ChildrenData | undefined>;
   override readonly parent: ParentFieldNode | undefined;
   override readonly fieldManager: FormFieldManager;
   override readonly isOrphaned: Signal<boolean>;
@@ -140,8 +143,16 @@ export class CompatStructure extends FieldNodeStructure {
     this.keyInParent = signals.keyInParent;
     this.isOrphaned = signals.isOrphaned;
 
-    this.pathKeys = computed(() =>
-      this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],
+    this.pathKeys = computed(
+      () => (this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : []),
+      ngDevMode ? formDebugObj(this.node.debugName, 'pathKeys') : undefined,
+    );
+
+    this.children = signal([], ngDevMode ? formDebugObj(node.debugName, 'children') : undefined);
+
+    this.childrenMap = computed(
+      () => undefined,
+      ngDevMode ? formDebugObj(node.debugName, 'childrenMap') : undefined,
     );
   }
 

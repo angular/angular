@@ -14,6 +14,7 @@ import {map, takeUntil} from 'rxjs/operators';
 import {FieldNode} from '../../src/field/node';
 import {getInjectorFromOptions} from '../../src/field/util';
 import type {CompatFieldNodeOptions} from './compat_structure';
+import {formDebugObj} from '../../src/util/debug';
 
 /**
  * Field node with additional  control property.
@@ -72,11 +73,15 @@ export function extractControlPropToSignal<T, R = T>(
         return runInInjectionContext(injector, () => makeSignal(control, createDestroySubject()));
       });
     },
+    ...(ngDevMode ? formDebugObj(options.debugName, 'signalOfControlSignal') : undefined),
   });
 
   // We have to have computed, because we need to react to both:
   // linked signal changes as well as the inner signal changes.
-  return computed(() => signalOfControlSignal()());
+  return computed(
+    () => signalOfControlSignal()(),
+    ngDevMode ? formDebugObj(options.debugName, 'controlPropToSignal') : undefined,
+  );
 }
 
 /**
@@ -99,6 +104,7 @@ export const getControlStatusSignal = <T>(
       ),
       {
         initialValue: getValue(c),
+        ...(ngDevMode ? formDebugObj(options.debugName, 'controlStatus') : undefined),
       },
     ),
   );
@@ -126,6 +132,7 @@ export const getControlEventsSignal = <T>(
       ),
       {
         initialValue: getValue(c),
+        ...(ngDevMode ? formDebugObj(options.debugName, 'controlEvents') : undefined),
       },
     ),
   );

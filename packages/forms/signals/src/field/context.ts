@@ -17,7 +17,6 @@ import {RuntimeErrorCode} from '../errors';
 import {AbstractControl} from '@angular/forms';
 import {
   CompatSchemaPath,
-  CompatFieldState,
   FieldContext,
   ReadonlyCompatFieldState,
   ReadonlyFieldState,
@@ -28,6 +27,7 @@ import {
 } from '../api/types';
 import {FieldPathNode} from '../schema/path_node';
 import {isArray} from '../util/type_guards';
+import {formDebugObj} from '../util/debug';
 import type {FieldNode} from './node';
 import {getBoundPathDepth} from './resolution';
 
@@ -35,6 +35,8 @@ import {getBoundPathDepth} from './resolution';
  * `FieldContext` implementation, backed by a `FieldNode`.
  */
 export class FieldNodeContext implements FieldContext<unknown> {
+  readonly index: Signal<number>;
+
   /**
    * Cache of paths that have been resolved for this context.
    *
@@ -52,6 +54,23 @@ export class FieldNodeContext implements FieldContext<unknown> {
     /** The field node this context corresponds to. */
     private readonly node: FieldNode,
   ) {
+    this.index = computed(
+      () => {
+        // Attempt to read the key first, this will throw an error if we're on a root field.
+        const key = this.key();
+        // Assert that the parent is actually an array.
+        if (!isArray(untracked(this.node.structure.parent!.value))) {
+          throw new RuntimeError(
+            RuntimeErrorCode.PARENT_NOT_ARRAY,
+            ngDevMode && 'Cannot access index, parent field is not an array.',
+          );
+        }
+        // Return the key as a number if we are indeed inside an array field.
+        return Number(key);
+      },
+      ngDevMode ? formDebugObj(this.node.debugName, 'index') : undefined,
+    );
+
     // These methods are explicitly bound to the context instance so that they
     // safely retain their `this` reference if destructured by consumers
     // (e.g., during validation when `stateOf` or `fieldTreeOf` are extracted).
@@ -66,46 +85,52 @@ export class FieldNodeContext implements FieldContext<unknown> {
    */
   private resolve<U>(target: SchemaPath<U, SchemaPathRules>): ReadonlyFieldTree<U> {
     if (!this.cache.has(target)) {
-      const resolver = computed<ReadonlyFieldTree<unknown>>(() => {
-        const targetPathNode = FieldPathNode.unwrapFieldPath(target);
+      const resolver = computed<ReadonlyFieldTree<unknown>>(
+        () => {
+          const targetPathNode = FieldPathNode.unwrapFieldPath(target);
 
-        // First, find the field where the root our target path was merged in.
-        // We determine this by walking up the field tree from the current field and looking for
-        // the place where the LogicNodeBuilder from the target path's root was merged in.
-        // We always make sure to walk up at least as far as the depth of the path we were bound to.
-        // This ensures that we do not accidentally match on the wrong application of a recursively
-        // applied schema.
-        let field: FieldNode | undefined = this.node;
-        let stepsRemaining = getBoundPathDepth();
-        while (stepsRemaining > 0 || !field.structure.logic.hasLogic(targetPathNode.root.builder)) {
-          stepsRemaining--;
-          field = field.structure.parent;
-          if (field === undefined) {
-            throw new RuntimeError(
-              RuntimeErrorCode.PATH_NOT_IN_FIELD_TREE,
-              ngDevMode && 'Path is not part of this field tree.',
-            );
+          // First, find the field where the root our target path was merged in.
+          // We determine this by walking up the field tree from the current field and looking for
+          // the place where the LogicNodeBuilder from the target path's root was merged in.
+          // We always make sure to walk up at least as far as the depth of the path we were bound to.
+          // This ensures that we do not accidentally match on the wrong application of a recursively
+          // applied schema.
+          let field: FieldNode | undefined = this.node;
+          let stepsRemaining = getBoundPathDepth();
+          while (
+            stepsRemaining > 0 ||
+            !field.structure.logic.hasLogic(targetPathNode.root.builder)
+          ) {
+            stepsRemaining--;
+            field = field.structure.parent;
+            if (field === undefined) {
+              throw new RuntimeError(
+                RuntimeErrorCode.PATH_NOT_IN_FIELD_TREE,
+                ngDevMode && 'Path is not part of this field tree.',
+              );
+            }
           }
-        }
 
-        // Now, we can navigate to the target field using the relative path in the target path node
-        // to traverse down from the field we just found.
-        for (let key of targetPathNode.keys) {
-          field = field.structure.getChild(key);
-          if (field === undefined) {
-            throw new RuntimeError(
-              RuntimeErrorCode.PATH_RESOLUTION_FAILED,
-              ngDevMode &&
-                `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
-                  '<root>',
-                  ...this.node.structure.pathKeys(),
-                ].join('.')}.`,
-            );
+          // Now, we can navigate to the target field using the relative path in the target path node
+          // to traverse down from the field we just found.
+          for (let key of targetPathNode.keys) {
+            field = field.structure.getChild(key);
+            if (field === undefined) {
+              throw new RuntimeError(
+                RuntimeErrorCode.PATH_RESOLUTION_FAILED,
+                ngDevMode &&
+                  `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
+                    '<root>',
+                    ...this.node.structure.pathKeys(),
+                  ].join('.')}.`,
+              );
+            }
           }
-        }
 
-        return field.fieldTree;
-      });
+          return field.fieldTree;
+        },
+        ngDevMode ? formDebugObj(this.node.debugName, 'resolver') : undefined,
+      );
 
       this.cache.set(target, resolver);
     }
@@ -131,20 +156,6 @@ export class FieldNodeContext implements FieldContext<unknown> {
   get pathKeys(): Signal<readonly string[]> {
     return this.node.structure.pathKeys;
   }
-
-  readonly index = computed(() => {
-    // Attempt to read the key first, this will throw an error if we're on a root field.
-    const key = this.key();
-    // Assert that the parent is actually an array.
-    if (!isArray(untracked(this.node.structure.parent!.value))) {
-      throw new RuntimeError(
-        RuntimeErrorCode.PARENT_NOT_ARRAY,
-        ngDevMode && 'Cannot access index, parent field is not an array.',
-      );
-    }
-    // Return the key as a number if we are indeed inside an array field.
-    return Number(key);
-  });
 
   // Note: `fieldTreeOf` and `stateOf` are purposefully defined as overloaded class
   // methods rather than arrow-function properties. This allows their signatures

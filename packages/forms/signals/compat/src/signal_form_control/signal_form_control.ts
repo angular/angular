@@ -37,6 +37,7 @@ import {RuntimeErrorCode} from '../../../src/errors';
 import {FieldNode} from '../../../src/field/node';
 import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
 import {compatForm} from '../api/compat_form';
+import {formDebugObj} from '../../../src/util/debug';
 
 /** Options used to update the control value. */
 export type ValueUpdateOptions = {
@@ -96,7 +97,11 @@ export class SignalFormControl<T> extends AbstractControl {
   constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>) {
     super(null, null);
 
-    const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
+    const [model, schema, opts] = normalizeFormArgs<T>([
+      signal(value, ngDevMode ? formDebugObj(options?.debugName, 'value') : undefined),
+      schemaOrOptions,
+      options,
+    ]);
     this.sourceValue = model;
     this.initialValue = value;
     const injector = opts?.injector ?? inject(Injector);
@@ -122,7 +127,10 @@ export class SignalFormControl<T> extends AbstractControl {
           this.emitControlEvent(new ValueChangeEvent(value, this));
         });
       },
-      {injector},
+      {
+        injector,
+        ...(ngDevMode ? formDebugObj(options?.debugName, 'valueChanges') : undefined),
+      },
     );
 
     // Status changes effect
@@ -134,7 +142,10 @@ export class SignalFormControl<T> extends AbstractControl {
         });
         this.emitControlEvent(new StatusChangeEvent(status, this));
       },
-      {injector},
+      {
+        injector,
+        ...(ngDevMode ? formDebugObj(options?.debugName, 'statusChanges') : undefined),
+      },
     );
 
     // Disabled changes effect
@@ -147,7 +158,10 @@ export class SignalFormControl<T> extends AbstractControl {
           }
         });
       },
-      {injector},
+      {
+        injector,
+        ...(ngDevMode ? formDebugObj(options?.debugName, 'disabledChanges') : undefined),
+      },
     );
 
     // Touched changes effect
@@ -165,7 +179,10 @@ export class SignalFormControl<T> extends AbstractControl {
           parent.markAsTouched();
         }
       },
-      {injector},
+      {
+        injector,
+        ...(ngDevMode ? formDebugObj(options?.debugName, 'touchedChanges') : undefined),
+      },
     );
 
     // Dirty changes effect
@@ -183,7 +200,10 @@ export class SignalFormControl<T> extends AbstractControl {
           parent.markAsPristine();
         }
       },
-      {injector},
+      {
+        injector,
+        ...(ngDevMode ? formDebugObj(options?.debugName, 'dirtyChanges') : undefined),
+      },
     );
   }
 

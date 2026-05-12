@@ -26,6 +26,7 @@ import {
 } from './bindings';
 import {setNativeDomProperty} from './native';
 import type {FormField} from './form_field';
+import {formFieldDebugObj} from '../util/debug';
 
 function isValidatorObject(v: Function | Validator): v is Validator {
   return typeof v === 'object' && v !== null;
@@ -34,6 +35,7 @@ function isValidatorObject(v: Function | Validator): v is Validator {
 export function cvaControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
+  debugFormFieldName?: string,
 ): () => void {
   const bindings = createBindings<ControlBindingKey | 'controlValue'>();
 
@@ -52,7 +54,10 @@ export function cvaControlCreate(
 
     for (const v of legacyValidators) {
       if (isValidatorObject(v) && v.registerOnValidatorChange) {
-        version ??= signal(0);
+        version ??= signal(
+          0,
+          ngDevMode ? formFieldDebugObj(debugFormFieldName, 'version') : undefined,
+        );
         v.registerOnValidatorChange(() => {
           version!.update((n) => n + 1);
         });
@@ -64,12 +69,15 @@ export function cvaControlCreate(
     );
     const mergedValidator = Validators.compose(validatorFns);
 
-    const parseErrors = computed(() => {
-      // Read the `version` signal to re-run the validator when legacy validators trigger their change callbacks.
-      version?.();
-      const errors = mergedValidator ? mergedValidator(parent.interopNgControl.control) : null;
-      return reactiveErrorsToSignalErrors(errors, parent.interopNgControl.control);
-    });
+    const parseErrors = computed(
+      () => {
+        // Read the `version` signal to re-run the validator when legacy validators trigger their change callbacks.
+        version?.();
+        const errors = mergedValidator ? mergedValidator(parent.interopNgControl.control) : null;
+        return reactiveErrorsToSignalErrors(errors, parent.interopNgControl.control);
+      },
+      ngDevMode ? formFieldDebugObj(debugFormFieldName, 'parseErrors') : undefined,
+    );
     // We must cast here because `CompatValidationError` claims to have `fieldTree` statically (to
     // satisfy `ValidationState` elsewhere), but at construction it is created without it and acts as
     // `WithoutFieldTree` initially.

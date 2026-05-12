@@ -11,6 +11,7 @@ import {AbstractControl} from '@angular/forms';
 import {FieldNodeState} from '../../src/field/state';
 import {CompatFieldNode, getControlEventsSignal, getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
+import {formDebugObj} from '../../src/util/debug';
 
 /**
  * A FieldNodeState class wrapping a FormControl and proxying it's state.
@@ -31,9 +32,12 @@ export class CompatNodeState extends FieldNodeState {
     this.dirty = getControlEventsSignal(options, (c) => c.dirty);
     const controlDisabled = getControlStatusSignal(options, (c) => c.disabled);
 
-    this.disabled = computed(() => {
-      return controlDisabled() || this.disabledReasons().length > 0;
-    });
+    this.disabled = computed(
+      () => {
+        return controlDisabled() || this.disabledReasons().length > 0;
+      },
+      ngDevMode ? formDebugObj(options.debugName, 'disabled') : undefined,
+    );
   }
 
   override markAsDirty() {
