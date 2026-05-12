@@ -55,7 +55,6 @@
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
-    "@angular-devkit/build-angular": "22.0.0-next.7",
     "@angular-devkit/core": "22.0.0-next.7",
     "@angular-devkit/schematics": "22.0.0-next.7",
     "@angular/animations": "workspace:*",
