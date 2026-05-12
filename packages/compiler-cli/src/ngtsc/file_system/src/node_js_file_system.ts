@@ -94,6 +94,9 @@ export class NodeJSReadonlyFileSystem extends NodeJSPathManipulation implements 
     return fs.readFileSync(path, 'utf8');
   }
   readFileBuffer(path: AbsoluteFsPath): Uint8Array {
+    // TODO: go/ts59upgrade - Remove the suppression after TS 5.9.2 upgrade
+    //   TS2322: Type 'Buffer' is not assignable to type 'Uint8Array<ArrayBufferLike>'.
+    // @ts-ignore
     return fs.readFileSync(path);
   }
   readdir(path: AbsoluteFsPath): PathSegment[] {
