@@ -1,3 +1,23 @@
+<a name="19.2.22"></a>
+
+# 19.2.22 (2026-05-12)
+
+### core
+
+| Commit                                                                                           | Type | Description                                                                                                                  |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------------------------------------------------------------- |
+| [83a640516f](https://github.com/angular/angular/commit/83a640516f7b1fff4dfb0fd0ed8b19876bdb00c4) | fix  | disallow event attribute bindings in host bindings unconditionally ([#68469](https://github.com/angular/angular/pull/68469)) |
+| [24a0103a98](https://github.com/angular/angular/commit/24a0103a9898b1547f5d1f57314e2bb6545a2c7a) | fix  | validate security-sensitive attributes in i18n bindings ([#68469](https://github.com/angular/angular/pull/68469))            |
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                                                                                                   |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------------- |
+| [8569db8875](https://github.com/angular/angular/commit/8569db88758d189544b03ec4474fd5334ff29346) | fix  | add `allowedHosts` option to `renderModule` and `renderApplication`                                           |
+| [837a710217](https://github.com/angular/angular/commit/837a7102172502dd3d92793ec15b2d4e533a573d) | fix  | ensure origin has a trailing slash when parsing url ([#68469](https://github.com/angular/angular/pull/68469)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.21"></a>
 
 # 19.2.21 (2026-04-15)
