@@ -35,6 +35,7 @@ packages:
 allowBuilds:
   '@bazel/concatjs': false
   '@firebase/util': false
+  '@google/genai': false
   '@parcel/watcher': false
   '@vscode/vsce-sign': false
   bufferutil: false
@@ -71,7 +72,6 @@ minimumReleaseAgeExclude:
 peerDependencyRules:
   allowAny:
     - '@angular/*'
-patchedDependencies: {}
 packageExtensions:
   grpc-gcp:
     peerDependencies:
