@@ -125,7 +125,9 @@ describe('sanitization', () => {
         contextsByProp.set(prop, contexts);
         // check only in case a prop can be a part of both URL contexts
         if (contexts.size === 2) {
-          expect(getUrlSanitizer(tag, prop)).toEqual(sanitizerNameByContext.get(context)!);
+          expect(getUrlSanitizer(tag, prop))
+            .withContext(`key: ${key}, context: ${context}`)
+            .toEqual(sanitizerNameByContext.get(context)!);
         }
       }
     });

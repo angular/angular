@@ -36,79 +36,85 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'a|xlink:href',
       'form|action',
 
-      // MathML namespace
-      // https://crsrc.org/c/third_party/blink/renderer/core/sanitizer/sanitizer.cc;l=753-768;drc=b3eb16372dcd3317d65e9e0265015e322494edcd;bpv=1;bpt=1
-      'annotation|href',
-      'annotation|xlink:href',
-      'annotation-xml|href',
-      'annotation-xml|xlink:href',
-      'maction|href',
-      'maction|xlink:href',
-      'malignmark|href',
-      'malignmark|xlink:href',
-      'math|href',
-      'math|xlink:href',
-      'mroot|href',
-      'mroot|xlink:href',
-      'msqrt|href',
-      'msqrt|xlink:href',
-      'merror|href',
-      'merror|xlink:href',
-      'mfrac|href',
-      'mfrac|xlink:href',
-      'mglyph|href',
-      'mglyph|xlink:href',
-      'msub|href',
-      'msub|xlink:href',
-      'msup|href',
-      'msup|xlink:href',
-      'msubsup|href',
-      'msubsup|xlink:href',
-      'mmultiscripts|href',
-      'mmultiscripts|xlink:href',
-      'mprescripts|href',
-      'mprescripts|xlink:href',
-      'mi|href',
-      'mi|xlink:href',
-      'mn|href',
-      'mn|xlink:href',
-      'mo|href',
-      'mo|xlink:href',
-      'mpadded|href',
-      'mpadded|xlink:href',
-      'mphantom|href',
-      'mphantom|xlink:href',
-      'mrow|href',
-      'mrow|xlink:href',
-      'ms|href',
-      'ms|xlink:href',
-      'mspace|href',
-      'mspace|xlink:href',
-      'mstyle|href',
-      'mstyle|xlink:href',
-      'mtable|href',
-      'mtable|xlink:href',
-      'mtd|href',
-      'mtd|xlink:href',
-      'mtr|href',
-      'mtr|xlink:href',
-      'mtext|href',
-      'mtext|xlink:href',
-      'mover|href',
-      'mover|xlink:href',
-      'munder|href',
-      'munder|xlink:href',
-      'munderover|href',
-      'munderover|xlink:href',
-      'semantics|href',
-      'semantics|xlink:href',
-      'none|href',
-      'none|xlink:href',
-
       // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
       'img|src',
       'video|src',
     ]);
+
+    registerContext(
+      SecurityContext.URL,
+      [
+        // MathML namespace
+        // https://crsrc.org/c/third_party/blink/renderer/core/sanitizer/sanitizer.cc;l=753-768;drc=b3eb16372dcd3317d65e9e0265015e322494edcd;bpv=1;bpt=1
+        'annotation|href',
+        'annotation|xlink:href',
+        'annotation-xml|href',
+        'annotation-xml|xlink:href',
+        'maction|href',
+        'maction|xlink:href',
+        'malignmark|href',
+        'malignmark|xlink:href',
+        'math|href',
+        'math|xlink:href',
+        'mroot|href',
+        'mroot|xlink:href',
+        'msqrt|href',
+        'msqrt|xlink:href',
+        'merror|href',
+        'merror|xlink:href',
+        'mfrac|href',
+        'mfrac|xlink:href',
+        'mglyph|href',
+        'mglyph|xlink:href',
+        'msub|href',
+        'msub|xlink:href',
+        'msup|href',
+        'msup|xlink:href',
+        'msubsup|href',
+        'msubsup|xlink:href',
+        'mmultiscripts|href',
+        'mmultiscripts|xlink:href',
+        'mprescripts|href',
+        'mprescripts|xlink:href',
+        'mi|href',
+        'mi|xlink:href',
+        'mn|href',
+        'mn|xlink:href',
+        'mo|href',
+        'mo|xlink:href',
+        'mpadded|href',
+        'mpadded|xlink:href',
+        'mphantom|href',
+        'mphantom|xlink:href',
+        'mrow|href',
+        'mrow|xlink:href',
+        'ms|href',
+        'ms|xlink:href',
+        'mspace|href',
+        'mspace|xlink:href',
+        'mstyle|href',
+        'mstyle|xlink:href',
+        'mtable|href',
+        'mtable|xlink:href',
+        'mtd|href',
+        'mtd|xlink:href',
+        'mtr|href',
+        'mtr|xlink:href',
+        'mtext|href',
+        'mtext|xlink:href',
+        'mover|href',
+        'mover|xlink:href',
+        'munder|href',
+        'munder|xlink:href',
+        'munderover|href',
+        'munderover|xlink:href',
+        'semantics|href',
+        'semantics|xlink:href',
+        'none|href',
+        'none|xlink:href',
+      ],
+      'math',
+    );
 
     registerContext(SecurityContext.RESOURCE_URL, [
       'base|href',
@@ -118,12 +124,19 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'link|href',
       'object|codebase',
       'object|data',
-      'script|src',
-      // The below two are for Script SVG
-      // See: https://developer.mozilla.org/en-US/docs/Web/API/SVGScriptElement/href
-      'script|href',
-      'script|xlink:href',
     ]);
+
+    registerContext(
+      SecurityContext.RESOURCE_URL,
+      [
+        'script|src',
+        // The below two are for Script SVG
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/SVGScriptElement/href
+        'script|href',
+        'script|xlink:href',
+      ],
+      'svg',
+    );
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts
     // The `unknown` elements refer to cases when we need to validate the input/binding in a directive (host bindings)
@@ -133,16 +146,22 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     // against the set that requires sanitization.
     // These are unsafe as `attributeName` can be `href` or `xlink:href`
     // See: http://b/463880509#comment7
-    registerContext(SecurityContext.ATTRIBUTE_NO_BINDING, [
-      'animate|attributeName',
-      'animate|values',
-      'animate|to',
-      'animate|from',
-      'set|to',
-      'set|attributeName',
-      'animateMotion|attributeName',
-      'animateTransform|attributeName',
+    registerContext(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+      [
+        'animate|attributeName',
+        'animate|values',
+        'animate|to',
+        'animate|from',
+        'set|to',
+        'set|attributeName',
+        'animateMotion|attributeName',
+        'animateTransform|attributeName',
+      ],
+      'svg',
+    );
 
+    registerContext(SecurityContext.ATTRIBUTE_NO_BINDING, [
       'unknown|attributeName',
       'unknown|values',
       'unknown|to',
@@ -167,6 +186,12 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
   return _SECURITY_SCHEMA;
 }
 
-function registerContext(ctx: SecurityContext, specs: string[]) {
-  for (const spec of specs) _SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
+function registerContext(ctx: SecurityContext, specs: string[], namespace?: string) {
+  for (const spec of specs) {
+    const fullElementName =
+      namespace && !spec.startsWith('*|') && !spec.startsWith('unknown|')
+        ? `:${namespace}:${spec}`
+        : spec;
+    _SECURITY_SCHEMA[fullElementName.toLowerCase()] = ctx;
+  }
 }
