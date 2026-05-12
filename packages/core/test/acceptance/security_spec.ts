@@ -852,3 +852,17 @@ describe('innerHTML processing', () => {
     expect(fixture.nativeElement.innerHTML).not.toContain('action');
   });
 });
+
+describe('SVG <script> bindings', () => {
+  it(`should remove svg <script> element`, () => {
+    @Component({
+      template: `<svg><script src="https://bad.com/script.js"></script></svg>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
+  });
+});
