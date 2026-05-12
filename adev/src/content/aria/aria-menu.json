@@ -498,8 +498,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu-item.ts",
-        "startLine": 42,
-        "endLine": 122
+        "startLine": 43,
+        "endLine": 136
       }
     },
     {
@@ -912,7 +912,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 57,
-        "endLine": 204
+        "endLine": 213
       }
     }
   ],
@@ -962,15 +962,15 @@
       "@angular/core"
     ],
     [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
       "_IdGenerator",
       "@angular/cdk/a11y"
     ],
     [
       "afterNextRender",
-      "@angular/core"
-    ],
-    [
-      "afterRenderEffect",
       "@angular/core"
     ],
     [

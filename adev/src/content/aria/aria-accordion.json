@@ -172,8 +172,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/accordion/accordion-panel.ts",
-        "startLine": 33,
-        "endLine": 95
+        "startLine": 42,
+        "endLine": 124
       }
     },
     {
@@ -454,8 +454,8 @@
       ],
       "source": {
         "filePath": "/src/aria/accordion/accordion-trigger.ts",
-        "startLine": 42,
-        "endLine": 120
+        "startLine": 43,
+        "endLine": 145
       }
     },
     {
@@ -657,8 +657,8 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion-group.ts",
-        "startLine": 60,
-        "endLine": 131
+        "startLine": 61,
+        "endLine": 141
       }
     }
   ],
@@ -677,6 +677,10 @@
     ],
     [
       "computed",
+      "@angular/core"
+    ],
+    [
+      "contentChild",
       "@angular/core"
     ],
     [
