@@ -87,3 +87,10 @@ hoist: false
 # for peer dependencies, avoiding potential mismatches. In addition, it ensures we can continue
 # to rely on peer dependency placeholders substituted via Bazel.
 autoInstallPeers: false
+
+# TODO: Investigate why without minimumReleaseAgeStrict: false it fails with such errors:
+# [ERR_PNPM_MISSING_TIME] The metadata of @babel/helper-globals is missing the "time" field
+# This error happened while installing the dependencies of @angular-devkit/build-angular@22.0.0-next.7
+#  at @babel/preset-env@7.29.2
+#  at @babel/plugin-transform-classes@7.28.6
+minimumReleaseAgeStrict: false
