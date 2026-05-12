@@ -741,6 +741,9 @@ export interface ExistingSansProvider {
     useExisting: any;
 }
 
+// @public (undocumented)
+export function splitEffect<T>(reactiveFn: () => T, effectFn: (params: T, onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
+
 // @public
 export interface FactoryProvider extends FactorySansProvider {
     multi?: boolean;

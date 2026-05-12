@@ -14,11 +14,11 @@ import {
   provideZonelessChangeDetection,
   signal,
 } from '../../src/core';
+import {AfterRenderPhase} from '../../src/render3/after_render/api';
 import {
   afterRenderEffect,
   AfterRenderEffectSequence,
 } from '../../src/render3/reactivity/after_render_effect';
-import {AfterRenderPhase} from '../../src/render3/after_render/api';
 import {TestBed} from '../../testing';
 
 describe('afterRenderEffect', () => {

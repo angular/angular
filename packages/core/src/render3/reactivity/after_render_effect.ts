@@ -16,8 +16,6 @@ import {
   SIGNAL_NODE,
   type SignalNode,
 } from '../../../primitives/signals';
-import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
-import {type Signal} from '../reactivity/api';
 import {TracingService, TracingSnapshot} from '../../application/tracing';
 import {
   ChangeDetectionScheduler,
@@ -35,13 +33,15 @@ import {
   AfterRenderManager,
   AfterRenderSequence,
 } from '../after_render/manager';
-import {LView} from '../interfaces/view';
-import {ViewContext} from '../view_context';
-import {assertNotInReactiveContext} from './asserts';
 import {
   emitAfterRenderEffectPhaseCreatedEvent,
   setInjectorProfilerContext,
 } from '../debug/injector_profiler';
+import {LView} from '../interfaces/view';
+import {type Signal} from '../reactivity/api';
+import {ViewContext} from '../view_context';
+import {assertNotInReactiveContext} from './asserts';
+import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
 
 const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
 const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
