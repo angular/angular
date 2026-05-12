@@ -70,8 +70,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar-widget-group.ts",
-        "startLine": 29,
-        "endLine": 65
+        "startLine": 30,
+        "endLine": 81
       }
     },
     {
@@ -227,7 +227,7 @@
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
         "startLine": 46,
-        "endLine": 123
+        "endLine": 132
       }
     },
     {
@@ -443,11 +443,11 @@
       "@angular/core"
     ],
     [
-      "afterNextRender",
+      "afterRenderEffect",
       "@angular/core"
     ],
     [
-      "afterRenderEffect",
+      "afterNextRender",
       "@angular/core"
     ],
     [
