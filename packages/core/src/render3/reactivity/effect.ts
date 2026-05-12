@@ -7,28 +7,29 @@
  */
 
 import {
+  BASE_EFFECT_NODE,
+  BaseEffectNode,
   SIGNAL,
   consumerDestroy,
   isInNotificationPhase,
-  setActiveConsumer,
-  BaseEffectNode,
-  BASE_EFFECT_NODE,
   runEffect,
+  setActiveConsumer,
 } from '../../../primitives/signals';
-import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
-import {markAncestorsForTraversal} from '../util/view_utils';
-import {inject} from '../../di/injector_compatibility';
-import {Injector} from '../../di/injector';
-import {assertNotInReactiveContext} from './asserts';
-import {assertInInjectionContext} from '../../di/contextual';
-import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
-import {ViewContext} from '../view_context';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from '../../change_detection/scheduling/zoneless_scheduling';
+import {assertInInjectionContext} from '../../di/contextual';
+import {Injector} from '../../di/injector';
+import {inject} from '../../di/injector_compatibility';
+import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
+import {EFFECTS, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {setIsRefreshingViews} from '../state';
+import {markAncestorsForTraversal} from '../util/view_utils';
+import {ViewContext} from '../view_context';
+import {assertNotInReactiveContext} from './asserts';
 import {EffectScheduler, SchedulableEffect} from './root_effect_scheduler';
+import {untracked} from './untracked';
 
 import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
 
@@ -137,7 +138,35 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 export function effect(
   effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
   options?: CreateEffectOptions,
+): EffectRef;
+export function effect<T>(
+  reactiveFn: () => T,
+  effectFn: (params: T, onCleanup: EffectCleanupRegisterFn) => void,
+  options?: CreateEffectOptions,
+): EffectRef;
+export function effect<T>(
+  effectFnOrReactiveFn: ((onCleanup: EffectCleanupRegisterFn) => void) | (() => T),
+  optionsOrEffectFn?:
+    | CreateEffectOptions
+    | ((params: T, onCleanup: EffectCleanupRegisterFn) => void),
+  explicitOptions?: CreateEffectOptions,
 ): EffectRef {
+  let effectFn: (onCleanup: EffectCleanupRegisterFn) => void;
+  let options: CreateEffectOptions | undefined;
+
+  if (typeof optionsOrEffectFn === 'function') {
+    const reactiveFn = effectFnOrReactiveFn as () => T;
+    const untrackedEffectFn = optionsOrEffectFn;
+    effectFn = (onCleanup) => {
+      const params = reactiveFn();
+      untracked(() => untrackedEffectFn(params, onCleanup));
+    };
+    options = explicitOptions;
+  } else {
+    effectFn = effectFnOrReactiveFn as (onCleanup: EffectCleanupRegisterFn) => void;
+    options = optionsOrEffectFn;
+  }
+
   ngDevMode &&
     assertNotInReactiveContext(
       effect,

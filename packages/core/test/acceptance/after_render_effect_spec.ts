@@ -14,11 +14,11 @@ import {
   provideZonelessChangeDetection,
   signal,
 } from '../../src/core';
+import {AfterRenderPhase} from '../../src/render3/after_render/api';
 import {
   afterRenderEffect,
   AfterRenderEffectSequence,
 } from '../../src/render3/reactivity/after_render_effect';
-import {AfterRenderPhase} from '../../src/render3/after_render/api';
 import {TestBed} from '../../testing';
 
 describe('afterRenderEffect', () => {
@@ -34,6 +34,80 @@ describe('afterRenderEffect', () => {
     afterNextRender(() => log.push('after'), {injector: appRef.injector});
     appRef.tick();
     expect(log).toEqual(['before', 'mixedReadWrite', 'after']);
+  });
+
+  it('should support explicit tracking with an untracked effect callback', () => {
+    const log: number[] = [];
+    const appRef = TestBed.inject(ApplicationRef);
+    const tracked = signal(0);
+    const untrackedSignal = signal(0);
+
+    afterRenderEffect(
+      () => tracked(),
+      (value) => {
+        log.push(value);
+        // This read should not be tracked as a dependency.
+        untrackedSignal();
+      },
+      {injector: appRef.injector},
+    );
+
+    appRef.tick();
+    expect(log).toEqual([0]);
+
+    untrackedSignal.set(1);
+    appRef.tick();
+    expect(log).toEqual([0]);
+
+    tracked.set(1);
+    appRef.tick();
+    expect(log).toEqual([0, 1]);
+  });
+
+  it('should run explicit and phased hooks in phase order', () => {
+    const log: string[] = [];
+    const appRef = TestBed.inject(ApplicationRef);
+    const tracked = signal(0);
+    const untrackedSignal = signal(0);
+
+    afterRenderEffect(
+      () => tracked(),
+      (value) => {
+        log.push(`explicit: ${value}`);
+        // This read should not be tracked as a dependency.
+        untrackedSignal();
+      },
+      {injector: appRef.injector},
+    );
+
+    afterRenderEffect(
+      {
+        earlyRead: () => log.push('phase: earlyRead'),
+        write: () => log.push('phase: write'),
+        mixedReadWrite: () => log.push('phase: mixedReadWrite'),
+        read: () => log.push('phase: read'),
+      },
+      {injector: appRef.injector},
+    );
+
+    appRef.tick();
+    expect(log).toEqual([
+      'phase: earlyRead',
+      'phase: write',
+      'explicit: 0',
+      'phase: mixedReadWrite',
+      'phase: read',
+    ]);
+
+    log.length = 0;
+
+    untrackedSignal.set(1);
+    appRef.tick();
+    expect(log).toEqual([]);
+
+    tracked.set(1);
+    appRef.tick();
+    expect(log).toEqual(['explicit: 1']);
   });
 
   it('should run once', () => {
