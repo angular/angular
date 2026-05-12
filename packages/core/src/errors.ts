@@ -120,11 +120,6 @@ export const enum RuntimeErrorCode {
   MISSING_ZONEJS = 908,
   UNEXPECTED_ZONE_STATE = 909,
   UNSAFE_ATTRIBUTE_BINDING = -910,
-  /**
-   * @deprecated use `UNSAFE_ATTRIBUTE_BINDING` instead.
-   */
-  // tslint:disable-next-line:no-duplicate-enum-values
-  UNSAFE_IFRAME_ATTRS = -910,
   VIEW_ALREADY_DESTROYED = 911,
   COMPONENT_ID_COLLISION = -912,
   IMAGE_PERFORMANCE_WARNING = -913,
