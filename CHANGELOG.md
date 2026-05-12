@@ -1,3 +1,15 @@
+<a name="20.3.21"></a>
+
+# 20.3.21 (2026-05-12)
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                                                         |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------- |
+| [f584840e2e](https://github.com/angular/angular/commit/f584840e2e50f751397cf3fad5258e18e857427e) | fix  | add `allowedHosts` option to `renderModule` and `renderApplication` |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.20"></a>
 
 # 20.3.20 (2026-05-06)
