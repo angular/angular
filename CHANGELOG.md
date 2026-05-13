@@ -1,3 +1,17 @@
+<a name="21.2.13"></a>
+# 21.2.13 (2026-05-13)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1c6553e97d](https://github.com/angular/angular/commit/1c6553e97d9655d8c48fbf625987fae86f9cd947) | fix | disallow event attribute bindings in host bindings unconditionally |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [629905d537](https://github.com/angular/angular/commit/629905d537f59dc3c264c49f6347e3599dea0215) | fix | add `allowedHosts` option to `renderModule` and `renderApplication` |
+| [0b7192f441](https://github.com/angular/angular/commit/0b7192f4410d055191ac9b15bff57d1d0b9a644f) | fix | forward BEFORE_APP_SERIALIZED errors to ErrorHandler |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.22"></a>
 # 19.2.22 (2026-05-12)
 ### core
