@@ -28,7 +28,7 @@ import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './by
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './schema/security';
+import {SecurityContext} from './dom_security_schema';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
 /**

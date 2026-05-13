@@ -9,8 +9,7 @@
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '../core';
 import {isNgContainer, isNgContent} from '../ml_parser/tags';
 import {dashCaseToCamelCase} from '../util';
-// @ng_package: ignore-cross-repo-import
-import {SECURITY_SCHEMA} from '../../../core/src/sanitization/schema/dom_security_schema';
+import {SECURITY_SCHEMA} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
 const BOOLEAN = 'boolean';
