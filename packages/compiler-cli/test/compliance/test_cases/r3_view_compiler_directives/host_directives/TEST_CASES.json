@@ -15,12 +15,7 @@
           ]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "linked compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should create hostDirective definitions for a chain of host directives",
@@ -36,12 +31,7 @@
           ]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "linked compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should handle a forwardRef used in hostDirectives",
@@ -57,12 +47,7 @@
           ]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "linked compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should handle the `inputs` and `outputs` options in host directives",
@@ -78,12 +63,7 @@
           ]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "linked compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     },
     {
       "description": "should handle aliases to aliased `inputs` and `outputs` of a host directive",
@@ -99,12 +79,7 @@
           ]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "linked compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "linked compile", "declaration-only emit"]
     }
   ]
 }

@@ -827,7 +827,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an @Input decorator with a transform function', () => {
+    it('should emit type declarations when using an @Input decorator with a transform function', () => {
       env.write(
         'test.ts',
         `
@@ -840,16 +840,52 @@ runInEachFileSystem(() => {
         `,
       );
 
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ngAcceptInputType_decoratedInput: Parameters<typeof i0.booleanAttribute>[0];',
+      );
+    });
+
+    it('should emit type declarations when using an @Input decorator with an inline transform function', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, Input} from '@angular/core';
+
+        @Component({template: '', selector: 'comp'})
+        export class Comp {
+          @Input({ transform: (v: string) => !!v }) decoratedInput!: boolean;
+        }
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain('static ngAcceptInputType_decoratedInput: string;');
+    });
+
+    it('should produce a diagnostic when using an @Input decorator with an inline transform function missing a parameter type', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, Input} from '@angular/core';
+
+        @Component({template: '', selector: 'comp'})
+        export class Comp {
+          @Input({ transform: (v) => !!v }) decoratedInput!: boolean;
+        }
+        `,
+      );
+
       const errors = env.driveDiagnostics();
 
       expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
-      const errorMessage = ts.flattenDiagnosticMessageText(errors[0].messageText, '\n');
-      expect(errorMessage).toContain(
-        '@Input decorators with a transform function are not supported in experimental declaration-only emission mode',
-      );
-      expect(errorMessage).toContain(
-        `Consider converting 'Comp.decoratedInput' to an input signal`,
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
+        'Input transform function first parameter must have a type',
       );
     });
 
