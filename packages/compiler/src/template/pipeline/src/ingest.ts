@@ -935,8 +935,19 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
     }
   }
 
-  const sourceSpan = convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan);
-  const track = convertAst(forBlock.trackBy, unit.job, sourceSpan);
+  let track: o.Expression;
+
+  if (forBlock.trackBy === null) {
+    // `@for` without a `track` is invalid and it produces a parser error.
+    // Put a placeholder here so we don't need to account for it throughout the pipeline.
+    track = o.variable('$index');
+  } else {
+    track = convertAst(
+      forBlock.trackBy,
+      unit.job,
+      convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan),
+    );
+  }
 
   ingestNodes(repeaterView, forBlock.children);
 

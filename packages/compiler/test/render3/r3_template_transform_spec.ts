@@ -119,7 +119,10 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
-    const result: any[] = ['ForLoopBlock', unparse(block.expression), unparse(block.trackBy)];
+    const result: any[] = ['ForLoopBlock', unparse(block.expression)];
+    if (block.trackBy !== null) {
+      result.push(unparse(block.trackBy));
+    }
     this.result.push(result);
     this.visitAll([[block.item], block.contextVariables, block.children]);
     block.empty?.visit(this);

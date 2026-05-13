@@ -6573,6 +6573,32 @@ suppress
           `Type 'number' is not assignable to type 'string'.`,
         ]);
       });
+
+      it('should type check a @for loop without a `track` expression', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of items) {
+                {{does_not_exist}}
+              }
+            \`,
+          })
+          export class Main {
+            items = [];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist' does not exist on type 'Main'.`,
+          `@for loop must have a "track" expression`,
+        ]);
+      });
     });
 
     describe('control flow content projection diagnostics', () => {

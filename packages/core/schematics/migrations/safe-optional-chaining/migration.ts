@@ -703,7 +703,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
 
   override visitForLoopBlock(block: TmplAstForLoopBlock) {
     block.expression.visit(this.exprMigrator, false);
-    block.trackBy.visit(this.exprMigrator, false);
+    block.trackBy?.visit(this.exprMigrator, false);
     super.visitForLoopBlock(block);
   }
 

@@ -183,35 +183,40 @@ export function createForLoop(
   }
 
   if (params !== null) {
+    // The `for` block has a main span that includes the `empty` branch. For only the span of the
+    // main `for` body, use `mainSourceSpan`.
+    const endSpan = empty?.endSourceSpan ?? ast.endSourceSpan;
+    const sourceSpan = new ParseSourceSpan(
+      ast.sourceSpan.start,
+      endSpan?.end ?? ast.sourceSpan.end,
+    );
+    let trackExpression: ASTWithSource | null;
+    let trackKeywordSpan: ParseSourceSpan | null;
+
     if (params.trackBy === null) {
-      // TODO: We should not fail here, and instead try to produce some AST for the language
-      // service.
+      trackExpression = trackKeywordSpan = null;
       errors.push(new ParseError(ast.startSourceSpan, '@for loop must have a "track" expression'));
     } else {
-      // The `for` block has a main span that includes the `empty` branch. For only the span of the
-      // main `for` body, use `mainSourceSpan`.
-      const endSpan = empty?.endSourceSpan ?? ast.endSourceSpan;
-      const sourceSpan = new ParseSourceSpan(
-        ast.sourceSpan.start,
-        endSpan?.end ?? ast.sourceSpan.end,
-      );
+      trackExpression = params.trackBy.expression;
+      trackKeywordSpan = params.trackBy.keywordSpan;
       validateTrackByExpression(params.trackBy.expression, params.trackBy.keywordSpan, errors);
-      node = new t.ForLoopBlock(
-        params.itemName,
-        params.expression,
-        params.trackBy.expression,
-        params.trackBy.keywordSpan,
-        params.context,
-        html.visitAll(visitor, ast.children, ast.children),
-        empty,
-        sourceSpan,
-        ast.sourceSpan,
-        ast.startSourceSpan,
-        endSpan,
-        ast.nameSpan,
-        ast.i18n,
-      );
     }
+
+    node = new t.ForLoopBlock(
+      params.itemName,
+      params.expression,
+      trackExpression,
+      trackKeywordSpan,
+      params.context,
+      html.visitAll(visitor, ast.children, ast.children),
+      empty,
+      sourceSpan,
+      ast.sourceSpan,
+      ast.startSourceSpan,
+      endSpan,
+      ast.nameSpan,
+      ast.i18n,
+    );
   }
 
   return {node, errors};
