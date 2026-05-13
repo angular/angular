@@ -312,6 +312,40 @@ export function ɵɵpureFunctionV(
 }
 
 /**
+ * Caches a cloned flat static object literal in a single LView slot.
+ *
+ * @param slotOffset the offset from binding root to the reserved slot
+ * @param constant the static object literal
+ * @returns the cloned object
+ *
+ * @codeGenApi
+ */
+export function ɵɵcloneObject<T extends object>(slotOffset: number, constant: T): T {
+  const bindingIndex = getBindingRoot() + slotOffset;
+  const lView = getLView();
+  return lView[bindingIndex] === NO_CHANGE
+    ? updateBinding(lView, bindingIndex, {...constant})
+    : getBinding(lView, bindingIndex);
+}
+
+/**
+ * Caches a cloned flat static array literal in a single LView slot.
+ *
+ * @param slotOffset the offset from binding root to the reserved slot
+ * @param constant the static array literal
+ * @returns the cloned array
+ *
+ * @codeGenApi
+ */
+export function ɵɵcloneArray<T extends any[]>(slotOffset: number, constant: T): T {
+  const bindingIndex = getBindingRoot() + slotOffset;
+  const lView = getLView();
+  return lView[bindingIndex] === NO_CHANGE
+    ? updateBinding(lView, bindingIndex, [...constant] as unknown as T)
+    : getBinding(lView, bindingIndex);
+}
+
+/**
  * Results of a pure function invocation are stored in LView in a dedicated slot that is initialized
  * to NO_CHANGE. In rare situations a pure pipe might throw an exception on the very first
  * invocation and not produce any valid results. In this case LView would keep holding the NO_CHANGE

@@ -57,7 +57,9 @@ function transformLiteralArray(expr: o.LiteralArrayExpr): o.Expression {
       derivedEntries.push(new ir.PureFunctionParameterExpr(idx));
     }
   }
-  return new ir.PureFunctionExpr(o.literalArr(derivedEntries), nonConstantArgs);
+  const pureExpr = new ir.PureFunctionExpr(o.literalArr(derivedEntries), nonConstantArgs);
+  pureExpr.isFlatArrayLiteral = isFlatLiteral(expr);
+  return pureExpr;
 }
 
 function transformLiteralMap(expr: o.LiteralMapExpr): o.Expression {
@@ -91,5 +93,38 @@ function transformLiteralMap(expr: o.LiteralMapExpr): o.Expression {
       );
     }
   }
-  return new ir.PureFunctionExpr(new o.LiteralMapExpr(derivedEntries), nonConstantArgs);
+  const pureExpr = new ir.PureFunctionExpr(new o.LiteralMapExpr(derivedEntries), nonConstantArgs);
+  pureExpr.isFlatObjectLiteral = isFlatLiteral(expr);
+  return pureExpr;
+}
+
+/**
+ * Verifies whether an object or array literal expression is completely flat (contains no nested
+ * object/array literals or spread operations).
+ *
+ * Flat static literals can be safely cloned at runtime using `ɵɵcloneObject` or `ɵɵcloneArray`
+ * without risking inner reference sharing. Deeply nested literals automatically fall back to
+ * unique factory function generation to guarantee reference sandboxing across component instances.
+ */
+function isFlatLiteral(expr: o.Expression): boolean {
+  if (expr instanceof o.LiteralArrayExpr) {
+    return expr.entries.every(
+      (entry) =>
+        !(
+          entry instanceof o.SpreadElementExpr ||
+          entry instanceof o.LiteralArrayExpr ||
+          entry instanceof o.LiteralMapExpr
+        ),
+    );
+  } else if (expr instanceof o.LiteralMapExpr) {
+    return expr.entries.every(
+      (entry) =>
+        !(
+          entry instanceof o.LiteralMapSpreadAssignment ||
+          entry.value instanceof o.LiteralArrayExpr ||
+          entry.value instanceof o.LiteralMapExpr
+        ),
+    );
+  }
+  return true;
 }

@@ -10,7 +10,7 @@ export class MyApp {
         $r3$.ɵɵelement(0, "some-comp", 0);
       }
       if (rf & 2) {
-        $r3$.ɵɵproperty("prop", $c0$)("otherProp", $c1$);
+        $r3$.ɵɵproperty("prop", $r3$.ɵɵcloneArray(2, $c0$))("otherProp", $r3$.ɵɵcloneArray(3, $c1$));
       }
     },
     // ...

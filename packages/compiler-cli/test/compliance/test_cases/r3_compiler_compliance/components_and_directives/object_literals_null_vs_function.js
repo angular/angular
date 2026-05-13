@@ -10,9 +10,9 @@ export class MyApp {
         $r3$.ɵɵelement(0, "div", 0)(1, "div", 0);
       }
       if (rf & 2) {
-        $r3$.ɵɵproperty("dir", $c0$);
+        $r3$.ɵɵproperty("dir", $r3$.ɵɵcloneObject(2, $c0$));
         $r3$.ɵɵadvance();
-        $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(2, $c1$, ctx.getFoo()));
+        $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(3, $c1$, ctx.getFoo()));
       }
     },
     // ...

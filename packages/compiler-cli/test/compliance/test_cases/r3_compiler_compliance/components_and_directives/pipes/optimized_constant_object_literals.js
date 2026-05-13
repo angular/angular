@@ -1,5 +1,6 @@
 const $c0$ = { name: "Angular" };
 
+// ...
 export class MyApp {
   // ...
   static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
@@ -10,7 +11,7 @@ export class MyApp {
         $r3$.ɵɵpipe(1, "myPipe");
       }
       if (rf & 2) {
-        $r3$.ɵɵtextInterpolate1(" ", $r3$.ɵɵpipeBind1(1, 1, $c0$), " ");
+        $r3$.ɵɵtextInterpolate($r3$.ɵɵpipeBind1(1, 1, $r3$.ɵɵcloneObject(3, $c0$)));
       }
     },
     // ...
