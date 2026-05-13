@@ -20,7 +20,9 @@ export function extractPureFunctions(job: CompilationJob): void {
           return;
         }
 
-        const constantDef = new PureFunctionConstant(expr.args.length);
+        const isFlat =
+          expr.args.length === 0 && (expr.isFlatObjectLiteral || expr.isFlatArrayLiteral);
+        const constantDef = new PureFunctionConstant(expr.args.length, isFlat);
         expr.fn = job.pool.getSharedConstant(constantDef, expr.body);
         expr.body = null;
       });
@@ -29,7 +31,10 @@ export function extractPureFunctions(job: CompilationJob): void {
 }
 
 class PureFunctionConstant extends GenericKeyFn implements SharedConstantDefinition {
-  constructor(private numArgs: number) {
+  constructor(
+    private numArgs: number,
+    private isFlat: boolean,
+  ) {
     super();
   }
 
@@ -62,10 +67,10 @@ class PureFunctionConstant extends GenericKeyFn implements SharedConstantDefinit
       ir.VisitorContextFlag.None,
     );
 
-    // 0-arg pure functions are optimized to be emitted as direct references to constants,
-    // so we don't need to wrap them in an arrow function.
-    const initializer =
-      this.numArgs === 0 ? returnExpr : new o.ArrowFunctionExpr(fnParams, returnExpr);
+    // Flat 0-arg pure functions are optimized to be emitted as direct references to static constants,
+    // to be cloned at runtime via ɵɵcloneObject / ɵɵcloneArray. Non-flat pure functions are wrapped
+    // in an arrow function to be evaluated by ɵɵpureFunction0.
+    const initializer = this.isFlat ? returnExpr : new o.ArrowFunctionExpr(fnParams, returnExpr);
 
     return new o.DeclareVarStmt(declName, initializer, undefined, o.StmtModifier.Final);
   }
