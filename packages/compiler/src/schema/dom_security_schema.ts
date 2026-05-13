@@ -26,20 +26,28 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     _SECURITY_SCHEMA = {};
     // Case is insignificant below, all element and attribute names are lower-cased for lookup.
 
-    registerContext(SecurityContext.HTML, ['iframe|srcdoc', '*|innerHTML', '*|outerHTML']);
-    registerContext(SecurityContext.STYLE, ['*|style']);
+    registerContext(
+      SecurityContext.HTML,
+      ['iframe|srcdoc', '*|innerHTML', '*|outerHTML'],
+      undefined,
+    );
+    registerContext(SecurityContext.STYLE, ['*|style'], undefined);
     // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
-    registerContext(SecurityContext.URL, [
-      '*|formAction',
-      'area|href',
-      'a|href',
-      'a|xlink:href',
-      'form|action',
+    registerContext(
+      SecurityContext.URL,
+      [
+        '*|formAction',
+        'area|href',
+        'a|href',
+        'a|xlink:href',
+        'form|action',
 
-      // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
-      'img|src',
-      'video|src',
-    ]);
+        // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
+        'img|src',
+        'video|src',
+      ],
+      undefined,
+    );
 
     registerContext(
       SecurityContext.URL,
@@ -116,15 +124,19 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'math',
     );
 
-    registerContext(SecurityContext.RESOURCE_URL, [
-      'base|href',
-      'embed|src',
-      'frame|src',
-      'iframe|src',
-      'link|href',
-      'object|codebase',
-      'object|data',
-    ]);
+    registerContext(
+      SecurityContext.RESOURCE_URL,
+      [
+        'base|href',
+        'embed|src',
+        'frame|src',
+        'iframe|src',
+        'link|href',
+        'object|codebase',
+        'object|data',
+      ],
+      undefined,
+    );
 
     registerContext(
       SecurityContext.RESOURCE_URL,
@@ -161,32 +173,40 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'svg',
     );
 
-    registerContext(SecurityContext.ATTRIBUTE_NO_BINDING, [
-      'unknown|attributeName',
-      'unknown|values',
-      'unknown|to',
-      'unknown|from',
+    registerContext(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+      [
+        'unknown|attributeName',
+        'unknown|values',
+        'unknown|to',
+        'unknown|from',
 
-      'iframe|sandbox',
-      'iframe|allow',
-      'iframe|allowFullscreen',
-      'iframe|referrerPolicy',
-      'iframe|csp',
-      'iframe|fetchPriority',
+        'iframe|sandbox',
+        'iframe|allow',
+        'iframe|allowFullscreen',
+        'iframe|referrerPolicy',
+        'iframe|csp',
+        'iframe|fetchPriority',
 
-      'unknown|sandbox',
-      'unknown|allow',
-      'unknown|allowFullscreen',
-      'unknown|referrerPolicy',
-      'unknown|csp',
-      'unknown|fetchPriority',
-    ]);
+        'unknown|sandbox',
+        'unknown|allow',
+        'unknown|allowFullscreen',
+        'unknown|referrerPolicy',
+        'unknown|csp',
+        'unknown|fetchPriority',
+      ],
+      undefined,
+    );
   }
 
   return _SECURITY_SCHEMA;
 }
 
-function registerContext(ctx: SecurityContext, specs: string[], namespace?: string) {
+function registerContext(
+  ctx: SecurityContext,
+  specs: string[],
+  namespace: string | undefined,
+): void {
   for (const spec of specs) {
     const fullElementName =
       namespace && !spec.startsWith('*|') && !spec.startsWith('unknown|')

@@ -1329,8 +1329,9 @@ function ingestElementBindings(
 
   for (const attr of element.attributes) {
     // Attribute literal bindings, such as `attr.foo="bar"`.
-    let namespace: string | null = null;
-    if (element.name[0] !== ':') {
+    const [ns, elementName] = splitNsName(element.name);
+    let namespace = ns;
+    if (!ns) {
       switch (op.namespace) {
         case ir.Namespace.SVG:
           namespace = SVG_NAMESPACE;
@@ -1341,7 +1342,6 @@ function ingestElementBindings(
       }
     }
 
-    const elementName = element.name;
     const securityContext = domSchema.securityContext(
       namespace ? `:${namespace}:${elementName}` : elementName,
       attr.name,
