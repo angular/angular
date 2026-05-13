@@ -252,6 +252,16 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     const node: ts.Node = ast.node;
     if (ts.isEntityName(node)) {
       return ts.factory.createTypeReferenceNode(this.routeEntityNameThroughImportManager(node));
+    } else if (ts.isPropertyAccessExpression(node)) {
+      const entityName = expressionToEntityName(node);
+      if (entityName !== null) {
+        return ts.factory.createTypeReferenceNode(
+          this.routeEntityNameThroughImportManager(entityName),
+        );
+      }
+      throw new Error(
+        `Unsupported PropertyAccessExpression in TypeTranslatorVisitor: ${node.getText()} in ${node.getSourceFile()?.fileName}`,
+      );
     } else if (ts.isTypeNode(node)) {
       // The wrapped type node may reference identifiers from another source file (e.g. when the
       // NgModule isolated-declarations transform synthesizes `ReturnType<typeof Foo.forRoot>`).
@@ -422,4 +432,15 @@ function replaceLeftmostEntityName(name: ts.EntityName, newLeftmost: ts.EntityNa
     replaceLeftmostEntityName(name.left, newLeftmost),
     name.right,
   );
+}
+
+function expressionToEntityName(expr: ts.Expression): ts.EntityName | null {
+  if (ts.isIdentifier(expr)) {
+    return ts.factory.createIdentifier(expr.text);
+  }
+  if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) {
+    const left = expressionToEntityName(expr.expression);
+    return left === null ? null : ts.factory.createQualifiedName(left, expr.name);
+  }
+  return null;
 }
