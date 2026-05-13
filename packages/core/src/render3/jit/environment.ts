@@ -55,6 +55,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵelementStart': r3.ɵɵelementStart,
   'ɵɵelementEnd': r3.ɵɵelementEnd,
   'ɵɵelement': r3.ɵɵelement,
+  'ɵɵforeignComponent': r3.ɵɵforeignComponent,
   'ɵɵelementContainerStart': r3.ɵɵelementContainerStart,
   'ɵɵelementContainerEnd': r3.ɵɵelementContainerEnd,
   'ɵɵdomElement': r3.ɵɵdomElement,

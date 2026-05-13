@@ -44,6 +44,7 @@ export type CreateOp =
   | ElementOp
   | ElementStartOp
   | ElementEndOp
+  | ForeignComponentOp
   | ContainerOp
   | ContainerStartOp
   | ContainerEndOp
@@ -232,6 +233,51 @@ export function createElementStartOp(
     i18nPlaceholder,
     startSourceSpan,
     wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Logical operation representing a foreign component in the creation IR.
+ */
+export interface ForeignComponentOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.ForeignComponent;
+
+  /**
+   * The `XrefId` allocated for this foreign component.
+   */
+  xref: XrefId;
+
+  /**
+   * Reference to the foreign component class/function itself as an output AST expression.
+   */
+  foreignComponentRef: o.Expression;
+
+  /**
+   * Static attributes and property bindings aggregated as an object literal.
+   */
+  props: o.Expression | null;
+
+  sourceSpan: ParseSourceSpan | null;
+}
+
+/**
+ * Create a `ForeignComponentOp`.
+ */
+export function createForeignComponentOp(
+  xref: XrefId,
+  foreignComponentRef: o.Expression,
+  props: o.Expression | null,
+  sourceSpan: ParseSourceSpan | null,
+): ForeignComponentOp {
+  return {
+    kind: OpKind.ForeignComponent,
+    xref,
+    handle: new SlotHandle(),
+    foreignComponentRef,
+    props,
+    sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
