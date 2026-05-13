@@ -19,8 +19,7 @@ import {
   ɵɵsanitizeResourceUrl as _sanitizeResourceUrl,
   ɵɵvalidateAttribute as _validateAttribute,
 } from '../../sanitization/sanitization';
-import {SECURITY_SCHEMA} from '../../sanitization/schema/dom_security_schema';
-import {SecurityContext} from '../../sanitization/schema/security';
+import {SECURITY_SCHEMA, SecurityContext} from '../../sanitization/dom_security_schema';
 import {
   assertDefined,
   assertEqual,
