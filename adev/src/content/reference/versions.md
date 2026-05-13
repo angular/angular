@@ -82,9 +82,11 @@ targets supporting approximately 95% of web users.
 
 | Angular | Baseline Date | Browser Set                 |
 | ------- | ------------- | --------------------------- |
+| v22     | 2026-05-07    | [Browser Set][browsers-v22] |
 | v21     | 2025-10-20    | [Browser Set][browsers-v21] |
 | v20     | 2025-04-30    | [Browser Set][browsers-v20] |
 
+[browsers-v22]: https://web-platform-dx.github.io/web-features/supported-browsers/?widelyAvailableOnDate=2026-05-07&includeDownstream=false
 [browsers-v21]: https://web-platform-dx.github.io/web-features/supported-browsers/?widelyAvailableOnDate=2025-10-20&includeDownstream=false
 [browsers-v20]: https://web-platform-dx.github.io/web-features/supported-browsers/?widelyAvailableOnDate=2025-04-30&includeDownstream=false
 
