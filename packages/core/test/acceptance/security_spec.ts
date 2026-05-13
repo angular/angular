@@ -10,7 +10,9 @@ import {NgIf} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
 import {
   Component,
+  createComponent,
   Directive,
+  EnvironmentInjector,
   inject,
   provideZoneChangeDetection,
   TemplateRef,
@@ -850,5 +852,53 @@ describe('innerHTML processing', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.innerHTML).not.toContain('action');
+  });
+});
+
+describe('Component host element validation', () => {
+  it('should throw an error when dynamically mounting a component onto a script tag', () => {
+    @Component({
+      selector: 'my-sink',
+      template: '',
+    })
+    class MySink {}
+
+    const scriptHost = document.createElement('script');
+    document.head.appendChild(scriptHost);
+
+    try {
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      expect(() => {
+        createComponent(MySink, {
+          environmentInjector,
+          hostElement: scriptHost,
+        });
+      }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+    } finally {
+      scriptHost.remove();
+    }
+  });
+
+  it('should throw an error when dynamically mounting a component onto an SVG script tag', () => {
+    @Component({
+      selector: 'my-svg-sink',
+      template: '',
+    })
+    class MySvgSink {}
+
+    const svgScriptHost = document.createElementNS('http://www.w3.org/2000/svg', 'script');
+    document.head.appendChild(svgScriptHost);
+
+    try {
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      expect(() => {
+        createComponent(MySvgSink, {
+          environmentInjector,
+          hostElement: svgScriptHost,
+        });
+      }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+    } finally {
+      svgScriptHost.remove();
+    }
   });
 });
