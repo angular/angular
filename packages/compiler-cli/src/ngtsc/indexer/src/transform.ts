@@ -30,14 +30,6 @@ export function generateAnalysis<T = DeclarationNode>(
     const name = adapter.getName(declaration);
     const fileName = adapter.getFileName(declaration);
 
-    const usedComponents = new Set<T>();
-    const usedDirs = boundTemplate.getUsedDirectives();
-    usedDirs.forEach((dir) => {
-      if (dir.isComponent) {
-        usedComponents.add(dir.ref.node);
-      }
-    });
-
     // Get source files for the component and the template. If the template is inline, its source
     // file is the component's.
     const componentFile = new ParseSourceFile(adapter.getContent(declaration), fileName);
@@ -55,8 +47,6 @@ export function generateAnalysis<T = DeclarationNode>(
       file: componentFile,
       template: {
         identifiers,
-        usedComponents,
-        isInline: templateMeta.isInline,
         file: templateFile,
       },
       errors,
