@@ -70,8 +70,6 @@ runInEachFileSystem(() => {
         template: {
           identifiers: getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>'))
             .identifiers,
-          usedComponents: new Set(),
-          isInline: false,
           file: new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
         },
         errors: [],
@@ -115,38 +113,6 @@ runInEachFileSystem(() => {
       expect(info!.template.file).toEqual(
         new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
       );
-    });
-
-    it('should emit used components', () => {
-      const context = new IndexingContext();
-
-      const templateA = '<b-selector></b-selector>';
-      const declA = util.getComponentDeclaration('class A {}', 'A');
-
-      const templateB = '<a-selector></a-selector>';
-      const declB = util.getComponentDeclaration('class B {}', 'B');
-
-      const boundA = util.getBoundTemplate(templateA, {}, [
-        {selector: 'b-selector', declaration: declB},
-      ]);
-      const boundB = util.getBoundTemplate(templateB, {}, [
-        {selector: 'a-selector', declaration: declA},
-      ]);
-
-      populateContext(context, declA, 'a-selector', templateA, boundA);
-      populateContext(context, declB, 'b-selector', templateB, boundB);
-
-      const analysis = generateAnalysis(context, adapter);
-
-      expect(analysis.size).toBe(2);
-
-      const infoA = analysis.get(declA);
-      expect(infoA).toBeDefined();
-      expect(infoA!.template.usedComponents).toEqual(new Set([declB]));
-
-      const infoB = analysis.get(declB);
-      expect(infoB).toBeDefined();
-      expect(infoB!.template.usedComponents).toEqual(new Set([declA]));
     });
   });
 });

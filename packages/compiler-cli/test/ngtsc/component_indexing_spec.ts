@@ -83,8 +83,6 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          usedComponents: new Set(),
-          isInline: true,
           file: new ParseSourceFile(componentContent, testSourceFile),
         });
       });
@@ -116,8 +114,6 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          usedComponents: new Set(),
-          isInline: false,
           file: new ParseSourceFile('{{foo}}', testTemplateFile),
         });
       });
@@ -153,8 +149,6 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          usedComponents: new Set(),
-          isInline: false,
           file: new ParseSourceFile('  \n  {{foo}}', testTemplateFile),
         });
       });
@@ -205,12 +199,6 @@ runInEachFileSystem(() => {
         const testImportComp = indexedComps.find((cmp) => cmp.name === 'TestImportCmp');
         expect(testComp).toBeDefined();
         expect(testImportComp).toBeDefined();
-
-        expect(testComp!.template.usedComponents.size).toBe(0);
-        expect(testImportComp!.template.usedComponents.size).toBe(1);
-
-        const [usedComp] = Array.from(testImportComp!.template.usedComponents);
-        expect(indexed.get(usedComp)).toEqual(testComp);
       });
     });
   });

@@ -185,8 +185,6 @@ export interface IndexedComponent<T = DeclarationNode> {
   file: ParseSourceFile;
   template: {
     identifiers: Set<TopLevelIdentifier<T>>;
-    usedComponents: Set<T>;
-    isInline: boolean;
     file: ParseSourceFile;
   };
   errors: Error[];
