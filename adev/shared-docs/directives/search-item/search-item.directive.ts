@@ -23,7 +23,7 @@ export class SearchItem implements Highlightable {
 
   readonly item = input<SearchResultItem | undefined>();
 
-  private readonly elementRef = inject(ElementRef<HTMLLIElement>);
+  private readonly elementRef = inject<ElementRef<HTMLLIElement>>(ElementRef);
 
   private _isActive = signal(false);
 

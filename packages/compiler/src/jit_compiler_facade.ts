@@ -25,6 +25,7 @@ import {
   R3DeclarePipeDependencyFacade,
   R3DeclarePipeFacade,
   R3DeclareQueryMetadataFacade,
+  R3DeclareServiceFacade,
   R3DependencyMetadataFacade,
   R3DirectiveMetadataFacade,
   R3FactoryDefMetadataFacade,
@@ -33,6 +34,7 @@ import {
   R3NgModuleMetadataFacade,
   R3PipeMetadataFacade,
   R3QueryMetadataFacade,
+  R3ServiceMetadataFacade,
   R3TemplateDependencyFacade,
 } from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
@@ -45,6 +47,7 @@ import {
   ViewEncapsulation,
 } from './core';
 import {compileInjectable} from './injectable_compiler_2';
+import {LEGACY_OPTIONAL_CHAINING_DEFAULT} from './legacy_optional_chaining_default';
 import {
   DeclareVarStmt,
   Expression,
@@ -103,6 +106,7 @@ import {R3TargetBinder} from './render3/view/t2_binder';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
+import {compileService} from './service_compiler';
 import {getJitStandaloneDefaultForVersion} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
@@ -267,6 +271,44 @@ export class CompilerFacadeImpl implements CompilerFacade {
     );
     const meta = convertDeclareDirectiveFacadeToMetadata(declaration, typeSourceSpan);
     return this.compileDirectiveFromMeta(angularCoreEnv, sourceMapUrl, meta);
+  }
+
+  compileService(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    facade: R3ServiceMetadataFacade,
+  ): any {
+    const {expression, statements} = compileService(
+      {
+        name: facade.name,
+        type: wrapReference(facade.type),
+        typeArgumentCount: facade.typeArgumentCount,
+        autoProvided: facade.autoProvided,
+        factory: facade.factory ? wrapExpression(facade, 'factory') : undefined,
+      },
+      /* resolveForwardRefs */ true,
+    );
+
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
+  }
+
+  compileServiceDeclaration(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    facade: R3DeclareServiceFacade,
+  ): any {
+    const {expression, statements} = compileService(
+      {
+        name: facade.type.name,
+        type: wrapReference(facade.type),
+        typeArgumentCount: 0,
+        autoProvided: facade.autoProvided,
+        factory: facade.factory ? wrapExpression(facade, 'factory') : undefined,
+      },
+      /* resolveForwardRefs */ true,
+    );
+
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
   }
 
   private compileDirectiveFromMeta(
@@ -568,6 +610,7 @@ function convertDeclareDirectiveFacadeToMetadata(
       declaration.isStandalone ?? getJitStandaloneDefaultForVersion(declaration.version),
     isSignal: declaration.isSignal ?? false,
     hostDirectives,
+    legacyOptionalChaining: declaration.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
   };
 }
 
@@ -673,6 +716,7 @@ function convertDeclareComponentFacadeToMetadata(
     i18nUseExternalIds: true,
     relativeTemplatePath: null,
     hasDirectiveDependencies,
+    legacyOptionalChaining: decl.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
   };
 }
 
@@ -864,12 +908,6 @@ function extractHostBindings(
   // First parse the declarations from the metadata.
   const bindings = parseHostBindings(host || {});
 
-  // After that check host bindings for errors
-  const errors = verifyHostBindings(bindings, sourceSpan);
-  if (errors.length) {
-    throw new Error(errors.map((error: ParseError) => error.msg).join('\n'));
-  }
-
   // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
@@ -887,6 +925,12 @@ function extractHostBindings(
         }
       });
     }
+  }
+
+  // After that check host bindings for errors
+  const errors = verifyHostBindings(bindings, sourceSpan);
+  if (errors.length) {
+    throw new Error(errors.map((error: ParseError) => error.msg).join('\n'));
   }
 
   return bindings;

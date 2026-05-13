@@ -964,7 +964,7 @@ describe('R3 AST source spans', () => {
   describe('@let declaration', () => {
     it('is correct for a let declaration', () => {
       expectFromHtml('@let foo = 123;').toEqual([
-        ['LetDeclaration', '@let foo = 123', 'foo', '123'],
+        ['LetDeclaration', '@let foo = 123;', 'foo', '123'],
       ]);
     });
   });

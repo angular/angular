@@ -387,6 +387,75 @@ export declare class MyMod {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: temporary_variables_use_null.js
+ ****************************************************************************************************/
+import { Component, NgModule, Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AsyncPipe {
+    transform(v) { }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AsyncPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AsyncPipe, isStandalone: false, name: "async" });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AsyncPipe, decorators: [{
+            type: Pipe,
+            args: [{
+                    name: 'async',
+                    standalone: false
+                }]
+        }] });
+// https://github.com/angular/angular/issues/37194
+// Verifies that temporary expressions used for expressions with potential side-effects in
+// the LHS of a safe navigation access are emitted within the binding expression itself, to
+// ensure that these temporaries are evaluated during the evaluation of the binding. This
+// is important for when the LHS contains a pipe, as pipe evaluation depends on the current
+// binding index.
+export class MyComponent {
+    myTitle = 'hello';
+    auth;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "ng-component", ngImport: i0, template: '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>', isInline: true, dependencies: [{ kind: "pipe", type: AsyncPipe, name: "async" }] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    template: '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>',
+                    standalone: false
+                }]
+        }] });
+export class MyMod {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod, declarations: [MyComponent, AsyncPipe] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyMod, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [MyComponent, AsyncPipe] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: temporary_variables_use_null.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AsyncPipe {
+    transform(v: any): null | any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AsyncPipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<AsyncPipe, "async", false>;
+}
+export declare class MyComponent {
+    myTitle: string;
+    auth: () => {
+        identity(): any;
+    };
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
+}
+export declare class MyMod {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof MyComponent, typeof AsyncPipe], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyMod>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: chain_multiple_bindings.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';

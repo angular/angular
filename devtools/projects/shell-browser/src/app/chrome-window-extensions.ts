@@ -42,7 +42,7 @@ const chromeWindowExtensions = {
       return;
     }
     if (directiveIndex !== undefined) {
-      if (node.directives[directiveIndex]) {
+      if (node.directives?.[directiveIndex]) {
         return node.directives[directiveIndex].instance.constructor;
       } else {
         console.error(
@@ -102,10 +102,10 @@ const chromeWindowExtensions = {
 
     const isDirective =
       directivePosition.directive !== undefined &&
-      node.directives[directivePosition.directive] &&
+      node.directives?.[directivePosition.directive] &&
       typeof node.directives[directivePosition.directive] === 'object';
     if (isDirective) {
-      return traverseDirective(node.directives[directivePosition.directive].instance, objectPath);
+      return traverseDirective(node.directives![directivePosition.directive].instance, objectPath);
     }
     if (node.component) {
       return traverseDirective(node.component.instance, objectPath);

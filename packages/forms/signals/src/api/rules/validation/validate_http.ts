@@ -10,10 +10,11 @@ import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/c
 import {DebounceTimer, ResourceSnapshot, Signal} from '@angular/core';
 import {
   FieldContext,
-  SchemaPath,
+  LogicFn,
   PathKind,
-  TreeValidationResult,
+  SchemaPath,
   SchemaPathRules,
+  TreeValidationResult,
 } from '../../types';
 import {MapToErrorsFn, validateAsync} from './validate_async';
 
@@ -26,7 +27,7 @@ import {MapToErrorsFn, validateAsync} from './validate_async';
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
   /**
@@ -68,6 +69,10 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    * returns a promise that resolves when the update should proceed.
    */
   readonly debounce?: DebounceTimer<string | HttpResourceRequest | undefined>;
+  /**
+   * A function that receives the field context and returns true if the async validation should be run.
+   */
+  readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 /**
@@ -82,7 +87,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  *
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
@@ -96,5 +101,6 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
     factory: (request: Signal<any>) => httpResource(request, opts.options),
     onSuccess: opts.onSuccess,
     onError: opts.onError,
+    when: opts.when,
   });
 }

@@ -63,7 +63,7 @@ Possible values are:
 To bundle your schematics together with your library, you must configure the library to build the schematics separately, then add them to the bundle.
 You must build your schematics _after_ you build your library, so they are placed in the correct directory.
 
-- Your library needs a custom Typescript configuration file with instructions on how to compile your schematics into your distributed library
+- Your library needs a custom TypeScript configuration file with instructions on how to compile your schematics into your distributed library
 - To add the schematics to the library bundle, add scripts to the library's `package.json` file
 
 Assume you have a library project `my-lib` in your Angular workspace.
@@ -144,12 +144,10 @@ Schematic templates support special syntax to execute code and variable substitu
 
    ```ts {header:projects/my-lib/schematics/my-service/files/__name@dasherize__.service.ts.template (Schematic Template)}
 
-   import { Injectable } from '@angular/core';
+   import { Service } from '@angular/core';
    import { HttpClient } from '@angular/common/http';
 
-   @Injectable({
-      providedIn: 'root'
-   })
+   @Service()
    export class <%= classify(name) %>Service {
       private http = inject(HttpClient);
    }

@@ -6,7 +6,6 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//packages/core/primitives/dom-navigation/testing",

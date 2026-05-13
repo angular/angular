@@ -7,7 +7,7 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {Component, DestroyRef, PLATFORM_ID, computed, inject, signal} from '@angular/core';
+import {Component, PLATFORM_ID, computed, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -35,7 +35,6 @@ export const ANIMATION_DURATION = 500;
   styleUrls: ['./secondary-navigation.component.scss'],
 })
 export class SecondaryNavigation {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly navigationState = inject(NavigationState);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
@@ -69,15 +68,15 @@ export class SecondaryNavigation {
 
   private readonly primaryActiveRouteChanged$ = toObservable(this.primaryActiveRouteItem).pipe(
     distinctUntilChanged(),
-    takeUntilDestroyed(this.destroyRef),
+    takeUntilDestroyed(),
   );
 
   private readonly urlAfterRedirects$ = this.router.events.pipe(
     filter((event) => event instanceof NavigationEnd),
-    map((event) => (event as NavigationEnd).urlAfterRedirects),
-    filter((url): url is string => url !== undefined),
+    map((event) => event.urlAfterRedirects),
+    filter((url) => url !== undefined),
     startWith(this.getInitialPath(this.router.routerState.snapshot)),
-    takeUntilDestroyed(this.destroyRef),
+    takeUntilDestroyed(),
   );
 
   constructor() {

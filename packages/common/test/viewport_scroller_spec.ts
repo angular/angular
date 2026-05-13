@@ -7,7 +7,7 @@
  */
 
 import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
-import {isNode} from '@angular/private/testing';
+import {isNode, waitFor} from '@angular/private/testing';
 
 describe('BrowserViewportScroller', () => {
   describe('setHistoryScrollRestoration', () => {
@@ -109,6 +109,30 @@ describe('BrowserViewportScroller', () => {
       anchorNode.name = anchor;
       scroller.scrollToAnchor(anchor, {top: 0, left: 0} as any);
       expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+      cleanup();
+    });
+
+    it('should honor the scroll offset when smooth scrolling', async () => {
+      // Ensure the scroll behavior is smooth for this test, as the bug only occurred with smooth scrolling.
+      document.documentElement.style.scrollBehavior = 'smooth';
+
+      const {anchorNode, cleanup} = createTallElement();
+      anchorNode.id = anchor;
+
+      // Padding ensures the page is tall enough that the offset-adjusted target
+      // is reachable and not clamped to the maximum scroll position.
+      document.body.style.paddingBottom = '5000px';
+      // Header offset
+      scroller.setOffset([0, 80]);
+
+      scroller.scrollToAnchor(anchor);
+
+      await waitFor(() => throwUnless(anchorNode.getBoundingClientRect().top).toBe(80), {
+        timeout: 1_000,
+      });
+
+      document.documentElement.style.scrollBehavior = '';
+      document.body.style.paddingBottom = '';
       cleanup();
     });
 

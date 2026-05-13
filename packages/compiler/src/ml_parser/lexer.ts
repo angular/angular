@@ -423,8 +423,8 @@ class _Tokenizer {
     const endChar = this._cursor.peek();
     if (endChar === chars.$SEMICOLON) {
       this._beginToken(TokenType.LET_END);
-      this._endToken([]);
       this._cursor.advance();
+      this._endToken([]);
     } else {
       startToken.type = TokenType.INCOMPLETE_LET;
       startToken.sourceSpan = this._cursor.getSpan(start);

@@ -266,6 +266,54 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should allow min/max bindings on date inputs', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="date" [formField]="f" min="2026-01-01" max="2026-12-31"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(new Date('2026-01-15')));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should prohibit min/max bindings on non-date inputs', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="number" [formField]="f" min="1" max="10"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(5));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(extractMessage(diags[0])).toBe(
+        `Setting the 'min' attribute is not allowed on nodes using the '[formField]' directive`,
+      );
+      expect(extractMessage(diags[1])).toBe(
+        `Setting the 'max' attribute is not allowed on nodes using the '[formField]' directive`,
+      );
+    });
+
     it('should infer the type of a custom value control', () => {
       env.write(
         'test.ts',

@@ -489,8 +489,8 @@ export class ForLoopBlock extends BlockNode implements Node {
   constructor(
     public item: Variable,
     public expression: ASTWithSource,
-    public trackBy: ASTWithSource,
-    public trackKeywordSpan: ParseSourceSpan,
+    public trackBy: ASTWithSource | null,
+    public trackKeywordSpan: ParseSourceSpan | null,
     public contextVariables: Variable[],
     public children: Node[],
     public empty: ForLoopBlockEmpty | null,

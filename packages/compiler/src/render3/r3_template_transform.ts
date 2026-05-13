@@ -591,10 +591,11 @@ class HtmlAstToIvyAst implements html.Visitor {
         // Note that validation is skipped and property mapping is disabled
         // due to the fact that we need to make sure a given prop is not an
         // input of a directive and directive matching happens at runtime.
+        const isAttrOn = prop.name.toLowerCase().startsWith('attr.on');
         const bep = this.bindingParser.createBoundElementProperty(
           elementName,
           prop,
-          /* skipValidation */ true,
+          /* skipValidation */ !isAttrOn,
           /* mapPropertyName */ false,
         );
         bound.push(t.BoundAttribute.fromBoundElementProperty(bep, i18n));

@@ -33,6 +33,7 @@ export {
 } from './metadata/ng_module_def';
 export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
 export {inferTagNameFromDefinition as ɵinferTagNameFromDefinition} from './render3/component_ref';
+export {ɵɵenableIncrementalHydrationRuntime} from './hydration/incremental_runtime';
 export {getLContext as ɵgetLContext} from './render3/context_discovery';
 export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
 export {
@@ -274,6 +275,7 @@ export {
   ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,
   ɵɵngDeclareInjectable,
+  ɵɵngDeclareService,
   ɵɵngDeclareInjector,
   ɵɵngDeclareNgModule,
   ɵɵngDeclarePipe,

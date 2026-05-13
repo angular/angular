@@ -80,7 +80,8 @@ function extractViewTree(
     };
   }
 
-  const isDisplayableNode = component || componentTreeNode.directives.length || isDehydratedElement;
+  const isDisplayableNode =
+    component || componentTreeNode.directives?.length || isDehydratedElement;
   if (isDisplayableNode) {
     result.push(componentTreeNode);
   }

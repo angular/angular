@@ -1283,7 +1283,7 @@ describe('HtmlParser', () => {
 
       it('should store the source location of a @let declaration', () => {
         expect(humanizeDomSourceSpans(parser.parse('@let foo = 123 + 456;', 'TestCmp'))).toEqual([
-          [html.LetDeclaration, 'foo', '123 + 456', '@let foo = 123 + 456', 'foo', '123 + 456'],
+          [html.LetDeclaration, 'foo', '123 + 456', '@let foo = 123 + 456;', 'foo', '123 + 456'],
         ]);
       });
 

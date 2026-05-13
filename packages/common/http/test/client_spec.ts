@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClient} from '../src/client';
-import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
-import {HttpTestingController, provideHttpClientTesting} from '../testing';
-import {provideHttpClient, withNoXsrfProtection} from '../src/provider';
 import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
 import {TestBed} from '@angular/core/testing';
 import {toArray} from 'rxjs/operators';
+import {HttpClient} from '../src/client';
+import {provideHttpClient, withNoXsrfProtection} from '../src/provider';
+import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
+import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 describe('HttpClient', () => {
   let client: HttpClient;
@@ -133,6 +133,15 @@ describe('HttpClient', () => {
       client.get('/test', {reportProgress: true}).subscribe(() => done());
       const req = backend.expectOne('/test');
       expect(req.request.reportProgress).toEqual(true);
+      req.flush({});
+    });
+    it('with split progress events enabled', (done) => {
+      client
+        .get('/test', {reportUploadProgress: true, reportDownloadProgress: true})
+        .subscribe(() => done());
+      const req = backend.expectOne('/test');
+      expect(req.request.reportUploadProgress).toBe(true);
+      expect(req.request.reportDownloadProgress).toBe(true);
       req.flush({});
     });
   });

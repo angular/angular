@@ -63,6 +63,7 @@ export function ingestComponent(
   allDeferrableDepsFn: o.ReadVarExpr | null,
   relativeTemplatePath: string | null,
   enableDebugLocations: boolean,
+  legacyOptionalChaining: boolean,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -74,6 +75,7 @@ export function ingestComponent(
     allDeferrableDepsFn,
     relativeTemplatePath,
     enableDebugLocations,
+    legacyOptionalChaining,
   );
   ingestNodes(job.root, template);
   return job;
@@ -85,6 +87,7 @@ export interface HostBindingInput {
   properties: e.ParsedProperty[] | null;
   attributes: {[key: string]: o.Expression};
   events: e.ParsedEvent[] | null;
+  legacyOptionalChaining: boolean;
 }
 
 /**
@@ -100,6 +103,7 @@ export function ingestHostBinding(
     input.componentName,
     constantPool,
     TemplateCompilationMode.DomOnly,
+    input.legacyOptionalChaining,
   );
   for (const property of input.properties ?? []) {
     let bindingKind = ir.BindingKind.Property;
@@ -931,8 +935,19 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
     }
   }
 
-  const sourceSpan = convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan);
-  const track = convertAst(forBlock.trackBy, unit.job, sourceSpan);
+  let track: o.Expression;
+
+  if (forBlock.trackBy === null) {
+    // `@for` without a `track` is invalid and it produces a parser error.
+    // Put a placeholder here so we don't need to account for it throughout the pipeline.
+    track = o.variable('$index');
+  } else {
+    track = convertAst(
+      forBlock.trackBy,
+      unit.job,
+      convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan),
+    );
+  }
 
   ingestNodes(repeaterView, forBlock.children);
 
@@ -1162,9 +1177,14 @@ function convertAst(
     return new ir.SafePropertyReadExpr(convertAst(ast.receiver, job, baseSourceSpan), ast.name);
   } else if (ast instanceof e.SafeCall) {
     // TODO: source span
-    return new ir.SafeInvokeFunctionExpr(
+    return new o.InvokeFunctionExpr(
       convertAst(ast.receiver, job, baseSourceSpan),
       ast.args.map((a) => convertAst(a, job, baseSourceSpan)),
+      null,
+      convertSourceSpan(ast.span, baseSourceSpan),
+      false,
+      [],
+      true,
     );
   } else if (ast instanceof e.EmptyExpr) {
     return new ir.EmptyExpr(convertSourceSpan(ast.span, baseSourceSpan));

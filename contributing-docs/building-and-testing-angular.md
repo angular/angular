@@ -8,7 +8,7 @@ It also explains the basic mechanics of using `git`, `node`, and `pnpm`.
   - [Development in a Container](#development-in-a-container)
   - [Experimenting in dev-app](#experimenting-in-dev-app)
   - [Getting the Sources](#getting-the-sources)
-  - [Installing NPM Modules](#installing-npm-modules)
+  - [Installing npm Modules](#installing-npm-modules)
   - [Building](#building)
   - [Running Tests Locally](#running-tests-locally)
     - [Testing changes against a local library/project](#testing-changes-against-a-local-libraryproject)
@@ -95,7 +95,7 @@ cd angular
 git remote add upstream https://github.com/angular/angular.git
 ```
 
-## Installing NPM Modules
+## Installing npm Modules
 
 Next, install the JavaScript modules needed to build and test Angular:
 

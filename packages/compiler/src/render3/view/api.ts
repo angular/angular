@@ -121,6 +121,11 @@ export interface R3DirectiveMetadata {
    * Additional directives applied to the directive host.
    */
   hostDirectives: R3HostDirectiveMetadata[] | null;
+
+  /**
+   * Whether null should be used instead of undefined for optional chaining.
+   */
+  legacyOptionalChaining: boolean;
 }
 
 /**

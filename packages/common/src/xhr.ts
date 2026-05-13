@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Service} from '@angular/core';
 
 /**
  * A factory for `HttpXhrBackend` that uses the `XMLHttpRequest` browser API.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class BrowserXhr implements XhrFactory {
   build(): XMLHttpRequest {
     return new XMLHttpRequest();

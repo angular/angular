@@ -12,9 +12,8 @@ import {WINDOW} from '@angular/docs';
 import {EmbeddedTutorialManager} from '../../editor';
 import {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
-import TutorialPlayground from './playground.component';
 import {provideRouter} from '@angular/router';
-import {mockAsyncProvider} from '../../core/services/inject-async';
+import TutorialPlayground from './playground.component';
 
 describe('TutorialPlayground', () => {
   let component: TutorialPlayground;
@@ -44,8 +43,8 @@ describe('TutorialPlayground', () => {
           provide: WINDOW,
           useValue: fakeWindow,
         },
-        mockAsyncProvider(NodeRuntimeSandbox, FakeNodeRuntimeSandbox),
-        mockAsyncProvider(EmbeddedTutorialManager, FakeEmbeddedTutorialManager),
+        {provide: NodeRuntimeSandbox, useClass: FakeNodeRuntimeSandbox},
+        {provide: EmbeddedTutorialManager, useClass: FakeEmbeddedTutorialManager},
       ],
     });
 

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, Type, inject} from '@angular/core';
+import {Service, Type, inject} from '@angular/core';
 import {PREVIEWS_COMPONENTS} from '@angular/docs';
 
-@Injectable()
+@Service({autoProvided: false})
 export class ExampleContentLoader {
   private readonly previewsComponents = inject(PREVIEWS_COMPONENTS);
 

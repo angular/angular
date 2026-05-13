@@ -19,7 +19,7 @@ To make these transitions as straightforward as possible, the Angular team makes
 - We follow the deprecation policy described here, so you have time to update your applications to the latest APIs and best practices
 
 HELPFUL: The practices described in this document apply to Angular 2.0 and later.
-If you are currently using AngularJS, see [Upgrading from AngularJS](https://angular.io/guide/upgrade 'Upgrading from Angular JS').
+If you are currently using AngularJS, see [Upgrading from AngularJS](https://angular.io/guide/upgrade 'Upgrading from AngularJS').
 _AngularJS_ is the name for all v1.x versions of Angular.
 
 ## Angular versioning

@@ -8,9 +8,7 @@
 
 function showTransferState() {
   cy.get('.main-toolbar > .settings > button:last-child').click();
-  cy.get(
-    '.cdk-overlay-container mat-slide-toggle + span:contains("Enable Transfer State Tab")',
-  ).click();
+  cy.get('ng-settings #enable-transfer-state').click();
 }
 
 function goToTransferStateTab() {

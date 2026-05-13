@@ -322,6 +322,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'updated',
           },
           {
+            label: 'Lazy loading services',
+            path: 'guide/di/lazy-loading-services',
+            contentPath: 'guide/di/lazy-loading-services',
+            status: 'new',
+          },
+          {
             label: 'Defining dependency providers',
             path: 'guide/di/defining-dependency-providers',
             contentPath: 'guide/di/defining-dependency-providers',
@@ -520,6 +526,13 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Schemas',
             path: 'guide/forms/signals/schemas',
             contentPath: 'guide/forms/signals/schemas',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Field metadata',
+            path: 'guide/forms/signals/field-metadata',
+            contentPath: 'guide/forms/signals/field-metadata',
             category: 'Signal Forms',
             status: 'new',
           },

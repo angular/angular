@@ -7,23 +7,23 @@
  */
 
 import {
-  Injectable,
   InjectionToken,
   Provider,
+  Service,
   debounced,
   inject,
   linkedSignal,
   resource,
   signal,
 } from '@angular/core';
-import {ENVIRONMENT} from '../providers/index';
-import type {Environment, SearchResult, SearchResultItem, SnippetResult} from '../interfaces/index';
 import {
-  LiteClient,
-  liteClient as algoliasearch,
-  SearchResponses,
   SearchResult as AlgoliaSearchResult,
+  LiteClient,
+  SearchResponses,
+  liteClient as algoliasearch,
 } from 'algoliasearch/lite';
+import type {Environment, SearchResult, SearchResultItem, SnippetResult} from '../interfaces/index';
+import {ENVIRONMENT} from '../providers/index';
 
 export const SEARCH_DELAY = 200;
 // Maximum number of facet values to return for each facet during a regular search.
@@ -40,9 +40,7 @@ export const provideAlgoliaSearchClient = (config: Environment): Provider => {
   };
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class Search {
   readonly searchQuery = signal('');
 

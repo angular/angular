@@ -32,6 +32,7 @@ import {RelativeLink} from '../../pipes';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {SearchHistoryComponent} from '../search-history/search-history.component';
 import {TextField} from '../text-field/text-field.component';
+import {getRelativeUrl} from '../../utils';
 
 @Component({
   selector: 'docs-search-dialog',
@@ -55,7 +56,7 @@ export class SearchDialog {
 
   readonly history = inject(SearchHistory);
   private readonly search = inject(Search);
-  private readonly relativeLink = new RelativeLink();
+
   private readonly router = inject(Router);
   private readonly window = inject(WINDOW);
   private readonly injector = inject(Injector);
@@ -120,7 +121,7 @@ export class SearchDialog {
       return;
     }
 
-    this.router.navigateByUrl(this.relativeLink.transform(activeItemLink));
+    this.router.navigateByUrl(getRelativeUrl(activeItemLink));
     this.onClose.emit();
   }
 }

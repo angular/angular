@@ -18,6 +18,8 @@ export type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Ro
       /** A user-facing error message to include with the error. */
       message?: string | LogicFn<TValue, string, TPathKind>;
       error?: never;
+      /** A function that receives the `FieldContext` and returns true if the validator should be applied. */
+      when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
     }
   | {
       /**
@@ -26,6 +28,8 @@ export type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Ro
        */
       error?: OneOrMany<ValidationError> | LogicFn<TValue, OneOrMany<ValidationError>, TPathKind>;
       message?: never;
+      /** A function that receives the `FieldContext` and returns true if the validator should be applied. */
+      when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
     };
 
 /** Gets the length or size of the given value. */

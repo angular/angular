@@ -43,7 +43,7 @@ Writable signals have the type `WritableSignal`.
 `WritableSignal` provide a `asReadonly()` method that returns a readonly version of the signal. This is useful when you want to expose a signal's value to consumers without allowing them to modify it directly:
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Service()
 export class CounterState {
   // Private writable state
   private readonly _count = signal(0);
@@ -75,7 +75,7 @@ IMPORTANT: The readonly signals do **not** have any built-in mechanism that woul
 
 ### Computed signals
 
-**Computed signal** are read-only signals that derive their value from other signals. You define computed signals using the `computed` function and specifying a derivation:
+**Computed signals** are read-only signals that derive their value from other signals. You define computed signals using the `computed` function and specifying a derivation:
 
 ```typescript
 const count: WritableSignal<number> = signal(0);

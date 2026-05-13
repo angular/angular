@@ -299,7 +299,7 @@ const prepareInitialFrame = (source: string, duration: number) => {
     let position: ElementPosition | undefined;
     if (node.component) {
       position = directiveForestHooks.getDirectivePosition(node.component.instance);
-    } else if (node.directives[0]) {
+    } else if (node.directives?.[0]) {
       position = directiveForestHooks.getDirectivePosition(node.directives[0].instance);
     } else if (node.controlFlowBlock) {
       position = directiveForestHooks.getDirectivePosition(node.controlFlowBlock);
@@ -308,15 +308,16 @@ const prepareInitialFrame = (source: string, duration: number) => {
     if (position === undefined) {
       return;
     }
-    const directives = node.directives.map((d) => {
-      return {
-        isComponent: false,
-        isElement: false,
-        name: getDirectiveName(d.instance),
-        outputs: {},
-        lifecycle: {},
-      };
-    });
+    const directives =
+      node.directives?.map((d) => {
+        return {
+          isComponent: false,
+          isElement: false,
+          name: getDirectiveName(d.instance),
+          outputs: {},
+          lifecycle: {},
+        };
+      }) ?? [];
     if (node.component) {
       directives.push({
         isElement: node.component.isElement,

@@ -963,6 +963,52 @@ class HiddenModule {}
           );
 
           it(
+            `using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
+              `should report to ErrorHandler when TransferState contains an unserializable value (zoneless:${zoneless})`,
+            async () => {
+              // A circular reference causes JSON.stringify (called inside toJson())
+              // to throw. Previously this was silently swallowed, causing the server
+              // to return a 200 OK without the <script id="ng-state"> tag.
+              function createCircularTransferStateApp(s: boolean) {
+                @Component({standalone: s, selector: 'app', template: ''})
+                class CircularApp {
+                  constructor() {
+                    const circular: Record<string, unknown> = {};
+                    circular['self'] = circular;
+                    coreInject(TransferState).set(makeStateKey<unknown>('key'), circular);
+                  }
+                }
+                return CircularApp;
+              }
+
+              const consoleSpy = spyOn(console, 'error');
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    getStandaloneBootstrapFn(createCircularTransferStateApp(true)),
+                    options,
+                  )
+                : renderModule(
+                    (() => {
+                      const CircularApp = createCircularTransferStateApp(false);
+                      @NgModule({
+                        declarations: [CircularApp],
+                        imports: [BrowserModule, ServerModule],
+                        bootstrap: [CircularApp],
+                      })
+                      class M {}
+                      return M;
+                    })(),
+                    options,
+                  );
+              await bootstrap;
+              // The circular reference error is forwarded to ErrorHandler rather
+              // than thrown, so the render completes but the error is still reported.
+              expect(consoleSpy).toHaveBeenCalled();
+            },
+          );
+
+          it(
             'uses `other` as the `serverContext` value when all symbols are removed after sanitization' +
               `(standalone:${isStandalone}, zoneless:${zoneless})`,
             async () => {
@@ -1102,7 +1148,7 @@ class HiddenModule {}
             'should call multiple render hooks' +
               `(standalone:${isStandalone}, zoneless:${zoneless})`,
             async () => {
-              const consoleSpy = spyOn(console, 'warn');
+              const consoleSpy = spyOn(console, 'error');
               const options = {document: doc};
               const bootstrap = isStandalone
                 ? renderApplication(
@@ -1116,6 +1162,8 @@ class HiddenModule {}
                 '<html><head><title>RenderHook</title><meta name="description"></head>' +
                   '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
               );
+              // Errors from callbacks are forwarded to ErrorHandler (console.error by default)
+              // rather than swallowed silently or thrown.
               expect(consoleSpy).toHaveBeenCalled();
             },
           );
@@ -1143,7 +1191,7 @@ class HiddenModule {}
             'should call multiple async and sync render hooks' +
               `(standalone:${isStandalone}, zoneless:${zoneless})`,
             async () => {
-              const consoleSpy = spyOn(console, 'warn');
+              const consoleSpy = spyOn(console, 'error');
               const options = {document: doc};
               const bootstrap = isStandalone
                 ? renderApplication(

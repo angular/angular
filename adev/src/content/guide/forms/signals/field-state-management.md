@@ -228,8 +228,9 @@ import { form, FormField, disabled } from '@angular/forms/signals'
 @Component({
   selector: 'app-order',
   imports: [FormField],
+  // TIP: The `[formField]` directive automatically binds the `disabled` attribute based
+  // on the field's `disabled()` state, so you don't need to manually add `[disabled]="field().disabled()"`
   template: `
-    <!-- TIP: The `[formField]` directive automatically binds the `disabled` attribute based on the field's `disabled()` state, so you don't need to manually add `[disabled]="field().disabled()"` -->
     <input [formField]="orderForm.couponCode" />
 
     @if (orderForm.couponCode().disabled()) {
@@ -621,6 +622,8 @@ While field state typically updates through user interactions (typing, focusing,
 Signal Forms provides a `FormRoot` directive that simplifies form submission. It automatically prevents the default browser form submission behavior and sets the `novalidate` attribute on the `<form>` element.
 
 ```angular-ts
+import {FormField, FormRoot} from '@angular/forms/signals';
+
 @Component({
   imports: [FormRoot, FormField],
   template: `
@@ -691,6 +694,7 @@ import {Component, signal} from '@angular/core';
 import {form, FormField, email} from '@angular/forms/signals';
 
 @Component({
+  imports: [FormField],
   template: `
     <input
       type="email"

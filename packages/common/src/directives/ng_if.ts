@@ -10,10 +10,10 @@ import {
   Directive,
   EmbeddedViewRef,
   Input,
+  ɵRuntimeError as RuntimeError,
   TemplateRef,
   ViewContainerRef,
   ɵstringify as stringify,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -158,7 +158,7 @@ import {RuntimeErrorCode} from '../errors';
  * @publicApi
  *
  * @deprecated 20.0
- * Use the `@if` block instead. Intent to remove in v22
+ * Use the `@if` block instead. Intent to remove in a future major release
  */
 @Directive({
   selector: '[ngIf]',
@@ -179,7 +179,7 @@ export class NgIf<T = unknown> {
 
   /**
    * The Boolean expression to evaluate as the condition for showing a template.
-   * @deprecated Use the `@if` block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in a future major release
    */
   @Input()
   set ngIf(condition: T) {
@@ -189,7 +189,7 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to true.
-   * @deprecated Use the `@if` block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in a future major release
    */
   @Input()
   set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null) {
@@ -201,7 +201,7 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to false.
-   * @deprecated Use the `@if` block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in a future major release
    */
   @Input()
   set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null) {

@@ -52,6 +52,7 @@ export class NoopImportRewriter implements ImportRewriter {
  */
 const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
   ['ɵɵdefineInjectable', 'ɵɵdefineInjectable'],
+  ['ɵɵdefineService', 'ɵɵdefineService'],
   ['ɵɵdefineInjector', 'ɵɵdefineInjector'],
   ['ɵɵdefineNgModule', 'ɵɵdefineNgModule'],
   ['ɵɵsetNgModuleScope', 'ɵɵsetNgModuleScope'],

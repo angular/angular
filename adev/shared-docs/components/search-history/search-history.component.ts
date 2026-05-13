@@ -23,6 +23,7 @@ import {Router, RouterLink} from '@angular/router';
 import {SearchItem} from '../../directives';
 import {RelativeLink} from '../../pipes';
 import {SearchHistory} from '../../services';
+import {getRelativeUrl} from '../../utils';
 
 @Component({
   selector: 'docs-search-history',
@@ -41,7 +42,6 @@ export class SearchHistoryComponent {
   private readonly injector = inject(Injector);
   private readonly router = inject(Router);
 
-  private readonly relativeLink = new RelativeLink();
   private readonly keyManager = new ActiveDescendantKeyManager(
     this.items,
     this.injector,
@@ -99,7 +99,7 @@ export class SearchHistoryComponent {
     const activeItemLink = this.keyManager.activeItem?.item()?.url;
 
     if (activeItemLink) {
-      const url = this.relativeLink.transform(activeItemLink);
+      const url = getRelativeUrl(activeItemLink);
       this.router.navigateByUrl(url);
     }
   }

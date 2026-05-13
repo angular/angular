@@ -13,7 +13,6 @@ ts_project(
         ["**/*.ts"],
         exclude = SPEC_FILES_WITH_FORWARD_REFS,
     ),
-    # Visible to //:saucelabs_unit_tests
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",

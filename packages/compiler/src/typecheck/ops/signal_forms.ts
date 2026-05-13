@@ -81,6 +81,12 @@ export class TcbNativeFieldOp extends TcbOp {
     'minlength',
   ]);
 
+  /**
+   * Whether the host element has a dynamic `type` binding, meaning we cannot
+   * statically determine the input type.
+   */
+  private readonly hasDynamicType: boolean;
+
   override get optional() {
     return false;
   }
@@ -92,6 +98,27 @@ export class TcbNativeFieldOp extends TcbOp {
     private inputType: string | null,
   ) {
     super();
+
+    this.hasDynamicType =
+      this.inputType === null &&
+      this.node.inputs.some(
+        (input) =>
+          (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+          input.name === 'type',
+      );
+
+    const isPossiblyDateOrTime =
+      this.hasDynamicType ||
+      this.inputType === 'date' ||
+      this.inputType === 'time' ||
+      this.inputType === 'month' ||
+      this.inputType === 'week' ||
+      this.inputType === 'datetime-local';
+
+    if (isPossiblyDateOrTime) {
+      this.unsupportedBindingFields.delete('min');
+      this.unsupportedBindingFields.delete('max');
+    }
   }
 
   override execute(): null {
@@ -170,16 +197,8 @@ export class TcbNativeFieldOp extends TcbOp {
         return 'string | number | Date | null';
     }
 
-    const hasDynamicType =
-      this.inputType === null &&
-      this.node.inputs.some(
-        (input) =>
-          (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
-          input.name === 'type',
-      );
-
     // If the type is dynamic, check it as if it can be any of the types above.
-    if (hasDynamicType) {
+    if (this.hasDynamicType) {
       return 'string | number | boolean | Date | null';
     }
 

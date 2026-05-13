@@ -25,7 +25,7 @@ import type {FieldState, LogicFn, PathKind, SchemaPath, SchemaPathRules} from '.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category logic
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function metadata<
   TValue,
@@ -34,7 +34,13 @@ export function metadata<
 >(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   key: TKey,
-  logic: NoInfer<LogicFn<TValue, MetadataSetterType<TKey>, TPathKind>>,
+  logic: NoInfer<
+    LogicFn<
+      TValue,
+      TKey extends LimitSelectionKey ? LimitKey<TValue> : MetadataSetterType<TKey>,
+      TPathKind
+    >
+  >,
 ): TKey {
   assertPathIsCurrent(path);
 
@@ -49,7 +55,7 @@ export function metadata<
  *
  * @template TAcc The accumulated type of the reduce operation.
  * @template TItem The type of the individual items that are reduced over.
- * @experimental 21.0.2
+ * @publicApi 22.0
  */
 export interface MetadataReducer<TAcc, TItem> {
   /** The reduce function. */
@@ -67,26 +73,26 @@ export const MetadataReducer = {
   },
 
   /** Creates a reducer that accumulates the min of its individual item values. */
-  min(): MetadataReducer<number | undefined, number | undefined> {
+  min<T extends Date | number>(): MetadataReducer<T | undefined, T | undefined> {
     return {
       reduce: (acc, item) => {
         if (acc === undefined || item === undefined) {
           return acc ?? item;
         }
-        return Math.min(acc, item);
+        return item < acc ? item : acc;
       },
       getInitial: () => undefined,
     };
   },
 
   /** Creates a reducer that accumulates a the max of its individual item values. */
-  max(): MetadataReducer<number | undefined, number | undefined> {
+  max<T extends Date | number>(): MetadataReducer<T | undefined, T | undefined> {
     return {
-      reduce: (prev, next) => {
-        if (prev === undefined || next === undefined) {
-          return prev ?? next;
+      reduce: (acc, item) => {
+        if (acc === undefined || item === undefined) {
+          return acc ?? item;
         }
-        return Math.max(prev, next);
+        return item > acc ? item : acc;
       },
       getInitial: () => undefined,
     };
@@ -125,7 +131,7 @@ function override<T>(getInitial?: () => T): MetadataReducer<T | undefined, T> {
  * A symbol used to tag a `MetadataKey` as representing an asynchronous validation resource.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol = Symbol('IS_ASYNC_VALIDATION_RESOURCE');
 
@@ -139,15 +145,15 @@ export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol = Symbol('IS_ASYNC_VALI
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export class MetadataKey<TRead, TWrite, TAcc> {
-  private brand!: [TRead, TWrite, TAcc];
+  private brand!: (write: TWrite) => [TRead, TAcc];
 
   /** @internal */
   [IS_ASYNC_VALIDATION_RESOURCE]?: true;
 
-  /** Use {@link reducedMetadataKey}. */
+  /** Use {@link createMetadataKey}. */
   protected constructor(
     readonly reducer: MetadataReducer<TAcc, TWrite>,
     readonly create: ((state: FieldState<unknown>, data: Signal<TAcc>) => TRead) | undefined,
@@ -155,11 +161,44 @@ export class MetadataKey<TRead, TWrite, TAcc> {
 }
 
 /**
+ * Represents metadata that is used to define a valid limit for a field.
+ *
+ * @template TLimit The type the limit value.
+ * @experimental 22.0.0
+ */
+export type LimitKey<TLimit> = MetadataKey<
+  Signal<NonNullable<TLimit> | undefined>,
+  NonNullable<TLimit> | undefined,
+  NonNullable<TLimit> | undefined
+>;
+
+/**
+ * A symbol used to tag a `MetadataKey` as representing a limit selection key.
+ */
+declare const LIMIT_SELECTION_KEY: unique symbol;
+
+/**
+ * Used to select a {@link LimitKey}.
+ *
+ * This indirection allows rules to bind a {@link LimitKey} of a specific limit type (e.g. `number`
+ * or `Date`) matching the field's type to a generic {@link MetadataKey}.
+ *
+ * @experimental 22.0.0
+ */
+export type LimitSelectionKey = MetadataKey<
+  Signal<LimitKey<unknown> | undefined>,
+  LimitKey<unknown>,
+  LimitKey<unknown> | undefined
+> & {
+  [LIMIT_SELECTION_KEY]: true;
+};
+
+/**
  * Extracts the the type that can be set into the given metadata key type using the `metadata()` rule.
  *
  * @template TKey The `MetadataKey` type
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export type MetadataSetterType<TKey> =
   TKey extends MetadataKey<any, infer TWrite, any> ? TWrite : never;
@@ -170,7 +209,7 @@ export type MetadataSetterType<TKey> =
  *
  * @template TWrite The type written to this key using the `metadata()` rule
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createMetadataKey<TWrite>(): MetadataKey<
   Signal<TWrite | undefined>,
@@ -184,7 +223,7 @@ export function createMetadataKey<TWrite>(): MetadataKey<
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createMetadataKey<TWrite, TAcc>(
   reducer: MetadataReducer<TAcc, TWrite>,
@@ -208,7 +247,7 @@ export function createMetadataKey<TWrite, TAcc>(
  * @template TRead The type read from the `FieldState` for this key
  * @template TWrite The type written to this key using the `metadata()` rule
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createManagedMetadataKey<TRead, TWrite>(
   create: (state: FieldState<unknown>, data: Signal<TWrite | undefined>) => TRead,
@@ -226,7 +265,7 @@ export function createManagedMetadataKey<TRead, TWrite>(
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function createManagedMetadataKey<TRead, TWrite, TAcc>(
   create: (state: FieldState<unknown>, data: Signal<TAcc>) => TRead,
@@ -243,68 +282,99 @@ export function createManagedMetadataKey<TRead, TWrite, TAcc>(
 }
 
 /**
+ * Creates a {@link LimitSelectionKey}.
+ *
+ * @experimental 22.0.0
+ */
+export function createLimitSelectionKey(): LimitSelectionKey {
+  return createMetadataKey() as LimitSelectionKey;
+}
+
+/**
  * A {@link MetadataKey} representing whether the field is required.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMetadataKey(
   MetadataReducer.or(),
 );
 
 /**
- * A {@link MetadataKey} representing the min value of the field.
+ * A {@link MetadataKey} that points to another key determining the minimum value of the field.
+ *
+ * This indirection allows different keys to be used for different types of values with their
+ * own reducers, such as {@link MIN_DATE} and {@link MIN_NUMBER}.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export const MIN: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.max());
+export const MIN: LimitSelectionKey = createLimitSelectionKey();
 
 /**
- * A {@link MetadataKey} representing the max value of the field.
+ * A {@link MetadataKey} representing the minimum valid value of a date field.
  *
  * @category validation
- * @experimental 21.0.0
+ * @experimental 22.0.0
  */
-export const MAX: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.min());
+export const MIN_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.max());
+
+/**
+ * A {@link MetadataKey} representing the minimum valid value of a number field.
+ *
+ * @category validation
+ * @experimental 22.0.0
+ */
+export const MIN_NUMBER: LimitKey<number> = createMetadataKey(MetadataReducer.max());
+
+/**
+ * A {@link MetadataKey} that points to another key determining the maximum value of the field.
+ *
+ * This indirection allows different keys to be used for different types of values with their
+ * own reducers, such as {@link MAX_DATE} and {@link MAX_NUMBER}.
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export const MAX: LimitSelectionKey = createLimitSelectionKey();
+
+/**
+ * A {@link MetadataKey} representing the maximum valid value of a date field.
+ *
+ * @category validation
+ * @experimental 22.0.0
+ */
+export const MAX_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.min());
+
+/**
+ * A {@link MetadataKey} representing the maximum valid value of a number field.
+ *
+ * @category validation
+ * @experimental 22.0.0
+ */
+export const MAX_NUMBER: LimitKey<number> = createMetadataKey(MetadataReducer.min());
 
 /**
  * A {@link MetadataKey} representing the min length of the field.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export const MIN_LENGTH: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.max());
+export const MIN_LENGTH: LimitKey<number> = createMetadataKey(MetadataReducer.max());
 
 /**
  * A {@link MetadataKey} representing the max length of the field.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export const MAX_LENGTH: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.min());
+export const MAX_LENGTH: LimitKey<number> = createMetadataKey(MetadataReducer.min());
 
 /**
  * A {@link MetadataKey} representing the patterns the field must match.
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export const PATTERN: MetadataKey<
   Signal<RegExp[]>,

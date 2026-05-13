@@ -41,27 +41,16 @@ describe('ShadowCss, :host and :host-context', () => {
       expect(shim(':host.pr\\fc fung {}', 'contenta', 'a-host')).toEqual('.pr\\fc fung[a-host] {}');
     });
 
-    it('should handle multiple tag selectors', () => {
-      expect(shim(':host(ul,li) {}', 'contenta', 'a-host')).toEqualCss('ul[a-host], li[a-host] {}');
-      expect(shim(':host(ul,li) > .z {}', 'contenta', 'a-host')).toEqualCss(
-        'ul[a-host] > .z[contenta], li[a-host] > .z[contenta] {}',
-      );
-    });
-
     it('should handle compound class selectors', () => {
       expect(shim(':host(.a.b) {}', 'contenta', 'a-host')).toEqualCss('.a.b[a-host] {}');
     });
 
-    it('should handle multiple class selectors', () => {
-      expect(shim(':host(.x,.y) {}', 'contenta', 'a-host')).toEqualCss('.x[a-host], .y[a-host] {}');
-      expect(shim(':host(.x,.y) > .z {}', 'contenta', 'a-host')).toEqualCss(
-        '.x[a-host] > .z[contenta], .y[a-host] > .z[contenta] {}',
+    it('should ignore :host with a selector list containing top-level commas', () => {
+      expect(shim(':host(.a, .b) {}', 'contenta', 'a-host')).toEqualCss(
+        '[contenta]:host(.a, .b) {}',
       );
-    });
-
-    it('should handle multiple attribute selectors', () => {
-      expect(shim(':host([a="b"],[c=d]) {}', 'contenta', 'a-host')).toEqualCss(
-        '[a="b"][a-host], [c=d][a-host] {}',
+      expect(shim('.outer :host(.a, .b) .inner {}', 'contenta', 'a-host')).toEqualCss(
+        '.outer[contenta] [contenta]:host(.a, .b) .inner[contenta] {}',
       );
     });
 
@@ -262,18 +251,17 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
-    // It is not clear what the behavior should be for a `:host-context` with no selectors.
     // This test is checking that the result is backward compatible with previous behavior.
     // Arguably it should actually be an error that should be reported.
     it('should handle :host-context with no ancestor selectors', () => {
       expect(shim(':host-context .inner {}', 'contenta', 'a-host')).toEqualCss(
-        '[a-host] .inner[contenta] {}',
+        '[contenta]:host-context .inner[contenta] {}',
       );
       expect(shim(':host-context() .inner {}', 'contenta', 'a-host')).toEqualCss(
-        '[a-host] .inner[contenta] {}',
+        '[contenta]:host-context() .inner[contenta] {}',
       );
       expect(shim(':host-context :host-context(.a) {}', 'contenta', 'host-a')).toEqualCss(
-        '.a[host-a], .a [host-a] {}',
+        ':host-context .a[host-a], .a [host-a] {}',
       );
     });
 

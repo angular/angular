@@ -9,7 +9,6 @@
 import {isPlatformBrowser, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {
   afterNextRender,
-  ChangeDetectorRef,
   Component,
   computed,
   DestroyRef,
@@ -71,7 +70,6 @@ export default class Tutorial {
   readonly resizer = viewChild.required<ElementRef<HTMLDivElement>>('resizer');
   readonly revealAnswerButton = viewChild<ElementRef<HTMLButtonElement>>('revealAnswerButton');
 
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly elementRef = inject(ElementRef<unknown>);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
@@ -97,7 +95,7 @@ export default class Tutorial {
   nextStepPath: string | undefined;
   previousStepPath: string | undefined;
 
-  embeddedEditorComponent?: Type<unknown>;
+  embeddedEditorComponent = signal<Type<unknown> | null>(null);
 
   canRevealAnswer: Signal<boolean> = signal(false);
   readonly answerRevealed = signal<boolean>(false);
@@ -128,8 +126,7 @@ export default class Tutorial {
       from(this.loadEmbeddedEditorComponent())
         .pipe(takeUntilDestroyed(destroyRef))
         .subscribe((editorComponent) => {
-          this.embeddedEditorComponent = editorComponent;
-          this.changeDetectorRef.markForCheck();
+          this.embeddedEditorComponent.set(editorComponent);
         });
     });
   }
@@ -150,15 +147,18 @@ export default class Tutorial {
 
     this.embeddedTutorialManager.revealAnswer();
 
-    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
+    try {
+      const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
+      await Promise.all(
+        Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
+          nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
+        ),
+      );
 
-    await Promise.all(
-      Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
-      ),
-    );
-
-    this.answerRevealed.set(true);
+      this.answerRevealed.set(true);
+    } catch (err) {
+      console.error('Failed to reveal answer', err);
+    }
   }
 
   async handleResetAnswer() {
@@ -166,13 +166,16 @@ export default class Tutorial {
 
     this.embeddedTutorialManager.resetRevealAnswer();
 
-    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
-
-    await Promise.all(
-      Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
-      ),
-    );
+    try {
+      const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
+      await Promise.all(
+        Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
+          nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
+        ),
+      );
+    } catch (err) {
+      console.error('Failed to reset answer', err);
+    }
 
     this.answerRevealed.set(false);
   }
@@ -195,9 +198,13 @@ export default class Tutorial {
       (routeData.type === TutorialType.EDITOR || routeData.type === TutorialType.CLI) &&
       this.isBrowser
     ) {
-      await this.setEditorTutorialData(
-        tutorialNavigationItem.path.replace(`${PAGE_PREFIX.TUTORIALS}/`, ''),
-      );
+      try {
+        await this.setEditorTutorialData(
+          tutorialNavigationItem.path.replace(`${PAGE_PREFIX.TUTORIALS}/`, ''),
+        );
+      } catch (err) {
+        console.error('Failed to load embedded editor tutorial data', err);
+      }
     }
   }
 

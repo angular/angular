@@ -123,6 +123,8 @@ describe('Zone.js npm_package', () => {
         'sync-test.min.js',
         'task-tracking.js',
         'task-tracking.min.js',
+        'vitest-patch.js',
+        'vitest-patch.min.js',
         'webapis-media-query.js',
         'webapis-media-query.min.js',
         'webapis-notification.js',

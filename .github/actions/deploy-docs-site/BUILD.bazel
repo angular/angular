@@ -35,7 +35,5 @@ ts_project(
         "//:node_modules/@actions/github",
         "//:node_modules/@angular/ng-dev",
         "//:node_modules/@types/node",
-        "//:node_modules/@types/tmp",
-        "//:node_modules/tmp",
     ],
 )

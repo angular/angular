@@ -17,18 +17,18 @@ import {
   HostAttributeToken,
   HostListener,
   inject,
-  Injectable,
   Input,
+  input,
   linkedSignal,
   OnChanges,
   OnDestroy,
   Renderer2,
+  ɵRuntimeError as RuntimeError,
+  Service,
   signal,
   SimpleChanges,
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
-  ɵRuntimeError as RuntimeError,
-  input,
 } from '@angular/core';
 import {Subject} from 'rxjs';
 
@@ -45,7 +45,7 @@ import {isUrlTree, UrlSerializer, UrlTree} from '../url_tree';
 // Converts non-reactive router state to reactive state via the NavigationEnd
 // event. This isn't the ideal way of doing things, but is necessary to avoid
 // breaking tests which have mocked the Router.
-@Injectable({providedIn: 'root'})
+@Service()
 export class ReactiveRouterState {
   private readonly router = inject(Router);
   private readonly stateManager = inject(StateManager);

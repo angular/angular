@@ -187,6 +187,10 @@ export class Identifiers {
     name: 'ɵɵdeferEnableTimerScheduling',
     moduleName: CORE,
   };
+  static enableIncrementalHydrationRuntime: o.ExternalReference = {
+    name: 'ɵɵenableIncrementalHydrationRuntime',
+    moduleName: CORE,
+  };
 
   static conditionalCreate: o.ExternalReference = {name: 'ɵɵconditionalCreate', moduleName: CORE};
   static conditionalBranchCreate: o.ExternalReference = {
@@ -308,6 +312,9 @@ export class Identifiers {
     name: 'ɵɵInjectableDeclaration',
     moduleName: CORE,
   };
+
+  static defineService: o.ExternalReference = {name: 'ɵɵdefineService', moduleName: CORE};
+  static declareService: o.ExternalReference = {name: 'ɵɵngDeclareService', moduleName: CORE};
 
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};

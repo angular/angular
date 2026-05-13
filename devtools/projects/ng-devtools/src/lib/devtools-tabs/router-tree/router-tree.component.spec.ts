@@ -8,12 +8,12 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {RouterTreeComponent} from './router-tree.component';
-import SpyObj = jasmine.SpyObj;
-import {FrameManager} from '../../application-services/frame_manager';
+import {provideZoneChangeDetection} from '@angular/core';
 import {Events, MessageBus} from '../../../../../protocol';
 import {ApplicationOperations} from '../../application-operations';
-import {provideZoneChangeDetection} from '@angular/core';
+import {FrameManager} from '../../application-services/frame_manager';
+import {RouterTreeComponent} from './router-tree.component';
+import SpyObj = jasmine.SpyObj;
 
 describe('RouterTreeComponent', () => {
   let messageBus: MessageBus<Events>;
@@ -39,7 +39,7 @@ describe('RouterTreeComponent', () => {
         {provide: MessageBus, useValue: messageBus},
         {provide: FrameManager, useValue: frameManager},
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(RouterTreeComponent);
     fixture.componentRef.setInput('routes', [

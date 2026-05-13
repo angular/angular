@@ -12,6 +12,7 @@ ng_project(
     srcs = [
         "app.component.ts",
         "app.config.ts",
+        "konami-code.service.ts",
     ],
     angular_assets = [
         "app.component.html",
@@ -75,6 +76,7 @@ ts_project(
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
+        "//devtools:node_modules/@types/firefox-webext-browser",
         "//devtools/projects/ng-devtools",
         "//devtools/projects/protocol",
     ],

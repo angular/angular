@@ -1,15 +1,17 @@
-import {fileSync} from 'tmp';
-import {writeSync} from 'node:fs';
+import {writeFileSync, mkdtempSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
 import {getInput, setSecret} from '@actions/core';
 
 let credentialFilePath: undefined | string;
 
 export function getCredentialFilePath(): string {
   if (credentialFilePath === undefined) {
-    const tmpFile = fileSync({postfix: '.json'});
-    writeSync(tmpFile.fd, getInput('serviceKey', {required: true}));
-    setSecret(tmpFile.name);
-    credentialFilePath = tmpFile.name;
+    const tmpDir = mkdtempSync(join(tmpdir(), 'credential-'));
+    const filePath = join(tmpDir, 'credential.json');
+    writeFileSync(filePath, getInput('serviceKey', {required: true}));
+    setSecret(filePath);
+    credentialFilePath = filePath;
   }
   return credentialFilePath;
 }

@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector, Injectable, OnDestroy} from '@angular/core';
+import {
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  Injectable,
+  OnDestroy,
+  Service,
+} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, mergeAll, mergeMap} from 'rxjs/operators';
 
@@ -52,7 +58,7 @@ export abstract class PreloadingStrategy {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return fn().pipe(catchError(() => of(null)));
@@ -70,7 +76,7 @@ export class PreloadAllModules implements PreloadingStrategy {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class NoPreloading implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return of(null);

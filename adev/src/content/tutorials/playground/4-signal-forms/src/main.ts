@@ -33,11 +33,11 @@ interface LoginData {
         </label>
 
         @if (loginForm.password().invalid()) {
-          <div class="error">
+          <ul class="error-list">
             @for (error of loginForm.password().errors(); track error) {
-              <p>{{ error.message }}</p>
+              <li>{{ error.message }}</li>
             }
-          </div>
+          </ul>
         }
       </div>
 

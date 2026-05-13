@@ -25,6 +25,8 @@ import {PropertyPaneComponent} from './property-pane/property-pane.component';
 import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {FlatNode} from '../../shared/object-tree-explorer/object-tree-types';
 import {APP_DATA, AppData} from '../../application-providers/app_data';
+import {SettingsStore} from '../../application-services/settings_store';
+import {Settings} from '../../application-services/settings';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -74,6 +76,8 @@ async function configureTestingModule(appData?: Partial<AppData>) {
       'viewSource',
       'selectDomElement',
       'inspect',
+      'setStorageItems',
+      'getStorageItems',
     ]);
 
   const messageBusMock: SpyObj<any> = jasmine.createSpyObj('messageBus', [
@@ -106,6 +110,11 @@ async function configureTestingModule(appData?: Partial<AppData>) {
         useValue: new ElementPropertyResolver(messageBusMock),
       },
       {provide: FrameManager, useFactory: () => FrameManager.initialize(123)},
+      {
+        provide: SettingsStore,
+        useFactory: () => new SettingsStore({}),
+      },
+      Settings,
       {
         provide: APP_DATA,
         useFactory: () =>
@@ -245,21 +254,11 @@ describe('DirectiveExplorerComponent', () => {
 
   describe('hydration', () => {
     it('should highlight hydration nodes', () => {
-      comp.hightlightHydrationNodes();
+      comp.createHydrationOverlays();
       expect(messageBusMock.emit).toHaveBeenCalledWith('createHydrationOverlay');
 
-      comp.removeHydrationNodesHightlights();
+      comp.removeHydrationOverlays();
       expect(messageBusMock.emit).toHaveBeenCalledWith('removeHydrationOverlay');
-    });
-
-    it('should show hydration checkbox toggle', async () => {
-      let module = await configureTestingModule({hydration: true});
-      let toggle = module.fixture.debugElement.query(By.css('#show-hydration-overlays'));
-      expect(toggle).toBeTruthy();
-
-      module = await configureTestingModule({hydration: false});
-      toggle = module.fixture.debugElement.query(By.css('#show-hydration-overlays'));
-      expect(toggle).toBeFalsy();
     });
   });
 

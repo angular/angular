@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, Service} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
@@ -35,7 +35,7 @@ import {PRIMARY_OUTLET, RouteTitleKey} from './shared';
  * @publicApi
  * @see [Page title guide](guide/routing/define-routes#using-titlestrategy-for-page-titles)
  */
-@Injectable({providedIn: 'root', useFactory: () => inject(DefaultTitleStrategy)})
+@Service({factory: () => inject(DefaultTitleStrategy)})
 export abstract class TitleStrategy {
   /** Performs the application title update. */
   abstract updateTitle(snapshot: RouterStateSnapshot): void;

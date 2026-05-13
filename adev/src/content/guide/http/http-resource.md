@@ -1,7 +1,5 @@
 # Reactive data fetching with `httpResource`
 
-IMPORTANT: `httpResource` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
-
 `httpResource` is a reactive wrapper around `HttpClient` that gives you the request status and response as signals. You can thus use these signals with `computed`, `effect`, `linkedSignal`, or any other reactive API. Because it's built on top of `HttpClient`, `httpResource` supports all the same features, such as interceptors.
 
 For more about Angular's `resource` pattern, see [Async reactivity with `resource`](/guide/signals/resource).

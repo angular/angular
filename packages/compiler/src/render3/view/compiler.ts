@@ -35,7 +35,6 @@ import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} fr
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
-const ANIMATE_LEAVE = `animate.leave`;
 
 function baseDirectiveFields(
   meta: R3DirectiveMetadata,
@@ -79,6 +78,7 @@ function baseDirectiveFields(
       meta.selector || '',
       meta.name,
       definitionMap,
+      meta.legacyOptionalChaining,
     ),
   );
 
@@ -100,16 +100,6 @@ function baseDirectiveFields(
   }
 
   return definitionMap;
-}
-
-function hasAnimationHostBinding(
-  meta: R3DirectiveMetadata | R3ComponentMetadata<R3TemplateDependency>,
-): boolean {
-  return (
-    meta.host.attributes[ANIMATE_LEAVE] !== undefined ||
-    meta.host.properties[ANIMATE_LEAVE] !== undefined ||
-    meta.host.listeners[ANIMATE_LEAVE] !== undefined
-  );
 }
 
 /**
@@ -225,6 +215,7 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
     getTemplateSourceLocationsEnabled(),
+    meta.legacyOptionalChaining,
   );
 
   // Then the IR is transformed to prepare it for code generation.
@@ -464,6 +455,7 @@ function createHostBindingsFunction(
   selector: string,
   name: string,
   definitionMap: DefinitionMap,
+  legacyOptionalChaining: boolean,
 ): o.Expression | null {
   const bindings = bindingParser.createBoundHostProperties(
     hostBindingsMetadata.properties,
@@ -498,6 +490,7 @@ function createHostBindingsFunction(
       properties: bindings,
       events: eventBindings,
       attributes: hostBindingsMetadata.attributes,
+      legacyOptionalChaining: legacyOptionalChaining,
     },
     bindingParser,
     constantPool,
@@ -595,7 +588,39 @@ export function verifyHostBindings(
   const bindingParser = makeBindingParser();
   bindingParser.createDirectiveHostEventAsts(bindings.listeners, sourceSpan);
   bindingParser.createBoundHostProperties(bindings.properties, sourceSpan);
+
+  validateNoEventBindings(bindings, bindingParser, sourceSpan);
+
   return bindingParser.errors;
+}
+
+/**
+ * Validates that there are no event attribute bindings in the host bindings.
+ * @param bindings - Map of host bindings for the component.
+ * @param bindingParser - Binding parser used to create the binding expression.
+ * @param sourceSpan - Source span where the host bindings were defined.
+ */
+function validateNoEventBindings(
+  bindings: ParsedHostBindings,
+  bindingParser: BindingParser,
+  sourceSpan: ParseSourceSpan,
+): void {
+  for (const prop in bindings.properties) {
+    const isAttr = prop.startsWith('attr.');
+    const boundName = isAttr ? prop.slice(5) : prop;
+
+    if (boundName.toLowerCase().startsWith('on')) {
+      const errorType = isAttr ? 'attribute' : 'property';
+      const suggestion = `(${boundName.slice(2)})=...`;
+
+      let msg = `Binding to event ${errorType} '${boundName}' is disallowed for security reasons, please use ${suggestion}`;
+      if (!isAttr) {
+        msg += `\nIf '${prop}' is a directive input, make sure the directive is imported by the current module.`;
+      }
+
+      bindingParser.errors.push(new ParseError(sourceSpan, msg));
+    }
+  }
 }
 
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {

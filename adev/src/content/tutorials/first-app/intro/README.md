@@ -23,7 +23,7 @@ The lessons in this tutorial assume that you have experience with the following:
 
 ### Your equipment
 
-These lessons can be completed using a local installation of the Angular tools or in our embedded editor. Local Angular development can be completed on Windows, MacOS or Linux based systems.
+These lessons can be completed using a local installation of the Angular tools or in our embedded editor. Local Angular development can be completed on Windows, macOS or Linux based systems.
 
 NOTE: Look for alerts like this one, which call out steps that may only be for your local editor.
 

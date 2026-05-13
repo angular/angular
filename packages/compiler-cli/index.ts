@@ -61,7 +61,7 @@ export {
 } from './src/ngtsc/reflection';
 export {isFatalDiagnosticError} from './src/ngtsc/diagnostics';
 export {PerfPhase} from './src/ngtsc/perf';
-export {type FileUpdate, type ProgramDriver} from './src/ngtsc/program_driver';
+export {type FileUpdate, InliningMode, type ProgramDriver} from './src/ngtsc/program_driver';
 export {TrackedIncrementalBuildStrategy} from './src/ngtsc/incremental';
 export {isShim} from './src/ngtsc/shims';
 export {getRootDirs} from './src/ngtsc/util/src/typescript';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions} from './model/abstract_model';
@@ -136,7 +136,7 @@ export type ɵElement<T, N extends null> =
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class FormBuilder {
   private useNonNullable: boolean = false;
 
@@ -415,10 +415,7 @@ export class FormBuilder {
  *
  * @publicApi
  */
-@Injectable({
-  providedIn: 'root',
-  useFactory: () => inject(FormBuilder).nonNullable,
-})
+@Service({factory: () => inject(FormBuilder).nonNullable})
 export abstract class NonNullableFormBuilder {
   /**
    * Similar to `FormBuilder#group`, except any implicitly constructed `FormControl`
@@ -465,7 +462,7 @@ export abstract class NonNullableFormBuilder {
 /**
  * UntypedFormBuilder is the same as `FormBuilder`, but it provides untyped controls.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class UntypedFormBuilder extends FormBuilder {
   /**
    * Like `FormBuilder#group`, except the resulting group is untyped.

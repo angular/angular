@@ -5859,6 +5859,36 @@ describe('platform-server full application hydration integration', () => {
         }
       });
 
+      it('should not throw when ngSkipHydration is set on a component with projectable nodes created via ViewContainerRef.createComponent', async () => {
+        // Regression test for #67928: NG0503 was thrown during serialization even
+        // when ngSkipHydration was applied to a dynamically created component that
+        // received projectable nodes, because serializeLContainer did not respect
+        // the skip-hydration flag before calling serializeLView.
+        @Component({
+          selector: 'dynamic',
+          template: `<ng-content />`,
+          host: {'ngSkipHydration': 'true'},
+        })
+        class DynamicComponent {}
+
+        @Component({
+          selector: 'app',
+          template: `<div #anchor></div>`,
+        })
+        class SimpleComponent {
+          @ViewChild('anchor', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+
+          ngAfterViewInit() {
+            const div = document.createElement('div');
+            this.vcr.createComponent(DynamicComponent, {projectableNodes: [[div]]});
+          }
+        }
+
+        // Before the fix this threw NG0503. After the fix it should succeed.
+        const html = await ssr(SimpleComponent);
+        expect(html).toContain('<dynamic');
+      });
+
       it('should support cases when <ng-content> is used with *ngIf="false"', async () => {
         @Component({
           selector: 'projector-cmp',

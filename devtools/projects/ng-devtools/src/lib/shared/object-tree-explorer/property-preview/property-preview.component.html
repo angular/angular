@@ -1,6 +1,7 @@
 <span
   class="value"
   [class.function]="isClickableProp()"
+  [ngPropValueHighlighter]="node().prop"
   (click)="isClickableProp() && inspect.emit()"
   >{{ node().prop.descriptor.preview }}</span
 >

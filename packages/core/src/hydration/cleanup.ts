@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef} from '../application/application_ref';
+import type {ApplicationRef} from '../application/application_ref';
 import {DehydratedDeferBlock} from '../defer/interfaces';
 import {DehydratedBlockRegistry} from '../defer/registry';
 import {

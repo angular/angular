@@ -8,20 +8,23 @@
 
 import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
 import {
+  APP_BOOTSTRAP_LISTENER,
+  ApplicationRef,
+  ɵCACHE_ACTIVE as CACHE_ACTIVE,
+  ɵConsole as Console,
   ENVIRONMENT_INITIALIZER,
   EnvironmentProviders,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
+  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
   makeEnvironmentProviders,
   Provider,
-  ɵConsole as Console,
+  provideStabilityDebugging,
   ɵRuntimeError as RuntimeError,
-  ɵformatRuntimeError as formatRuntimeError,
   ɵwithDomHydration as withDomHydration,
   ɵwithEventReplay,
   ɵwithI18nSupport,
   ɵwithIncrementalHydration,
-  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
-  provideStabilityDebugging,
 } from '@angular/core';
 import {RuntimeErrorCode} from './errors';
 
@@ -287,5 +290,23 @@ export function provideClientHydration(
       ? []
       : ɵwithIncrementalHydration(),
     providers,
+    {
+      provide: CACHE_ACTIVE,
+      useValue: {isActive: true},
+    },
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      multi: true,
+      useFactory: () => {
+        const appRef = inject(ApplicationRef);
+        const cacheState = inject(CACHE_ACTIVE);
+
+        return () => {
+          appRef.whenStable().then(() => {
+            cacheState.isActive = false;
+          });
+        };
+      },
+    },
   ]);
 }

@@ -163,6 +163,7 @@ function setup(
     /* typeCheckHostBindings */ true,
     /* enableSelectorless */ false,
     /* emitDeclarationOnly */ false,
+    /* enableInlineStyles */ true,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

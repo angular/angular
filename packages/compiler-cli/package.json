@@ -40,7 +40,8 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "typescript": "6.0.2"
+    "typescript": "6.0.3",
+    "@types/convert-source-map": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
@@ -62,7 +63,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": "^22.22.0 || >=24.13.1"
+    "node": "^22.22.0 || ^24.13.1 || >=26.0.0"
   },
   "bugs": {
     "url": "https://github.com/angular/angular/issues"

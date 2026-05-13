@@ -21,8 +21,10 @@ import {
   EnvironmentInjector,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
+  ɵgetComponentDef as getComponentDef,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
+  ɵinferTagNameFromDefinition as inferTagNameFromDefinition,
   InjectOptions,
   Injector,
   NgModule,
@@ -38,8 +40,6 @@ import {
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
   Type,
-  ɵinferTagNameFromDefinition as inferTagNameFromDefinition,
-  ɵgetComponentDef as getComponentDef,
 } from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -679,10 +679,14 @@ export class TestBedImpl implements TestBed {
 
   createComponent<T>(type: Type<T>, options?: TestComponentOptions): ComponentFixture<T> {
     if (getAsyncClassMetadataFn(type)) {
-      throw new Error(
-        `Component '${type.name}' has unresolved metadata. ` +
-          `Please call \`await TestBed.compileComponents()\` before running this test.`,
-      );
+      const isCompiled = !!getComponentDef(type);
+
+      if (!isCompiled) {
+        throw new Error(
+          `Component '${type.name}' has unresolved metadata. ` +
+            `Please call \`await TestBed.compileComponents()\` before running this test.`,
+        );
+      }
     }
 
     // Note: injecting the renderer before accessing the definition appears to be load-bearing.

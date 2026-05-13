@@ -495,7 +495,7 @@ interface User {
   /* ... */
 })
 export class UserFormComponent {
-  readonly userModel = model<DTO>({
+  readonly userModel = model<User>({
     firstName: '',
     lastName: '',
   });

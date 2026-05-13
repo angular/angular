@@ -448,8 +448,9 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>(
  * activated. When this happens, the service subscribes to the `ActivatedRoute` observables (params,
  * queryParams, data) and sets the inputs of the component using `ComponentRef.setInput`.
  * Importantly, when an input does not have an item in the route data with a matching key, this
- * input is set to `undefined`. If it were not done this way, the previous information would be
+ * input is set to `undefined` by default. If it were not done this way, the previous information would be
  * retained if the data got removed from the route (i.e. if a query parameter is removed).
+ * The `unmatchedInputBehavior` option can be used to configure this behavior.
  *
  * The `RouterOutlet` should unregister itself when destroyed via `unsubscribeFromRouteData` so that
  * the subscriptions are cleaned up.
@@ -457,6 +458,7 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>(
 @Injectable()
 export class RoutedComponentInputBinder {
   private outletDataSubscriptions = new Map<RouterOutlet, Subscription>();
+  private outletSeenKeys = new Map<RouterOutlet, Set<string>>();
 
   constructor(private options: ComponentInputBindingOptions) {
     this.options.queryParams ??= true;
@@ -470,6 +472,7 @@ export class RoutedComponentInputBinder {
   unsubscribeFromRouteData(outlet: RouterOutlet): void {
     this.outletDataSubscriptions.get(outlet)?.unsubscribe();
     this.outletDataSubscriptions.delete(outlet);
+    this.outletSeenKeys.delete(outlet);
   }
 
   private subscribeToRouteData(outlet: RouterOutlet) {
@@ -512,8 +515,23 @@ export class RoutedComponentInputBinder {
           return;
         }
 
+        let seenKeys = this.outletSeenKeys.get(outlet);
+        if (!seenKeys) {
+          seenKeys = new Set<string>();
+          this.outletSeenKeys.set(outlet, seenKeys);
+        }
+
+        for (const key of Object.keys(data)) {
+          seenKeys.add(key);
+        }
+
+        const behavior = this.options.unmatchedInputBehavior ?? 'alwaysUndefined';
+
         for (const {templateName} of mirror.inputs) {
-          outlet.activatedComponentRef.setInput(templateName, data[templateName]);
+          const value = data[templateName];
+          if (value !== undefined || behavior === 'alwaysUndefined' || seenKeys.has(templateName)) {
+            outlet.activatedComponentRef.setInput(templateName, value);
+          }
         }
       });
 

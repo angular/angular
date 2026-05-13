@@ -11,6 +11,9 @@ import * as o from '../output/output_ast';
 
 import {Identifiers} from './r3_identifiers';
 
+/** Regex that includes unsafe characters in an object literal property name. */
+const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
+
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
   if (numParams === 0) {
     return o.expressionType(type);
@@ -91,6 +94,10 @@ export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean):
 
 export function tsIgnoreComment(): o.LeadingComment {
   return o.leadingComment('@ts-ignore', true, true);
+}
+
+export function isUnsafeObjectKey(key: string): boolean {
+  return UNSAFE_OBJECT_KEY_NAME_REGEXP.test(key);
 }
 
 /**

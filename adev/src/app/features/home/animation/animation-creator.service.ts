@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, Injector} from '@angular/core';
+import {inject, Injector, Service} from '@angular/core';
 import {Animation} from './animation';
 import {AnimationLayerDirective} from './animation-layer.directive';
 import {AnimationConfig} from './types';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class AnimationCreatorService {
   private readonly injector = inject(Injector);
 

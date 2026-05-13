@@ -8,10 +8,18 @@
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from '../api';
 import {Environment} from './environment';
-import {ImportFlags, ReferenceEmitKind, Reference} from '../../imports';
+import {
+  ImportFlags,
+  ReferenceEmitKind,
+  Reference,
+  ReferenceEmitter,
+  assertSuccessfulReferenceEmit,
+} from '../../imports';
+import {ImportManager, translateType} from '../../translator';
 import {
   AbsoluteSourceSpan,
   ExternalExpr,
+  ExpressionType,
   TransplantedType,
   BoundTarget,
   ReferenceTarget,
@@ -35,8 +43,9 @@ import {requiresInlineTypeCtor} from './type_constructor';
 import {tempPrint} from './tcb_print';
 import {generateTcbTypeParameters} from './tcb_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import ts from 'typescript';
+import {absoluteFromSourceFile} from '../../file_system';
 
 /**
  * Adapts the compiler's `TypeCheckBlockMetadata` (which includes full TS AST nodes)
@@ -46,10 +55,36 @@ export function adaptTypeCheckBlockMetadata(
   ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
   meta: TypeCheckBlockMetadata,
   env: Environment,
+  reflector: ReflectionHost,
   genericContextBehavior: TcbGenericContextBehavior,
 ): {tcbMeta: TcbTypeCheckBlockMetadata; component: TcbComponentMetadata} {
   const refCache = new Map<Reference<ClassDeclaration>, TcbReferenceMetadata>();
   const dirCache = new Map<TypeCheckableDirectiveMeta, TcbDirectiveMetadata>();
+
+  const canReferenceType = (r: Reference) => {
+    const result = env.refEmitter.emit(
+      r,
+      env.contextFile,
+      ImportFlags.NoAliasing | ImportFlags.AllowTypeImports | ImportFlags.AllowRelativeDtsImports,
+    );
+    return result.kind === ReferenceEmitKind.Success;
+  };
+
+  const referenceType = (r: Reference) => {
+    const ngExpr = env.refEmitter.emit(
+      r,
+      env.contextFile,
+      ImportFlags.NoAliasing | ImportFlags.AllowTypeImports | ImportFlags.AllowRelativeDtsImports,
+    );
+    assertSuccessfulReferenceEmit(ngExpr, env.contextFile, 'symbol');
+    return translateType(
+      new ExpressionType(ngExpr.expression),
+      env.contextFile,
+      reflector,
+      env.refEmitter,
+      env.importManager,
+    );
+  };
 
   const extractRef = (ref: Reference<ClassDeclaration>) => {
     if (refCache.has(ref)) {
@@ -77,8 +112,12 @@ export function adaptTypeCheckBlockMetadata(
             isSignal: input.isSignal,
             transformType: (() => {
               if (input.transform != null) {
-                const node = env.referenceTransplantedType(
+                const node = translateType(
                   new TransplantedType(input.transform.type),
+                  env.contextFile,
+                  reflector,
+                  env.refEmitter,
+                  env.importManager,
                 );
                 return tempPrint(node, env.contextFile);
               }
@@ -116,17 +155,20 @@ export function adaptTypeCheckBlockMetadata(
       isGeneric: dir.isGeneric,
       requiresInlineTypeCtor: requiresInlineTypeCtor(
         dir.ref.node as ClassDeclaration<ts.ClassDeclaration>,
-        env.reflector,
-        env,
+        reflector,
+        canReferenceType,
       ),
       ...adaptGenerics(
         dir.ref.node as ClassDeclaration<ts.ClassDeclaration>,
         env,
+        reflector,
         // The directive that we're processing is its own dependency
         // so we should the same generic context behavior.
         extractRef(dir.ref).key === extractRef(ref).key
           ? genericContextBehavior
           : TcbGenericContextBehavior.UseEmitter,
+        canReferenceType,
+        referenceType,
       ),
     };
 
@@ -210,7 +252,14 @@ export function adaptTypeCheckBlockMetadata(
     },
     component: {
       ref: extractRef(ref as Reference<ClassDeclaration>),
-      ...adaptGenerics(ref.node, env, genericContextBehavior),
+      ...adaptGenerics(
+        ref.node,
+        env,
+        reflector,
+        genericContextBehavior,
+        canReferenceType,
+        referenceType,
+      ),
     },
   };
 }
@@ -218,7 +267,10 @@ export function adaptTypeCheckBlockMetadata(
 function adaptGenerics(
   node: ClassDeclaration<ts.ClassDeclaration>,
   env: Environment,
+  reflector: ReflectionHost,
   genericContextBehavior: TcbGenericContextBehavior,
+  canReferenceType: (ref: Reference) => boolean,
+  referenceType: (ref: Reference) => ts.TypeNode,
 ): {
   typeParameters: TcbTypeParameter[] | null;
   typeArguments: string[] | null;
@@ -233,9 +285,9 @@ function adaptGenerics(
 
     switch (genericContextBehavior) {
       case TcbGenericContextBehavior.UseEmitter:
-        const emitter = new TypeParameterEmitter(node.typeParameters, env.reflector);
-        const emittedParams = emitter.canEmit((r) => env.canReferenceType(r))
-          ? emitter.emit((typeRef) => env.referenceType(typeRef))
+        const emitter = new TypeParameterEmitter(node.typeParameters, reflector);
+        const emittedParams = emitter.canEmit(canReferenceType)
+          ? emitter.emit(referenceType)
           : undefined;
         typeParameters = generateTcbTypeParameters(
           emittedParams || node.typeParameters,
@@ -268,6 +320,47 @@ function extractReferenceMetadata(
   let unexportedDiagnostic: string | null = null;
   let isLocal = true;
 
+  // When the compiler operates in `CopySourceToTcb` mode, it creates a separate shim file
+  // and copies the entire source content of the original file into it. From a pure text
+  // perspective in that shim file, the original classes are local.
+  //
+  // However, during the generation phase here, the compiler is still working with the
+  // AST nodes of the original file. So, `ref.node.getSourceFile()` returns the original
+  // file, not the shim file. If we fall through to standard reference resolution below,
+  // the emitter would assume it needs to generate an import (because the target file and
+  // source file don't match in AST terms). For non-exported symbols, that auto-import
+  // would fail.
+  //
+  // This condition acts as a bridge between AST reality and the physical file text:
+  // it identifies that the class is local because its text was copied to this shim,
+  // and it ensures we just output the class name directly rather than an import.
+  if (env.copiedSourceOriginPath !== undefined) {
+    const refFile = absoluteFromSourceFile(ref.node.getSourceFile());
+    if (refFile === env.copiedSourceOriginPath) {
+      const nodeName = ref.node?.name as ts.Identifier | undefined;
+      const nodeNameSpan = nodeName
+        ? new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd())
+        : undefined;
+
+      let key: TcbReferenceKey;
+      if (nodeNameSpan !== undefined) {
+        key = `${refFile}#${nodeNameSpan.start}` as TcbReferenceKey;
+      } else {
+        key = name as TcbReferenceKey;
+      }
+
+      return {
+        name,
+        moduleName: null,
+        isLocal: true,
+        unexportedDiagnostic: null,
+        nodeNameSpan,
+        nodeFilePath: refFile,
+        key,
+      } satisfies TcbReferenceMetadata;
+    }
+  }
+
   const emitted = env.refEmitter.emit(ref, env.contextFile, ImportFlags.NoAliasing);
   if (emitted.kind === ReferenceEmitKind.Success) {
     if (emitted.expression instanceof ExternalExpr) {
@@ -290,7 +383,8 @@ function extractReferenceMetadata(
   const nodeNameSpan = nodeName
     ? new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd())
     : undefined;
-  const nodeFilePath = nodeName?.getSourceFile().fileName;
+  const nodeFilePath =
+    nodeName !== undefined ? absoluteFromSourceFile(nodeName.getSourceFile()) : undefined;
   let key: TcbReferenceKey;
 
   if (nodeFilePath !== undefined && nodeNameSpan !== undefined) {

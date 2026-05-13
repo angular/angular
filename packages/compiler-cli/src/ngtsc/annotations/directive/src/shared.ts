@@ -7,6 +7,8 @@
  */
 
 import {
+  ArrowFunctionExpr,
+  ClassPropertyMapping,
   createMayBeForwardRefExpression,
   emitDistinctChangesOnlyDefaultValue,
   Expression,
@@ -14,6 +16,11 @@ import {
   ExternalReference,
   ForwardRefHandling,
   getSafePropertyAccessString,
+  HostBindingDecorator,
+  HostListenerDecorator,
+  HostObjectLiteralBinding,
+  InputOrOutput,
+  literal,
   LiteralArrayExpr,
   literalMap,
   MaybeForwardRefExpression,
@@ -22,20 +29,13 @@ import {
   parseHostBindings,
   R3DirectiveMetadata,
   R3HostDirectiveMetadata,
+  R3Identifiers,
   R3InputMetadata,
   R3QueryMetadata,
   R3Reference,
-  verifyHostBindings,
-  R3Identifiers,
-  ArrowFunctionExpr,
-  WrappedNodeExpr,
-  literal,
-  ClassPropertyMapping,
-  InputOrOutput,
-  HostObjectLiteralBinding,
-  HostListenerDecorator,
-  HostBindingDecorator,
   SourceNode,
+  verifyHostBindings,
+  WrappedNodeExpr,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -137,6 +137,7 @@ export function extractDirectiveMetadata(
   strictStandalone: boolean,
   implicitStandaloneValue: boolean,
   emitDeclarationOnly: boolean,
+  legacyOptionalChaining: boolean,
 ):
   | {
       jitForced: false;
@@ -457,6 +458,7 @@ export function extractDirectiveMetadata(
     hostDirectives:
       hostDirectives?.map((hostDir) => toHostDirectiveMetadata(hostDir, sourceFile, refEmitter)) ||
       null,
+    legacyOptionalChaining,
   };
   return {
     jitForced: false,

@@ -55,6 +55,7 @@ export abstract class ViewportScroller {
   /**
    * Scrolls to an anchor element.
    * @param anchor The ID of the anchor element.
+   * @param options Scroll options
    */
   abstract scrollToAnchor(anchor: string, options?: ScrollOptions): void;
 
@@ -125,11 +126,12 @@ export class BrowserViewportScroller implements ViewportScroller {
       this.scrollToElement(elSelected, options);
       // After scrolling to the element, the spec dictates that we follow the focus steps for the
       // target. Rather than following the robust steps, simply attempt focus.
-      //
+      // Use `preventScroll: true` to avoid extra scroll that breaks smooth scrolling.
       // @see https://html.spec.whatwg.org/#get-the-focusable-area
       // @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
       // @see https://html.spec.whatwg.org/#focusable-area
-      elSelected.focus();
+      // @see https://www.yanandcoffee.com/2020/05/08/accessible-smooth-scrolling-and-focus-management-solutions/
+      elSelected.focus({preventScroll: true});
     }
   }
 
@@ -235,7 +237,7 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  scrollToAnchor(anchor: string): void {}
+  scrollToAnchor(anchor: string, options?: ScrollOptions): void {}
 
   /**
    * Empty implementation

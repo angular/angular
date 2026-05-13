@@ -510,7 +510,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     // dynamically via workspace/configuration request by the server.
     // This allows users to change these settings without restarting.
 
-    const tsdk = config.get('typescript.tsdk', '');
+    const tsdk = config.get('js/ts.tsdk.path', config.get('typescript.tsdk', ''));
     if (tsdk.trim().length > 0) {
       args.push('--tsdk', tsdk);
     }

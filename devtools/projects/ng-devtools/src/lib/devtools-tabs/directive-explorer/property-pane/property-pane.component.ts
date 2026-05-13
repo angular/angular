@@ -47,7 +47,9 @@ export class PropertyPaneComponent {
     if (selected.component) {
       directives.push(selected.component);
     }
-    directives.push(...selected.directives);
+    if (selected.directives) {
+      directives.push(...selected.directives);
+    }
 
     return directives;
   });

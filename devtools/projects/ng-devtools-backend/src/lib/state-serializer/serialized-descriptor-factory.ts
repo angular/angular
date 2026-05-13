@@ -54,14 +54,16 @@ const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Array]: (prop: Array<unknown>) => `Array(${prop.length})`,
   [PropType.Set]: (prop: Set<unknown>) => `Set(${prop.size})`,
   [PropType.Map]: (prop: Map<unknown, unknown>) => `Map(${prop.size})`,
-  [PropType.BigInt]: (prop: bigint) => truncate(prop.toString()),
+  [PropType.BigInt]: (prop: bigint) => `${truncate(prop.toString())}n`,
   [PropType.Boolean]: (prop: boolean) => truncate(prop.toString()),
   [PropType.String]: (prop: string) => `"${prop}"`,
-  [PropType.Function]: (prop: Function) => `${prop.name}(...)`,
+  [PropType.Function]: (prop: Function) => `${prop.name ? 'ƒ ' : ''}(...)`,
   [PropType.HTMLNode]: (prop: Node) => prop.constructor.name,
   [PropType.Null]: (_: null) => 'null',
   [PropType.Number]: (prop: any) => prop.toString(),
-  [PropType.Object]: (prop: Object) => (getKeys(prop).length > 0 ? '{...}' : '{}'),
+  [PropType.Object]: (prop: Object) =>
+    (prop.constructor.name !== 'Object' ? `${prop.constructor.name} ` : '') +
+    (getKeys(prop).length > 0 ? '{...}' : '{}'),
   [PropType.Symbol]: (symbol: symbol) => `Symbol(${symbol.description})`,
   [PropType.Undefined]: (_: undefined) => 'undefined',
   [PropType.Date]: (prop: unknown) => {

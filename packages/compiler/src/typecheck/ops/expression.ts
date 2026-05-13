@@ -20,11 +20,11 @@ import {
 import {LetDeclaration} from '../../render3/r3_ast';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
 import {TemplateEntity} from '../../render3/view/t2_api';
+import {astToTcbExpr} from '../expression';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {astToTcbExpr} from '../expression';
 
 /**
  * Process an `AST` expression and convert it into a `ts.Expression`, generating references to the
@@ -213,6 +213,22 @@ export class TcbExpressionTranslator {
       (ast instanceof Call || ast instanceof SafeCall) &&
       (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead)
     ) {
+      // Resolve the special `$safeNavigationMigration(expr)` syntax to evaluate as the wrapped expression.
+      // `$safeNavigationMigration(expr)` -> `expr`
+      // In the TCB this magic function will not affect the emitted TS
+      // as Safe avigation expressions already returned `undefined` instead of null
+      // see bug https://github.com/angular/angular/issues/37622
+      if (
+        ast.receiver.receiver instanceof ImplicitReceiver &&
+        ast.receiver.name === '$safeNavigationMigration' &&
+        ast.args.length === 1
+      ) {
+        const expr = this.translate(ast.args[0]);
+        const result = new TcbExpr(`(${expr.print()})`);
+        result.addParseSpanInfo(ast.sourceSpan);
+        return result;
+      }
+
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
       // `$any(expr)` -> `expr as any`
       if (

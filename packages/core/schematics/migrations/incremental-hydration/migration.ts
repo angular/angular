@@ -44,21 +44,21 @@ export class IncrementalHydrationMigration extends TsurgeFunnelMigration<
           node.expression.text === 'provideClientHydration'
         ) {
           let hasIncremental = false;
+          let hasNoIncremental = false;
           let incrementalArgNode: ts.CallExpression | null = null;
 
           for (const arg of node.arguments) {
-            if (
-              ts.isCallExpression(arg) &&
-              ts.isIdentifier(arg.expression) &&
-              arg.expression.text === 'withIncrementalHydration'
-            ) {
-              hasIncremental = true;
-              incrementalArgNode = arg;
-              break;
+            if (ts.isCallExpression(arg) && ts.isIdentifier(arg.expression)) {
+              if (arg.expression.text === 'withIncrementalHydration') {
+                hasIncremental = true;
+                incrementalArgNode = arg;
+              } else if (arg.expression.text === 'withNoIncrementalHydration') {
+                hasNoIncremental = true;
+              }
             }
           }
 
-          if (!hasIncremental) {
+          if (!hasIncremental && !hasNoIncremental) {
             // Add withNoIncrementalHydration()
             const withNoIncrementalExpr = importManager.addImport({
               exportModuleSpecifier: '@angular/platform-browser',

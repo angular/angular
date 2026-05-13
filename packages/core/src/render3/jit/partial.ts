@@ -17,6 +17,7 @@ import {
   R3DeclareInjectorFacade,
   R3DeclareNgModuleFacade,
   R3DeclarePipeFacade,
+  R3DeclareServiceFacade,
 } from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {setClassMetadata, setClassMetadataAsync} from '../metadata';
@@ -128,6 +129,8 @@ function getFactoryKind(target: FactoryTarget) {
       return 'pipe';
     case FactoryTarget.NgModule:
       return 'NgModule';
+    case FactoryTarget.Service:
+      return 'service';
   }
 }
 
@@ -202,4 +205,22 @@ export function ɵɵngDeclarePipe(decl: R3DeclarePipeFacade): unknown {
     type: decl.type,
   });
   return compiler.compilePipeDeclaration(angularCoreEnv, `ng:///${decl.type.name}/ɵpipe.js`, decl);
+}
+
+/**
+ * Compiles a partial service declaration object into a full service definition object.
+ *
+ * @codeGenApi
+ */
+export function ɵɵngDeclareService(decl: R3DeclareServiceFacade): unknown {
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.PartialDeclaration,
+    kind: 'service',
+    type: decl.type,
+  });
+  return compiler.compileServiceDeclaration(
+    angularCoreEnv,
+    `ng:///${decl.type.name}/ɵprov.js`,
+    decl,
+  );
 }

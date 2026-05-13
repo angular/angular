@@ -8,7 +8,7 @@ TLDR: Interceptors are middleware that allows common patterns around retrying, c
 
 ## Interceptors
 
-Interceptors are generally functions which you can run for each request, and have broad capabilities to affect the contents and overall flow of requests and responses. You can install multiple interceptors, which form an interceptor chain where each interceptor processes the request or response before forwarding it to the next interceptor in the chain.
+Interceptors are generally functions that you can run for each request and have broad capabilities to affect the contents and overall flow of requests and responses. You can install multiple interceptors, which form an interceptor chain where each interceptor processes the request or response before forwarding it to the next interceptor in the chain.
 
 You can use interceptors to implement a variety of common patterns, such as:
 
@@ -16,7 +16,7 @@ You can use interceptors to implement a variety of common patterns, such as:
 - Retrying failed requests with exponential backoff.
 - Caching responses for a period of time, or until invalidated by mutations.
 - Customizing the parsing of responses.
-- Measuring server response times and log them.
+- Measuring server response times and logging them.
 - Driving UI elements such as a loading spinner while network operations are in progress.
 - Collecting and batch requests made within a certain timeframe.
 - Automatically failing requests after a configurable deadline or timeout.
@@ -172,7 +172,7 @@ const resp = new HttpResponse({
 
 ## Working with redirect information
 
-When `HttpClient` uses the fetch backend , responses include a `redirected` property that indicates whether the response was the result of a redirect. This property aligns with the native Fetch API specification and can be useful in interceptors for handling redirect scenarios.
+When `HttpClient` uses the fetch backend, responses include a `redirected` property that indicates whether the response was the result of a redirect. This property aligns with the native Fetch API specification and can be useful in interceptors for handling redirect scenarios.
 
 An interceptor can access and act upon the redirect information:
 
@@ -215,7 +215,7 @@ export function authRedirectInterceptor(
 
 ## Working with response types
 
-When `HttpClient` uses the fetch backend , responses include a `type` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
+When `HttpClient` uses the fetch backend, responses include a `type` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
 
 The response `type` property can have the following values:
 

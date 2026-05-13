@@ -24,7 +24,7 @@ import {encapsulateResourceError} from '../../src/resource/resource';
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
  *
- * @experimental
+ * @publicApi 22.0
  */
 export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
   stream: (params: ResourceLoaderParams<R>) => Observable<T>;
@@ -36,7 +36,7 @@ export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
  *
  * @see [Using rxResource for async data](ecosystem/rxjs-interop#using-rxresource-for-async-data)
  *
- * @experimental
+ * @publicApi 22.0
  */
 export function rxResource<T, R>(
   opts: RxResourceOptions<T, R> & {defaultValue: NoInfer<T>},
@@ -46,7 +46,7 @@ export function rxResource<T, R>(
  * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
  * resource's value.
  *
- * @experimental
+ * @publicApi 22.0
  */
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined> {

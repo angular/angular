@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, signal} from '@angular/core';
+import {signal, Service} from '@angular/core';
 import {FileSystemTree} from '@webcontainer/api';
 import {BehaviorSubject} from 'rxjs';
 
@@ -17,7 +17,7 @@ import {TUTORIALS_ASSETS_WEB_PATH} from './constants';
  * A service responsible for the current tutorial, retrieving and providing
  * its source code and metadata.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class EmbeddedTutorialManager {
   readonly tutorialId = signal<string>('');
   readonly tutorialFilesystemTree = signal<FileSystemTree | null>(null);

@@ -11,9 +11,9 @@ import {
   DestroyRef,
   EnvironmentInjector,
   inject,
-  Injectable,
   InjectionToken,
   runInInjectionContext,
+  Service,
   signal,
   Type,
   untracked,
@@ -53,7 +53,6 @@ import {
   QueryParamsHandling,
   RedirectCommand,
   Route,
-  Routes,
 } from './models';
 import {
   isNavigationCancelingError,
@@ -66,6 +65,7 @@ import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
 import {TitleStrategy} from './page_title_strategy';
+import type {Router} from './router';
 import {ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -80,10 +80,9 @@ import {
 import type {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree} from './url_tree';
+import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
-import {abortSignalToObservable} from './utils/abort_signal_to_observable';
-import type {Router} from './router';
 
 /**
  * @description
@@ -218,6 +217,9 @@ export type RestoredState = {
   // The `ɵ` prefix is there to reduce the chance of colliding with any existing user properties on
   // the history state.
   ɵrouterPageId?: number;
+  // When `browserUrl` is used, the actual route URL is stored here so that popstate events
+  // can use it for route matching instead of the displayed browser URL.
+  ɵrouterUrl?: string;
 };
 
 /**
@@ -334,7 +336,7 @@ export const NAVIGATION_ERROR_HANDLER = new InjectionToken<
   (error: NavigationError) => unknown | RedirectCommand
 >(typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '');
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class NavigationTransitions {
   // Some G3 targets expect the navigation object to be mutated (and not getting a new reference on changes).
   currentNavigation = signal<Navigation | null>(null, {equal: () => false});
@@ -441,6 +443,7 @@ export class NavigationTransitions {
 
       // Using switchMap so we cancel executing navigations when a new one comes in
       switchMap((overallTransitionState) => {
+        let abortable = true;
         let completedOrAborted = false;
         const abortController = new AbortController();
         const shouldContinueNavigation = () => {
@@ -736,6 +739,20 @@ export class NavigationTransitions {
             return loaders.length === 0 ? of(t) : from(Promise.all(loaders).then(() => t));
           }),
 
+          switchMap((t: NavigationTransition) => {
+            const targetRouterState = createRouterState(
+              router.routeReuseStrategy,
+              t.targetSnapshot!,
+              t.currentRouterState,
+            );
+            this.currentTransition = overallTransitionState = t = {...t, targetRouterState};
+            this.currentNavigation.update((nav) => {
+              nav!.targetRouterState = targetRouterState;
+              return nav;
+            });
+            return of(t);
+          }),
+
           switchTap(() => this.afterPreactivation()),
 
           // TODO(atscott): Move this into the last block below.
@@ -760,17 +777,7 @@ export class NavigationTransitions {
           take(1),
 
           switchMap((t: NavigationTransition) => {
-            const targetRouterState = createRouterState(
-              router.routeReuseStrategy,
-              t.targetSnapshot!,
-              t.currentRouterState,
-            );
-            this.currentTransition = overallTransitionState = t = {...t, targetRouterState};
-            this.currentNavigation.update((nav) => {
-              nav!.targetRouterState = targetRouterState;
-              return nav;
-            });
-
+            abortable = false;
             this.events.next(new BeforeActivateRoutes());
             const deferred = overallTransitionState.beforeActivateHandler.deferredHandle;
             return deferred ? from(deferred.then(() => t)) : of(t);
@@ -809,7 +816,7 @@ export class NavigationTransitions {
           takeUntil(
             abortSignalToObservable(abortController.signal).pipe(
               // Ignore aborts if we are already completed, canceled, or are in the activation stage (we have targetRouterState)
-              filter(() => !completedOrAborted && !overallTransitionState.targetRouterState),
+              filter(() => !completedOrAborted && abortable),
               tap(() => {
                 this.cancelNavigationTransition(
                   overallTransitionState,

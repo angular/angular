@@ -53,6 +53,10 @@ import {
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
 
+export interface ControlValueSignal<T> extends WritableSignal<T> {
+  rawSet(value: T): void;
+}
+
 /**
  * Internal node in the form tree for a given field.
  *
@@ -73,7 +77,7 @@ export class FieldNode implements FieldState<unknown> {
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;
   readonly fieldAdapter: FieldAdapter;
-  readonly controlValue: WritableSignal<unknown>;
+  readonly controlValue: ControlValueSignal<unknown>;
 
   private _context: FieldContext<unknown> | undefined = undefined;
   get context(): FieldContext<unknown> {
@@ -224,16 +228,18 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  get max(): Signal<number | undefined> | undefined {
-    return this.metadata(MAX);
+  get max(): Signal<{} | undefined> | undefined {
+    const maxKey = this.metadata(MAX)?.();
+    return maxKey ? this.metadata(maxKey) : undefined;
   }
 
   get maxLength(): Signal<number | undefined> | undefined {
     return this.metadata(MAX_LENGTH);
   }
 
-  get min(): Signal<number | undefined> | undefined {
-    return this.metadata(MIN);
+  get min(): Signal<{} | undefined> | undefined {
+    const minKey = this.metadata(MIN)?.();
+    return minKey ? this.metadata(minKey) : undefined;
   }
 
   get minLength(): Signal<number | undefined> | undefined {
@@ -261,6 +267,9 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   markAsTouched(options?: MarkAsTouchedOptions): void {
+    if (this.structure.isOrphaned()) {
+      return;
+    }
     untracked(() => {
       this.markAsTouchedInternal(options);
       this.flushSync();
@@ -268,6 +277,9 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   markAsTouchedInternal(options?: MarkAsTouchedOptions): void {
+    if (this.structure.isOrphaned()) {
+      return;
+    }
     if (this.validationState.shouldSkipValidation()) {
       return;
     }
@@ -313,14 +325,26 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   private _reset(value?: unknown) {
+    this.pendingSync()?.abort();
+
     if (value !== undefined) {
       this.value.set(value);
     }
 
+    // controlValue is a linkedSignal that only auto-resets when value *changes*.
+    // When the reset value equals the current value (or no value was passed),
+    // controlValue retains the typed text. Force it to match value by setting
+    // directly via the raw interface, which doesn't trigger a sync.
+    this.controlValue.rawSet(this.value());
+
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();
 
-    for (const child of this.structure.children()) {
+    for (const binding of this.formFieldBindings()) {
+      binding.reset();
+    }
+
+    for (const child of this.structure.materializedChildren()) {
       child._reset();
     }
   }
@@ -350,17 +374,22 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * Creates a linked signal that initiates a {@link debounceSync} when set.
    */
-  private controlValueSignal(): WritableSignal<unknown> {
-    const controlValue = linkedSignal(this.value);
-    const {set, update} = controlValue;
+  private controlValueSignal(): ControlValueSignal<unknown> {
+    const controlValue = linkedSignal(this.value) as ControlValueSignal<unknown>;
 
+    controlValue.rawSet = controlValue.set;
     controlValue.set = (newValue) => {
-      set(newValue);
+      // We intentionally allow same-value updates here to ensure that setting the control value
+      // (even to the same value) still marks the control as dirty.
+      controlValue.rawSet(newValue);
       this.markAsDirty();
       this.debounceSync();
     };
+    const rawUpdate = controlValue.update;
     controlValue.update = (updateFn) => {
-      update(updateFn);
+      // We intentionally allow same-value updates here to ensure that updating the control value
+      // (even to the same value) still marks the control as dirty.
+      rawUpdate(updateFn);
       this.markAsDirty();
       this.debounceSync();
     };
@@ -410,6 +439,10 @@ export class FieldNode implements FieldState<unknown> {
           return; // Do not sync if the debounce was aborted.
         }
       }
+    }
+
+    if (this.structure.isOrphaned()) {
+      return;
     }
 
     this.sync();

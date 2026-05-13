@@ -126,15 +126,15 @@ export class SelectMultipleControlValueAccessor
    */
   writeValue(value: any): void {
     this.value = value;
-    let optionSelectedStateSetter: (opt: ɵNgSelectMultipleOption, o: any) => void;
+    let optionSelectedStateSetter: (opt: ɵNgSelectMultipleOption, id: string) => void;
     if (Array.isArray(value)) {
       // convert values to ids
       const ids = value.map((v) => this._getOptionId(v));
-      optionSelectedStateSetter = (opt, o) => {
-        opt._setSelected(ids.indexOf(o.toString()) > -1);
+      optionSelectedStateSetter = (opt, id) => {
+        opt._setSelected(ids.indexOf(id) > -1);
       };
     } else {
-      optionSelectedStateSetter = (opt, o) => {
+      optionSelectedStateSetter = (opt) => {
         opt._setSelected(false);
       };
     }

@@ -13,6 +13,7 @@ import {
   compileDeclareDirectiveFromMetadata,
   compileDirectiveFromMetadata,
   ConstantPool,
+  createHostElement,
   FactoryTarget,
   makeBindingParser,
   MatchSource,
@@ -20,7 +21,6 @@ import {
   R3DirectiveMetadata,
   R3TargetBinder,
   WrappedNodeExpr,
-  createHostElement,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -48,6 +48,7 @@ import {
   ClassMemberKind,
   Decorator,
   ReflectionHost,
+  reflectObjectLiteral,
 } from '../../../reflection';
 import {LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
 import {
@@ -72,14 +73,22 @@ import {
   getUndecoratedClassWithAngularFeaturesDiagnostic,
   InjectableClassRegistry,
   isAngularDecorator,
+  parseStandaloneOption,
   readBaseClass,
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toFactoryMetadata,
   UndecoratedMetadataExtractor,
+  unwrapExpression,
   validateHostDirectives,
 } from '../../common';
 
+import {
+  HostBindingsContext,
+  TypeCheckableDirectiveMeta,
+  TypeCheckContext,
+} from '../../../typecheck/api';
+import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {
   extractDirectiveMetadata,
   extractHostBindingResources,
@@ -87,12 +96,6 @@ import {
   HostBindingNodes,
 } from './shared';
 import {DirectiveSymbol} from './symbol';
-import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
-import {
-  HostBindingsContext,
-  TypeCheckableDirectiveMeta,
-  TypeCheckContext,
-} from '../../../typecheck/api';
 
 const FIELD_DECORATORS = [
   'Input',
@@ -164,6 +167,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
     private readonly usePoisonedData: boolean,
     private readonly typeCheckHostBindings: boolean,
     private readonly emitDeclarationOnly: boolean,
+    private readonly legacyOptionalChaining: boolean,
   ) {
     this.undecoratedMetadataExtractor = getDirectiveUndecoratedMetadataExtractor(
       reflector,
@@ -227,6 +231,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
       this.strictStandalone,
       this.implicitStandaloneValue,
       this.emitDeclarationOnly,
+      this.legacyOptionalChaining,
     );
     // `extractDirectiveMetadata` returns `jitForced = true` when the `@Directive` has
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning

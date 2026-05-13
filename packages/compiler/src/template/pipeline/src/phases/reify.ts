@@ -442,6 +442,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.ProjectionDef:
         ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
         break;
+      case ir.OpKind.EnableIncrementalHydrationRuntime:
+        ir.OpList.replace<ir.CreateOp>(op, ng.enableIncrementalHydrationRuntime(op.sourceSpan));
+        break;
       case ir.OpKind.Projection:
         if (op.handle.slot === null) {
           throw new Error('No slot was assigned for project instruction');

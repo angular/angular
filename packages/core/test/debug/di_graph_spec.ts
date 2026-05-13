@@ -47,12 +47,12 @@ describe('diGraphTool', () => {
         expect(result.elementInjectorRoots).toEqual([
           jasmine.objectContaining({
             type: 'element',
-            providers: [
+            providers: jasmine.arrayContaining([
               {
                 token: CustomService,
                 value: jasmine.any(CustomService),
               },
-            ],
+            ]),
             viewProviders: [],
             children: [],
           }),
@@ -93,21 +93,21 @@ describe('diGraphTool', () => {
         expect(result.elementInjectorRoots).toEqual([
           jasmine.objectContaining({
             type: 'element',
-            providers: [
+            providers: jasmine.arrayContaining([
               {
                 token: ComponentService,
                 value: jasmine.any(ComponentService),
               },
-            ],
+            ]),
             children: [
               jasmine.objectContaining({
                 type: 'element',
-                providers: [
+                providers: jasmine.arrayContaining([
                   {
                     token: DirectiveService,
                     value: jasmine.any(DirectiveService),
                   },
-                ],
+                ]),
                 children: [],
               }),
             ],
@@ -192,10 +192,10 @@ describe('diGraphTool', () => {
 
         expect(result.elementInjectorRoots).toEqual([
           jasmine.objectContaining({
-            providers: [{token: Service1, value: jasmine.any(Service1)}],
+            providers: jasmine.arrayContaining([{token: Service1, value: jasmine.any(Service1)}]),
           }),
           jasmine.objectContaining({
-            providers: [{token: Service2, value: jasmine.any(Service2)}],
+            providers: jasmine.arrayContaining([{token: Service2, value: jasmine.any(Service2)}]),
           }),
         ]);
       } finally {
@@ -243,7 +243,7 @@ describe('diGraphTool', () => {
 
         expect(result.elementInjectorRoots).toEqual([
           jasmine.objectContaining({
-            providers: jasmine.arrayWithExactContents([
+            providers: jasmine.arrayContaining([
               {
                 token: TestService,
                 value: jasmine.any(TestService),
@@ -251,7 +251,7 @@ describe('diGraphTool', () => {
             ]),
             children: [
               jasmine.objectContaining({
-                providers: jasmine.arrayWithExactContents([
+                providers: jasmine.arrayContaining([
                   {
                     token: ProjectorService,
                     value: jasmine.any(ProjectorService),
@@ -260,7 +260,7 @@ describe('diGraphTool', () => {
                 children: [
                   jasmine.objectContaining({
                     type: 'element',
-                    providers: jasmine.arrayWithExactContents([
+                    providers: jasmine.arrayContaining([
                       {
                         token: ChildService,
                         value: jasmine.any(ChildService),
@@ -307,21 +307,21 @@ describe('diGraphTool', () => {
 
         expect(result.elementInjectorRoots).toEqual([
           jasmine.objectContaining({
-            providers: [
+            providers: jasmine.arrayContaining([
               {
                 token: ComponentService,
                 value: jasmine.any(ComponentService),
               },
-            ],
+            ]),
             children: [
               jasmine.objectContaining({
                 type: 'element',
-                providers: [
+                providers: jasmine.arrayContaining([
                   {
                     token: DirectiveService,
                     value: jasmine.any(DirectiveService),
                   },
-                ],
+                ]),
               }),
             ],
           }),
@@ -362,7 +362,7 @@ describe('diGraphTool', () => {
         expect(result.elementInjectorRoots).toEqual([
           // Components and host directives share the same `Injector`.
           jasmine.objectContaining({
-            providers: jasmine.arrayWithExactContents([
+            providers: jasmine.arrayContaining([
               {
                 token: HostService,
                 value: jasmine.any(HostService),
@@ -403,12 +403,12 @@ describe('diGraphTool', () => {
 
         expect(result.elementInjectorRoots).toEqual([
           jasmine.objectContaining({
-            providers: [
+            providers: jasmine.arrayContaining([
               {
                 token: TestService,
                 value: jasmine.any(TestService),
               },
-            ],
+            ]),
             viewProviders: [
               {
                 token: ViewService,
@@ -459,10 +459,14 @@ describe('diGraphTool', () => {
         const result = await diGraphTool.execute({});
         expect(result.elementInjectorRoots).toEqual([
           jasmine.objectContaining({
-            providers: [{token: TestService, value: jasmine.any(TestService)}],
+            providers: jasmine.arrayContaining([
+              {token: TestService, value: jasmine.any(TestService)},
+            ]),
           }),
           jasmine.objectContaining({
-            providers: [{token: DynamicService, value: jasmine.any(DynamicService)}],
+            providers: jasmine.arrayContaining([
+              {token: DynamicService, value: jasmine.any(DynamicService)},
+            ]),
           }),
         ]);
       } finally {
@@ -559,10 +563,10 @@ describe('diGraphTool', () => {
             // There should only be one `multiToken`, but the framework profiler currently records
             // multi-providers once per configuration rather than aggregating them by token. This
             // causes them to appear multiple times in the providers array.
-            providers: [
+            providers: jasmine.arrayContaining([
               {token: multiToken, value: ['val1', 'val2']},
               {token: multiToken, value: ['val1', 'val2']},
-            ],
+            ]),
           }),
         ]);
       } finally {

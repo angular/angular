@@ -5,15 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {BoundTarget, ParseSourceFile} from '@angular/compiler';
+import {ParseSourceFile} from '@angular/compiler';
 
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ClassDeclaration} from '../../reflection';
-import {ComponentMeta, IndexingContext} from '../src/context';
+import {ClassDeclaration, DeclarationNode} from '../../reflection';
+import {IndexingContext} from '../src/context';
 import {getTemplateIdentifiers} from '../src/template';
 import {generateAnalysis} from '../src/transform';
 
 import * as util from './util';
+import {AbstractBoundTemplate, NodeAdapter} from '../src/api';
+import ts from 'typescript';
 
 /**
  * Adds information about a component to a context.
@@ -23,7 +25,7 @@ function populateContext(
   component: ClassDeclaration,
   selector: string,
   template: string,
-  boundTemplate: BoundTarget<ComponentMeta>,
+  boundTemplate: AbstractBoundTemplate<DeclarationNode>,
   isInline: boolean = false,
 ) {
   context.addComponent({
@@ -37,6 +39,18 @@ function populateContext(
   });
 }
 
+const adapter: NodeAdapter<DeclarationNode> = {
+  getName(node: DeclarationNode): string {
+    return ts.isClassDeclaration(node) && node.name ? node.name.getText() : '';
+  },
+  getFileName(node: DeclarationNode): string {
+    return node.getSourceFile().fileName;
+  },
+  getContent(node: DeclarationNode): string {
+    return node.getSourceFile().getFullText();
+  },
+};
+
 runInEachFileSystem(() => {
   describe('generateAnalysis', () => {
     it('should emit component and template analysis information', () => {
@@ -44,7 +58,7 @@ runInEachFileSystem(() => {
       const decl = util.getComponentDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
       populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
-      const analysis = generateAnalysis(context);
+      const analysis = generateAnalysis(context, adapter);
 
       expect(analysis.size).toBe(1);
 
@@ -76,7 +90,7 @@ runInEachFileSystem(() => {
         util.getBoundTemplate(template),
         /* inline template */ true,
       );
-      const analysis = generateAnalysis(context);
+      const analysis = generateAnalysis(context, adapter);
 
       expect(analysis.size).toBe(1);
 
@@ -92,7 +106,7 @@ runInEachFileSystem(() => {
       const decl = util.getComponentDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
       populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
-      const analysis = generateAnalysis(context);
+      const analysis = generateAnalysis(context, adapter);
 
       expect(analysis.size).toBe(1);
 
@@ -122,7 +136,7 @@ runInEachFileSystem(() => {
       populateContext(context, declA, 'a-selector', templateA, boundA);
       populateContext(context, declB, 'b-selector', templateB, boundB);
 
-      const analysis = generateAnalysis(context);
+      const analysis = generateAnalysis(context, adapter);
 
       expect(analysis.size).toBe(2);
 

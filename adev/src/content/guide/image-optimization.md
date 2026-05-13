@@ -468,7 +468,7 @@ For maintenance reasons, we don't currently plan to support additional built-in 
 
 No, but this is on our roadmap, so stay tuned.
 
-If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).
+If you're waiting on this feature, please upvote the GitHub issue [here](https://github.com/angular/angular/issues/56594).
 
 ### How do I find my LCP image with Chrome DevTools?
 

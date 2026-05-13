@@ -189,6 +189,7 @@ export interface AttributeDecorator {
 export interface BaseResourceOptions<T, R> {
     defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
+    id?: string;
     injector?: Injector;
     params?: (ctx: ResourceParamsContext) => R;
 }
@@ -540,7 +541,15 @@ export class DebugNode {
 }
 
 // @public
+export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): void;
+
+// @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
+
+// @public
+export interface DefaultExport<T> {
+    default: T;
+}
 
 // @public @deprecated (undocumented)
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
@@ -908,6 +917,17 @@ export interface InjectableType<T> extends Type<T> {
 }
 
 // @public
+export function injectAsync<T>(loader: () => Promise<ProviderToken<T>>, options?: InjectAsyncOptions): () => Promise<T>;
+
+// @public (undocumented)
+export function injectAsync<T>(loader: () => Promise<DefaultExport<ProviderToken<T>>>, options?: InjectAsyncOptions): () => Promise<T>;
+
+// @public
+export interface InjectAsyncOptions {
+    prefetch?: PrefetchTrigger;
+}
+
+// @public
 export interface InjectDecorator {
     (token: string): any;
     (token: any): any;
@@ -1009,6 +1029,8 @@ export interface InputFunction {
     <T>(initialValue: undefined, opts: InputOptionsWithoutTransform<T>): InputSignal<T | undefined>;
     <T, TransformT>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
     <T, TransformT>(initialValue: undefined, opts: InputOptionsWithTransform<T | undefined, TransformT>): InputSignalWithTransform<T | undefined, TransformT>;
+    <T>(initialValue: T, opts: InputOptionsWithTransform<T, unknown>): InputSignalWithTransform<T, T>;
+    <T>(initialValue: undefined, opts: InputOptionsWithTransform<T | undefined, unknown>): InputSignalWithTransform<T | undefined, T | undefined>;
     required: {
         <T>(opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
         <T, TransformT>(opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
@@ -1316,6 +1338,11 @@ export interface OnDestroy {
 }
 
 // @public
+export function onIdle(options?: {
+    timeout?: number;
+}): Promise<void>;
+
+// @public
 export interface OnInit {
     ngOnInit(): void;
 }
@@ -1444,6 +1471,9 @@ export class PlatformRef {
 export type Predicate<T> = (value: T) => boolean;
 
 // @public
+export type PrefetchTrigger = () => Promise<void>;
+
+// @public
 export interface PromiseResourceOptions<T, R> extends BaseResourceOptions<T, R> {
     loader: ResourceLoader<T, R>;
     stream?: never;
@@ -1468,6 +1498,9 @@ export function provideCheckNoChangesConfig(options: {
 
 // @public
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
+
+// @public
+export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
 
 // @public
 export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;
@@ -1655,7 +1688,7 @@ export interface ResourceLoaderParams<R> {
     };
 }
 
-// @public (undocumented)
+// @public
 export type ResourceOptions<T, R> = (PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>) & {
     debugName?: string;
 };
@@ -1701,7 +1734,7 @@ export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resol
 // @public
 export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => Signal<ResourceStreamItem<T>> | PromiseLike<Signal<ResourceStreamItem<T>>> | undefined;
 
-// @public (undocumented)
+// @public
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
@@ -1762,6 +1795,30 @@ export interface SelfDecorator {
     (): any;
     // (undocumented)
     new (): Self;
+}
+
+// @public
+export interface Service {
+    autoProvided?: boolean;
+    factory?: () => unknown;
+}
+
+// @public
+export const Service: ServiceDecorator;
+
+// @public
+export interface ServiceDecorator {
+    (): TypeDecorator;
+    (options: {
+        autoProvided: false;
+    }): TypeDecorator;
+    <T>(options: {
+        autoProvided?: true;
+        factory: () => T;
+    }): <C extends Type<unknown> | AbstractType<unknown>>(target: C) => C extends Type<unknown> ? Type<T> : abstract new (...args: any[]) => T;
+    (options?: {
+        autoProvided?: true;
+    }): TypeDecorator;
 }
 
 // @public
@@ -2070,6 +2127,22 @@ export abstract class ViewRef extends ChangeDetectorRef {
     abstract get destroyed(): boolean;
     abstract onDestroy(callback: Function): void;
 }
+
+// @public
+export interface WebMcpClient {
+    signal: AbortSignal;
+}
+
+// @public
+export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
+    description?: string;
+    execute: WebMcpToolExecute<InputSchema>;
+    inputSchema: InputSchema;
+    name: string;
+}
+
+// @public
+export type WebMcpToolExecute<InputSchema extends JsonSchemaForInference> = (args: InferArgsFromInputSchema<InputSchema>, client: WebMcpClient) => unknown;
 
 // @public
 export interface WritableResource<T> extends Resource<T> {

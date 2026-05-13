@@ -16,7 +16,7 @@ Angular CLI builders support a `configurations` object, which allows overwriting
     "my-app": {
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
             // By default, disable source map generation.
             "sourceMap": false
@@ -54,7 +54,7 @@ ng build --configuration debug,production,customer-facing
 
 ## Configure environment-specific defaults
 
-`@angular-devkit/build-angular:browser` supports file replacements, an option for substituting source files before executing a build.
+`@angular/build:application` supports file replacements, an option for substituting source files before executing a build.
 Using this in combination with `--configuration` provides a mechanism for configuring environment-specific data in your application.
 
 Start by [generating environments](cli/generate/environments) to create the `src/environments/` directory and configure the project to use file replacements.
@@ -188,7 +188,7 @@ You can also configure `ng serve` to use the targeted build configuration if you
 ```json
 
   "serve": {
-    "builder": "@angular-devkit/build-angular:dev-server",
+    "builder": "@angular/build:dev-server",
     "options": { … },
     "configurations": {
       "development": {

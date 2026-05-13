@@ -312,6 +312,10 @@ submission: {
 }
 ```
 
+## Concurrent submissions
+
+When a submission is in progress, subsequent calls to `submit()` for the same form or any of its parents return `false` immediately without running the action. This prevents duplicate submissions and side effects if a user triggers the submit action multiple times quickly.
+
 ## Next steps
 
 This guide covered submitting forms and handling form submission errors. Related guides explore other aspects of Signal Forms:

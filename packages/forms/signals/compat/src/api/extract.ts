@@ -29,7 +29,7 @@ export type RawValue<T> =
 /**
  * A type that recursively makes all properties of T optional.
  * Used for the result of `extractValue` when filtering is applied.
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export type DeepPartial<T> =
   | (T extends (infer U)[]
@@ -45,7 +45,7 @@ export type DeepPartial<T> =
  * Each property is optional; when provided, the field must match the specified state.
  *
  * @category interop
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export interface ExtractFilter {
   readonly dirty?: boolean;
@@ -63,7 +63,7 @@ export interface ExtractFilter {
  * @returns The raw value of the field tree.
  *
  * @category interop
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
 /**
@@ -77,7 +77,7 @@ export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
  * @returns A partial value containing only the fields matching the filter, or `undefined` if none match.
  *
  * @category interop
- * @experimental 21.2.0
+ * @publicApi 22.0
  */
 export function extractValue<T>(
   field: FieldTree<T>,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 import {Meta, Title} from '@angular/platform-browser';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy} from '@angular/router';
@@ -22,7 +22,7 @@ export const TITLE_TWITTER_META_TAG = 'twitter:title';
 
 export const ALL_TITLE_META_TAGS = [TITLE_OG_META_TAG, TITLE_TWITTER_META_TAG];
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ADevTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);

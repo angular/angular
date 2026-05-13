@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector, Injectable, inject} from '@angular/core';
+import {EnvironmentInjector, Service, inject} from '@angular/core';
 import * as IDX from 'open-in-idx';
 
 import {injectNodeRuntimeSandbox} from './inject-node-runtime-sandbox';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class FirebaseStudioLauncher {
   private readonly environmentInjector = inject(EnvironmentInjector);
 

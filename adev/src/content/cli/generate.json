@@ -1010,6 +1010,12 @@
           "description": "Creates files at the top level of the project or the given path. If set to false, a new folder with the service's name will be created to contain the files."
         },
         {
+          "name": "injectable",
+          "type": "boolean",
+          "default": false,
+          "description": "When true, generates an `@Injectable` instead of `@Service`."
+        },
+        {
           "name": "name",
           "type": "string",
           "description": "The name for the new service. This will be used to create the service's class and spec files (e.g., `my-service.service.ts` and `my-service.service.spec.ts`).",

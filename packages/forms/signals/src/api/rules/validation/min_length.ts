@@ -34,7 +34,7 @@ import {minLengthError} from './validation_errors';
  *
  * @see [Signal Form Min Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minLength<
   TValue extends ValueWithLengthOrSize,
@@ -44,9 +44,12 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
-    typeof minLength === 'number' ? minLength : minLength(ctx),
-  );
+  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof minLength === 'number' ? minLength : minLength(ctx);
+  });
   metadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {

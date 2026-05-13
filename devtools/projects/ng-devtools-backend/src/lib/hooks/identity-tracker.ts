@@ -168,7 +168,7 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     position,
     element: node.element,
     component: node.component,
-    directives: node.directives.map((d) => ({position, ...d})),
+    directives: node.directives?.map((d) => ({position, ...d})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
     hydration: node.hydration,

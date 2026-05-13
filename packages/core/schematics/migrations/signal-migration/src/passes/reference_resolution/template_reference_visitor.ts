@@ -26,6 +26,7 @@ import {
   TmplAstDeferredBlock,
   TmplAstForLoopBlock,
   TmplAstIfBlockBranch,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstSwitchBlock,
@@ -174,7 +175,11 @@ export class TemplateReferenceVisitor<
 
   override visitForLoopBlock(block: TmplAstForLoopBlock): void {
     this.checkExpressionForReferencedFields(block, block.expression);
-    this.checkExpressionForReferencedFields(block, block.trackBy);
+
+    if (block.trackBy !== null) {
+      this.checkExpressionForReferencedFields(block, block.trackBy);
+    }
+
     super.visitForLoopBlock(block);
   }
 
@@ -222,6 +227,10 @@ export class TemplateReferenceVisitor<
     if (this.templateAttributeReferencedFields !== null) {
       this.templateAttributeReferencedFields.push(...referencedFields);
     }
+  }
+
+  override visitLetDeclaration(decl: TmplAstLetDeclaration): void {
+    this.checkExpressionForReferencedFields(decl, decl.value);
   }
 }
 

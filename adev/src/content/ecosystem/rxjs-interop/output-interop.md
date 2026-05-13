@@ -37,7 +37,7 @@ The `outputToObservable` function lets you create an RxJS observable from a comp
 import {outputToObservable} from '@angular/core/rxjs-interop';
 
 @Component(/*...*/)
-    class CustomSlider {
+class CustomSlider {
     valueChange = output<number>();
 }
 

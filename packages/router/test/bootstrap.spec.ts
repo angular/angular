@@ -7,11 +7,11 @@
  */
 
 import {
-  DOCUMENT,
-  PlatformLocation,
-  ɵgetDOM as getDOM,
   BrowserPlatformLocation,
+  DOCUMENT,
+  ɵgetDOM as getDOM,
   ɵNullViewportScroller as NullViewportScroller,
+  PlatformLocation,
   ViewportScroller,
 } from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
@@ -26,8 +26,8 @@ import {
   NgModule,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {isNode, useAutoTick} from '@angular/private/testing';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
+import {isNode, useAutoTick} from '@angular/private/testing';
 import {
   NavigationEnd,
   provideRouter,
@@ -36,16 +36,6 @@ import {
   RouterOutlet,
   withEnabledBlockingInitialNavigation,
 } from '../index';
-
-// This is needed, because all files under `packages/` are compiled together as part of the
-// [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
-// [service-worker/worker/src/service-worker.d.ts][2].
-//
-// [1]:
-// https://github.com/angular/angular/blob/ffeea63f43e6a7fd46be4a8cd5a5d254c98dea08/.circleci/config.yml#L681
-// [2]:
-// https://github.com/angular/angular/blob/316dc2f12ce8931f5ff66fa5f8da21c0d251a337/packages/service-worker/worker/src/service-worker.d.ts#L9
-declare var window: Window;
 
 describe('bootstrap', () => {
   useAutoTick();

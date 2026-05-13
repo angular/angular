@@ -295,6 +295,24 @@ describe('submit', () => {
     expect(await result).toBe(true);
   });
 
+  it('prohibits concurrent submits', async () => {
+    const f = form(signal(0), {injector});
+    const {promise, resolve} = promiseWithResolvers<undefined>();
+    const submitSpy = jasmine.createSpy('submit').and.callFake(() => promise);
+
+    const result1 = submit(f, {action: submitSpy});
+    expect(f().submitting()).toBe(true);
+
+    const result2 = submit(f, {action: submitSpy});
+    expect(await result2).toBe(false);
+
+    expect(submitSpy).toHaveBeenCalledTimes(1);
+
+    resolve(undefined);
+    expect(await result1).toBe(true);
+    expect(f().submitting()).toBe(false);
+  });
+
   it('marks descendants as submitting', async () => {
     const initialValue = {a: {b: 12}};
     const data = signal(initialValue);
@@ -405,7 +423,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Disable first name when last name is empty.
-        disabled(name.first, ({valueOf}) => valueOf(name.last) === '');
+        disabled(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -430,7 +448,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Hide first name when last name is empty.
-        hidden(name.first, ({valueOf}) => valueOf(name.last) === '');
+        hidden(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -455,7 +473,7 @@ describe('submit', () => {
       data,
       (name) => {
         // Make first name readonly when last name is empty.
-        readonly(name.first, ({valueOf}) => valueOf(name.last) === '');
+        readonly(name.first, {when: ({valueOf}) => valueOf(name.last) === ''});
       },
       {injector: TestBed.inject(Injector)},
     );

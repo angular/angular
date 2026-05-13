@@ -140,20 +140,18 @@ export function compileInjectable(
     .callFn([injectableProps.toLiteralMap()], undefined, true);
   return {
     expression,
-    type: createInjectableType(meta),
+    type: createInjectableType(meta.type.type, meta.typeArgumentCount),
     statements: result.statements,
   };
 }
 
-export function createInjectableType(meta: R3InjectableMetadata) {
+export function createInjectableType(type: o.Expression, typeArgumentCount: number) {
   return new o.ExpressionType(
-    o.importExpr(Identifiers.InjectableDeclaration, [
-      typeWithParameters(meta.type.type, meta.typeArgumentCount),
-    ]),
+    o.importExpr(Identifiers.InjectableDeclaration, [typeWithParameters(type, typeArgumentCount)]),
   );
 }
 
-function delegateToFactory(
+export function delegateToFactory(
   type: o.WrappedNodeExpr<any>,
   useType: o.WrappedNodeExpr<any>,
   unwrapForwardRefs: boolean,

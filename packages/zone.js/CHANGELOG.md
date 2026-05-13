@@ -1,3 +1,9 @@
+## <small>0.16.2 (2026-05-06)</small>
+
+* feat(zone.js): support vitest patching in zone.js/testing (#68395) ([62c6e3b](https://github.com/angular/angular/commit/62c6e3b)), closes [#68395](https://github.com/angular/angular/issues/68395) [#68395](https://github.com/angular/angular/issues/68395)
+* fix(zone.js): allow draining microtasks in `Promise.then` (through flag) ([fc6a7ee](https://github.com/angular/angular/commit/fc6a7ee)), closes [angular#45273](https://github.com/angular/issues/45273) [angular#44446](https://github.com/angular/issues/44446) [angular#55590](https://github.com/angular/issues/55590) [angular#51328](https://github.com/angular/issues/51328)
+
+
 ## <small>0.16.1 (2026-02-18)</small>
 
 * fix(zone.js): support passthrough of Promise.try API ([fc557f0](https://github.com/angular/angular/commit/fc557f0)), closes [#67057](https://github.com/angular/angular/issues/67057)

@@ -1617,6 +1617,94 @@ describe('platform-server partial hydration integration', () => {
           testElement.dispatchEvent(clickEvent2);
 
           appRef.tick();
+          expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+        });
+
+        it('should hydrate a `hydrate on idle` block that lives inside a deferred-loaded child component', async () => {
+          @Component({
+            selector: 'inner-cmp',
+            template: `
+              @defer (hydrate on idle) {
+                <article>
+                  inner defer block rendered!
+                  <span id="test" (click)="fnB()">{{ value() }}</span>
+                </article>
+              } @placeholder {
+                <span>Inner placeholder</span>
+              }
+            `,
+          })
+          class InnerCmp {
+            value = signal('start');
+            fnB() {
+              this.value.set('end');
+            }
+          }
+
+          @Component({
+            selector: 'app',
+            imports: [InnerCmp],
+            template: `
+              <main>
+                @defer (on idle) {
+                  <inner-cmp />
+                } @placeholder {
+                  <span>Outer placeholder</span>
+                }
+              </main>
+            `,
+          })
+          class SimpleComponent {}
+
+          const appId = 'custom-app-id';
+          const providers = [{provide: APP_ID, useValue: appId}];
+
+          const html = await ssr(SimpleComponent, {envProviders: providers});
+          const ssrContents = getAppContents(html);
+
+          // The outer `@defer (on idle)` is a non-hydrating defer, so the server
+          // renders its placeholder, NOT the inner component or its hydrating block.
+          expect(ssrContents).toContain('Outer placeholder');
+          expect(ssrContents).not.toContain('inner defer block rendered');
+          // No `@defer` blocks were configured for incremental hydration in the
+          // outer template (the `hydrate on idle` lives in a child component that
+          // hasn't been loaded yet on the server).
+          expect(ssrContents).not.toContain('"__nghDeferData__"');
+
+          // Internal cleanup before we do server->client transition in this test.
+          resetTViewsFor(SimpleComponent, InnerCmp);
+
+          ////////////////////////////////
+          const doc = getDocument();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+          await appRef.whenStable();
+
+          const appHostNode = compRef.location.nativeElement;
+
+          expect(appHostNode.outerHTML).toContain('Outer placeholder');
+
+          // Trigger idle to load the inner component (outer `on idle`).
+          triggerIdleCallbacks();
+          await allPendingDynamicImports();
+          appRef.tick();
+
+          expect(appHostNode.outerHTML).not.toContain('Outer placeholder');
+          expect(appHostNode.outerHTML).toContain('Inner placeholder');
+
+          triggerIdleCallbacks();
+          await allPendingDynamicImports();
+          appRef.tick();
+
+          expect(appHostNode.outerHTML).toContain('inner defer block rendered');
+          expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+
+          const testElement = doc.getElementById('test')!;
+          testElement.dispatchEvent(new CustomEvent('click'));
+          appRef.tick();
 
           expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
         });

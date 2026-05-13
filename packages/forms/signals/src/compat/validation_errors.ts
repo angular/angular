@@ -13,7 +13,7 @@ import {ReadonlyFieldTree} from '../api/types';
 /**
  * An error used for compat errors.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  * @category interop
  */
 export class CompatValidationError<T = unknown> implements ValidationError {
@@ -33,7 +33,7 @@ export class CompatValidationError<T = unknown> implements ValidationError {
 /**
  * Converts signal forms validation errors to reactive forms ValidationErrors.
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function signalErrorsToValidationErrors(errors: ValidationError[]): ValidationErrors | null {
   if (errors.length === 0) {

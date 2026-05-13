@@ -140,7 +140,7 @@
     position: absolute;
     top: 0;
     background-color: var(--page-background);
-    box-shadow: 10px 4px 3px 0 rgba(0, 0, 0, 0.001);
+    box-shadow: 2px 0 0 0 var(--page-background);
 
     transform: translateX(-100%);
     // primary nav: exit delayed

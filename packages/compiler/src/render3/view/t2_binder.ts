@@ -994,7 +994,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     } else if (nodeOrNodes instanceof ForLoopBlock) {
       this.visitNode(nodeOrNodes.item);
       nodeOrNodes.contextVariables.forEach((v) => this.visitNode(v));
-      nodeOrNodes.trackBy.visit(this);
+      nodeOrNodes.trackBy?.visit(this);
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof DeferredBlock) {

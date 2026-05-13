@@ -16,7 +16,7 @@ import {CompatFieldAdapter} from '../compat_field_adapter';
  * Options that may be specified when creating a compat form.
  *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
 
@@ -47,7 +47,7 @@ export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
  * the model.
  *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
@@ -81,7 +81,7 @@ export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TMo
  *   2. The form options (excluding adapter, since it's provided).
  *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function compatForm<TModel>(
   model: WritableSignal<TModel>,
@@ -117,7 +117,7 @@ export function compatForm<TModel>(
  * @param options The form options (excluding adapter, since it's provided).
  *
  * @category interop
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function compatForm<TModel>(
   model: WritableSignal<TModel>,

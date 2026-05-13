@@ -162,3 +162,101 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: operators_use_null.js
+ ****************************************************************************************************/
+import { Component, Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+export class IdentityPipe {
+    transform(value) {
+        return value;
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, isStandalone: true, name: "identity" });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, decorators: [{
+            type: Pipe,
+            args: [{ name: 'identity' }]
+        }] });
+export class Bar {
+}
+export class MyApp {
+    foo = { bar: 'baz' };
+    number = 1;
+    bar = new Bar();
+    Bar = Bar;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    {{ 1 + 2 }}
+    {{ (1 % 2) + 3 / 4 * 5 ** 6 }}
+    {{ +1 }}
+    {{ typeof {} === 'object' }}
+    {{ !(typeof {} === 'object') }}
+    {{ typeof foo?.bar === 'string' }}
+    {{ typeof foo?.bar | identity }}
+    {{ void 'test' }}
+    {{ (-1) ** 3 }}
+    {{ 'bar' in foo }}
+    {{ bar instanceof Bar }}
+    <button (click)="number += 1"></button>
+    <button (click)="number -= 1"></button>
+    <button (click)="number *= 1"></button>
+    <button (click)="number /= 1"></button>
+    <button (click)="number %= 1"></button>
+    <button (click)="number **= 1"></button>
+    <button (click)="number &&= 1"></button>
+    <button (click)="number ||= 1"></button>
+    <button (click)="number ??= 1"></button>
+  `, isInline: true, dependencies: [{ kind: "pipe", type: IdentityPipe, name: "identity" }] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{ 1 + 2 }}
+    {{ (1 % 2) + 3 / 4 * 5 ** 6 }}
+    {{ +1 }}
+    {{ typeof {} === 'object' }}
+    {{ !(typeof {} === 'object') }}
+    {{ typeof foo?.bar === 'string' }}
+    {{ typeof foo?.bar | identity }}
+    {{ void 'test' }}
+    {{ (-1) ** 3 }}
+    {{ 'bar' in foo }}
+    {{ bar instanceof Bar }}
+    <button (click)="number += 1"></button>
+    <button (click)="number -= 1"></button>
+    <button (click)="number *= 1"></button>
+    <button (click)="number /= 1"></button>
+    <button (click)="number %= 1"></button>
+    <button (click)="number **= 1"></button>
+    <button (click)="number &&= 1"></button>
+    <button (click)="number ||= 1"></button>
+    <button (click)="number ??= 1"></button>
+  `,
+                    imports: [IdentityPipe],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: operators_use_null.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class IdentityPipe {
+    transform(value: any): any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<IdentityPipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<IdentityPipe, "identity", true>;
+}
+export declare class Bar {
+}
+export declare class MyApp {
+    foo: {
+        bar?: string;
+    };
+    number: number;
+    bar: Bar;
+    Bar: typeof Bar;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

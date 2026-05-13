@@ -42,7 +42,7 @@ export function cvaControlCreate(
     // `bindingUpdated` sees that the model value matches the last seen view value.
     // This prevents the framework from writing the same value back to the CVA (CVA loopback).
     bindings['controlValue'] = value;
-    parent.state().controlValue.set(value as any);
+    parent.state().controlValue.set(value);
   });
   parent.controlValueAccessor!.registerOnTouched(() => parent.state().markAsTouched());
 
@@ -78,7 +78,13 @@ export function cvaControlCreate(
     );
   }
 
-  parent.registerAsBinding();
+  parent.registerAsBinding({
+    reset: () => {
+      const value = parent.state().value();
+      bindings['controlValue'] = value;
+      untracked(() => parent.controlValueAccessor!.writeValue(value));
+    },
+  });
 
   return () => {
     const fieldState = parent.state();

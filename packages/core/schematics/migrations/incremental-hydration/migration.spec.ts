@@ -32,7 +32,7 @@ describe('IncrementalHydration migration', () => {
     const content = fs.readFile(absoluteFrom('/index.ts'));
     expect(content).not.toContain('withNoIncrementalHydration()');
     expect(content).toContain('withIncrementalHydration()');
-    expect(content).toContain('provideClientHydration()');
+    expect(content).toContain('provideClientHydration(withIncrementalHydration())');
   });
 
   it('should add withNoIncrementalHydration() if withIncrementalHydration is absent', async () => {
@@ -50,5 +50,23 @@ describe('IncrementalHydration migration', () => {
 
     const content = fs.readFile(absoluteFrom('/index.ts'));
     expect(content).toContain('withNoIncrementalHydration()');
+  });
+
+  it('should not add withNoIncrementalHydration() if withNoIncrementationHydration is already present', async () => {
+    const {fs} = await runTsurgeMigration(new IncrementalHydrationMigration(), [
+      {
+        name: absoluteFrom('/index.ts'),
+        isProgramRootFile: true,
+        contents: `
+          import { provideClientHydration, withNoIncrementalHydration } from '@angular/platform-browser';
+
+          provideClientHydration(withNoIncrementalHydration());
+        `,
+      },
+    ]);
+
+    const content = fs.readFile(absoluteFrom('/index.ts'));
+    expect(content).toContain('provideClientHydration(withNoIncrementalHydration())');
+    expect(content).not.toContain('withIncrementalHydration()');
   });
 });

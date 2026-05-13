@@ -10,6 +10,7 @@ export interface BazelAndG3Options {
     _experimentalAllowEmitDeclarationOnly?: boolean;
     generateDeepReexports?: boolean;
     generateExtraImportsInLocalMode?: boolean;
+    legacyOptionalChaining?: boolean;
     onlyExplicitDeferDependencyImports?: boolean;
     onlyPublishPublicTypingsForNgModules?: boolean;
 }

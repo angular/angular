@@ -119,4 +119,7 @@ BUNDLES_ENTRY_POINTS = {
     "zone-testing": {
         "entrypoint": _DIR + "testing/rollup-zone-testing",
     },
+    "vitest-patch": {
+        "entrypoint": _DIR + "vitest/rollup-vitest",
+    },
 }

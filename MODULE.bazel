@@ -6,40 +6,40 @@ module(
 
 bazel_dep(name = "rules_pkg", version = "1.2.0")
 bazel_dep(name = "rules_nodejs", version = "6.7.4")
-bazel_dep(name = "aspect_rules_ts", version = "3.8.8")
-bazel_dep(name = "aspect_rules_js", version = "3.0.3")
+bazel_dep(name = "aspect_rules_ts", version = "3.8.9")
+bazel_dep(name = "aspect_rules_js", version = "3.1.1")
 bazel_dep(name = "aspect_rules_esbuild", version = "0.25.1")
 bazel_dep(name = "aspect_rules_jasmine", version = "2.0.4")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
-bazel_dep(name = "bazel_lib", version = "3.2.2")
-bazel_dep(name = "tar.bzl", version = "0.10.1")
+bazel_dep(name = "bazel_lib", version = "3.3.1")
+bazel_dep(name = "tar.bzl", version = "0.10.4")
 bazel_dep(name = "yq.bzl", version = "0.3.6")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "c85cdb4a0f132ab84a890003f49c2f6cf0b75937",
+    commit = "045f98407a299ffaeeeafa275d8490d4507513f8",
     remote = "https://github.com/angular/rules_angular.git",
 )
 
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "072b86b14d31fdcc93023c641f642c7ebc9a89d8",
+    commit = "eaa9aaa98de612484109350f710fdb02e92c84ae",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
 bazel_dep(name = "rules_sass")
 git_override(
     module_name = "rules_sass",
-    commit = "dfb751533767caa759a7162a34cfe0852f988976",
+    commit = "846437db57b03761ac6af22415919a9763b7be65",
     remote = "https://github.com/angular/rules_sass.git",
 )
 
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "a9e504a7df2347317968cf979701688778f7915a",
+    commit = "bf27ea46fdbb0209526ca821f1500d4337eb8299",
     remote = "https://github.com/angular/rules_browsers.git",
 )
 
@@ -71,8 +71,8 @@ use_repo(node, "nodejs_windows_amd64")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 pnpm.pnpm(
     name = "pnpm",
-    pnpm_version = "10.33.0",
-    pnpm_version_integrity = "sha512-EFaLtKavtYyes2MNqQzJUWQXq+vT+rvmc58K55VyjaFJHp21pUTHatjrdXD1xLs9bGN7LLQb/c20f6gjyGSTGQ==",
+    pnpm_version = "11.1.1",
+    pnpm_version_integrity = "sha512-0f319zxhe2T6GlaoHDyN/g6WbjOmAQqiVrUXrne+Idk+Ba/8DeGoOw5PKdVp9otEaujwaM1yR8C7PfD7TXvfmg==",
 )
 use_repo(pnpm, "pnpm")
 
@@ -86,6 +86,7 @@ npm.npm_translate_lock(
         "//adev:package.json",
         "//adev/shared-docs:package.json",
         "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//devtools:package.json",
         "//integration:package.json",
         "//modules:package.json",
         "//packages/animations:package.json",
@@ -109,7 +110,11 @@ npm.npm_translate_lock(
         "//tools/bazel/rules_angular_store:package.json",
         "//vscode-ng-language-service/integration/project:package.json",
     ],
-    npmrc = "//:.npmrc",
+    lifecycle_hooks = {
+        # sleep requires node-gyp rebuild but the native module is not needed in Bazel;
+        # disable the install hook to avoid failing builds when node-gyp is unavailable.
+        "sleep": [],
+    },
     pnpm_lock = "//:pnpm-lock.yaml",
 )
 use_repo(npm, "npm")
@@ -118,8 +123,8 @@ rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
 rules_ts_ext.deps(
     name = "angular_npm_typescript",
     # Obtained by: curl --silent https://registry.npmjs.org/typescript/6.0.2 | jq -r '.dist.integrity'
-    ts_integrity = "sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==",
-    ts_version = "6.0.2",
+    ts_integrity = "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
+    ts_version = "6.0.3",
 )
 use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
 
@@ -157,23 +162,4 @@ cldr_xml_data(
     urls = {
         "https://github.com/unicode-org/cldr/releases/download/release-%s/core.zip" % CLDR_VERSION: "d5ee2abac64158c04884a722f8ef4830ea22b6c74aac20185be2838db8eda788",
     },
-)
-
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-# Fetch sauce connect (tool to open Saucelabs tunnel for Saucelabs browser tests)
-http_archive(
-    name = "sauce_connect_linux_amd64",
-    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
-    sha256 = "26b9c3630f441b47854b6032f7eca6f1d88d3f62e50ee44c27015d71a5155c36",
-    strip_prefix = "sc-4.8.2-linux",
-    url = "https://saucelabs.com/downloads/sc-4.8.2-linux.tar.gz",
-)
-
-http_archive(
-    name = "sauce_connect_mac",
-    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
-    sha256 = "28277ce81ef9ab84f5b87b526258920a8ead44789a5034346e872629bbf38089",
-    strip_prefix = "sc-4.8.2-osx",
-    url = "https://saucelabs.com/downloads/sc-4.8.2-osx.zip",
 )

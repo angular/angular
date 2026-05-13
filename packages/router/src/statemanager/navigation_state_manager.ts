@@ -7,11 +7,11 @@
  */
 import {
   afterNextRender,
-  ɵpromiseWithResolvers as promiseWithResolvers,
   DestroyRef,
   EnvironmentInjector,
   inject,
-  Injectable,
+  ɵpromiseWithResolvers as promiseWithResolvers,
+  Service,
 } from '@angular/core';
 
 import {
@@ -19,12 +19,7 @@ import {
   PlatformNavigation,
   ɵPRECOMMIT_HANDLER_SUPPORTED as PRECOMMIT_HANDLER_SUPPORTED,
 } from '@angular/common';
-import {StateManager} from './state_manager';
-import {
-  NavigationExtras,
-  RestoredState,
-  Navigation as RouterNavigation,
-} from '../navigation_transition';
+import {Subject, SubscriptionLike} from 'rxjs';
 import {
   BeforeActivateRoutes,
   BeforeRoutesRecognized,
@@ -38,13 +33,18 @@ import {
   NavigationTrigger,
   PrivateRouterEvents,
 } from '../events';
-import {Subject, SubscriptionLike} from 'rxjs';
-import {UrlTree} from '../url_tree';
+import {
+  NavigationExtras,
+  RestoredState,
+  Navigation as RouterNavigation,
+} from '../navigation_transition';
 import {ROUTER_SCROLLER} from '../router_scroller';
+import {UrlTree} from '../url_tree';
+import {StateManager} from './state_manager';
 
 type NavigationInfo = {ɵrouterInfo: {intercept: boolean}};
 
-@Injectable({providedIn: 'root'})
+@Service()
 /**
  * A `StateManager` that uses the browser's Navigation API to get the state of a `popstate`
  * event.
@@ -268,8 +268,7 @@ export class NavigationStateManager extends StateManager {
     // Prepare the state to be stored in the NavigationHistoryEntry.
     const state = {
       ...transition.extras.state,
-      // Include router's navigationId for tracking. Required for in-memory scroll restoration
-      navigationId: transition.id,
+      ...this.generateNgRouterState(transition),
     };
 
     const info: NavigationInfo = {ɵrouterInfo: {intercept: true}};
@@ -489,7 +488,7 @@ export class NavigationStateManager extends StateManager {
               : 'push';
           const state = {
             ...transition.extras.state,
-            navigationId: transition.id,
+            ...this.generateNgRouterState(transition),
           };
           // this might be a path or an actual URL depending on the baseHref
           const pathOrUrl = this.location.prepareExternalUrl(internalPath);
@@ -542,6 +541,14 @@ export class NavigationStateManager extends StateManager {
     // this might be a path or an actual URL depending on the baseHref
     const routerDestination = this.location.prepareExternalUrl(internalPath);
     return new URL(routerDestination, eventDestination.origin).href === eventDestination.href;
+  }
+
+  private generateNgRouterState(transition: RouterNavigation) {
+    return {
+      ...this.routerUrlState(transition),
+      // Include router's navigationId for tracking. Required for in-memory scroll restoration
+      navigationId: transition.id,
+    };
   }
 
   private deferredCommitSupported(event: NavigateEvent): boolean {

@@ -1,3 +1,6 @@
-@for (node of reversedPath(); track node.id) {
-  <div [class]="['node', NODE_TYPE_CLASS_MAP[node.type]]">{{ node.name }}</div>
-}
+<p class="label">Resolution path of the dependency</p>
+<div class="viz">
+  @for (node of reversedPath(); track node.id) {
+    <div [class]="['node', NODE_TYPE_CLASS_MAP[node.type]]">{{ node.name }}</div>
+  }
+</div>

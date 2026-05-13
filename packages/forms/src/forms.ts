@@ -51,7 +51,8 @@ export {
 export {
   selectValueAccessor as ɵselectValueAccessor,
   SetDisabledStateOption,
-  ɵFORM_FIELD_PARSE_ERRORS,
+  ɵFORM_CONTROL_INTEGRATION,
+  ɵFormControlIntegration,
 } from './directives/shared';
 export {
   AsyncValidator,
@@ -125,7 +126,7 @@ export {VERSION} from './version';
 
 export {
   isNativeFormElement as ɵisNativeFormElement,
-  isNumericFormElement as ɵisNumericFormElement,
+  elementAcceptsMinMax as ɵelementAcceptsMinMax,
   isTextualFormElement as ɵisTextualFormElement,
   setNativeDomProperty as ɵsetNativeDomProperty,
   type NativeFormControl as ɵNativeFormControl,

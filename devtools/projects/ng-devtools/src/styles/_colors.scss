@@ -102,7 +102,10 @@ $_colors: (
   --color-tree-node-highlighted: #cddffd;
   --color-tree-node-matched: #f3ce49;
 
-  --color-property-list-name: #71a2f7;
+  --color-prop-value-scalar: #0842a0;
+  --color-prop-value-string: #db362e;
+  --color-prop-value-nullish: #aaaaaa;
+  --color-prop-value-object-based: #747474;
 }
 
 @mixin _dark-colors {
@@ -148,7 +151,10 @@ $_colors: (
   --color-tree-node-highlighted: #00416c;
   --color-tree-node-matched: #906921;
 
-  --color-property-list-name: #0c3a96;
+  --color-prop-value-scalar: #9980ff;
+  --color-prop-value-string: #5cd5fb;
+  --color-prop-value-nullish: #6f6f6f;
+  --color-prop-value-object-based: #ababab;
 }
 
 /* Utilities */

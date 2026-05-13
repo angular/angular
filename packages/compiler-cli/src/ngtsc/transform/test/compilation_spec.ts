@@ -18,7 +18,13 @@ import {
   TypeScriptReflectionHost,
 } from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
-import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler} from '../../transform';
+import {
+  CompilationMode,
+  DetectResult,
+  DtsTransformRegistry,
+  TraitCompiler,
+  TraitState,
+} from '../../transform';
 import {
   AnalysisOutput,
   CompileResult,
@@ -425,6 +431,154 @@ runInEachFileSystem(() => {
         compiler.updateResources(decl);
 
         expect(handler.updateResources).not.toHaveBeenCalled();
+      });
+    });
+    describe('non-exported classes', () => {
+      it('should skip non-exported non-standalone components', () => {
+        class FakeComponentHandler implements DecoratorHandler<{}, {}, null, unknown> {
+          name = 'FakeComponentHandler';
+          precedence = HandlerPrecedence.PRIMARY;
+
+          detect(
+            node: ClassDeclaration,
+            decorators: Decorator[] | null,
+          ): DetectResult<{}> | undefined {
+            if (node.name.text !== 'Cmp') return undefined;
+            return {trigger: node, decorator: null, metadata: {}};
+          }
+
+          isStandalone(): boolean {
+            return false;
+          }
+
+          analyze(node: ClassDeclaration, metadata: {}): AnalysisOutput<{}> {
+            return {
+              analysis: {
+                meta: {
+                  isStandalone: false, // Not standalone!
+                },
+              },
+            };
+          }
+
+          symbol(): null {
+            return null;
+          }
+          compileFull(): CompileResult {
+            throw new Error('Should not be called');
+          }
+          compileLocal(): CompileResult {
+            throw new Error('Should not be called');
+          }
+        }
+
+        const contents = `
+          class Cmp {} // Not exported!
+        `;
+
+        const filename = 'test.ts';
+        const {program} = makeProgram([{name: absoluteFrom('/' + filename), contents}]);
+        const checker = program.getTypeChecker();
+        const reflectionHost = new TypeScriptReflectionHost(checker);
+
+        const compiler = new TraitCompiler(
+          [new FakeComponentHandler()],
+          reflectionHost,
+          NOOP_PERF_RECORDER,
+          NOOP_INCREMENTAL_BUILD,
+          false, // compileNonExportedClasses = false!
+          CompilationMode.FULL,
+          new DtsTransformRegistry(),
+          null,
+          fakeSfTypeIdentifier,
+          false,
+          false,
+        );
+
+        const sourceFile = program.getSourceFile(filename)!;
+
+        compiler.analyzeSync(sourceFile);
+
+        const record = compiler.recordFor(
+          getDeclaration(program, absoluteFrom('/test.ts'), 'Cmp', isNamedClassDeclaration),
+        );
+        expect(record).not.toBeNull();
+        expect(record!.traits.length).toBe(1);
+        expect(record!.traits[0].state).toBe(TraitState.Analyzed);
+        expect((record!.traits[0] as {analysis: unknown}).analysis).toBeNull();
+      });
+
+      it('should not skip non-exported standalone components', () => {
+        class FakeComponentHandler implements DecoratorHandler<{}, {}, null, unknown> {
+          name = 'FakeComponentHandler';
+          precedence = HandlerPrecedence.PRIMARY;
+
+          detect(
+            node: ClassDeclaration,
+            decorators: Decorator[] | null,
+          ): DetectResult<{}> | undefined {
+            if (node.name.text !== 'Cmp') return undefined;
+            return {trigger: node, decorator: null, metadata: {}};
+          }
+
+          isStandalone(): boolean {
+            return true;
+          }
+
+          analyze(node: ClassDeclaration, metadata: {}): AnalysisOutput<{}> {
+            return {
+              analysis: {
+                meta: {
+                  isStandalone: true, // Standalone!
+                },
+              },
+            };
+          }
+
+          symbol(): null {
+            return null;
+          }
+          compileFull(): CompileResult {
+            throw new Error('Should not be called');
+          }
+          compileLocal(): CompileResult {
+            throw new Error('Should not be called');
+          }
+        }
+
+        const contents = `
+          class Cmp {} // Not exported!
+        `;
+
+        const filename = 'test.ts';
+        const {program} = makeProgram([{name: absoluteFrom('/' + filename), contents}]);
+        const checker = program.getTypeChecker();
+        const reflectionHost = new TypeScriptReflectionHost(checker);
+
+        const compiler = new TraitCompiler(
+          [new FakeComponentHandler()],
+          reflectionHost,
+          NOOP_PERF_RECORDER,
+          NOOP_INCREMENTAL_BUILD,
+          false, // compileNonExportedClasses = false!
+          CompilationMode.FULL,
+          new DtsTransformRegistry(),
+          null,
+          fakeSfTypeIdentifier,
+          false,
+          false,
+        );
+
+        const sourceFile = program.getSourceFile(filename)!;
+
+        compiler.analyzeSync(sourceFile);
+
+        const record = compiler.recordFor(
+          getDeclaration(program, absoluteFrom('/test.ts'), 'Cmp', isNamedClassDeclaration),
+        );
+        expect(record).not.toBeNull();
+        expect(record!.traits.length).toBe(1);
+        expect(record!.traits[0].state).not.toBe(TraitState.Skipped);
       });
     });
   });

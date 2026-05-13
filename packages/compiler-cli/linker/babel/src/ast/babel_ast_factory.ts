@@ -84,6 +84,19 @@ export class BabelAstFactory implements AstFactory<
 
   createBlock = t.blockStatement;
 
+  createCallChain(
+    callee: t.Expression,
+    args: (t.Expression | t.SpreadElement)[],
+    pure: boolean,
+    isOptional: boolean,
+  ): t.Expression {
+    const call = t.optionalCallExpression(callee, args, /* optional */ isOptional);
+    if (pure) {
+      t.addComment(call, 'leading', ' @__PURE__ ', /* line */ false);
+    }
+    return call;
+  }
+
   createCallExpression(
     callee: t.Expression,
     args: (t.Expression | t.SpreadElement)[],
@@ -100,6 +113,19 @@ export class BabelAstFactory implements AstFactory<
 
   createElementAccess(expression: t.Expression, element: t.Expression): t.Expression {
     return t.memberExpression(expression, element, /* computed */ true);
+  }
+
+  createElementAccessChain(
+    expression: t.Expression,
+    element: t.Expression,
+    isOptional: boolean,
+  ): t.Expression {
+    return t.optionalMemberExpression(
+      expression,
+      element,
+      /* computed */ true,
+      /* optional */ isOptional,
+    );
   }
 
   createExpressionStatement = t.expressionStatement;
@@ -199,6 +225,19 @@ export class BabelAstFactory implements AstFactory<
 
   createPropertyAccess(expression: t.Expression, propertyName: string): t.Expression {
     return t.memberExpression(expression, t.identifier(propertyName), /* computed */ false);
+  }
+
+  createPropertyAccessChain(
+    expression: t.Expression,
+    propertyName: string,
+    isOptional: boolean,
+  ): t.Expression {
+    return t.optionalMemberExpression(
+      expression,
+      t.identifier(propertyName),
+      /* computed */ false,
+      /* optional */ isOptional,
+    );
   }
 
   createReturnStatement(expression: t.Expression | null): t.Statement {

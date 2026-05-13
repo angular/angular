@@ -223,6 +223,27 @@ function parseAtLink(link: string): {label: string; url: string} | undefined {
       );
     }
 
+    // Validate absolute `/api/...` links against the known symbol registry. This catches
+    // miscased symbol names (e.g. `/api/router/routerModule` instead of
+    // `/api/router/RouterModule`) at build time.
+    if (rawSymbol.startsWith('/api/')) {
+      const [pathPart] = rawSymbol.split('#');
+      const segments = pathPart.split('/').filter((s) => s.length > 0);
+      const symbolName = segments[segments.length - 1];
+      // Case-insensitive lookup: find the canonical symbol name in the registry.
+      const knownSymbols = Object.keys(getSymbolsAsApiEntries());
+      const canonicalSymbol = knownSymbols.find(
+        (s) => s.toLowerCase() === symbolName.toLowerCase(),
+      );
+      if (canonicalSymbol && canonicalSymbol !== symbolName) {
+        const expectedUrl = getSymbolUrl(canonicalSymbol);
+        throw Error(
+          `Broken @link: ${link}. Did you mean ${expectedUrl}? ` +
+            `Symbol names in API URLs are case-sensitive.`,
+        );
+      }
+    }
+
     return {
       url: rawSymbol,
       label: description ?? rawSymbol.split('/').pop()!,

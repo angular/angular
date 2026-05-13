@@ -22,9 +22,10 @@ import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ComponentMeta} from '../src/context';
+import {AbstractBoundTemplate} from '../src/api';
 
 /** Dummy file URL */
 function getTestFilePath(): AbsoluteFsPath {
@@ -57,7 +58,7 @@ export function getBoundTemplate(
   template: string,
   options: ParseTemplateOptions = {},
   components: Array<{selector: string | null; declaration: ClassDeclaration}> = [],
-): BoundTarget<ComponentMeta> {
+): AbstractBoundTemplate<DeclarationNode> {
   const componentsMeta = components.map(({selector, declaration}) => ({
     ref: new Reference(declaration),
     selector,
@@ -95,5 +96,30 @@ export function getBoundTemplate(
 
   const binder = new R3TargetBinder(matcher);
 
-  return binder.bind({template: parseTemplate(template, getTestFilePath(), options).nodes});
+  const boundTemplate = binder.bind({
+    template: parseTemplate(template, getTestFilePath(), options).nodes,
+  });
+  const abstractBoundTemplate: AbstractBoundTemplate<DeclarationNode> = {
+    getDirectivesOfNode(node) {
+      return boundTemplate.getDirectivesOfNode(node);
+    },
+    getReferenceTarget(node) {
+      return boundTemplate.getReferenceTarget(node);
+    },
+    getExpressionTarget(ast) {
+      return boundTemplate.getExpressionTarget(ast);
+    },
+    getUsedDirectives() {
+      return boundTemplate.getUsedDirectives().map((dir) => ({
+        ref: {node: dir.ref.node},
+        isComponent: dir.isComponent,
+      }));
+    },
+    getTemplateAst() {
+      return boundTemplate.target.template;
+    },
+  };
+  return abstractBoundTemplate;
 }
+
+function createAbstractBoundTemplate() {}

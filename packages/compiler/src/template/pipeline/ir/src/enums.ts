@@ -191,6 +191,13 @@ export enum OpKind {
   ProjectionDef,
 
   /**
+   * Emit a top-level call to the `ɵɵenableIncrementalHydrationRuntime` instruction.
+   * This op is inserted once per view (before the first `Defer` op with hydrate triggers)
+   * to activate the incremental hydration runtime for that view.
+   */
+  EnableIncrementalHydrationRuntime,
+
+  /**
    * Create a content projection slot.
    */
   Projection,
@@ -404,9 +411,9 @@ export enum ExpressionKind {
   SafeKeyedRead,
 
   /**
-   * A safe function call requiring expansion into a null check.
+   * Wraps an expression to indicate that it should be evaluated with legacy null-safe navigation semantics.
    */
-  SafeInvokeFunction,
+  SafeNavigationMigration,
 
   /**
    * An intermediate expression that will be expanded from a safe read into an explicit ternary.

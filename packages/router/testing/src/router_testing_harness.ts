@@ -10,7 +10,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DebugElement,
-  Injectable,
+  Service,
   Type,
   ViewChild,
   WritableSignal,
@@ -19,7 +19,7 @@ import {
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Router, RouterOutlet, ɵafterNextNavigation as afterNextNavigation} from '../../index';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class RootFixtureService {
   private fixture?: ComponentFixture<RootCmp>;
   private harness?: RouterTestingHarness;

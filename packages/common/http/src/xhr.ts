@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {XhrFactory} from '../../index';
 import {
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
   Injectable,
   ɵRuntimeError as RuntimeError,
-  ɵformatRuntimeError as formatRuntimeError,
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
 } from '@angular/core';
 import {from, Observable, Observer, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import {XhrFactory} from '../../index';
 
 import type {HttpBackend} from './backend';
 import {RuntimeErrorCode} from './errors';
@@ -402,15 +402,18 @@ export class HttpXhrBackend implements HttpBackend {
           xhr.addEventListener('timeout', onTimeout);
           xhr.addEventListener('abort', onError);
 
+          const reportUploadProgress = req.reportProgress || req.reportUploadProgress;
+          const reportDownloadProgress = req.reportProgress || req.reportDownloadProgress;
+
           // Progress events are only enabled if requested.
-          if (req.reportProgress) {
+          if (reportDownloadProgress) {
             // Download progress is always enabled if requested.
             xhr.addEventListener('progress', onDownProgress);
+          }
 
-            // Upload progress depends on whether there is a body to upload.
-            if (reqBody !== null && xhr.upload) {
-              xhr.upload.addEventListener('progress', onUpProgress);
-            }
+          // Upload progress depends on whether there is a body to upload.
+          if (reportUploadProgress && reqBody !== null && xhr.upload) {
+            xhr.upload.addEventListener('progress', onUpProgress);
           }
 
           // Fire the request, and notify the event stream that it was fired.
@@ -425,11 +428,12 @@ export class HttpXhrBackend implements HttpBackend {
             xhr.removeEventListener('load', onLoad);
             xhr.removeEventListener('timeout', onTimeout);
 
-            if (req.reportProgress) {
+            if (reportDownloadProgress) {
               xhr.removeEventListener('progress', onDownProgress);
-              if (reqBody !== null && xhr.upload) {
-                xhr.upload.removeEventListener('progress', onUpProgress);
-              }
+            }
+
+            if (reportUploadProgress && reqBody !== null && xhr.upload) {
+              xhr.upload.removeEventListener('progress', onUpProgress);
             }
 
             // Finally, abort the in-flight request.

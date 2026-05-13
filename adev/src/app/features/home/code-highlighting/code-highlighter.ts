@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, OnDestroy} from '@angular/core';
+import {OnDestroy, Service} from '@angular/core';
 import angularHtml from '@shikijs/langs/angular-html';
 import angularTs from '@shikijs/langs/angular-ts';
 import githubDark from '@shikijs/themes/github-dark';
@@ -14,7 +14,7 @@ import githubLight from '@shikijs/themes/github-light';
 import {CodeToHastOptions, createHighlighterCoreSync, HighlighterCore} from 'shiki/core';
 import {createOnigurumaEngine} from 'shiki/engine/oniguruma';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class CodeHighligher implements OnDestroy {
   private cachedHighligher: HighlighterCore | undefined;
 

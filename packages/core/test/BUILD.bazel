@@ -25,7 +25,6 @@ ts_project(
             "**/*_node_only_spec.ts",
         ],
     ),
-    # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         ":test_utils",

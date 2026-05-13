@@ -322,11 +322,6 @@ describe('ShadowCss', () => {
     expect(shim('.pr\\fc fung {}', 'contenta')).toEqual('.pr\\fc fung[contenta] {}');
   });
 
-  it('should handle ::shadow', () => {
-    const css = shim('x::shadow > y {}', 'contenta');
-    expect(css).toEqualCss('x[contenta] > y[contenta] {}');
-  });
-
   it('should leave calc() unchanged', () => {
     const styleStr = 'div {height:calc(100% - 55px);}';
     const css = shim(styleStr, 'contenta');
@@ -369,30 +364,30 @@ describe('ShadowCss', () => {
     // Comments should be kept in the same position as otherwise inline sourcemaps break due to
     // shift in lines.
     it('should remove inline comments without adding extra lines', () => {
-      expect(shim('/* b {c} */ b {c}', 'contenta')).toBe(' b[contenta] {c}');
+      expect(shim('/* b {} */ b {}', 'contenta')).toBe(' b[contenta] {}');
     });
 
     it('should preserve internal newlines from multiline comments', () => {
-      expect(shim('/* b {c}\n */ b {c}', 'contenta')).toBe('\n b[contenta] {c}');
+      expect(shim('/* b {}\n */ b {}', 'contenta')).toBe('\n b[contenta] {}');
     });
 
     it('should remove multiple inline comments without adding extra lines', () => {
-      expect(shim('/* b {c} */ b {c} /* a {c} */ a {c}', 'contenta')).toBe(
-        ' b[contenta] {c}  a[contenta] {c}',
+      expect(shim('/* b {} */ b {} /* a {} */ a {}', 'contenta')).toBe(
+        ' b[contenta] {}  a[contenta] {}',
       );
     });
 
     it('should keep sourceMappingURL comments', () => {
-      expect(shim('b {c} /*# sourceMappingURL=data:x */', 'contenta')).toBe(
-        'b[contenta] {c} /*# sourceMappingURL=data:x */',
+      expect(shim('b {} /*# sourceMappingURL=data:x */', 'contenta')).toBe(
+        'b[contenta] {} /*# sourceMappingURL=data:x */',
       );
-      expect(shim('b {c}/* #sourceMappingURL=data:x */', 'contenta')).toBe(
-        'b[contenta] {c}/* #sourceMappingURL=data:x */',
+      expect(shim('b {}/* #sourceMappingURL=data:x */', 'contenta')).toBe(
+        'b[contenta] {}/* #sourceMappingURL=data:x */',
       );
     });
 
     it('should handle adjacent comments', () => {
-      expect(shim('/* comment 1 */ /* comment 2 */ b {c}', 'contenta')).toBe('  b[contenta] {c}');
+      expect(shim('/* comment 1 */ /* comment 2 */ b {}', 'contenta')).toBe('  b[contenta] {}');
     });
   });
 });

@@ -316,12 +316,9 @@ describe('DefaultDomRendererV2', () => {
     });
 
     it('should create MathML elements', () => {
-      // MathMLElement is fairly recent and doesn't exist on our Saucelabs test environments
-      if (typeof MathMLElement !== 'undefined') {
-        expect(
-          document.createElementNS(NAMESPACE_URIS['math'], 'math') instanceof MathMLElement,
-        ).toBeTrue();
-      }
+      expect(
+        document.createElementNS(NAMESPACE_URIS['math'], 'math') instanceof MathMLElement,
+      ).toBeTrue();
     });
   });
 

@@ -1,7 +1,12 @@
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("//devtools/tools:defaults.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
 
 bool_flag(
     name = "debug",

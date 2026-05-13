@@ -510,7 +510,7 @@ describe('definitions', () => {
     const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
     expect(definitions[0].name).toEqual('foo');
     expect(definitions[0].kind).toBe(ts.ScriptElementKind.variableElement);
-    expect(definitions[0].textSpan).toBe('@let foo = {value: 123}');
+    expect(definitions[0].textSpan).toBe('@let foo = {value: 123};');
     assertFileNames(Array.from(definitions), ['app.html']);
   });
 

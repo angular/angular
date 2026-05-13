@@ -750,7 +750,8 @@ export type ExperimentalAutoCleanupInjectorsFeature =
  *
  * This feature is opt-in and requires `RouteReuseStrategy.shouldDestroyInjector` to return `true`
  * for the routes that should be destroyed. If the `RouteReuseStrategy` uses stored handles, it
- * should also implement `retrieveStoredHandle` to ensure we don't destroy injectors for handles that will be reattached.
+ * should also implement `retrieveStoredRouteHandles` to ensure injectors for handles that will be
+ * reattached are not destroyed.
  *
  * @experimental 21.1
  */

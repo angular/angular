@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "d3": "^7.0.0",
+    "dagre-d3-es": "^7.0.14",
+    "ngx-flamegraph": "0.1.1",
+    "todomvc-app-css": "^2.3.0",
+    "todomvc-common": "^1.0.5",
+    "webtreemap": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/firefox-webext-browser": "^143.0.0"
+  }
+}

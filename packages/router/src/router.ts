@@ -10,15 +10,15 @@ import {Location} from '@angular/common';
 import {
   ɵConsole as Console,
   EnvironmentInjector,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
-  Injectable,
   ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  Service,
   Signal,
   Type,
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
-  ɵformatRuntimeError as formatRuntimeError,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
@@ -34,7 +34,6 @@ import {
   NavigationCancel,
   NavigationCancellationCode,
   NavigationEnd,
-  NavigationError,
   NavigationTrigger,
   RedirectRequest,
 } from './events';
@@ -54,6 +53,7 @@ import {RouteReuseStrategy} from './route_reuse_strategy';
 
 import {ROUTER_CONFIGURATION} from './router_config';
 import {ROUTES} from './router_config_loader';
+import {RouterState} from './router_state';
 import {Params} from './shared';
 import {StateManager} from './statemanager/state_manager';
 import {UrlHandlingStrategy} from './url_handling_strategy';
@@ -69,7 +69,6 @@ import {
 } from './url_tree';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
-import {RouterState} from './router_state';
 
 /**
  * @description
@@ -85,7 +84,7 @@ import {RouterState} from './router_state';
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class Router {
   private get currentUrlTree() {
     return this.stateManager.getCurrentUrlTree();
@@ -318,18 +317,27 @@ export class Router {
     // position for the page.
     const restoredState = state?.navigationId ? state : null;
 
+    // When `browserUrl` was used during the original navigation, the actual route URL
+    // was stored in history state as `ɵrouterUrl`. Use it for route matching and
+    // preserve the browser URL as the displayed URL.
+    const routerUrl = state?.ɵrouterUrl ?? url;
+    if (state?.ɵrouterUrl) {
+      extras = {...extras, browserUrl: url};
+    }
+
     // Separate to NavigationStart.restoredState, we must also restore the state to
     // history.state and generate a new navigationId, since it will be overwritten
     if (state) {
       const stateCopy = {...state} as Partial<RestoredState>;
       delete stateCopy.navigationId;
       delete stateCopy.ɵrouterPageId;
+      delete stateCopy.ɵrouterUrl;
       if (Object.keys(stateCopy).length !== 0) {
         extras.state = stateCopy;
       }
     }
 
-    const urlTree = this.parseUrl(url);
+    const urlTree = this.parseUrl(routerUrl);
     this.scheduleNavigation(urlTree, source, restoredState, extras).catch((e) => {
       if (this.disposed) {
         return;

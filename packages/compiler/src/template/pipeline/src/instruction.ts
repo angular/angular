@@ -314,6 +314,10 @@ export function defer(
   return call(Identifiers.defer, args, sourceSpan);
 }
 
+export function enableIncrementalHydrationRuntime(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
+  return call(Identifiers.enableIncrementalHydrationRuntime, [], sourceSpan);
+}
+
 const deferTriggerToR3TriggerInstructionsMap = new Map([
   [
     ir.DeferTriggerKind.Idle,

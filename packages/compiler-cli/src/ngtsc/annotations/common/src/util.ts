@@ -38,6 +38,7 @@ import {
   Import,
   ImportedTypeValueReference,
   LocalTypeValueReference,
+  reflectObjectLiteral,
   ReflectionHost,
   TypeValueReference,
   TypeValueReferenceKind,
@@ -532,4 +533,27 @@ export function isAbstractClassDeclaration(clazz: ClassDeclaration): boolean {
   return ts.canHaveModifiers(clazz) && clazz.modifiers !== undefined
     ? clazz.modifiers.some((mod) => mod.kind === ts.SyntaxKind.AbstractKeyword)
     : false;
+}
+
+export function parseStandaloneOption(
+  decorator: Readonly<Decorator | null>,
+  evaluator: PartialEvaluator,
+  implicitStandaloneValue: boolean,
+): boolean {
+  if (decorator === null || decorator.args === null || decorator.args.length !== 1) {
+    return implicitStandaloneValue;
+  }
+  const meta = unwrapExpression(decorator.args[0]);
+  if (!ts.isObjectLiteralExpression(meta)) {
+    return implicitStandaloneValue;
+  }
+  const obj = reflectObjectLiteral(meta);
+  if (obj.has('standalone')) {
+    const expr = obj.get('standalone')!;
+    const resolved = evaluator.evaluate(expr);
+    // If the value is not a boolean, default to true so that it falls through to the main analysis
+    // phase which will report a proper diagnostic.
+    return typeof resolved === 'boolean' ? resolved : true;
+  }
+  return implicitStandaloneValue;
 }

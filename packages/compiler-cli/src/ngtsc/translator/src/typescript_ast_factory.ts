@@ -121,17 +121,39 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     return ts.factory.createBlock(body);
   }
 
+  createCallChain(
+    callee: ts.Expression,
+    args: ts.Expression[],
+    pure: boolean,
+    isOptional: boolean,
+  ): ts.Expression {
+    const call = ts.factory.createCallChain(
+      callee,
+      isOptional ? ts.factory.createToken(ts.SyntaxKind.QuestionDotToken) : undefined,
+      undefined,
+      args,
+    );
+    if (pure) {
+      this.markAsPure(call);
+    }
+    return call;
+  }
+
   createCallExpression(callee: ts.Expression, args: ts.Expression[], pure: boolean): ts.Expression {
     const call = ts.factory.createCallExpression(callee, undefined, args);
     if (pure) {
-      ts.addSyntheticLeadingComment(
-        call,
-        ts.SyntaxKind.MultiLineCommentTrivia,
-        this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
-        /* trailing newline */ false,
-      );
+      this.markAsPure(call);
     }
     return call;
+  }
+
+  private markAsPure<T extends ts.Node>(node: T): T {
+    return ts.addSyntheticLeadingComment(
+      node,
+      ts.SyntaxKind.MultiLineCommentTrivia,
+      this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
+      /* trailing newline */ false,
+    );
   }
 
   createConditional(
@@ -149,6 +171,18 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   }
 
   createElementAccess = ts.factory.createElementAccessExpression;
+
+  createElementAccessChain(
+    expression: ts.Expression,
+    element: ts.Expression,
+    isOptional: boolean,
+  ): ts.Expression {
+    return ts.factory.createElementAccessChain(
+      expression,
+      isOptional ? ts.factory.createToken(ts.SyntaxKind.QuestionDotToken) : undefined,
+      element,
+    );
+  }
 
   createExpressionStatement = ts.factory.createExpressionStatement;
 
@@ -274,6 +308,18 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   createParenthesizedExpression = ts.factory.createParenthesizedExpression;
 
   createPropertyAccess = ts.factory.createPropertyAccessExpression;
+
+  createPropertyAccessChain(
+    expression: ts.Expression,
+    propertyName: string,
+    isOptional: boolean,
+  ): ts.Expression {
+    return ts.factory.createPropertyAccessChain(
+      expression,
+      isOptional ? ts.factory.createToken(ts.SyntaxKind.QuestionDotToken) : undefined,
+      propertyName,
+    );
+  }
 
   createSpreadElement = ts.factory.createSpreadElement;
 
