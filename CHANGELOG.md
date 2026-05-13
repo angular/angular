@@ -1,3 +1,21 @@
+<a name="22.0.0-rc.0"></a>
+# 22.0.0-rc.0 (2026-05-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c7aef8ec5d](https://github.com/angular/angular/commit/c7aef8ec5dd12b5b1d4c703a61bd1dd43f998e18) | fix | enforce parentheses containing arguments for :host-context |
+| [8a1533c9ad](https://github.com/angular/angular/commit/8a1533c9ad7c306e03d7c50676f87b56bade5bf6) | fix | preserve leading commas in animation definitions |
+| [194f723f66](https://github.com/angular/angular/commit/194f723f6620ea3cdf490b762ecbef8df6bb2c8a) | fix | remove dedicated support for legacy shadow DOM selectors |
+| [4c25a42e98](https://github.com/angular/angular/commit/4c25a42e988e7a59d4d4dc3121cd77f7b344c048) | fix | remove deprecated shadow CSS encapsulation polyfills |
+| [7dc1017e51](https://github.com/angular/angular/commit/7dc1017e517c077a6aa8fd749392a2af1277e1b7) | fix | simplify handling of colon host with a selector list |
+| [ccb7d427e4](https://github.com/angular/angular/commit/ccb7d427e4f07506c14c50ce0cbe87c57930ebb5) | fix | type check invalid for loops |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [119a19e604](https://github.com/angular/angular/commit/119a19e604a500f295867fc2cf2e6dbd43a9d807) | fix | forward BEFORE_APP_SERIALIZED errors to ErrorHandler |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.13"></a>
 # 21.2.13 (2026-05-13)
 ### core
