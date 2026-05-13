@@ -71,7 +71,8 @@ class PureFunctionConstant extends GenericKeyFn implements SharedConstantDefinit
     // to be cloned at runtime via ɵɵcloneObject / ɵɵcloneArray. Non-flat pure functions are wrapped
     // in an arrow function to be evaluated by ɵɵpureFunction0.
     const initializer = this.isFlat ? returnExpr : new o.ArrowFunctionExpr(fnParams, returnExpr);
+    const varType = this.isFlat ? o.DYNAMIC_TYPE : undefined;
 
-    return new o.DeclareVarStmt(declName, initializer, undefined, o.StmtModifier.Final);
+    return new o.DeclareVarStmt(declName, initializer, varType, o.StmtModifier.Final);
   }
 }
