@@ -201,6 +201,8 @@ export {
   ɵɵpureFunction7,
   ɵɵpureFunction8,
   ɵɵpureFunctionV,
+  ɵɵcloneObject,
+  ɵɵcloneArray,
 } from './pure_function';
 export {ɵɵdisableBindings, ɵɵenableBindings, ɵɵresetView, ɵɵrestoreView} from './state';
 export {NO_CHANGE} from './tokens';

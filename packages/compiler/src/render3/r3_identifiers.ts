@@ -241,6 +241,8 @@ export class Identifiers {
   static pureFunction7: o.ExternalReference = {name: 'ɵɵpureFunction7', moduleName: CORE};
   static pureFunction8: o.ExternalReference = {name: 'ɵɵpureFunction8', moduleName: CORE};
   static pureFunctionV: o.ExternalReference = {name: 'ɵɵpureFunctionV', moduleName: CORE};
+  static cloneObject: o.ExternalReference = {name: 'ɵɵcloneObject', moduleName: CORE};
+  static cloneArray: o.ExternalReference = {name: 'ɵɵcloneArray', moduleName: CORE};
 
   static pipeBind1: o.ExternalReference = {name: 'ɵɵpipeBind1', moduleName: CORE};
   static pipeBind2: o.ExternalReference = {name: 'ɵɵpipeBind2', moduleName: CORE};
