@@ -13,5 +13,5 @@
   "scripts": {
     "test": "node ./test.mjs"
   },
-  "packageManager": "pnpm@11.1.0"
+  "packageManager": "pnpm@11.1.1"
 }

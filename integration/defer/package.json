@@ -29,5 +29,5 @@
     "ts-node": "10.9.2",
     "typescript": "6.0.3"
   },
-  "packageManager": "pnpm@11.1.0"
+  "packageManager": "pnpm@11.1.1"
 }
