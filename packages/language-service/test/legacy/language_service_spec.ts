@@ -109,7 +109,9 @@ describe('language service adapter', () => {
   describe('compiler options diagnostics', () => {
     it('suggests turning on strict flag', () => {
       configFileFs.overwriteConfigFile(TSCONFIG, {
-        angularCompilerOptions: {},
+        angularCompilerOptions: {
+          strictTemplates: false,
+        },
       });
       const diags = ngLS.getCompilerOptionsDiagnostics();
       const diag = diags.find(isSuggestStrictTemplatesDiag);

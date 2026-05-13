@@ -892,7 +892,7 @@ export class LanguageService {
         project.readFile(path),
       );
 
-      if (!this.options.strictTemplates) {
+      if (this.options.strictTemplates === false) {
         diagnostics.push({
           messageText:
             'Some language features are not available. ' +
