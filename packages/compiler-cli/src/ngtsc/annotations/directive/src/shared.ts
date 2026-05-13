@@ -2097,29 +2097,7 @@ function extractHostDirectives(
           `In ${compilationModeName} mode, host directive cannot be an expression. Use an identifier instead`,
         );
       }
-
-      if (emitDeclarationOnly) {
-        if (ts.isIdentifier(hostReference.node)) {
-          const importInfo = reflector.getImportOfIdentifier(hostReference.node);
-          if (importInfo) {
-            directive = new ExternalReference(importInfo.from, importInfo.name);
-          } else {
-            throw new FatalDiagnosticError(
-              ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
-              hostReference.node,
-              `In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead`,
-            );
-          }
-        } else {
-          throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
-            hostReference.node,
-            `In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead`,
-          );
-        }
-      } else {
-        directive = new WrappedNodeExpr(hostReference.node);
-      }
+      directive = new WrappedNodeExpr(hostReference.node);
     } else if (hostReference instanceof Reference) {
       directive = hostReference as Reference<ClassDeclaration>;
       nameForErrors = (fieldName: string) =>
