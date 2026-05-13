@@ -1,6 +1,5 @@
 import {Component, Input, NgModule} from '@angular/core';
 
-
 @Component({
     selector: 'some-comp', template: '',
     standalone: false

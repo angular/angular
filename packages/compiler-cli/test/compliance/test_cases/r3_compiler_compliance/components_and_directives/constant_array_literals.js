@@ -1,6 +1,6 @@
 const $c0$ = [];
 const $c1$ = [0, 1, 2];
-
+// ...
 export class MyApp {
   // ...
   static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
