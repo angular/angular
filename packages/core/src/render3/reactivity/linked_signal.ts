@@ -17,6 +17,7 @@ import {
 } from '../../../primitives/signals';
 import {Signal, ValueEqualityFn} from './api';
 import {signalAsReadonlyFn, WritableSignal} from './signal';
+import {untracked} from './untracked';
 
 const identityFn = <T>(v: T) => v;
 
@@ -27,7 +28,11 @@ const identityFn = <T>(v: T) => v;
  */
 export function linkedSignal<D>(
   computation: () => D,
-  options?: {equal?: ValueEqualityFn<NoInfer<D>>; debugName?: string},
+  options?: {
+    equal?: ValueEqualityFn<NoInfer<D>>;
+    debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
+  },
 ): WritableSignal<D>;
 
 /**
@@ -44,6 +49,7 @@ export function linkedSignal<S, D>(options: {
   computation: (source: NoInfer<S>, previous?: {source: NoInfer<S>; value: NoInfer<D>}) => D;
   equal?: ValueEqualityFn<NoInfer<D>>;
   debugName?: string;
+  set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 export function linkedSignal<S, D>(
@@ -53,9 +59,14 @@ export function linkedSignal<S, D>(
         computation: ComputationFn<S, D>;
         equal?: ValueEqualityFn<D>;
         debugName?: string;
+        set?: (value: D, rawSet: (value: D) => void) => void;
       }
     | (() => D),
-  options?: {equal?: ValueEqualityFn<D>; debugName?: string},
+  options?: {
+    equal?: ValueEqualityFn<D>;
+    debugName?: string;
+    set?: (value: D, rawSet: (value: D) => void) => void;
+  },
 ): WritableSignal<D> {
   if (typeof optionsOrComputation === 'function') {
     const getter = createLinkedSignal<D, D>(
@@ -63,20 +74,25 @@ export function linkedSignal<S, D>(
       identityFn<D>,
       options?.equal,
     ) as LinkedSignalGetter<D, D> & WritableSignal<D>;
-    return upgradeLinkedSignalGetter(getter, options?.debugName);
+    return upgradeLinkedSignalGetter(getter, options?.debugName, options?.set);
   } else {
     const getter = createLinkedSignal<S, D>(
       optionsOrComputation.source,
       optionsOrComputation.computation,
       optionsOrComputation.equal,
     );
-    return upgradeLinkedSignalGetter(getter, optionsOrComputation.debugName);
+    return upgradeLinkedSignalGetter(
+      getter,
+      optionsOrComputation.debugName,
+      optionsOrComputation.set,
+    );
   }
 }
 
 function upgradeLinkedSignalGetter<S, D>(
   getter: LinkedSignalGetter<S, D>,
   debugName?: string,
+  customSet?: (value: D, rawSet: (value: D) => void) => void,
 ): WritableSignal<D> {
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     getter[SIGNAL].debugName = debugName;
@@ -86,8 +102,15 @@ function upgradeLinkedSignalGetter<S, D>(
   const node = getter[SIGNAL] as LinkedSignalNode<S, D>;
   const upgradedGetter = getter as LinkedSignalGetter<S, D> & WritableSignal<D>;
 
-  upgradedGetter.set = (newValue: D) => linkedSignalSetFn(node, newValue);
-  upgradedGetter.update = (updateFn: (value: D) => D) => linkedSignalUpdateFn(node, updateFn);
+  if (customSet !== undefined) {
+    const rawSet = (newValue: D) => linkedSignalSetFn(node, newValue);
+    upgradedGetter.set = (newValue: D) => customSet(newValue, rawSet);
+    upgradedGetter.update = (updateFn: (value: D) => D) =>
+      customSet(updateFn(untracked(getter)), rawSet);
+  } else {
+    upgradedGetter.set = (newValue: D) => linkedSignalSetFn(node, newValue);
+    upgradedGetter.update = (updateFn: (value: D) => D) => linkedSignalUpdateFn(node, updateFn);
+  }
   upgradedGetter.asReadonly = signalAsReadonlyFn.bind(getter as any) as () => Signal<D>;
 
   return upgradedGetter;

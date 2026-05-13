@@ -1168,6 +1168,7 @@ export class KeyValueDiffers {
 export function linkedSignal<D>(computation: () => D, options?: {
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public
@@ -1179,6 +1180,7 @@ export function linkedSignal<S, D>(options: {
     }) => D;
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public

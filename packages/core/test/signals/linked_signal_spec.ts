@@ -8,7 +8,7 @@
 
 import {isSignal, linkedSignal, signal, computed} from '../../src/core';
 import {defaultEquals, setPostProducerCreatedFn} from '../../primitives/signals';
-import {testingEffect} from './effect_util';
+import {flushEffects, testingEffect} from './effect_util';
 
 describe('linkedSignal', () => {
   it('should conform to the writable signals contract', () => {
@@ -438,6 +438,86 @@ describe('linkedSignal', () => {
       shouldThrow = false;
       source.set(2);
       expect(derived()).toBe('2, hasPrevious: false');
+    });
+  });
+
+  describe('with custom setter', () => {
+    it('should run custom setter on set()', () => {
+      const customCalls: any[] = [];
+      const source = signal(10);
+      const derived = linkedSignal(() => source() * 2, {
+        set: (value, rawSet) => {
+          customCalls.push({value});
+          rawSet(value);
+        },
+      });
+
+      expect(derived()).toBe(20);
+
+      derived.set(30);
+      expect(customCalls).toEqual([{value: 30}]);
+      expect(derived()).toBe(30);
+    });
+
+    it('should support routing set() to the source signal', () => {
+      const tempC = signal(0);
+      const tempF = linkedSignal(() => (tempC() * 9) / 5 + 32, {
+        set: (valF) => tempC.set(((valF - 32) * 5) / 9),
+      });
+
+      expect(tempF()).toBe(32);
+
+      // Setting Fahrenheit should update Celsius, which reactively updates Fahrenheit
+      tempF.set(212);
+      expect(tempC()).toBe(100);
+      expect(tempF()).toBe(212);
+    });
+
+    it('should run custom setter on update() and pass updated value', () => {
+      const customCalls: any[] = [];
+      const source = signal(10);
+      const derived = linkedSignal(() => source() * 2, {
+        set: (value, rawSet) => {
+          customCalls.push({value});
+          rawSet(value);
+        },
+      });
+
+      expect(derived()).toBe(20);
+
+      derived.update((v) => v + 5);
+      expect(customCalls).toEqual([{value: 25}]);
+      expect(derived()).toBe(25);
+    });
+
+    it('should untrack current value read during update()', () => {
+      const source = signal(10);
+      const derived = linkedSignal(() => source() * 2, {
+        set: (value, rawSet) => {
+          rawSet(value);
+        },
+      });
+
+      const effectRuns: number[] = [];
+      const trigger = signal(0);
+      const watchDestroy = testingEffect(() => {
+        trigger();
+        derived.update((v) => v + 1);
+        effectRuns.push(derived());
+      });
+
+      try {
+        flushEffects();
+        expect(derived()).toBe(21);
+        expect(effectRuns).toEqual([21]);
+
+        trigger.set(1);
+        flushEffects();
+        expect(derived()).toBe(22);
+        expect(effectRuns).toEqual([21, 22]);
+      } finally {
+        watchDestroy();
+      }
     });
   });
 });
