@@ -1266,6 +1266,11 @@ export function transformExpressionsInOp(
     case OpKind.StoreLet:
       op.value = transformExpressionsInExpression(op.value, transform, flags);
       break;
+    case OpKind.ForeignComponent:
+      if (op.props !== null) {
+        op.props = transformExpressionsInExpression(op.props, transform, flags);
+      }
+      break;
     case OpKind.Advance:
     case OpKind.Container:
     case OpKind.ContainerEnd:

@@ -1094,8 +1094,8 @@ runInEachFileSystem(() => {
 
         expect(diagnostics).toBeUndefined();
         expect(analysis?.foreignImports).toHaveSize(2);
-        expect(analysis!.foreignImports![0].debugName).toBe('FancyButton');
-        expect(analysis!.foreignImports![1].debugName).toBe('FancyMenu');
+        expect(analysis!.foreignImports![0].name).toBe('FancyButton');
+        expect(analysis!.foreignImports![1].name).toBe('FancyMenu');
       });
 
       it('should produce diagnostic for imports in non-standalone component', () => {

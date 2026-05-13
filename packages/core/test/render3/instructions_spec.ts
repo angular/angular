@@ -17,6 +17,7 @@ import {
   ɵɵproperty,
   ɵɵstyleMap,
   ɵɵstyleProp,
+  ɵɵforeignComponent,
 } from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/attribute_marker';
 import {

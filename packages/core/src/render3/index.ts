@@ -83,6 +83,7 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
   ɵɵelementStart,
+  ɵɵforeignComponent,
   ɵɵgetCurrentView,
   ɵɵdomProperty,
   ɵɵinjectAttribute,
