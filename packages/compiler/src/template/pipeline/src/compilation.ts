@@ -7,8 +7,10 @@
  */
 
 import {ConstantPool} from '../../../constant_pool';
+import {SelectorlessMatcher} from '../../../directive_matching';
 import * as o from '../../../output/output_ast';
-import {R3ComponentDeferMetadata} from '../../../render3/view/api';
+import {R3ComponentDeferMetadata, R3ForeignComponentMetadata} from '../../../render3/view/api';
+import * as t from '../../../render3/r3_ast';
 import * as ir from '../ir';
 
 export enum CompilationJobKind {
@@ -75,6 +77,8 @@ export abstract class CompilationJob {
  * embedded views or host bindings.
  */
 export class ComponentCompilationJob extends CompilationJob {
+  private foreignMatcher: SelectorlessMatcher<R3ForeignComponentMetadata> | null;
+
   constructor(
     componentName: string,
     pool: ConstantPool,
@@ -86,10 +90,29 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly relativeTemplatePath: string | null,
     readonly enableDebugLocations: boolean,
     legacyOptionalChaining: boolean,
+    readonly foreignImports?: R3ForeignComponentMetadata[] | null,
   ) {
     super(componentName, pool, mode, legacyOptionalChaining);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
+
+    if (foreignImports && foreignImports.length > 0) {
+      const registry = new Map<string, R3ForeignComponentMetadata[]>();
+      for (const meta of foreignImports) {
+        registry.set(meta.name, [meta]);
+      }
+      this.foreignMatcher = new SelectorlessMatcher(registry);
+    } else {
+      this.foreignMatcher = null;
+    }
+  }
+
+  getForeignComponent(element: t.Element): R3ForeignComponentMetadata | null {
+    if (this.foreignMatcher === null) {
+      return null;
+    }
+    const matches = this.foreignMatcher.match(element.name);
+    return matches.length > 0 ? matches[0] : null;
   }
 
   override kind = CompilationJobKind.Tmpl;
