@@ -325,6 +325,7 @@ export class DeferredBlockLoading extends BlockNode implements Node {
 export class DeferredBlockError extends BlockNode implements Node {
   constructor(
     public children: Node[],
+    public retryCount: number | null,
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,
     startSourceSpan: ParseSourceSpan,

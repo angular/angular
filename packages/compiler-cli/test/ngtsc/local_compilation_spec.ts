@@ -2218,8 +2218,8 @@ runInEachFileSystem(() => {
         // are located in a single function (since we can't detect in
         // the local mode which components belong to which block).
         expect(cleanNewLines(jsContents)).toContain(
-          'const AppCmp_DeferFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+          'const AppCmp_DeferFn = () => [() => /* @ts-ignore */ ' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), () => /* @ts-ignore */ ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)];',
         );
 
@@ -2233,8 +2233,8 @@ runInEachFileSystem(() => {
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
         expect(cleanNewLines(jsContents)).toContain(
-          'ɵsetClassMetadataAsync(AppCmp, () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+          'ɵsetClassMetadataAsync(AppCmp, () => [() => /* @ts-ignore */ ' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), () => /* @ts-ignore */ ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
             '(DeferredCmpA, DeferredCmpB) => {',
         );
@@ -2365,8 +2365,8 @@ runInEachFileSystem(() => {
         // the local mode which components belong to which block).
         // Eager dependencies are **not* included here.
         expect(cleanNewLines(jsContents)).toContain(
-          'const AppCmp_DeferFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+          'const AppCmp_DeferFn = () => [() => /* @ts-ignore */ ' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), () => /* @ts-ignore */ ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)];',
         );
 
@@ -2383,8 +2383,8 @@ runInEachFileSystem(() => {
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
         expect(cleanNewLines(jsContents)).toContain(
-          'ɵsetClassMetadataAsync(AppCmp, () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+          'ɵsetClassMetadataAsync(AppCmp, () => [() => /* @ts-ignore */ ' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), () => /* @ts-ignore */ ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
             '(DeferredCmpA, DeferredCmpB) => {',
         );
@@ -2453,11 +2453,11 @@ runInEachFileSystem(() => {
           // Expect that we generate 2 different defer functions
           // (one for each component).
           expect(cleanNewLines(jsContents)).toContain(
-            'const AppCmpA_DeferFn = () => [/* @ts-ignore */ ' +
+            'const AppCmpA_DeferFn = () => [() => /* @ts-ignore */ ' +
               'import("./deferred-deps").then(m => m.DeferredCmpA)]',
           );
           expect(cleanNewLines(jsContents)).toContain(
-            'const AppCmpB_DeferFn = () => [/* @ts-ignore */ ' +
+            'const AppCmpB_DeferFn = () => [() => /* @ts-ignore */ ' +
               'import("./deferred-deps").then(m => m.DeferredCmpB)]',
           );
 
@@ -2470,11 +2470,11 @@ runInEachFileSystem(() => {
 
           // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
           expect(cleanNewLines(jsContents)).toContain(
-            'ɵsetClassMetadataAsync(AppCmpA, () => [/* @ts-ignore */ ' +
+            'ɵsetClassMetadataAsync(AppCmpA, () => [() => /* @ts-ignore */ ' +
               'import("./deferred-deps").then(m => m.DeferredCmpA)]',
           );
           expect(cleanNewLines(jsContents)).toContain(
-            'ɵsetClassMetadataAsync(AppCmpB, () => [/* @ts-ignore */ ' +
+            'ɵsetClassMetadataAsync(AppCmpB, () => [() => /* @ts-ignore */ ' +
               'import("./deferred-deps").then(m => m.DeferredCmpB)]',
           );
         },

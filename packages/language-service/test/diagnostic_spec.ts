@@ -103,6 +103,25 @@ describe('getSemanticDiagnostics', () => {
     expect(diags).toEqual([]);
   });
 
+  it('should not report diagnostics for defer error retry syntax', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        templateUrl: './app.html',
+        standalone: false,
+      })
+      export class AppComponent {}
+    `,
+      'app.html': `@defer { Loaded } @error (retry 2) { Failed }`,
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const diags = project.getDiagnosticsForFile('app.html');
+    expect(diags).toEqual([]);
+  });
+
   it('should not report external template diagnostics on the TS file', () => {
     const files = {
       'app.ts': `

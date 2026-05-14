@@ -136,6 +136,9 @@ function internalCompileSetClassMetadataAsync(
 /**
  * Compiles the function that loads the dependencies for the
  * entire component in `setClassMetadataAsync`.
+ *
+ * Each dynamic import is wrapped in an outer arrow function (a "thunk") to
+ * match the resolver shape used by `@defer` runtime dependency loading.
  */
 export function compileComponentMetadataAsyncResolver(
   dependencies: R3DeferPerComponentDependency[],
@@ -150,13 +153,16 @@ export function compileComponentMetadataAsyncResolver(
       );
 
     // e.g. `import('./cmp-a').then(...)`
-    return new o.DynamicImportExpr(importPath)
+    const importThen = new o.DynamicImportExpr(importPath)
       .prop('then')
       .callFn([innerFn], undefined, undefined, [
         // Necessary, because we might not generate extensions for the path
         // and TS may try to enforce it based on the compiler options.
         tsIgnoreComment(),
       ]);
+
+    // Wrap in an outer thunk: `() => import('./cmp-a').then(m => m.CmpA)`.
+    return o.arrowFn([], importThen);
   });
 
   // e.g. `() => [ ... ];`

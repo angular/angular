@@ -1705,9 +1705,9 @@ describe('TestBed', () => {
         setClassMetadataAsync(
           ComponentClass,
           function () {
-            const promises: Array<Promise<Type<unknown>>> = deferrableDependencies.map(
+            const promises: Array<() => Promise<Type<unknown>>> = deferrableDependencies.map(
               // Emulates a dynamic import, e.g. `import('./cmp-a').then(m => m.CmpA)`
-              (dep) => new Promise((resolve) => setTimeout(() => resolve(dep))),
+              (dep) => () => new Promise((resolve) => setTimeout(() => resolve(dep))),
             );
             return promises;
           },
@@ -1908,9 +1908,9 @@ describe('TestBed', () => {
       setClassMetadataAsync(
         ParentCmp,
         function () {
-          const promises: Array<Promise<Type<unknown>>> = deferrableDependencies.map(
+          const promises: Array<() => Promise<Type<unknown>>> = deferrableDependencies.map(
             // Emulates a dynamic import, e.g. `import('./cmp-a').then(m => m.CmpA)`
-            (dep) => new Promise((resolve) => setTimeout(() => resolve(dep))),
+            (dep) => () => new Promise((resolve) => setTimeout(() => resolve(dep))),
           );
           return promises;
         },

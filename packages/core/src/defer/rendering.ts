@@ -485,3 +485,14 @@ export function ɵɵdeferEnableTimerScheduling(
     applyDeferBlockStateWithSchedulingImpl = applyDeferBlockStateWithScheduling;
   }
 }
+
+/**
+ * Enables retry support on a defer block. The compiler emits a call to this
+ * instruction only when the corresponding `@error (retry N)` parameter is
+ * present
+ *
+ * @codeGenApi
+ */
+export function ɵɵdeferEnableRetry(tDetails: TDeferBlockDetails, retryCount: number): void {
+  tDetails.maxRetryCount = retryCount;
+}

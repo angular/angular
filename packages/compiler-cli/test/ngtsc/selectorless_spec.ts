@@ -1117,9 +1117,9 @@ runInEachFileSystem(() => {
       expect(jsContents).not.toContain('import { DepDir');
       expect(jsContents).not.toContain('import { DepPipe');
       expect(cleanNewLines(jsContents)).toContain(
-        'const Comp_Defer_1_DepsFn = () => [/* @ts-ignore */ import("./dep-comp").then(m => m.DepComp), ' +
-          '/* @ts-ignore */ import("./dep-dir").then(m => m.DepDir), ' +
-          '/* @ts-ignore */ import("./dep-pipe").then(m => m.DepPipe)];',
+        'const Comp_Defer_1_DepsFn = () => [() => /* @ts-ignore */ import("./dep-comp").then(m => m.DepComp), ' +
+          '() => /* @ts-ignore */ import("./dep-dir").then(m => m.DepDir), ' +
+          '() => /* @ts-ignore */ import("./dep-pipe").then(m => m.DepPipe)];',
       );
       expect(jsContents).toContain('ɵɵdefer(1, 0, Comp_Defer_1_DepsFn);');
     });

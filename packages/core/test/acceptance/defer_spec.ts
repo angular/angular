@@ -38,6 +38,8 @@ import {
   ViewChild,
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+  DeferBlockRetryHandler,
+  provideDeferBlockRetryHandler,
 } from '../../src/core';
 import {IDLE_SERVICE, IdleService, provideIdleServiceWith} from '../../src/defer/idle_service';
 import {IdleScheduler} from '../../src/defer/idle_scheduler';
@@ -1227,6 +1229,245 @@ describe('@defer', () => {
       expect(errorMsg).toContain('Failed to load module X');
     });
 
+    it('should not invoke direct type dependencies from resolvers as loader thunks', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Loaded!',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'simple-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when isVisible) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder!
+          } @loading {
+            Loading!
+          } @error (retry 3) {
+            Failed!
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      let invocationCount = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            invocationCount++;
+            return [NestedCmp];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      clearDirectiveDefs(MyCmp);
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder!');
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Loaded!');
+      expect(fixture.nativeElement.outerHTML).not.toContain('Failed!');
+      expect(invocationCount).toBe(1);
+    });
+
+    it('should retry dependency loading via @error (retry N) and provideDeferBlockRetryHandler', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Loaded!',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'simple-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when isVisible) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder!
+          } @error (retry 2) {
+            Failed!
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      let invocationCount = 0;
+      const seenAttempts: number[] = [];
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [
+            () =>
+              new Promise((resolve, reject) => {
+                const attempt = invocationCount++;
+                setTimeout(() => {
+                  if (attempt < 2) {
+                    reject(new Error('boom #' + attempt));
+                  } else {
+                    resolve(NestedCmp);
+                  }
+                });
+              }),
+          ];
+        },
+      };
+
+      const dependencyLoader: DeferBlockRetryHandler = (load, ctx) => {
+        seenAttempts.push(ctx.attempt);
+        return load();
+      };
+
+      TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          provideDeferBlockRetryHandler(dependencyLoader),
+        ],
+      });
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      // Drain pending promises across all 3 attempts.
+      await allPendingDynamicImports();
+      await allPendingDynamicImports();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // After two retries the third attempt succeeds and primary content renders.
+      expect(fixture.nativeElement.outerHTML).toContain('Loaded!');
+      expect(fixture.nativeElement.outerHTML).not.toContain('Failed!');
+      expect(invocationCount).toBe(3);
+      // The handler should have been invoked with attempt indexes 0, 1, 2.
+      expect(seenAttempts).toEqual([0, 1, 2]);
+    });
+
+    it('default retry handler should load dependencies on the first attempt without any provider override', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Loaded!',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'simple-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when isVisible) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder!
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      let invocationCount = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            invocationCount++;
+            return [() => Promise.resolve(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Loaded!');
+      expect(invocationCount).toBe(1);
+    });
+
+    it('should fall through to the @error block once retries are exhausted', async () => {
+      @Component({
+        selector: 'simple-app',
+        template: `
+          @defer (when isVisible) {
+            Loaded!
+          } @placeholder {
+            Placeholder!
+          } @error (retry 1) {
+            Failed!
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      let invocationCount = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            invocationCount++;
+            return [failedDynamicImport()];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // 1 initial attempt + 1 retry = 2 invocations, then error block renders.
+      expect(invocationCount).toBe(2);
+      expect(fixture.nativeElement.outerHTML).toContain('Failed!');
+    });
     it('should not render `@error` block if loaded component has errors', async () => {
       @Component({
         selector: 'cmp-with-error',

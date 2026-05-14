@@ -423,6 +423,21 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a defer block with an `@error (retry N)` parameter",
+      "inputFiles": ["deferred_with_error_retry.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_error_retry_template.js",
+              "generated": "deferred_with_error_retry.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

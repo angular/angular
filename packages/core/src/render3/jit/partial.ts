@@ -68,7 +68,7 @@ export function ɵɵngDeclareClassMetadata(decl: {
  */
 export function ɵɵngDeclareClassMetadataAsync(decl: {
   type: Type<any>;
-  resolveDeferredDeps: () => Promise<Type<unknown>>[];
+  resolveDeferredDeps: () => Array<() => Promise<Type<unknown>>>;
   resolveMetadata: (...types: Type<unknown>[]) => {
     decorators: any[];
     ctorParameters: (() => any[]) | null;
