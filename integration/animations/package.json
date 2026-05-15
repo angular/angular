@@ -22,7 +22,7 @@
     "@angular/ssr": "22.0.0-rc.0",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
-    "zone.js": "0.16.1"
+    "zone.js": "0.16.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "22.0.0-rc.0",
@@ -34,7 +34,7 @@
     "concurrently": "9.2.1",
     "jasmine": "6.2.0",
     "jasmine-core": "6.2.0",
-    "puppeteer": "24.43.0",
+    "puppeteer": "24.43.1",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"
   },
