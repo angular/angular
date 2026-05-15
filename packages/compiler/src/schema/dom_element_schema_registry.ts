@@ -12,6 +12,9 @@ import {dashCaseToCamelCase} from '../util';
 import {SECURITY_SCHEMA} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
+const SVG_PREFIX = ':svg:';
+const MATH_PREFIX = ':math:';
+
 const BOOLEAN = 'boolean';
 const NUMBER = 'number';
 const STRING = 'string';
@@ -444,9 +447,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       propName = this.getMappedPropName(propName);
     }
 
-    // Make sure comparisons are case insensitive, so that case differences between attribute and
-    // property names do not have a security impact.
     tagName = tagName.toLowerCase();
+    if (tagName.startsWith(SVG_PREFIX)) {
+      tagName = tagName.substring(SVG_PREFIX.length);
+    } else if (tagName.startsWith(MATH_PREFIX)) {
+      tagName = tagName.substring(MATH_PREFIX.length);
+    }
     propName = propName.toLowerCase();
     let ctx = SECURITY_SCHEMA()[tagName + '|' + propName];
     if (ctx) {
