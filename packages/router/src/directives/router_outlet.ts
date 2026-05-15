@@ -27,14 +27,14 @@ import {
   SimpleChanges,
   ViewContainerRef,
 } from '@angular/core';
-import {combineLatest, Observable, of, Subscription} from 'rxjs';
+import {combineLatest, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
-import {Params, PRIMARY_OUTLET} from '../shared';
+import {PRIMARY_OUTLET} from '../shared';
 import {ComponentInputBindingOptions} from '../router_config';
 
 /**

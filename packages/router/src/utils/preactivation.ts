@@ -10,7 +10,6 @@ import {
   Injector,
   ProviderToken,
   ɵisInjectable as isInjectable,
-  EnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
 import {RunGuardsAndResolvers} from '../models';

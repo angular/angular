@@ -17,7 +17,6 @@ import {
 
 import {RuntimeErrorCode} from '../errors';
 import {Route, Routes} from '../models';
-import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
 /**
