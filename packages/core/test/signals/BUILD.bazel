@@ -12,6 +12,7 @@ ts_project(
         "//packages/core",
         "//packages/core/primitives/signals",
         "//packages/core/src/util",
+        "//packages/private/testing",
     ],
 )
 
@@ -20,6 +21,7 @@ jasmine_test(
     data = [
         ":signals_lib",
     ],
+    node_options = ["--expose-gc"],
 )
 
 ng_web_test_suite(
