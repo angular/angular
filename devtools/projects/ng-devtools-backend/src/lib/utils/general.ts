@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ngDebugApiIsSupported, ngDebugClient} from './ng-debug-api/ng-debug-api';
+import {ngDebugApiIsSupported, ngDebugClient} from '../ng-debug-api/ng-debug-api';
 
 export const runOutsideAngular = (f: () => void): void => {
   const w = window as any;

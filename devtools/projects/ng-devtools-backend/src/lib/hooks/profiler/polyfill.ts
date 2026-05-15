@@ -11,7 +11,7 @@ import {
   getLViewFromDirectiveOrElementInstance,
   METADATA_PROPERTY_NAME,
 } from '../../directive-forest';
-import {runOutsideAngular} from '../../utils';
+import {runOutsideAngular} from '../../utils/general';
 import {IdentityTracker, NodeArray} from '../identity-tracker';
 
 import {getLifeCycleName, Profiler} from './shared';

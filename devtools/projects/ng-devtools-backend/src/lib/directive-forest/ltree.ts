@@ -10,7 +10,7 @@ import semver from 'semver';
 
 import {getDirectiveName} from '../highlighter';
 import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
-import {isCustomElement} from '../utils';
+import {isCustomElement} from '../utils/general';
 import {VERSION} from '../version';
 
 let HEADER_OFFSET = 19;

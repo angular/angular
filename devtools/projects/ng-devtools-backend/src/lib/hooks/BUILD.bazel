@@ -15,8 +15,8 @@ ts_project(
         ":identity_tracker",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
         "//devtools/projects/ng-devtools-backend/src/lib/hooks/profiler",
+        "//devtools/projects/ng-devtools-backend/src/lib/utils",
         "//devtools/projects/protocol",
     ],
 )
