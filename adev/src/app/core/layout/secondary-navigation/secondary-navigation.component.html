@@ -3,7 +3,7 @@
   class="adev-secondary-nav-mask"
   [class.docs-nav-secondary--open]="isSecondaryNavVisible()"
   (docsClickOutside)="close()"
-  [docsClickOutsideIgnore]="[PRIMARY_NAV_ID]"
+  [docsClickOutsideIgnore]="[PRIMARY_NAV_ID, SEARCH_DIALOG_ID]"
 >
   <div
     class="docs-nav-secondary docs-scroll-track-transparent"
