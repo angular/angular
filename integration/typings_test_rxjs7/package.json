@@ -21,7 +21,7 @@
     "@types/node": "^20.14.8",
     "rxjs": "^7.0.0",
     "typescript": "6.0.3",
-    "zone.js": "0.16.1"
+    "zone.js": "0.16.2"
   },
   "scripts": {
     "test": "tsc"

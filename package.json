@@ -120,7 +120,7 @@
     "magic-string": "^0.30.8",
     "protractor": "^7.0.0",
     "reflect-metadata": "^0.2.0",
-    "rollup": "4.60.3",
+    "rollup": "4.60.4",
     "rollup-plugin-dts": "^6.1.1",
     "rxjs": "^7.0.0",
     "selenium-webdriver": "3.5.0",
@@ -132,7 +132,7 @@
     "typescript": "6.0.3",
     "ws": "^8.15.0",
     "yargs": "^18.0.0",
-    "zone.js": "0.16.1"
+    "zone.js": "0.16.2"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
@@ -151,7 +151,7 @@
     "cldr": "8.0.0",
     "cldrjs": "0.5.5",
     "conventional-changelog": "^7.0.0",
-    "cypress": "15.14.2",
+    "cypress": "15.15.0",
     "firebase-tools": "^15.0.0",
     "get-tsconfig": "^4.10.1",
     "gulp": "^5.0.0",
