@@ -14,12 +14,12 @@ Use rules when field behavior depends on other field values or needs to update r
 
 ## How rules work
 
-Rules bind reactive logic to specific fields in your form. Most rules accept a reactive logic function as an optional argument. The reactive logic function automatically recomputes whenever the signals it references change, just like a `computed`.
+Rules bind reactive logic to specific fields in your form. Most conditional rules accept an options object with a `when` function. The `when` function automatically recomputes whenever the signals it references change, just like a `computed`.
 
 ```ts
 const orderForm = form(this.orderModel, (schemaPath) => {
-  disabled(schemaPath.couponCode, ({valueOf}) => valueOf(schemaPath.total) < 50);
-  //~~~~~~ ~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  disabled(schemaPath.couponCode, {when: ({valueOf}) => valueOf(schemaPath.total) < 50});
+  //~~~~~~ ~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //rule     path                   reactive logic function
 });
 ```
@@ -70,7 +70,7 @@ export class Settings {
 
 ### Conditional disabling
 
-To disable a field based on conditions, provide a reactive logic function that returns `true` (disabled) or `false` (enabled):
+To disable a field based on conditions, provide a `when` function that returns `true` (disabled) or `false` (enabled):
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -98,7 +98,7 @@ export class Order {
   });
 
   orderForm = form(this.orderModel, (schemaPath) => {
-    disabled(schemaPath.couponCode, ({valueOf}) => valueOf(schemaPath.total) < 50);
+    disabled(schemaPath.couponCode, {when: ({valueOf}) => valueOf(schemaPath.total) < 50});
   });
 }
 ```
@@ -143,14 +143,15 @@ export class Order {
   });
 
   orderForm = form(this.orderModel, (schemaPath) => {
-    disabled(schemaPath.couponCode, ({valueOf}) =>
-      valueOf(schemaPath.total) < 50 ? 'Order must be $50 or more to use a coupon' : false,
-    );
+    disabled(schemaPath.couponCode, {
+      when: ({valueOf}) =>
+        valueOf(schemaPath.total) < 50 ? 'Order must be $50 or more to use a coupon' : false,
+    });
   });
 }
 ```
 
-The reactive logic function returns:
+The `when` function returns:
 
 - A **string** to disable the field with a reason
 - `false` to enable the field (not just any falsy value - use `false` explicitly)
@@ -163,12 +164,13 @@ You can also call `disabled()` multiple times on the same field, and all of the 
 
 ```angular-ts
 orderForm = form(this.orderModel, (schemaPath) => {
-  disabled(schemaPath.promoCode, ({valueOf}) =>
-    !valueOf(schemaPath.hasAccount) ? 'You must have an account to use promo codes' : false,
-  );
-  disabled(schemaPath.promoCode, ({valueOf}) =>
-    valueOf(schemaPath.total) < 25 ? 'Order must be at least $25' : false,
-  );
+  disabled(schemaPath.promoCode, {
+    when: ({valueOf}) =>
+      !valueOf(schemaPath.hasAccount) ? 'You must have an account to use promo codes' : false,
+  });
+  disabled(schemaPath.promoCode, {
+    when: ({valueOf}) => (valueOf(schemaPath.total) < 25 ? 'Order must be at least $25' : false),
+  });
 });
 ```
 
@@ -184,7 +186,7 @@ NOTE: Like disabled fields, hidden fields also skip validation. See the [Validat
 
 ### Basic field hiding
 
-Use `hidden()` with a reactive logic function that returns `true` (hidden) or `false` (visible):
+Use `hidden()` with a `when` function that returns `true` (hidden) or `false` (visible):
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -214,7 +216,7 @@ export class Profile {
   });
 
   profileForm = form(this.profileModel, (schemaPath) => {
-    hidden(schemaPath.publicUrl, ({valueOf}) => !valueOf(schemaPath.isPublic));
+    hidden(schemaPath.publicUrl, {when: ({valueOf}) => !valueOf(schemaPath.isPublic)});
   });
 }
 ```
@@ -264,7 +266,7 @@ The `[FormField]` directive automatically binds the `readonly` attribute based o
 
 ### Conditional readonly
 
-To make a field readonly based on conditions, provide a reactive logic function:
+To make a field readonly based on conditions, provide a `when` function:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -292,7 +294,7 @@ export class Document {
   });
 
   documentForm = form(this.documentModel, (schemaPath) => {
-    readonly(schemaPath.title, ({valueOf}) => valueOf(schemaPath.isLocked));
+    readonly(schemaPath.title, {when: ({valueOf}) => valueOf(schemaPath.isLocked)});
   });
 }
 ```
@@ -580,10 +582,12 @@ export class Promo {
   });
 
   promoForm = form(this.promoModel, (schemaPath) => {
-    disabled(schemaPath.promoCode, ({valueOf}) =>
-      !valueOf(schemaPath.hasAccount) ? 'You must have an account' : false,
-    );
-    hidden(schemaPath.promoCode, ({valueOf}) => valueOf(schemaPath.subscriptionType) === 'free');
+    disabled(schemaPath.promoCode, {
+      when: ({valueOf}) => (!valueOf(schemaPath.hasAccount) ? 'You must have an account' : false),
+    });
+    hidden(schemaPath.promoCode, {
+      when: ({valueOf}) => valueOf(schemaPath.subscriptionType) === 'free',
+    });
     debounce(schemaPath.promoCode, 300);
     metadata(schemaPath.promoCode, PLACEHOLDER, () => 'Enter promo code');
   });
