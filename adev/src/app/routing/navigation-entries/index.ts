@@ -949,6 +949,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'ai/design-patterns',
         contentPath: 'ai/design-patterns',
       },
+      {
+        label: 'WebMCP',
+        path: 'ai/webmcp',
+        contentPath: 'ai/webmcp',
+        status: 'new',
+      },
     ],
   },
   {
