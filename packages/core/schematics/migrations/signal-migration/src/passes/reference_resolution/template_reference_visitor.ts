@@ -248,6 +248,7 @@ export class TemplateExpressionReferenceVisitor<
   private activeTmplAstNode: ExprContext | null = null;
   private detectedInputReferences: TmplInputExpressionReference<ExprContext, D>[] = [];
   private isInsideObjectShorthandExpression = false;
+  private isInsideAssignment = false;
   private insideConditionalExpressionsWithReads: AST[] = [];
 
   constructor(
@@ -289,17 +290,20 @@ export class TemplateExpressionReferenceVisitor<
   }
 
   override visitPropertyRead(ast: PropertyRead, context: AST[]) {
-    this._inspectPropertyAccess(ast, false, context);
+    this._inspectPropertyAccess(ast, context);
     super.visitPropertyRead(ast, context);
   }
   override visitSafePropertyRead(ast: SafePropertyRead, context: AST[]) {
-    this._inspectPropertyAccess(ast, false, context);
+    this._inspectPropertyAccess(ast, context);
     super.visitPropertyRead(ast, context);
   }
 
   override visitBinary(ast: Binary, context: AST[]) {
-    if (ast.operation === '=' && ast.left instanceof PropertyRead) {
-      this._inspectPropertyAccess(ast.left, true, [...context, ast, ast.left]);
+    if (ast.operation === '=') {
+      this.isInsideAssignment = true;
+      this.visit(ast.left, [...context, ast]);
+      this.isInsideAssignment = false;
+      this.visit(ast.right, [...context, ast]);
     } else {
       super.visitBinary(ast, context);
     }
@@ -317,7 +321,7 @@ export class TemplateExpressionReferenceVisitor<
    * Inspects the property access and attempts to resolve whether they access
    * a known field. If so, the result is captured.
    */
-  private _inspectPropertyAccess(ast: PropertyRead, isAssignment: boolean, astPath: AST[]) {
+  private _inspectPropertyAccess(ast: PropertyRead, astPath: AST[]) {
     if (
       this.fieldNamesToConsiderForReferenceLookup !== null &&
       !this.fieldNamesToConsiderForReferenceLookup.has(ast.name)
@@ -326,7 +330,7 @@ export class TemplateExpressionReferenceVisitor<
     }
 
     const isWrite = !!(
-      isAssignment ||
+      this.isInsideAssignment ||
       (this.activeTmplAstNode && isTwoWayBindingNode(this.activeTmplAstNode))
     );
 
