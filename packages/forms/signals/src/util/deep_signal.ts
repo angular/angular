@@ -9,11 +9,13 @@
 import {computed, Signal, untracked, WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 import {isArray} from './type_guards';
+import {formDebugObj} from './debug';
 
 /**
  * Creates a writable signal for a specific property on a source writeable signal.
  * @param source A writeable signal to derive from
  * @param prop A signal of a property key of the source value
+ * @param debugName Debug name of the signal
  * @returns A writeable signal for the given property of the source value.
  * @template S The source value type
  * @template K The key type for S
@@ -21,9 +23,13 @@ import {isArray} from './type_guards';
 export function deepSignal<S, K extends keyof S>(
   source: WritableSignal<S>,
   prop: Signal<K>,
+  debugName?: string,
 ): WritableSignal<S[K]> {
   // Memoize the property.
-  const read = computed(() => source()[prop()]) as WritableSignal<S[K]>;
+  const read = computed(
+    () => source()[prop()],
+    ngDevMode ? formDebugObj(debugName, '') : undefined,
+  ) as WritableSignal<S[K]>;
 
   read[SIGNAL] = source[SIGNAL];
   read.set = (value: S[K]) => {

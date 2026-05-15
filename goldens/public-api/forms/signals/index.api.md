@@ -205,6 +205,7 @@ export interface FormFieldBindingOptions {
 
 // @public
 export interface FormOptions<TModel> {
+    debugName?: string;
     injector?: Injector;
     name?: string;
     submission?: FormSubmitOptions<TModel, unknown>;
@@ -717,7 +718,7 @@ export function submit<TModel>(form: FieldTree<TModel>, options?: NoInfer<FormSu
 export function submit<TModel>(form: FieldTree<TModel>, action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>): Promise<boolean>;
 
 // @public
-export function transformedValue<TValue, TRaw>(value: ModelSignal<TValue>, options: TransformedValueOptions<TValue, TRaw>): TransformedValueSignal<TRaw>;
+export function transformedValue<TValue, TRaw>(value: ModelSignal<TValue>, options: TransformedValueOptions<TValue, TRaw>, debugFormFieldName?: string): TransformedValueSignal<TRaw>;
 
 // @public
 export interface TransformedValueOptions<TValue, TRaw> {

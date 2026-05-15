@@ -15,7 +15,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import {RuntimeErrorCode} from '../errors';
-import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
+import {BasicFieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
@@ -55,6 +55,8 @@ export interface FormOptions<TModel> {
   name?: string;
   /** Options that define how to handle form submission. */
   submission?: FormSubmitOptions<TModel, unknown>;
+  /** A debug name for the form. Used in Angular DevTools to identify the node. */
+  debugName?: string;
 }
 
 /**
@@ -194,8 +196,8 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
     options?.submission as FormSubmitOptions<unknown, unknown> | undefined,
   );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
-  const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
-  fieldManager.createFieldManagementEffect(fieldRoot.structure);
+  const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter, options?.debugName);
+  fieldManager.createFieldManagementEffect(fieldRoot.structure, options?.debugName);
 
   return fieldRoot.fieldTree as FieldTree<TModel>;
 }

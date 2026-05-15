@@ -38,6 +38,7 @@ export function nativeControlCreate(
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >,
   validityMonitor: InputValidityMonitor,
+  debugFormFieldName?: string,
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
@@ -51,6 +52,7 @@ export function nativeControlCreate(
     // Our parse function doesn't care about the raw value that gets passed in,
     // It just reads the newly parsed value directly off the input element.
     (_rawValue: unknown) => getNativeControlValue(input, parent.state().value, validityMonitor),
+    debugFormFieldName,
   );
 
   parseErrorsSource.set(parser.errors);

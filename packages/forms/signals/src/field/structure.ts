@@ -23,6 +23,7 @@ import {LogicNode} from '../schema/logic_node';
 import type {FieldPathNode} from '../schema/path_node';
 import {deepSignal} from '../util/deep_signal';
 import {isArray, isObject} from '../util/type_guards';
+import {formDebugObj} from '../util/debug';
 import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
 import type {FieldNode, ParentFieldNode} from './node';
@@ -226,64 +227,78 @@ export abstract class FieldNodeStructure {
     initialKeyInParent: string | undefined,
   ): {keyInParent: Signal<string>; isOrphaned: Signal<boolean>} {
     if (kind === 'root') {
-      return {keyInParent: ROOT_KEY_IN_PARENT, isOrphaned: FALSE_SIGNAL};
+      return {
+        keyInParent: ROOT_KEY_IN_PARENT,
+        isOrphaned: ngDevMode
+          ? computed(() => false, formDebugObj(this.node.debugName, 'FALSE_SIGNAL'))
+          : FALSE_SIGNAL,
+      };
     }
 
     const parent = this.parent!;
     let lastKnownKey = initialKeyInParent!;
 
-    const keyOrOrphan = computed(() => {
-      if (parent.structure.isOrphaned()) {
-        return ORPHAN_TOKEN;
-      }
+    const keyOrOrphan = computed(
+      () => {
+        if (parent.structure.isOrphaned()) {
+          return ORPHAN_TOKEN;
+        }
 
-      const map = parent.structure.childrenMap();
-      if (!map) {
-        return ORPHAN_TOKEN;
-      }
+        const map = parent.structure.childrenMap();
+        if (!map) {
+          return ORPHAN_TOKEN;
+        }
 
-      // Fast path: check last known key
-      const lastKnownChild = map.byPropertyKey.get(lastKnownKey);
-      if (lastKnownChild && lastKnownChild.node === this.node) {
-        return lastKnownKey;
-      }
+        // Fast path: check last known key
+        const lastKnownChild = map.byPropertyKey.get(lastKnownKey);
+        if (lastKnownChild && lastKnownChild.node === this.node) {
+          return lastKnownKey;
+        }
 
-      if (identityInParent === undefined) {
-        // Object property: if not at last known key, it's orphaned
-        return ORPHAN_TOKEN;
-      } else {
-        // Array element: scan for node in childrenMap
-        for (const [key, child] of map.byPropertyKey) {
-          if (child.node === this.node) {
-            return (lastKnownKey = key);
+        if (identityInParent === undefined) {
+          // Object property: if not at last known key, it's orphaned
+          return ORPHAN_TOKEN;
+        } else {
+          // Array element: scan for node in childrenMap
+          for (const [key, child] of map.byPropertyKey) {
+            if (child.node === this.node) {
+              return (lastKnownKey = key);
+            }
+          }
+          return ORPHAN_TOKEN;
+        }
+      },
+      ngDevMode ? formDebugObj(this.node.debugName, 'keyOrOrphan') : undefined,
+    );
+
+    const isOrphaned = computed(
+      () => keyOrOrphan() === ORPHAN_TOKEN,
+      ngDevMode ? formDebugObj(this.node.debugName, 'isOrphaned') : undefined,
+    );
+
+    const keyInParent = computed(
+      () => {
+        const key = keyOrOrphan();
+        if (key === ORPHAN_TOKEN) {
+          if (identityInParent === undefined) {
+            throw new RuntimeError(
+              RuntimeErrorCode.ORPHAN_FIELD_PROPERTY,
+              ngDevMode &&
+                `Orphan field, looking for property '${initialKeyInParent}' of ${getDebugName(
+                  parent,
+                )}`,
+            );
+          } else {
+            throw new RuntimeError(
+              RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
+              ngDevMode && `Orphan field, can't find element in array ${getDebugName(parent)}`,
+            );
           }
         }
-        return ORPHAN_TOKEN;
-      }
-    });
-
-    const isOrphaned = computed(() => keyOrOrphan() === ORPHAN_TOKEN);
-
-    const keyInParent = computed(() => {
-      const key = keyOrOrphan();
-      if (key === ORPHAN_TOKEN) {
-        if (identityInParent === undefined) {
-          throw new RuntimeError(
-            RuntimeErrorCode.ORPHAN_FIELD_PROPERTY,
-            ngDevMode &&
-              `Orphan field, looking for property '${initialKeyInParent}' of ${getDebugName(
-                parent,
-              )}`,
-          );
-        } else {
-          throw new RuntimeError(
-            RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
-            ngDevMode && `Orphan field, can't find element in array ${getDebugName(parent)}`,
-          );
-        }
-      }
-      return key;
-    });
+        return key;
+      },
+      ngDevMode ? formDebugObj(this.node.debugName, 'keyInParent') : undefined,
+    );
 
     return {keyInParent, isOrphaned};
   }
@@ -295,6 +310,7 @@ export abstract class FieldNodeStructure {
         value: unknown,
         previous: {source: unknown; value: ChildrenData | undefined} | undefined,
       ): ChildrenData | undefined => this.computeChildrenMap(value, previous?.value, false),
+      ...(ngDevMode ? formDebugObj(this.node.debugName, 'childrenMap') : undefined),
     });
   }
 
@@ -424,7 +440,10 @@ export abstract class FieldNodeStructure {
    * reactive consumers aren't notified unless the field at a key actually changes.
    */
   private createReader(key: string): Signal<FieldNode | undefined> {
-    return computed(() => this.childrenMap()?.byPropertyKey.get(key)?.node);
+    return computed(
+      () => this.childrenMap()?.byPropertyKey.get(key)?.node,
+      ngDevMode ? formDebugObj(this.node.debugName, 'reader') : undefined,
+    );
   }
 }
 
@@ -439,14 +458,28 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
   }
 
   override get pathKeys(): Signal<readonly string[]> {
-    return ROOT_PATH_KEYS;
+    return ngDevMode
+      ? computed(() => [], formDebugObj(this.node.debugName, 'ROOT_PATH_KEYS'))
+      : ROOT_PATH_KEYS;
   }
 
   override get keyInParent(): Signal<string> {
-    return ROOT_KEY_IN_PARENT;
+    return ngDevMode
+      ? computed(
+          () => {
+            throw new RuntimeError(
+              RuntimeErrorCode.ROOT_FIELD_NO_PARENT,
+              'The top-level field in the form has no parent.',
+            );
+          },
+          formDebugObj(this.node.debugName, 'ROOT_KEY_IN_PARENT'),
+        )
+      : ROOT_KEY_IN_PARENT;
   }
 
-  override readonly isOrphaned = FALSE_SIGNAL;
+  override readonly isOrphaned = ngDevMode
+    ? computed(() => false, formDebugObj(this.node.debugName, 'FALSE_SIGNAL'))
+    : FALSE_SIGNAL;
 
   /** @internal */
   override readonly childrenMap: Signal<ChildrenData | undefined>;
@@ -518,9 +551,12 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     this.isOrphaned = signals.isOrphaned;
     this.keyInParent = signals.keyInParent;
 
-    this.pathKeys = computed(() => [...parent.structure.pathKeys(), this.keyInParent()]);
+    this.pathKeys = computed(
+      () => [...parent.structure.pathKeys(), this.keyInParent()],
+      ngDevMode ? formDebugObj(node.debugName, 'pathKeys') : undefined,
+    );
 
-    this.value = deepSignal(this.parent.structure.value, this.keyInParent);
+    this.value = deepSignal(this.parent.structure.value, this.keyInParent, node.debugName);
     this.childrenMap = this.createChildrenMap();
     this.fieldManager.structures.add(this);
   }
@@ -543,6 +579,8 @@ export interface RootFieldNodeOptions {
   readonly fieldManager: FormFieldManager;
   /** This allows for more granular field and state management, and is currently used for compat. */
   readonly fieldAdapter: FieldAdapter;
+  /** The debug name of the form. Used in Angular DevTools to cluster all internal form nodes. */
+  readonly debugName?: string;
 }
 
 /** Options passed when constructing a child field node. */
@@ -561,6 +599,8 @@ export interface ChildFieldNodeOptions {
   readonly identityInParent: TrackingKey | undefined;
   /** This allows for more granular field and state management, and is currently used for compat. */
   readonly fieldAdapter: FieldAdapter;
+  /** The debug name of the form. Used in Angular DevTools to cluster all internal form nodes. */
+  readonly debugName?: string;
 }
 
 /** Options passed when constructing a field node. */
@@ -574,10 +614,7 @@ const ROOT_PATH_KEYS = computed<readonly string[]>(() => []);
  * do not have a parent. This signal will throw if it is read.
  */
 const ROOT_KEY_IN_PARENT = computed(() => {
-  throw new RuntimeError(
-    RuntimeErrorCode.ROOT_FIELD_NO_PARENT,
-    ngDevMode && 'The top-level field in the form has no parent.',
-  );
+  throw new RuntimeError(RuntimeErrorCode.ROOT_FIELD_NO_PARENT, null);
 });
 
 /** Gets a human readable name for a field node for use in error messages. */
@@ -593,7 +630,7 @@ interface MutableChildrenData {
 /**
  * Derived data regarding child fields for a specific parent field.
  */
-interface ChildrenData {
+export interface ChildrenData {
   /**
    * Tracks `ChildData` for each property key within the parent.
    */

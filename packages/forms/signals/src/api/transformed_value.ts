@@ -17,6 +17,7 @@ import {createParser} from '../util/parser';
 import type {ValidationError} from './rules';
 import type {OneOrMany} from './types';
 import {ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION} from '@angular/forms';
+import {formFieldDebugObj} from '../util/debug';
 
 /**
  * Result of parsing a raw value into a model value.
@@ -114,12 +115,16 @@ export interface TransformedValueSignal<TRaw> extends WritableSignal<TRaw> {
 export function transformedValue<TValue, TRaw>(
   value: ModelSignal<TValue>,
   options: TransformedValueOptions<TValue, TRaw>,
+  debugFormFieldName?: string,
 ): TransformedValueSignal<TRaw> {
   const {parse, format} = options;
-  const parser = createParser(value, value.set, parse);
+  const parser = createParser(value, value.set, parse, debugFormFieldName);
 
   // Create the result signal with overridden set/update and a `parseErrors` property.
-  const rawValue = linkedSignal(() => format(value()));
+  const rawValue = linkedSignal(
+    () => format(value()),
+    ngDevMode ? formFieldDebugObj(debugFormFieldName, 'rawValue') : undefined,
+  );
   const result = rawValue as WritableSignal<TRaw> & {
     parseErrors: Signal<readonly ValidationError.WithoutFieldTree[]>;
   };

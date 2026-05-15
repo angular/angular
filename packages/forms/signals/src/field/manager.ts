@@ -9,6 +9,7 @@
 import {APP_ID, effect, Injector, untracked} from '@angular/core';
 import type {FormSubmitOptions} from '../api/types';
 import type {FieldNodeStructure} from './structure';
+import {formDebugObj} from '../util/debug';
 
 /**
  * Manages the collection of fields associated with a given `form`.
@@ -51,8 +52,9 @@ export class FormFieldManager {
    * elements are now orphaned and not connected to the root. Thus they will be destroyed.
    *
    * @param root The root field structure.
+   * @param debugName Debug name of the effect.
    */
-  createFieldManagementEffect(root: FieldNodeStructure): void {
+  createFieldManagementEffect(root: FieldNodeStructure, debugName?: string): void {
     effect(
       () => {
         const liveStructures = new Set<FieldNodeStructure>();
@@ -66,7 +68,10 @@ export class FormFieldManager {
           }
         }
       },
-      {injector: this.injector},
+      {
+        injector: this.injector,
+        ...(ngDevMode ? formDebugObj(debugName, 'fieldManagement') : undefined),
+      },
     );
   }
 

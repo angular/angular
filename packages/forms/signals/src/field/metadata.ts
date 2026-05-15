@@ -15,6 +15,7 @@ import {
 import {MetadataKey} from '../api/rules/metadata';
 import {RuntimeErrorCode} from '../errors';
 import type {FieldNode} from './node';
+import {formDebugObj} from '../util/debug';
 
 /**
  * Tracks custom metadata associated with a `FieldNode`.
@@ -41,7 +42,10 @@ export class FieldMetadataState {
             const logic = this.node.logicNode.logic.getMetadata(key);
             const result = key.create!(
               this.node,
-              computed(() => logic.compute(this.node.context)),
+              computed(
+                () => logic.compute(this.node.context),
+                ngDevMode ? formDebugObj(this.node.debugName, 'result') : undefined,
+              ),
             );
             this.metadata.set(key, result);
           }
@@ -64,7 +68,10 @@ export class FieldMetadataState {
         const logic = this.node.logicNode.logic.getMetadata(key);
         this.metadata.set(
           key,
-          computed(() => logic.compute(this.node.context)),
+          computed(
+            () => logic.compute(this.node.context),
+            ngDevMode ? formDebugObj(this.node.debugName, 'metadata') : undefined,
+          ),
         );
       }
     }

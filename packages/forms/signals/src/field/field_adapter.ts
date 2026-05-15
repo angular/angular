@@ -59,6 +59,7 @@ export interface FieldAdapter {
     model: WritableSignal<TValue>,
     pathNode: FieldPathNode,
     adapter: FieldAdapter,
+    debugName?: string,
   ): FieldNode;
 }
 
@@ -78,6 +79,7 @@ export class BasicFieldAdapter implements FieldAdapter {
     value: WritableSignal<TValue>,
     pathNode: FieldPathNode,
     adapter: FieldAdapter,
+    debugName?: string,
   ): FieldNode {
     return new FieldNode({
       kind: 'root',
@@ -86,6 +88,7 @@ export class BasicFieldAdapter implements FieldAdapter {
       pathNode,
       logic: pathNode.builder.build(),
       fieldAdapter: adapter,
+      debugName,
     });
   }
 

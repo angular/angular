@@ -23,6 +23,7 @@ import {CompatFieldNode} from './compat_field_node';
 import {CompatNodeState} from './compat_node_state';
 import {CompatChildFieldNodeOptions, CompatStructure} from './compat_structure';
 import {CompatValidationState} from './compat_validation_state';
+import {formDebugObj} from '../../src/util/debug';
 
 /**
  * This is a tree-shakable Field adapter that can create a compat node
@@ -120,9 +121,10 @@ export function createCompatNode(options: FieldNodeOptions) {
   const control = (
     options.kind === 'root'
       ? options.value
-      : computed(() => {
-          return options.parent.value()[options.initialKeyInParent];
-        })
+      : computed(
+          () => options.parent.value()[options.initialKeyInParent],
+          ngDevMode ? formDebugObj(options.debugName, 'control') : undefined,
+        )
   ) as Signal<AbstractControl>;
 
   return new CompatFieldNode({

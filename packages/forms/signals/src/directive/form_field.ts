@@ -38,7 +38,6 @@ import {InteropNgControl} from '../controls/interop_ng_control';
 import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
-import type {FormUiControl} from '../api/control';
 import {shallowArrayEquals} from '../util/array';
 import {bindingUpdated, type ControlBindingKey, createBindings} from './bindings';
 import {customControlCreate} from './control_custom';
@@ -51,6 +50,7 @@ import {
   type NativeFormControl,
 } from './native';
 import {InputValidityMonitor} from './input_validity_monitor';
+import {formFieldDebugObj} from '../util/debug';
 
 export const ɵNgFieldDirective: unique symbol = Symbol();
 
@@ -77,6 +77,9 @@ export interface FormFieldBindingOptions {
 export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_FIELD' : '',
 );
+
+// Index used for the creation of FormField instance debug name.
+let debugFormFieldIdx = 0;
 
 /**
  * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
@@ -110,15 +113,31 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
   ],
 })
 export class FormField<T> {
+  // Due to the reactive nature of the form field and the inability
+  // to create a debug name that relies on another signal, since
+  // that name must be passed to consumer signals options (those that
+  // need to be identified), we resort to an index-based debug name that,
+  // at the very least, will help for internal signal grouping/clustering
+  // in Angular DevTools.
+  private readonly debugName: string | undefined = ngDevMode
+    ? 'formField_' + debugFormFieldIdx++
+    : undefined;
+
   /**
    * The field to bind to the underlying form control.
    */
-  readonly field = input.required<Field<T>>({alias: 'formField'});
+  readonly field = input.required<Field<T>>({
+    alias: 'formField',
+    ...(ngDevMode ? formFieldDebugObj(this.debugName, 'field') : undefined),
+  });
 
   /**
    * `FieldState` for the currently bound field.
    */
-  readonly state = computed<FieldState<T>>(() => this.field()());
+  readonly state = computed<FieldState<T>>(
+    () => this.field()(),
+    ngDevMode ? formFieldDebugObj(this.debugName, 'state') : undefined,
+  );
 
   /** @internal */
   readonly renderer = inject(Renderer2);
@@ -165,7 +184,7 @@ export class FormField<T> {
   /** @internal */
   readonly parseErrorsSource = signal<
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
-  >(undefined);
+  >(undefined, ngDevMode ? formFieldDebugObj(this.debugName, 'parseErrorsSource') : undefined);
 
   /** A lazily instantiated fake `NgControl`. */
   private _interopNgControl: InteropNgControl | undefined;
@@ -184,6 +203,7 @@ export class FormField<T> {
         fieldTree: untracked(this.state).fieldTree,
         formField: this as FormField<unknown>,
       })) ?? [],
+    ngDevMode ? formFieldDebugObj(this.debugName, 'parseErrors') : undefined,
   );
 
   /** Errors associated with this form field. */
@@ -192,7 +212,10 @@ export class FormField<T> {
       this.state()
         .errors()
         .filter((err) => !err.formField || err.formField === this),
-    {equal: shallowArrayEquals},
+    {
+      equal: shallowArrayEquals,
+      ...(ngDevMode ? formFieldDebugObj(this.debugName, 'errors') : undefined),
+    },
   );
 
   /** Whether this `FormField` has been registered as a binding on its associated `FieldState`. */
@@ -246,7 +269,14 @@ export class FormField<T> {
    */
   private installClassBindingEffect(): void {
     const classes = Object.entries(this.config?.classes ?? {}).map(
-      ([className, computation]) => [className, computed(() => computation(this))] as const,
+      ([className, computation]) =>
+        [
+          className,
+          computed(
+            () => computation(this),
+            ngDevMode ? formFieldDebugObj(this.debugName, className) : undefined,
+          ),
+        ] as const,
     );
     if (classes.length === 0) {
       return;
@@ -269,7 +299,10 @@ export class FormField<T> {
           }
         },
       },
-      {injector: this.injector},
+      {
+        injector: this.injector,
+        ...(ngDevMode ? formFieldDebugObj(this.debugName, 'applyClassNames') : undefined),
+      },
     );
   }
 
@@ -352,7 +385,10 @@ export class FormField<T> {
             );
           }
         },
-        {injector: this.injector},
+        {
+          injector: this.injector,
+          ...formFieldDebugObj(this.debugName, 'registerAsBinding'),
+        },
       );
     }
   }
@@ -379,7 +415,7 @@ export class FormField<T> {
     }
 
     if (this.controlValueAccessor) {
-      this.ɵngControlUpdate = cvaControlCreate(host, this as FormField<unknown>);
+      this.ɵngControlUpdate = cvaControlCreate(host, this as FormField<unknown>, this.debugName);
     } else if (host.customControl) {
       this.ɵngControlUpdate = customControlCreate(host, this as FormField<unknown>);
     } else if (this.elementIsNativeFormElement) {
@@ -388,6 +424,7 @@ export class FormField<T> {
         this as FormField<unknown>,
         this.parseErrorsSource,
         this.validityMonitor,
+        this.debugName,
       );
     } else {
       throw new RuntimeError(
