@@ -8,7 +8,7 @@
 
 import {ContainerType, Descriptor, NestedProp, PropType} from '../../../../protocol';
 
-import {isSignal, safelyReadSignalValue, unwrapSignal} from '../utils';
+import {isSignal, safelyReadSignalValue, unwrapSignal} from '../utils/general';
 
 import {getDescriptor, getKeys} from './object-utils';
 

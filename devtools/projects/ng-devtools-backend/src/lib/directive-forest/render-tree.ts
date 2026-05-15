@@ -14,7 +14,7 @@ import {HydrationStatus} from '../../../../protocol';
 
 import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
-import {isCustomElement} from '../utils';
+import {isCustomElement} from '../utils/general';
 import {
   ControlFlowBlocksIterator,
   createControlFlowTreeNode,

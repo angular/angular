@@ -17,7 +17,7 @@ import {
 
 import {getDirectiveName} from '../highlighter';
 import {ComponentTreeNode} from '../interfaces';
-import {isCustomElement, runOutsideAngular} from '../utils';
+import {isCustomElement, runOutsideAngular} from '../utils/general';
 
 import {initializeOrGetDirectiveForestHooks} from '.';
 import {DirectiveForestHooks} from './hooks';

@@ -24,9 +24,9 @@ ts_test_library(
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
         "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/utils",
         "//devtools/projects/protocol",
     ],
 )

@@ -49,7 +49,7 @@ import {mutateNestedProp} from '../property-mutation';
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
 import {getAppRoots} from './get-roots';
 import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './core-enums';
-import {unwrapSignal} from '../utils';
+import {unwrapSignal} from '../utils/general';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
