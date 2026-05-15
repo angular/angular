@@ -51,6 +51,9 @@ export const COMPONENT_VARIABLE = '%COMP%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
+const ISOLATED_SHADOW_STYLE_HOST = Symbol('ngIsolatedShadowStyleHost');
+const USE_SHADOW_ROOT_AS_ISOLATED_HOST = false;
+
 /**
  * The default value for the `REMOVE_STYLES_ON_COMPONENT_DESTROY` DI token.
  */
@@ -156,31 +159,41 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       return this.defaultRenderer;
     }
 
-    if (
-      typeof ngServerMode !== 'undefined' &&
-      ngServerMode &&
-      (type.encapsulation === ViewEncapsulation.ShadowDom ||
-        type.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom)
-    ) {
-      // Domino does not support shadow DOM.
-      type = {...type, encapsulation: ViewEncapsulation.Emulated};
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+      if (type.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) {
+        throw new RuntimeError(
+          RuntimeErrorCode.EXPERIMENTAL_ISOLATED_SHADOW_DOM_UNSUPPORTED_ON_SERVER,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            'ViewEncapsulation.ExperimentalIsolatedShadowDom is not supported in server-side rendering.',
+        );
+      }
+
+      if (type.encapsulation === ViewEncapsulation.ShadowDom) {
+        // Domino does not support shadow DOM.
+        type = {...type, encapsulation: ViewEncapsulation.Emulated};
+      }
     }
 
-    const renderer = this.getOrCreateRenderer(element, type);
+    const isolatedStyleHost = getIsolatedShadowStyleHost(element);
+    const renderer = this.getOrCreateRenderer(element, type, isolatedStyleHost);
     // Renderers have different logic due to different encapsulation behaviours.
     // Ex: for emulated, an attribute is added to the element.
     if (renderer instanceof EmulatedEncapsulationDomRenderer2) {
-      renderer.applyToHost(element);
+      renderer.applyToHost(element, isolatedStyleHost);
     } else if (renderer instanceof NoneEncapsulationDomRenderer) {
-      renderer.applyStyles();
+      renderer.applyStyles(isolatedStyleHost);
     }
 
     return renderer;
   }
 
-  private getOrCreateRenderer(element: any, type: RendererType2): Renderer2 {
+  private getOrCreateRenderer(
+    element: any,
+    type: RendererType2,
+    isolatedStyleHost?: Node,
+  ): Renderer2 {
     const rendererByCompId = this.rendererByCompId;
-    let renderer = rendererByCompId.get(type.id);
+    let renderer = isolatedStyleHost ? undefined : rendererByCompId.get(type.id);
 
     if (!renderer) {
       const doc = this.doc;
@@ -223,6 +236,8 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             this.nonce,
             tracingService,
+            sharedStylesHost,
+            USE_SHADOW_ROOT_AS_ISOLATED_HOST,
           );
 
         default:
@@ -238,7 +253,9 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
           break;
       }
 
-      rendererByCompId.set(type.id, renderer);
+      if (!isolatedStyleHost) {
+        rendererByCompId.set(type.id, renderer);
+      }
     }
 
     return renderer;
@@ -304,12 +321,14 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   appendChild(parent: any, newChild: any): void {
     const targetParent = isTemplateNode(parent) ? parent.content : parent;
+    copyIsolatedShadowStyleHost(targetParent, newChild);
     targetParent.appendChild(newChild);
   }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
       const targetParent = isTemplateNode(parent) ? parent.content : parent;
+      copyIsolatedShadowStyleHost(targetParent, newChild);
       targetParent.insertBefore(newChild, refChild);
     }
   }
@@ -491,6 +510,20 @@ function isTemplateNode(node: any): node is HTMLTemplateElement {
   return node.tagName === 'TEMPLATE' && node.content !== undefined;
 }
 
+function getIsolatedShadowStyleHost(node: any): Node | undefined {
+  return node?.[ISOLATED_SHADOW_STYLE_HOST];
+}
+
+function setIsolatedShadowStyleHost(node: any, styleHost: Node | undefined): void {
+  if (styleHost) {
+    node[ISOLATED_SHADOW_STYLE_HOST] = styleHost;
+  }
+}
+
+function copyIsolatedShadowStyleHost(parent: any, child: any): void {
+  setIsolatedShadowStyleHost(child, getIsolatedShadowStyleHost(parent));
+}
+
 class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
@@ -503,14 +536,25 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     nonce: string | null,
     tracingService: TracingService<TracingSnapshot> | null,
     private sharedStylesHost?: SharedStylesHost,
+    private readonly registerSharedStylesHost = true,
   ) {
     super(eventManager, doc, ngZone, tracingService);
-    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    const existingShadowRoot = this.registerSharedStylesHost ? null : (hostEl as any).shadowRoot;
+    this.shadowRoot = existingShadowRoot ?? (hostEl as any).attachShadow({mode: 'open'});
+    if (existingShadowRoot) {
+      existingShadowRoot.textContent = '';
+    }
 
-    // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
-    // This is optional as it is not used by ExperimentalIsolatedShadowDom.
-    if (this.sharedStylesHost) {
-      this.sharedStylesHost.addHost(this.shadowRoot);
+    setIsolatedShadowStyleHost(
+      this.shadowRoot,
+      this.registerSharedStylesHost ? undefined : this.shadowRoot,
+    );
+
+    // ShadowDom registers the shadow root as a shared styles host so all global component
+    // styles apply there. ExperimentalIsolatedShadowDom only uses SharedStylesHost for
+    // child component styles that are rendered through this shadow root.
+    if (this.registerSharedStylesHost) {
+      this.sharedStylesHost!.addHost(this.shadowRoot);
     }
     let styles = component.styles;
     if (ngDevMode) {
@@ -554,6 +598,12 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     return node === this.hostEl ? this.shadowRoot : node;
   }
 
+  override createElement(name: string, namespace?: string): any {
+    const element = super.createElement(name, namespace);
+    setIsolatedShadowStyleHost(element, getIsolatedShadowStyleHost(this.shadowRoot));
+    return element;
+  }
+
   override appendChild(parent: any, newChild: any): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
   }
@@ -580,6 +630,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
   private readonly styleUrls?: string[];
+  private hostNode?: Node;
 
   constructor(
     eventManager: EventManager,
@@ -603,8 +654,9 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     this.styleUrls = component.getExternalStyles?.(compId);
   }
 
-  applyStyles(): void {
-    this.sharedStylesHost.addStyles(this.styles, this.styleUrls);
+  applyStyles(hostNode?: Node): void {
+    this.hostNode = hostNode;
+    this.sharedStylesHost.addStyles(this.styles, this.styleUrls, hostNode);
   }
 
   override destroy(): void {
@@ -612,7 +664,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
       return;
     }
     if (allLeavingAnimations.size === 0) {
-      this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
+      this.sharedStylesHost.removeStyles(this.styles, this.styleUrls, this.hostNode);
     }
   }
 }
@@ -646,8 +698,8 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     this.hostAttr = shimHostAttribute(compId);
   }
 
-  applyToHost(element: any): void {
-    this.applyStyles();
+  applyToHost(element: any, hostNode?: Node): void {
+    this.applyStyles(hostNode);
     this.setAttribute(element, this.hostAttr, '');
   }
 

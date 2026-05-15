@@ -333,6 +333,73 @@ describe('hot module replacement', () => {
     );
   });
 
+  it('should preserve native slot content when replacing an isolated shadow DOM component', () => {
+    // Domino doesn't support shadow DOM.
+    if (isNode) {
+      return;
+    }
+
+    let instance!: ChildCmp;
+    const initialMetadata: Component = {
+      encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
+      selector: 'child-cmp',
+      template: '<slot></slot><span>{{state}}</span>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {
+      state = 0;
+
+      constructor() {
+        instance = this;
+      }
+    }
+
+    @Component({
+      selector: 'projected-cmp',
+      template: '<button>Projected</button>',
+    })
+    class ProjectedCmp {}
+
+    @Component({
+      imports: [ChildCmp, ProjectedCmp],
+      template: '<child-cmp>Projected text <projected-cmp></projected-cmp></child-cmp>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    const getHost = () => fixture.nativeElement.querySelector('child-cmp') as HTMLElement;
+    const getSlot = () => getHost().shadowRoot!.querySelector('slot') as HTMLSlotElement;
+
+    expect(
+      getSlot()
+        .assignedNodes()
+        .map((node) => node.textContent?.trim()),
+    ).toEqual(['Projected text', 'Projected']);
+
+    instance.state = 1;
+    fixture.detectChanges();
+    expectHTML(getHost().shadowRoot!, '<slot></slot><span>1</span>');
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      template: '<slot></slot><span>Changed {{state}}</span>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    });
+    fixture.detectChanges();
+
+    expect(
+      getSlot()
+        .assignedNodes()
+        .map((node) => node.textContent?.trim()),
+    ).toEqual(['Projected text', 'Projected']);
+    expectHTML(getHost().shadowRoot!, '<slot></slot><span>Changed 1</span>');
+  });
+
   it('should continue binding inputs to a component that is replaced', () => {
     const initialMetadata: Component = {
       selector: 'child-cmp',
@@ -2400,7 +2467,7 @@ describe('hot module replacement', () => {
     );
   }
 
-  function expectHTML(element: HTMLElement, expectation: string) {
+  function expectHTML(element: HTMLElement | ShadowRoot, expectation: string) {
     const actual = element.innerHTML
       .replace(/<!--(\W|\w)*?-->/g, '')
       .replace(/\s(ng-reflect|_nghost|_ngcontent)-\S*="[^"]*"/g, '');
