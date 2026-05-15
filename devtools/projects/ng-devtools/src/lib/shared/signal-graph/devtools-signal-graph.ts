@@ -103,33 +103,41 @@ function processClusterToClusterDependencies(
   clusters: Cluster[],
   clusterIdxMap: Map<string, number>,
 ) {
-  // Creates a map of consumer index to cluster ID.
+  // Creates a map of consumer index to cluster IDs.
   // We don't care about the producers since we are
   // interested only in cluster-to-cluster relationships,
   // so using either the consumers or the producers works.
-  const consumerToClusterMap = new Map<number, string>();
+  const consumerToClustersMap = new Map<number, string[]>();
   for (const cluster of clusters) {
     for (const consumerIdx of cluster.consumers) {
-      consumerToClusterMap.set(consumerIdx, cluster.id);
+      const existingClusters = consumerToClustersMap.get(consumerIdx);
+      const clusters = existingClusters ?? [];
+      clusters.push(cluster.id);
+
+      if (!existingClusters) {
+        consumerToClustersMap.set(consumerIdx, clusters);
+      }
     }
   }
 
-  for (let i = 0; i < graph.nodes.length; i++) {
-    const producerClusterId = consumerToClusterMap.get(i);
-    const node = graph.nodes[i];
+  for (const [i, node] of graph.nodes.entries()) {
+    if (!isSignalNode(node) || !node.clusterId) {
+      continue;
+    }
+    const producerClusterIds = consumerToClustersMap.get(i);
+    if (!producerClusterIds?.length) {
+      continue;
+    }
 
     // Add an edge for all nodes that are part of a cluster
     // which are produced by nodes in other clusters.
-    if (
-      producerClusterId &&
-      isSignalNode(node) &&
-      node.clusterId &&
-      node.clusterId !== producerClusterId
-    ) {
-      graph.edges.push({
-        producer: clusterIdxMap.get(producerClusterId)!,
-        consumer: clusterIdxMap.get(node.clusterId)!,
-      });
+    for (const producerClusterId of producerClusterIds) {
+      if (node.clusterId !== producerClusterId) {
+        graph.edges.push({
+          producer: clusterIdxMap.get(producerClusterId)!,
+          consumer: clusterIdxMap.get(node.clusterId)!,
+        });
+      }
     }
   }
 }
