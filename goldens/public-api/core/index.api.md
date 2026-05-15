@@ -275,7 +275,6 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
-    foreignImports?: ForeignComponent[];
     imports?: (Type<any> | ReadonlyArray<any>)[];
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];
@@ -752,11 +751,6 @@ export interface FactoryProvider extends FactorySansProvider {
 export interface FactorySansProvider {
     deps?: any[];
     useFactory: Function;
-}
-
-// @public
-export interface ForeignComponent {
-    ɵrender: Function;
 }
 
 // @public

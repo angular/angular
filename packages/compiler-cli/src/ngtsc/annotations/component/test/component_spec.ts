@@ -1049,26 +1049,30 @@ runInEachFileSystem(() => {
             name: _('/node_modules/@angular/core/index.d.ts'),
             contents: `
               export const Component: any;
-              export interface ForeignComponent { ɵrender: (...args: any[]) => any }
+            `,
+          },
+          {
+            name: _('/node_modules/@angular/core/src/render3/foreign_import.ts'),
+            contents: `
+              export function foreignImport(render: any): any {}
             `,
           },
           {
             name: _('/entry.ts'),
             contents: `
-              import {Component, ForeignComponent} from '@angular/core';
+              import {Component} from '@angular/core';
+              import {foreignImport} from '@angular/core/src/render3/foreign_import';
 
-              function ForeignButton() {}
+              function FancyButton() {}
 
-              function foreignImport(component: unknown): ForeignComponent {
-                const foreignComponent = component as ForeignComponent;
-                foreignComponent.ɵrender ??= () => {};
-                return foreignComponent;
+              function frameworkImport(component: unknown) {
+                return foreignImport(() => {/* render component */});
               }
 
               @Component({
                 selector: 'main',
                 template: '',
-                foreignImports: [foreignImport(ForeignButton)],
+                foreignImports: [frameworkImport(FancyButton)],
               }) class TestCmp {}
             `,
           },
@@ -1086,7 +1090,7 @@ runInEachFileSystem(() => {
 
         expect(diagnostics).toBeUndefined();
         expect(analysis?.foreignImports?.length).toBe(1);
-        expect(analysis?.foreignImports![0].node.name.text).toBe('ForeignButton');
+        expect(analysis?.foreignImports![0].node.name.text).toBe('FancyButton');
       });
 
       it('should produce diagnostic for imports in non-standalone component', () => {

@@ -77,7 +77,6 @@ export {
   TRANSLATIONS_FORMAT,
 } from './i18n/tokens';
 export {AbstractType, Type} from './interface/type';
-export {ForeignComponent} from './interface/foreign_component';
 export * from './linker';
 export * from './linker/ng_module_factory_loader_impl';
 export * from './metadata';

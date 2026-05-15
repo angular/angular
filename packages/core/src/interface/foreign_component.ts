@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/** Symbol used to store and retrieve the render function for a foreign component. */
+export const RENDER: unique symbol = Symbol('RENDER');
+
 /**
- * Represents a component from another framework.
- *
- * @publicApi
+ * Represents a component from another framework that Angular can import and render.
  */
 export interface ForeignComponent {
-  /**
-   * A function that renders this component.
-   */
-  ɵrender: Function;
+  readonly [RENDER]: Function;
 }
