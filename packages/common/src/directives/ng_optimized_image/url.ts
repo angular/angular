@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {PlatformLocation} from '../../location';
+
 // Converts a string that represents a URL into a URL class instance.
-export function getUrl(src: string, win: Window): URL {
+export function getUrl(src: string, win: PlatformLocation): URL {
   // Don't use a base URL is the URL is absolute.
-  return isAbsoluteUrl(src) ? new URL(src) : new URL(src, win.location.href);
+  return isAbsoluteUrl(src) ? new URL(src) : new URL(src, win.href);
 }
 
 // Checks whether a URL is absolute (i.e. starts with `http://` or `https://`).
