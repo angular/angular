@@ -118,7 +118,7 @@ describe('sanitization', () => {
       [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl],
     ]);
     Object.entries(schema).forEach(([key, context]) => {
-      if (context === SecurityContext.URL || SecurityContext.RESOURCE_URL) {
+      if (context === SecurityContext.URL || context === SecurityContext.RESOURCE_URL) {
         const [tag, prop] = key.split('|');
         const contexts = contextsByProp.get(prop) || new Set<number>();
         contexts.add(context);
