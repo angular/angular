@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
 import {ExampleViewerContentLoader} from '../../../interfaces';
-import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
+import {EXAMPLE_VIEWER_CONTENT_LOADER, WINDOW} from '../../../providers';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
 import {DocViewer} from './docs-viewer.component';
 import {IconComponent} from '../../icon/icon.component';
@@ -24,6 +24,32 @@ import {Clipboard} from '@angular/cdk/clipboard';
 describe('DocViewer', () => {
   let exampleContentSpy: jasmine.SpyObj<ExampleViewerContentLoader>;
   let navigationStateSpy: jasmine.SpyObj<NavigationState>;
+
+  function provideWindow({
+    navigationUrl,
+    performanceUrl = navigationUrl,
+    locationHref = navigationUrl,
+  }: {
+    navigationUrl?: string;
+    performanceUrl?: string;
+    locationHref?: string;
+  }) {
+    TestBed.overrideProvider(WINDOW, {
+      useValue: {
+        navigation: {
+          currentEntry: {
+            url: navigationUrl,
+          },
+        },
+        performance: {
+          getEntriesByType: () => (performanceUrl ? [{name: performanceUrl}] : []),
+        },
+        location: {
+          href: locationHref,
+        },
+      } as unknown as Window,
+    });
+  }
 
   const exampleDocContentWithExampleViewerPlaceholders = `<div class="docs-code linenums" visibleLines="[12, 31]" expanded="true" path="hello-world/hello-world-new.ts">
     <div class="docs-code-header">A styled code example</div>
@@ -98,6 +124,67 @@ describe('DocViewer', () => {
     await fixture.whenStable();
 
     expect(fixture.nativeElement.innerHTML).toBe('hello world');
+  });
+
+  it('should preserve existing doc content on initial text fragment load', async () => {
+    provideWindow({
+      navigationUrl:
+        'http://localhost:4201/overview#:~:text=Maintained%20by%20a%20dedicated%20team%20at%20Google',
+    });
+    const fixture = TestBed.createComponent(DocViewer);
+    const renderComponentSpy = spyOn(fixture.componentInstance, 'renderComponent' as any);
+    fixture.nativeElement.innerHTML = '<docs-icon>check</docs-icon><p id="ssr">SSR content</p>';
+
+    fixture.componentRef.setInput('docContent', '<p id="client">Client content</p>');
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('#ssr')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('#client')).toBeNull();
+    expect(fixture.nativeElement.classList).not.toContain('docs-animate-content');
+    expect(renderComponentSpy.calls.allArgs().some(([type]) => type === IconComponent)).toBeTrue();
+  });
+
+  it('should replace existing doc content without a text fragment load', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.nativeElement.innerHTML = '<p id="ssr">SSR content</p>';
+
+    fixture.componentRef.setInput('docContent', '<p id="client">Client content</p>');
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('#ssr')).toBeNull();
+    expect(fixture.nativeElement.querySelector('#client')).not.toBeNull();
+  });
+
+  it('should replace content on text fragment load when existing content only contains whitespace', async () => {
+    provideWindow({
+      navigationUrl:
+        'http://localhost:4201/overview#:~:text=Maintained%20by%20a%20dedicated%20team%20at%20Google',
+    });
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.nativeElement.innerHTML = '   ';
+
+    fixture.componentRef.setInput('docContent', '<p id="client">Client content</p>');
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('#client')).not.toBeNull();
+  });
+
+  it('should replace content after preserving initial text fragment content', async () => {
+    provideWindow({
+      navigationUrl:
+        'http://localhost:4201/overview#:~:text=Maintained%20by%20a%20dedicated%20team%20at%20Google',
+    });
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.nativeElement.innerHTML = '<p id="ssr">SSR content</p>';
+
+    fixture.componentRef.setInput('docContent', '<p id="client">Client content</p>');
+    await fixture.whenStable();
+    fixture.componentRef.setInput('docContent', '<p id="next">Next content</p>');
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('#ssr')).toBeNull();
+    expect(fixture.nativeElement.querySelector('#client')).toBeNull();
+    expect(fixture.nativeElement.querySelector('#next')).not.toBeNull();
   });
 
   it('should instantiate example viewer with only a single file', async () => {
