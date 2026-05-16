@@ -150,7 +150,7 @@ When serving your Angular application, the server should include a randomly-gene
 You must provide this nonce to Angular so that the framework can render `<style>` elements.
 You can set the nonce for Angular in one of the following ways:
 
-1. Set the `autoCsp` option to `true` the [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options).
+1. Set the `autoCsp` option to `true` in the [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options).
 1. Set the `ngCspNonce` attribute on the root application element as `<app ngCspNonce="randomNonceGoesHere"></app>`. Use this approach if you have access to server-side templating that can add the nonce both to the header and the `index.html` when constructing the response.
 1. Provide the nonce using the `CSP_NONCE` injection token. Use this approach if you have access to the nonce at runtime and you want to be able to cache the `index.html`.
 
@@ -379,7 +379,7 @@ The validation rules are:
 - `X-Forwarded-Prefix` header must start with `/` and contain only alphanumeric characters, hyphens, and underscores, separated by single slashes.
 - By default, the `Forwarded` header and all `X-Forwarded-*` headers are treated as untrusted and are removed from the request. To retain them, they must be explicitly allowed by configuring `trustProxyHeaders`.
 
-Invalid headers trigger an error log, and unallowed proxy headers are removed from the request. Requests with unrecognized hostnames will result in a `400 Bad Request` being issued.
+Invalid headers trigger an error log, and unallowed proxy headers are removed from the request. Requests with unrecognized hostnames will result in a `400 Bad Request`.
 
 NOTE: Most cloud providers and CDN providers perform automatic validation of these headers before a request ever reaches the application origin. This inherent filtering significantly reduces the practical attack surface.
 

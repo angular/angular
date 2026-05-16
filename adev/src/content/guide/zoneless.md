@@ -5,9 +5,9 @@
 The main advantages to removing ZoneJS as a dependency are:
 
 - **Improved performance**: ZoneJS uses DOM events and async tasks as indicators of when application state _might_ have updated and subsequently triggers application synchronization to run change detection on the application's views. ZoneJS does not have any insight into whether application state actually changed and so this synchronization is triggered more frequently than necessary.
-- **Improved Core Web Vitals**: ZoneJS brings a fair amount of overhead, both in payload size and in startup time cost.
+- **Improved Core Web Vitals**: ZoneJS brings a fair amount of overhead, both in payload size and startup time.
 - **Improved debugging experience**: ZoneJS makes debugging code more difficult. Stack traces are harder to understand with ZoneJS. It's also difficult to understand when code breaks as a result of being outside the Angular Zone.
-- **Better ecosystem compatibility**: ZoneJS works by patching browser APIs but does not automatically have patches for every new browser API. Some APIs cannot be patched effectively, such as `async`/`await`, and have to be downleveled to work with ZoneJS. Sometimes libraries in the ecosystem are also incompatible with the way ZoneJS patches the native APIs. Removing ZoneJS as a dependency ensures better long-term compatibility by removing a source of complexity, monkey patching, and ongoing maintenance.
+- **Better ecosystem compatibility**: ZoneJS works by patching browser APIs but does not automatically have patches for every new browser API. Some APIs, such as `async`/`await`, cannot be patched effectively and must be downleveled to work with ZoneJS. Sometimes libraries in the ecosystem are also incompatible with the way ZoneJS patches the native APIs. Removing ZoneJS as a dependency ensures better long-term compatibility by removing a source of complexity, monkey patching, and ongoing maintenance.
 
 ## Enabling Zoneless in an application
 
@@ -64,7 +64,7 @@ Being a host for a user component means using an API such as `ViewContainerRef.c
 
 ### Remove `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`, `NgZone.isStable`, or `NgZone.onStable`
 
-Applications and libraries need to remove uses of `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable` and `NgZone.onStable`.
+Applications and libraries need to remove uses of `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`, and `NgZone.onStable`.
 These observables will never emit when an Application enables zoneless change detection.
 Similarly, `NgZone.isStable` will always be `true` and should not be used as a condition for code execution.
 
@@ -120,12 +120,11 @@ the application remains unstable until the observable emits, completes, errors, 
 readonly myObservableState = someObservable.pipe(pendingUntilEvent());
 ```
 
-The framework uses this service internally as well to prevent serialization until asynchronous tasks are complete. These include, but are not limited to,
-an ongoing Router navigation and an incomplete `HttpClient` request.
+The framework uses this service internally as well to prevent serialization until asynchronous tasks are complete. These include, but are not limited to, an ongoing Router navigation and an incomplete `HttpClient` request.
 
 ### Reactive forms in zoneless applications
 
-Reactive forms model updates (`setValue`, `patchValue`, `FormArray.push`, and similar APIs) update form state and emit forms observables, but they do not automatically schedule component change detection.
+Reactive forms model updates (`setValue`, `patchValue`, `FormArray.push`, and similar APIs) update form state and emit form observables, but they do not automatically schedule component change detection.
 
 If a template depends on reactive forms state, connect forms observables to a change-detection notification (for example `ChangeDetectorRef.markForCheck()`), or reflect the data through signals consumed by the template.
 
