@@ -18,6 +18,7 @@ import {
   Injector,
   input,
   Input,
+  model,
   NgModule,
   NgModuleRef,
   OnChanges,
@@ -217,6 +218,93 @@ withEachNg1Version(() => {
 
         $apply(upgrade, 'name = "everyone"');
         expect(multiTrim(document.body.textContent)).toEqual('Message: Hello everyone');
+      });
+    }));
+
+    it('should propagate AngularJS→Angular changes through model() signals', waitForAsync(() => {
+      const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
+        $rootScope['value'] = 'initial';
+      });
+
+      @Component({
+        selector: 'ng2',
+        template: 'Value: {{value()}}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+        standalone: false,
+      })
+      class Ng2Component {
+        value = model<string>('');
+      }
+
+      @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      // Wire up the model() signal for JIT tests. AOT compilation handles this automatically.
+      (Ng2Component as any).ɵcmp.inputs = {value: ['value', /* InputFlags.SignalBased */ 1]};
+      (Ng2Component as any).ɵcmp.outputs = {valueChange: 'value'};
+
+      ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
+
+      const element = html(`
+        <div>
+          <ng2 bindon-value="value"></ng2>
+          | value: {{value}}
+        </div>`);
+
+      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
+
+        $apply(upgrade, 'value = "updated"');
+        expect(multiTrim(document.body.textContent)).toEqual('Value: updated | value: updated');
+      });
+    }));
+
+    it('should propagate Angular→AngularJS changes through model() signals', waitForAsync(() => {
+      const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
+        $rootScope['value'] = 'initial';
+      });
+
+      let componentInstance: Ng2Component;
+
+      @Component({
+        selector: 'ng2',
+        template: 'Value: {{value()}}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+        standalone: false,
+      })
+      class Ng2Component {
+        value = model<string>('');
+        constructor() {
+          componentInstance = this;
+        }
+      }
+
+      @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      // Wire up the model() signal for JIT tests. AOT compilation handles this automatically.
+      (Ng2Component as any).ɵcmp.inputs = {value: ['value', /* InputFlags.SignalBased */ 1]};
+      (Ng2Component as any).ɵcmp.outputs = {valueChange: 'value'};
+
+      ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
+
+      const element = html(`
+        <div>
+          <ng2 bindon-value="value"></ng2>
+          | value: {{value}}
+        </div>`);
+
+      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
+
+        $apply(upgrade, () => componentInstance.value.set('from-angular'));
+        expect(multiTrim(document.body.textContent)).toEqual(
+          'Value: from-angular | value: from-angular',
+        );
       });
     }));
 

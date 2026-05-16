@@ -328,9 +328,15 @@ export class DowngradeComponentAdapter {
     }
 
     this.inputChangeCount++;
-    if (isSignal && !this.unsafelyOverwriteSignalInputs) {
-      const node = componentRef.instance[prop][SIGNAL] as InputSignalNode<unknown, unknown>;
-      node.applyValueToInputSignal(node, currValue);
+    const instanceProp = componentRef.instance[prop];
+    const node = instanceProp?.[SIGNAL] as InputSignalNode<unknown, unknown> | undefined;
+    // Model signals are writable signal inputs (they expose a `.set()` method). Overwriting
+    // them would destroy the internal OutputEmitterRef that setupOutputs() already subscribed
+    // to, severing the Angular→AngularJS two-way binding. Always use applyValueToInputSignal
+    // for model signals regardless of the unsafelyOverwriteSignalInputs flag.
+    const isModelSignal = node != null && typeof instanceProp.set === 'function';
+    if (isModelSignal || (isSignal && !this.unsafelyOverwriteSignalInputs)) {
+      node!.applyValueToInputSignal(node!, currValue);
     } else {
       componentRef.instance[prop] = currValue;
     }
