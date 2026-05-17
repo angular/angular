@@ -53,11 +53,10 @@ The `setupFiles` and `providersFile` options are particularly useful for managin
 For example, you could create a `src/test-providers.ts` file to provide `provideHttpClientTesting` to all your tests:
 
 ```typescript {header: "src/test-providers.ts"}
-import {Provider} from '@angular/core';
-import {provideHttpClient} from '@angular/common/http';
+import {EnvironmentProviders, Provider} from '@angular/core';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 
-const testProviders: Provider[] = [provideHttpClient(), provideHttpClientTesting()];
+const testProviders: (Provider | EnvironmentProviders)[] = [provideHttpClientTesting()];
 
 export default testProviders;
 ```
