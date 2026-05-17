@@ -1150,6 +1150,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             category: 'Loading Performance',
           },
           {
+            label: 'Lazy loading services',
+            path: 'best-practices/performance/lazy-loading-services',
+            contentPath: 'guide/di/lazy-loading-services',
+            category: 'Loading Performance',
+          },
+          {
             label: 'Image optimization',
             path: 'best-practices/performance/image-optimization',
             contentPath: 'guide/image-optimization',
