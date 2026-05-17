@@ -84,6 +84,26 @@ describe('public PendingTasks', () => {
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
   });
 
+  it('cleanup function returned by add() should implement Disposable', () => {
+    const pendingTasks = TestBed.inject(PendingTasks);
+    const cleanup = pendingTasks.add();
+    expect(cleanup[Symbol.dispose]).toBe(cleanup);
+    cleanup();
+  });
+
+  it('should support using keyword for automatic cleanup', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(PendingTasks);
+
+    {
+      using _ = pendingTasks.add();
+      await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    }
+    TestBed.inject(ApplicationRef).tick();
+    await Promise.resolve();
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
+  });
+
   it('should allow blocking stability with run', async () => {
     const appRef = TestBed.inject(ApplicationRef);
     const pendingTasks = TestBed.inject(PendingTasks);

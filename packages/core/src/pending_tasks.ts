@@ -34,6 +34,16 @@ import {PendingTasksInternal} from './pending_tasks_internal';
  * taskCleanup();
  * ```
  *
+ * The returned cleanup function also implements `Disposable`, allowing use
+ * with the `using` keyword for automatic cleanup:
+ * ```ts
+ * const pendingTasks = inject(PendingTasks);
+ * function foo() {
+ *   using _ = pendingTasks.add();
+ *   // _ is automatically disposed when the block exits
+ * }
+ * ```
+ *
  *
  * @see [PendingTasks for Server Side Rendering (SSR)](guide/zoneless#pendingtasks-for-server-side-rendering-ssr)
  *
@@ -45,11 +55,12 @@ export class PendingTasks {
   private readonly errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   /**
    * Adds a new task that should block application's stability.
-   * @returns A cleanup function that removes a task when called.
+   * @returns A cleanup function that removes a task when called. The function also
+   *   implements `Disposable` to support the `using` keyword.
    */
-  add(): () => void {
+  add(): (() => void) & Disposable {
     const taskId = this.internalPendingTasks.add();
-    return () => {
+    const cleanup = () => {
       if (!this.internalPendingTasks.has(taskId)) {
         // This pending task has already been cleared.
         return;
@@ -58,6 +69,11 @@ export class PendingTasks {
       this.scheduler.notify(NotificationSource.PendingTaskRemoved);
       this.internalPendingTasks.remove(taskId);
     };
+    // Symbol.dispose may not be defined in all environments (e.g. Safari < 17.4).
+    if (typeof (Symbol as {dispose?: symbol}).dispose === 'symbol') {
+      (cleanup as unknown as Record<symbol, unknown>)[Symbol.dispose] = cleanup;
+    }
+    return cleanup as unknown as (() => void) & Disposable;
   }
 
   /**
