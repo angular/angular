@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DiagnosticCategoryLabel} from '../../../../../core/api';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
@@ -84,6 +83,75 @@ runInEachFileSystem(() => {
             'TestCmp': `<div [myInput.px]="1"></div>`,
           },
           source: 'export class TestCmp {}',
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [suffixNotSupportedFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should produce suffix not supported warning for .% suffix', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {'TestCmp': `<div [attr.opacity.%]="50"></div>`},
+          source: 'export class TestCmp {}',
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [suffixNotSupportedFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SUFFIX_NOT_SUPPORTED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('attr.opacity.%');
+    });
+
+    it('should produce suffix not supported warning for .em suffix', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {'TestCmp': `<div [attr.font-size.em]="1.5"></div>`},
+          source: 'export class TestCmp {}',
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [suffixNotSupportedFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SUFFIX_NOT_SUPPORTED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('attr.font-size.em');
+    });
+
+    it('should not produce warning for attr binding without a style suffix', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {'TestCmp': `<div [attr.data-value]="x"></div>`},
+          source: 'export class TestCmp { x = 1; }',
         },
       ]);
       const sf = getSourceFileOrError(program, fileName);
