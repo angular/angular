@@ -31,6 +31,7 @@ import {
   ReturnStatement,
   SchemaMetadata,
   Statement,
+  TypeofExpr,
   WrappedNodeExpr,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -45,6 +46,7 @@ import {
   assertSuccessfulReferenceEmit,
   LocalCompilationExtraImportsTracker,
   Reference,
+  ReferenceEmitKind,
   ReferenceEmitter,
 } from '../../../imports';
 import {
@@ -104,6 +106,7 @@ import {
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toR3Reference,
+  tryUnwrapForwardRef,
   unwrapExpression,
   wrapFunctionExpressionsInParens,
   wrapTypeReference,
@@ -352,14 +355,21 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<
       return {};
     }
 
+    // In declaration-only emission the `declarations`/`imports`/`exports` arrays are emitted via a
+    // purely syntactic transform - we don't attempt static resolution at all (that machinery is
+    // only needed for the regular emit path) and produce the `Isolated` metadata kind directly
+    // from the raw decorator expressions.
+    if (this.emitDeclarationOnly) {
+      return this.analyzeForDeclarationOnly(node, name, ngModule, decorator);
+    }
+
     const forwardRefResolver = createForwardRefResolver(this.isCore);
     const moduleResolvers = combineResolvers([
       createModuleWithProvidersResolver(this.reflector, this.isCore),
       forwardRefResolver,
     ]);
 
-    const allowUnresolvedReferences =
-      this.compilationMode === CompilationMode.LOCAL && !this.emitDeclarationOnly;
+    const allowUnresolvedReferences = this.compilationMode === CompilationMode.LOCAL;
     const diagnostics: ts.Diagnostic[] = [];
 
     // Resolving declarations
@@ -552,6 +562,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<
     const type = wrapTypeReference(node);
 
     let ngModuleMetadata: R3NgModuleMetadata;
+
     if (allowUnresolvedReferences) {
       ngModuleMetadata = {
         kind: R3NgModuleMetadataKind.Local,
@@ -1093,6 +1104,117 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<
     }
   }
 
+  /**
+   * Analyze path used in `emitDeclarationOnly` (isolated declarations) mode. The
+   * `declarations`/`imports`/`exports` arrays are NOT statically resolved here - they're transformed
+   * syntactically into the `Isolated` metadata kind's type-tuple expressions, which downstream
+   * `.d.ts` metadata readers resolve. This skips the partial-evaluator path entirely.
+   */
+  private analyzeForDeclarationOnly(
+    node: ClassDeclaration,
+    name: string,
+    ngModule: Map<string, ts.Expression>,
+    decorator: Readonly<Decorator>,
+  ): AnalysisOutput<NgModuleAnalysis> {
+    const diagnostics: ts.Diagnostic[] = [];
+    const rawDeclarations = ngModule.get('declarations') ?? null;
+    const rawImports = ngModule.get('imports') ?? null;
+    const rawExports = ngModule.get('exports') ?? null;
+    const rawBootstrap = ngModule.get('bootstrap') ?? null;
+    const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
+
+    let id: Expression | null = null;
+    if (ngModule.has('id')) {
+      const idExpr = ngModule.get('id')!;
+      if (!isModuleIdExpression(idExpr)) {
+        id = new WrappedNodeExpr(idExpr);
+      }
+    }
+
+    const type = wrapTypeReference(node);
+
+    const ngModuleMetadata: R3NgModuleMetadata = {
+      kind: R3NgModuleMetadataKind.Isolated,
+      type,
+      importsExpression: rawImports
+        ? transformToTypeTupleExpression(
+            rawImports,
+            this.evaluator,
+            this.refEmitter,
+            node.getSourceFile(),
+            this.reflector,
+            diagnostics,
+          )
+        : null,
+      exportsExpression: rawExports
+        ? transformToTypeTupleExpression(
+            rawExports,
+            this.evaluator,
+            this.refEmitter,
+            node.getSourceFile(),
+            this.reflector,
+            diagnostics,
+          )
+        : null,
+      id,
+      selectorScopeMode: R3SelectorScopeMode.Omit,
+      schemas: [],
+    };
+
+    // Providers are emitted as-is - they are needed for the injector but don't go through any
+    // resolution at this stage.
+    let wrappedProviders: WrappedNodeExpr<ts.Expression> | null = null;
+    if (
+      rawProviders !== null &&
+      (!ts.isArrayLiteralExpression(rawProviders) || rawProviders.elements.length > 0)
+    ) {
+      wrappedProviders = new WrappedNodeExpr(
+        this.annotateForClosureCompiler
+          ? wrapFunctionExpressionsInParens(rawProviders)
+          : rawProviders,
+      );
+    }
+
+    const injectorMetadata: R3InjectorMetadata = {
+      name,
+      type,
+      providers: wrappedProviders,
+      imports: [],
+    };
+
+    const factoryMetadata: R3FactoryMetadata = {
+      name,
+      type,
+      typeArgumentCount: 0,
+      deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
+      target: FactoryTarget.NgModule,
+    };
+
+    return {
+      diagnostics: diagnostics.length > 0 ? diagnostics : undefined,
+      analysis: {
+        id,
+        schemas: [],
+        mod: ngModuleMetadata,
+        inj: injectorMetadata,
+        fac: factoryMetadata,
+        declarations: [],
+        rawDeclarations,
+        imports: [],
+        rawImports,
+        importRefs: [],
+        exports: [],
+        rawExports,
+        providers: rawProviders,
+        providersRequiringFactory: null,
+        classMetadata: null,
+        factorySymbolName: node.name.text,
+        remoteScopesMayRequireCycleProtection: false,
+        decorator: (decorator?.node as ts.Decorator | null) ?? null,
+      },
+    };
+  }
+
   // Verify that a "Declaration" reference is a `ClassDeclaration` reference.
   private isClassDeclarationReference(ref: Reference): ref is Reference<ClassDeclaration> {
     return this.reflector.isClass(ref.node);
@@ -1176,17 +1298,6 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<
       } else if (entry instanceof DynamicValue && allowUnresolvedReferences) {
         dynamicValueSet.add(entry);
         continue;
-      } else if (
-        this.emitDeclarationOnly &&
-        entry instanceof DynamicValue &&
-        entry.isFromUnknownIdentifier()
-      ) {
-        throw createValueHasWrongTypeError(
-          entry.node,
-          entry,
-          `Value at position ${absoluteIndex} in the NgModule.${arrayName} of ${className} is an external reference. ` +
-            'External references in @NgModule declarations are not supported in experimental declaration-only emission mode',
-        );
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
         throw createValueHasWrongTypeError(
@@ -1256,4 +1367,130 @@ function makeStandaloneBootstrapDiagnostic(
 
 function isSyntheticReference(ref: Reference<DeclarationNode>): boolean {
   return ref.synthetic;
+}
+
+/**
+ * Converts a value expression that is an identifier or a chain of property accesses on identifiers
+ * (e.g. `Foo` or `Foo.bar`) into the equivalent `ts.EntityName`, reusing the original identifier
+ * nodes so that any imports they reference are preserved by TypeScript's declaration emitter.
+ * Returns `null` for any other shape of expression.
+ */
+function expressionToEntityName(expr: ts.Expression): ts.EntityName | null {
+  if (ts.isIdentifier(expr)) {
+    return expr;
+  }
+  if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) {
+    const left = expressionToEntityName(expr.expression);
+    return left === null ? null : ts.factory.createQualifiedName(left, expr.name.text);
+  }
+  return null;
+}
+
+function transformToTypeTupleElement(
+  el: ts.Expression,
+  reflector: ReflectionHost,
+  diagnostics: ts.Diagnostic[],
+): Expression {
+  el = unwrapExpression(el);
+
+  const forwardRefUnwrapped = tryUnwrapForwardRef(el, reflector);
+  if (forwardRefUnwrapped !== null) {
+    return transformToTypeTupleElement(forwardRefUnwrapped, reflector, diagnostics);
+  }
+
+  // A call expression (e.g. `Foo.forRoot()` or a bare `fn()`) cannot be referenced with a
+  // `typeof` query directly. Instead emit `ReturnType<typeof callee>` so that the `.d.ts`
+  // reader can resolve the (potentially `ModuleWithProviders<T>`) return type later.
+  if (ts.isCallExpression(el)) {
+    const callee = expressionToEntityName(el.expression);
+    if (callee !== null) {
+      return new WrappedNodeExpr(
+        ts.factory.createTypeReferenceNode(ts.factory.createIdentifier('ReturnType'), [
+          ts.factory.createTypeQueryNode(callee),
+        ]),
+      );
+    }
+  }
+
+  if (expressionToEntityName(el) === null) {
+    const diag = makeDiagnostic(
+      ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
+      el,
+      `In experimental declaration-only emission mode, this expression is not supported in NgModule imports/exports as it cannot be referenced with 'typeof'. Use a direct reference or a supported call.`,
+    );
+    diagnostics.push(diag);
+    return new WrappedNodeExpr(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword));
+  }
+
+  return new TypeofExpr(new WrappedNodeExpr(el));
+}
+
+function resolvedToTypeTupleElement(
+  originalEl: ts.Expression,
+  resolved: ResolvedValue,
+  refEmitter: ReferenceEmitter,
+  sourceFile: ts.SourceFile,
+  reflector: ReflectionHost,
+  diagnostics: ts.Diagnostic[],
+): Expression {
+  if (resolved instanceof Reference) {
+    const emitted = refEmitter.emit(resolved, sourceFile);
+    if (emitted.kind === ReferenceEmitKind.Success) {
+      return new TypeofExpr(emitted.expression);
+    }
+  }
+
+  if (Array.isArray(resolved)) {
+    const elements: Expression[] = [];
+    let allValid = true;
+    for (const item of resolved) {
+      if (item instanceof Reference) {
+        const emitted = refEmitter.emit(item, sourceFile);
+        if (emitted.kind === ReferenceEmitKind.Success) {
+          elements.push(new TypeofExpr(emitted.expression));
+          continue;
+        }
+      }
+      allValid = false;
+      break;
+    }
+    if (allValid && elements.length > 0) {
+      return new LiteralArrayExpr(elements);
+    }
+  }
+
+  // Fallback to syntactic transform
+  return transformToTypeTupleElement(originalEl, reflector, diagnostics);
+}
+
+function transformToTypeTupleExpression(
+  expr: ts.Expression,
+  evaluator: PartialEvaluator,
+  refEmitter: ReferenceEmitter,
+  sourceFile: ts.SourceFile,
+  reflector: ReflectionHost,
+  diagnostics: ts.Diagnostic[],
+): Expression | null {
+  if (ts.isArrayLiteralExpression(expr)) {
+    // An empty array is treated like an omitted slot (emitted as `never` by
+    // `createNgModuleType`), matching the standard compilation path.
+    if (expr.elements.length === 0) {
+      return null;
+    }
+    return new LiteralArrayExpr(
+      expr.elements.map((el) => {
+        const resolved = evaluator.evaluate(el);
+        return resolvedToTypeTupleElement(
+          el,
+          resolved,
+          refEmitter,
+          sourceFile,
+          reflector,
+          diagnostics,
+        );
+      }),
+    );
+  }
+  const resolved = evaluator.evaluate(expr);
+  return resolvedToTypeTupleElement(expr, resolved, refEmitter, sourceFile, reflector, diagnostics);
 }
