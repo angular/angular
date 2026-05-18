@@ -6,6 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+declare global {
+  interface SymbolConstructor {
+    readonly dispose: unique symbol;
+  }
+
+  interface Disposable {
+    [Symbol.dispose](): void;
+  }
+}
+
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {
@@ -47,17 +57,23 @@ export class PendingTasks {
    * Adds a new task that should block application's stability.
    * @returns A cleanup function that removes a task when called.
    */
-  add(): () => void {
+  add(): (() => void) & Disposable {
     const taskId = this.internalPendingTasks.add();
-    return () => {
+
+    const cleanup = () => {
       if (!this.internalPendingTasks.has(taskId)) {
-        // This pending task has already been cleared.
         return;
       }
-      // Notifying the scheduler will hold application stability open until the next tick.
       this.scheduler.notify(NotificationSource.PendingTaskRemoved);
       this.internalPendingTasks.remove(taskId);
     };
+
+    const result = cleanup as (() => void) & Disposable;
+    if (Symbol.dispose !== undefined) {
+      result[Symbol.dispose] = cleanup;
+    }
+
+    return result;
   }
 
   /**
