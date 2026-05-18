@@ -375,7 +375,7 @@ export interface ContentChildFunction {
     // (undocumented)
     <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
         descendants?: boolean;
-        read: ProviderToken<ReadT>;
+        read: ClassOrInjectionToken<ReadT>;
         debugName?: string;
     }): Signal<ReadT | undefined>;
     required: {
@@ -386,7 +386,7 @@ export interface ContentChildFunction {
         }): Signal<LocatorT>;
         <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
             descendants?: boolean;
-            read: ProviderToken<ReadT>;
+            read: ClassOrInjectionToken<ReadT>;
             debugName?: string;
         }): Signal<ReadT>;
     };
@@ -408,7 +408,7 @@ export function contentChildren<LocatorT>(locator: ProviderToken<LocatorT> | str
 // @public (undocumented)
 export function contentChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
     descendants?: boolean;
-    read: ProviderToken<ReadT>;
+    read: ClassOrInjectionToken<ReadT>;
     debugName?: string;
 }): Signal<ReadonlyArray<ReadT>>;
 
@@ -858,15 +858,26 @@ export interface Inject {
 export const Inject: InjectDecorator;
 
 // @public (undocumented)
-export function inject<T>(token: ProviderToken<T>): T;
+export function inject<T>(token: abstract new (...args: any[]) => T): T;
 
 // @public (undocumented)
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {
+export function inject<T>(token: abstract new (...args: any[]) => T, options: InjectOptions & {
     optional?: false;
 }): T;
 
 // @public (undocumented)
-export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T | null;
+export function inject<T>(token: abstract new (...args: any[]) => T, options: InjectOptions): T | null;
+
+// @public (undocumented)
+export function inject<T>(token: InjectionToken<T>): T;
+
+// @public (undocumented)
+export function inject<T>(token: InjectionToken<T>, options: InjectOptions & {
+    optional?: false;
+}): T;
+
+// @public (undocumented)
+export function inject<T>(token: InjectionToken<T>, options: InjectOptions): T | null;
 
 // @public (undocumented)
 export function inject(token: HostAttributeToken): string;
@@ -2035,7 +2046,7 @@ export interface ViewChildDecorator {
 // @public
 export interface ViewChildFunction {
     <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
-        read: ProviderToken<ReadT>;
+        read: ClassOrInjectionToken<ReadT>;
         debugName?: string;
     }): Signal<ReadT | undefined>;
     // (undocumented)
@@ -2047,7 +2058,7 @@ export interface ViewChildFunction {
             debugName?: string;
         }): Signal<LocatorT>;
         <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
-            read: ProviderToken<ReadT>;
+            read: ClassOrInjectionToken<ReadT>;
             debugName?: string;
         }): Signal<ReadT>;
     };
@@ -2066,7 +2077,7 @@ export function viewChildren<LocatorT>(locator: ProviderToken<LocatorT> | string
 
 // @public (undocumented)
 export function viewChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
-    read: ProviderToken<ReadT>;
+    read: ClassOrInjectionToken<ReadT>;
     debugName?: string;
 }): Signal<ReadonlyArray<ReadT>>;
 
