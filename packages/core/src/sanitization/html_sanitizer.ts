@@ -205,7 +205,9 @@ class SanitizingHtmlSerializer {
         continue;
       }
       let value = elAttr!.value;
-      // TODO(martinprobst): Special case image URIs for data:image/...
+      // Note: data: URIs with dangerous subtypes (e.g. data:text/html) are now blocked
+      // by _sanitizeUrl, while safe media subtypes (data:image/*, data:video/*, data:audio/*)
+      // are still allowed.
       if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
       this.buf.push(' ', attrName, '="', encodeEntities(value), '"');
     }
