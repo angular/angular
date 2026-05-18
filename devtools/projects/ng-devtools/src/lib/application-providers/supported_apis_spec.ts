@@ -30,6 +30,7 @@ describe('SUPPORTED_APIS', () => {
       signals: true,
       signalPropertiesInspection: false,
       transferState: true,
+      transitiveSignalDepsInspection: false,
     });
 
     expect(supportedApis()).toEqual({
@@ -39,6 +40,7 @@ describe('SUPPORTED_APIS', () => {
       signals: true,
       signalPropertiesInspection: false,
       transferState: true,
+      transitiveSignalDepsInspection: false,
     });
   });
 
@@ -50,6 +52,7 @@ describe('SUPPORTED_APIS', () => {
       signals: true,
       signalPropertiesInspection: true,
       transferState: true,
+      transitiveSignalDepsInspection: true,
     });
 
     expect(() => {
@@ -60,6 +63,7 @@ describe('SUPPORTED_APIS', () => {
         signals: true,
         signalPropertiesInspection: true,
         transferState: true,
+        transitiveSignalDepsInspection: true,
       });
     }).toThrowError();
   });
