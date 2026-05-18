@@ -146,20 +146,30 @@ def web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages/
         external = kwargs.pop("external", []),
     )
 
+    native.genrule(
+        name = "%s_bundle_isolated" % name,
+        srcs = ["%s_bundle.spec.js" % name, "%s_bundle.spec.js.map" % name],
+        outs = ["isolated/%s_bundle.spec.js" % name, "isolated/%s_bundle.spec.js.map" % name],
+        cmd = "cp $(location %s_bundle.spec.js) $(location isolated/%s_bundle.spec.js) && cp $(location %s_bundle.spec.js.map) $(location isolated/%s_bundle.spec.js.map)" % (name, name, name, name),
+        testonly = True,
+    )
+
     wtr_test(
         name = name,
-        deps = [":%s_bundle" % name] + kwargs.pop("data", []),
+        deps = [":%s_bundle_isolated" % name] + kwargs.pop("data", []),
         tags = tags,
         **kwargs
     )
 
-def jasmine_test(name, fixed_args = [], **kwargs):
-    all_fixed_args = [
-        # Escape so that the `js_binary` launcher triggers Bash expansion.
-        "'**/*+(.|_)spec.js'",
-        "'**/*+(.|_)spec.mjs'",
-        "'**/*+(.|_)spec.cjs'",
-    ] + fixed_args
+def jasmine_test(name, fixed_args = [], bundled = False, **kwargs):
+    all_fixed_args = fixed_args
+    if not bundled:
+        all_fixed_args = [
+            # Escape so that the `js_binary` launcher triggers Bash expansion.
+            "'**/*+(.|_)spec.js'",
+            "'**/*+(.|_)spec.mjs'",
+            "'**/*+(.|_)spec.cjs'",
+        ] + fixed_args
 
     _jasmine_test(
         name = name,
@@ -192,5 +202,7 @@ def zone_compatible_jasmine_test(name, external = [], data = [], bootstrap = [],
     jasmine_test(
         name = name,
         data = [":%s_bundle" % name],
+        bundled = True,
+        fixed_args = ["'%s_bundle.spec.js'" % name],
         **kwargs
     )
