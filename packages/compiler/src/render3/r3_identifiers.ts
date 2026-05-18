@@ -187,6 +187,10 @@ export class Identifiers {
     name: 'ɵɵdeferEnableTimerScheduling',
     moduleName: CORE,
   };
+  static deferEnableRetry: o.ExternalReference = {
+    name: 'ɵɵdeferEnableRetry',
+    moduleName: CORE,
+  };
   static enableIncrementalHydrationRuntime: o.ExternalReference = {
     name: 'ɵɵenableIncrementalHydrationRuntime',
     moduleName: CORE,

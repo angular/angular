@@ -381,6 +381,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             timerScheduling,
             op.sourceSpan,
             op.flags,
+            op.errorRetryCount,
           ),
         );
         break;

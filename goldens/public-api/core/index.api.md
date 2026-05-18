@@ -583,6 +583,15 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 }
 
 // @public
+export interface DeferBlockRetryContext<T = unknown> {
+    readonly attempt: number;
+    retry(): Promise<T>;
+}
+
+// @public
+export type DeferBlockRetryHandler = <T>(load: () => Promise<T>, context: DeferBlockRetryContext<T>) => Promise<T>;
+
+// @public
 export interface DestroyableInjector extends Injector {
     // (undocumented)
     destroy(): void;
@@ -1495,6 +1504,9 @@ export function provideCheckNoChangesConfig(options: {
     interval?: number;
     exhaustive: true;
 }): EnvironmentProviders;
+
+// @public
+export function provideDeferBlockRetryHandler(handler: DeferBlockRetryHandler): EnvironmentProviders;
 
 // @public
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;

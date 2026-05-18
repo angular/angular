@@ -136,6 +136,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdeferHydrateOnViewport': r3.ɵɵdeferHydrateOnViewport,
   'ɵɵdeferEnableTimerScheduling': r3.ɵɵdeferEnableTimerScheduling,
   'ɵɵenableIncrementalHydrationRuntime': r3.ɵɵenableIncrementalHydrationRuntime,
+  'ɵɵdeferEnableRetry': r3.ɵɵdeferEnableRetry,
   'ɵɵrepeater': r3.ɵɵrepeater,
   'ɵɵrepeaterCreate': r3.ɵɵrepeaterCreate,
   'ɵɵrepeaterTrackByIndex': r3.ɵɵrepeaterTrackByIndex,

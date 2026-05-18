@@ -49,6 +49,7 @@ import {
   HydrateTriggerDetails,
   LDeferBlockDetails,
   ON_COMPLETE_FNS,
+  RETRY_ATTEMPTS_REMAINING,
   SSR_UNIQUE_ID,
   TDeferBlockDetails,
   TDeferDetailsFlags,
@@ -62,6 +63,7 @@ import {
   renderDeferStateAfterResourceLoading,
   renderPlaceholder,
 } from './rendering';
+import {DEFER_BLOCK_RETRY_HANDLER, reloadDeferDependencyWithCacheBust} from './retry_handler';
 import {onTimer} from './timer_scheduler';
 import {
   addDepsToRegistry,
@@ -219,91 +221,136 @@ export function triggerResourceLoading(
     return tDetails.loadingPromise;
   }
 
-  // Start downloading of defer block dependencies.
-  tDetails.loadingPromise = Promise.allSettled(dependenciesFn()).then((results) => {
-    let failed = false;
-    let failedReason: Error | null = null;
-    const directiveDefs: DirectiveDefList = [];
-    const pipeDefs: PipeDefList = [];
+  // Determine the current attempt index based on retries remaining for this
+  // instance. The first attempt is 0; subsequent attempts increment from
+  // there. When retries are disabled (`maxRetryCount == null`) this is always 0.
+  const maxRetryCount = tDetails.maxRetryCount;
+  let attempt = 0;
+  if (maxRetryCount != null) {
+    const remaining = lDetails[RETRY_ATTEMPTS_REMAINING] ?? maxRetryCount;
+    attempt = maxRetryCount - remaining;
+  }
 
-    for (let i = 0; i < results.length; i++) {
-      const result = results[i];
-      if (result.status === 'fulfilled') {
-        const dependency = result.value;
-        const directiveDef = getComponentDef(dependency) || getDirectiveDef(dependency);
-        if (directiveDef) {
-          directiveDefs.push(directiveDef);
-        } else {
-          const pipeDef = getPipeDef(dependency);
-          if (pipeDef) {
-            pipeDefs.push(pipeDef);
+  const retryHandler = injector.get(DEFER_BLOCK_RETRY_HANDLER);
+  const dependencies = dependenciesFn().map((dep) => {
+    // compiler emit: each dynamic-import dependency is wrapped in a thunk
+    // (`() => import('./x').then(m => m.X)`) so the handler can re-issue the
+    // import (e.g. with a cache-busting query parameter on retry)
+    if (isDeferDependencyLoader(dep)) {
+      return retryHandler(dep, {
+        attempt,
+        retry: () => reloadDeferDependencyWithCacheBust(dep, attempt),
+      });
+    }
+
+    // Direct, non-deferrable type reference — pass through unchanged.
+    return dep;
+  });
+
+  // Start downloading of defer block dependencies.
+  tDetails.loadingPromise = Promise.allSettled(dependencies).then(
+    (results): Promise<unknown> | void => {
+      let failed = false;
+      let failedReason: Error | null = null;
+      const directiveDefs: DirectiveDefList = [];
+      const pipeDefs: PipeDefList = [];
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        if (result.status === 'fulfilled') {
+          const dependency = result.value;
+          const directiveDef = getComponentDef(dependency) || getDirectiveDef(dependency);
+          if (directiveDef) {
+            directiveDefs.push(directiveDef);
+          } else {
+            const pipeDef = getPipeDef(dependency);
+            if (pipeDef) {
+              pipeDefs.push(pipeDef);
+            }
           }
+        } else {
+          failed = true;
+          failedReason =
+            result.reason instanceof Error ? result.reason : new Error(String(result.reason));
+          break;
+        }
+      }
+
+      if (failed) {
+        // If retry is configured and there are attempts remaining for this
+        // instance, reset the loading state so a subsequent triggering of this
+        // block re-invokes `dependenciesFn`. The DI-provided dependency loader
+        // is responsible for ensuring that the retried `import()` actually has
+        // a chance of succeeding (e.g. cache busting).
+        if (maxRetryCount != null) {
+          const remaining = lDetails[RETRY_ATTEMPTS_REMAINING] ?? maxRetryCount;
+          if (remaining > 0) {
+            lDetails[RETRY_ATTEMPTS_REMAINING] = remaining - 1;
+            tDetails.loadingState = DeferDependenciesLoadingState.NOT_STARTED;
+            tDetails.loadingPromise = null;
+            // Kick off another attempt. The result is awaited via the chained
+            // Promise returned to the caller below.
+            return triggerResourceLoading(tDetails, lView, tNode);
+          }
+        }
+
+        tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
+
+        if (tDetails.errorTmplIndex === null) {
+          const templateLocation = ngDevMode ? getTemplateLocationDetails(lView) : '';
+          let errorMsg = '';
+
+          if (ngDevMode) {
+            errorMsg =
+              'Loading dependencies for `@defer` block failed, ' +
+              `but no \`@error\` block was configured${templateLocation}. ` +
+              'Consider using the `@error` block to render an error state.';
+
+            const depsFn = tDetails.dependencyResolverFn;
+            const errorReason = failedReason?.message;
+
+            if (depsFn) {
+              errorMsg +=
+                `\n\nAngular tried to invoke the following dependency function (compiler-generated):\n` +
+                `\`\`\`\n${depsFn.toString()}\n\`\`\``;
+            }
+
+            if (errorReason) {
+              errorMsg += depsFn
+                ? `\n\nbut it resulted in the following error:\n\n${errorReason}`
+                : `\n\nThe loading resulted in the following error:\n\n${errorReason}`;
+            }
+          }
+
+          const error = new RuntimeError(RuntimeErrorCode.DEFER_LOADING_FAILED, errorMsg);
+          handleUncaughtError(lView, error);
         }
       } else {
-        failed = true;
-        failedReason =
-          result.reason instanceof Error ? result.reason : new Error(String(result.reason));
-        break;
-      }
-    }
+        tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
 
-    if (failed) {
-      tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
+        // Update directive and pipe registries to add newly downloaded dependencies.
+        const primaryBlockTView = primaryBlockTNode.tView!;
+        if (directiveDefs.length > 0) {
+          primaryBlockTView.directiveRegistry = addDepsToRegistry<DirectiveDefList>(
+            primaryBlockTView.directiveRegistry,
+            directiveDefs,
+          );
 
-      if (tDetails.errorTmplIndex === null) {
-        const templateLocation = ngDevMode ? getTemplateLocationDetails(lView) : '';
-        let errorMsg = '';
-
-        if (ngDevMode) {
-          errorMsg =
-            'Loading dependencies for `@defer` block failed, ' +
-            `but no \`@error\` block was configured${templateLocation}. ` +
-            'Consider using the `@error` block to render an error state.';
-
-          const depsFn = tDetails.dependencyResolverFn;
-          const errorReason = failedReason?.message;
-
-          if (depsFn) {
-            errorMsg +=
-              `\n\nAngular tried to invoke the following dependency function (compiler-generated):\n` +
-              `\`\`\`\n${depsFn.toString()}\n\`\`\``;
-          }
-
-          if (errorReason) {
-            errorMsg += depsFn
-              ? `\n\nbut it resulted in the following error:\n\n${errorReason}`
-              : `\n\nThe loading resulted in the following error:\n\n${errorReason}`;
-          }
+          // Extract providers from all NgModules imported by standalone components
+          // used within this defer block.
+          const directiveTypes = directiveDefs.map((def) => def.type);
+          const providers = internalImportProvidersFrom(false, ...directiveTypes);
+          tDetails.providers = providers;
         }
-
-        const error = new RuntimeError(RuntimeErrorCode.DEFER_LOADING_FAILED, errorMsg);
-        handleUncaughtError(lView, error);
+        if (pipeDefs.length > 0) {
+          primaryBlockTView.pipeRegistry = addDepsToRegistry<PipeDefList>(
+            primaryBlockTView.pipeRegistry,
+            pipeDefs,
+          );
+        }
       }
-    } else {
-      tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
-
-      // Update directive and pipe registries to add newly downloaded dependencies.
-      const primaryBlockTView = primaryBlockTNode.tView!;
-      if (directiveDefs.length > 0) {
-        primaryBlockTView.directiveRegistry = addDepsToRegistry<DirectiveDefList>(
-          primaryBlockTView.directiveRegistry,
-          directiveDefs,
-        );
-
-        // Extract providers from all NgModules imported by standalone components
-        // used within this defer block.
-        const directiveTypes = directiveDefs.map((def) => def.type);
-        const providers = internalImportProvidersFrom(false, ...directiveTypes);
-        tDetails.providers = providers;
-      }
-      if (pipeDefs.length > 0) {
-        primaryBlockTView.pipeRegistry = addDepsToRegistry<PipeDefList>(
-          primaryBlockTView.pipeRegistry,
-          pipeDefs,
-        );
-      }
-    }
-  });
+    },
+  );
 
   return tDetails.loadingPromise.finally(() => {
     // Loading is completed, we no longer need the loading Promise
@@ -311,6 +358,15 @@ export function triggerResourceLoading(
     tDetails.loadingPromise = null;
     removeTask();
   });
+}
+
+function isDeferDependencyLoader(dep: unknown): dep is () => Promise<unknown> {
+  return (
+    typeof dep === 'function' &&
+    getComponentDef(dep) === null &&
+    getDirectiveDef(dep) === null &&
+    getPipeDef(dep) === null
+  );
 }
 
 /**

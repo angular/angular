@@ -196,7 +196,9 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitDeferredBlockError(block: t.DeferredBlockError): void {
-    this.result.push(['DeferredBlockError']);
+    const result = ['DeferredBlockError'];
+    block.retryCount !== null && result.push(`retry ${block.retryCount}`);
+    this.result.push(result);
     this.visitAll([block.children]);
   }
 
@@ -1183,6 +1185,16 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse an error block with a retry parameter', () => {
+      expectFromHtml('@defer{<calendar-cmp [date]="current"/>}@error (retry 3){Failed}').toEqual([
+        ['DeferredBlock'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
+        ['BoundAttribute', 0, 'date', 'current'],
+        ['DeferredBlockError', 'retry 3'],
+        ['Text', 'Failed'],
+      ]);
+    });
+
     it('should parse a placeholder block with parameters', () => {
       expectFromHtml(
         '@defer {<calendar-cmp [date]="current"/>}' + '@placeholder (minimum 1.5s){Placeholder...}',
@@ -1453,9 +1465,27 @@ describe('R3 template transform', () => {
         );
       });
 
-      it('should report any parameter usage in error block', () => {
+      it('should report any unknown parameter usage in error block', () => {
         expect(() => parse('@defer {hello} @error (foo) {hi}')).toThrowError(
-          /@error block cannot have parameters/,
+          /Unrecognized parameter in @error block: "foo"/,
+        );
+      });
+
+      it('should report if retry value in error block cannot be parsed', () => {
+        expect(() => parse('@defer {hello} @error (retry abc) {hi}')).toThrowError(
+          /Could not parse value of "retry" parameter\. Expected a non-negative integer/,
+        );
+      });
+
+      it('should report negative retry value in error block', () => {
+        expect(() => parse('@defer {hello} @error (retry -1) {hi}')).toThrowError(
+          /Could not parse value of "retry" parameter\. Expected a non-negative integer/,
+        );
+      });
+
+      it('should report multiple retry parameters in error block', () => {
+        expect(() => parse('@defer {hello} @error (retry 2; retry 3) {hi}')).toThrowError(
+          /@error block can only have one "retry" parameter/,
         );
       });
 

@@ -767,7 +767,10 @@ export function compileDeferResolverFunction(
             // and TS may try to enforce it based on the compiler options.
             tsIgnoreComment(),
           ]);
-        depExpressions.push(importExpr);
+        // Wrap in a thunk so the runtime/`DeferBlockRetryHandler` can
+        // re-issue the import (e.g. with a cache-busting query parameter when
+        // retrying a failed chunk download).
+        depExpressions.push(o.arrowFn([], importExpr));
       } else {
         // Non-deferrable symbol, just use a reference to the type. Note that it's important to
         // go through `typeReference`, rather than `symbolName` in order to preserve the
@@ -791,7 +794,10 @@ export function compileDeferResolverFunction(
           // and TS may try to enforce it based on the compiler options.
           tsIgnoreComment(),
         ]);
-      depExpressions.push(importExpr);
+      // Wrap in a thunk so the runtime/`DeferBlockRetryHandler` can
+      // re-issue the import (e.g. with a cache-busting query parameter when
+      // retrying a failed chunk download).
+      depExpressions.push(o.arrowFn([], importExpr));
     }
   }
 

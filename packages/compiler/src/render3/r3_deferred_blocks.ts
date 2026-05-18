@@ -46,6 +46,9 @@ const WHEN_PARAMETER_PATTERN = /^when\s/;
 /** Pattern to identify a `on` parameter in a block. */
 const ON_PARAMETER_PATTERN = /^on\s/;
 
+/** Pattern to identify a `retry` parameter in a block. */
+const RETRY_PARAMETER_PATTERN = /^retry\s/;
+
 /**
  * Predicate function that determines if a block with
  * a specific name cam be connected to a `defer` block.
@@ -249,18 +252,50 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
 }
 
 function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBlockError {
-  if (ast.parameters.length > 0) {
-    throw new Error(`@error block cannot have parameters`);
+  let retryCount: number | null = null;
+
+  for (const param of ast.parameters) {
+    if (RETRY_PARAMETER_PATTERN.test(param.expression)) {
+      if (retryCount != null) {
+        throw new Error(`@error block can only have one "retry" parameter`);
+      }
+
+      const rawValue = param.expression.slice(getTriggerParametersStart(param.expression)).trim();
+      const parsed = parseRetryCount(rawValue);
+
+      if (parsed === null) {
+        throw new Error(
+          `Could not parse value of "retry" parameter. ` +
+            `Expected a non-negative integer, got: "${rawValue}".`,
+        );
+      }
+
+      retryCount = parsed;
+    } else {
+      throw new Error(`Unrecognized parameter in @error block: "${param.expression}"`);
+    }
   }
 
   return new t.DeferredBlockError(
     html.visitAll(visitor, ast.children, ast.children),
+    retryCount,
     ast.nameSpan,
     ast.sourceSpan,
     ast.startSourceSpan,
     ast.endSourceSpan,
     ast.i18n,
   );
+}
+
+function parseRetryCount(value: string): number | null {
+  if (!/^\d+$/.test(value)) {
+    return null;
+  }
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0 || !Number.isInteger(parsed)) {
+    return null;
+  }
+  return parsed;
 }
 
 function parsePrimaryTriggers(

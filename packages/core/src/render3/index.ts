@@ -170,6 +170,7 @@ export {
 } from './instructions/all';
 export {
   ɵɵdeferEnableTimerScheduling,
+  ɵɵdeferEnableRetry,
   DEFER_BLOCK_DEPENDENCY_INTERCEPTOR as ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
   DEFER_BLOCK_CONFIG as ɵDEFER_BLOCK_CONFIG,
 } from '../defer/rendering';
