@@ -162,17 +162,21 @@ function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
 }
 
 export function extractCallSignatures(name: string, typeChecker: ts.TypeChecker, type: ts.Type) {
-  return filterSignatureDeclarations(type.getCallSignatures()).map(({decl, signature}) => ({
-    name,
-    entryType: EntryType.Function,
-    description: extractJsDocDescription(decl),
-    generics: extractGenerics(decl),
-    isNewType: false,
-    jsdocTags: extractJsDocTags(decl),
-    params: extractAllParams(decl.parameters, typeChecker),
-    rawComment: extractRawJsDoc(decl),
-    returnType: extractReturnType(signature, typeChecker),
-  }));
+  return filterSignatureDeclarations(type.getCallSignatures()).map(({decl, signature}) => {
+    const jsdocTags = extractJsDocTags(decl);
+    return {
+      name,
+      entryType: EntryType.Function,
+      description: extractJsDocDescription(decl),
+      generics: extractGenerics(decl),
+      isNewType: false,
+      jsdocTags,
+      params: extractAllParams(decl.parameters, typeChecker),
+      rawComment: extractRawJsDoc(decl),
+      returnType: extractReturnType(signature, typeChecker),
+      returnDescription: jsdocTags.find((tag) => tag.name === 'returns')?.comment,
+    };
+  });
 }
 
 function extractReturnType(signature: ts.Signature, typeChecker: ts.TypeChecker): string {
