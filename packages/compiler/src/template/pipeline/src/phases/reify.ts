@@ -814,6 +814,20 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
       if (expr.fn === null) {
         throw new Error(`AssertionError: expected PureFunctions to have been extracted`);
       }
+      // 0-arg pure functions for flat object/array literals are optimized
+      // to clone static constants using ɵɵcloneObject/ɵɵcloneArray.
+      if (expr.args.length === 0) {
+        if (expr.isFlatObjectLiteral) {
+          return o
+            .importExpr(Identifiers.cloneObject)
+            .callFn([o.literal(expr.varOffset!), expr.fn]);
+        } else if (expr.isFlatArrayLiteral) {
+          return o.importExpr(Identifiers.cloneArray).callFn([o.literal(expr.varOffset!), expr.fn]);
+        }
+        // Otherwise, for non-flat 0-arg pure functions, we invoke the factory wrapper
+        // to instantiate the deep nesting and prevent nested property reference leakage.
+        return ng.pureFunction(expr.varOffset!, expr.fn, []);
+      }
       return ng.pureFunction(expr.varOffset!, expr.fn, expr.args);
     case ir.ExpressionKind.PureFunctionParameterExpr:
       throw new Error(`AssertionError: expected PureFunctionParameterExpr to have been extracted`);

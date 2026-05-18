@@ -76,6 +76,8 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵpureFunction7': r3.ɵɵpureFunction7,
   'ɵɵpureFunction8': r3.ɵɵpureFunction8,
   'ɵɵpureFunctionV': r3.ɵɵpureFunctionV,
+  'ɵɵcloneObject': r3.ɵɵcloneObject,
+  'ɵɵcloneArray': r3.ɵɵcloneArray,
   'ɵɵgetCurrentView': r3.ɵɵgetCurrentView,
   'ɵɵrestoreView': r3.ɵɵrestoreView,
   'ɵɵlistener': r3.ɵɵlistener,

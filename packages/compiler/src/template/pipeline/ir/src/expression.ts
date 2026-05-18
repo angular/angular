@@ -479,6 +479,8 @@ export class PureFunctionExpr
   readonly [UsesVarOffset] = true;
 
   varOffset: number | null = null;
+  isFlatObjectLiteral = false;
+  isFlatArrayLiteral = false;
 
   /**
    * The expression which should be memoized as a pure computation.
@@ -557,6 +559,8 @@ export class PureFunctionExpr
     );
     expr.fn = this.fn?.clone() ?? null;
     expr.varOffset = this.varOffset;
+    expr.isFlatObjectLiteral = this.isFlatObjectLiteral;
+    expr.isFlatArrayLiteral = this.isFlatArrayLiteral;
     return expr;
   }
 }
