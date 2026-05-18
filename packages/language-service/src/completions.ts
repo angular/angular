@@ -11,27 +11,28 @@ import {
   ASTWithSource,
   BindingPipe,
   BindingType,
+  TmplAstBoundEvent as BoundEvent,
+  CssSelector,
   EmptyExpr,
   ImplicitReceiver,
   LiteralPrimitive,
-  ParseSourceSpan,
   ParsedEventType,
+  ParseSourceSpan,
   PropertyRead,
   SafePropertyRead,
+  TmplAstSwitchBlock as SwitchBlock,
+  TmplAstTextAttribute as TextAttribute,
   ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstBoundEvent as BoundEvent,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstSwitchBlock,
-  TmplAstSwitchBlock as SwitchBlock,
   TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
-  TmplAstTextAttribute as TextAttribute,
   TmplAstVariable,
 } from '@angular/compiler';
 import {
@@ -54,6 +55,8 @@ import {
   buildAttributeCompletionTable,
   getAttributeCompletionSymbol,
 } from './attribute_completions';
+import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
+import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 import {
   DisplayInfo,
   DisplayInfoKind,
@@ -62,14 +65,12 @@ import {
   getTsSymbolDisplayInfo,
   unsafeCastDisplayInfoKindToScriptElementKind,
 } from './utils/display_parts';
-import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {
   findTightestNode,
+  getClassDeclarationFromSymbolReference,
   getCodeActionToImportTheDirectiveDeclaration,
   standaloneTraitOrNgModule,
-  getClassDeclarationFromSymbolReference,
 } from './utils/ts_utils';
-import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<
   PropertyRead | EmptyExpr | SafePropertyRead | TmplAstBoundEvent
@@ -142,6 +143,11 @@ interface DirectiveInfoForCompletionDetail {
    * Sometimes, the component is exported by the `NgModule`.
    */
   symbolName: string;
+
+  /**
+   * Original TypeScript completion entry data associated with the directive completion.
+   */
+  tsCompletionEntryData?: ts.CompletionEntryData;
 }
 
 /**
@@ -152,6 +158,47 @@ interface DirectiveInfoForCompletionDetail {
  * position is saved, not the symbol object.
  */
 let directiveInfoForCompletionDetailCache = new Map<string, DirectiveInfoForCompletionDetail>();
+
+const ELEMENT_TAG_COMPLETION_ID = '__ngElementTagCompletionId';
+
+type ElementTagCompletionEntryData = ts.CompletionEntryData & {
+  [ELEMENT_TAG_COMPLETION_ID]?: string;
+};
+
+let elementTagDirectiveInfoForCompletionDetailCache = new Map<
+  string,
+  DirectiveInfoForCompletionDetail
+>();
+
+function withElementTagCompletionId(
+  completionData: ts.CompletionEntryData | undefined,
+  completionId: string,
+): ts.CompletionEntryData {
+  const data =
+    completionData !== undefined && typeof completionData === 'object'
+      ? {...completionData}
+      : ({} as Record<string, unknown>);
+  (data as unknown as ElementTagCompletionEntryData)[ELEMENT_TAG_COMPLETION_ID] = completionId;
+  return data as unknown as ts.CompletionEntryData;
+}
+
+function readElementTagCompletionId(data: ts.CompletionEntryData | undefined): string | null {
+  if (data === undefined || typeof data !== 'object') {
+    return null;
+  }
+  const completionId = (data as ElementTagCompletionEntryData)[ELEMENT_TAG_COMPLETION_ID];
+  return typeof completionId === 'string' ? completionId : null;
+}
+
+function elementTagSelectorPriority(directive: PotentialDirective, selector: CssSelector): number {
+  const hasAdditionalSelectorParts =
+    selector.attrs.length > 0 || selector.classNames.length > 0 || selector.notSelectors.length > 0;
+
+  if (!hasAdditionalSelectorParts) {
+    return directive.isComponent ? 0 : 1;
+  }
+  return directive.isComponent ? 2 : 3;
+}
 
 /**
  * Performs autocompletion operations on a given node in the template.
@@ -758,45 +805,88 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
     const replacementSpan: ts.TextSpan = {start, length};
 
-    let potentialTags = Array.from(
-      templateTypeChecker.getPotentialElementTags(this.component, this.tsLS, {
+    const potentialDirectives = templateTypeChecker.getPotentialTemplateDirectives(
+      this.component,
+      this.tsLS,
+      {
         includeExternalModule: options?.includeCompletionsForModuleExports ?? false,
-      }),
+      },
     );
-    // Don't provide non-Angular tags (directive === null) because we expect other extensions
-    // (i.e. Emmet) to provide those for HTML files.
-    potentialTags = potentialTags.filter(([_, directive]) => directive !== null);
+
+    // A single element tag can match multiple directives/components (for example, a component
+    // `app-button` and a directive `app-button[appAddButton]`). Keep all matches so callers can
+    // choose the desired import target from completions.
+    const potentialTags: Array<{
+      tag: string;
+      directive: PotentialDirective;
+      selectorPriority: number;
+    }> = [];
+    const seenTagAndDirective = new Set<string>();
+    for (const directive of potentialDirectives) {
+      if (directive.selector === null) {
+        continue;
+      }
+      for (const selector of CssSelector.parse(directive.selector)) {
+        if (selector.element === null) {
+          continue;
+        }
+        const dedupeKey = `${selector.element}:${directive.ref.filePath}:${directive.ref.position}`;
+        if (seenTagAndDirective.has(dedupeKey)) {
+          continue;
+        }
+        seenTagAndDirective.add(dedupeKey);
+        potentialTags.push({
+          tag: selector.element,
+          directive,
+          selectorPriority: elementTagSelectorPriority(directive, selector),
+        });
+      }
+    }
+
+    potentialTags.sort((a, b) => {
+      if (a.tag !== b.tag) {
+        return a.tag.localeCompare(b.tag);
+      }
+      if (a.selectorPriority !== b.selectorPriority) {
+        return a.selectorPriority - b.selectorPriority;
+      }
+      return a.directive.ref.name.localeCompare(b.directive.ref.name);
+    });
+
     const directiveCompletionDetailMap = new Map<string, DirectiveInfoForCompletionDetail>();
 
     const entries: ts.CompletionEntry[] = [];
-    for (let [tag, directive] of potentialTags) {
-      if (
-        directive?.tsCompletionEntryInfos != null &&
-        directive.tsCompletionEntryInfos.length > 0
-      ) {
-        directiveCompletionDetailMap.set(tag, {
-          fileName: directive.ref.filePath,
-          entryName: directive.ref.name,
-          pos: directive.ref.position,
-          attrKind: null,
+    for (const {tag, directive, selectorPriority} of potentialTags) {
+      const tsCompletionEntryInfo = directive.tsCompletionEntryInfos?.[0];
+      const completionId = `${tag}:${directive.ref.filePath}:${directive.ref.position}:${directive.ref.name}`;
 
-          // The Angular LS only supports displaying one directive at a time when
-          // providing the completion item, even if it's exported by multiple modules.
-          symbolFileName: directive.tsCompletionEntryInfos[0].tsCompletionEntrySymbolFileName,
-          symbolName: directive.tsCompletionEntryInfos[0].tsCompletionEntrySymbolName,
-        });
-      }
+      directiveCompletionDetailMap.set(completionId, {
+        fileName: directive.ref.filePath,
+        entryName: directive.ref.name,
+        pos: directive.ref.position,
+        attrKind: null,
+        symbolFileName:
+          tsCompletionEntryInfo?.tsCompletionEntrySymbolFileName ?? directive.ref.filePath,
+        symbolName: tsCompletionEntryInfo?.tsCompletionEntrySymbolName ?? directive.ref.name,
+        tsCompletionEntryData: tsCompletionEntryInfo?.tsCompletionEntryData,
+      });
+
       entries.push({
         kind: tagCompletionKind(directive),
         name: tag,
-        sortText: tag,
+        // Rank better matches first (for example `app-button` before
+        // `app-button[appAddButton]` on `<app-button ...>` completions).
+        sortText: `${selectorPriority}:${tag}:${directive.ref.name}`,
         replacementSpan,
         hasAction: directive?.isInScope === true ? undefined : true,
-        data: directive?.tsCompletionEntryInfos?.[0]?.tsCompletionEntryData,
+        data: withElementTagCompletionId(
+          tsCompletionEntryInfo?.tsCompletionEntryData,
+          completionId,
+        ),
       });
     }
 
-    directiveInfoForCompletionDetailCache = directiveCompletionDetailMap;
+    elementTagDirectiveInfoForCompletionDetailCache = directiveCompletionDetailMap;
     return {
       entries,
       isGlobalCompletion: false,
@@ -820,7 +910,11 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.CompletionEntryDetails | undefined {
     const templateTypeChecker = this.compiler.getTemplateTypeChecker();
-    const directiveCompletionDetail = directiveInfoForCompletionDetailCache.get(entryName);
+    const completionId = readElementTagCompletionId(data);
+    const directiveCompletionDetail =
+      completionId !== null
+        ? elementTagDirectiveInfoForCompletionDetailCache.get(completionId)
+        : undefined;
 
     let directive: PotentialDirective | null | undefined;
 
@@ -837,7 +931,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       ) {
         directive = templateTypeChecker.getDirectiveScopeData(node, false, {
           tsCompletionEntrySymbolFileName: directiveCompletionDetail.symbolFileName,
-          tsCompletionEntryData: data,
+          tsCompletionEntryData: directiveCompletionDetail.tsCompletionEntryData,
           tsCompletionEntrySymbolName: directiveCompletionDetail.symbolName,
         });
       }

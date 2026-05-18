@@ -870,6 +870,57 @@ describe('completions', () => {
       expect(details.codeActions?.[0].description).toEqual('Import OtherCmp');
     });
 
+    it('should return both component and directive completions for the same element tag', () => {
+      const {templateFile} = setup(
+        `<app-button />`,
+        '',
+        {},
+        `
+        @Directive({selector: 'app-button[appAddButton]'})
+        export class AddButtonDirective {}
+
+        @Component({selector: 'app-button', template: 'cmp'})
+        export class ButtonComponent {}
+      `,
+      );
+      templateFile.moveCursorToText('<app-button¦');
+      const completions = templateFile.getCompletionsAtPosition();
+
+      const appButtonCompletions = completions?.entries.filter(
+        (entry) => entry.name === 'app-button',
+      );
+      expect(appButtonCompletions?.length).toBe(2);
+
+      const completionKinds = appButtonCompletions?.map((entry) => entry.kind) ?? [];
+      expect(completionKinds).toContain(
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+      );
+      expect(completionKinds).toContain(
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
+      );
+
+      const completionImportDescriptions = appButtonCompletions!.map((entry) => {
+        const details = templateFile.getCompletionEntryDetails(
+          entry.name,
+          undefined,
+          undefined,
+          entry.data,
+        )!;
+        return details.codeActions?.[0]?.description;
+      });
+
+      const firstCompletionDetails = templateFile.getCompletionEntryDetails(
+        appButtonCompletions![0].name,
+        undefined,
+        undefined,
+        appButtonCompletions![0].data,
+      )!;
+
+      expect(completionImportDescriptions).toContain('Import ButtonComponent');
+      expect(completionImportDescriptions).toContain('Import AddButtonDirective');
+      expect(firstCompletionDetails.codeActions?.[0]?.description).toBe('Import ButtonComponent');
+    });
+
     it('should return completions for an incomplete tag', () => {
       const OTHER_CMP = {
         'OtherCmp': `
