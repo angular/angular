@@ -53,7 +53,7 @@ export interface TreeVisualizerConfig<T extends TreeNode> {
   d3LinkModifier: (link: SvgD3Link<T>) => void;
 }
 
-// For easier compatability with d3 v5
+// For easier compatibility with d3 v5
 // Inspired by https://www.mulberryhousesoftware.com/articles/supporting-two-major-versions-of-d3
 function wrapEvent<E, V>(fn: (e: E) => void): (e: E) => void;
 function wrapEvent<E, V>(fn: (e: E, node: V) => void): (e: E, node: V) => void;
