@@ -16,7 +16,7 @@ In particular, you should be familiar with the following concepts:
 
 - [JavaScript Classes](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes)
 - [TypeScript fundamentals](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
-- [TypeScript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+- TypeScript decorator syntax (you'll see Angular decorators like `@Component` in this guide)
 
 ## Next Step
 
