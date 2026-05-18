@@ -432,9 +432,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             break;
           default:
             throw new Error(
-              `AssertionError: Unsupported reification of defer trigger kind ${
-                (op.trigger as any).kind
-              }`,
+              `AssertionError: Unsupported reification of defer trigger kind ${(op.trigger as ir.DeferTrigger).kind}`,
             );
         }
         ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.modifier, op.sourceSpan));
