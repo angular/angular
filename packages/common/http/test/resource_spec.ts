@@ -176,6 +176,37 @@ describe('httpResource', () => {
     expect(res.statusCode()).toBe(429);
   });
 
+  it('should return response redirected & responseType when resolved', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    const req = backend.expectOne('/data');
+    req.flush([], {
+      redirected: true,
+      responseType: 'cors',
+    });
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).toEqual([]);
+    expect(res.redirected()).toBe(true);
+    expect(res.responseType()).toBe('cors');
+  });
+
+  it('should return response redirected & responseType when request errored', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    const req = backend.expectOne('/data');
+    req.flush([], {
+      status: 429,
+      statusText: 'Too many requests',
+      redirected: false,
+      responseType: 'basic',
+    });
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.redirected()).toBe(false);
+    expect(res.responseType()).toBe('basic');
+  });
+
   it('should support progress events', async () => {
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource(
@@ -356,6 +387,8 @@ describe('httpResource', () => {
     expect(res.headers()).toBe(undefined);
     expect(res.progress()).toBe(undefined);
     expect(res.statusCode()).toBe(undefined);
+    expect(res.redirected()).toBe(undefined);
+    expect(res.responseType()).toBe(undefined);
   });
 
   it('should support chain', async () => {
