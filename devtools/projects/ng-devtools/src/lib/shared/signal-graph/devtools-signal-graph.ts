@@ -12,7 +12,7 @@ import {
   DevtoolsSignalGraph,
   DevtoolsSignalGraphNode,
 } from './signal-graph-types';
-import {checkClusterMatch, ClusterLabelFormatType, getNodeNames} from './utils';
+import {checkClusterMatch, ClusterLabelFormatType, getNodeNames, isSignalNode} from './utils';
 
 interface Cluster {
   id: string;
@@ -29,7 +29,9 @@ const PREVIEW_NODES: {[key in ClusterLabelFormatType]: string | null} = {
 };
 
 /**
- * Returns a cluster identifier based on the label string.
+ * Identifies clusters within a `DebugSignalGraph` using the node label strings,
+ * and returns an array of cluster objects (intermediate type) used for
+ * building the final signal graph with clusters.
  * Intended for format: <Cluster_Type>#<Cluster_Name>.<Compound_Node_Name>
  *
  * Note: Currently, the only supported type of cluster identifiers.
@@ -89,6 +91,58 @@ function identifyClusters(graph: DebugSignalGraph): Cluster[] {
 }
 
 /**
+ * Process cluster-to-cluster dependencies by adding
+ * the required edges to the provided signal graph in-place.
+ *
+ * @param graph Signal graph to be updated (in-place).
+ * @param clusters Intermediate cluster array.
+ * @param clusterIdxMap Cluster ID to index (position in `nodes`) map.
+ */
+function processClusterToClusterDependencies(
+  graph: DevtoolsSignalGraph,
+  clusters: Cluster[],
+  clusterIdxMap: Map<string, number>,
+) {
+  // Creates a map of consumer index to cluster IDs.
+  // We don't care about the producers since we are
+  // interested only in cluster-to-cluster relationships,
+  // so using either the consumers or the producers works.
+  const consumerToClustersMap = new Map<number, string[]>();
+  for (const cluster of clusters) {
+    for (const consumerIdx of cluster.consumers) {
+      const existingClusters = consumerToClustersMap.get(consumerIdx);
+      const clusters = existingClusters ?? [];
+      clusters.push(cluster.id);
+
+      if (!existingClusters) {
+        consumerToClustersMap.set(consumerIdx, clusters);
+      }
+    }
+  }
+
+  for (const [i, node] of graph.nodes.entries()) {
+    if (!isSignalNode(node) || !node.clusterId) {
+      continue;
+    }
+    const producerClusterIds = consumerToClustersMap.get(i);
+    if (!producerClusterIds?.length) {
+      continue;
+    }
+
+    // Add an edge for all nodes that are part of a cluster
+    // which are produced by nodes in other clusters.
+    for (const producerClusterId of producerClusterIds) {
+      if (node.clusterId !== producerClusterId) {
+        graph.edges.push({
+          producer: clusterIdxMap.get(producerClusterId)!,
+          consumer: clusterIdxMap.get(node.clusterId)!,
+        });
+      }
+    }
+  }
+}
+
+/**
  * Convert a `DebugSignalGraph` to a DevTools-FE specific `DevtoolsSignalGraph`.
  */
 export function convertToDevtoolsSignalGraph(
@@ -127,6 +181,9 @@ export function convertToDevtoolsSignalGraph(
   // Set edges
   signalGraph.edges = [...debugSignalGraph.edges];
 
+  // A map needed for cluster-to-cluster deps processing
+  const clusterIdxMap = new Map<string, number>();
+
   // Add cluster nodes and edges
   for (const cluster of clusters) {
     signalGraph.nodes.push({
@@ -136,6 +193,7 @@ export function convertToDevtoolsSignalGraph(
       label: cluster.name,
       previewNode: cluster.previewNode,
     });
+    clusterIdxMap.set(cluster.id, signalGraph.nodes.length - 1);
 
     // Start from the last node index
     const clusterIdx = signalGraph.nodes.length - 1;
@@ -154,6 +212,9 @@ export function convertToDevtoolsSignalGraph(
       });
     }
   }
+
+  // We process cluster-to-cluster deps in the end
+  processClusterToClusterDependencies(signalGraph, clusters, clusterIdxMap);
 
   return signalGraph;
 }
