@@ -879,9 +879,9 @@ export function calcPossibleSecurityContexts(
   isAttribute: boolean,
 ): SecurityContext[] {
   let ctxs: SecurityContext[];
-  const [namespaceKey, baseSelector] = selector ? splitNsName(selector) : [null, selector];
+  const [namespaceKey, baseSelector] = selector ? splitNsName(selector, false) : [null, selector];
   const nameToContext = (elName: string) => {
-    const [nsStr, name] = splitNsName(elName);
+    const [nsStr, name] = splitNsName(elName, false);
     const ns = nsStr ?? namespaceKey;
     const fullName = ns ? `:${ns}:${name}` : name;
     return registry.securityContext(fullName, propName, isAttribute);
