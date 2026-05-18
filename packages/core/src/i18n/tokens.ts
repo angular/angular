@@ -76,6 +76,30 @@ export function getGlobalLocale(): string {
  * });
  * ```
  *
+ * When the locale must be resolved through an Angular service (for example,
+ * to read it from user preferences, route parameters, or cookies), use
+ * `useFactory` with `inject()`:
+ * ```ts
+ * import { inject, Injectable, LOCALE_ID, ApplicationConfig } from '@angular/core';
+ *
+ * @Injectable({providedIn: 'root'})
+ * export class LangService {
+ *   getLocale(): string {
+ *     // read from user prefs, cookie, navigator, etc.
+ *     return 'en-US';
+ *   }
+ * }
+ *
+ * const appConfig: ApplicationConfig = {
+ *   providers: [
+ *     {
+ *       provide: LOCALE_ID,
+ *       useFactory: () => inject(LangService).getLocale(),
+ *     },
+ *   ],
+ * };
+ * ```
+ *
  * @publicApi
  * @see [Import global variants of the locale data](guide/i18n/import-global-variants)
  */
