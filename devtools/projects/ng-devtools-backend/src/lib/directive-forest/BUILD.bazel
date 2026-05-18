@@ -14,10 +14,10 @@ ts_project(
         "//:node_modules/semver",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
         "//devtools/projects/ng-devtools-backend/src/lib:version",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/ng-devtools-backend/src/lib/utils",
         "//devtools/projects/protocol",
     ],
 )
@@ -31,7 +31,7 @@ ts_test_library(
         ":directive-forest",
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/utils",
     ],
 )
 
