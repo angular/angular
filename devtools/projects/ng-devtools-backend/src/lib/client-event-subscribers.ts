@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
 import {debounceTime} from 'rxjs/operators';
-import {ɵDebugSignalGraph} from '@angular/core';
 import {
   ComponentExplorerViewQuery,
   ComponentType,
@@ -258,29 +258,29 @@ const getSignalNestedPropertiesCallback =
       position.element,
       initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
     );
-    if (!node) {
+    if (!node || !node.nativeElement) {
       return emitEmpty();
     }
 
-    const injector = getInjectorFromElementNode(node.nativeElement!);
+    const injector = getInjectorFromElementNode(node.nativeElement);
     if (!injector) {
       return emitEmpty();
     }
 
     const ng = ngDebugClient();
 
-    let signalGraph: ɵDebugSignalGraph | undefined;
+    let signalGraph: InternalDebugSignalGraph | undefined;
 
     // Considering that the inspection of signal value nested properties
     // usually involves multiple requests, we store the signal graph
     // during the first call. We keep only the last requested signal graph
     // to avoid filling the heap with graphs that may not be needed.
-    if (componentSignalGraphRef.exists(node.nativeElement!)) {
-      signalGraph = componentSignalGraphRef.deref(node.nativeElement!);
+    if (componentSignalGraphRef.exists(node.nativeElement)) {
+      signalGraph = componentSignalGraphRef.deref(node.nativeElement);
     } else {
       signalGraph = ng.ɵgetSignalGraph?.(injector);
       if (signalGraph) {
-        componentSignalGraphRef.set(node.nativeElement!, signalGraph);
+        componentSignalGraphRef.set(node.nativeElement, signalGraph);
       }
     }
 
@@ -288,7 +288,7 @@ const getSignalNestedPropertiesCallback =
       return emitEmpty();
     }
 
-    const current = signalGraph.nodes.find((node) => node.id === position.signalId);
+    const current = signalGraph.nodes.find((n) => n.id === position.signalId);
     if (!current) {
       return emitEmpty();
     }
@@ -514,7 +514,7 @@ const getInjectorProvidersCallback =
 
     const serializedProviderRecords: SerializedProviderRecord[] = [];
 
-    for (const [, records] of tokenToRecords.entries()) {
+    for (const records of tokenToRecords.values()) {
       const multiRecords = records.filter((record) => record.multi);
       const nonMultiRecords = records.filter((record) => !record.multi);
 
