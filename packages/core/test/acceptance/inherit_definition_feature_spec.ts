@@ -5964,4 +5964,40 @@ describe('inheritance', () => {
     // TODO: sub has ViewChildren and super has ContentChildren on same property
     // TODO: sub has ContentChild and super has ContentChildren on same property
   });
+
+  it('should not overwrite LView slots when extending a directive with host bindings (issue #66263)', () => {
+    @Directive({
+      host: {
+        '[attr.parent]': '["P"][0]',
+      },
+      standalone: true,
+    })
+    class ParentDir {}
+
+    @Directive({
+      selector: 'some-dir',
+      host: {
+        '[attr.child]': '["C"][0]',
+      },
+      standalone: true,
+    })
+    class SomeDir extends ParentDir {}
+
+    @Component({
+      selector: 'app-root',
+      standalone: true,
+      imports: [SomeDir],
+      template: `
+        <some-dir></some-dir>
+      `,
+    })
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement.querySelector('some-dir');
+    expect(element.getAttribute('parent')).toBe('P');
+    expect(element.getAttribute('child')).toBe('C');
+  });
 });
