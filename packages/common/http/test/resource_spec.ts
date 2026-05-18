@@ -20,6 +20,7 @@ import {
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 import {withHttpTransferCache} from '../src/transfer_cache';
 import {HttpClient} from '../src/client';
+import {lastValueFrom} from 'rxjs';
 
 describe('httpResource', () => {
   beforeEach(() => {
@@ -424,15 +425,10 @@ describe('httpResource', () => {
 
     it('should synchronously resolve with a cached value from TransferState', async () => {
       globalThis['ngServerMode'] = true;
-      let requestResolved = false;
-      TestBed.inject(HttpClient)
-        .get('/data')
-        .subscribe(() => (requestResolved = true));
-      const req = TestBed.inject(HttpTestingController).expectOne('/data');
-      req.flush([1, 2, 3]);
 
-      expect(requestResolved).toBe(true);
-
+      const response = lastValueFrom(TestBed.inject(HttpClient).get('/data'));
+      TestBed.inject(HttpTestingController).expectOne('/data').flush([1, 2, 3]);
+      await response;
       // Now switch to client mode
       globalThis['ngServerMode'] = false;
 
