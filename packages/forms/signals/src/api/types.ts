@@ -385,6 +385,16 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
   readonly readonly: Signal<boolean>;
 
   /**
+   * A signal indicating whether the field is non-interactive.
+   *
+   * A field is considered non-interactive if one of the following is true:
+   * - It is hidden
+   * - It is disabled
+   * - It is readonly
+   */
+  readonly isNonInteractive: Signal<boolean>;
+
+  /**
    * A signal indicating whether the field is required.
    */
   readonly required: Signal<boolean>;

@@ -952,6 +952,24 @@ describe('FieldNode', () => {
       expect(f.b().readonly()).toBe(true);
     });
 
+    it('should expose whether a field is non-interactive', () => {
+      const isReadonly = signal(false);
+
+      const f = form(
+        signal({a: 1}),
+        (p) => {
+          readonly(p.a, {when: isReadonly});
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().isNonInteractive()).toBe(false);
+
+      isReadonly.set(true);
+
+      expect(f.a().isNonInteractive()).toBe(true);
+    });
+
     it('should not validate readonly fields', () => {
       const isReadonly = signal(false);
       const f = form(
