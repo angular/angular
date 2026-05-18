@@ -32,31 +32,43 @@ import {SectionUsageNotes} from './section-usage-notes';
 export const signatureCard = (
   name: string,
   signature: FunctionSignatureMetadataRenderable,
-  opts: {id: string; printSignaturesAsHeader: boolean; hideUsageNotes?: boolean},
+  opts: {
+    id: string;
+    printSignaturesAsHeader: boolean;
+    hideUsageNotes?: boolean;
+    hideHeader?: boolean;
+    hideDescription?: boolean;
+  },
 ) => {
   return (
     <div id={opts.id} class={REFERENCE_MEMBER_CARD}>
-      <header class={REFERENCE_MEMBER_CARD_HEADER}>
-        {opts.printSignaturesAsHeader ? (
-          <HighlightTypeScript
-            code={printInitializerFunctionSignatureLine(
-              name,
-              signature,
-              // Always omit types in signature headers, to keep them short.
-              true,
-            )}
-          />
-        ) : (
-          <>
-            <h3>{name}</h3>
-            <div>
-              <CodeSymbol code={signature.returnType} />
-            </div>
-          </>
-        )}
-      </header>
+      {!opts.hideHeader && (
+        <header class={REFERENCE_MEMBER_CARD_HEADER}>
+          {opts.printSignaturesAsHeader ? (
+            <HighlightTypeScript
+              code={printInitializerFunctionSignatureLine(
+                name,
+                signature,
+                // Always omit types in signature headers, to keep them short.
+                true,
+              )}
+            />
+          ) : (
+            <>
+              <h3>{name}</h3>
+              <div>
+                <CodeSymbol code={signature.returnType} />
+              </div>
+            </>
+          )}
+        </header>
+      )}
       <div class={REFERENCE_MEMBER_CARD_BODY}>
-        <ClassMethodInfo entry={signature} hideUsageNotes={opts.hideUsageNotes} />
+        <ClassMethodInfo
+          entry={signature}
+          hideUsageNotes={opts.hideUsageNotes}
+          hideDescription={opts.hideDescription}
+        />
       </div>
     </div>
   );
@@ -64,8 +76,8 @@ export const signatureCard = (
 
 /** Component to render a function API reference document. */
 export function FunctionReference(entry: FunctionEntryRenderable) {
-  // Use signatures as header if there are multiple signatures.
   const printSignaturesAsHeader = entry.signatures.length > 1;
+  const hideSignatureCardDescription = !printSignaturesAsHeader;
 
   return (
     <div className={API_REFERENCE_CONTAINER}>
@@ -73,14 +85,15 @@ export function FunctionReference(entry: FunctionEntryRenderable) {
       <DeprecationWarning entry={entry} />
       <SectionApi entry={entry} />
       <div className={REFERENCE_MEMBERS}>
-        {entry.signatures.length > 1 &&
-          entry.signatures.map((s, i) =>
-            signatureCard(s.name, getFunctionMetadataRenderable(s, entry.moduleName, entry.repo), {
-              id: `${s.name}_${i}`,
-              printSignaturesAsHeader,
-              hideUsageNotes: true,
-            }),
-          )}
+        {entry.signatures.map((s, i) =>
+          signatureCard(s.name, getFunctionMetadataRenderable(s, entry.moduleName, entry.repo), {
+            id: `${s.name}_${i}`,
+            printSignaturesAsHeader,
+            hideHeader: !printSignaturesAsHeader,
+            hideUsageNotes: hideSignatureCardDescription,
+            hideDescription: hideSignatureCardDescription,
+          }),
+        )}
       </div>
 
       <SectionDescription entry={entry} />

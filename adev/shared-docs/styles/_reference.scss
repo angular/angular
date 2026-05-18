@@ -340,6 +340,11 @@
           }
         }
 
+        .docs-param-type {
+          display: inline-block;
+          margin-inline-end: 0.5rem;
+        }
+
         .docs-parameter-description {
           p:first-child {
             margin-block-start: 0;
@@ -357,7 +362,7 @@
         padding-block: 1rem;
 
         // & does not follow a function definition
-        &:not(.docs-function-definition + .docs-return-type) {
+        &:not(.docs-function-definition + .docs-return-type):not(:first-child) {
           border-block-start: 1px solid var(--senary-contrast);
         }
       }

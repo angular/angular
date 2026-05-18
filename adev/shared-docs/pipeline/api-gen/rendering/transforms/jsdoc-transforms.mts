@@ -112,7 +112,7 @@ export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtml
 }
 
 /** Given a markdown JsDoc text, gets the rendered HTML. */
-function getHtmlForJsDocText(text: string): string {
+export function getHtmlForJsDocText(text: string): string {
   const mdToParse = convertLinks(wrapExampleHtmlElementsWithCode(text));
   const parsed = parseMarkdown(mdToParse, {
     apiEntries: getSymbolsAsApiEntries(),
