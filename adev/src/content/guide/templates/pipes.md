@@ -289,3 +289,95 @@ export class JoinNamesImpurePipe implements PipeTransform {
 ```
 
 Angular developers often adopt the convention of including `Impure` in the pipe `name` and class name to indicate the potential performance pitfall to other developers.
+
+## Using pipe logic outside templates
+
+Pipes are template operators designed to transform data declaratively in templates. When you need the same transformation logic in a service, a utility class, or any other non-template context, **avoid injecting the pipe class**. Pipes are not designed as injectable services.
+
+### Extract the logic from custom pipes
+
+When you create a custom pipe, extract the transformation into a standalone function. Have the pipe's `transform()` method delegate to that function, and import the function directly wherever else you need it.
+
+```ts {header: "kebab-case.ts"}
+export function toKebabCase(value: string): string {
+  return value.toLowerCase().replace(/ /g, '-');
+}
+```
+
+```ts {header: "kebab-case.pipe.ts" , prefer}
+import {Pipe, PipeTransform} from '@angular/core';
+import {toKebabCase} from './kebab-case';
+
+@Pipe({name: 'kebabCase'})
+export class KebabCasePipe implements PipeTransform {
+  transform(value: string): string {
+    return toKebabCase(value);
+  }
+}
+```
+
+```ts {header: "formatter.service.ts" , prefer}
+import {Service} from '@angular/core';
+import {toKebabCase} from './kebab-case';
+
+@Service()
+export class FormatterService {
+  formatSlug(title: string): string {
+    return toKebabCase(title);
+  }
+}
+```
+
+```ts {header: "formatter.service.ts" , avoid}
+import {Service} from '@angular/core';
+import {KebabCasePipe} from './kebab-case.pipe';
+
+@Service()
+export class FormatterService {
+  // Avoid injecting the pipe class into services or other classes.
+  private kebabCasePipe = inject(KebabCasePipe);
+
+  formatSlug(title: string): string {
+    return this.kebabCasePipe.transform(title);
+  }
+}
+```
+
+### Use formatting functions for built-in pipes
+
+Angular's built-in locale-aware pipes each have a corresponding standalone formatting function exported from `@angular/common`. Use these functions instead of injecting the pipe class.
+
+| Pipe           | Standalone function |
+| -------------- | ------------------- |
+| `DatePipe`     | `formatDate`        |
+| `CurrencyPipe` | `formatCurrency`    |
+| `DecimalPipe`  | `formatNumber`      |
+| `PercentPipe`  | `formatPercent`     |
+
+```ts {prefer}
+import {Service, LOCALE_ID, inject} from '@angular/core';
+import {formatNumber} from '@angular/common';
+
+@Service()
+export class PriceService {
+  private locale = inject(LOCALE_ID);
+
+  format(value: number) {
+    return formatNumber(value, this.locale, '1.2-2');
+  }
+}
+```
+
+```ts {avoid}
+import {Service} from '@angular/core';
+import {DecimalPipe} from '@angular/common';
+
+@Service()
+export class PriceService {
+  private decimalPipe = inject(DecimalPipe);
+
+  format(value: number) {
+    return this.decimalPipe.transform(value, '1.2-2');
+  }
+}
+```
