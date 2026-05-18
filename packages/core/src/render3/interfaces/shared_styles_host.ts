@@ -23,9 +23,18 @@ export interface SharedStylesHost {
   addStyles(styles: string[], urls?: string[]): void;
 
   /**
+   * Disables styles of destroyed components instead of removing them from the DOM.
+   * This avoids expensive style recalculations triggered by DOM removal.
+   * @param styles An array of style content strings.
+   * @param urls An array of URLs to be disabled as link tags.
+   */
+  disableStyles(styles: string[], urls?: string[]): void;
+
+  /**
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
    * @param urls An array of URLs to be removed as link tags.
+   * @deprecated Use `disableStyles` instead.
    */
   removeStyles(styles: string[], urls?: string[]): void;
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -331,6 +332,52 @@ describe('hot module replacement', () => {
       getShadowRoot(),
       `<style>strong {background: pink;}</style>Changed <strong>1</strong>!`,
     );
+  });
+
+  it('should clean up stale disabled stylesheets when styles change during HMR', () => {
+    const initialStyles = `strong { color: red; }`;
+    const initialMetadata: Component = {
+      encapsulation: ViewEncapsulation.None,
+      selector: 'child-cmp',
+      template: 'Hello <strong>{{state}}</strong>',
+      styles: initialStyles,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {
+      state = 0;
+    }
+
+    @Component({
+      imports: [ChildCmp],
+      template: `<child-cmp />`,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    const doc = TestBed.inject(DOCUMENT);
+    const findStyle = (text: string) =>
+      Array.from(doc.head!.querySelectorAll('style')).find((s) => s.textContent === text);
+
+    // Verify initial style is present
+    expect(findStyle(initialStyles)).toBeTruthy();
+
+    const newStyles = `strong { background: pink; }`;
+
+    // Simulate HMR with different styles
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      template: `Changed <strong>{{state}}</strong>!`,
+      styles: newStyles,
+    });
+    fixture.detectChanges();
+
+    // Old style should be fully removed from the DOM, not just disabled
+    expect(findStyle(initialStyles)).toBeFalsy();
+    // New style should be present
+    expect(findStyle(newStyles)).toBeTruthy();
   });
 
   it('should continue binding inputs to a component that is replaced', () => {
