@@ -223,6 +223,7 @@ const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined>
   'base': {'href': true},
   'link': {'href': true},
   'object': {'data': true, 'codebase': true},
+  'use': {'href': true, 'xlink:href': true},
 };
 
 /**

@@ -118,7 +118,7 @@ describe('sanitization', () => {
       [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl],
     ]);
     Object.entries(schema).forEach(([key, context]) => {
-      if (context === SecurityContext.URL || SecurityContext.RESOURCE_URL) {
+      if (context === SecurityContext.URL || context === SecurityContext.RESOURCE_URL) {
         const [tag, prop] = key.split('|');
         const contexts = contextsByProp.get(prop) || new Set<number>();
         contexts.add(context);
@@ -192,6 +192,33 @@ describe('sanitization', () => {
     expect(
       ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustUrl('javascript:true'), 'a', 'href'),
     ).toEqual('javascript:true');
+  });
+
+  it('should sanitize new security sinks correctly', () => {
+    // meta[content] should use URL sanitizer
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'meta', 'content')).toEqual(
+      'unsafe:javascript:alert(1)',
+    );
+    // table[background] should use URL sanitizer
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'table', 'background')).toEqual(
+      'unsafe:javascript:alert(1)',
+    );
+    // use[href] should use ResourceURL sanitizer (throws if not trusted)
+    const ERROR = /NG0904: unsafe value used in a resource URL context.*/;
+    expect(() => ɵɵsanitizeUrlOrResourceUrl('http://attacker.com', 'use', 'href')).toThrowError(
+      ERROR,
+    );
+    expect(
+      ɵɵsanitizeUrlOrResourceUrl(
+        bypassSanitizationTrustResourceUrl('http://safe.com'),
+        'use',
+        'href',
+      ).toString(),
+    ).toEqual('http://safe.com');
+    // media|src should also use ResourceURL sanitizer — sync with compiler schema
+    expect(() =>
+      ɵɵsanitizeUrlOrResourceUrl('http://attacker.com/audio.mp3', 'media', 'src'),
+    ).toThrowError(ERROR);
   });
 
   it('should only trust constant strings from template literal tags without interpolation', () => {
