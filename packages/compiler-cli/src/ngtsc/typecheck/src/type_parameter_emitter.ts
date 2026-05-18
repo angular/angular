@@ -87,9 +87,10 @@ export class TypeParameterEmitter {
   }
 
   private resolveTypeReference(
-    type: ts.TypeReferenceNode,
-  ): Reference | ts.TypeReferenceNode | null {
-    const target = ts.isIdentifier(type.typeName) ? type.typeName : type.typeName.right;
+    type: ts.TypeReferenceNode | ts.TypeQueryNode,
+  ): Reference | ts.TypeReferenceNode | ts.TypeQueryNode | null {
+    const typeName = ts.isTypeReferenceNode(type) ? type.typeName : type.exprName;
+    const target = ts.isIdentifier(typeName) ? typeName : typeName.right;
     const declaration = this.reflector.getDeclarationOfIdentifier(target);
 
     // If no declaration could be resolved or does not have a `ts.Declaration`, the type cannot be
@@ -118,13 +119,13 @@ export class TypeParameterEmitter {
     );
   }
 
-  private translateTypeReference(
-    type: ts.TypeReferenceNode,
+  private translateTypeReference<T extends ts.TypeReferenceNode | ts.TypeQueryNode>(
+    type: T,
     emitReference: (ref: Reference) => ts.TypeNode | null,
-  ): ts.TypeReferenceNode | null {
+  ): T | null {
     const reference = this.resolveTypeReference(type);
     if (!(reference instanceof Reference)) {
-      return reference;
+      return reference as T | null;
     }
 
     const typeNode = emitReference(reference);
@@ -132,12 +133,7 @@ export class TypeParameterEmitter {
       return null;
     }
 
-    if (!ts.isTypeReferenceNode(typeNode)) {
-      throw new Error(
-        `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[typeNode.kind]}.`,
-      );
-    }
-    return typeNode;
+    return typeNode as T;
   }
 
   private isLocalTypeParameter(decl: DeclarationNode): boolean {
