@@ -375,3 +375,42 @@ export declare class StandaloneComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneComponent, "other-standalone", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: foreign_component.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export function FancyButton() { }
+// @angular/core does not expose the `ForeignComponent` type this should return. 
+function frameworkImport(component) {
+    return () => { };
+}
+export class TestCmp {
+    title = 'Submit';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "main", ngImport: i0, template: '<FancyButton class="btn-cls" [label]="title"></FancyButton>', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'main',
+                    template: '<FancyButton class="btn-cls" [label]="title"></FancyButton>',
+                    // @ts-ignore: @angular/core does not expose the `foreignImports` property.
+                    foreignImports: [
+                        // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
+                        frameworkImport(FancyButton)
+                    ],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: foreign_component.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare function FancyButton(): void;
+export declare class TestCmp {
+    title: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "main", never, {}, {}, never, never, true, never>;
+}
+

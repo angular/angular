@@ -8,6 +8,7 @@
 
 import {
   AST,
+  ForeignComponentMeta,
   LiteralPrimitive,
   ParseSourceSpan,
   PropertyRead,
@@ -332,6 +333,14 @@ export interface TemplateTypeChecker {
     component: ts.ClassDeclaration,
     node: TmplAstElement | TmplAstTemplate,
   ): TypeCheckableDirectiveMeta[] | null;
+
+  /**
+   * Gets the foreign component that matched the given template element.
+   */
+  getForeignComponent(
+    component: ts.ClassDeclaration,
+    element: TmplAstElement,
+  ): ForeignComponentMeta | null;
 
   /**
    * Gets the directives that have been used in a component's template.

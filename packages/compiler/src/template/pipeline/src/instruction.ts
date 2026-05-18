@@ -49,6 +49,19 @@ export function elementStart(
   );
 }
 
+export function foreignComponent(
+  slot: number,
+  foreignComponentRef: o.Expression,
+  props: o.Expression | null,
+  sourceSpan: ParseSourceSpan | null,
+): ir.CreateOp {
+  const args = [o.literal(slot), foreignComponentRef];
+  if (props !== null) {
+    args.push(props);
+  }
+  return call(Identifiers.foreignComponent, args, sourceSpan);
+}
+
 function elementOrContainerBase(
   instruction: o.ExternalReference,
   slot: number,

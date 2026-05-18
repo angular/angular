@@ -1064,6 +1064,7 @@ runInEachFileSystem(() => {
               import {foreignImport} from '@angular/core/src/render3/foreign_import';
 
               function FancyButton() {}
+              function FancyMenu() {}
 
               function frameworkImport(component: unknown) {
                 return foreignImport(() => {/* render component */});
@@ -1072,7 +1073,10 @@ runInEachFileSystem(() => {
               @Component({
                 selector: 'main',
                 template: '',
-                foreignImports: [frameworkImport(FancyButton)],
+                foreignImports: [
+                  frameworkImport(FancyButton),
+                  frameworkImport(FancyMenu),
+                ],
               }) class TestCmp {}
             `,
           },
@@ -1089,8 +1093,9 @@ runInEachFileSystem(() => {
         const {analysis, diagnostics} = handler.analyze(TestCmp, detected.metadata);
 
         expect(diagnostics).toBeUndefined();
-        expect(analysis?.foreignImports?.length).toBe(1);
-        expect(analysis?.foreignImports![0].node.name.text).toBe('FancyButton');
+        expect(analysis?.foreignImports).toHaveSize(2);
+        expect(analysis!.foreignImports![0].name).toBe('FancyButton');
+        expect(analysis!.foreignImports![1].name).toBe('FancyMenu');
       });
 
       it('should produce diagnostic for imports in non-standalone component', () => {
