@@ -12,6 +12,7 @@ import {
   createMayBeForwardRefExpression,
   emitDistinctChangesOnlyDefaultValue,
   Expression,
+  ExpressionType,
   ExternalExpr,
   ExternalReference,
   ForwardRefHandling,
@@ -1502,20 +1503,68 @@ export function parseDecoratorInputTransformFunction(
   emitDeclarationOnly: boolean,
 ): DecoratorInputTransform {
   if (emitDeclarationOnly) {
-    const chain: ts.DiagnosticMessageChain = {
-      messageText:
-        '@Input decorators with a transform function are not supported in experimental declaration-only emission mode',
-      category: ts.DiagnosticCategory.Error,
-      code: 0,
-      next: [
-        {
-          messageText: `Consider converting '${clazz.name.text}.${classPropertyName}' to an input signal`,
-          category: ts.DiagnosticCategory.Message,
-          code: 0,
-        },
-      ],
-    };
-    throw new FatalDiagnosticError(ErrorCode.DECORATOR_UNEXPECTED, value.node, chain);
+    if (ts.isArrowFunction(value.node) || ts.isFunctionExpression(value.node)) {
+      const firstParam =
+        value.node.parameters[0]?.name?.getText() === 'this'
+          ? value.node.parameters[1]
+          : value.node.parameters[0];
+
+      if (!firstParam) {
+        const ref = new Reference(ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+        ref.synthetic = true;
+        return {
+          node: value.node,
+          type: ref,
+        };
+      }
+
+      if (!firstParam.type) {
+        throw createValueHasWrongTypeError(
+          value.node,
+          value,
+          'Input transform function first parameter must have a type',
+        );
+      }
+
+      if (firstParam.dotDotDotToken) {
+        throw createValueHasWrongTypeError(
+          value.node,
+          value,
+          'Input transform function first parameter cannot be a spread parameter',
+        );
+      }
+
+      const ref = new Reference(firstParam.type);
+      ref.synthetic = true;
+      return {
+        node: value.node,
+        type: ref,
+      };
+    }
+
+    const node =
+      value instanceof Reference ? value.getIdentityIn(clazz.getSourceFile()) : value.node;
+    const entityName = node ? expressionToEntityName(node as ts.Expression) : null;
+    if (entityName !== null) {
+      const typeQuery = ts.factory.createTypeQueryNode(entityName);
+      const parametersType = ts.factory.createTypeReferenceNode('Parameters', [typeQuery]);
+      const indexedAccess = ts.factory.createIndexedAccessTypeNode(
+        parametersType,
+        ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral('0')),
+      );
+      const ref = new Reference(indexedAccess);
+      ref.synthetic = true;
+      return {
+        node: value.node,
+        type: ref,
+      };
+    }
+
+    throw createValueHasWrongTypeError(
+      value.node,
+      value,
+      'Input transform function could not be referenced',
+    );
   }
   // In local compilation mode we can skip type checking the function args. This is because usually
   // the type check is done in a separate build which runs in full compilation mode. So here we skip
@@ -2097,29 +2146,7 @@ function extractHostDirectives(
           `In ${compilationModeName} mode, host directive cannot be an expression. Use an identifier instead`,
         );
       }
-
-      if (emitDeclarationOnly) {
-        if (ts.isIdentifier(hostReference.node)) {
-          const importInfo = reflector.getImportOfIdentifier(hostReference.node);
-          if (importInfo) {
-            directive = new ExternalReference(importInfo.from, importInfo.name);
-          } else {
-            throw new FatalDiagnosticError(
-              ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
-              hostReference.node,
-              `In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead`,
-            );
-          }
-        } else {
-          throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
-            hostReference.node,
-            `In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead`,
-          );
-        }
-      } else {
-        directive = new WrappedNodeExpr(hostReference.node);
-      }
+      directive = new WrappedNodeExpr(hostReference.node);
     } else if (hostReference instanceof Reference) {
       directive = hostReference as Reference<ClassDeclaration>;
       nameForErrors = (fieldName: string) =>
@@ -2229,4 +2256,15 @@ export function extractHostBindingResources(nodes: HostBindingNodes): ReadonlySe
   }
 
   return result;
+}
+
+function expressionToEntityName(expr: ts.Expression): ts.EntityName | null {
+  if (ts.isIdentifier(expr)) {
+    return expr;
+  }
+  if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) {
+    const left = expressionToEntityName(expr.expression);
+    return left === null ? null : ts.factory.createQualifiedName(left, expr.name);
+  }
+  return null;
 }

@@ -53,6 +53,7 @@ export enum R3SelectorScopeMode {
 export enum R3NgModuleMetadataKind {
   Global,
   Local,
+  Isolated,
 }
 
 interface R3NgModuleMetadataCommon {
@@ -157,7 +158,33 @@ export interface R3NgModuleMetadataLocal extends R3NgModuleMetadataCommon {
 /**
  * Metadata required by the module compiler to generate a module def (`ɵmod`) for a type.
  */
-export type R3NgModuleMetadata = R3NgModuleMetadataGlobal | R3NgModuleMetadataLocal;
+/**
+ * Metadata required by the module compiler in isolated mode to generate a module def (`ɵmod`) for a
+ * type.
+ */
+export interface R3NgModuleMetadataIsolated extends R3NgModuleMetadataCommon {
+  kind: R3NgModuleMetadataKind.Isolated;
+
+  /**
+   * Isolated declarations mode always omits scope in the generated JS definition.
+   */
+  selectorScopeMode: R3SelectorScopeMode.Omit;
+
+  /**
+   * The output expression representing the imports of the module.
+   */
+  importsExpression: o.Expression | null;
+
+  /**
+   * The output expression representing the exports of the module.
+   */
+  exportsExpression: o.Expression | null;
+}
+
+export type R3NgModuleMetadata =
+  | R3NgModuleMetadataGlobal
+  | R3NgModuleMetadataLocal
+  | R3NgModuleMetadataIsolated;
 
 /**
  * The shape of the object literal that is passed to the `ɵɵdefineNgModule()` call.
@@ -294,6 +321,17 @@ export function createNgModuleType(meta: R3NgModuleMetadata): o.ExpressionType {
     return new o.ExpressionType(meta.type.value);
   }
 
+  if (meta.kind === R3NgModuleMetadataKind.Isolated) {
+    return new o.ExpressionType(
+      o.importExpr(R3.NgModuleDeclaration, [
+        new o.ExpressionType(meta.type.type),
+        o.NONE_TYPE,
+        meta.importsExpression ? o.expressionType(meta.importsExpression) : o.NONE_TYPE,
+        meta.exportsExpression ? o.expressionType(meta.exportsExpression) : o.NONE_TYPE,
+      ]),
+    );
+  }
+
   const {
     type: moduleType,
     declarations,
@@ -333,7 +371,7 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement | n
     if (meta.declarations.length > 0) {
       scopeMap.set('declarations', refsToArray(meta.declarations, meta.containsForwardDecls));
     }
-  } else {
+  } else if (meta.kind === R3NgModuleMetadataKind.Local) {
     if (meta.declarationsExpression) {
       scopeMap.set('declarations', meta.declarationsExpression);
     }
@@ -343,7 +381,7 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement | n
     if (meta.imports.length > 0) {
       scopeMap.set('imports', refsToArray(meta.imports, meta.containsForwardDecls));
     }
-  } else {
+  } else if (meta.kind === R3NgModuleMetadataKind.Local) {
     if (meta.importsExpression) {
       scopeMap.set('imports', meta.importsExpression);
     }
@@ -353,7 +391,7 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement | n
     if (meta.exports.length > 0) {
       scopeMap.set('exports', refsToArray(meta.exports, meta.containsForwardDecls));
     }
-  } else {
+  } else if (meta.kind === R3NgModuleMetadataKind.Local) {
     if (meta.exportsExpression) {
       scopeMap.set('exports', meta.exportsExpression);
     }
