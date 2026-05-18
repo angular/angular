@@ -21,7 +21,6 @@ import {
   ParameterEntry,
   PipeEntry,
   TypeAliasEntry,
-  EntryType,
 } from '../entities.mjs';
 
 import {CliCommand, CliOption} from '../cli-entities.mjs';
@@ -105,6 +104,7 @@ export type FunctionEntryRenderable = FunctionEntry &
 export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
   DocEntryRenderable & {
     params: ParameterEntryRenderable[];
+    htmlReturnDescription?: string;
   };
 
 /** Documentation entity for a block augmented with transformed content for rendering. */
