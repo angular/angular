@@ -19,6 +19,8 @@ import {
   SchemaMetadata,
   TmplAstDeferredBlock,
   ClassPropertyMapping,
+  SelectorlessMatcher,
+  ForeignComponentMeta,
 } from '@angular/compiler';
 import ts from 'typescript';
 

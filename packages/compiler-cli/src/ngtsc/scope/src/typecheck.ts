@@ -12,6 +12,7 @@ import {
   SchemaMetadata,
   SelectorlessMatcher,
   SelectorMatcher,
+  ForeignComponentMeta,
 } from '@angular/compiler';
 
 import {Reference} from '../../imports';
@@ -23,6 +24,7 @@ import {
   MetaKind,
   NgModuleMeta,
   PipeMeta,
+  createForeignComponentMatcher,
 } from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, SelectorlessScope} from './api';
@@ -36,6 +38,11 @@ export interface TypeCheckScope {
    * that are in the compilation scope of the declaring NgModule.
    */
   matcher: DirectiveMatcher<DirectiveMeta> | null;
+
+  /**
+   * A `SelectorlessMatcher` instance that contains matched foreign components.
+   */
+  foreignMatcher: SelectorlessMatcher<ForeignComponentMeta> | null;
 
   /**
    * All of the directives available in the compilation scope of the declaring NgModule.
@@ -100,6 +107,7 @@ export class TypeCheckScopeRegistry {
     if (scope === null) {
       return {
         matcher: null,
+        foreignMatcher: null,
         directives,
         pipes,
         schemas: [],
@@ -152,8 +160,12 @@ export class TypeCheckScopeRegistry {
       }
     }
 
+    const foreignMatcher =
+      hostMeta !== null ? createForeignComponentMatcher(hostMeta.foreignImports) : null;
+
     const typeCheckScope: TypeCheckScope = {
       matcher,
+      foreignMatcher,
       directives,
       pipes,
       schemas: scope.schemas,
