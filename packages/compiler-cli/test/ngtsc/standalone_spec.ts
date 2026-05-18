@@ -528,6 +528,82 @@ runInEachFileSystem(() => {
         );
       });
 
+      it('should silence the Angular import diagnostic for a non-exported class', () => {
+        env.tsconfig({compileNonExportedClasses: false});
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            class TestDir {}
+
+            @Component({
+              selector: 'test-cmp',
+              template: '',
+              imports: [TestDir],
+            })
+            export class TestCmp {}
+          `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should silence the Angular import diagnostic when both the importing and imported classes are non-exported', () => {
+        // Simulates the common test-file pattern where both the component under test
+        env.tsconfig({compileNonExportedClasses: false});
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            class TestDir {}
+
+            @Component({
+              selector: 'test-cmp',
+              template: '',
+              imports: [TestDir],
+            })
+            class TestCmp {}
+          `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should surface a TypeScript used-before-declaration error when a non-exported directive is imported before its definition', () => {
+        // When a non-exported Angular class is referenced in `imports` before it is declared in the file
+        // TypeScript reports TS2449 ("Class 'X' used before its declaration")
+        env.tsconfig({compileNonExportedClasses: false});
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '',
+              imports: [TestDir],
+            })
+            export class TestCmp {}
+
+            @Directive({
+              selector: '[dir]',
+            })
+            class TestDir {}
+          `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2449);
+      });
+
       it('should type-check standalone component templates', () => {
         env.write(
           'test.ts',
