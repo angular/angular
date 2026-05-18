@@ -69,6 +69,8 @@ export interface ComponentType {
   name: string;
   isElement: boolean;
   id: number;
+  /** Angular framework instance ID assigned by the profiler. Only present when profiling is active. */
+  instanceId?: number;
 }
 
 export type HydrationStatus =

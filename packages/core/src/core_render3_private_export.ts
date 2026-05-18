@@ -36,6 +36,7 @@ export {inferTagNameFromDefinition as ɵinferTagNameFromDefinition} from './rend
 export {ɵɵenableIncrementalHydrationRuntime} from './hydration/incremental_runtime';
 export {getLContext as ɵgetLContext} from './render3/context_discovery';
 export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
+export {getComponentInstanceId as ɵgetComponentInstanceId} from './render3/debug/chrome_dev_tools_performance';
 export {
   NG_COMP_DEF as ɵNG_COMP_DEF,
   NG_DIR_DEF as ɵNG_DIR_DEF,

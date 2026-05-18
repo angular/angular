@@ -3,6 +3,14 @@ load("//devtools/tools:defaults.bzl", "ng_project", "ts_project", "ts_test_libra
 package(default_visibility = ["//devtools:__subpackages__"])
 
 ng_project(
+    name = "deep_link",
+    srcs = ["deep_link_service.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ng_project(
     name = "browser_styles",
     srcs = ["browser_styles_service.ts"],
     deps = [
