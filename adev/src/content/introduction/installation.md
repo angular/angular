@@ -68,6 +68,8 @@ In your terminal, run the CLI command `ng new` with the desired project name. In
 ng new <project-name>
 ```
 
+HELPFUL: `ng new` supports options to configure your new project, for example `--ssr` for server-side rendering, `--style=scss` for Sass stylesheets, or `--zoneless` to opt out of `zone.js`. See the [`ng new` reference](cli/new) for all options.
+
 You will be presented with some configuration options for your project. Use the arrow and enter keys to navigate and select which options you desire.
 
 If you don't have any preferences, just hit the enter key to take the default options and continue with the setup.
