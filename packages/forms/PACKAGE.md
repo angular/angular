@@ -12,12 +12,14 @@ Angular forms allow you to:
 - Validate the correctness of user input.
 - Create custom validators and input elements.
 
-You can build forms in one of two ways:
+You can build forms in one of three ways:
 
 - _Reactive forms_ use existing instances of a `FormControl` or `FormGroup` to build a form model. This form
   model is synced with form input elements through directives to track and communicate changes back to the form model. Changes
   to the value and status of the controls are provided as observables.
 - _Template-driven forms_ rely on directives such as `NgModel` and `NgModelGroup` create the form model for you,
   so any changes to the form are communicated through the template.
+- _Signal-based forms_ build the form model out of signals, providing a third option that integrates
+  with the rest of Angular's signal-based reactivity. See `@angular/forms/signals`.
 
 @see Find out more in the [Forms Overview](guide/forms).

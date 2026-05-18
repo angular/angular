@@ -1,17 +1,14 @@
-# 🚧 Experimental Signal-Based Forms API 🏗️
+# Signal-Based Forms API
 
-This directory contains an experimental new Angular Forms API built on top of
-[signals](https://angular.dev/guide/signals). We're using this experimental API to explore potential
-designs for such a system, to play with new ideas, identify challenges, and to demonstrate
+This directory contains Angular's signal-based forms API, built on top of
+[signals](https://angular.dev/guide/signals). It provides a third option for building
+forms in Angular — alongside template-driven forms and reactive forms — and offers
 interoperability with the existing version of `@angular/forms`.
 
 ## Not yet supported
 
-- Debouncing validation
 - Dynamic objects
 - Tuples
-- Interop with Reactive/Template forms
-- Strongly-typed binding to UI controls
 
 ## FAQs
 
@@ -24,7 +21,7 @@ the gap between template and reactive forms, which often inspires debate in the 
 
 ### What does this mean for the future of template and/or reactive forms?
 
-Nothing is changing yet with template and reactive forms. This API is early and still highly experimental.
+Nothing is changing yet with template and reactive forms.
 
 Even if we achieve our goals, we will roll out any changes to forms incrementally. Like with NgModules
 and `standalone`, we don't intend to deprecate template or reactive forms without a clear sign from
