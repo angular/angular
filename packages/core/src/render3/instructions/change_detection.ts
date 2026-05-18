@@ -65,9 +65,9 @@ import {
   viewAttachedToChangeDetector,
 } from '../util/view_utils';
 
+import {ProfilerEvent} from '../../../primitives/devtools';
 import {isDestroyed} from '../interfaces/type_checks';
 import {profiler} from '../profiler';
-import {ProfilerEvent} from '../../../primitives/devtools';
 import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 import {runEffectsInView} from '../reactivity/view_effect_runner';
 import {executeTemplate} from './shared';
@@ -260,13 +260,14 @@ export function refreshView<T>(
       // `LView` but its declaration appears after the insertion component.
       markTransplantedViewsForRefresh(lView);
     }
-    runEffectsInView(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 
     // Content query results must be refreshed before content hooks are called.
     if (tView.contentQueries !== null) {
       refreshContentQueries(tView, lView);
     }
+
+    runEffectsInView(lView);
 
     // execute content hooks (AfterContentInit, AfterContentChecked)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
@@ -499,10 +500,10 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
     // Set active consumer to null to avoid inheriting an improper reactive context
     const prevConsumer = setActiveConsumer(null);
     try {
+      detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
       if (!isInCheckNoChangesPass) {
         runEffectsInView(lView);
       }
-      detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
       const components = tView.components;
       if (components !== null) {
         detectChangesInChildComponents(lView, components, ChangeDetectionMode.Targeted);
