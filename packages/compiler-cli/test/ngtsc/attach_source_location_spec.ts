@@ -45,7 +45,7 @@ runInEachFileSystem(() => {
       );
       env.driveMain();
       const content = env.getContents('test.js');
-      expect(content).toContain('ɵɵdomElementStart(0, "div")(1, "span")(2, "strong");');
+      expect(content).toContain('ɵɵdomElementStart(0, "div", 0)(1, "span", 1)(2, "strong", 2);');
       expect(content).toContain(
         'ɵɵattachSourceLocations("test.ts", [[0, 114, 5, 14], [1, 119, 5, 19], [2, 142, 6, 16]]);',
       );
@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
       );
       env.driveMain();
       const content = env.getContents('test.js');
-      expect(content).toContain('ɵɵdomElementStart(0, "div")(1, "span")(2, "strong");');
+      expect(content).toContain('ɵɵdomElementStart(0, "div", 0)(1, "span", 1)(2, "strong", 2);');
       expect(content).toContain(
         'ɵɵattachSourceLocations("test.html", [[0, 9, 1, 8], [1, 14, 1, 13], [2, 31, 2, 10]]);',
       );
@@ -99,8 +99,8 @@ runInEachFileSystem(() => {
       env.driveMain();
       const content = env.getContents('test.js');
       expect(content).toContain('ɵɵtemplate(0,');
-      expect(content).toContain('ɵɵelementStart(0, "div");');
-      expect(content).toContain('ɵɵelement(1, "span");');
+      expect(content).toContain('ɵɵelementStart(0, "div", 1);');
+      expect(content).toContain('ɵɵelement(1, "span", 2);');
       expect(content).toContain(
         'ɵɵattachSourceLocations("test.ts", [[0, 207, 7, 14], [1, 242, 8, 16]]);',
       );
@@ -128,10 +128,10 @@ runInEachFileSystem(() => {
       );
       env.driveMain();
       const content = env.getContents('test.js');
-      expect(content).toContain('ɵɵdomElementContainerStart(0);');
-      expect(content).toContain('ɵɵdomElementStart(1, "div");');
-      expect(content).toContain('ɵɵdomElementContainerStart(2);');
-      expect(content).toContain('ɵɵdomElement(3, "span");');
+      expect(content).toContain('ɵɵdomElementContainerStart(0, 0);');
+      expect(content).toContain('ɵɵdomElementStart(1, "div", 1);');
+      expect(content).toContain('ɵɵdomElementContainerStart(2, 2);');
+      expect(content).toContain('ɵɵdomElement(3, "span", 3);');
       expect(content).toContain(
         'ɵɵattachSourceLocations("test.ts", [[1, 145, 6, 16], [3, 204, 8, 20]]);',
       );

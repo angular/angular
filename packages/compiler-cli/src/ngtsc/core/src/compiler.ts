@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LEGACY_OPTIONAL_CHAINING_DEFAULT, TypeCheckingConfig} from '@angular/compiler';
+import {
+  LEGACY_OPTIONAL_CHAINING_DEFAULT,
+  setEnableTemplateSourceLocations,
+  TypeCheckingConfig,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -486,6 +490,9 @@ export class NgCompiler {
       ...verifyCompatibleTypeCheckOptions(this.options),
       ...verifyEmitDeclarationOnly(this.options),
     );
+    if (this.options.enableTemplateSourceLocations) {
+      setEnableTemplateSourceLocations(true);
+    }
 
     this.currentProgram = inputProgram;
     this.closureCompilerEnabled = !!this.options.annotateForClosureCompiler;
