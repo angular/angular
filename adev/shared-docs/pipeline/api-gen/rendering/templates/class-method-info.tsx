@@ -23,6 +23,7 @@ import {RawHtml} from './raw-html';
 export function ClassMethodInfo(props: {
   entry: FunctionSignatureMetadataRenderable;
   hideUsageNotes?: boolean;
+  hideDescription?: boolean;
 }) {
   const entry = props.entry;
 
@@ -30,7 +31,9 @@ export function ClassMethodInfo(props: {
     <div
       className={`${REFERENCE_MEMBER_CARD_ITEM} ${entry.deprecated ? 'docs-reference-card-item-deprecated' : ''}`}
     >
-      <RawHtml value={entry.htmlDescription} className={'docs-function-definition'} />
+      {!props.hideDescription && (
+        <RawHtml value={entry.htmlDescription} className={'docs-function-definition'} />
+      )}
       {/* In case when method is overloaded we need to indicate which overload is deprecated */}
       {entry.deprecated ? (
         <div>
@@ -45,6 +48,9 @@ export function ClassMethodInfo(props: {
       <div className={'docs-return-type'}>
         <span className={PARAM_KEYWORD_CLASS_NAME}>@returns</span>
         <CodeSymbol code={entry.returnType} />
+        {entry.htmlReturnDescription && (
+          <RawHtml value={entry.htmlReturnDescription} className="docs-parameter-description" />
+        )}
       </div>
       {entry.htmlUsageNotes && !props.hideUsageNotes ? (
         <div className={'docs-usage-notes'}>
