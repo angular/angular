@@ -418,6 +418,38 @@ accountForm = form(this.accountModel, (schemaPath) => {
 });
 ```
 
+## Making controls reusable
+
+A custom control often carries implicit expectations about validation. An email input needs `required` and `email` rules in every form that uses it. Instead of relying on each consumer to redeclare those rules, package a companion schema alongside the control and export both from the same module:
+
+```ts {header: 'email-input.ts'}
+import {schema, required, email} from '@angular/forms/signals';
+
+export const emailFieldSchema = schema<string>((path) => {
+  required(path, {message: 'Email is required'});
+  email(path, {message: 'Enter a valid email address'});
+});
+```
+
+A consumer imports the companion schema and composes it into their form with `apply()`:
+
+```ts {header: 'registration.ts'}
+import {form, apply} from '@angular/forms/signals';
+import {emailFieldSchema} from './email-input';
+
+registrationForm = form(this.registrationModel, (path) => {
+  apply(path.email, emailFieldSchema);
+});
+```
+
+`apply()` merges the companion schema's rules into the parent form at the specified path. The consumer can still add more rules to the same field because `apply()` composes with other rules rather than replacing them. See the [Schemas guide](guide/forms/signals/schemas) for complete coverage of `schema()`, `apply()`, and conditional composition with `applyWhen()`.
+
+### Design considerations
+
+The consumer's model must initialize every field with a defined value. In Signal Forms, `undefined` signifies the absence of a field and not an empty value. For a reusable email control, that means the consumer should use `''` as the initial value, and not leave the property undefined. See the [Form Models guide](guide/forms/signals/models) for details on choosing initial values.
+
+In addition, controls should not register their own effects for state management. The form system manages field state through internal effects. This means that your control receives state updates through input signals. If a control needs to transform values, use `linkedSignal()` as shown in the "[Value transformation](#value-transformation)" section rather than an `effect()`.
+
 ## Next steps
 
 This guide covered building custom controls that integrate with Signal Forms. Related guides explore other aspects of Signal Forms:
