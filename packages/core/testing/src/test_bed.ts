@@ -18,6 +18,7 @@ import {
   ComponentRef,
   ɵDeferBlockBehavior as DeferBlockBehavior,
   Directive,
+  DirectiveWithBindings,
   EnvironmentInjector,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
@@ -75,6 +76,9 @@ export interface TestBedStatic extends TestBed {
 export interface TestComponentOptions {
   /** Bindings to apply to the test component. */
   bindings?: Binding[];
+
+  /** Directives to apply to the test component. */
+  directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
 
   /**
    * Whether to infer the tag name of the test component from its selector.
@@ -711,7 +715,7 @@ export class TestBedImpl implements TestBed {
         [],
         `#${rootElId}`,
         this.testModuleRef,
-        undefined,
+        options?.directives,
         options?.bindings,
       ) as ComponentRef<T>;
       return this.runInInjectionContext(() => new ComponentFixture(componentRef));

@@ -182,6 +182,7 @@ export interface TestBedStatic extends TestBed {
 // @public
 export interface TestComponentOptions {
     bindings?: Binding[];
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     inferTagName?: boolean;
 }
 

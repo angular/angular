@@ -1293,6 +1293,65 @@ describe('TestBed', () => {
     });
   });
 
+  describe('directives', () => {
+    it('should be able to apply directives to the component', () => {
+      const logs: string[] = [];
+
+      @Directive({
+        host: {'class': 'dir-class', 'attr-one': 'one'},
+      })
+      class Dir {
+        constructor() {
+          logs.push('Dir');
+        }
+      }
+
+      @Component({template: '', host: {'class': 'host-class'}})
+      class TestComp {
+        constructor() {
+          logs.push('TestComp');
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestComp, {
+        directives: [Dir],
+      });
+      fixture.detectChanges();
+
+      expect(logs).toEqual(['TestComp', 'Dir']);
+      expect(fixture.nativeElement.classList.contains('host-class')).toBe(true);
+      expect(fixture.nativeElement.classList.contains('dir-class')).toBe(true);
+      expect(fixture.nativeElement.getAttribute('attr-one')).toBe('one');
+    });
+
+    it('should be able to apply directives with bindings', () => {
+      @Directive({})
+      class Dir {
+        @Input() dirInput = '';
+      }
+
+      @Component({template: 'Value: {{value}}'})
+      class TestComp {
+        @Input() value = '';
+      }
+
+      const dirValue = signal('dir-initial');
+      const fixture = TestBed.createComponent(TestComp, {
+        bindings: [inputBinding('value', () => 'host-value')],
+        directives: [{type: Dir, bindings: [inputBinding('dirInput', dirValue)]}],
+      });
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Value: host-value');
+      const dirInstance = fixture.debugElement.injector.get(Dir);
+      expect(dirInstance.dirInput).toBe('dir-initial');
+
+      dirValue.set('dir-updated');
+      fixture.detectChanges();
+      expect(dirInstance.dirInput).toBe('dir-updated');
+    });
+  });
+
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)', () => {
     const serviceOverride = {
       get() {
