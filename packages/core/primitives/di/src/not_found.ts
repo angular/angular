@@ -27,7 +27,13 @@ export class NotFoundError extends Error {
  * Type guard for checking if an unknown value is a NotFound.
  */
 export function isNotFound(e: unknown): e is NotFound {
-  return e === NOT_FOUND || (e as NotFoundError)?.name === 'ɵNotFound';
+  if (e === NOT_FOUND) return true;
+
+  if (e instanceof Error) {
+    return e.name === 'ɵNotFound';
+  }
+
+  return false;
 }
 
 /**
