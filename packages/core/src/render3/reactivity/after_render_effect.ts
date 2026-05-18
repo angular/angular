@@ -16,8 +16,6 @@ import {
   SIGNAL_NODE,
   type SignalNode,
 } from '../../../primitives/signals';
-import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
-import {type Signal} from '../reactivity/api';
 import {TracingService, TracingSnapshot} from '../../application/tracing';
 import {
   ChangeDetectionScheduler,
@@ -35,13 +33,16 @@ import {
   AfterRenderManager,
   AfterRenderSequence,
 } from '../after_render/manager';
-import {LView} from '../interfaces/view';
-import {ViewContext} from '../view_context';
-import {assertNotInReactiveContext} from './asserts';
 import {
   emitAfterRenderEffectPhaseCreatedEvent,
   setInjectorProfilerContext,
 } from '../debug/injector_profiler';
+import {LView} from '../interfaces/view';
+import {type Signal} from '../reactivity/api';
+import {ViewContext} from '../view_context';
+import {assertNotInReactiveContext} from './asserts';
+import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
+import {untracked} from './untracked';
 
 const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
 const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
@@ -306,6 +307,11 @@ export function afterRenderEffect(
   callback: (onCleanup: EffectCleanupRegisterFn) => void,
   options?: AfterRenderOptions,
 ): AfterRenderRef;
+export function afterRenderEffect<T>(
+  reactiveFn: () => T,
+  effectFn: (params: T, onCleanup: EffectCleanupRegisterFn) => void,
+  options?: AfterRenderOptions,
+): AfterRenderRef;
 /**
  * Register effects that, when triggered, are invoked when the application finishes rendering,
  * during the specified phases. The available phases are:
@@ -380,7 +386,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(
  * @publicApi
  */
 export function afterRenderEffect<E = never, W = never, M = never>(
-  callbackOrSpec:
+  callbackSpecOrReactiveFn:
     | ((onCleanup: EffectCleanupRegisterFn) => void)
     | {
         earlyRead?: (onCleanup: EffectCleanupRegisterFn) => E;
@@ -390,8 +396,47 @@ export function afterRenderEffect<E = never, W = never, M = never>(
         ) => M;
         read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
       },
-  options?: AfterRenderOptions,
+  optionsOrEffectFn?:
+    | AfterRenderOptions
+    | ((params: unknown, onCleanup: EffectCleanupRegisterFn) => void),
+  explicitOptions?: AfterRenderOptions,
 ): AfterRenderRef {
+  let callbackOrSpec:
+    | ((onCleanup: EffectCleanupRegisterFn) => void)
+    | {
+        earlyRead?: (onCleanup: EffectCleanupRegisterFn) => E;
+        write?: (...args: [...ɵFirstAvailableSignal<[E]>, EffectCleanupRegisterFn]) => W;
+        mixedReadWrite?: (
+          ...args: [...ɵFirstAvailableSignal<[W, E]>, EffectCleanupRegisterFn]
+        ) => M;
+        read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
+      };
+  let options: AfterRenderOptions | undefined;
+
+  if (typeof callbackSpecOrReactiveFn === 'function' && typeof optionsOrEffectFn === 'function') {
+    const reactiveFn = callbackSpecOrReactiveFn as () => unknown;
+    const effectFn = optionsOrEffectFn;
+    callbackOrSpec = {
+      mixedReadWrite: ((onCleanup: EffectCleanupRegisterFn) => {
+        const params = reactiveFn();
+        untracked(() => effectFn(params, onCleanup));
+      }) as any,
+    } as any;
+    options = explicitOptions;
+  } else {
+    callbackOrSpec = callbackSpecOrReactiveFn as
+      | ((onCleanup: EffectCleanupRegisterFn) => void)
+      | {
+          earlyRead?: (onCleanup: EffectCleanupRegisterFn) => E;
+          write?: (...args: [...ɵFirstAvailableSignal<[E]>, EffectCleanupRegisterFn]) => W;
+          mixedReadWrite?: (
+            ...args: [...ɵFirstAvailableSignal<[W, E]>, EffectCleanupRegisterFn]
+          ) => M;
+          read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
+        };
+    options = optionsOrEffectFn as AfterRenderOptions | undefined;
+  }
+
   ngDevMode &&
     assertNotInReactiveContext(
       afterRenderEffect,

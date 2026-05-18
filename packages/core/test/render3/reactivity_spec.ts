@@ -240,6 +240,34 @@ describe('reactivity', () => {
       expect(fixture.componentInstance.counter()).toBe(2);
     });
 
+    it('should support explicit tracking with untracked effect callback', () => {
+      const tracked = signal(0);
+      const untrackedSignal = signal(0);
+      const log: number[] = [];
+
+      TestBed.runInInjectionContext(() => {
+        effect(
+          () => tracked(),
+          (value) => {
+            log.push(value);
+            // This read should not be tracked as a dependency.
+            untrackedSignal();
+          },
+        );
+      });
+
+      TestBed.tick();
+      expect(log).toEqual([0]);
+
+      untrackedSignal.set(1);
+      TestBed.tick();
+      expect(log).toEqual([0]);
+
+      tracked.set(1);
+      TestBed.tick();
+      expect(log).toEqual([0, 1]);
+    });
+
     it('should run effects created in ngAfterViewInit', () => {
       let didRun = false;
 

@@ -50,6 +50,9 @@ export function afterNextRender(callback: VoidFunction, options?: AfterRenderOpt
 // @public
 export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: AfterRenderOptions): AfterRenderRef;
 
+// @public (undocumented)
+export function afterRenderEffect<T>(reactiveFn: () => T, effectFn: (params: T, onCleanup: EffectCleanupRegisterFn) => void, options?: AfterRenderOptions): AfterRenderRef;
+
 // @public
 export function afterRenderEffect<E = never, W = never, M = never>(spec: {
     earlyRead?: (onCleanup: EffectCleanupRegisterFn) => E;
@@ -655,6 +658,9 @@ export const DOCUMENT: InjectionToken<Document>;
 
 // @public
 export function effect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
+
+// @public (undocumented)
+export function effect<T>(reactiveFn: () => T, effectFn: (params: T, onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
 
 // @public
 export type EffectCleanupFn = () => void;
