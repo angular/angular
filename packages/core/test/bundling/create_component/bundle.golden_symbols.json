@@ -421,6 +421,7 @@
       "getInsertInFrontOfRNodeWithNoI18n",
       "getLView",
       "getLViewParent",
+      "getNamespace",
       "getNativeByIndex",
       "getNativeByTNode",
       "getNearestLContainer",
