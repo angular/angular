@@ -1830,6 +1830,9 @@ export type Signal<T> = (() => T) & {
 };
 
 // @public
+export function signal<T = undefined>(): WritableSignal<T | undefined>;
+
+// @public (undocumented)
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
 
 // @public
