@@ -698,6 +698,12 @@ export enum ErrorCode {
   SUGGEST_SUBOPTIMAL_TYPE_INFERENCE = 10002,
 
   /**
+   * Warns when `isPlatformBrowser()` is used inside template control flow blocks
+   * (e.g. `@if`), which can cause hydration re-rendering and UI flicker.
+   */
+  HYDRATION_PLATFORM_BROWSER_IN_CONTROL_FLOW = 10003,
+
+  /**
    * In local compilation mode a const is required to be resolved statically but cannot be so since
    * it is imported from a file outside of the compilation unit. This usually happens with const
    * being used as Angular decorators parameters such as `@Component.template`,
