@@ -305,6 +305,11 @@ export interface R3ComponentMetadata<
    * not be set. If component has empty array imports then this field is not set.
    */
   rawImports?: o.Expression;
+
+  /**
+   * Foreign components imported by the component.
+   */
+  foreignImports?: R3ForeignComponentMetadata[] | null;
 }
 
 /**
@@ -341,7 +346,6 @@ export enum R3TemplateDependencyKind {
   Directive = 0,
   Pipe = 1,
   NgModule = 2,
-  ForeignComponent = 3,
 }
 
 /**
@@ -362,8 +366,7 @@ export interface R3TemplateDependency {
 export type R3TemplateDependencyMetadata =
   | R3DirectiveDependencyMetadata
   | R3PipeDependencyMetadata
-  | R3NgModuleDependencyMetadata
-  | R3ForeignComponentDependencyMetadata;
+  | R3NgModuleDependencyMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public
@@ -411,13 +414,16 @@ export interface R3NgModuleDependencyMetadata extends R3TemplateDependency {
 /**
  * Information about a foreign component that is used in a component template.
  */
-export interface R3ForeignComponentDependencyMetadata extends R3TemplateDependency {
-  kind: R3TemplateDependencyKind.ForeignComponent;
-
+export interface R3ForeignComponentMetadata {
   /**
    * The foreign component's name.
    */
   name: string;
+
+  /**
+   * The expression used to refer to this foreign component.
+   */
+  component: o.Expression;
 }
 
 /**
