@@ -1021,7 +1021,7 @@ export class Scroll {
 export abstract class TitleStrategy {
     // (undocumented)
     buildTitle(snapshot: RouterStateSnapshot): string | undefined;
-    getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): any;
+    getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): string | undefined;
     abstract updateTitle(snapshot: RouterStateSnapshot): void;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<TitleStrategy, never>;

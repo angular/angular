@@ -57,7 +57,7 @@ export abstract class TitleStrategy {
    * Given an `ActivatedRouteSnapshot`, returns the final value of the
    * `Route.title` property, which can either be a static string or a resolved value.
    */
-  getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot) {
+  getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): string | undefined {
     return snapshot.data[RouteTitleKey];
   }
 }
