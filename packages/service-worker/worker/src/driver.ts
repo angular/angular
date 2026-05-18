@@ -437,7 +437,29 @@ export class Driver implements Debuggable, UpdateSource {
 
     const onActionClick = notification?.data?.onActionClick?.[notificationAction];
 
-    const urlToOpen = new URL(onActionClick?.url ?? '', this.scope.registration.scope).href;
+    const actionUrl = onActionClick?.url ?? '';
+
+    // Validate URL to prevent open redirect attacks via protocol-relative URLs.
+    // Protocol-relative URLs (e.g., //evil.com) can escape the service worker scope
+    // and redirect users to attacker-controlled domains.
+    if (actionUrl.startsWith('//') || actionUrl.startsWith('\\')) {
+      this.debugger.log(`Rejecting potentially malicious URL in notification action: ${actionUrl}`);
+      return;
+    }
+
+    let urlToOpen: string;
+
+    // Handle absolute URLs (e.g., http://example.com/path) differently from relative URLs.
+    // Absolute URLs are explicitly set by developers and should be allowed.
+    if (URL.canParse(actionUrl)) {
+      urlToOpen = new URL(actionUrl).href;
+    } else {
+      // For relative URLs, resolve against scope.
+      // Relative URLs that stay on the same origin are allowed.
+      // Only protocol-relative URLs (which we already rejected above) can change the origin.
+      const baseUrl = new URL(this.scope.registration.scope);
+      urlToOpen = new URL(actionUrl, baseUrl).href;
+    }
 
     switch (onActionClick?.operation) {
       case 'openWindow':
