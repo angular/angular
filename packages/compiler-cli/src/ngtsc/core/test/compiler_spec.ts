@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 
+import {ErrorCode, ERROR_DETAILS_PAGE_BASE_URL, ngErrorCode} from '../../diagnostics';
 import {
   absoluteFrom as _,
   FileSystem,
@@ -100,6 +101,112 @@ runInEachFileSystem(() => {
       );
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toContain('does_not_exist');
+    });
+
+    it('should add error guide links to diagnostics that have guides', () => {
+      const COMPONENT = _('/cmp.ts');
+      fs.writeFile(
+        COMPONENT,
+        `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'test-cmp',
+          template: '<not-known>{{value | missingPipe}}</not-known>',
+        })
+        export class Cmp {
+          value = '';
+        }
+      `,
+      );
+
+      const options: NgCompilerOptions = {
+        strictTemplates: true,
+      };
+      const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+      const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+      const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+      const compiler = makeFreshCompiler(
+        host,
+        options,
+        program,
+        new TsCreateProgramDriver(program, host, options, []),
+        new NoopIncrementalBuildStrategy(),
+        /** enableTemplateTypeChecker */ false,
+        /* usePoisonedData */ false,
+      );
+
+      const diags = compiler.getDiagnosticsForFile(
+        getSourceFileOrError(program, COMPONENT),
+        OptimizeFor.SingleFile,
+      );
+      const schemaDiag = diags.find(
+        (diag) => diag.code === ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT),
+      );
+      expect(schemaDiag).toBeDefined();
+      expect(schemaDiag!.messageText).toContain(
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG8001`,
+      );
+
+      const pipeDiag = diags.find((diag) => diag.code === ngErrorCode(ErrorCode.MISSING_PIPE));
+      expect(pipeDiag).toBeDefined();
+      expect(pipeDiag!.messageText).not.toContain('Find more at');
+    });
+
+    it('should add an error guide link to multiple component match diagnostics', () => {
+      const COMPONENT = _('/cmp.ts');
+      fs.writeFile(
+        COMPONENT,
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: '[stroked-button]',
+          template: '',
+        })
+        export class StrokedBtn {}
+
+        @Component({
+          selector: '[raised-button]',
+          template: '',
+        })
+        export class RaisedBtn {}
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<button stroked-button raised-button></button>',
+          imports: [StrokedBtn, RaisedBtn],
+        })
+        export class Cmp {}
+      `,
+      );
+
+      const options: NgCompilerOptions = {
+        strictTemplates: true,
+      };
+      const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+      const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+      const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+      const compiler = makeFreshCompiler(
+        host,
+        options,
+        program,
+        new TsCreateProgramDriver(program, host, options, []),
+        new NoopIncrementalBuildStrategy(),
+        /** enableTemplateTypeChecker */ false,
+        /* usePoisonedData */ false,
+      );
+
+      const diags = compiler.getDiagnosticsForFile(
+        getSourceFileOrError(program, COMPONENT),
+        OptimizeFor.SingleFile,
+      );
+      const multipleComponentsDiag = diags.find(
+        (diag) => diag.code === ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS),
+      );
+      expect(multipleComponentsDiag).toBeDefined();
+      expect(multipleComponentsDiag!.messageText).toContain(
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG8023`,
+      );
     });
 
     describe('getComponentsWithTemplateFile', () => {

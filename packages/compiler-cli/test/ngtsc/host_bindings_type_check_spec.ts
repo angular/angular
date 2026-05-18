@@ -153,8 +153,8 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'ng-component'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[foo]');
     });
@@ -175,8 +175,8 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'input'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'input'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[foo]');
     });
@@ -198,8 +198,8 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'value' since it isn't a known property of 'div'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'value' since it isn't a known property of 'div'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[value]');
     });
@@ -496,8 +496,8 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'ng-component'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('foo');
     });
@@ -517,8 +517,8 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
+      expect(diags[0].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'ng-component'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('foo');
     });
@@ -762,8 +762,8 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[1])).toBe('literalListenerDoesNotExist');
       expect(diags[2].messageText).toBe(`Expected 1 arguments, but got 0.`);
       expect(getDiagnosticSourceCode(diags[2])).toBe('directiveDecoratorHostListener');
-      expect(diags[3].messageText).toBe(
-        `Can't bind to 'foo' since it isn't a known property of 'button'.`,
+      expect(diags[3].messageText).toMatch(
+        /Can't bind to 'foo' since it isn't a known property of 'button'\. Find more at .*/,
       );
       expect(getDiagnosticSourceCode(diags[3])).toBe('foo');
     });
