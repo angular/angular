@@ -110,6 +110,21 @@ const fixture = TestBed.createComponent(ValueDisplay, {
 });
 ```
 
+### Applying host directives
+
+To apply host directives to a component created via `TestBed.createComponent()`, use the `directives` option. You can pass directive types directly, or provide bindings for their inputs.
+
+```ts
+import {inputBinding} from '@angular/core';
+
+const fixture = TestBed.createComponent(MyComponent, {
+  directives: [
+    HighlightDirective,
+    {type: TooltipDirective, bindings: [inputBinding('tooltipText', tooltipSignal)]},
+  ],
+});
+```
+
 ### Change an input value with `dispatchEvent()`
 
 To simulate user input, find the input element and set its `value` property.
