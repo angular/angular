@@ -20,6 +20,7 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
+import {PlatformLocation} from '../../location';
 
 // Set of origins that are always excluded from the preconnect checks.
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0', '[::1]']);
@@ -56,6 +57,7 @@ export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | stri
 @Service()
 export class PreconnectLinkChecker implements OnDestroy {
   private document = inject(DOCUMENT);
+  private platformLocation = inject(PlatformLocation);
 
   /**
    * Set of <link rel="preconnect"> tags found on this page.
@@ -67,8 +69,6 @@ export class PreconnectLinkChecker implements OnDestroy {
    * Keep track of all already seen origin URLs to avoid repeating the same check.
    */
   private alreadySeen = new Set<string>();
-
-  private window: Window | null = this.document.defaultView;
 
   private blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
 
@@ -100,7 +100,12 @@ export class PreconnectLinkChecker implements OnDestroy {
   assertPreconnect(rewrittenSrc: string, originalNgSrc: string): void {
     if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
-    const imgUrl = getUrl(rewrittenSrc, this.window!);
+    const imgUrl = getUrl(rewrittenSrc, this.platformLocation);
+
+    // Do not check preconnect hints for same-origin URLs as the browser already
+    // establishes a connection to the origin of the page.
+    if (imgUrl.origin === new URL(this.platformLocation.href).origin) return;
+
     if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
 
     // Register this origin as seen, so we don't check it again later.
@@ -130,7 +135,7 @@ export class PreconnectLinkChecker implements OnDestroy {
     const preconnectUrls = new Set<string>();
     const links = this.document.querySelectorAll<HTMLLinkElement>('link[rel=preconnect]');
     for (const link of links) {
-      const url = getUrl(link.href, this.window!);
+      const url = getUrl(link.href, this.platformLocation);
       preconnectUrls.add(url.origin);
     }
     return preconnectUrls;

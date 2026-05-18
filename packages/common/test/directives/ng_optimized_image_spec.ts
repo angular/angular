@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {isBrowser, isNode, withHead} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
-import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '../../index';
+import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig, PlatformLocation} from '../../index';
 import {RuntimeErrorCode} from '../../src/errors';
 import {PLATFORM_SERVER_ID} from '../../src/platform_id';
 
@@ -32,6 +32,7 @@ import {
   resetImagePriorityCount,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
+import {MockPlatformLocation} from '../../testing';
 
 describe('Image directive', () => {
   const PLACEHOLDER_BLUR_AMOUNT = 15;
@@ -1611,6 +1612,29 @@ describe('Image directive', () => {
       'should not log a warning if there is a matching preconnect link for a priority image (with an extra `/` at the end)',
       withHead('<link rel="preconnect" href="https://angular.dev/">', () => {
         setupTestingModule({imageLoader});
+
+        const consoleWarnSpy = spyOn(console, 'warn');
+        const template = '<img ngSrc="a.png" width="100" height="50" priority>';
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        // Expect no warnings in the console.
+        expect(consoleWarnSpy.calls.count()).toBe(0);
+      }),
+    );
+
+    it(
+      'should not log a warning if there is no preconnect link, but the image is loaded from the same origin',
+      withHead('', () => {
+        setupTestingModule({
+          imageLoader,
+          extraProviders: [
+            {
+              provide: PlatformLocation,
+              useValue: new MockPlatformLocation({startUrl: 'https://angular.dev/some-page'}),
+            },
+          ],
+        });
 
         const consoleWarnSpy = spyOn(console, 'warn');
         const template = '<img ngSrc="a.png" width="100" height="50" priority>';

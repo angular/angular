@@ -19,6 +19,7 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {getUrl} from './url';
+import {PlatformLocation} from '../../location';
 
 interface ObservedImageState {
   priority: boolean;
@@ -43,7 +44,7 @@ export class LCPImageObserver implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
   private images = new Map<string, ObservedImageState>();
 
-  private window: Window | null = inject(DOCUMENT).defaultView;
+  private platformLocation = inject(PlatformLocation);
   private observer: PerformanceObserver | null = null;
 
   constructor() {
@@ -95,7 +96,7 @@ export class LCPImageObserver implements OnDestroy {
 
   registerImage(rewrittenSrc: string, isPriority: boolean) {
     if (!this.observer) return;
-    const url = getUrl(rewrittenSrc, this.window!).href;
+    const url = getUrl(rewrittenSrc, this.platformLocation).href;
     const existingState = this.images.get(url);
 
     if (existingState) {
@@ -116,7 +117,7 @@ export class LCPImageObserver implements OnDestroy {
 
   unregisterImage(rewrittenSrc: string) {
     if (!this.observer) return;
-    const url = getUrl(rewrittenSrc, this.window!).href;
+    const url = getUrl(rewrittenSrc, this.platformLocation).href;
     const existingState = this.images.get(url);
 
     if (existingState) {
@@ -129,8 +130,8 @@ export class LCPImageObserver implements OnDestroy {
 
   updateImage(originalSrc: string, newSrc: string) {
     if (!this.observer) return;
-    const originalUrl = getUrl(originalSrc, this.window!).href;
-    const newUrl = getUrl(newSrc, this.window!).href;
+    const originalUrl = getUrl(originalSrc, this.platformLocation).href;
+    const newUrl = getUrl(newSrc, this.platformLocation).href;
 
     // URL hasn't changed
     if (originalUrl === newUrl) return;
