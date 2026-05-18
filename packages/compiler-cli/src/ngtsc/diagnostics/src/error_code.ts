@@ -664,6 +664,23 @@ export enum ErrorCode {
   FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION = 8118,
 
   /**
+   * A template reference variable uses the same name as a component class member,
+   * which causes the class member to be shadowed within the template scope.
+   *
+   * For example:
+   * ```ts
+   * class MyComponent {
+   *   name = 'Alice';
+   * }
+   * ```
+   * ```angular-html
+   * <!-- `name` refers to the reference, not `MyComponent.name` -->
+   * <input #name />
+   * ```
+   */
+  TEMPLATE_REFERENCE_SHADOWS_COMPONENT_VARIABLE = 8119,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
