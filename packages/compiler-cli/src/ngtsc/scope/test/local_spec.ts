@@ -360,6 +360,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     isStandalone: false,
     isSignal: false,
     imports: null,
+    foreignImports: null,
     rawImports: null,
     schemas: null,
     decorator: null,

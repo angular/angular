@@ -121,7 +121,7 @@ function setup(
     metaReader,
     scopeRegistry,
     {
-      getCanonicalFileName: (fileName) => fileName,
+      getCanonicalFileName: (fileName: string) => fileName,
     },
     scopeRegistry,
     typeCheckScopeRegistry,
@@ -1041,6 +1041,56 @@ runInEachFileSystem(() => {
         const {diagnostics} = handler.analyze(TestCmp, detected.metadata);
 
         expect(diagnostics).toBeUndefined();
+      });
+
+      it('should populate foreignImports with ForeignComponents', () => {
+        const {program, options, host} = makeProgram([
+          {
+            name: _('/node_modules/@angular/core/index.d.ts'),
+            contents: `
+              export const Component: any;
+            `,
+          },
+          {
+            name: _('/node_modules/@angular/core/src/render3/foreign_import.ts'),
+            contents: `
+              export function foreignImport(render: any): any {}
+            `,
+          },
+          {
+            name: _('/entry.ts'),
+            contents: `
+              import {Component} from '@angular/core';
+              import {foreignImport} from '@angular/core/src/render3/foreign_import';
+
+              function FancyButton() {}
+
+              function frameworkImport(component: unknown) {
+                return foreignImport(() => {/* render component */});
+              }
+
+              @Component({
+                selector: 'main',
+                template: '',
+                foreignImports: [frameworkImport(FancyButton)],
+              }) class TestCmp {}
+            `,
+          },
+        ]);
+        const {reflectionHost, handler} = setup(program, options, host);
+        const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+        const detected = handler.detect(
+          TestCmp,
+          reflectionHost.getDecoratorsOfDeclaration(TestCmp),
+        );
+        if (detected === undefined) {
+          return fail('Failed to recognize @Component');
+        }
+        const {analysis, diagnostics} = handler.analyze(TestCmp, detected.metadata);
+
+        expect(diagnostics).toBeUndefined();
+        expect(analysis?.foreignImports?.length).toBe(1);
+        expect(analysis?.foreignImports![0].node.name.text).toBe('FancyButton');
       });
 
       it('should produce diagnostic for imports in non-standalone component', () => {

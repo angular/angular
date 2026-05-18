@@ -8,6 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di/interface/provider';
+import {ForeignComponent} from '../interface/foreign_component';
 import {Type} from '../interface/type';
 import {compileComponent, compileDirective} from '../render3/jit/directive';
 import {compilePipe} from '../render3/jit/pipe';
@@ -640,6 +641,14 @@ export interface Component extends Directive {
    * declared in an NgModule generates a compilation error.
    */
   imports?: (Type<any> | ReadonlyArray<any>)[];
+
+  /**
+   * The foreignImports property specifies components from other frameworks that can be used
+   * within this component's template.
+   *
+   * @internal
+   */
+  foreignImports?: ForeignComponent[];
 
   /**
    * The `deferredImports` property specifies a standalone component's template dependencies,
