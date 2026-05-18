@@ -118,9 +118,7 @@ export interface ExternalCoreGlobalUtils {
   ɵgetControlFlowBlocks(node: Node): ControlFlowBlock[];
   ɵgetTransferState(injector: Injector): Record<string, unknown>;
 
-  getDirectiveMetadata(
-    directiveOrComponentInstance: any,
-  ): AngularComponentDebugMetadata | AngularDirectiveDebugMetadata | null;
+  getDirectiveMetadata(directiveOrComponentInstance: any): DirectiveDebugMetadata | null;
   getComponent<T>(element: Element): T | null;
   getContext<T extends {}>(element: Element): T | null;
   getListeners(element: Element): Listener[];
@@ -203,9 +201,8 @@ export function publishGlobalUtil<K extends keyof ExternalCoreGlobalUtils>(
  * ExternalCoreGlobalUtils is specifically the `@angular/core` implementation, so we
  * overwrite some properties to make them more framework-agnostic.
  */
-export type FrameworkAgnosticGlobalUtils = Omit<ExternalCoreGlobalUtils, 'getDirectiveMetadata'> & {
-  getDirectiveMetadata(directiveOrComponentInstance: any): DirectiveDebugMetadata | null;
-} & InternalCoreGlobalUtils &
+export type FrameworkAgnosticGlobalUtils = ExternalCoreGlobalUtils &
+  InternalCoreGlobalUtils &
   NonCoreGlobalUtils;
 
 /**
