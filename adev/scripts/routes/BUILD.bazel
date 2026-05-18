@@ -51,4 +51,7 @@ js_run_binary(
     outs = ["defined-routes.json"],
     chdir = package_name(),
     tool = ":generate_route",
+    # Public so the api-gen rendering pipeline (used from //packages/...) can validate guide
+    # links against the same set of routes defined for the live site.
+    visibility = ["//visibility:public"],
 )

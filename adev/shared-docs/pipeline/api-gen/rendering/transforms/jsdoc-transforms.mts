@@ -29,10 +29,12 @@ import {parseMarkdown} from '../../../shared/marked/parse.mjs';
 import {getHighlighterInstance} from '../shiki/shiki.mjs';
 import {
   getCurrentSymbol,
+  getSymbolMembers,
   getSymbolsAsApiEntries,
   getSymbolUrl,
   unknownSymbolMessage,
 } from '../symbol-context.mjs';
+import {getAnchorsForRoute, hasDefinedRoutes, isKnownRoute} from '../defined-routes-context.mjs';
 import {addApiLinksToHtml} from './code-transforms.mjs';
 
 const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
@@ -42,6 +44,15 @@ export const JS_DOC_DESCRIPTION_TAG = 'description';
 // Some links are written in the following format: {@link Route}
 const jsDoclinkRegex = /\{\s*@link\s+([^}]+)\s*\}/;
 const jsDoclinkRegexGlobal = new RegExp(jsDoclinkRegex.source, 'g');
+
+/**
+ * Section anchors that the API page templates always emit (via `SectionHeading` /
+ * `convertSectionNameToId`). Fragments matching one of these are valid even though they don't
+ * correspond to a class/interface member.
+ *
+ * Keep in sync with `templates/section-*.tsx` and the inline `<SectionHeading name="...">` usages.
+ */
+const KNOWN_API_SECTION_ANCHORS = new Set(['description', 'usage-notes', 'api', 'pipe-usage']);
 
 /** Given an entity with a description, gets the entity augmented with an `htmlDescription`. */
 export function addHtmlDescription<T extends HasDescription & HasModuleName & MaybeJsDocTags>(
@@ -113,13 +124,109 @@ export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtml
 
 /** Given a markdown JsDoc text, gets the rendered HTML. */
 function getHtmlForJsDocText(text: string): string {
-  const mdToParse = convertLinks(wrapExampleHtmlElementsWithCode(text));
+  const escaped = wrapExampleHtmlElementsWithCode(text);
+  validateMarkdownLinks(escaped);
+  const mdToParse = convertLinks(escaped);
   const parsed = parseMarkdown(mdToParse, {
     apiEntries: getSymbolsAsApiEntries(),
     highlighter: getHighlighterInstance(),
     definedRoutes: [],
   });
   return addApiLinksToHtml(parsed);
+}
+
+// Markdown inline link: [label](url) or [label](url "title"). Used to extract URLs for
+// build-time validation against the guide/api manifests. We only care about the URL group.
+const markdownLinkUrlRegexGlobal = /\[(?:[^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+
+/**
+ * Walk every markdown `[label](url)` link in `text` and run the same `/api/...` and `/guide/...`
+ * validation that `{@link}` URLs are subject to. This catches broken/stale links written in
+ * plain markdown , including those in `@see` tag comments , at build time.
+ */
+function validateMarkdownLinks(text: string): void {
+  for (const match of text.matchAll(markdownLinkUrlRegexGlobal)) {
+    validateInternalUrl(match[1]);
+  }
+}
+
+/**
+ * Validate an absolute or relative internal documentation URL. Accepts URLs with or without a
+ * leading `/` since both forms are common in markdown link syntax. External URLs (`http`, `mailto`,
+ * `#`-only fragments, etc.) and unknown shapes are accepted as-is , this validator only enforces
+ * correctness for paths it knows how to check.
+ */
+function validateInternalUrl(url: string): void {
+  if (!url || url.startsWith('#') || url.startsWith('http') || url.startsWith('mailto:')) {
+    return;
+  }
+  // Normalise leading slash for prefix matching but keep the original for error messages.
+  const normalised = url.startsWith('/') ? url : `/${url}`;
+  if (normalised.startsWith('/api/')) {
+    validateApiUrl(url, normalised);
+  } else if (normalised.startsWith('/guide/')) {
+    validateGuideUrl(url, normalised);
+  }
+}
+
+function validateApiUrl(originalUrl: string, normalisedUrl: string): void {
+  const [pathPart, fragment] = normalisedUrl.split('#');
+  const segments = pathPart.split('/').filter((s) => s.length > 0);
+  const symbolName = segments.at(-1)!;
+  const knownSymbols = Object.keys(getSymbolsAsApiEntries());
+  // Prefer an exact-case match (e.g. both `inject` and `Inject` exist in core) and only fall
+  // back to a case-insensitive lookup to suggest the canonical capitalisation.
+  const canonicalSymbol = knownSymbols.includes(symbolName)
+    ? symbolName
+    : knownSymbols.find((s) => s.toLowerCase() === symbolName.toLowerCase());
+  if (canonicalSymbol && canonicalSymbol !== symbolName) {
+    const expectedUrl = getSymbolUrl(canonicalSymbol);
+    throw Error(
+      `Broken link: ${originalUrl}. Did you mean ${expectedUrl}? ` +
+        `Symbol names in API URLs are case-sensitive.`,
+    );
+  }
+  if (fragment && canonicalSymbol && !KNOWN_API_SECTION_ANCHORS.has(fragment)) {
+    const members = getSymbolMembers(canonicalSymbol);
+    if (members && !members.has(fragment)) {
+      const memberMatch = [...members].find((m) => m.toLowerCase() === fragment.toLowerCase());
+      const hint = memberMatch
+        ? `Did you mean #${memberMatch}? Member names are case-sensitive.`
+        : `${canonicalSymbol} has no member named '${fragment}'.`;
+      throw Error(`Broken link: ${originalUrl}. ${hint}`);
+    }
+  }
+}
+
+function validateGuideUrl(originalUrl: string, normalisedUrl: string): void {
+  if (!hasDefinedRoutes()) {
+    return;
+  }
+  const [pathPart, fragment] = normalisedUrl.split('#');
+  // Strip the leading `/` and any trailing `/` so the key matches the manifest entries
+  // (`guide/...`, not `/guide/...`).
+  const guidePath = pathPart.replace(/^\//, '').replace(/\/$/, '');
+  const fullKey = fragment ? `${guidePath}#${fragment}` : guidePath;
+
+  if (isKnownRoute(fullKey)) {
+    return;
+  }
+
+  if (!fragment) {
+    throw new Error(`Broken link: ${originalUrl}. Unknown guide page ${guidePath}. `);
+  }
+  // The page may exist (just not this anchor) or may itself be unknown. Distinguish so the
+  // error message can suggest a near-match anchor when possible.
+  const knownAnchors = getAnchorsForRoute(guidePath);
+  if (!isKnownRoute(guidePath) && knownAnchors.length === 0) {
+    throw new Error(`Broken link: ${originalUrl}. Unknown guide page ${guidePath}. `);
+  }
+  const anchorMatch = knownAnchors.find((a) => a.toLowerCase() === fragment.toLowerCase());
+  const hint = anchorMatch
+    ? `Did you mean #${anchorMatch}? Anchor IDs are case-sensitive.`
+    : `Page ${guidePath} has no heading with id '${fragment}'.`;
+
+  throw new Error(`Broken link: ${originalUrl}. ${hint}`);
 }
 
 export function setEntryFlags<T extends HasJsDocTags & HasModuleName>(
@@ -151,6 +258,7 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
       const markdownLinkMatch = comment.match(markdownLinkRule);
 
       if (markdownLinkMatch) {
+        validateInternalUrl(markdownLinkMatch[2]);
         return {
           label: convertBackticksToCodeTags(markdownLinkMatch[1]),
           url: markdownLinkMatch[2],
@@ -223,26 +331,10 @@ function parseAtLink(link: string): {label: string; url: string} | undefined {
       );
     }
 
-    // Validate absolute `/api/...` links against the known symbol registry. This catches
-    // miscased symbol names (e.g. `/api/router/routerModule` instead of
-    // `/api/router/RouterModule`) at build time.
-    if (rawSymbol.startsWith('/api/')) {
-      const [pathPart] = rawSymbol.split('#');
-      const segments = pathPart.split('/').filter((s) => s.length > 0);
-      const symbolName = segments[segments.length - 1];
-      // Case-insensitive lookup: find the canonical symbol name in the registry.
-      const knownSymbols = Object.keys(getSymbolsAsApiEntries());
-      const canonicalSymbol = knownSymbols.find(
-        (s) => s.toLowerCase() === symbolName.toLowerCase(),
-      );
-      if (canonicalSymbol && canonicalSymbol !== symbolName) {
-        const expectedUrl = getSymbolUrl(canonicalSymbol);
-        throw Error(
-          `Broken @link: ${link}. Did you mean ${expectedUrl}? ` +
-            `Symbol names in API URLs are case-sensitive.`,
-        );
-      }
-    }
+    // Validate absolute `/api/...` and `/guide/...` URLs against the known registries. Catches
+    // miscased symbols, unknown members and stale `#fragment` anchors at build time. Same logic is
+    // also applied to plain markdown `[label](url)` links via `validateMarkdownLinks`.
+    validateInternalUrl(rawSymbol);
 
     return {
       url: rawSymbol,
