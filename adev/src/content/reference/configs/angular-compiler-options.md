@@ -213,6 +213,11 @@ When `true`, reports an error if a component, directive, or pipe is not standalo
 When `true`, prints extra information while compiling templates.
 Default is `false`.
 
+### `typeCheckHostBindings`
+
+When `true`, enables type checking of expressions in the `host` object literal and `@HostBinding`/`@HostListener` decorators of components and directives.
+Default is `true`.
+
 ## Command line options
 
 Most of the time, you interact with the Angular Compiler indirectly using [Angular CLI](reference/configs/angular-compiler-options). When debugging certain issues, you might find it useful to invoke the Angular Compiler directly.
