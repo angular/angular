@@ -49,8 +49,10 @@ import {
 } from '../dom_node_manipulation';
 import {
   getBindingIndex,
+  getSelectedIndex,
   isInSkipHydrationBlock,
   lastNodeWasCreated,
+  setSelectedIndex,
   wasLastNodeCreated,
 } from '../state';
 import {renderStringify} from '../util/stringify_utils';

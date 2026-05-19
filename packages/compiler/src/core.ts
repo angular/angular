@@ -76,16 +76,6 @@ export interface Type extends Function {
 }
 export const Type = Function;
 
-export enum SecurityContext {
-  NONE = 0,
-  HTML = 1,
-  STYLE = 2,
-  SCRIPT = 3,
-  URL = 4,
-  RESOURCE_URL = 5,
-  ATTRIBUTE_NO_BINDING = 6,
-}
-
 /**
  * Injection flags for DI.
  */
@@ -328,3 +318,5 @@ export const enum AttributeMarker {
    */
   I18n = 6,
 }
+
+export {SecurityContext} from './schema/dom_security_schema';

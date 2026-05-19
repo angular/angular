@@ -1,4 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "tsec_test")
@@ -171,4 +172,11 @@ genrule(
     srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
     outs = ["event-dispatch-contract.min.js"],
     cmd = "cp $< $@",
+)
+
+write_source_file(
+    name = "dom_security_schema",
+    check_that_out_file_exists = False,
+    in_file = "//packages/compiler:src/schema/dom_security_schema.ts",
+    out_file = ":src/sanitization/dom_security_schema.ts",
 )

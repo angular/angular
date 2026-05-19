@@ -13,7 +13,7 @@ import {TestBed} from '../../testing';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/security';
+import {SecurityContext} from '../../src/sanitization/dom_security_schema';
 
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {

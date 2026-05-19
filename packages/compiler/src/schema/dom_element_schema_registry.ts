@@ -393,8 +393,6 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       propName = this.getMappedPropName(propName);
     }
 
-    // Make sure comparisons are case insensitive, so that case differences between attribute and
-    // property names do not have a security impact.
     tagName = tagName.toLowerCase();
     propName = propName.toLowerCase();
 

@@ -67,6 +67,7 @@ import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
 import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
 import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
+import {resolveI18nAttrSanitizers} from './phases/resolve_i18n_attr_sanitizers';
 import {resolveNames} from './phases/resolve_names';
 import {resolveSanitizers} from './phases/resolve_sanitizers';
 import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set';
@@ -148,6 +149,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
   {kind: Kind.Tmpl, fn: extractI18nMessages},
   {kind: Kind.Tmpl, fn: collectI18nConsts},
+  {kind: Kind.Tmpl, fn: resolveI18nAttrSanitizers},
   {kind: Kind.Tmpl, fn: collectConstExpressions},
   {kind: Kind.Both, fn: collectElementConsts},
   {kind: Kind.Tmpl, fn: removeI18nContexts},
