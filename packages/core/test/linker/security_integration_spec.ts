@@ -7,6 +7,8 @@
  */
 
 import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '../../src/core';
+import {clearTranslations, loadTranslations} from '@angular/localize';
+import {computeMsgId} from '@angular/compiler';
 import {ComponentFixture, getTestBed, TestBed} from '../../testing';
 import {DomSanitizer} from '@angular/platform-browser';
 
@@ -274,6 +276,83 @@ describe('security integration tests', function () {
   });
 
   describe('translation', () => {
+    afterEach(() => {
+      clearTranslations();
+    });
+
+    it('should throw error on translated SVG script ResourceURL attributes', () => {
+      const template = `
+        <svg>
+          <script href="/safe-svg-script.js" i18n-href></script>
+        </svg>
+      `;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /unsafe value used in a resource URL context/i,
+      );
+    });
+
+    it('should throw error on SVG animation retargeting attributes', () => {
+      const template = `
+        <svg>
+          <a href="/safe">
+            <set
+              attributeName="href"
+              to="http://safe.com"
+              i18n-attributeName
+              i18n-to
+              begin="0s"
+              fill="freeze">
+            </set>
+          </a>
+        </svg>
+      `;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(SecuredComponent);
+        fixture.detectChanges();
+      }).toThrowError(
+        /For security reasons, the `attributeName` can be set on the <set> element as a static attribute only/i,
+      );
+    });
+
+    it('should allow non-security sensitive attributes', () => {
+      loadTranslations({[computeMsgId('foo')]: 'bar'});
+      const template = `<iframe title="foo" i18n-title></iframe>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      const fixture = TestBed.createComponent(SecuredComponent);
+      fixture.detectChanges();
+      const element = fixture.nativeElement.querySelector('iframe');
+      expect(element.getAttribute('title')).toEqual('bar');
+    });
+
+    it('should sanitize translations of static iframe attributes', () => {
+      const template = `<iframe sandbox="allow-scripts" i18n-sandbox></iframe>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => {
+        const fixture = TestBed.createComponent(SecuredComponent);
+        fixture.detectChanges();
+      }).toThrowError(
+        /For security reasons, the `sandbox` can be set on the <iframe> element as a static attribute only/i,
+      );
+    });
+
+    it('should sanitize translated static href attributes', () => {
+      loadTranslations({[computeMsgId('/safe')]: 'javascript:alert(1)'});
+      const template = `<a href="/safe" i18n-href>Link</a>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      const fixture = TestBed.createComponent(SecuredComponent);
+      fixture.detectChanges();
+
+      const link = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
+    });
+
     it('should throw error on security-sensitive attributes with constant values', () => {
       const template = `<iframe srcdoc="foo" i18n-srcdoc></iframe>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});

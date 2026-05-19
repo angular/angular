@@ -10,10 +10,10 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {getDocument} from '../render3/interfaces/document';
-import {TNodeType} from '../render3/interfaces/node';
+import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {ENVIRONMENT} from '../render3/interfaces/view';
-import {getLView, getSelectedTNode} from '../render3/state';
+import {getLView, getSelectedIndex, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode} from '../render3/util/view_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
@@ -25,11 +25,11 @@ import {
 } from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
-import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './security';
-import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
+import {SecurityContext} from './dom_security_schema';
+import {_sanitizeUrl} from './url_sanitizer';
 
 /**
  * An `html` sanitizer which converts untrusted `html` **string** into trusted string by removing
@@ -280,12 +280,16 @@ const attributeName: ReadonlySet<string> = new Set(['attributename']);
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
+<<<<<<< HEAD
 /**
  * Set of attributes that are sensitive and should be sanitized.
  */
 const SECURITY_SENSITIVE_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(['href', 'xlink:href']);
 
 export const SECURITY_SENSITIVE_ELEMENTS: Record<
+=======
+const SECURITY_SENSITIVE_ELEMENTS: Record<
+>>>>>>> 61a97f22e8 (fix(core): support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation)
   string,
   Record<string, true | undefined | ReadonlySet<string>> | undefined
 > = {
@@ -319,9 +323,16 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
 
+<<<<<<< HEAD
+=======
+  const index = getSelectedIndex();
+  const tNode: TNode | null = index === -1 ? null : getSelectedTNode();
+  if (tNode && tNode.type !== TNodeType.Element) {
+    return value;
+  }
+>>>>>>> 61a97f22e8 (fix(core): support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation)
 
   // Leverage tNode.namespace if active, otherwise check both namespaced and base variants.
-  const tNode = getSelectedTNode();
   const fullTagName =
     lowerCaseTagName[0] !== ':' && tNode?.namespace
       ? `:${tNode.namespace}:${lowerCaseTagName}`
@@ -334,32 +345,40 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
   }
 
   const lView = getLView();
-  if (lowerCaseTagName === 'iframe') {
-    if (tNode?.type === TNodeType.Element) {
-      const element = getNativeByTNode(tNode, lView) as RElement;
-      enforceIframeSecurity(element as HTMLIFrameElement);
-    }
+  if (tNode && lowerCaseTagName === 'iframe') {
+    const element = getNativeByTNode(tNode, lView) as RElement;
+    enforceIframeSecurity(element as HTMLIFrameElement);
   }
 
   const displayTagName = tagName[0] === ':' ? tagName.split(':').pop()! : tagName;
 
   if (typeof validationConfig !== 'boolean') {
-    if (tNode?.type === TNodeType.Element) {
-      const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
-      const attributeNameValue = element.getAttribute('attributeName');
+    if (!tNode) {
+      const errorMessage =
+        ngDevMode &&
+        `Angular has detected that the \`${attributeName}\` was applied ` +
+          `as a binding to the <${tagName}> element. ` +
+          `For security reasons, the \`${attributeName}\` can be set on the <${tagName}> element ` +
+          `as a static attribute only. \n` +
+          `To fix this, switch the \`${attributeName}\` binding to a static attribute ` +
+          `in a template or in host bindings section.`;
+      throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
+    }
 
-      if (attributeNameValue && validationConfig.has(attributeNameValue.toLowerCase())) {
-        const errorMessage =
-          ngDevMode &&
-          `Angular has detected that the \`${attributeName}\` was applied ` +
-            `as a binding to the <${displayTagName}> element${getTemplateLocationDetails(lView)}. ` +
-            `For security reasons, the \`${attributeName}\` can be set on the <${displayTagName}> element ` +
-            `as a static attribute only when the "attributeName" is set to \'${attributeNameValue}\'. \n` +
-            `To fix this, switch the \`${attributeNameValue}\` binding to a static attribute ` +
-            `in a template or in host bindings section.`;
+    const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
+    const attributeNameValue = element.getAttribute('attributeName');
 
-        throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
-      }
+    if (attributeNameValue && validationConfig.has(attributeNameValue.toLowerCase())) {
+      const errorMessage =
+        ngDevMode &&
+        `Angular has detected that the \`${attributeName}\` was applied ` +
+          `as a binding to the <${displayTagName}> element${getTemplateLocationDetails(lView)}. ` +
+          `For security reasons, the \`${attributeName}\` can be set on the <${displayTagName}> element ` +
+          `as a static attribute only when the "attributeName" is set to \'${attributeNameValue}\'. \n` +
+          `To fix this, switch the \`${attributeNameValue}\` binding to a static attribute ` +
+          `in a template or in host bindings section.`;
+
+      throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
     }
 
     return value;
@@ -367,7 +386,7 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
   const errorMessage =
     ngDevMode &&
     `Angular has detected that the \`${attributeName}\` was applied ` +
-      `as a binding to the <${displayTagName}> element${getTemplateLocationDetails(lView)}. ` +
+      `as a binding to the <${displayTagName}> element${tNode ? getTemplateLocationDetails(lView) : ''}. ` +
       `For security reasons, the \`${attributeName}\` can be set on the <${displayTagName}> element ` +
       `as a static attribute only. \n` +
       `To fix this, switch the \`${attributeName}\` binding to a static attribute ` +

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SECURITY_SCHEMA} from '@angular/compiler';
 import {ENVIRONMENT, LView} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
 
@@ -28,7 +27,7 @@ import {
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
 } from '../../src/sanitization/sanitization';
-import {SecurityContext} from '../../src/sanitization/security';
+import {SECURITY_SCHEMA, SecurityContext} from '../../src/sanitization/dom_security_schema';
 
 function fakeLView(): LView {
   const fake = [null, {}] as LView;
