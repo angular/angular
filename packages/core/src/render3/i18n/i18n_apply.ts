@@ -49,8 +49,10 @@ import {
 } from '../dom_node_manipulation';
 import {
   getBindingIndex,
+  getSelectedIndex,
   isInSkipHydrationBlock,
   lastNodeWasCreated,
+  setSelectedIndex,
   wasLastNodeCreated,
 } from '../state';
 import {renderStringify} from '../util/stringify_utils';
@@ -439,14 +441,20 @@ export function applyUpdateOpCodes(
                     sanitizeFn,
                   );
                 } else {
-                  setPropertyAndInputs(
-                    tNodeOrTagName,
-                    lView,
-                    propName,
-                    value,
-                    lView[RENDERER],
-                    sanitizeFn,
-                  );
+                  const prevSelectedIndex = getSelectedIndex();
+                  setSelectedIndex(nodeIndex);
+                  try {
+                    setPropertyAndInputs(
+                      tNodeOrTagName,
+                      lView,
+                      propName,
+                      value,
+                      lView[RENDERER],
+                      sanitizeFn,
+                    );
+                  } finally {
+                    setSelectedIndex(prevSelectedIndex);
+                  }
                 }
                 break;
               case I18nUpdateOpCode.Text:
