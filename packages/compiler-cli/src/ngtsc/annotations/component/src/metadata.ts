@@ -20,7 +20,6 @@ import {
   TmplAstDeferredBlock,
   ClassPropertyMapping,
   SelectorlessMatcher,
-  ForeignComponentMeta,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -28,9 +27,11 @@ import {Reference} from '../../../imports';
 import {
   DirectiveResources,
   DirectiveTypeCheckMeta,
+  ForeignComponentMeta,
   HostDirectiveMeta,
   InputMapping,
 } from '../../../metadata';
+export {ForeignComponentMeta} from '../../../metadata';
 import {ClassDeclaration, Import} from '../../../reflection';
 import {SubsetOfKeys} from '../../../util/src/typescript';
 
@@ -94,7 +95,7 @@ export interface ComponentAnalysisData {
 
   rawImports: ts.Expression | null;
   resolvedImports: Reference<ClassDeclaration>[] | null;
-  foreignImports: Reference<ClassDeclaration>[] | null;
+  foreignImports: ForeignComponentMeta[] | null;
   rawDeferredImports: ts.Expression | null;
   resolvedDeferredImports: Reference<ClassDeclaration>[] | null;
 

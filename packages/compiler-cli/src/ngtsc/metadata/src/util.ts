@@ -29,6 +29,7 @@ import {
   MetadataReader,
   NgModuleMeta,
   PipeMeta,
+  ForeignComponentMeta,
 } from './api';
 import {TypeEntityToDeclarationError} from '../../reflection/src/typescript';
 import {
@@ -36,7 +37,6 @@ import {
   ClassPropertyName,
   TemplateGuardMeta,
   SelectorlessMatcher,
-  ForeignComponentMeta,
 } from '@angular/compiler';
 
 export function extractReferencesFromType(
@@ -364,15 +364,14 @@ export function isHostDirectiveMetaForGlobalMode(
 
 /** Extracts foreign component names from foreignImports and creates a SelectorlessMatcher. */
 export function createForeignComponentMatcher(
-  foreignImports: Reference<ClassDeclaration>[] | null,
+  foreignImports: ForeignComponentMeta[] | null,
 ): SelectorlessMatcher<ForeignComponentMeta> | null {
   if (foreignImports === null || foreignImports.length === 0) {
     return null;
   }
   const registry = new Map<string, ForeignComponentMeta[]>();
-  for (const ref of foreignImports) {
-    const name = ref.node.name.getText();
-    registry.set(name, [{name, ref}]);
+  for (const meta of foreignImports) {
+    registry.set(meta.name, [meta]);
   }
   return new SelectorlessMatcher(registry);
 }

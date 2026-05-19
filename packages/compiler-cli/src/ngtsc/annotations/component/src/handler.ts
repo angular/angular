@@ -44,7 +44,6 @@ import {
   SelectorMatcher,
   TmplAstDeferredBlock,
   TypeCheckId,
-  ForeignComponentMeta,
   ViewEncapsulation,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -182,6 +181,7 @@ import {
   ComponentAnalysisData,
   ComponentResolutionData,
   DeferredComponentDependency,
+  ForeignComponentMeta,
 } from './metadata';
 import {
   _extractTemplateStyleUrls,
@@ -609,7 +609,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     }
 
     let resolvedImports: Reference<ClassDeclaration>[] | null = null;
-    let foreignImports: Reference<ClassDeclaration>[] | null = null;
+    let foreignImports: ForeignComponentMeta[] | null = null;
     let resolvedDeferredImports: Reference<ClassDeclaration>[] | null = null;
 
     let rawImports: ts.Expression | null = component.get('imports') ?? null;

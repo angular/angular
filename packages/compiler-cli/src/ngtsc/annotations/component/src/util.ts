@@ -25,6 +25,7 @@ import {
   isNamedFunctionDeclaration,
 } from '../../../reflection';
 import {createValueHasWrongTypeError, getOriginNodeForDiagnostics} from '../../common';
+import {ForeignComponentMeta} from './metadata';
 
 /**
  * Collect the animation names from the static evaluation result.
@@ -167,10 +168,10 @@ export function validateAndFlattenForeignImports(
   imports: ResolvedValue,
   expr: ts.Expression,
 ): {
-  foreignImports: Reference<ClassDeclaration>[];
+  foreignImports: ForeignComponentMeta[];
   diagnostics: ts.Diagnostic[];
 } {
-  const flattened: Reference<ClassDeclaration>[] = [];
+  const flattened: ForeignComponentMeta[] = [];
   const errorMessage = `'foreignImports' must be an array of ForeignComponents.`;
 
   if (!Array.isArray(imports)) {
@@ -200,7 +201,13 @@ export function validateAndFlattenForeignImports(
       flattened.push(...childForeignImports);
       diagnostics.push(...childDiagnostics);
     } else if (ref instanceof Reference && isNamedFunctionDeclaration(ref.node)) {
-      flattened.push(ref as Reference<ClassDeclaration>);
+      // Use the local identity if available to account for import aliases.
+      const name = ref.getIdentityInExpression(refExpr)?.text ?? ref.node.name.getText();
+      flattened.push({
+        name,
+        ref: ref as Reference<ClassDeclaration>,
+        rawExpression: refExpr,
+      });
     } else {
       const {node: diagnosticNode, value: diagnosticValue} = getDiagnosticOrigin(
         ref,
