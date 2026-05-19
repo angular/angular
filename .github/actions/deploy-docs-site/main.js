@@ -19426,98 +19426,134 @@ var require_lib = __commonJS({
 });
 
 // 
-var require_fast_content_type_parse = __commonJS({
-  ""(exports, module) {
+var require_dist = __commonJS({
+  ""(exports) {
     "use strict";
-    var NullObject = function NullObject2() {
-    };
-    NullObject.prototype = /* @__PURE__ */ Object.create(null);
-    var paramRE = /; *([!#$%&'*+.^\w`|~-]+)=("(?:[\v\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\v\u0020-\u00ff])*"|[!#$%&'*+.^\w`|~-]+) */gu;
-    var quotedPairRE = /\\([\v\u0020-\u00ff])/gu;
-    var mediaTypeRE = /^[!#$%&'*+.^\w|~-]+\/[!#$%&'*+.^\w|~-]+$/u;
-    var defaultContentType = { type: "", parameters: new NullObject() };
-    Object.freeze(defaultContentType.parameters);
-    Object.freeze(defaultContentType);
-    function parse3(header) {
-      if (typeof header !== "string") {
-        throw new TypeError("argument header is required and must be a string");
-      }
-      let index = header.indexOf(";");
-      const type = index !== -1 ? header.slice(0, index).trim() : header.trim();
-      if (mediaTypeRE.test(type) === false) {
-        throw new TypeError("invalid media type");
-      }
-      const result = {
-        type: type.toLowerCase(),
-        parameters: new NullObject()
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.format = format3;
+    exports.parse = parse4;
+    var TEXT_REGEXP = /^[\u0009\u0020-\u007e\u0080-\u00ff]*$/;
+    var TOKEN_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+    var QUOTE_REGEXP = /[\\"]/g;
+    var TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+    var NullObject = (() => {
+      const C = function() {
       };
-      if (index === -1) {
-        return result;
+      C.prototype = /* @__PURE__ */ Object.create(null);
+      return C;
+    })();
+    function format3(obj) {
+      const { type, parameters } = obj;
+      if (!type || !TYPE_REGEXP.test(type)) {
+        throw new TypeError(`Invalid type: ${type}`);
       }
-      let key;
-      let match;
-      let value;
-      paramRE.lastIndex = index;
-      while (match = paramRE.exec(header)) {
-        if (match.index !== index) {
-          throw new TypeError("invalid parameter format");
+      let result = type;
+      if (parameters) {
+        for (const param of Object.keys(parameters)) {
+          if (!TOKEN_REGEXP.test(param)) {
+            throw new TypeError(`Invalid parameter name: ${param}`);
+          }
+          result += `; ${param}=${qstring(parameters[param])}`;
         }
-        index += match[0].length;
-        key = match[1].toLowerCase();
-        value = match[2];
-        if (value[0] === '"') {
-          value = value.slice(1, value.length - 1);
-          quotedPairRE.test(value) && (value = value.replace(quotedPairRE, "$1"));
-        }
-        result.parameters[key] = value;
-      }
-      if (index !== header.length) {
-        throw new TypeError("invalid parameter format");
       }
       return result;
     }
-    function safeParse2(header) {
-      if (typeof header !== "string") {
-        return defaultContentType;
-      }
-      let index = header.indexOf(";");
-      const type = index !== -1 ? header.slice(0, index).trim() : header.trim();
-      if (mediaTypeRE.test(type) === false) {
-        return defaultContentType;
-      }
-      const result = {
-        type: type.toLowerCase(),
-        parameters: new NullObject()
-      };
-      if (index === -1) {
-        return result;
-      }
-      let key;
-      let match;
-      let value;
-      paramRE.lastIndex = index;
-      while (match = paramRE.exec(header)) {
-        if (match.index !== index) {
-          return defaultContentType;
-        }
-        index += match[0].length;
-        key = match[1].toLowerCase();
-        value = match[2];
-        if (value[0] === '"') {
-          value = value.slice(1, value.length - 1);
-          quotedPairRE.test(value) && (value = value.replace(quotedPairRE, "$1"));
-        }
-        result.parameters[key] = value;
-      }
-      if (index !== header.length) {
-        return defaultContentType;
-      }
-      return result;
+    function parse4(header, options) {
+      const len = header.length;
+      let index = skipOWS(header, 0, len);
+      const valueStart = index;
+      index = skipValue(header, index, len);
+      const valueEnd = trailingOWS(header, valueStart, index);
+      const type = header.slice(valueStart, valueEnd).toLowerCase();
+      const parameters = options?.parameters === false ? new NullObject() : parseParameters(header, index, len);
+      return { type, parameters };
     }
-    module.exports.default = { parse: parse3, safeParse: safeParse2 };
-    module.exports.parse = parse3;
-    module.exports.safeParse = safeParse2;
-    module.exports.defaultContentType = defaultContentType;
+    var SP = 32;
+    var HTAB = 9;
+    var SEMI = 59;
+    var EQ = 61;
+    var DQUOTE = 34;
+    var BSLASH = 92;
+    function parseParameters(header, index, len) {
+      const parameters = new NullObject();
+      parameter:
+        while (index < len) {
+          index = skipOWS(header, index + 1, len);
+          const keyStart = index;
+          while (index < len) {
+            const code = header.charCodeAt(index);
+            if (code === SEMI)
+              continue parameter;
+            if (code === EQ) {
+              const keyEnd = trailingOWS(header, keyStart, index);
+              const key = header.slice(keyStart, keyEnd).toLowerCase();
+              index = skipOWS(header, index + 1, len);
+              if (index < len && header.charCodeAt(index) === DQUOTE) {
+                index++;
+                let value = "";
+                while (index < len) {
+                  const code2 = header.charCodeAt(index++);
+                  if (code2 === DQUOTE) {
+                    index = skipValue(header, index, len);
+                    if (parameters[key] === void 0)
+                      parameters[key] = value;
+                    break;
+                  }
+                  if (code2 === BSLASH && index < len) {
+                    value += header[index++];
+                    continue;
+                  }
+                  value += String.fromCharCode(code2);
+                }
+                continue parameter;
+              }
+              const valueStart = index;
+              index = skipValue(header, index, len);
+              if (parameters[key] === void 0) {
+                const valueEnd = trailingOWS(header, valueStart, index);
+                parameters[key] = header.slice(valueStart, valueEnd);
+              }
+              continue parameter;
+            }
+            index++;
+          }
+        }
+      return parameters;
+    }
+    function skipValue(str, index, len) {
+      while (index < len) {
+        const char = str.charCodeAt(index);
+        if (char === SEMI)
+          break;
+        index++;
+      }
+      return index;
+    }
+    function skipOWS(header, index, len) {
+      while (index < len) {
+        const char = header.charCodeAt(index);
+        if (char !== SP && char !== HTAB)
+          break;
+        index++;
+      }
+      return index;
+    }
+    function trailingOWS(header, start, end) {
+      while (end > start) {
+        const char = header.charCodeAt(end - 1);
+        if (char !== SP && char !== HTAB)
+          break;
+        end--;
+      }
+      return end;
+    }
+    function qstring(str) {
+      if (TOKEN_REGEXP.test(str))
+        return str;
+      if (TEXT_REGEXP.test(str))
+        return `"${str.replace(QUOTE_REGEXP, "\\$&")}"`;
+      throw new TypeError(`Invalid parameter value: ${str}`);
+    }
   }
 });
 
@@ -21630,13 +21666,13 @@ var require_lockfile = __commonJS({
           }
           concat(integrity, opts) {
             const other = typeof integrity === "string" ? integrity : stringify(integrity, opts);
-            return parse3(`${this.toString(opts)} ${other}`, opts);
+            return parse4(`${this.toString(opts)} ${other}`, opts);
           }
           hexDigest() {
-            return parse3(this, { single: true }).hexDigest();
+            return parse4(this, { single: true }).hexDigest();
           }
           match(integrity, opts) {
-            const other = parse3(integrity, opts);
+            const other = parse4(integrity, opts);
             const algo = other.pickAlgorithm(opts);
             return this[algo] && other[algo] && this[algo].find(
               (hash) => other[algo].find(
@@ -21655,8 +21691,8 @@ var require_lockfile = __commonJS({
             });
           }
         }
-        module2.exports.parse = parse3;
-        function parse3(sri, opts) {
+        module2.exports.parse = parse4;
+        function parse4(sri, opts) {
           opts = opts || {};
           if (typeof sri === "string") {
             return _parse(sri, opts);
@@ -21689,7 +21725,7 @@ var require_lockfile = __commonJS({
           if (obj.algorithm && obj.digest) {
             return Hash.prototype.toString.call(obj, opts);
           } else if (typeof obj === "string") {
-            return stringify(parse3(obj, opts), opts);
+            return stringify(parse4(obj, opts), opts);
           } else {
             return Integrity.prototype.toString.call(obj, opts);
           }
@@ -21697,7 +21733,7 @@ var require_lockfile = __commonJS({
         module2.exports.fromHex = fromHex;
         function fromHex(hexDigest, algorithm, opts) {
           const optString = opts && opts.options && opts.options.length ? `?${opts.options.join("?")}` : "";
-          return parse3(
+          return parse4(
             `${algorithm}-${Buffer2.from(hexDigest, "hex").toString("base64")}${optString}`,
             opts
           );
@@ -21744,7 +21780,7 @@ var require_lockfile = __commonJS({
         module2.exports.checkData = checkData;
         function checkData(data, sri, opts) {
           opts = opts || {};
-          sri = parse3(sri, opts);
+          sri = parse4(sri, opts);
           if (!Object.keys(sri).length) {
             if (opts.error) {
               throw Object.assign(
@@ -21759,7 +21795,7 @@ var require_lockfile = __commonJS({
           }
           const algorithm = sri.pickAlgorithm(opts);
           const digest = crypto.createHash(algorithm).update(data).digest("base64");
-          const newSri = parse3({ algorithm, digest });
+          const newSri = parse4({ algorithm, digest });
           const match = newSri.match(sri, opts);
           if (match || !opts.error) {
             return match;
@@ -21805,7 +21841,7 @@ var require_lockfile = __commonJS({
         module2.exports.integrityStream = integrityStream;
         function integrityStream(opts) {
           opts = opts || {};
-          const sri = opts.integrity && parse3(opts.integrity, opts);
+          const sri = opts.integrity && parse4(opts.integrity, opts);
           const goodSri = sri && Object.keys(sri).length;
           const algorithm = goodSri && sri.pickAlgorithm(opts);
           const digests = goodSri && sri[algorithm];
@@ -21824,7 +21860,7 @@ var require_lockfile = __commonJS({
             }
           }).on("end", () => {
             const optString = opts.options && opts.options.length ? `?${opts.options.join("?")}` : "";
-            const newSri = parse3(hashes.map((h, i) => {
+            const newSri = parse4(hashes.map((h, i) => {
               return `${algorithms[i]}-${h.digest("base64")}${optString}`;
             }).join(" "), opts);
             const match = goodSri && newSri.match(sri, opts);
@@ -22085,9 +22121,9 @@ var require_lockfile = __commonJS({
           }
           return expand3(pattern);
         }
-        Minimatch.prototype.parse = parse3;
+        Minimatch.prototype.parse = parse4;
         var SUBPARSE = {};
-        function parse3(pattern, isSub) {
+        function parse4(pattern, isSub) {
           if (pattern.length > 1024 * 64) {
             throw new TypeError("pattern is too long");
           }
@@ -23203,7 +23239,7 @@ var require_lockfile = __commonJS({
         });
         exports2.default = function(str, fileLoc = "lockfile") {
           str = (0, (_stripBom || _load_stripBom()).default)(str);
-          return hasMergeConflicts(str) ? parseWithConflict(str, fileLoc) : { type: "success", object: parse3(str, fileLoc) };
+          return hasMergeConflicts(str) ? parseWithConflict(str, fileLoc) : { type: "success", object: parse4(str, fileLoc) };
         };
         var _util;
         function _load_util() {
@@ -23536,7 +23572,7 @@ var require_lockfile = __commonJS({
         function hasMergeConflicts(str) {
           return str.includes(MERGE_CONFLICT_START) && str.includes(MERGE_CONFLICT_SEP) && str.includes(MERGE_CONFLICT_END);
         }
-        function parse3(str, fileLoc) {
+        function parse4(str, fileLoc) {
           const parser2 = new Parser2(str, fileLoc);
           parser2.next();
           return parser2.parse();
@@ -23544,7 +23580,7 @@ var require_lockfile = __commonJS({
         function parseWithConflict(str, fileLoc) {
           const variants = extractConflictVariants(str);
           try {
-            return { type: "merge", object: Object.assign({}, parse3(variants[0], fileLoc), parse3(variants[1], fileLoc)) };
+            return { type: "merge", object: Object.assign({}, parse4(variants[0], fileLoc), parse4(variants[1], fileLoc)) };
           } catch (err) {
             if (err instanceof SyntaxError) {
               return { type: "conflict", object: {} };
@@ -27008,7 +27044,7 @@ ${indent}`);
           options = options || {};
           var type = typeof val;
           if (type === "string" && val.length > 0) {
-            return parse3(val);
+            return parse4(val);
           } else if (type === "number" && isNaN(val) === false) {
             return options.long ? fmtLong(val) : fmtShort(val);
           }
@@ -27016,7 +27052,7 @@ ${indent}`);
             "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
           );
         };
-        function parse3(str) {
+        function parse4(str) {
           str = String(str);
           if (str.length > 100) {
             return;
@@ -28446,7 +28482,7 @@ function withDefaults(oldDefaults, newDefaults) {
 var endpoint = withDefaults(null, DEFAULTS);
 
 // 
-var import_fast_content_type_parse = __toESM(require_fast_content_type_parse());
+var import_content_type = __toESM(require_dist());
 
 // 
 var intRegex = /^-?\d+$/;
@@ -28607,7 +28643,7 @@ var RequestError = class extends Error {
 };
 
 // 
-var VERSION2 = "10.0.8";
+var VERSION2 = "10.0.9";
 var defaults_default = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION2} ${getUserAgent()}`
@@ -28728,7 +28764,7 @@ async function getResponseData(response) {
   if (!contentType) {
     return response.text().catch(noop);
   }
-  const mimetype = (0, import_fast_content_type_parse.safeParse)(contentType);
+  const mimetype = (0, import_content_type.parse)(contentType);
   if (isJSONResponse(mimetype)) {
     let text = "";
     try {
@@ -36225,9 +36261,9 @@ var YargsInstance = class {
     __classPrivateFieldSet(this, _YargsInstance_hasOutput, true, "f");
     if (!__classPrivateFieldGet(this, _YargsInstance_usage, "f").hasCachedHelpMessage()) {
       if (!this.parsed) {
-        const parse3 = this[kRunYargsParserAndExecuteCommands](__classPrivateFieldGet(this, _YargsInstance_processArgs, "f"), void 0, void 0, 0, true);
-        if (isPromise(parse3)) {
-          return parse3.then(() => {
+        const parse4 = this[kRunYargsParserAndExecuteCommands](__classPrivateFieldGet(this, _YargsInstance_processArgs, "f"), void 0, void 0, 0, true);
+        if (isPromise(parse4)) {
+          return parse4.then(() => {
             return __classPrivateFieldGet(this, _YargsInstance_usage, "f").help();
           });
         }
@@ -36571,9 +36607,9 @@ var YargsInstance = class {
     __classPrivateFieldSet(this, _YargsInstance_hasOutput, true, "f");
     if (!__classPrivateFieldGet(this, _YargsInstance_usage, "f").hasCachedHelpMessage()) {
       if (!this.parsed) {
-        const parse3 = this[kRunYargsParserAndExecuteCommands](__classPrivateFieldGet(this, _YargsInstance_processArgs, "f"), void 0, void 0, 0, true);
-        if (isPromise(parse3)) {
-          parse3.then(() => {
+        const parse4 = this[kRunYargsParserAndExecuteCommands](__classPrivateFieldGet(this, _YargsInstance_processArgs, "f"), void 0, void 0, 0, true);
+        if (isPromise(parse4)) {
+          parse4.then(() => {
             __classPrivateFieldGet(this, _YargsInstance_usage, "f").showHelp(level);
           });
           return this;
@@ -37450,7 +37486,7 @@ import { spawnSync as spawnSync2 } from "child_process";
 import { URL as URL2 } from "url";
 var import_lockfile = __toESM(require_lockfile(), 1);
 var require5 = __cjsCompatRequire_ngDev4(import.meta.url);
-var require_fast_content_type_parse2 = __commonJS2({
+var require_fast_content_type_parse = __commonJS2({
   ""(exports, module) {
     "use strict";
     var NullObject = function NullObject2() {
@@ -46702,7 +46738,7 @@ var require_public_api = __commonJS2({
     exports.stringify = stringify;
   }
 });
-var require_dist = __commonJS2({
+var require_dist2 = __commonJS2({
   ""(exports) {
     "use strict";
     var composer = require_composer();
@@ -47098,7 +47134,7 @@ function expand2(template, context3) {
     return template.replace(/\/$/, "");
   }
 }
-function parse2(options) {
+function parse3(options) {
   let method = options.method.toUpperCase();
   let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
   let headers = Object.assign({}, options.headers);
@@ -47162,7 +47198,7 @@ function parse2(options) {
   );
 }
 function endpointWithDefaults2(defaults2, route, options) {
-  return parse2(merge2(defaults2, route, options));
+  return parse3(merge2(defaults2, route, options));
 }
 function withDefaults4(oldDefaults, newDefaults) {
   const DEFAULTS22 = merge2(oldDefaults, newDefaults);
@@ -47171,11 +47207,11 @@ function withDefaults4(oldDefaults, newDefaults) {
     DEFAULTS: DEFAULTS22,
     defaults: withDefaults4.bind(null, DEFAULTS22),
     merge: merge2.bind(null, DEFAULTS22),
-    parse: parse2
+    parse: parse3
   });
 }
 var endpoint2 = withDefaults4(null, DEFAULTS2);
-var import_fast_content_type_parse2 = __toESM2(require_fast_content_type_parse2());
+var import_fast_content_type_parse = __toESM2(require_fast_content_type_parse());
 var intRegex2 = /^-?\d+$/;
 var noiseValue2 = /^-?\d+n+$/;
 var originalStringify2 = JSON.stringify;
@@ -47451,7 +47487,7 @@ async function getResponseData2(response) {
   if (!contentType) {
     return response.text().catch(noop3);
   }
-  const mimetype = (0, import_fast_content_type_parse2.safeParse)(contentType);
+  const mimetype = (0, import_fast_content_type_parse.safeParse)(contentType);
   if (isJSONResponse2(mimetype)) {
     let text = "";
     try {
@@ -51418,7 +51454,7 @@ var allLabels = {
   ...miscLabels
 };
 var import_which = __toESM2(require_lib2());
-var import_yaml = __toESM2(require_dist());
+var import_yaml = __toESM2(require_dist2());
 
 // 
 var require6 = __cjsCompatRequire_ngDev5(import.meta.url);
@@ -51582,6 +51618,13 @@ undici/lib/web/fetch/body.js:
 
 undici/lib/web/websocket/frame.js:
   (*! ws. MIT License. Einar Otto Stangvik <einaros@gmail.com> *)
+
+content-type/dist/index.js:
+  (*!
+   * content-type
+   * Copyright(c) 2015 Douglas Christopher Wilson
+   * MIT Licensed
+   *)
 
 @octokit/request-error/dist-src/index.js:
   (* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist *)
