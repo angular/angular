@@ -63,8 +63,29 @@ export type ɵNullableFormControls<T> = {[K in keyof T]: ɵElement<T[K], null>};
 export type ɵNonNullableFormControls<T> = {[K in keyof T]: ɵElement<T[K], never>};
 
 /**
- * ControlConfig<T> is a tuple containing a value of type T, plus optional validators and async
- * validators.
+ * `ControlConfig<T>` is a tuple shorthand accepted by `FormBuilder.group` (and
+ * `FormBuilder.array`) describing a single child `FormControl`. The tuple's elements are, in
+ * order:
+ *
+ * 1. The initial value of the control, either as a raw value of type `T` or as a
+ *    {@link FormControlState} "boxed value" (`{value: T, disabled: boolean}`) when the control
+ *    should also start disabled.
+ * 2. An optional synchronous validator or array of synchronous validators.
+ * 3. An optional asynchronous validator or array of asynchronous validators.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * const fb = inject(FormBuilder);
+ * fb.group({
+ *   // Raw initial value, no validators.
+ *   nickname: ['Nancy'],
+ *   // Raw initial value with a single sync validator.
+ *   email: ['', Validators.email],
+ *   // Boxed value: starts with the given value but disabled.
+ *   ssn: [{value: '123-45-6789', disabled: true}, Validators.required],
+ * });
+ * ```
  *
  * @publicApi
  */
@@ -194,7 +215,17 @@ export class FormBuilder {
    * containing all the keys and corresponding inner control types.
    *
    * @param controls A collection of child controls. The key for each child is the name
-   * under which it is registered.
+   * under which it is registered. Each value in the collection can be one of:
+   * * A raw initial value of the control's value type (e.g. `'Nancy'`).
+   * * A "boxed value" {@link FormControlState} object — `{value, disabled}` — to set both the
+   *   initial value and disabled state (e.g. `{value: 'Nancy', disabled: true}`).
+   * * A {@link ControlConfig} tuple — `[initialValue, syncValidators?, asyncValidators?]` —
+   *   where `initialValue` itself may be a raw value or a boxed value.
+   * * An already-constructed `AbstractControl` (such as a `FormControl`, nested `FormGroup`, or
+   *   `FormArray`), which will be added as-is.
+   *
+   * Note: a boxed value object (`{value, disabled}`) is different from the second `options`
+   * argument below (`{validators, asyncValidators, updateOn}`) — they are not interchangeable.
    *
    * @param options Configuration options object for the `FormGroup`. The object should have the
    * `AbstractControlOptions` type and might contain the following fields:
@@ -202,6 +233,23 @@ export class FormBuilder {
    * * `asyncValidators`: A single async validator or array of async validator functions.
    * * `updateOn`: The event upon which the control should be updated (options: 'change' | 'blur'
    * | submit').
+   *
+   * @usageNotes
+   *
+   * ```ts
+   * const fb = inject(FormBuilder);
+   * const form = fb.group(
+   *   {
+   *     // Raw initial value.
+   *     name: 'Nancy',
+   *     // ControlConfig tuple with a boxed value (starts disabled) plus a validator.
+   *     ssn: [{value: '123-45-6789', disabled: true}, Validators.required],
+   *     // Already-constructed control is taken as-is.
+   *     email: new FormControl('nancy@example.com', {nonNullable: true}),
+   *   },
+   *   {updateOn: 'blur'},
+   * );
+   * ```
    */
   group<T extends {}>(
     controls: T,
@@ -306,11 +354,22 @@ export class FormBuilder {
    * @description
    * Constructs a new `FormControl` with the given state, validators and options. Sets
    * `{nonNullable: true}` in the options to get a non-nullable control. Otherwise, the
-   * control will be nullable. Accepts a single generic argument, which is the type  of the
+   * control will be nullable. Accepts a single generic argument, which is the type of the
    * control's value.
    *
-   * @param formState Initializes the control with an initial state value, or
-   * with an object that contains both a value and a disabled status.
+   * @param formState Initializes the control. This argument can be either:
+   * * A raw value of type `T` — the control starts with that value and is enabled.
+   * * A "boxed value" {@link FormControlState} object of the form
+   *   `{value: T, disabled: boolean}` — the control starts with the provided value and the
+   *   provided disabled state. This is equivalent to constructing the control with the raw
+   *   value and then calling `control.disable()`/`control.enable()`.
+   *
+   * The same behavior matches the {@link FormControl} constructor, so any value accepted by
+   * `new FormControl(...)` as its first argument is also accepted here.
+   *
+   * Note: the boxed value object (`{value, disabled}`) only has the keys `value` and `disabled`.
+   * It is not the same as the `FormControlOptions` argument below (which carries `validators`,
+   * `asyncValidators`, `updateOn`, and `nonNullable`).
    *
    * @param validatorOrOpts A synchronous validator function, or an array of
    * such functions, or a `FormControlOptions` object that contains
@@ -321,9 +380,18 @@ export class FormBuilder {
    *
    * @usageNotes
    *
+   * ### Initialize a control with a raw value
+   *
+   * ```ts
+   * const name = fb.control('Nancy', Validators.required);
+   * console.log(name.value);    // 'Nancy'
+   * console.log(name.disabled); // false
+   * ```
+   *
    * ### Initialize a control as disabled
    *
-   * The following example returns a control with an initial value in a disabled state.
+   * The following example returns a control with an initial value in a disabled state, by
+   * passing a {@link FormControlState} "boxed value" as the first argument.
    *
    * {@example forms/ts/formBuilder/form_builder_example.ts region='disabled-control'}
    */
@@ -352,14 +420,29 @@ export class FormBuilder {
    * validators and options. Accepts a single generic argument, which is the type of each control
    * inside the array.
    *
-   * @param controls An array of child controls or control configs. Each child control is given an
-   *     index when it is registered.
+   * @param controls An array of child controls or control configs. Each entry can be any of the
+   *     shapes accepted by {@link FormBuilder.group} for a child: a raw value, a "boxed value"
+   *     {@link FormControlState} object (`{value, disabled}`), a {@link ControlConfig} tuple, or
+   *     an already-constructed `AbstractControl`. Each child control is given an index when it
+   *     is registered.
    *
    * @param validatorOrOpts A synchronous validator function, or an array of such functions, or an
    *     `AbstractControlOptions` object that contains
    * validation functions and a validation trigger.
    *
    * @param asyncValidator A single async validator or array of async validator functions.
+   *
+   * @usageNotes
+   *
+   * ```ts
+   * const fb = inject(FormBuilder);
+   * // A FormArray<FormControl<string|null>> where the second item starts disabled.
+   * const aliases = fb.array([
+   *   'first',
+   *   {value: 'second', disabled: true},
+   *   ['third', Validators.required],
+   * ]);
+   * ```
    */
   array<T>(
     controls: Array<T>,
@@ -451,6 +534,10 @@ export abstract class NonNullableFormBuilder {
   /**
    * Similar to `FormBuilder#control`, except this overridden version of `control` forces
    * `nonNullable` to be `true`, resulting in the control always being non-nullable.
+   *
+   * The `formState` argument accepts the same shapes as `FormBuilder#control`: either a raw
+   * initial value of type `T`, or a "boxed value" {@link FormControlState} object
+   * (`{value: T, disabled: boolean}`) to also initialize the control's disabled state.
    */
   abstract control<T>(
     formState: T | FormControlState<T>,
