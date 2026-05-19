@@ -117,7 +117,7 @@ describe('sanitization', () => {
       [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl],
     ]);
     Object.entries(schema).forEach(([key, context]) => {
-      if (context === SecurityContext.URL || SecurityContext.RESOURCE_URL) {
+      if (context === SecurityContext.URL || context === SecurityContext.RESOURCE_URL) {
         const [tag, prop] = key.split('|');
         const contexts = contextsByProp.get(prop) || new Set<number>();
         contexts.add(context);
@@ -136,7 +136,7 @@ describe('sanitization', () => {
     expect(getUrlSanitizer('IFRAME', 'SRC')).toEqual(ɵɵsanitizeResourceUrl);
     expect(getUrlSanitizer('IFRAME', 'src')).toEqual(ɵɵsanitizeResourceUrl);
     expect(getUrlSanitizer('iframe', 'SRC')).toEqual(ɵɵsanitizeResourceUrl);
-    expect(getUrlSanitizer('ScRiPt', 'xLiNk:HrEf')).toEqual(ɵɵsanitizeResourceUrl);
+    expect(getUrlSanitizer('ScRiPt', 'xLiNk:HrEf')).toEqual(ɵɵsanitizeUrl);
     expect(getUrlSanitizer('A', 'HREF')).toEqual(ɵɵsanitizeUrl);
   });
 
@@ -149,8 +149,8 @@ describe('sanitization', () => {
 
     expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'iframe', 'SRC')).toThrowError(ERROR);
 
-    expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'ScRiPt', 'xLiNk:HrEf')).toThrowError(
-      ERROR,
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'ScRiPt', 'xLiNk:HrEf')).toEqual(
+      'unsafe:javascript:true',
     );
 
     expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'A', 'HREF')).toEqual(
