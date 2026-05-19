@@ -2296,6 +2296,30 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(0);
       });
+
+      it('should support import aliases for matching foreign components', () => {
+        env.write(
+          'original.ts',
+          `
+          export function Original() {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+          import {Original as Alias} from './original';
+
+          @Component({
+            selector: 'test',
+            template: '<Alias />',
+            foreignImports: [frameworkImport(Alias)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        env.driveMain();
+      });
     });
 
     it('should detect a duplicate variable declaration', () => {
