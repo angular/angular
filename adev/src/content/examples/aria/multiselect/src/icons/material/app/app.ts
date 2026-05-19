@@ -50,19 +50,7 @@ export class App {
   /** Whether the popup is expanded. */
   readonly popupExpanded = signal(false);
 
-  /** Whether the overlay is open in the DOM. */
-  readonly overlayOpen = signal(false);
-
   constructor() {
-    // Synchronize overlayOpen with popupExpanded with a delay on close to allow exit transitions
-    effect(() => {
-      if (this.popupExpanded()) {
-        this.overlayOpen.set(true);
-      } else {
-        setTimeout(() => this.overlayOpen.set(false), 180);
-      }
-    });
-
     // Scrolls to the active item when the active option changes.
     afterRenderEffect(() => {
       this.listbox()?.scrollActiveItemIntoView();

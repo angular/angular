@@ -18,10 +18,10 @@
 
 <ng-template
   [cdkConnectedOverlay]="{origin: combobox.element, usePopover: 'inline', matchWidth: true}"
-  [cdkConnectedOverlayOpen]="overlayOpen()"
+  [cdkConnectedOverlayOpen]="popupExpanded()"
 >
   <ng-template ngComboboxPopup [combobox]="combobox">
-    <div class="example-popup-container" [class.closing]="!popupExpanded()">
+    <div class="example-popup-container">
       <div
         #listbox="ngListbox"
         ngListbox
