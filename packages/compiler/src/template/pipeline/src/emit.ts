@@ -72,6 +72,7 @@ import {resolveDeferDepsFns} from './phases/resolve_defer_deps_fns';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
 import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
 import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
+import {resolveI18nAttrSanitizers} from './phases/resolve_i18n_attr_sanitizers';
 import {resolveNames} from './phases/resolve_names';
 import {resolveSanitizers} from './phases/resolve_sanitizers';
 import {saveAndRestoreView} from './phases/save_restore_view';
@@ -157,6 +158,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
   {kind: Kind.Tmpl, fn: extractI18nMessages},
   {kind: Kind.Tmpl, fn: collectI18nConsts},
+  {kind: Kind.Tmpl, fn: resolveI18nAttrSanitizers},
   {kind: Kind.Tmpl, fn: collectConstExpressions},
   {kind: Kind.Both, fn: collectElementConsts},
   {kind: Kind.Tmpl, fn: removeI18nContexts},

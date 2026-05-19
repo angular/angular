@@ -186,10 +186,7 @@ class ElementAttributes {
       if (value === null) {
         throw Error('Attribute, i18n attribute, & style element attributes must have a value');
       }
-      if (trustedValueFn !== null) {
-        if (!ir.isStringLiteral(value)) {
-          throw Error('AssertionError: extracted attribute value should be string literal');
-        }
+      if (trustedValueFn !== null && ir.isStringLiteral(value)) {
         array.push(
           o.taggedTemplate(
             trustedValueFn,

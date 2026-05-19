@@ -32,7 +32,6 @@ import {publishFacade} from './jit_compiler_facade';
 import * as outputAst from './output/output_ast';
 import {global} from './util';
 
-export {SECURITY_SCHEMA} from './schema/dom_security_schema';
 export {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from './core';
 export {core};
 
