@@ -48,12 +48,5 @@ export class App {
     afterRenderEffect(() => {
       this.listbox()?.scrollActiveItemIntoView();
     });
-
-    // Resets the listbox scroll position when the combobox is closed.
-    afterRenderEffect(() => {
-      if (!this.popupExpanded()) {
-        setTimeout(() => this.listbox()?.element.scrollTo(0, 0), 150);
-      }
-    });
   }
 }
