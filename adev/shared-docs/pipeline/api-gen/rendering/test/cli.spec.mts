@@ -43,4 +43,17 @@ describe('CLI docs to html', () => {
     expect(cliTocs[0].textContent).toContain('ng component [name] [options]');
     expect(cliTocs[1].textContent).toContain('ng c [name] [options]');
   });
+
+  it('should rewrite absolute angular.dev hrefs in option descriptions to root-relative', async () => {
+    const renderableJson = await getRenderable(entryJson, '', 'angular/cli');
+    const localFragment = JSDOM.fragment(renderEntry(renderableJson));
+    const hrefs = Array.from(localFragment.querySelectorAll('a')).map((a) =>
+      a.getAttribute('href'),
+    );
+    // Absolute angular.dev URLs are rewritten to root-relative.
+    expect(hrefs).toContain('/cli-test-rewrite');
+    expect(hrefs).not.toContain('https://angular.dev/cli-test-rewrite');
+    // Subdomains are intentionally left as external.
+    expect(hrefs).toContain('https://next.angular.dev/cli-test-preview');
+  });
 });
