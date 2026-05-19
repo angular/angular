@@ -854,7 +854,6 @@ describe('SVG <script> bindings', () => {
     expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
   });
 });
-
 describe('SVG <a> link sanitization', () => {
   it('should sanitize dynamic `href` bindings on <svg:a>', () => {
     @Component({
