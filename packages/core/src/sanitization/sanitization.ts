@@ -329,7 +329,7 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
       ? `:${tNode.namespace}:${lowerCaseTagName}`
       : lowerCaseTagName;
 
-  let validationConfig = SECURITY_SENSITIVE_ELEMENTS[fullTagName]?.[lowerCaseAttrName];
+  const validationConfig = SECURITY_SENSITIVE_ELEMENTS[fullTagName]?.[lowerCaseAttrName];
 
   if (!validationConfig) {
     return value;
