@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
-
 import {ErrorCode} from './error_code';
 import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
 
@@ -54,23 +52,11 @@ export function errorCodeWithGuideFromDiagnosticCode(code: number): ErrorCode | 
 }
 
 /**
- * Appends a "Find more at <url>" guide link to the root message of a diagnostic.
- * Nested messages in {@link ts.DiagnosticMessageChain.next} are left unchanged.
+ * Appends a "Find more at <url>" guide link to the message text of a diagnostic.
  */
-export function addDiagnosticDetails(
-  code: ErrorCode,
-  messageText: string | ts.DiagnosticMessageChain,
-): string | ts.DiagnosticMessageChain {
+export function addDiagnosticDetails(code: ErrorCode, messageText: string): string {
   const details = `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${formatCompilerErrorCode(code)}`;
-
-  if (typeof messageText === 'string') {
-    return appendMessageText(messageText, details);
-  }
-
-  return {
-    ...messageText,
-    messageText: appendMessageText(messageText.messageText, details),
-  };
+  return appendMessageText(messageText, details);
 }
 
 function appendMessageText(messageText: string, textToAppend: string): string {

@@ -678,9 +678,16 @@ export class NgCompiler {
     return diagnostics.map((diag) => {
       const errorCode = errorCodeWithGuideFromDiagnosticCode(diag.code);
       if (errorCode !== null) {
+        const messageText =
+          typeof diag.messageText === 'string'
+            ? addDiagnosticDetails(errorCode, diag.messageText)
+            : {
+                ...diag.messageText,
+                messageText: addDiagnosticDetails(errorCode, diag.messageText.messageText),
+              };
         return {
           ...diag,
-          messageText: addDiagnosticDetails(errorCode, diag.messageText),
+          messageText,
         };
       }
       return diag;
