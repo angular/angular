@@ -53,11 +53,14 @@ export function getCliCardsRenderable(command: CliCommand): CliCardRenderable[] 
   return cards;
 }
 
+// Rewrite absolute angular.dev hrefs to root-relative so links stay in-site.
+const angularDevHrefRegex = /(href=["'])https?:\/\/angular\.dev\//g;
+
 function getRenderableOptions(items: CliOption[]): CliOptionRenderable[] {
   return items.map((option) => ({
     ...option,
     deprecated: option.deprecated ? {version: undefined} : undefined,
-    description: marked.parse(option.description) as string,
+    description: (marked.parse(option.description) as string).replace(angularDevHrefRegex, '$1/'),
   }));
 }
 
