@@ -11,6 +11,7 @@ import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../namespaces';
 
 /**
  * Wraps static i18n extracted attributes in their corresponding sanitizers/validators.
@@ -21,7 +22,17 @@ export function resolveI18nAttrSanitizers(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
       if (op.kind === ir.OpKind.ElementStart || op.kind === ir.OpKind.Template) {
-        tagNamesByElement.set(op.xref, (op as any).tag ?? '');
+        let tag = op.tag ?? '';
+        switch (op.namespace) {
+          case ir.Namespace.SVG:
+            tag = `:${SVG_NAMESPACE}:${tag}`;
+            break;
+          case ir.Namespace.Math:
+            tag = `:${MATH_ML_NAMESPACE}:${tag}`;
+            break;
+        }
+
+        tagNamesByElement.set(op.xref, tag);
       }
     }
   }

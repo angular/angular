@@ -385,13 +385,16 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
         // the compiler treats static i18n attributes as regular attribute bindings.
         // Since this may not be the first i18n attribute on this element we need to pass in how
         // many previous bindings there have already been.
+        const tagName = previousElement.namespace
+          ? `:${previousElement.namespace}:${previousElement.value}`
+          : previousElement.value;
         generateBindingUpdateOpCodes(
           updateOpCodes,
           message,
           previousElementIndex,
           attrName,
           countBindings(updateOpCodes),
-          i18nResolveSanitizer(attrName, previousElement.value),
+          i18nResolveSanitizer(attrName, tagName),
         );
       }
     }
@@ -811,6 +814,13 @@ function walkIcuTree(
             const attr = elAttrs.item(i)!;
             const lowerAttrName = attr.name.toLowerCase();
             const hasBinding = !!attr.value.match(BINDING_REGEXP);
+            const elementNS = element.namespaceURI;
+            const tagNameWithNamespace =
+              elementNS === 'http://www.w3.org/2000/svg'
+                ? `:svg:${tagName}`
+                : elementNS === 'http://www.w3.org/1998/Math/MathML'
+                  ? `:math:${tagName}`
+                  : tagName;
             if (hasBinding) {
               if (VALID_ATTRS.hasOwnProperty(lowerAttrName)) {
                 generateBindingUpdateOpCodes(
@@ -819,7 +829,7 @@ function walkIcuTree(
                   newIndex,
                   attr.name,
                   0,
-                  i18nResolveSanitizer(lowerAttrName, tagName),
+                  i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace),
                 );
               } else {
                 ngDevMode &&
@@ -831,7 +841,7 @@ function walkIcuTree(
               }
             } else if (VALID_ATTRS[lowerAttrName]) {
               let val = attr.value;
-              const sanitizer = i18nResolveSanitizer(lowerAttrName, tagName);
+              const sanitizer = i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace);
               if (sanitizer) {
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                   console.warn(

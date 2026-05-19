@@ -25,11 +25,11 @@ import {
 } from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
-import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './dom_security_schema';
-import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
+import {_sanitizeUrl} from './url_sanitizer';
 
 /**
  * An `html` sanitizer which converts untrusted `html` **string** into trusted string by removing
@@ -329,10 +329,7 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
       ? `:${tNode.namespace}:${lowerCaseTagName}`
       : lowerCaseTagName;
 
-  const validationConfig =
-    SECURITY_SENSITIVE_ELEMENTS[fullTagName]?.[lowerCaseAttrName] ??
-    (lowerCaseTagName !== '*' ? SECURITY_SENSITIVE_ELEMENTS[`:svg:${lowerCaseTagName}`]?.[lowerCaseAttrName] : undefined) ??
-    (lowerCaseTagName !== '*' ? SECURITY_SENSITIVE_ELEMENTS[`:math:${lowerCaseTagName}`]?.[lowerCaseAttrName] : undefined);
+  let validationConfig = SECURITY_SENSITIVE_ELEMENTS[fullTagName]?.[lowerCaseAttrName];
 
   if (!validationConfig) {
     return value;
