@@ -115,12 +115,6 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       ['object', ['codebase', 'data']],
     ]);
 
-    // The below are for Script SVG
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/SVGScriptElement/href
-    registerContext(SecurityContext.RESOURCE_URL, SVG_NAMESPACE, [
-      ['script', ['src', 'href', 'xlink:href']],
-    ]);
-
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts
     // Unknown is the internal tag name for unknown elements example used for host-bindings.
     // These are unsafe as `attributeName` can be `href` or `xlink:href`
