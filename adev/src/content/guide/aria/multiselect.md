@@ -185,12 +185,7 @@ The structural `ngComboboxPopup` directive marks the overlay template and requir
 
 #### ComboboxWidget directive
 
-The `ngComboboxWidget` directive bridges the listbox widget inside the popup with the parent `ngCombobox` trigger to manage active-descendant focus tracking. When `focusMode="activedescendant"` is configured on the listbox:
-
-1. Browser focus remains securely on the combobox trigger.
-2. Keyboard navigation (Arrow Up/Down) updates the listbox's active descendant.
-3. The `[activeDescendant]` input on `ngComboboxWidget` propagates this ID to the parent `ngCombobox` directive.
-4. `ngCombobox` automatically updates the `aria-activedescendant` attribute on the trigger element, informing screen readers of the active option.
+The `ngComboboxWidget` directive bridges the listbox with the combobox trigger to support active-descendant focus tracking.
 
 | Property           | Type                  | Description                                                                                                                                  |
 | ------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
