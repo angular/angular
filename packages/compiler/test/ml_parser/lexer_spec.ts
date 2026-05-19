@@ -1822,6 +1822,55 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should parse attributes with unquoted value containing slashes (URL)', () => {
+      // Regression test for https://github.com/angular/angular/issues/36932.
+      // Per the HTML spec, `/` is allowed inside unquoted attribute values.
+      expect(tokenizeAndHumanizeParts('<a href=https://example.com>')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'a'],
+        [TokenType.ATTR_NAME, '', 'href'],
+        [TokenType.ATTR_VALUE_TEXT, 'https://example.com'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should parse attributes with unquoted value containing slashes (path)', () => {
+      // Regression test for https://github.com/angular/angular/issues/36932.
+      expect(tokenizeAndHumanizeParts('<img src=path/to/foo.png>')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'img'],
+        [TokenType.ATTR_NAME, '', 'src'],
+        [TokenType.ATTR_VALUE_TEXT, 'path/to/foo.png'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should still treat `<br/>` as a self-closing tag', () => {
+      // Regression-of-regression: ensure the self-closing slash is still
+      // handled at the tag-end state for tags without attributes.
+      expect(tokenizeAndHumanizeParts('<br/>')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'br'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should consume trailing `/` as part of an unquoted attribute value per the HTML spec', () => {
+      // Regression test for https://github.com/angular/angular/issues/36932.
+      // Per https://html.spec.whatwg.org/#unquoted, the only characters that
+      // terminate an unquoted attribute value are whitespace, `"`, `'`, `=`,
+      // `<`, `>` and `` ` ``. A trailing `/` is therefore part of the value,
+      // so `<input type=text/>` has attribute `type="text/"` and is not a
+      // self-closing tag.
+      expect(tokenizeAndHumanizeParts('<input type=text/>')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'input'],
+        [TokenType.ATTR_NAME, '', 'type'],
+        [TokenType.ATTR_VALUE_TEXT, 'text/'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse bound inputs with expressions containing newlines', () => {
       expect(
         tokenizeAndHumanizeParts(`<app-component

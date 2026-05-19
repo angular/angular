@@ -1051,7 +1051,12 @@ class _Tokenizer {
       );
       this._consumeQuote(quoteChar);
     } else {
-      const endPredicate = () => isNameEnd(this._cursor.peek());
+      // Per the HTML spec, an unquoted attribute value is terminated by ASCII
+      // whitespace, `"`, `'`, `=`, `<`, `>` or EOF. Notably, `/` is _not_ a
+      // terminator: e.g. `<a href=https://example.com>` and
+      // `<img src=path/to/foo.png>` are both valid (see
+      // https://html.spec.whatwg.org/#unquoted).
+      const endPredicate = () => isUnquotedAttrValueEnd(this._cursor.peek());
       this._consumeWithInterpolation(
         TokenType.ATTR_VALUE_TEXT,
         TokenType.ATTR_VALUE_INTERPOLATION,
@@ -1447,6 +1452,24 @@ function isNameEnd(code: number): boolean {
     code === chars.$GT ||
     code === chars.$LT ||
     code === chars.$SLASH ||
+    code === chars.$SQ ||
+    code === chars.$DQ ||
+    code === chars.$EQ ||
+    code === chars.$EOF
+  );
+}
+
+/**
+ * Predicate for the end of an unquoted attribute value. Mirrors `isNameEnd` but
+ * does _not_ include `/`, since the HTML spec allows `/` inside unquoted
+ * attribute values (e.g. `href=https://example.com` or `src=path/to/foo.png`).
+ * See https://html.spec.whatwg.org/#unquoted.
+ */
+function isUnquotedAttrValueEnd(code: number): boolean {
+  return (
+    chars.isWhitespace(code) ||
+    code === chars.$GT ||
+    code === chars.$LT ||
     code === chars.$SQ ||
     code === chars.$DQ ||
     code === chars.$EQ ||

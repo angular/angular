@@ -324,6 +324,22 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should parse unquoted attribute values containing slashes', () => {
+        // Regression test for https://github.com/angular/angular/issues/36932.
+        // Per the HTML spec, `/` is allowed inside unquoted attribute values.
+        expect(
+          humanizeDom(parser.parse('<a href=https://example.com>Link</a>', 'TestComp')),
+        ).toEqual([
+          [html.Element, 'a', 0],
+          [html.Attribute, 'href', 'https://example.com', ['https://example.com']],
+          [html.Text, 'Link', 1, ['Link']],
+        ]);
+        expect(humanizeDom(parser.parse('<img src=path/to/foo.png>', 'TestComp'))).toEqual([
+          [html.Element, 'img', 0],
+          [html.Attribute, 'src', 'path/to/foo.png', ['path/to/foo.png']],
+        ]);
+      });
+
       it('should parse bound inputs with expressions containing newlines', () => {
         expect(
           humanizeDom(
