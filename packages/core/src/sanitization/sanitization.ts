@@ -219,8 +219,7 @@ const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined>
   'frame': {'src': true},
   'iframe': {'src': true},
   'media': {'src': true},
-  'script': {'src': true, 'href': true, 'xlink:href': true},
-  ':svg:script': {'src': true, 'href': true, 'xlink:href': true},
+
   'base': {'href': true},
   'link': {'href': true},
   'object': {'data': true, 'codebase': true},
