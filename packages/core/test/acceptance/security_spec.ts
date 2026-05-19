@@ -916,5 +916,3 @@ describe('SVG <script> bindings', () => {
     expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
   });
 });
-  });
-});
