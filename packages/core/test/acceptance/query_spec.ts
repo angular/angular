@@ -676,6 +676,49 @@ describe('query logic', () => {
       expect(secondComponent.setEvents).toEqual(['textDir set', 'foo set']);
     });
 
+    // Regression test for https://github.com/angular/angular/issues/36876.
+    // The `static` option has always been accepted at runtime by the
+    // `ContentChildren` / `ViewChildren` decorator factories, but the
+    // TypeScript decorator typings used to reject it. This test ensures the
+    // option is accepted by the type-checker and still produces a usable
+    // `QueryList` at runtime.
+    it('should accept the `static` option on `ContentChildren` and `ViewChildren`', () => {
+      @Component({
+        selector: 'static-children-host',
+        template: '<ng-content></ng-content>',
+        standalone: false,
+      })
+      class StaticChildrenHost {
+        @ContentChildren('foo', {static: true}) contentFoos!: QueryList<ElementRef>;
+        @ContentChild('foo', {static: true}) contentFoo!: ElementRef;
+      }
+
+      @Component({
+        template: `
+          <static-children-host>
+            <div #foo></div>
+            <div #foo></div>
+          </static-children-host>
+        `,
+        standalone: false,
+      })
+      class App {
+        @ViewChildren(StaticChildrenHost, {static: true})
+        viewHosts!: QueryList<StaticChildrenHost>;
+        @ViewChild(StaticChildrenHost, {static: true}) viewHost!: StaticChildrenHost;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, StaticChildrenHost]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.viewHost).toBeInstanceOf(StaticChildrenHost);
+      expect(fixture.componentInstance.viewHosts.length).toBe(1);
+      expect(fixture.componentInstance.viewHost.contentFoos).toBeInstanceOf(QueryList);
+      expect(fixture.componentInstance.viewHost.contentFoos.length).toBe(2);
+      expect(fixture.componentInstance.viewHost.contentFoo).toBeInstanceOf(ElementRef);
+    });
+
     it('should support ContentChild query inherited from undecorated superclasses', () => {
       class MyComp {
         @ContentChild('foo') foo: any;

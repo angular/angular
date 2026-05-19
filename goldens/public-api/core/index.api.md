@@ -418,12 +418,14 @@ export interface ContentChildrenDecorator {
         descendants?: boolean;
         emitDistinctChangesOnly?: boolean;
         read?: any;
+        static?: boolean;
     }): any;
     // (undocumented)
     new (selector: ProviderToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
         emitDistinctChangesOnly?: boolean;
         read?: any;
+        static?: boolean;
     }): Query;
 }
 
@@ -2075,11 +2077,13 @@ export interface ViewChildrenDecorator {
     (selector: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         emitDistinctChangesOnly?: boolean;
+        static?: boolean;
     }): any;
     // (undocumented)
     new (selector: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
         emitDistinctChangesOnly?: boolean;
+        static?: boolean;
     }): ViewChildren;
 }
 

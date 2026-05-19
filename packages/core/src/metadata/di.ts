@@ -126,6 +126,8 @@ export interface ContentChildrenDecorator {
    *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
    *   removed in future versions of Angular.
    * * **read** - Used to read a different token from the queried elements.
+   * * **static** - True to resolve query results before change detection runs,
+   * false to resolve after change detection. Defaults to false.
    *
    * The following selectors are supported.
    *   * Any class with the `@Component` or `@Directive` decorator
@@ -170,11 +172,17 @@ export interface ContentChildrenDecorator {
       descendants?: boolean;
       emitDistinctChangesOnly?: boolean;
       read?: any;
+      static?: boolean;
     },
   ): any;
   new (
     selector: ProviderToken<unknown> | Function | string,
-    opts?: {descendants?: boolean; emitDistinctChangesOnly?: boolean; read?: any},
+    opts?: {
+      descendants?: boolean;
+      emitDistinctChangesOnly?: boolean;
+      read?: any;
+      static?: boolean;
+    },
   ): Query;
 }
 
@@ -337,6 +345,8 @@ export interface ViewChildrenDecorator {
    *   if the QueryList has not changed.
    *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
    * removed in future versions of Angular.
+   * * **static** - True to resolve query results before change detection runs,
+   * false to resolve after change detection. Defaults to false.
    *
    * The following selectors are supported.
    *   * Any class with the `@Component` or `@Directive` decorator
@@ -372,11 +382,11 @@ export interface ViewChildrenDecorator {
    */
   (
     selector: ProviderToken<unknown> | Function | string,
-    opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+    opts?: {read?: any; emitDistinctChangesOnly?: boolean; static?: boolean},
   ): any;
   new (
     selector: ProviderToken<unknown> | Function | string,
-    opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+    opts?: {read?: any; emitDistinctChangesOnly?: boolean; static?: boolean},
   ): ViewChildren;
 }
 
