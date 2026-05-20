@@ -48,6 +48,7 @@
       "CONTEXT",
       "CREATE_VIEW_TRANSITION",
       "CSP_NONCE",
+      "CSS_VAR_NAMESPACE",
       "CanActivate",
       "CanDeactivate",
       "ChainedInjector",
