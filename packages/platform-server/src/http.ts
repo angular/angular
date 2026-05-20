@@ -8,10 +8,10 @@
 
 import {PlatformLocation, XhrFactory} from '@angular/common';
 import {
+  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
   HttpEvent,
   HttpHandlerFn,
   HttpRequest,
-  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
 } from '@angular/common/http';
 import {inject, Injectable, Provider} from '@angular/core';
 import {Observable} from 'rxjs';
@@ -58,7 +58,13 @@ function relativeUrlsTransformerInterceptorFn(
 
   const baseHref = platformLocation.getBaseHrefFromDOM() || href;
   const baseUrl = new URL(baseHref, urlPrefix);
-  const newUrl = new URL(request.url, baseUrl).toString();
+
+  // Prevent SSRF bypasses via backslash URLs.
+  // The `URL` constructor normalizes backslashes to forward slashes, which can
+  // cause `/\` to be evaluated as a protocol-relative URL (`//`).
+  // Replacing backslashes with their URL-encoded equivalent prevents this.
+  const safeUrl = request.url.replace(/\\/g, '%5C');
+  const newUrl = new URL(safeUrl, baseUrl).toString();
 
   return next(request.clone({url: newUrl}));
 }

@@ -1455,6 +1455,26 @@ class HiddenModule {}
         });
       });
 
+      it('prevents SSRF bypasses via backslash URLs in HttpClient', async () => {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {document: '<app></app>', url: 'http://localhost:4000/base'},
+          },
+        ]);
+        await platform.bootstrapModule(HttpClientExampleModule).then((ref) => {
+          const mock = ref.injector.get(HttpTestingController);
+          const http = ref.injector.get(HttpClient);
+          ref.injector.get(NgZone).run(() => {
+            http.get('/\\evil.com/api').subscribe();
+
+            // The URL constructor normalizes backslashes to %5C
+            // PREVENTING it from hitting http://evil.com/api via a protocol-relative URL interpretation.
+            mock.expectOne('http://localhost:4000/%5Cevil.com/api').flush('safe');
+          });
+        });
+      });
+
       it('can use HttpInterceptor that injects HttpClient', async () => {
         const platform = platformServer([
           {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
