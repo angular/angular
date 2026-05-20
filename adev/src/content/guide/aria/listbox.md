@@ -72,7 +72,7 @@ Applications sometimes need selectable lists visible directly on the page rather
   <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/app/app.html" />
 </docs-code-multifile>
 
-The `values` model signal provides two-way binding to the selected items. With `selectionMode="explicit"`, users press Space or Enter to select options. For dropdown patterns that combine listbox with combobox and overlay positioning, see the [Select](guide/aria/select) pattern.
+The `value` model signal provides two-way binding to the selected items. With `selectionMode="explicit"`, users press Space or Enter to select options. For dropdown patterns that combine listbox with combobox and overlay positioning, see the [Select](guide/aria/select) pattern.
 
 ### Horizontal listbox
 
@@ -158,13 +158,13 @@ The `ngListbox` directive creates an accessible list of selectable options.
 
 | Property | Type  | Description                               |
 | -------- | ----- | ----------------------------------------- |
-| `values` | `V[]` | Two-way bindable array of selected values |
+| `value`  | `V[]` | Two-way bindable array of selected values |
 
 #### Signals
 
 | Property | Type          | Description                           |
 | -------- | ------------- | ------------------------------------- |
-| `values` | `Signal<V[]>` | Currently selected values as a signal |
+| `value`  | `Signal<V[]>` | Currently selected values as a signal |
 
 #### Methods
 

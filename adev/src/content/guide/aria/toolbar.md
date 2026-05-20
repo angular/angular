@@ -228,6 +228,7 @@ The `ngToolbar` directive provides the container for toolbar functionality.
 | `disabled`     | `boolean`                      | `false`        | Disables the entire toolbar                            |
 | `softDisabled` | `boolean`                      | `true`         | Whether disabled items can receive focus               |
 | `wrap`         | `boolean`                      | `true`         | Whether focus should wrap at the edges                 |
+| `value`        | `V[]`                          | `[]`           | Selected widget values (supports two-way binding)      |
 
 ### ToolbarWidget Directive
 
