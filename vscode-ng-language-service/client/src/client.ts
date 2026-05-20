@@ -510,7 +510,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     // dynamically via workspace/configuration request by the server.
     // This allows users to change these settings without restarting.
 
-    const tsdk = config.get('js/ts.tsdk.path', config.get('typescript.tsdk', ''));
+    const tsdk = await this.getTsdkPath();
     if (tsdk.trim().length > 0) {
       args.push('--tsdk', tsdk);
     }
@@ -624,6 +624,62 @@ export class AngularLanguageClient implements vscode.Disposable {
       disposable = this.sessionDisposables.pop()
     ) {
       disposable.dispose();
+    }
+  }
+
+  private async getTsdkPath(): Promise<string> {
+    const config = vscode.workspace.getConfiguration();
+    const tsdkInspect =
+      config.inspect<string>('js/ts.tsdk.path') ?? config.inspect<string>('typescript.tsdk');
+
+    if (!tsdkInspect) {
+      return '';
+    }
+
+    // 1. Check workspace/folder settings first (highest priority)
+    // ONLY check or load workspace-level settings if the workspace is trusted
+    if (vscode.workspace.isTrusted) {
+      const workspaceTsdk = (
+        tsdkInspect.workspaceValue ?? tsdkInspect.workspaceFolderValue
+      )?.trim();
+      if (workspaceTsdk) {
+        const stateKey = `approvedTsdk:${workspaceTsdk}`;
+        const isApproved = this.context.workspaceState.get<boolean>(stateKey);
+
+        if (isApproved) {
+          return workspaceTsdk;
+        }
+
+        if (isApproved === undefined) {
+          // Prompt the user asynchronously, without blocking current server initialization
+          this.promptForTsdkApproval(workspaceTsdk, stateKey);
+        }
+
+        // Fall back to globalValue (or bundled) while waiting for approval or if rejected
+      }
+    }
+
+    return tsdkInspect.globalValue?.trim() ?? '';
+  }
+
+  private async promptForTsdkApproval(workspaceTsdk: string, stateKey: string): Promise<void> {
+    const allowOption = 'Allow';
+    const disallowOption = 'Disallow';
+
+    const choice = await vscode.window.showWarningMessage(
+      `This workspace configures a custom TypeScript compiler path (${workspaceTsdk}) via 'js/ts.tsdk.path' or 'typescript.tsdk'. ` +
+        `Do you want to allow the Angular Language Service to load the TypeScript compiler from this path?`,
+      allowOption,
+      disallowOption,
+    );
+
+    if (choice === allowOption) {
+      await this.context.workspaceState.update(stateKey, true);
+      // Restart the language server so it launches with the newly authorized compiler path
+      await vscode.commands.executeCommand('angular.restartNgServer');
+    } else {
+      // Remember rejection to avoid repeatedly prompting on startup/activation
+      await this.context.workspaceState.update(stateKey, false);
     }
   }
 
