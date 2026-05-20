@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {formatCurrency, formatNumber, formatPercent} from '../../index';
 import localeAr from '../../locales/ar';
 import localeEn from '../../locales/en';
 import localeEsUS from '../../locales/es-US';
 import localeFr from '../../locales/fr';
-import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 describe('Format number', () => {
   beforeAll(() => {
@@ -41,6 +41,18 @@ describe('Format number', () => {
       it('should throw if minFractionDigits is explicitly higher than maxFractionDigits', () => {
         expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '3.4-2')).toThrowError(
           /is higher than the maximum/,
+        );
+      });
+
+      it('should throw if minInt, minFraction, or maxFraction exceeds 100 to prevent DoS', () => {
+        const expectedError = /Exceeded maximum limits of 100 digits/;
+        expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '101.4-5')).toThrowError(expectedError);
+        expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '3.101-105')).toThrowError(
+          expectedError,
+        );
+        expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '3.4-101')).toThrowError(expectedError);
+        expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '1.2000000000-20000000')).toThrowError(
+          expectedError,
         );
       });
     });
