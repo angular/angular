@@ -208,7 +208,7 @@ export class I18nMetaVisitor implements html.Visitor {
             isTrustedType = isTrustedTypesSink(node.name, name);
           }
 
-          if (isTrustedType) {
+          if (isTrustedType || name.toLowerCase().startsWith('on')) {
             this._reportError(
               attr,
               `Translating attribute '${name}' is disallowed for security reasons.`,
