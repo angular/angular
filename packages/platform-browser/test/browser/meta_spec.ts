@@ -137,6 +137,43 @@ describe('Meta service', () => {
     metaService.removeTagElement(actual);
   });
 
+  it('should escape selector values when deriving the match selector', () => {
+    // This payload attempts to prematurely close the attribute selector
+    // and match another attribute.
+    const property = 'fb:app_id"][content="123456789';
+
+    const meta = metaService.updateTag({property, content: 'pwned'})!;
+
+    expect(meta).not.toBe(defaultMeta);
+    expect(meta.getAttribute('property')).toEqual(property);
+    expect(meta.getAttribute('content')).toEqual('pwned');
+    expect(metaService.getTags('property="fb:app_id"').length).toEqual(1);
+
+    // clean up
+    metaService.removeTagElement(meta);
+  });
+
+  it('should not let a quoted name break out of the meta selector and target body', () => {
+    // This payload attempts to break out of the `meta[name="..."]` constraint entirely
+    // and inject a comma to target arbitrary DOM elements like the `body` tag.
+    const attackerName = 'description"], body';
+
+    const firstMeta = metaService.addTag({name: attackerName, content: 'safe'})!;
+    const secondMeta = metaService.addTag({name: attackerName, content: 'safe'})!;
+
+    expect(firstMeta).toBe(secondMeta);
+    expect(firstMeta.tagName).toEqual('META');
+    expect(
+      Array.from(doc.getElementsByTagName('meta')).filter(
+        (meta) => meta.getAttribute('name') === attackerName,
+      ).length,
+    ).toEqual(1);
+    expect(doc.body).not.toBeNull();
+
+    // clean up
+    metaService.removeTagElement(firstMeta);
+  });
+
   it('should add multiple new meta tags', () => {
     const nameSelector = 'name="twitter:title"';
     const propertySelector = 'property="og:title"';

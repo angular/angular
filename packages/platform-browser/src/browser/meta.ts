@@ -183,7 +183,13 @@ export class Meta {
 
   private _parseSelector(tag: MetaDefinition): string {
     const attr: string = tag.name ? 'name' : 'property';
-    return `${attr}="${tag[attr]}"`;
+    return `${attr}=${this._escapeSelectorValue(String(tag[attr]))}`;
+  }
+
+  private _escapeSelectorValue(value: string): string {
+    // Escape backslashes and double quotes to prevent CSS selector injection.
+    // This securely confines the value inside an attribute selector.
+    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
   }
 
   private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
