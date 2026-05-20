@@ -1,3 +1,38 @@
+<a name="22.0.0-rc.1"></a>
+# 22.0.0-rc.1 (2026-05-20)
+## Breaking Changes
+### router
+- The return type for `TitleStrategy.getResolvedTitleForRoute`
+  was previously 'any' while the actual return type could only be either `string`
+  or `undefined`. The return type now reflects the possible values correctly.
+  Code that reads the value may need to be adjusted.
+  
+  (cherry picked from commit ad37f52c1212164c51ffcc533067af05c2c33c89)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b2b8dea732](https://github.com/angular/angular/commit/b2b8dea7325c8d0d6788bbee6100d406f6ebe355) | fix | strip namespaced SVG script elements during template compilation |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [38aca8fe79](https://github.com/angular/angular/commit/38aca8fe79f47a7ad94f7c0b21f44d828e28547e) | fix | do not insert todo when migrating void @Output |
+| [1e0330d854](https://github.com/angular/angular/commit/1e0330d854b2c2d3fdb2977883cd168f9cb0a4c8) | fix | makes resource URL sanitizer lookup case-insensitive |
+| [3f6abfb167](https://github.com/angular/angular/commit/3f6abfb16791c2bfb811f355676bb768b574906a) | fix | reject script element as a dynamic component host |
+| [88d138ccc8](https://github.com/angular/angular/commit/88d138ccc84b839784f59575fddcda3fcaf18d35) | fix | support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation |
+| [bfe6f6c2a5](https://github.com/angular/angular/commit/bfe6f6c2a5570cd669afa3dd8b1cd9e2d91e393a) | fix | synchronize core sanitization schema with compiler |
+| [1f71ebd788](https://github.com/angular/angular/commit/1f71ebd788af52be8d9c2ff645719390773aa107) | fix | visit ICU expressions in signal migration schematics |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [07a9358157](https://github.com/angular/angular/commit/07a935815782eb58a2109bcaacde33896e8d5d76) | perf | avoid spurious recomputation in FormField.parseErrors |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3e7117d690](https://github.com/angular/angular/commit/3e7117d690386b079c18b435545dab96fc183305) | fix | Add strict typing on 'getResolvedTitleForRoute' |
+| [3e5ab7b470](https://github.com/angular/angular/commit/3e5ab7b470b06b63410649700b6a999e381cbb85) | fix | skip scroll-to-top on initial navigation when hydrating |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-rc.0"></a>
 # 22.0.0-rc.0 (2026-05-13)
 ### compiler
