@@ -21,7 +21,35 @@ import {
 } from './abstract_model';
 
 /**
- * FormControlState is a boxed form value. It is an object with a `value` key and a `disabled` key.
+ * `FormControlState` is a "boxed" form value — an object with a `value` key and a `disabled`
+ * key. Passing a `FormControlState<T>` instead of a plain value of type `T` when constructing a
+ * `FormControl` (or when using `FormBuilder.control` / `FormBuilder.group`) lets you initialize
+ * both the value and the disabled state of the control in a single argument.
+ *
+ * @usageNotes
+ *
+ * ### Initialize a control with a value and a disabled state
+ *
+ * ```ts
+ * // Equivalent to: `new FormControl('Nancy')` followed by `control.disable()`.
+ * const control = new FormControl({value: 'Nancy', disabled: true});
+ * console.log(control.value);    // 'Nancy'
+ * console.log(control.disabled); // true
+ * ```
+ *
+ * The same shape is accepted by `FormBuilder.control` and as the first element of the
+ * `ControlConfig` tuple consumed by `FormBuilder.group`:
+ *
+ * ```ts
+ * fb.control({value: 'Nancy', disabled: true});
+ * fb.group({
+ *   name: [{value: 'Nancy', disabled: true}, Validators.required],
+ * });
+ * ```
+ *
+ * Note: a boxed value object has exactly the two keys `value` and `disabled`. Do not confuse it
+ * with the `AbstractControlOptions` configuration object (which carries `validators`,
+ * `asyncValidators`, `updateOn`, or `nonNullable`) — those are passed as a separate argument.
  *
  * @publicApi
  */
