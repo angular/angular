@@ -639,8 +639,8 @@ importers:
   adev/shared-docs:
     dependencies:
       '@angular/common':
-        specifier: 'workspace: *'
-        version: link:../../packages/common
+        specifier: 19.2.16
+        version: 19.2.16(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/core':
         specifier: 'workspace: *'
         version: link:../../packages/core
@@ -1641,6 +1641,13 @@ packages:
     resolution: {integrity: sha512-4EQBn8oTzlcSwZ+7h6UZrMPLoFduRjpek59MiIq19gMBuJJrPCZCzcWXfIyZuapagZUECAwRpqDrKXTGFSc/1w==}
     engines: {node: ^22.22.0 || ^24.13.1 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
+
+  '@angular/common@19.2.16':
+    resolution: {integrity: sha512-sugztO7XIiLRoVjn0WJK9ooBm9zejsqlE5k4ZGvy1zFafM8LMjFHwD4KymN8JB3AOb7Ad4lJHVq1IvwWnpqeWw==}
+    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
+    peerDependencies:
+      '@angular/core': 19.2.16
+      rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/core@22.0.0-rc.0':
     resolution: {integrity: sha512-+P2hVciCEH3MuXTXIuFiGpvcCivgCXB3agCakWHQ7rMiEmRB2oILTSKH5rRPlwPyoETPwfPeVn7tiAAaOuuGFg==}
@@ -11775,6 +11782,12 @@ snapshots:
       - '@types/node'
       - chokidar
       - supports-color
+
+  '@angular/common@19.2.16(@angular/core@packages+core)(rxjs@7.8.2)':
+    dependencies:
+      '@angular/core': link:packages/core
+      rxjs: 7.8.2
+      tslib: 2.8.1
 
   '@angular/core@22.0.0-rc.0(@angular/compiler@packages+compiler)':
     dependencies:
