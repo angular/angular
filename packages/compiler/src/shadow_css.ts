@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as chars from './chars';
+import {getInvalidCssGlobalError} from './util';
 
 /**
  * The following set contains all keywords that can be used in the animation css shorthand
@@ -1053,10 +1054,7 @@ export function namespaceCssVariables(cssText: string): string {
     }
 
     if (varName.startsWith('--global-') && !varName.startsWith('--global--')) {
-      throw new Error(
-        `CSS variable "${varName}" has a single hyphen after "--global". ` +
-          `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`,
-      );
+      throw new Error(getInvalidCssGlobalError(varName));
     }
 
     let result;

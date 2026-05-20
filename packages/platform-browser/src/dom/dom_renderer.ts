@@ -177,7 +177,13 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(CSS_VAR_NAMESPACE) @Optional() cssVarNamespace: string | null = null,
   ) {
     this.cssVarNamespace = cssVarNamespace ?? '';
-    this.defaultRenderer = new DefaultDomRenderer2(eventManager, doc, ngZone, this.tracingService);
+    this.defaultRenderer = new DefaultDomRenderer2(
+      eventManager,
+      doc,
+      ngZone,
+      this.tracingService,
+      this.cssVarNamespace,
+    );
   }
 
   createRenderer(element: any, type: RendererType2 | null): Renderer2 {
@@ -304,6 +310,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly doc: Document,
     protected readonly ngZone: NgZone,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
+    private readonly cssVarNamespace: string = '',
   ) {}
 
   destroy(): void {}
@@ -412,7 +419,10 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
-    if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
+    if (style.startsWith('--')) {
+      style = style.replace('%NS%', this.cssVarNamespace);
+      el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
+    } else if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
       el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {
       el.style[style] = value;
@@ -420,7 +430,10 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
-    if (flags & RendererStyleFlags2.DashCase) {
+    if (style.startsWith('--')) {
+      style = style.replace('%NS%', this.cssVarNamespace);
+      el.style.removeProperty(style);
+    } else if (flags & RendererStyleFlags2.DashCase) {
       // removeProperty has no effect when used on camelCased properties.
       el.style.removeProperty(style);
     } else {
@@ -538,7 +551,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     cssVarNamespace: string,
     private sharedStylesHost?: SharedStylesHost,
   ) {
-    super(eventManager, doc, ngZone, tracingService);
+    super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
@@ -628,7 +641,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     cssVarNamespace: string,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, tracingService);
+    super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
