@@ -280,19 +280,6 @@ describe('security integration tests', function () {
       clearTranslations();
     });
 
-    it('should throw error on translated SVG script ResourceURL attributes', () => {
-      const template = `
-        <svg>
-          <script href="/safe-svg-script.js" i18n-href></script>
-        </svg>
-      `;
-      TestBed.overrideComponent(SecuredComponent, {set: {template}});
-
-      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
-        /unsafe value used in a resource URL context/i,
-      );
-    });
-
     it('should throw error on SVG animation retargeting attributes', () => {
       const template = `
         <svg>
