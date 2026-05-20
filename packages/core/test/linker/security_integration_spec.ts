@@ -376,6 +376,15 @@ describe('security integration tests', function () {
       expect(link.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
     });
 
+    it('should throw error on translated event attributes', () => {
+      const template = `<img src="/missing-image.png" onerror="void 0" i18n-onerror>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'onerror' is disallowed for security reasons./,
+      );
+    });
+
     it('should throw error on security-sensitive attributes with constant values', () => {
       const template = `<iframe srcdoc="foo" i18n-srcdoc></iframe>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
