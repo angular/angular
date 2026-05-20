@@ -1033,6 +1033,36 @@ const _cssCommaInPlaceholderReGlobal = new RegExp(COMMA_IN_PLACEHOLDER, 'g');
 const _cssSemiInPlaceholderReGlobal = new RegExp(SEMI_IN_PLACEHOLDER, 'g');
 const _cssColonInPlaceholderReGlobal = new RegExp(COLON_IN_PLACEHOLDER, 'g');
 
+// Matches any CSS variable name, defined by a double-hyphen followed by any valid ident.
+// https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
+const _cssVariableRe = /(var\(\s*)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
+
+/**
+ * Transforms CSS variables within a stylesheet to include a namespace placeholder.
+ *
+ * E.g. `--foo: bar;` becomes `--%NS%foo: bar;`
+ * E.g. `color: var(--foo);` becomes `color: var(--%NS%foo);`
+ *
+ * If a variable is prefixed with `--global--`, it is NOT namespaced and the prefix is removed.
+ * E.g. `--global--mycolor: red;` becomes `--mycolor: red;`
+ */
+export function namespaceCssVariables(cssText: string): string {
+  return cssText.replace(_cssVariableRe, (match, leadingVar, varName, trailingColon) => {
+    if (!leadingVar && !trailingColon) {
+      return match;
+    }
+
+    let result;
+    if (varName.startsWith('--global--')) {
+      result = `--${varName.substring('--global--'.length)}`;
+    } else {
+      result = `--%NS%${varName.substring('--'.length)}`;
+    }
+
+    return (leadingVar || '') + result + (trailingColon || '');
+  });
+}
+
 export class CssRule {
   constructor(
     public selector: string,
