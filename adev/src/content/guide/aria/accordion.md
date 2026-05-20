@@ -145,8 +145,8 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 ```angular-html
 <div ngAccordionGroup>
   <div>
-    <button ngAccordionTrigger panelId="item-1">Trigger Text</button>
-    <div ngAccordionPanel panelId="item-1">
+    <button ngAccordionTrigger [panel]="panel1">Trigger Text</button>
+    <div ngAccordionPanel #panel1="ngAccordionPanel">
       <ng-template ngAccordionContent>
         <!-- This content only renders when the panel first opens -->
         <img src="large-image.jpg" alt="Description" />
@@ -187,12 +187,12 @@ The directive applied to the button element that toggles panel visibility.
 
 #### Inputs
 
-| Property   | Type      | Default | Description                                                    |
-| ---------- | --------- | ------- | -------------------------------------------------------------- |
-| `id`       | `string`  | auto    | Unique identifier for the trigger                              |
-| `panelId`  | `string`  | —       | **Required.** Must match the `panelId` of the associated panel |
-| `disabled` | `boolean` | `false` | Disables this trigger                                          |
-| `expanded` | `boolean` | `false` | Whether the panel is expanded (supports two-way binding)       |
+| Property   | Type             | Default | Description                                                    |
+| ---------- | ---------------- | ------- | -------------------------------------------------------------- |
+| `panel`    | `AccordionPanel` | —       | **Required.** The reference of the controlled accordion panel. |
+| `id`       | `string`         | auto    | Unique identifier for the trigger                              |
+| `disabled` | `boolean`        | `false` | Disables this trigger                                          |
+| `expanded` | `boolean`        | `false` | Whether the panel is expanded (supports two-way binding)       |
 
 #### Signals
 
@@ -214,11 +214,10 @@ The directive applied to the element containing the collapsible content.
 
 #### Inputs
 
-| Property          | Type      | Default | Description                                                      |
-| ----------------- | --------- | ------- | ---------------------------------------------------------------- |
-| `id`              | `string`  | auto    | Unique identifier for the panel                                  |
-| `panelId`         | `string`  | —       | **Required.** Must match the `panelId` of the associated trigger |
-| `preserveContent` | `boolean` | `true`  | Whether to keep content in DOM after panel collapses             |
+| Property          | Type      | Default | Description                                          |
+| ----------------- | --------- | ------- | ---------------------------------------------------- |
+| `id`              | `string`  | auto    | Unique identifier for the panel                      |
+| `preserveContent` | `boolean` | `true`  | Whether to keep content in DOM after panel collapses |
 
 #### Signals
 
@@ -241,7 +240,7 @@ The structural directive applied to an `ng-template` inside an accordion panel t
 This directive has no inputs, outputs, or methods. Apply it to an `ng-template` element:
 
 ```angular-html
-<div ngAccordionPanel panelId="item-1">
+<div ngAccordionPanel #panel1="ngAccordionPanel">
   <ng-template ngAccordionContent>
     <!-- Content here is lazily rendered -->
   </ng-template>
