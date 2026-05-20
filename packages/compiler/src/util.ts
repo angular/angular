@@ -153,3 +153,14 @@ export function getJitStandaloneDefaultForVersion(version: string): boolean {
   // All other Angular versions (v19+) default to true.
   return true;
 }
+
+/**
+ * Formats the compile-time error message for invalid global CSS variable names
+ * (i.e., those starting with `--global-` with a single hyphen instead of two).
+ */
+export function getInvalidCssGlobalError(varName: string): string {
+  return (
+    `CSS variable "${varName}" has a single hyphen after "--global". ` +
+    `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`
+  );
+}

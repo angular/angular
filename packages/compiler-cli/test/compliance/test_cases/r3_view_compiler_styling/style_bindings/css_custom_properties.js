@@ -4,6 +4,6 @@
   if (rf & 1) {
     i0.ɵɵelement(0, "div", 0);
   } if (rf & 2) {
-    i0.ɵɵstyleProp("--camelCase", ctx.value)("--kebab-case", ctx.value);
+    i0.ɵɵstyleProp("--%NS%camelCase", ctx.value)("--%NS%kebab-case", ctx.value);
   }
 }

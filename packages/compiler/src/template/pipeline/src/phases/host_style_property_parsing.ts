@@ -9,6 +9,7 @@
 import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';
+import {getInvalidCssGlobalError} from '../../../../util';
 
 const STYLE_DOT = 'style.';
 const CLASS_DOT = 'class.';
@@ -40,6 +41,15 @@ export function parseHostStyleProperties(job: CompilationJob): void {
 
       if (!isCssCustomProperty(op.name)) {
         op.name = hyphenate(op.name);
+      } else {
+        if (op.name.startsWith('--global-') && !op.name.startsWith('--global--')) {
+          throw new Error(getInvalidCssGlobalError(op.name));
+        }
+        if (op.name.startsWith('--global--')) {
+          op.name = '--' + op.name.substring('--global--'.length);
+        } else {
+          op.name = '--%NS%' + op.name.substring('--'.length);
+        }
       }
 
       const {property, suffix} = parseProperty(op.name);
