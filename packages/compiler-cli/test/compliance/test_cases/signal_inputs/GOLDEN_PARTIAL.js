@@ -69,8 +69,8 @@ function convertToBoolean(value) {
 export class TestDir {
     counter = input(0, /* @ts-ignore */
     ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
-    signalWithTransform = input(false, { ...(ngDevMode ? { debugName: "signalWithTransform" } : /* istanbul ignore next */ {}), transform: convertToBoolean });
-    signalWithTransformAndAlias = input(false, { ...(ngDevMode ? { debugName: "signalWithTransformAndAlias" } : /* istanbul ignore next */ {}), alias: 'publicNameSignal', transform: convertToBoolean });
+    signalWithTransform = input(false, { ...(ngDevMode ? { debugName: "signalWithTransform" } : /* istanbul ignore next */ null), transform: convertToBoolean });
+    signalWithTransformAndAlias = input(false, { ...(ngDevMode ? { debugName: "signalWithTransformAndAlias" } : /* istanbul ignore next */ null), alias: 'publicNameSignal', transform: convertToBoolean });
     decoratorInput = true;
     decoratorInputWithAlias = true;
     decoratorInputWithTransformAndAlias = true;
@@ -115,7 +115,7 @@ function convertToBoolean(value) {
     return value === true || value !== '';
 }
 export class TestDir {
-    name = input.required({ ...(ngDevMode ? { debugName: "name" } : /* istanbul ignore next */ {}), transform: convertToBoolean });
+    name = input.required({ ...(ngDevMode ? { debugName: "name" } : /* istanbul ignore next */ null), transform: convertToBoolean });
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, inputs: { name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: true, transformFunction: null } }, ngImport: i0 });
 }
@@ -144,10 +144,10 @@ const toBoolean = (v) => v === true || v !== '';
 // Note: `@Input` non-signal inputs did not support transform function "builders" and generics.
 const complexTransform = (defaultVal) => (v) => v || defaultVal;
 export class TestDir {
-    name = input.required({ ...(ngDevMode ? { debugName: "name" } : /* istanbul ignore next */ {}), transform: (v) => v === true || v !== '' });
-    name2 = input.required({ ...(ngDevMode ? { debugName: "name2" } : /* istanbul ignore next */ {}), transform: toBoolean });
-    genericTransform = input.required({ ...(ngDevMode ? { debugName: "genericTransform" } : /* istanbul ignore next */ {}), transform: complexTransform(1) });
-    genericTransform2 = input.required({ ...(ngDevMode ? { debugName: "genericTransform2" } : /* istanbul ignore next */ {}), transform: complexTransform(null) });
+    name = input.required({ ...(ngDevMode ? { debugName: "name" } : /* istanbul ignore next */ null), transform: (v) => v === true || v !== '' });
+    name2 = input.required({ ...(ngDevMode ? { debugName: "name2" } : /* istanbul ignore next */ null), transform: toBoolean });
+    genericTransform = input.required({ ...(ngDevMode ? { debugName: "genericTransform" } : /* istanbul ignore next */ null), transform: complexTransform(1) });
+    genericTransform2 = input.required({ ...(ngDevMode ? { debugName: "genericTransform2" } : /* istanbul ignore next */ null), transform: complexTransform(null) });
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, inputs: { name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: true, transformFunction: null }, name2: { classPropertyName: "name2", publicName: "name2", isSignal: true, isRequired: true, transformFunction: null }, genericTransform: { classPropertyName: "genericTransform", publicName: "genericTransform", isSignal: true, isRequired: true, transformFunction: null }, genericTransform2: { classPropertyName: "genericTransform2", publicName: "genericTransform2", isSignal: true, isRequired: true, transformFunction: null } }, ngImport: i0 });
 }

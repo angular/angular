@@ -66,7 +66,7 @@ import * as i0 from "@angular/core";
 export class TestDir {
     counter = model(0, /* @ts-ignore */
     ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
-    modelWithAlias = model(false, { ...(ngDevMode ? { debugName: "modelWithAlias" } : /* istanbul ignore next */ {}), alias: 'alias' });
+    modelWithAlias = model(false, { ...(ngDevMode ? { debugName: "modelWithAlias" } : /* istanbul ignore next */ null), alias: 'alias' });
     decoratorInput = true;
     decoratorInputWithAlias = true;
     decoratorOutput = new EventEmitter();

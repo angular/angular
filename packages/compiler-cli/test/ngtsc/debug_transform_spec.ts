@@ -120,7 +120,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -229,7 +229,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -357,7 +357,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -468,7 +468,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `computed(() => testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `computed(() => testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -577,7 +577,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -711,7 +711,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -878,7 +878,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `model.required({ ...(ngDevMode ? { debugName: "testModel" } : /* istanbul ignore next */ {}), alias: 'testModelAlias' })`,
+            `model.required({ ...(ngDevMode ? { debugName: "testModel" } : /* istanbul ignore next */ null), alias: 'testModelAlias' })`,
           );
         });
 
@@ -1068,7 +1068,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `input.required({ ...(ngDevMode ? { debugName: "testInput" } : /* istanbul ignore next */ {}), alias: 'testInputAlias' })`,
+            `input.required({ ...(ngDevMode ? { debugName: "testInput" } : /* istanbul ignore next */ null), alias: 'testInputAlias' })`,
           );
         });
 
@@ -1920,7 +1920,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `linkedSignal(() => testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `linkedSignal(() => testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -1982,7 +1982,7 @@ runInEachFileSystem(() => {
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            'testLinkedSignal = linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
+            'testLinkedSignal = linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ null), ' +
               'source: testSignal, ' +
               'computation: (src, prev) => src ' +
               '})',
@@ -2106,7 +2106,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -2181,7 +2181,7 @@ runInEachFileSystem(() => {
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
+            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ null), ' +
               'source: this.testSignal, ' +
               'computation: (src, prev) => src ' +
               '})',
@@ -2328,7 +2328,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(cleanNewLines(jsContents)).toContain(
-            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ null), equal: () => true })`,
           );
         });
 
@@ -2418,7 +2418,7 @@ runInEachFileSystem(() => {
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
+            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ null), ' +
               'source: this.testSignal, ' +
               'computation: (src, prev) => src ' +
               '})',
@@ -2533,7 +2533,7 @@ runInEachFileSystem(() => {
         const jsContents = cleanNewLines(env.getContents('test.js'));
         expect(jsContents).toContain(
           'resource({ ' +
-            '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
+            '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ null), ' +
             `defaultValue: 'foo', ` +
             `loader: async () => 'bar' ` +
             '})',
@@ -2611,7 +2611,7 @@ runInEachFileSystem(() => {
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
             'resource({ ' +
-              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
+              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ null), ' +
               `defaultValue: 'foo', ` +
               `loader: async () => 'bar' ` +
               '})',
@@ -2702,7 +2702,7 @@ runInEachFileSystem(() => {
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
             'resource({ ' +
-              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
+              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ null), ' +
               `defaultValue: 'foo', ` +
               `loader: async () => 'bar' ` +
               '})',

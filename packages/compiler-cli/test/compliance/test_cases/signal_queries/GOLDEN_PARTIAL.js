@@ -19,9 +19,9 @@ export class TestDir {
     ...(ngDevMode ? [{ debugName: "query5" }] : /* istanbul ignore next */ []));
     query6 = viewChildren(SomeToken, /* @ts-ignore */
     ...(ngDevMode ? [{ debugName: "query6" }] : /* istanbul ignore next */ []));
-    query7 = viewChild('locatorE', { ...(ngDevMode ? { debugName: "query7" } : /* istanbul ignore next */ {}), read: SomeToken });
-    query8 = contentChildren('locatorF, locatorG', { ...(ngDevMode ? { debugName: "query8" } : /* istanbul ignore next */ {}), descendants: true });
-    query9 = contentChildren(nonAnalyzableRefersToString, { ...(ngDevMode ? { debugName: "query9" } : /* istanbul ignore next */ {}), descendants: true });
+    query7 = viewChild('locatorE', { ...(ngDevMode ? { debugName: "query7" } : /* istanbul ignore next */ null), read: SomeToken });
+    query8 = contentChildren('locatorF, locatorG', { ...(ngDevMode ? { debugName: "query8" } : /* istanbul ignore next */ null), descendants: true });
+    query9 = contentChildren(nonAnalyzableRefersToString, { ...(ngDevMode ? { debugName: "query9" } : /* istanbul ignore next */ null), descendants: true });
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, queries: [{ propertyName: "query3", first: true, predicate: ["locatorC"], descendants: true, isSignal: true }, { propertyName: "query4", predicate: ["locatorD"], isSignal: true }, { propertyName: "query8", predicate: ["locatorF, locatorG"], descendants: true, isSignal: true }, { propertyName: "query9", predicate: nonAnalyzableRefersToString, descendants: true, isSignal: true }], viewQueries: [{ propertyName: "query1", first: true, predicate: ["locatorA"], descendants: true, isSignal: true }, { propertyName: "query2", predicate: ["locatorB"], descendants: true, isSignal: true }, { propertyName: "query5", first: true, predicate: i0.forwardRef(() => SomeToken), descendants: true, isSignal: true }, { propertyName: "query6", predicate: SomeToken, descendants: true, isSignal: true }, { propertyName: "query7", first: true, predicate: ["locatorE"], descendants: true, read: SomeToken, isSignal: true }], ngImport: i0 });
 }

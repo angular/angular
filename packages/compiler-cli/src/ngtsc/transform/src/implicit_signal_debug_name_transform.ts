@@ -41,13 +41,22 @@ function insertDebugNameIntoCallExpression(
 
   if (existingArg !== null) {
     // If there's an existing object literal already, we transform it as follows:
-    // `signal(0, {equal})` becomes `signal(0, { ...(ngDevMode ? {debugName: "n"} : {}), equal })`.
-    // During minification the spread will be removed since it's pointing to an empty object.
+    // `signal(0, {equal})` becomes `signal(0, { ...(ngDevMode ? {debugName: "n"} : null), equal })`.
+    //
+    // The falsy branch is `null` rather than `{}` (ECMA-262 §13.2.5 makes `{...null}` a no-op):
+    //   - `{}` allocates in V8's young generation via a bump-pointer allocator. Individual
+    //     allocations are nanoseconds, but they raise the allocation rate and increase the
+    //     frequency of scavenger (minor GC) pauses — directly on the startup critical path.
+    //   - TurboFan's escape analysis could theoretically eliminate the allocation, but escape
+    //     analysis is per-function. When `{}` is passed into `computed()`, TurboFan must inline
+    //     `computed()` to prove it doesn't escape — not guaranteed at thousands of call sites.
+    //   - `null` hits a fast path in V8's object-spread runtime: it checks the value, finds it
+    //     nullish, and returns immediately — no heap allocation, no property iteration.
     const transformedArg = ts.factory.createObjectLiteralExpression([
       ts.factory.createSpreadAssignment(
         createNgDevModeConditional(
           ts.factory.createObjectLiteralExpression([debugNameProperty]),
-          ts.factory.createObjectLiteralExpression(),
+          ts.factory.createNull(),
         ),
       ),
       ...existingArg.properties,
