@@ -238,13 +238,14 @@ The container for tab buttons that manages selection and keyboard navigation.
 
 #### Inputs
 
-| Property        | Type                         | Default        | Description                                                        |
-| --------------- | ---------------------------- | -------------- | ------------------------------------------------------------------ |
-| `orientation`   | `'horizontal' \| 'vertical'` | `'horizontal'` | Tab list layout direction                                          |
-| `wrap`          | `boolean`                    | `false`        | Whether keyboard navigation wraps from last to first tab           |
-| `softDisabled`  | `boolean`                    | `true`         | When `true`, disabled tabs are focusable but not activatable       |
-| `selectionMode` | `'follow' \| 'explicit'`     | `'follow'`     | Whether tabs activate on focus or require explicit activation      |
-| `selectedTab`   | `any`                        | —              | The value of the currently selected tab (supports two-way binding) |
+| Property        | Type                             | Default        | Description                                                        |
+| --------------- | -------------------------------- | -------------- | ------------------------------------------------------------------ |
+| `orientation`   | `'horizontal' \| 'vertical'`     | `'horizontal'` | Tab list layout direction                                          |
+| `wrap`          | `boolean`                        | `true`         | Whether keyboard navigation wraps from last to first tab           |
+| `softDisabled`  | `boolean`                        | `true`         | When `true`, disabled tabs are focusable but not activatable       |
+| `selectionMode` | `'follow' \| 'explicit'`         | `'follow'`     | Whether tabs activate on focus or require explicit activation      |
+| `focusMode`     | `'roving' \| 'activedescendant'` | `'roving'`     | Focus management strategy                                          |
+| `selectedTab`   | `any`                            | —              | The value of the currently selected tab (supports two-way binding) |
 
 ### Tab
 

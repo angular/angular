@@ -212,12 +212,13 @@ An individual item within a menu.
 
 #### Inputs
 
-| Property     | Type      | Default | Description                                          |
-| ------------ | --------- | ------- | ---------------------------------------------------- |
-| `value`      | `any`     | —       | **Required.** Value for this item                    |
-| `disabled`   | `boolean` | `false` | Disables this menu item                              |
-| `submenu`    | `Menu`    | —       | Reference to a submenu                               |
-| `searchTerm` | `string`  | `''`    | Search term for typeahead (supports two-way binding) |
+| Property     | Type                                                  | Default      | Description                                          |
+| ------------ | ----------------------------------------------------- | ------------ | ---------------------------------------------------- |
+| `value`      | `any`                                                 | —            | **Required.** Value for this item                    |
+| `role`       | `'menuitem' \| 'menuitemcheckbox' \| 'menuitemradio'` | `'menuitem'` | The ARIA role for the menu item                      |
+| `disabled`   | `boolean`                                             | `false`      | Disables this menu item                              |
+| `submenu`    | `Menu`                                                | —            | Reference to a submenu                               |
+| `searchTerm` | `string`                                              | `''`         | Search term for typeahead (supports two-way binding) |
 
 #### Signals
 

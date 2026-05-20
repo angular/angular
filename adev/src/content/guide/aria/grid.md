@@ -214,3 +214,31 @@ Represents an individual cell within a grid row.
 | Property | Type              | Description                          |
 | -------- | ----------------- | ------------------------------------ |
 | `active` | `Signal<boolean>` | Whether the cell currently has focus |
+
+### GridCellWidget
+
+Applied to an interactive element inside a grid cell to allow for pausing grid navigation.
+
+#### Inputs
+
+| Property      | Type                                  | Default    | Description                                               |
+| ------------- | ------------------------------------- | ---------- | --------------------------------------------------------- |
+| `id`          | `string`                              | auto       | Unique identifier for the widget                          |
+| `widgetType`  | `'simple' \| 'complex' \| 'editable'` | `'simple'` | The widget type, controlling how activation behaves       |
+| `disabled`    | `boolean`                             | `false`    | Disables this cell widget                                 |
+| `focusTarget` | `ElementResolver<HTMLElement>`        | —          | Optional element reference to receive focus on activation |
+| `tabindex`    | `number`                              | —          | Tabindex override for the widget                          |
+
+#### Outputs
+
+| Property      | Type                                                     | Description                                    |
+| ------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| `activated`   | `EventEmitter<KeyboardEvent \| FocusEvent \| undefined>` | Emits when the cell widget becomes activated   |
+| `deactivated` | `EventEmitter<KeyboardEvent \| FocusEvent \| undefined>` | Emits when the cell widget becomes deactivated |
+
+#### Methods
+
+| Method       | Parameters | Description                       |
+| ------------ | ---------- | --------------------------------- |
+| `activate`   | none       | Forcefully activates the widget   |
+| `deactivate` | none       | Forcefully deactivates the widget |
