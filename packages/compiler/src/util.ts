@@ -153,3 +153,25 @@ export function getJitStandaloneDefaultForVersion(version: string): boolean {
   // All other Angular versions (v19+) default to true.
   return true;
 }
+
+/**
+ * Namespaces a CSS variable name and validates its syntax.
+ *
+ * @param varName The CSS variable name starting with `--`.
+ * @throws An Error if the CSS variable is invalid (e.g. has a single hyphen after "--global").
+ * @returns The namespaced CSS variable name.
+ */
+export function namespaceCssVariable(varName: string): string {
+  if (varName.startsWith('--global-') && !varName.startsWith('--global--')) {
+    throw new Error(
+      `CSS variable "${varName}" has a single hyphen after "--global". ` +
+        `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`,
+    );
+  }
+
+  if (varName.startsWith('--global--')) {
+    return '--' + varName.substring('--global--'.length);
+  } else {
+    return '--%NS%' + varName.substring('--'.length);
+  }
+}

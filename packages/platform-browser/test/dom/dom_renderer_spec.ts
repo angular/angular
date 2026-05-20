@@ -361,7 +361,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpNamespaceEmulated],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpNamespaceEmulated);
         fixture.detectChanges();
@@ -384,7 +384,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpNamespaceNone],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpNamespaceNone);
         fixture.detectChanges();
@@ -407,7 +407,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpNamespaceShadow],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpNamespaceShadow);
         fixture.detectChanges();
@@ -496,6 +496,73 @@ describe('DefaultDomRendererV2', () => {
           .map((s) => s.textContent)
           .join('\n\n');
         expect(css).toContain('var(--foo)');
+      });
+    });
+
+    describe('style property bindings namespacing', () => {
+      it('should namespace style property bindings starting with `--`', () => {
+        @Component({
+          selector: 'cmp-style-prop-namespace',
+          template: `<div [style.--foo]="'blue'"></div>`,
+          standalone: true,
+        })
+        class CmpStylePropNamespace {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpStylePropNamespace],
+          providers: [provideCssVarNamespacing('my-namespace')],
+        });
+        const fixture = TestBed.createComponent(CmpStylePropNamespace);
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div');
+        expect(div.style.getPropertyValue('--my-namespace_foo')).toBe('blue');
+        expect(div.style.getPropertyValue('--foo')).toBe('');
+      });
+
+      it('should throw an error if style property binding starts with `--global-` with a single hyphen', () => {
+        @Component({
+          selector: 'cmp-style-prop-error',
+          template: `<div [style.--global-foo]="'blue'"></div>`,
+          standalone: true,
+        })
+        class CmpStylePropError {}
+
+        expect(() => {
+          TestBed.configureTestingModule({
+            imports: [CmpStylePropError],
+            providers: [provideCssVarNamespacing('my-namespace')],
+          });
+        }).toThrowError(/CSS variable "--global-foo" has a single hyphen after "--global"/);
+      });
+
+      it('should namespace styles set via Renderer2.setStyle/removeStyle', () => {
+        @Component({
+          selector: 'cmp-renderer-set-style',
+          template: '',
+          standalone: true,
+        })
+        class CmpRendererSetStyle {
+          constructor(public renderer: Renderer2) {}
+        }
+
+        TestBed.configureTestingModule({
+          imports: [CmpRendererSetStyle],
+          providers: [provideCssVarNamespacing('my-namespace')],
+        });
+        const fixture = TestBed.createComponent(CmpRendererSetStyle);
+        const comp = fixture.componentInstance;
+        const div = document.createElement('div');
+
+        comp.renderer.setStyle(div, '--%NS%foo', 'blue');
+        expect(div.style.getPropertyValue('--my-namespace_foo')).toBe('blue');
+
+        comp.renderer.setStyle(div, '--bar', 'red');
+        expect(div.style.getPropertyValue('--bar')).toBe('red');
+        expect(div.style.getPropertyValue('--my-namespace_bar')).toBe('');
+
+        comp.renderer.removeStyle(div, '--%NS%foo');
+        expect(div.style.getPropertyValue('--my-namespace_foo')).toBe('');
       });
     });
   });

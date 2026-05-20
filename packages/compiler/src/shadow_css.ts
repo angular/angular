@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as chars from './chars';
+import {namespaceCssVariable} from './util';
 
 /**
  * The following set contains all keywords that can be used in the animation css shorthand
@@ -1048,25 +1049,19 @@ const _cssVariableRe = /(var\(\s*)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
  */
 export function namespaceCssVariables(cssText: string): string {
   return cssText.replace(_cssVariableRe, (match, leadingVar, varName, trailingColon) => {
+    // Check for a leading `var(` or trailing `:` to approximate whether we're operating on a
+    // real CSS variable, not another piece of syntax that resembles it. For example, this
+    // guards against:
+    // - `.foo--bar {}`
+    // - `/* --foo */`
+    // - `p { content: "--foo" }`
+    // - `[data---bar] {}`
+    // - `[data-status=foo--bar] {}`
+    // etc.
     if (!leadingVar && !trailingColon) {
       return match;
     }
-
-    if (varName.startsWith('--global-') && !varName.startsWith('--global--')) {
-      throw new Error(
-        `CSS variable "${varName}" has a single hyphen after "--global". ` +
-          `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`,
-      );
-    }
-
-    let result;
-    if (varName.startsWith('--global--')) {
-      result = `--${varName.substring('--global--'.length)}`;
-    } else {
-      result = `--%NS%${varName.substring('--'.length)}`;
-    }
-
-    return (leadingVar || '') + result + (trailingColon || '');
+    return (leadingVar ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
   });
 }
 

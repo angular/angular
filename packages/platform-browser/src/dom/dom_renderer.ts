@@ -78,20 +78,23 @@ export const REMOVE_STYLES_ON_COMPONENT_DESTROY = new InjectionToken<boolean>(
  *
  * Typically set via {@link provideCssVarNamespacing}.
  */
-export const CSS_VAR_NAMESPACE = new InjectionToken<string>('CSS_VAR_NAMESPACE');
+export const CSS_VAR_NAMESPACE = new InjectionToken<string>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CSS_VAR_NAMESPACE' : '',
+);
 
 /**
  * Configures the application to use the given namespace for all CSS variables.
  *
- * @param namespace The prefix string to use as a namespace. This is typically the `APP_ID`
- *     followed by a separator, such as 'my-app_'.
+ * @param namespace The prefix string to use as a namespace. If not provided, it defaults
+ *     to the `APP_ID`. An underscore is appended unconditionally.
  * @publicApi
  */
-export function provideCssVarNamespacing(namespace: string): EnvironmentProviders {
+export function provideCssVarNamespacing(namespace?: string): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: CSS_VAR_NAMESPACE,
-      useValue: namespace,
+      useFactory: (appId: string) => `${namespace ?? appId}_`,
+      deps: [APP_ID],
     },
   ]);
 }
@@ -177,7 +180,13 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(CSS_VAR_NAMESPACE) @Optional() cssVarNamespace: string | null = null,
   ) {
     this.cssVarNamespace = cssVarNamespace ?? '';
-    this.defaultRenderer = new DefaultDomRenderer2(eventManager, doc, ngZone, this.tracingService);
+    this.defaultRenderer = new DefaultDomRenderer2(
+      eventManager,
+      doc,
+      ngZone,
+      this.tracingService,
+      this.cssVarNamespace,
+    );
   }
 
   createRenderer(element: any, type: RendererType2 | null): Renderer2 {
@@ -304,6 +313,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly doc: Document,
     protected readonly ngZone: NgZone,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
+    private readonly cssVarNamespace: string = '',
   ) {}
 
   destroy(): void {}
@@ -412,7 +422,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
-    if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
+    const isVariable = style.startsWith('--');
+    if (isVariable) {
+      style = style.replace('%NS%', this.cssVarNamespace);
+    }
+    if (isVariable || flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
       el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {
       el.style[style] = value;
@@ -420,7 +434,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
-    if (flags & RendererStyleFlags2.DashCase) {
+    const isVariable = style.startsWith('--');
+    if (isVariable) {
+      style = style.replace('%NS%', this.cssVarNamespace);
+    }
+    if (isVariable || flags & RendererStyleFlags2.DashCase) {
       // removeProperty has no effect when used on camelCased properties.
       el.style.removeProperty(style);
     } else {
@@ -538,7 +556,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     cssVarNamespace: string,
     private sharedStylesHost?: SharedStylesHost,
   ) {
-    super(eventManager, doc, ngZone, tracingService);
+    super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
@@ -628,7 +646,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     cssVarNamespace: string,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, tracingService);
+    super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
