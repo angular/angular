@@ -31,6 +31,7 @@ import {
   isNotTypescriptOrSupportedDecoratorField,
   isNotTypescriptOrSupportedDecoratorRange,
 } from './embedded_support';
+import {OpenJsDocLinkCommandId} from '../../common/initialize';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -96,7 +97,9 @@ export class AngularLanguageClient implements vscode.Disposable {
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
       outputChannel: this.outputChannel,
       markdown: {
-        isTrusted: true,
+        isTrusted: {
+          enabledCommands: [OpenJsDocLinkCommandId],
+        },
       },
       middleware: {
         provideCodeActions: async (
