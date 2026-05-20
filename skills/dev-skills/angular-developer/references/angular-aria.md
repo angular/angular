@@ -170,7 +170,7 @@ import {Listbox, Option} from '@angular/aria/listbox';
 
 <!-- Example 2: Select Component (Applied directly to a div trigger) -->
 <div ngCombobox #select="ngCombobox" [(expanded)]="selectExpanded" class="select-trigger">
-  <span class="select-text">{{ selectedValue() || 'Choose an option' }}</span>
+  <span class="select-text">{{ selectedValue() ?? 'Choose an option' }}</span>
   <span class="icon">▼</span>
 </div>
 
@@ -468,7 +468,7 @@ describe('MyAccordionComponent', () => {
 
   beforeEach(async () => {
     fixture = TestBed.createComponent(MyAccordionComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
