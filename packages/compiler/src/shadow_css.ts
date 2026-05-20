@@ -1052,6 +1052,13 @@ export function namespaceCssVariables(cssText: string): string {
       return match;
     }
 
+    if (varName.startsWith('--global-') && !varName.startsWith('--global--')) {
+      throw new Error(
+        `CSS variable "${varName}" has a single hyphen after "--global". ` +
+          `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`,
+      );
+    }
+
     let result;
     if (varName.startsWith('--global--')) {
       result = `--${varName.substring('--global--'.length)}`;

@@ -584,5 +584,17 @@ p {
 }
       `);
     });
+
+    it('should throw an error when a CSS variable has a single hyphen after --global', () => {
+      expect(() => namespaceCssVariables('p { --global-foo: red; }')).toThrowError(
+        'CSS variable "--global-foo" has a single hyphen after "--global". Use two hyphens ("--global--foo") to opt-out of namespacing.',
+      );
+      expect(() => namespaceCssVariables('p { color: var(--global-my-color); }')).toThrowError(
+        'CSS variable "--global-my-color" has a single hyphen after "--global". Use two hyphens ("--global--my-color") to opt-out of namespacing.',
+      );
+      expect(() => namespaceCssVariables('p { --global-: red; }')).toThrowError(
+        'CSS variable "--global-" has a single hyphen after "--global". Use two hyphens ("--global--") to opt-out of namespacing.',
+      );
+    });
   });
 });
