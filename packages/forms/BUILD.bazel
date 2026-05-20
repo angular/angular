@@ -57,6 +57,7 @@ ng_package(
         "//packages/forms",
         "//packages/forms/signals",
         "//packages/forms/signals/compat",
+        "//packages/forms/signals/config",
     ],
 )
 

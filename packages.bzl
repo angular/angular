@@ -73,6 +73,7 @@ DOCS_ENTRYPOINTS = [
     "core/testing",
     "elements",
     "forms",
+    "forms/signals/config",
     "localize",
     "localize/init",
     "localize/src/localize",

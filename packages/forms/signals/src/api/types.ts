@@ -8,6 +8,7 @@
 
 import {Injector, Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
+import type {SignalFormsClassBinding} from '../../config/src/api';
 import type {FormField} from '../directive/form_field';
 import type {MetadataKey, ValidationError} from './rules';
 
@@ -609,7 +610,7 @@ export type FieldStateByMode<
  *
  * @publicApi 22.0
  */
-export interface FormFieldBinding {
+export interface FormFieldBinding extends SignalFormsClassBinding {
   /**
    * The HTML element on which the {@link FormField} directive is applied.
    */

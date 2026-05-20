@@ -31,6 +31,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {provideSignalFormsConfig} from '../../config/public_api';
 
 function isFirefox() {
   const userAgent = navigator.userAgent.toLowerCase();
@@ -54,7 +55,6 @@ import {
   minDate,
   minLength,
   pattern,
-  provideSignalFormsConfig,
   readonly,
   required,
   requiredError,

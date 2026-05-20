@@ -419,7 +419,7 @@ such as `.ng-valid` or `.ng-dirty`) to facilitate styling control states. Signal
 If you want to preserve this behavior, you can provide the `NG_STATUS_CLASSES` preset:
 
 ```typescript
-import {provideSignalFormsConfig} from '@angular/forms/signals';
+import {provideSignalFormsConfig} from '@angular/forms/signals/config';
 import {NG_STATUS_CLASSES} from '@angular/forms/signals/compat';
 
 bootstrapApplication(App, {
@@ -434,7 +434,7 @@ bootstrapApplication(App, {
 You can also provide your own custom configuration to apply whatever classes you wish based on you custom logic:
 
 ```typescript
-import {provideSignalFormsConfig} from '@angular/forms/signals';
+import {provideSignalFormsConfig} from '@angular/forms/signals/config';
 
 bootstrapApplication(App, {
   providers: [

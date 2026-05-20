@@ -191,7 +191,7 @@ export class FormField<T> {
 }
 
 // @public
-export interface FormFieldBinding {
+export interface FormFieldBinding extends SignalFormsClassBinding {
     readonly element: HTMLElement;
     focus(options?: FocusOptions): void;
     readonly injector: Injector;
@@ -554,7 +554,7 @@ export class PatternValidationError extends BaseNgValidationError {
 // @public
 export function provideExperimentalWebMcpForms(): EnvironmentProviders;
 
-// @public
+// @public @deprecated
 export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
 
 // @public
@@ -689,10 +689,10 @@ TModel
     [K in keyof TModel]: MaybeSchemaPathTree<TModel[K], PathKind.Child>;
 } : unknown);
 
-// @public
+// @public @deprecated
 export interface SignalFormsConfig {
     classes?: {
-        [className: string]: (formField: FormFieldBinding) => boolean;
+        [className: string]: (formField: SignalFormsClassBinding) => boolean;
     };
 }
 

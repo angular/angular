@@ -17,6 +17,7 @@ ng_project(
         "//packages/forms:node_modules/zod",
         "//packages/forms/signals",
         "//packages/forms/signals/compat",
+        "//packages/forms/signals/config",
         "//packages/platform-browser",
         "//packages/platform-browser/testing",
         "//packages/private/testing",

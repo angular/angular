@@ -16,6 +16,7 @@ ng_project(
         "//packages/forms",
         "//packages/forms:node_modules/@mcp-b/webmcp-types",
         "//packages/forms:node_modules/@standard-schema/spec",
+        "//packages/forms/signals/config",
     ],
 )
 

@@ -7,6 +7,7 @@
  */
 
 import {signal, WritableSignal} from '@angular/core';
+import {provideSignalFormsConfig} from '../../config/public_api';
 import {
   createMetadataKey,
   FieldTree,
@@ -19,7 +20,6 @@ import {
   MAX_DATE,
   MAX_NUMBER,
   metadata,
-  provideSignalFormsConfig,
   ReadonlyFieldState,
   required,
   schema,

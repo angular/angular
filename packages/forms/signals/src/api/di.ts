@@ -7,18 +7,22 @@
  */
 
 import {type Provider} from '@angular/core';
-import type {FormFieldBinding} from '../api/types';
-import {SIGNAL_FORMS_CONFIG} from '../field/di';
+import {
+  provideSignalFormsConfig as provideSignalFormsConfigFromConfig,
+  type SignalFormsClassBinding,
+} from '../../config/src/api';
 
 /**
  * Configuration options for signal forms.
  *
  * @publicApi 22.0
+ * @deprecated Import `SignalFormsConfig` from `@angular/forms/signals/config` instead.
+ * Intent to remove in Angular v23.
  */
 export interface SignalFormsConfig {
   /** A map of CSS class names to predicate functions that determine when to apply them. */
   classes?: {
-    [className: string]: (formField: FormFieldBinding) => boolean;
+    [className: string]: (formField: SignalFormsClassBinding) => boolean;
   };
 }
 
@@ -26,7 +30,9 @@ export interface SignalFormsConfig {
  * Provides configuration options for signal forms.
  *
  * @publicApi 22.0
+ * @deprecated Import `provideSignalFormsConfig` from `@angular/forms/signals/config` instead.
+ * Intent to remove in Angular v23.
  */
 export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[] {
-  return [{provide: SIGNAL_FORMS_CONFIG, useValue: config}];
+  return provideSignalFormsConfigFromConfig(config);
 }
