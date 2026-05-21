@@ -32,7 +32,7 @@ export interface FlatNode {
   level: number;
   original: IndexedNode;
   newItem?: boolean;
-  hydration: HydrationStatus;
+  hydration?: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
   changeDetection?: ChangeDetection;
   hasNativeElement: boolean;
