@@ -902,3 +902,57 @@ describe('SVG <script> bindings', () => {
     expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
   });
 });
+
+describe('SVG <a> link sanitization', () => {
+  it('should sanitize dynamic `href` bindings on <svg:a>', () => {
+    @Component({
+      template: '<svg><a [attr.href]="url"></a></svg>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {
+      url = 'javascript:alert(1)';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
+  });
+
+  it('should sanitize dynamic `xlink:href` bindings on <svg:a>', () => {
+    @Component({
+      template: '<svg><a [attr.xlink:href]="url"></a></svg>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {
+      url = 'javascript:alert(1)';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('xlink:href')).toEqual('unsafe:javascript:alert(1)');
+  });
+
+  it('should allow static unsafe `href` and `xlink:href` on <svg:a>', () => {
+    @Component({
+      template: `
+        <svg>
+          <a href="javascript:alert(1)"></a>
+          <a xlink:href="javascript:alert(2)"></a>
+        </svg>
+      `,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const links = fixture.nativeElement.querySelectorAll('a');
+    expect(links[0].getAttribute('href')).toEqual('javascript:alert(1)');
+    expect(links[1].getAttribute('xlink:href')).toEqual('javascript:alert(2)');
+  });
+});

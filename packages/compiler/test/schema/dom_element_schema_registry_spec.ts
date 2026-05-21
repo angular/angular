@@ -167,6 +167,12 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext(':svg:set', 'to', false)).toBe(
       SecurityContext.ATTRIBUTE_NO_BINDING,
     );
+
+    // SVG link attributes
+    expect(registry.securityContext(':svg:a', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'xlink:href', true)).toBe(SecurityContext.URL);
   });
 
   it('should detect properties on namespaced elements', () => {
