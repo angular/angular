@@ -73,8 +73,8 @@ importers:
         specifier: 6.2.0
         version: 6.2.0
       puppeteer:
-        specifier: 25.0.2
-        version: 25.0.2(typescript@6.0.3)
+        specifier: 25.0.4
+        version: 25.0.4(typescript@6.0.3)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.19.41)(typescript@6.0.3)
@@ -1793,8 +1793,8 @@ packages:
     resolution: {integrity: sha512-C2Xj8FZ0uHWeCXXqX5B4/gVFQmtSkiuOolzAgutjTfseNOHT3pUjljDZsTSxXFGgio54bCzVFqmEOUrIVk8RDA==}
     engines: {node: '>=20.0.0'}
 
-  '@puppeteer/browsers@3.0.2':
-    resolution: {integrity: sha512-JnOSHrAdCQOj27P5QnTrd6bkYd9cXXeFMJS5UJF3UmQbpZQAMMO7AaL0NyrT7i2l/43bwjaHguU+LOpBRyx66w==}
+  '@puppeteer/browsers@3.0.3':
+    resolution: {integrity: sha512-v3YaiGpzUTgOZkHBFR0iZg58Vto25SqBQxfLUXDiofJccwVl6Mlr7BdLCS1NZgxikdeIHf936cxYWL9IZp3tow==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
@@ -3779,12 +3779,12 @@ packages:
   pump@3.0.4:
     resolution: {integrity: sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA==}
 
-  puppeteer-core@25.0.2:
-    resolution: {integrity: sha512-Q0IUIHER1S9PiNIfdNFc+pVOj79Tp4b9v0Fv4enigwsLy0Hbgq45KFgqzmN31DeCXh+Uvxnt9r7fMERhAMjs8Q==}
+  puppeteer-core@25.0.4:
+    resolution: {integrity: sha512-K1LQKDP6w1rIr1jUyN9obH16TO/DCy86k3q+FBd2prGY+TStxhFySxmaZZuRF+0D3BJXjwCYFke7tMHCH4olTA==}
     engines: {node: '>=22.12.0'}
 
-  puppeteer@25.0.2:
-    resolution: {integrity: sha512-cXj/5RlDCzSC7k1YdBIm6prb8lK8lEdmScVbcalX1rBn4fqNN1UNuEz/HZZYiDLsK8dOGvyLpGjh6CgxCyqKtg==}
+  puppeteer@25.0.4:
+    resolution: {integrity: sha512-QFdBAuNOqL0I+AdARTlRR1KcgPk0fo0dU127e1ZQFVxb9QPcpBDIiQp/dMgdbyLXHpF2GRjC/OezDmjKcLCKYw==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -6445,7 +6445,7 @@ snapshots:
       tslib: 2.8.1
       tsyringe: 4.10.0
 
-  '@puppeteer/browsers@3.0.2':
+  '@puppeteer/browsers@3.0.3':
     dependencies:
       debug: 4.4.3
       progress: 2.0.3
@@ -7241,7 +7241,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.13)
       postcss-modules-values: 4.0.0(postcss@8.5.13)
       postcss-value-parser: 4.2.0
-      semver: 7.7.4
+      semver: 7.8.0
     optionalDependencies:
       webpack: 5.106.2(esbuild@0.28.0)(postcss@8.5.13)
 
@@ -7885,7 +7885,7 @@ snapshots:
       '@babel/parser': 7.29.3
       '@istanbuljs/schema': 0.1.6
       istanbul-lib-coverage: 3.2.2
-      semver: 7.7.4
+      semver: 7.8.0
     transitivePeerDependencies:
       - supports-color
 
@@ -8442,7 +8442,7 @@ snapshots:
       cosmiconfig: 9.0.1(typescript@6.0.3)
       jiti: 2.7.0
       postcss: 8.5.13
-      semver: 7.7.4
+      semver: 7.8.0
     optionalDependencies:
       webpack: 5.106.2(esbuild@0.28.0)(postcss@8.5.13)
     transitivePeerDependencies:
@@ -8515,9 +8515,9 @@ snapshots:
       end-of-stream: 1.4.5
       once: 1.4.0
 
-  puppeteer-core@25.0.2:
+  puppeteer-core@25.0.4:
     dependencies:
-      '@puppeteer/browsers': 3.0.2
+      '@puppeteer/browsers': 3.0.3
       chromium-bidi: 16.0.1(devtools-protocol@0.0.1608973)
       debug: 4.4.3
       devtools-protocol: 0.0.1608973
@@ -8533,13 +8533,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@25.0.2(typescript@6.0.3):
+  puppeteer@25.0.4(typescript@6.0.3):
     dependencies:
-      '@puppeteer/browsers': 3.0.2
+      '@puppeteer/browsers': 3.0.3
       chromium-bidi: 16.0.1(devtools-protocol@0.0.1608973)
       cosmiconfig: 9.0.1(typescript@6.0.3)
       devtools-protocol: 0.0.1608973
-      puppeteer-core: 25.0.2
+      puppeteer-core: 25.0.4
       typed-query-selector: 2.12.2
     transitivePeerDependencies:
       - bare-abort-controller

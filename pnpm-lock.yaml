@@ -29,7 +29,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 22.0.0-rc.0
-        version: 22.0.0-rc.0(a39c9a32a952f46209f6e49c68048ac0)
+        version: 22.0.0-rc.0(a4eaca632be0af2493c20ba00d3042c1)
       '@angular/cdk':
         specifier: 22.0.0-rc.0
         version: 22.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -357,7 +357,7 @@ importers:
         version: 22.0.0-rc.0(@angular/cdk@22.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 22.0.0-rc.0
-        version: 22.0.0-rc.0(a0f782952076e1a738ca24fad59161f1)
+        version: 22.0.0-rc.0(ad6600cb79c8547b78e68ee935bce476)
       '@angular/cdk':
         specifier: 22.0.0-rc.0
         version: 22.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -536,8 +536,8 @@ importers:
         specifier: 10.6.0
         version: 10.6.0
       fflate:
-        specifier: 0.8.2
-        version: 0.8.2
+        specifier: 0.8.3
+        version: 0.8.3
       hast-util-to-html:
         specifier: ^9.0.5
         version: 9.0.5
@@ -566,8 +566,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(jasmine-core@6.2.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       marked:
-        specifier: 18.0.3
-        version: 18.0.3
+        specifier: 18.0.4
+        version: 18.0.4
       mermaid:
         specifier: 11.15.0
         version: 11.15.0
@@ -581,11 +581,11 @@ importers:
         specifier: 1.60.0
         version: 1.60.0
       preact:
-        specifier: 10.29.1
-        version: 10.29.1
+        specifier: 10.29.2
+        version: 10.29.2
       preact-render-to-string:
-        specifier: 6.6.7
-        version: 6.6.7(preact@10.29.1)
+        specifier: 6.7.0
+        version: 6.7.0(preact@10.29.2)
       prettier:
         specifier: 3.8.3
         version: 3.8.3
@@ -596,8 +596,8 @@ importers:
         specifier: 7.8.2
         version: 7.8.2
       shiki:
-        specifier: 4.0.2
-        version: 4.0.2
+        specifier: 4.1.0
+        version: 4.1.0
       space-separated-tokens:
         specifier: ^2.0.2
         version: 2.0.2
@@ -625,13 +625,13 @@ importers:
     devDependencies:
       autoprefixer:
         specifier: 10.5.0
-        version: 10.5.0(postcss@8.5.14)
+        version: 10.5.0(postcss@8.5.15)
       karma:
         specifier: ~6.4.4
         version: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       postcss:
-        specifier: 8.5.14
-        version: 8.5.14
+        specifier: 8.5.15
+        version: 8.5.15
       tailwindcss:
         specifier: 3.4.19
         version: 3.4.19(tsx@4.22.1)(yaml@2.9.0)
@@ -731,7 +731,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 22.0.0-rc.0
-        version: 22.0.0-rc.0(a0f782952076e1a738ca24fad59161f1)
+        version: 22.0.0-rc.0(ad6600cb79c8547b78e68ee935bce476)
       '@angular/cli':
         specifier: 22.0.0-rc.0
         version: 22.0.0-rc.0(@cfworker/json-schema@4.1.1)(@types/node@24.12.4)(chokidar@5.0.0)
@@ -831,7 +831,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 22.0.0-rc.0
-        version: 22.0.0-rc.0(a0f782952076e1a738ca24fad59161f1)
+        version: 22.0.0-rc.0(ad6600cb79c8547b78e68ee935bce476)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1013,7 +1013,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 22.0.0-rc.0
-        version: 22.0.0-rc.0(a0f782952076e1a738ca24fad59161f1)
+        version: 22.0.0-rc.0(ad6600cb79c8547b78e68ee935bce476)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -4240,28 +4240,56 @@ packages:
     resolution: {integrity: sha512-hxT0YF4ExEqB8G/qFdtJvpmHXBYJ2lWW7qTHDarVkIudPFE6iCIrqdgWxGn5s+ppkGXI0aEGlibI0PAyzP3zlw==}
     engines: {node: '>=20'}
 
+  '@shikijs/core@4.1.0':
+    resolution: {integrity: sha512-jLJtSJeuFffqX6/inRE1zqU5aFv2hrszvYgq3OjbAgFRZiWv7abKMDdQzYxuSDfmUPQozZvI/kuy6VMTvnvqTQ==}
+    engines: {node: '>=20'}
+
   '@shikijs/engine-javascript@4.0.2':
     resolution: {integrity: sha512-7PW0Nm49DcoUIQEXlJhNNBHyoGMjalRETTCcjMqEaMoJRLljy1Bi/EGV3/qLBgLKQejdspiiYuHGQW6dX94Nag==}
+    engines: {node: '>=20'}
+
+  '@shikijs/engine-javascript@4.1.0':
+    resolution: {integrity: sha512-YquhawCUgaBfhsS72e2Y/dI59gCBNPHu3fEO/tvLaXrTssxZrY5ddjtNLTwndrMgPo8b3IscE+xoICDzpTmlFQ==}
     engines: {node: '>=20'}
 
   '@shikijs/engine-oniguruma@4.0.2':
     resolution: {integrity: sha512-UpCB9Y2sUKlS9z8juFSKz7ZtysmeXCgnRF0dlhXBkmQnek7lAToPte8DkxmEYGNTMii72zU/lyXiCB6StuZeJg==}
     engines: {node: '>=20'}
 
+  '@shikijs/engine-oniguruma@4.1.0':
+    resolution: {integrity: sha512-axLpjVs45YBvvINa+dJF+NPW+KtFkNXsFr4SDw2BMj9GdeMnGxVB9PQb2xXlJYovslt/nz6giedAyOANkfc7hg==}
+    engines: {node: '>=20'}
+
   '@shikijs/langs@4.0.2':
     resolution: {integrity: sha512-KaXby5dvoeuZzN0rYQiPMjFoUrz4hgwIE+D6Du9owcHcl6/g16/yT5BQxSW5cGt2MZBz6Hl0YuRqf12omRfUUg==}
+    engines: {node: '>=20'}
+
+  '@shikijs/langs@4.1.0':
+    resolution: {integrity: sha512-nwOMruEkbgdZfQ/b8CgpNBVOpvG1k0N5tbmgiFeqsan401+x3ILqlzZJowSla4Agmq4hG2Uf2wh5jLTEhR8VSg==}
     engines: {node: '>=20'}
 
   '@shikijs/primitive@4.0.2':
     resolution: {integrity: sha512-M6UMPrSa3fN5ayeJwFVl9qWofl273wtK1VG8ySDZ1mQBfhCpdd8nEx7nPZ/tk7k+TYcpqBZzj/AnwxT9lO+HJw==}
     engines: {node: '>=20'}
 
+  '@shikijs/primitive@4.1.0':
+    resolution: {integrity: sha512-zx2/2Uwj2q9X3KSyYREEhXO23xBw5WUhP4orK2lE4r+t9JGITmEe0JH+wPmJhqHpOT2bRRs6lAL945+LDvOAGw==}
+    engines: {node: '>=20'}
+
   '@shikijs/themes@4.0.2':
     resolution: {integrity: sha512-mjCafwt8lJJaVSsQvNVrJumbnnj1RI8jbUKrPKgE6E3OvQKxnuRoBaYC51H4IGHePsGN/QtALglWBU7DoKDFnA==}
     engines: {node: '>=20'}
 
+  '@shikijs/themes@4.1.0':
+    resolution: {integrity: sha512-emCcTnUM7yO2wltYbaxm+yLvcCI4+h8XBKc4KmJ7EZUXoSGjcCHifkI//R4OFit9ewpg7H2/9tjOuXrT2v/Knw==}
+    engines: {node: '>=20'}
+
   '@shikijs/types@4.0.2':
     resolution: {integrity: sha512-qzbeRooUTPnLE+sHD/Z8DStmaDgnbbc/pMrU203950aRqjX/6AFHeDYT+j00y2lPdz0ywJKx7o/7qnqTivtlXg==}
+    engines: {node: '>=20'}
+
+  '@shikijs/types@4.1.0':
+    resolution: {integrity: sha512-3EQWX54fMpniOrDblzAhiwiJwpiTMW6+B9DWyUd9ska483tbayFYuw47UxwuPknI31bKnySfVQ/QW+jFL4rFdA==}
     engines: {node: '>=20'}
 
   '@shikijs/vscode-textmate@10.0.2':
@@ -6753,6 +6781,9 @@ packages:
   fflate@0.8.2:
     resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
+
   filesize@6.4.0:
     resolution: {integrity: sha512-mjFIpOHC4jbfcTfoh4rkWpI31mF7viw9ikj/JyLoKzqlwG/YsefKfvYlYhdYdg/9mtK2z1AzgN/0LvVQ3zdlSQ==}
     engines: {node: '>= 0.4.0'}
@@ -8415,6 +8446,11 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
+  marked@18.0.4:
+    resolution: {integrity: sha512-c/BTaKzg0G6ezQx97DAkYU7k0HM6ys0FqYeKBL6hlBByZwy+ycA1+f0vDdjMHKKeEjdgkx0GOv9Il6D+85cOqA==}
+    engines: {node: '>= 20'}
+    hasBin: true
+
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
@@ -9322,6 +9358,10 @@ packages:
     resolution: {integrity: sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postcss@8.5.15:
+    resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
+    engines: {node: ^10 || ^12 || >=14}
+
   postgres-array@2.0.0:
     resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
     engines: {node: '>=4'}
@@ -9338,13 +9378,13 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  preact-render-to-string@6.6.7:
-    resolution: {integrity: sha512-3XdbsX3+vn9dQW+jJI/FsI9rlkgl6dbeUpqLsChak6jp3j3auFqBCkno7VChbMFs5Q8ylBj6DrUkKRwtVN3nvw==}
+  preact-render-to-string@6.7.0:
+    resolution: {integrity: sha512-Z4WR8fmLMRpdYqJ9i7vrlXSsSrxVJydwrkEXHapexfARbWfGb7vGcnvNQnIzN0cXciMVOlz/XLoiMCi9gUsy9Q==}
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
 
-  preact@10.29.1:
-    resolution: {integrity: sha512-gQCLc/vWroE8lIpleXtdJhTFDogTdZG9AjMUpVkDf2iTCNwYNWA+u16dL41TqUDJO4gm2IgrcMv3uTpjd4Pwmg==}
+  preact@10.29.2:
+    resolution: {integrity: sha512-7tNmwg/7mzzAoB/8kSg6Hl37JraAZw3Z3A0JSY7VXlZwo82Xn0G7wKbNNs2qoF4ZEEsQGTwDAroNdqKs1ofJxQ==}
 
   prebuild-install@7.1.3:
     resolution: {integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==}
@@ -9885,6 +9925,10 @@ packages:
 
   shiki@4.0.2:
     resolution: {integrity: sha512-eAVKTMedR5ckPo4xne/PjYQYrU3qx78gtJZ+sHlXEg5IHhhoQhMfZVzetTYuaJS0L2Ef3AcCRzCHV8T0WI6nIQ==}
+    engines: {node: '>=20'}
+
+  shiki@4.1.0:
+    resolution: {integrity: sha512-l/ABZPUR5v70jI10EzqfMS/I96vjSGv2y0ihUV+WYFzv0EfvW4s54m0Lg8wCrrL+2IkwBzFTuxkZjPf8b2NX9Q==}
     engines: {node: '>=20'}
 
   side-channel-list@1.0.1:
@@ -11589,66 +11633,7 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@22.0.0-rc.0(a0f782952076e1a738ca24fad59161f1)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.0-rc.0(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.29.0
-      '@babel/helper-annotate-as-pure': 7.27.3
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@24.12.4)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@24.12.4)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(tsx@4.22.1)(yaml@2.9.0))
-      beasties: 0.4.2
-      browserslist: 4.28.2
-      esbuild: 0.28.0
-      https-proxy-agent: 9.0.0
-      jsonc-parser: 3.3.1
-      listr2: 10.2.1
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.4
-      piscina: 5.1.4
-      rollup: 4.60.2
-      sass: 1.99.0
-      semver: 7.7.4
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.16
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 7.3.2(@types/node@24.12.4)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(tsx@4.22.1)(yaml@2.9.0)
-      watchpack: 2.5.1
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      less: 4.6.4
-      lmdb: 3.5.4
-      ng-packagr: 22.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.14
-      tailwindcss: 3.4.19(tsx@4.22.1)(yaml@2.9.0)
-      vitest: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@24.12.4)(esbuild@0.28.0)(jiti@1.21.7)(jsdom@29.1.1)(less@4.6.4)(sass@1.99.0)(tsx@4.22.1)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@22.0.0-rc.0(a39c9a32a952f46209f6e49c68048ac0)':
+  '@angular/build@22.0.0-rc.0(a4eaca632be0af2493c20ba00d3042c1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.0-rc.0(chokidar@5.0.0)
@@ -11691,9 +11676,68 @@ snapshots:
       less: 4.6.4
       lmdb: 3.5.4
       ng-packagr: 22.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.14
+      postcss: 8.5.15
       tailwindcss: 3.4.19(tsx@4.22.1)(yaml@2.9.0)
       vitest: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@20.19.41)(esbuild@0.28.0)(jiti@1.21.7)(jsdom@29.1.1)(less@4.6.4)(sass@1.99.0)(tsx@4.22.1)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@22.0.0-rc.0(ad6600cb79c8547b78e68ee935bce476)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2200.0-rc.0(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.0
+      '@babel/helper-annotate-as-pure': 7.27.3
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 6.0.12(@types/node@24.12.4)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@24.12.4)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(tsx@4.22.1)(yaml@2.9.0))
+      beasties: 0.4.2
+      browserslist: 4.28.2
+      esbuild: 0.28.0
+      https-proxy-agent: 9.0.0
+      jsonc-parser: 3.3.1
+      listr2: 10.2.1
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.4
+      piscina: 5.1.4
+      rollup: 4.60.2
+      sass: 1.99.0
+      semver: 7.7.4
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.16
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 7.3.2(@types/node@24.12.4)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(tsx@4.22.1)(yaml@2.9.0)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.6.4
+      lmdb: 3.5.4
+      ng-packagr: 22.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.15
+      tailwindcss: 3.4.19(tsx@4.22.1)(yaml@2.9.0)
+      vitest: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@24.12.4)(esbuild@0.28.0)(jiti@1.21.7)(jsdom@29.1.1)(less@4.6.4)(sass@1.99.0)(tsx@4.22.1)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -14630,9 +14674,23 @@ snapshots:
       '@types/hast': 3.0.4
       hast-util-to-html: 9.0.5
 
+  '@shikijs/core@4.1.0':
+    dependencies:
+      '@shikijs/primitive': 4.1.0
+      '@shikijs/types': 4.1.0
+      '@shikijs/vscode-textmate': 10.0.2
+      '@types/hast': 3.0.4
+      hast-util-to-html: 9.0.5
+
   '@shikijs/engine-javascript@4.0.2':
     dependencies:
       '@shikijs/types': 4.0.2
+      '@shikijs/vscode-textmate': 10.0.2
+      oniguruma-to-es: 4.3.6
+
+  '@shikijs/engine-javascript@4.1.0':
+    dependencies:
+      '@shikijs/types': 4.1.0
       '@shikijs/vscode-textmate': 10.0.2
       oniguruma-to-es: 4.3.6
 
@@ -14641,9 +14699,18 @@ snapshots:
       '@shikijs/types': 4.0.2
       '@shikijs/vscode-textmate': 10.0.2
 
+  '@shikijs/engine-oniguruma@4.1.0':
+    dependencies:
+      '@shikijs/types': 4.1.0
+      '@shikijs/vscode-textmate': 10.0.2
+
   '@shikijs/langs@4.0.2':
     dependencies:
       '@shikijs/types': 4.0.2
+
+  '@shikijs/langs@4.1.0':
+    dependencies:
+      '@shikijs/types': 4.1.0
 
   '@shikijs/primitive@4.0.2':
     dependencies:
@@ -14651,11 +14718,26 @@ snapshots:
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
 
+  '@shikijs/primitive@4.1.0':
+    dependencies:
+      '@shikijs/types': 4.1.0
+      '@shikijs/vscode-textmate': 10.0.2
+      '@types/hast': 3.0.4
+
   '@shikijs/themes@4.0.2':
     dependencies:
       '@shikijs/types': 4.0.2
 
+  '@shikijs/themes@4.1.0':
+    dependencies:
+      '@shikijs/types': 4.1.0
+
   '@shikijs/types@4.0.2':
+    dependencies:
+      '@shikijs/vscode-textmate': 10.0.2
+      '@types/hast': 3.0.4
+
+  '@shikijs/types@4.1.0':
     dependencies:
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
@@ -15597,13 +15679,13 @@ snapshots:
 
   at-least-node@1.0.0: {}
 
-  autoprefixer@10.5.0(postcss@8.5.14):
+  autoprefixer@10.5.0(postcss@8.5.15):
     dependencies:
       browserslist: 4.28.2
       caniuse-lite: 1.0.30001793
       fraction.js: 5.3.4
       picocolors: 1.1.1
-      postcss: 8.5.14
+      postcss: 8.5.15
       postcss-value-parser: 4.2.0
 
   available-typed-arrays@1.0.7:
@@ -17466,6 +17548,8 @@ snapshots:
       web-streams-polyfill: 3.3.3
 
   fflate@0.8.2: {}
+
+  fflate@0.8.3: {}
 
   filesize@6.4.0: {}
 
@@ -19702,6 +19786,8 @@ snapshots:
 
   marked@18.0.3: {}
 
+  marked@18.0.4: {}
+
   math-intrinsics@1.1.0: {}
 
   mdast-util-to-hast@13.2.1:
@@ -20664,6 +20750,12 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postcss@8.5.15:
+    dependencies:
+      nanoid: 3.3.12
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+
   postgres-array@2.0.0: {}
 
   postgres-bytea@1.0.1: {}
@@ -20674,11 +20766,11 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  preact-render-to-string@6.6.7(preact@10.29.1):
+  preact-render-to-string@6.7.0(preact@10.29.2):
     dependencies:
-      preact: 10.29.1
+      preact: 10.29.2
 
-  preact@10.29.1: {}
+  preact@10.29.2: {}
 
   prebuild-install@7.1.3:
     dependencies:
@@ -21428,6 +21520,17 @@ snapshots:
       '@shikijs/langs': 4.0.2
       '@shikijs/themes': 4.0.2
       '@shikijs/types': 4.0.2
+      '@shikijs/vscode-textmate': 10.0.2
+      '@types/hast': 3.0.4
+
+  shiki@4.1.0:
+    dependencies:
+      '@shikijs/core': 4.1.0
+      '@shikijs/engine-javascript': 4.1.0
+      '@shikijs/engine-oniguruma': 4.1.0
+      '@shikijs/langs': 4.1.0
+      '@shikijs/themes': 4.1.0
+      '@shikijs/types': 4.1.0
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
 
