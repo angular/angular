@@ -50,6 +50,14 @@ const serializable: Set<PropType> = new Set([
   PropType.Unknown,
 ]);
 
+const getConstructorName = (prop: object, fallback: string): string => {
+  const constructorName = (prop as {constructor?: {name?: unknown}}).constructor?.name;
+
+  return typeof constructorName === 'string' && constructorName.length > 0
+    ? constructorName
+    : fallback;
+};
+
 const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Array]: (prop: Array<unknown>) => `Array(${prop.length})`,
   [PropType.Set]: (prop: Set<unknown>) => `Set(${prop.size})`,
@@ -58,12 +66,16 @@ const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Boolean]: (prop: boolean) => truncate(prop.toString()),
   [PropType.String]: (prop: string) => `"${prop}"`,
   [PropType.Function]: (prop: Function) => `${prop.name ? 'ƒ ' : ''}(...)`,
-  [PropType.HTMLNode]: (prop: Node) => prop.constructor.name,
+  [PropType.HTMLNode]: (prop: Node) => getConstructorName(prop, 'Node'),
   [PropType.Null]: (_: null) => 'null',
   [PropType.Number]: (prop: any) => prop.toString(),
-  [PropType.Object]: (prop: Object) =>
-    (prop.constructor.name !== 'Object' ? `${prop.constructor.name} ` : '') +
-    (getKeys(prop).length > 0 ? '{...}' : '{}'),
+  [PropType.Object]: (prop: object) => {
+    const constructorName = getConstructorName(prop, 'Object');
+    return (
+      (constructorName !== 'Object' ? `${constructorName} ` : '') +
+      (getKeys(prop).length > 0 ? '{...}' : '{}')
+    );
+  },
   [PropType.Symbol]: (symbol: symbol) => `Symbol(${symbol.description})`,
   [PropType.Undefined]: (_: undefined) => 'undefined',
   [PropType.Date]: (prop: unknown) => {
@@ -308,7 +320,10 @@ function getNestedDescriptorValue(
     case PropType.Object:
       return nodes.reduce(
         (accumulator, nestedProp) => {
-          if (prop.hasOwnProperty(nestedProp.name) && !ignoreList.has(nestedProp.name)) {
+          if (
+            Object.prototype.hasOwnProperty.call(value, nestedProp.name) &&
+            !ignoreList.has(nestedProp.name)
+          ) {
             accumulator[nestedProp.name] = nestedSerializer(
               value,
               nestedProp.name,

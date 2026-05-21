@@ -9,7 +9,7 @@
 import {PropType} from '../../../../protocol';
 
 import {getDescriptor, getKeys} from './object-utils';
-import {deeplySerializeSelectedProperties} from './state-serializer';
+import {deeplySerializeSelectedProperties, serializeDirectiveState} from './state-serializer';
 
 const QUERY_1_1: any[] = [];
 
@@ -494,6 +494,50 @@ describe('deeplySerializeSelectedProperties', () => {
     });
   });
 
+  it('should preview objects without prototypes as plain objects', () => {
+    const grouped = Object.create(null);
+    grouped.foo = 1;
+
+    const result = serializeDirectiveState({grouped});
+
+    expect(result['grouped']).toEqual({
+      type: PropType.Object,
+      editable: false,
+      expandable: true,
+      preview: '{...}',
+      containerType: null,
+    });
+  });
+
+  it('should deeply serialize selected properties from objects without prototypes', () => {
+    const grouped = Object.create(null);
+    grouped.foo = 1;
+
+    const result = deeplySerializeSelectedProperties({grouped}, [
+      {name: 'grouped', children: [{name: 'foo', children: []}]},
+    ]);
+
+    expect(result).toEqual({
+      grouped: {
+        type: PropType.Object,
+        editable: false,
+        expandable: true,
+        preview: '{...}',
+        value: {
+          foo: {
+            type: PropType.Number,
+            expandable: false,
+            editable: true,
+            preview: '1',
+            value: 1,
+            containerType: null,
+          },
+        },
+        containerType: null,
+      },
+    });
+  });
+
   it('getDescriptor should get the descriptors for both getters and setters correctly from the prototype', () => {
     const instance = {
       __proto__: {
@@ -553,6 +597,12 @@ describe('deeplySerializeSelectedProperties', () => {
     const instance = Object.create(null);
 
     expect(getKeys(instance)).toEqual([]);
+  });
+
+  it('getDescriptor should not throw on object without prototype', () => {
+    const instance = Object.create(null);
+
+    expect(getDescriptor(instance, 'foo')).toBeUndefined();
   });
 
   it('getKeys would ignore getters and setters for "__proto__"', () => {
