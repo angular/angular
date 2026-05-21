@@ -46,7 +46,7 @@ export function createElementNode(
  */
 export function nativeInsertBefore(
   renderer: Renderer,
-  parent: RElement,
+  parent: RNode,
   child: RNode,
   beforeNode: RNode | null,
   isMove: boolean,

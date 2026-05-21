@@ -6,7 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ForeignComponent} from '../../interface/foreign_component';
+import {ForeignComponent, RENDER} from '../../interface/foreign_component';
+import {attachPatchData} from '../context_discovery';
+import {nativeInsertBefore} from '../dom_node_manipulation';
+import {createForeignView} from '../foreign_view';
+import {TContainerNode, TNodeType} from '../interfaces/node';
+import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
+import {appendChild} from '../node_manipulation';
+import {getLView, getTView, setCurrentTNodeAsNotParent} from '../state';
+import {getOrCreateTNode} from '../tnode_manipulation';
+import {addToEndOfViewTree} from '../view/construction';
+import {createLContainer} from '../view/container';
+import {NodeInjector} from '../di';
+import {runInInjectionContext} from '../../di';
+import {Renderer} from '../interfaces/renderer';
+import {RNode} from '../interfaces/renderer_dom';
 
 /**
  * Creation phase instruction to render a foreign component.
@@ -16,10 +30,54 @@ import {ForeignComponent} from '../../interface/foreign_component';
  * @param props Aggregate properties and static attributes.
  * @codeGenApi
  */
-export function ɵɵforeignComponent<TProps>(
+export function ɵɵforeignComponent(
   index: number,
-  foreignComponent: ForeignComponent,
-  props: TProps,
+  foreignComponent: ForeignComponent<any>,
+  props?: any,
 ): void {
-  // No-op for now!
+  const lView = getLView();
+  const tView = getTView();
+  const adjustedIndex = index + HEADER_OFFSET;
+
+  // 1. Get or create TNode for this container slot
+  let tNode: TContainerNode;
+  if (tView.firstCreatePass) {
+    tNode = getOrCreateTNode(tView, adjustedIndex, TNodeType.Container, null, null);
+  } else {
+    tNode = tView.data[adjustedIndex] as TContainerNode;
+  }
+  // `getOrCreateTNode` unconditionally sets the current node as a parent node, which it is not.
+  setCurrentTNodeAsNotParent();
+
+  // 2. Create the anchor node in the DOM
+  const renderer = lView[RENDERER] as Renderer;
+  const comment = renderer.createComment(ngDevMode ? 'foreign-component' : '');
+  appendChild(tView, lView, comment, tNode);
+  attachPatchData(comment, lView);
+
+  // 3. Create the hosting LContainer
+  const lContainer = createLContainer(comment, lView, comment, tNode);
+  lView[adjustedIndex] = lContainer;
+  addToEndOfViewTree(lView, lContainer);
+
+  // 4. Create the Foreign View and insert it at index 0 of the container
+  const viewRef = createForeignView(lContainer, 0);
+
+  // 5. Call the RENDER function to get the nodes and DisposeFn
+  const injector = new NodeInjector(tNode, lView);
+  const [nodes, dispose] = runInInjectionContext(injector, () => foreignComponent[RENDER](props));
+
+  // 6. Insert the returned nodes into the foreign view, between its head and tail comment anchors.
+  const tail = viewRef.tail as RNode;
+  const parent = tail.parentNode;
+  if (parent) {
+    for (let i = 0; i < nodes.length; i++) {
+      nativeInsertBefore(renderer, parent, nodes[i], tail, false);
+    }
+  }
+
+  // 7. Register the DisposeFn in the foreign view's LView destroy hooks.
+  if (dispose) {
+    viewRef.onDestroy(dispose);
+  }
 }
