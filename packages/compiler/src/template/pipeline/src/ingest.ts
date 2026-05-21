@@ -70,7 +70,7 @@ export function ingestComponent(
   relativeTemplatePath: string | null,
   enableDebugLocations: boolean,
   legacyOptionalChaining: boolean,
-  foreignImports?: R3ForeignComponentMetadata[] | null,
+  foreignImports: R3ForeignComponentMetadata[] | null,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,

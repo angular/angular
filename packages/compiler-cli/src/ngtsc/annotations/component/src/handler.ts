@@ -1024,6 +1024,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           relativeContextFilePath,
           rawImports: rawImports !== null ? new o.WrappedNodeExpr(rawImports) : undefined,
           relativeTemplatePath,
+          foreignImports: null,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: this.includeClassMetadata

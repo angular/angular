@@ -90,7 +90,7 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly relativeTemplatePath: string | null,
     readonly enableDebugLocations: boolean,
     legacyOptionalChaining: boolean,
-    readonly foreignImports?: R3ForeignComponentMetadata[] | null,
+    readonly foreignImports: R3ForeignComponentMetadata[] | null,
   ) {
     super(componentName, pool, mode, legacyOptionalChaining);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);

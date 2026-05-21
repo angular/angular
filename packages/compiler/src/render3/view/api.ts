@@ -309,7 +309,7 @@ export interface R3ComponentMetadata<
   /**
    * Foreign components imported by the component.
    */
-  foreignImports?: R3ForeignComponentMetadata[] | null;
+  foreignImports: R3ForeignComponentMetadata[] | null;
 }
 
 /**
