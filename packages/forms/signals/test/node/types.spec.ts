@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-
+import {email, pattern} from '../../src/api/rules/validation';
 import {signal, WritableSignal} from '@angular/core';
 import {
   createMetadataKey,
@@ -26,7 +26,6 @@ import {
   SchemaFn,
   validate,
 } from '../../public_api';
-
 interface Order {
   id: string;
   details: {
@@ -229,3 +228,11 @@ function typeVerificationOnlyDoNotRunMe() {
     });
   });
 }
+
+// Type test for nullable string validators
+const nullableEmailModel: WritableSignal<{email: string | null}> = null!;
+
+form(nullableEmailModel, (p) => {
+  email(p.email);
+  pattern(p.email, /^[a-z]+$/);
+});
