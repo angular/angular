@@ -72,8 +72,6 @@ export interface ComponentType {
 }
 
 export type HydrationStatus =
-  // null represent the absence of hydration status (a node created via CSR)
-  | null
   | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
@@ -129,7 +127,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
-  hydration: HydrationStatus;
+  hydration?: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
   changeDetection?: ChangeDetection;
   injector?: Injector;

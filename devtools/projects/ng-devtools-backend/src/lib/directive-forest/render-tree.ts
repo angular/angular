@@ -134,9 +134,9 @@ function groupControlFlowBlocksChildren(
   result.push(blockTreeNode);
 }
 
-function hydrationStatus(element: Node): HydrationStatus {
+function hydrationStatus(element: Node): HydrationStatus | undefined {
   if (!(element instanceof Element)) {
-    return null;
+    return undefined;
   }
 
   if (!!element.getAttribute('ngh')) {
@@ -156,7 +156,7 @@ function hydrationStatus(element: Node): HydrationStatus {
         actualNodeDetails: hydrationInfo.actualNodeDetails,
       };
     default:
-      return null;
+      return undefined;
   }
 }
 

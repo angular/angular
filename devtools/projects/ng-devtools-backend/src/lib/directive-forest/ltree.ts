@@ -94,7 +94,6 @@ export class LTreeStrategy {
         element,
         directives: [],
         component: null,
-        hydration: null, // We know there is no hydration if we use the LTreeStrategy
         controlFlowBlock: null, // neither there will be any control flow block
       };
     }
@@ -120,7 +119,6 @@ export class LTreeStrategy {
       element,
       directives,
       component,
-      hydration: null, // We know there is no hydration if we use the LTreeStrategy
       controlFlowBlock: null, // neither there will be any control flow block
     };
   }
