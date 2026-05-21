@@ -713,6 +713,9 @@ function getProbeLocations(bundled: string): string[] {
   const locations = [];
   // Prioritize the bundled version
   locations.push(bundled);
+  if (!vscode.workspace.isTrusted) {
+    return locations;
+  }
   // Look in workspaces currently open
   const workspaceFolders = vscode.workspace.workspaceFolders || [];
   for (const folder of workspaceFolders) {
@@ -726,7 +729,7 @@ function extensionVersionCompatibleWithAllProjects(serverModuleLocation: string)
     '@angular/language-service',
     serverModuleLocation,
   )?.version;
-  if (languageServiceVersion === undefined) {
+  if (languageServiceVersion === undefined || !vscode.workspace.isTrusted) {
     return true;
   }
 
@@ -750,6 +753,10 @@ function extensionVersionCompatibleWithAllProjects(serverModuleLocation: string)
 async function getAngularVersionsInWorkspace(
   outputChannel: vscode.OutputChannel,
 ): Promise<NodeModule[]> {
+  if (!vscode.workspace.isTrusted) {
+    return [];
+  }
+
   const packageJsonFiles = await vscode.workspace.findFiles(
     '**/package.json',
     // Skip looking inside `node_module` folders as those contain irrelevant files.
