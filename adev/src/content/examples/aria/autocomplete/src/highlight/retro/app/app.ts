@@ -11,6 +11,20 @@ import {FormsModule} from '@angular/forms';
   imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, OverlayModule, FormsModule],
 })
 export class App {
+  clear() {
+    this.query.set('');
+    this.selectedOption.set([]);
+    this.popupExpanded.set(false);
+    this.navigated.set(false);
+  }
+
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.clear();
+      event.stopPropagation();
+    }
+  }
+
   readonly listbox = viewChild(Listbox);
   readonly combobox = viewChild(Combobox);
 
@@ -45,6 +59,7 @@ export class App {
       this.query.set('');
     }
     this.popupExpanded.set(false);
+    this.combobox()?.element.focus();
   }
 }
 
