@@ -436,8 +436,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       args.push('--logVerbosity', ngLog);
     }
 
-    const ngProbeLocations = getProbeLocations(this.context.extensionPath);
-    args.push('--ngProbeLocations', ngProbeLocations.join(','));
+    args.push('--ngProbeLocations', this.context.extensionPath);
 
     const includeAutomaticOptionalChainCompletions = config.get<boolean>(
       'angular.suggest.includeAutomaticOptionalChainCompletions',
@@ -514,8 +513,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     if (tsdk.trim().length > 0) {
       args.push('--tsdk', tsdk);
     }
-    const tsProbeLocations = [...getProbeLocations(this.context.extensionPath)];
-    args.push('--tsProbeLocations', tsProbeLocations.join(','));
+    args.push('--tsProbeLocations', this.context.extensionPath);
 
     const supportClientSide = config.get('angular.server.useClientSideFileWatcher');
 
@@ -701,24 +699,6 @@ function registerNotificationHandlers(
   );
 
   return vscode.Disposable.from(...disposables);
-}
-
-/**
- * Return the paths for the module that corresponds to the specified `configValue`,
- * and use the specified `bundled` as fallback if none is provided.
- * @param configName
- * @param bundled
- */
-function getProbeLocations(bundled: string): string[] {
-  const locations = [];
-  // Prioritize the bundled version
-  locations.push(bundled);
-  // Look in workspaces currently open
-  const workspaceFolders = vscode.workspace.workspaceFolders || [];
-  for (const folder of workspaceFolders) {
-    locations.push(folder.uri.fsPath);
-  }
-  return locations;
 }
 
 function extensionVersionCompatibleWithAllProjects(serverModuleLocation: string): boolean {
