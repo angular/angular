@@ -308,11 +308,7 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
         if (ts.isTypeReferenceNode(node)) {
           const typeName = this.routeEntityNameThroughImportManager(node.typeName);
           const typeArguments = node.typeArguments
-            ? ts.factory.createNodeArray(
-                node.typeArguments.map(
-                  (arg) => ts.visitNode(arg, visit, ts.isTypeNode) as ts.TypeNode,
-                ),
-              )
+            ? ts.visitNodes(node.typeArguments, visit, ts.isTypeNode)
             : undefined;
           return ts.factory.updateTypeReferenceNode(node, typeName, typeArguments);
         }

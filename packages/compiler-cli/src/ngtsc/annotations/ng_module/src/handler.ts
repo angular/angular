@@ -1120,8 +1120,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<
     const rawDeclarations = ngModule.get('declarations') ?? null;
     const rawImports = ngModule.get('imports') ?? null;
     const rawExports = ngModule.get('exports') ?? null;
-    const rawBootstrap = ngModule.get('bootstrap') ?? null;
-    const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
+    const rawProviders = ngModule.get('providers') ?? null;
 
     let id: Expression | null = null;
     if (ngModule.has('id')) {
@@ -1381,7 +1380,7 @@ function expressionToEntityName(expr: ts.Expression): ts.EntityName | null {
   }
   if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) {
     const left = expressionToEntityName(expr.expression);
-    return left === null ? null : ts.factory.createQualifiedName(left, expr.name.text);
+    return left === null ? null : ts.factory.createQualifiedName(left, expr.name);
   }
   return null;
 }
@@ -1391,12 +1390,15 @@ function transformToTypeTupleElement(
   reflector: ReflectionHost,
   diagnostics: ts.Diagnostic[],
 ): Expression {
-  el = unwrapExpression(el);
-
-  const forwardRefUnwrapped = tryUnwrapForwardRef(el, reflector);
-  if (forwardRefUnwrapped !== null) {
-    return transformToTypeTupleElement(forwardRefUnwrapped, reflector, diagnostics);
+  let current = unwrapExpression(el);
+  while (true) {
+    const unwrapped = tryUnwrapForwardRef(current, reflector);
+    if (unwrapped === null) {
+      break;
+    }
+    current = unwrapExpression(unwrapped);
   }
+  el = current;
 
   // A call expression (e.g. `Foo.forRoot()` or a bare `fn()`) cannot be referenced with a
   // `typeof` query directly. Instead emit `ReturnType<typeof callee>` so that the `.d.ts`

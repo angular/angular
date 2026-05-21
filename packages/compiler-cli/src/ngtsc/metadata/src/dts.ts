@@ -84,39 +84,22 @@ export class DtsMetadataReader implements MetadataReader {
       return moduleWithProvidersTypeArgument(typeNode, this.reflector);
     };
 
+    const evaluateMetadata = (metadataNode: ts.TypeNode) => {
+      return metadataNode.kind === ts.SyntaxKind.NeverKeyword
+        ? []
+        : this.evaluator.evaluateType(
+            metadataNode,
+            ref.bestGuessOwningModule,
+            undefined,
+            foreignTypeResolver,
+          );
+    };
+
     const declarations = this.extractReferencesFromResolvedValue(
-      declarationMetadata.kind === ts.SyntaxKind.NeverKeyword
-        ? []
-        : this.evaluator.evaluateType(
-            declarationMetadata,
-            ref.bestGuessOwningModule,
-            undefined,
-            foreignTypeResolver,
-          ),
-      ref.bestGuessOwningModule,
+      evaluateMetadata(declarationMetadata),
     );
-    const exports = this.extractReferencesFromResolvedValue(
-      exportMetadata.kind === ts.SyntaxKind.NeverKeyword
-        ? []
-        : this.evaluator.evaluateType(
-            exportMetadata,
-            ref.bestGuessOwningModule,
-            undefined,
-            foreignTypeResolver,
-          ),
-      ref.bestGuessOwningModule,
-    );
-    const imports = this.extractReferencesFromResolvedValue(
-      importMetadata.kind === ts.SyntaxKind.NeverKeyword
-        ? []
-        : this.evaluator.evaluateType(
-            importMetadata,
-            ref.bestGuessOwningModule,
-            undefined,
-            foreignTypeResolver,
-          ),
-      ref.bestGuessOwningModule,
-    );
+    const exports = this.extractReferencesFromResolvedValue(evaluateMetadata(exportMetadata));
+    const imports = this.extractReferencesFromResolvedValue(evaluateMetadata(importMetadata));
 
     // The module is considered poisoned if it's exports couldn't be
     // resolved completely. This would make the module not necessarily
@@ -142,10 +125,10 @@ export class DtsMetadataReader implements MetadataReader {
     };
   }
 
-  private extractReferencesFromResolvedValue(
-    value: ResolvedValue,
-    bestGuessOwningModule: OwningModule | null,
-  ): {result: Reference<ClassDeclaration>[]; isIncomplete: boolean} {
+  private extractReferencesFromResolvedValue(value: ResolvedValue): {
+    result: Reference<ClassDeclaration>[];
+    isIncomplete: boolean;
+  } {
     const result: Reference<ClassDeclaration>[] = [];
     let isIncomplete = false;
 
@@ -460,7 +443,7 @@ function moduleWithProvidersTypeArgument(
     return null;
   }
   const name = ts.isQualifiedName(type.typeName) ? type.typeName.right : type.typeName;
-  if (!ts.isIdentifier(name) || name.text !== 'ModuleWithProviders') {
+  if (name.text !== 'ModuleWithProviders') {
     return null;
   }
   // If the reference can be traced to an import, require it to be from `@angular/core`. If it can't
