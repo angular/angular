@@ -69,6 +69,7 @@ import {
   triggerPrefetching,
   triggerResourceLoading,
   shouldAttachTrigger,
+  shouldTriggerDeferBlock,
   hasHydrateTriggers,
 } from './triggering';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
@@ -580,8 +581,8 @@ export function ɵɵdeferOnHover(triggerIndex: number, walkUpTimes?: number) {
 
   renderPlaceholder(lView, tNode);
 
-  // Avoid adding event listeners when this instruction is invoked on the server.
-  if (!(typeof ngServerMode !== 'undefined' && ngServerMode)) {
+  // Avoid adding event listeners on the server or in manual testing mode.
+  if (shouldTriggerDeferBlock(TriggerType.Regular, lView)) {
     registerDomTrigger(
       lView,
       tNode,
@@ -677,8 +678,8 @@ export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: numbe
 
   renderPlaceholder(lView, tNode);
 
-  // Avoid adding event listeners when this instruction is invoked on the server.
-  if (!(typeof ngServerMode !== 'undefined' && ngServerMode)) {
+  // Avoid adding event listeners on the server or in manual testing mode.
+  if (shouldTriggerDeferBlock(TriggerType.Regular, lView)) {
     registerDomTrigger(
       lView,
       tNode,
@@ -785,8 +786,8 @@ export function ɵɵdeferOnViewport(
 
   renderPlaceholder(lView, tNode);
 
-  // Avoid adding event listeners when this instruction is invoked on the server.
-  if (!(typeof ngServerMode !== 'undefined' && ngServerMode)) {
+  // Avoid registering IntersectionObserver on the server or in manual testing mode.
+  if (shouldTriggerDeferBlock(TriggerType.Regular, lView)) {
     registerDomTrigger(
       lView,
       tNode,

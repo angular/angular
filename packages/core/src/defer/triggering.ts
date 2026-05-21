@@ -316,7 +316,7 @@ export function triggerResourceLoading(
 /**
  * Defines whether we should proceed with triggering a given defer block.
  */
-function shouldTriggerDeferBlock(triggerType: TriggerType, lView: LView): boolean {
+export function shouldTriggerDeferBlock(triggerType: TriggerType, lView: LView): boolean {
   // prevents triggering regular triggers when on the server.
   if (triggerType === TriggerType.Regular && typeof ngServerMode !== 'undefined' && ngServerMode) {
     return false;
