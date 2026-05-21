@@ -1468,9 +1468,9 @@ class HiddenModule {}
           ref.injector.get(NgZone).run(() => {
             http.get('/\\evil.com/api').subscribe();
 
-            // The URL constructor normalizes backslashes to %5C
-            // PREVENTING it from hitting http://evil.com/api via a protocol-relative URL interpretation.
-            mock.expectOne('http://localhost:4000/%5Cevil.com/api').flush('safe');
+            // To prevent SSRF, we ensures it's forced as a relative path and backslashes
+            // inside path-relative segments are normalized via URL constructor, generating a safe URL.
+            mock.expectOne('http://localhost:4000/evil.com/api').flush('safe');
           });
         });
       });
@@ -1566,6 +1566,93 @@ class HiddenModule {}
               expect(body).toEqual('success!');
             });
             mock.expectOne('http://localhost/testing').flush('success!');
+          });
+        });
+
+        it('should allow legitimate protocol-relative URLs', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('//example.com/testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://example.com/testing').flush('success!');
+          });
+        });
+
+        it('should treat backslash bypass SSRF attempts in relative requests strictly as pathnames', async () => {
+          const badUrls = [
+            '/\\attacker.com',
+            '\\\\attacker.com',
+            '///attacker.com',
+            '//\\attacker.com',
+            '  /\\attacker.com',
+            '\r\n/\\attacker.com',
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const badUrl of badUrls) {
+              http.get(badUrl).subscribe((body) => {
+                expect(body).toEqual('success!');
+              });
+              mock.expectOne('http://localhost:4000/attacker.com').flush('success!');
+            }
+          });
+        });
+
+        it('should resolve safe path-relative URLs containing backslashes without origin change', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('\\testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/testing').flush('success!');
+          });
+        });
+
+        it('should resolve backslashes inside path-relative segments without origin change', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('/foo\\bar').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/foo/bar').flush('success!');
+          });
+        });
+
+        it('should resolve relative request URLs without leading slash relative to parent path', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/testing').flush('success!');
+          });
+        });
+      });
+
+      describe(`given 'url' is provided in 'INITIAL_CONFIG' with a trailing slash`, () => {
+        let mock: HttpTestingController;
+        let ref: NgModuleRef<HttpInterceptorExampleModule>;
+        let http: HttpClient;
+
+        beforeEach(async () => {
+          const platform = platformServer([
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '<app></app>',
+                url: 'http://localhost:4000/foo/',
+              },
+            },
+          ]);
+
+          ref = await platform.bootstrapModule(HttpInterceptorExampleModule);
+          mock = ref.injector.get(HttpTestingController);
+          http = ref.injector.get(HttpClient);
+        });
+
+        it('should resolve sub-path relative request URLs relative to trailing-slash base URL', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/foo/testing').flush('success!');
           });
         });
       });

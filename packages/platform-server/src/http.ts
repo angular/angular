@@ -59,14 +59,22 @@ function relativeUrlsTransformerInterceptorFn(
   const baseHref = platformLocation.getBaseHrefFromDOM() || href;
   const baseUrl = new URL(baseHref, urlPrefix);
 
-  // Prevent SSRF bypasses via backslash URLs.
-  // The `URL` constructor normalizes backslashes to forward slashes, which can
-  // cause `/\` to be evaluated as a protocol-relative URL (`//`).
-  // Replacing backslashes with their URL-encoded equivalent prevents this.
-  const safeUrl = request.url.replace(/\\/g, '%5C');
-  const newUrl = new URL(safeUrl, baseUrl).toString();
+  let parsedUrl = new URL(request.url, baseUrl);
 
-  return next(request.clone({url: newUrl}));
+  if (parsedUrl.origin !== baseUrl.origin) {
+    // If the request changed the origin, we check if it was authorized to do so.
+    // Legitimate absolute URLs start with a scheme (e.g. http://) or are protocol-relative (//).
+    // SSRF bypasses via backslashes (e.g. `/\attacker.com`, `\\attacker.com`) evade naive checks.
+    const isAbsolute = /^[\s\r\n]*(?:[a-zA-Z][a-zA-Z0-9+\-.]*:)/.test(request.url);
+    const isProtocolRelative = /^[\s\r\n]*\/\/[^/\\]/.test(request.url);
+
+    if (!isAbsolute && !isProtocolRelative) {
+      // Unrecognized structure that changed origin. Force it to be a local path.
+      parsedUrl = new URL(request.url.replace(/^[\s\r\n]*[/\\]+/, '/'), baseUrl);
+    }
+  }
+
+  return next(request.clone({url: parsedUrl.toString()}));
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
