@@ -123,7 +123,17 @@ describe('foreign views', () => {
     vcr2.insert(viewRef);
 
     expect(fixture.nativeElement.innerHTML).toBe(
-      '<div></div><!--container--><div></div><!----><span></span><span></span><!----><!--container-->',
+      '' +
+        '<div></div>' +
+        // First <div> container
+        '<!--container-->' +
+        '<div></div>' +
+        // Foreign view
+        '<!--foreign-view-head-->' +
+        '<span></span><span></span>' +
+        '<!--foreign-view-tail-->' +
+        // Second <div> container
+        '<!--container-->',
     );
   });
 
