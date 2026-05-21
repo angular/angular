@@ -102,7 +102,8 @@ export class Meta {
    */
   getTag(attrSelector: string): HTMLMetaElement | null {
     if (!attrSelector) return null;
-    return this._doc.querySelector(`meta[${attrSelector}]`) || null;
+    const meta = this._doc.querySelector(`meta[${attrSelector}]`);
+    return meta?.nodeName.toLowerCase() === 'meta' ? meta : null;
   }
 
   /**
@@ -114,7 +115,11 @@ export class Meta {
   getTags(attrSelector: string): HTMLMetaElement[] {
     if (!attrSelector) return [];
     const list /*NodeList*/ = this._doc.querySelectorAll(`meta[${attrSelector}]`);
-    return list ? [].slice.call(list) : [];
+    return list
+      ? (([].slice.call(list) as HTMLElement[]).filter(
+          (elem) => elem.nodeName.toLowerCase() === 'meta',
+        ) as HTMLMetaElement[])
+      : [];
   }
 
   /**

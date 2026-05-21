@@ -89,6 +89,24 @@ describe('Meta service', () => {
     expect(actual!.getAttribute('content')).toEqual('4321');
   });
 
+  it('should not allow a custom selector to match off target elements like the body tag', () => {
+    // This payload attempts to break out of the `meta[name="..."]` constraint entirely
+    // and inject a comma to target arbitrary DOM elements like the `body` tag via the
+    // `selector` argument of `updateTag`.
+    const attackerSelector = 'name="description"], body, meta[name="pwned"';
+
+    const firstMeta = metaService.updateTag({content: 'pwned'}, attackerSelector)!;
+
+    expect(firstMeta).not.toBeNull();
+    // It creates a new meta element instead of targeting `body` because it did not
+    // find a meta element matching the dirty selector since `body` is not a `meta` tag
+    expect(firstMeta!.nodeName.toLowerCase()).toEqual('meta');
+    expect(firstMeta!.getAttribute('content')).toEqual('pwned');
+    expect(doc.body.getAttribute('content')).toBeNull();
+
+    metaService.removeTagElement(firstMeta);
+  });
+
   it('should extract selector from the tag definition', () => {
     const selector = 'property="fb:app_id"';
     metaService.updateTag({property: 'fb:app_id', content: '666'});
