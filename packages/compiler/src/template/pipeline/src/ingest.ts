@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {isUnsafeObjectKey} from '../../../render3/util';
 import {
   DeferBlockDepsEmitMode,
   R3ComponentDeferMetadata,
@@ -296,14 +297,14 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
       propEntries.push({
         key: attr.name,
         value: o.literal(attr.value),
-        quoted: false,
+        quoted: isUnsafeObjectKey(attr.name),
       });
     }
     for (const input of element.inputs) {
       propEntries.push({
         key: input.name,
         value: convertAst(input.value, unit.job, input.sourceSpan),
-        quoted: false,
+        quoted: isUnsafeObjectKey(input.name),
       });
     }
     const props = propEntries.length > 0 ? o.literalMap(propEntries) : null;

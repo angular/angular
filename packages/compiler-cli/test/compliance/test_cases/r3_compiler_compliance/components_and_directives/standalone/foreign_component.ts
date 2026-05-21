@@ -9,7 +9,14 @@ function frameworkImport(component: {}): Function {
 
 @Component({
   selector: 'main',
-  template: '<FancyButton class="btn-cls" [label]="title"></FancyButton>',
+  template: `
+    <FancyButton
+      class="btn-cls"
+      unsafe-attr="value"
+      [label]="title"
+      [unsafe-input]="title"
+    />
+  `,
   // @ts-ignore: @angular/core does not expose the `foreignImports` property.
   foreignImports: [
     // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.

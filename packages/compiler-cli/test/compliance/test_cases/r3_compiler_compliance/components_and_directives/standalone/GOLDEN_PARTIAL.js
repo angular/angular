@@ -388,13 +388,27 @@ function frameworkImport(component) {
 export class TestCmp {
     title = 'Submit';
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "main", ngImport: i0, template: '<FancyButton class="btn-cls" [label]="title"></FancyButton>', isInline: true });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "main", ngImport: i0, template: `
+    <FancyButton
+      class="btn-cls"
+      unsafe-attr="value"
+      [label]="title"
+      [unsafe-input]="title"
+    />
+  `, isInline: true });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
             args: [{
                     selector: 'main',
-                    template: '<FancyButton class="btn-cls" [label]="title"></FancyButton>',
+                    template: `
+    <FancyButton
+      class="btn-cls"
+      unsafe-attr="value"
+      [label]="title"
+      [unsafe-input]="title"
+    />
+  `,
                     // @ts-ignore: @angular/core does not expose the `foreignImports` property.
                     foreignImports: [
                         // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
