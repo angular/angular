@@ -106,8 +106,12 @@ export function createForeignView(lContainer: LContainer, index: number): Foreig
   // 5. "Render" the view by creating the head and tail nodes, populating their slots, and marking
   // the view as created. This last step is normally handled by `renderView()` for native Angular
   // views with template functions.
-  const headComment = (lView[headTNode.index] = renderer.createComment(''));
-  const tailComment = (lView[tailTNode.index] = renderer.createComment(''));
+  const headComment = (lView[headTNode.index] = renderer.createComment(
+    ngDevMode ? 'foreign-view-head' : '',
+  ));
+  const tailComment = (lView[tailTNode.index] = renderer.createComment(
+    ngDevMode ? 'foreign-view-tail' : '',
+  ));
   lView[FLAGS] &= ~LViewFlags.CreationMode;
 
   // 6. Insert the view into the container
