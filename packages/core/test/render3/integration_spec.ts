@@ -18,8 +18,8 @@ import {TestBed} from '../../testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
-import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/dom_security_schema';
+import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
@@ -690,6 +690,50 @@ describe('sanitization', () => {
     });
     const fixture = TestBed.createComponent(TestComp);
     expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should throw on uppercase iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.src]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <IFRAME unsafeUrlHostBindingDir></IFRAME>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
+  });
+
+  it('should throw on uppercase SRC attribute on iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.SRC]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <iframe unsafeUrlHostBindingDir></iframe>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
   });
 });
 
