@@ -646,7 +646,7 @@ export interface Component extends Directive {
    * The foreignImports property specifies components from other frameworks that can be used
    * within this component's template.
    *
-   * @internal
+   * @internal // 3p-only
    */
   foreignImports?: ForeignComponent[];
 
@@ -657,7 +657,7 @@ export interface Component extends Directive {
    * which bring symbols used in the `deferredImports` don't contain other symbols.
    *
    * Note: this is an internal-only field, use regular `@Component.imports` field instead.
-   * @internal
+   * @internal // 3p-only
    */
   deferredImports?: (Type<any> | ReadonlyArray<any>)[];
 

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
+// g3-only import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
+import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types'; // 3p-only
 import {assertInInjectionContext, inject, Injector, runInInjectionContext} from '../di';
 import type {ModelContext, ToolDescriptor} from './types';
 import {DestroyRef} from '../linker';

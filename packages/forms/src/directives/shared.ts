@@ -65,7 +65,8 @@ export type SetDisabledStateOption = 'whenDisabledForLegacyCode' | 'always';
 /**
  * Whether to use the fixed setDisabledState behavior by default.
  */
-export const setDisabledStateDefault: SetDisabledStateOption = 'always';
+// g3-only export const setDisabledStateDefault: SetDisabledStateOption = 'whenDisabledForLegacyCode';
+export const setDisabledStateDefault: SetDisabledStateOption = 'always'; // 3p-only
 
 export function controlPath(name: string | null, parent: ControlContainer): string[] {
   return [...parent.path!, name!];

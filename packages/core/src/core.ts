@@ -76,6 +76,7 @@ export {
   TRANSLATIONS,
   TRANSLATIONS_FORMAT,
 } from './i18n/tokens';
+// g3-only export {ForeignComponent} from './interface/foreign_component';
 export {AbstractType, Type} from './interface/type';
 export * from './linker';
 export * from './linker/ng_module_factory_loader_impl';
@@ -111,6 +112,7 @@ export {
   outputBinding,
   twoWayBinding,
 } from './render3/dynamic_bindings';
+// g3-only export {foreignImport} from './render3/foreign_import';
 export {createEnvironmentInjector, createNgModule} from './render3/ng_module_ref';
 export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
 export * from './resource';
