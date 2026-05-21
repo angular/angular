@@ -33,7 +33,7 @@
   width: 13rem;
   font-size: 1rem;
   border-radius: 0.25rem;
-  padding: 0.75rem 0.5rem 0.75rem 2.5rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem;
   color: var(--primary-contrast);
   outline: none;
   border: 1px solid var(--quinary-contrast);
@@ -110,4 +110,36 @@
 
 .check-icon {
   font-size: 0.9rem;
+}
+
+.clear-button {
+  position: absolute;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: var(--quaternary-contrast);
+  padding: 0;
+  margin: 0;
+  outline: none;
+  transition: background-color 0.15s ease;
+}
+
+.clear-button:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+.clear-button:focus-visible {
+  outline: 2px solid var(--hot-pink);
+  outline-offset: -2px;
+}
+
+.clear-icon {
+  font-size: 1.25rem;
 }

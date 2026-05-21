@@ -15,6 +15,16 @@
       (keydown.arrowup)="navigated.set(true)"
       [inlineSuggestion]="query() || navigated() ? selectedOption()[0] : undefined"
     />
+    <button
+      type="button"
+      class="clear-button"
+      aria-label="Clear"
+      (mousedown)="$event.preventDefault()"
+      (click)="clear()"
+      (keydown)="onKeydown($event)"
+    >
+      <span class="clear-icon" aria-hidden="true">X</span>
+    </button>
   </div>
 
   <div aria-live="polite" class="cdk-visually-hidden">
