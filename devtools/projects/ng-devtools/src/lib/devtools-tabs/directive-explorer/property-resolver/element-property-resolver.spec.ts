@@ -18,7 +18,6 @@ const mockIndexedNode: IndexedNode = {
     id: 0,
     isElement: false,
   },
-  hydration: null,
   directives: [
     {
       id: 1,

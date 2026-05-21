@@ -686,7 +686,6 @@ export const buildDirectiveForest = (): ComponentTreeNode[] => {
     while (frontier.length) {
       const node = frontier.pop()!;
       node.element ??= node.nativeElement?.nodeName.toLowerCase() ?? '';
-      node.hydration ??= null;
       node.component!.isElement ??= false;
       for (const child of node.children) {
         frontier.push(child);
