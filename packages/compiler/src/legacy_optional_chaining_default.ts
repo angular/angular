@@ -11,4 +11,5 @@
  *
  * This is extracted in order to be patched in G3.
  */
-export const LEGACY_OPTIONAL_CHAINING_DEFAULT = false;
+// g3-only export const LEGACY_OPTIONAL_CHAINING_DEFAULT = true;
+export const LEGACY_OPTIONAL_CHAINING_DEFAULT = false; // 3p-only

@@ -240,7 +240,8 @@ export class ActivatedRoute {
 
 export type ParamsInheritanceStrategy = 'emptyOnly' | 'always';
 
-export const DEFAULT_PARAMS_INHERITANCE_STRATEGY: ParamsInheritanceStrategy = 'always';
+// g3-only export const DEFAULT_PARAMS_INHERITANCE_STRATEGY: ParamsInheritanceStrategy = 'emptyOnly';
+export const DEFAULT_PARAMS_INHERITANCE_STRATEGY: ParamsInheritanceStrategy = 'always'; // 3p-only
 
 /** @internal */
 export type Inherited = {

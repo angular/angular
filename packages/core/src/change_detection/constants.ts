@@ -38,6 +38,8 @@ export enum ChangeDetectionStrategy {
    * explicitly deactivated.
    * @deprecated Use `Eager` instead.
    */
+  // 3p-only-start
   // tslint:disable-next-line:no-duplicate-enum-values
   Default = 1,
+  // 3p-only-end
 }
