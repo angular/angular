@@ -2190,11 +2190,11 @@ runInEachFileSystem(() => {
       const foreignSetupCode = `
         // We must redeclare foreignImports and ForeignComponent to test them since they are marked @internal.
         declare module '@angular/core' {
-          export interface ForeignComponent {}
-          export function foreignImport(render: Function): ForeignComponent;
+          export interface ForeignComponent<TProps> {}
+          export function foreignImport<TProps>(render: (props: TProps) => any): ForeignComponent<TProps>;
 
           interface Component {
-            foreignImports?: ForeignComponent[];
+            foreignImports?: ForeignComponent<any>[];
           }
         }
 
@@ -2203,7 +2203,7 @@ runInEachFileSystem(() => {
 
         function FancyButton() {}
 
-        function frameworkImport(component: unknown): ForeignComponent {
+        function frameworkImport(component: unknown): ForeignComponent<any> {
           return foreignImport(() => {});
         }
       `;

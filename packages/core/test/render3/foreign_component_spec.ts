@@ -1,0 +1,174 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {ɵɵforeignComponent} from '../../src/render3/instructions/foreign_component';
+import {foreignImport} from '../../src/render3/foreign_import';
+import {destroyLView} from '../../src/render3/node_manipulation';
+import {ViewFixture} from './view_fixture';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/element';
+import {inject, InjectionToken} from '../../src/di';
+import {ɵɵdefineDirective} from '../../src/render3/definition';
+import {ɵɵProvidersFeature} from '../../src/render3/features/providers_feature';
+
+describe('ɵɵforeignComponent', () => {
+  afterEach(ViewFixture.cleanUp);
+
+  it("should render a foreign component's native elements", () => {
+    const foreignComp = foreignImport(() => {
+      const el = document.createElement('div');
+      el.id = 'foreign-el';
+      el.textContent = 'Foreign Content';
+      return [[el]];
+    });
+
+    const fixture = new ViewFixture({
+      decls: 1,
+      vars: 0,
+      create: () => {
+        ɵɵforeignComponent(0, foreignComp);
+      },
+    });
+
+    expect(fixture.host.innerHTML).toContain('<div id="foreign-el">Foreign Content</div>');
+  });
+
+  it('should pass props to a foreign component', () => {
+    let passedProps: any = null;
+    const foreignComp = foreignImport<{name: string}>((props) => {
+      passedProps = props;
+      return [[]];
+    });
+
+    new ViewFixture({
+      decls: 1,
+      vars: 0,
+      create: () => {
+        ɵɵforeignComponent(0, foreignComp, {name: 'Angular'});
+      },
+    });
+
+    expect(passedProps).toEqual({name: 'Angular'});
+  });
+
+  it('should call the dispose function when the containing view is destroyed', () => {
+    let disposeCalled = false;
+    const foreignComp = foreignImport(() => {
+      return [
+        [],
+        () => {
+          disposeCalled = true;
+        },
+      ];
+    });
+
+    const fixture = new ViewFixture({
+      decls: 1,
+      vars: 0,
+      create: () => {
+        ɵɵforeignComponent(0, foreignComp);
+      },
+    });
+
+    expect(disposeCalled).toBeFalse();
+
+    destroyLView(fixture.tView, fixture.lView);
+
+    expect(disposeCalled).toBeTrue();
+  });
+
+  it('should render foreign view between sibling elements', () => {
+    const foreignComp = foreignImport(() => {
+      const el = document.createElement('div');
+      el.textContent = 'Foreign Content';
+      return [[el]];
+    });
+
+    const fixture = new ViewFixture({
+      decls: 3,
+      vars: 0,
+      create: () => {
+        ɵɵelement(0, 'p');
+        ɵɵforeignComponent(1, foreignComp);
+        ɵɵelement(2, 'span');
+      },
+    });
+
+    expect(fixture.host.innerHTML).toContain(
+      '' +
+        '<p></p>' +
+        '<!--foreign-view-head-->' +
+        '<div>Foreign Content</div>' +
+        '<!--foreign-view-tail-->' +
+        '<!--foreign-component-->' +
+        '<span></span>',
+    );
+  });
+
+  it('should render foreign view as a child of a parent element', () => {
+    const foreignComp = foreignImport(() => {
+      const el = document.createElement('span');
+      el.textContent = 'Foreign Content';
+      return [[el]];
+    });
+
+    const fixture = new ViewFixture({
+      decls: 2,
+      vars: 0,
+      create: () => {
+        ɵɵelementStart(0, 'div');
+        ɵɵforeignComponent(1, foreignComp);
+        ɵɵelementEnd();
+      },
+    });
+
+    expect(fixture.host.innerHTML).toContain(
+      '' +
+        '<div>' +
+        '<!--foreign-view-head-->' +
+        '<span>Foreign Content</span>' +
+        '<!--foreign-view-tail-->' +
+        '<!--foreign-component-->' +
+        '</div>',
+    );
+  });
+
+  it('should execute the RENDER function inside the template injection context', () => {
+    const TEST_TOKEN = new InjectionToken<string>('test-token');
+
+    const foreignComp = foreignImport(() => {
+      const value = inject(TEST_TOKEN, {optional: true}) ?? 'null';
+      const el = document.createElement('div');
+      el.id = 'foreign-el';
+      el.textContent = value;
+      return [[el]];
+    });
+
+    class ProviderDirective {
+      static ɵfac = () => new ProviderDirective();
+      static ɵdir = ɵɵdefineDirective({
+        type: ProviderDirective,
+        selectors: [['', 'provider-dir', '']],
+        features: [ɵɵProvidersFeature([{provide: TEST_TOKEN, useValue: 'templated-value'}])],
+      });
+    }
+
+    const fixture = new ViewFixture({
+      decls: 2,
+      vars: 0,
+      consts: [['provider-dir', '']],
+      directives: [ProviderDirective],
+      create: () => {
+        ɵɵelementStart(0, 'div', 0);
+        ɵɵforeignComponent(1, foreignComp);
+        ɵɵelementEnd();
+      },
+    });
+
+    expect(fixture.host.innerHTML).toContain('<div id="foreign-el">templated-value</div>');
+  });
+});
