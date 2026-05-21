@@ -332,6 +332,46 @@ export class OrderComponent {
 }
 ```
 
+## Validation for unions and variants
+
+Some forms use union types where validation rules depend on the current variant. Use `applyWhenValue()` to conditionally apply validation rules based on another field's value.
+
+This pattern is useful for discriminated unions where different variants require different validation rules.
+
+```ts
+import {applyWhenValue, form, minLength, required} from '@angular/forms/signals';
+
+type Login =
+  | {
+      type: 'email';
+      email: string;
+      password: string;
+    }
+  | {
+      type: 'guest';
+      nickname: string;
+    };
+
+loginForm = form(this.loginModel, (schemaPath) => {
+  applyWhenValue(schemaPath, {
+    when: ({valueOf}) => valueOf(schemaPath.type) === 'email',
+    apply: (path) => {
+      required(path.email);
+      minLength(path.password, 8);
+    },
+  });
+
+  applyWhenValue(schemaPath, {
+    when: ({valueOf}) => valueOf(schemaPath.type) === 'guest',
+    apply: (path) => {
+      required(path.nickname);
+    },
+  });
+});
+```
+
+`applyWhenValue()` only applies validation rules when the `when` condition returns `true`. This lets each variant define its own validation requirements while keeping validation logic inside the schema function.
+
 ## Validation errors
 
 When validation rules fail, they produce error objects that describe what went wrong. Understanding error structure helps you provide clear feedback to users.
