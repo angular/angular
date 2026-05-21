@@ -12,7 +12,7 @@ import {APP_ID, DOCUMENT, inject, makeStateKey, TransferState} from '@angular/co
 /**
  * This function serializes the transfer state into the DOM.
  */
-export async function serializeTransferState(): Promise<void> {
+export function serializeTransferState(): void {
   const doc = inject(DOCUMENT);
   const appId = inject(APP_ID);
   const transferState = inject(TransferState);
