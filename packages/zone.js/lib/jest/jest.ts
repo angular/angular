@@ -28,8 +28,12 @@ export function patchJest(Zone: ZoneType): void {
     (Zone as any)[api.symbol('ignoreConsoleErrorUncaughtError')] = true;
     jest['__zone_patch__'] = true;
 
-    const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'];
-    const SyncTestZoneSpec = (Zone as any)['SyncTestZoneSpec'];
+    const ProxyZoneSpec = Object.prototype.hasOwnProperty.call(Zone, 'ProxyZoneSpec')
+        ? (Zone as any)['ProxyZoneSpec']
+        : undefined;
+    const SyncTestZoneSpec = Object.prototype.hasOwnProperty.call(Zone, 'SyncTestZoneSpec')
+        ? (Zone as any)['SyncTestZoneSpec']
+        : undefined;
 
     if (!ProxyZoneSpec) {
       throw new Error('Missing ProxyZoneSpec');
@@ -85,7 +89,9 @@ export function patchJest(Zone: ZoneType): void {
           !(testBody as any).isFakeAsync
         ) {
           // jest.useFakeTimers is called, run into fakeAsyncTest automatically.
-          const fakeAsyncModule = (Zone as any)[Zone.__symbol__('fakeAsyncTest')];
+          const fakeAsyncModule = Object.prototype.hasOwnProperty.call(Zone, Zone.__symbol__('fakeAsyncTest'))
+              ? (Zone as any)[Zone.__symbol__('fakeAsyncTest')]
+              : undefined;
           if (fakeAsyncModule && typeof fakeAsyncModule.fakeAsync === 'function') {
             testBody = fakeAsyncModule.fakeAsync(testBody);
           }

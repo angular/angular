@@ -906,7 +906,9 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 let _fakeAsyncTestZoneSpec: FakeAsyncTestZoneSpec | null = null;
 
 function getProxyZoneSpec(): typeof ProxyZoneSpec | undefined {
-  return Zone && (Zone as any)['ProxyZoneSpec'];
+  return Zone && Object.prototype.hasOwnProperty.call(Zone, 'ProxyZoneSpec')
+    ? (Zone as any)['ProxyZoneSpec']
+    : undefined;
 }
 
 let _sharedProxyZoneSpec: ProxyZoneSpec | null = null;
@@ -963,7 +965,9 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
     try {
       // in case jasmine.clock init a fakeAsyncTestZoneSpec
       if (!_fakeAsyncTestZoneSpec) {
-        const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];
+        const FakeAsyncTestZoneSpec = Zone && Object.prototype.hasOwnProperty.call(Zone, 'FakeAsyncTestZoneSpec')
+            ? (Zone as any)['FakeAsyncTestZoneSpec']
+            : undefined;
         if (proxyZoneSpec.getDelegate() instanceof FakeAsyncTestZoneSpec) {
           throw new Error('fakeAsync() calls can not be nested');
         }

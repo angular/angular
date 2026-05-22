@@ -36,8 +36,14 @@ export function patchJasmine(Zone: ZoneType): void {
     }
     (jasmine as any)['__zone_patch__'] = true;
 
-    const SyncTestZoneSpec: {new (name: string): ZoneSpec} = (Zone as any)['SyncTestZoneSpec'];
-    const ProxyZoneSpec: {new (): ZoneSpec} = (Zone as any)['ProxyZoneSpec'];
+    const SyncTestZoneSpec: {new (name: string): ZoneSpec} =
+        Object.prototype.hasOwnProperty.call(Zone, 'SyncTestZoneSpec')
+            ? (Zone as any)['SyncTestZoneSpec']
+            : undefined;
+    const ProxyZoneSpec: {new (): ZoneSpec} =
+        Object.prototype.hasOwnProperty.call(Zone, 'ProxyZoneSpec')
+            ? (Zone as any)['ProxyZoneSpec']
+            : undefined;
     if (!SyncTestZoneSpec) throw new Error('Missing: SyncTestZoneSpec');
     if (!ProxyZoneSpec) throw new Error('Missing: ProxyZoneSpec');
 
@@ -123,7 +129,10 @@ export function patchJasmine(Zone: ZoneType): void {
             ['install', 'uninstall'].forEach((methodName) => {
               const originalClockFn: Function = (clock[symbol(methodName)] = clock[methodName]);
               clock[methodName] = function () {
-                const FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
+                const FakeAsyncTestZoneSpec =
+                    Object.prototype.hasOwnProperty.call(Zone, 'FakeAsyncTestZoneSpec')
+                        ? (Zone as any)['FakeAsyncTestZoneSpec']
+                        : undefined;
                 if (FakeAsyncTestZoneSpec) {
                   (jasmine as any)[symbol('clockInstalled')] = 'install' === methodName;
                   return;

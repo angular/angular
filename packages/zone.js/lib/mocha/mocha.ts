@@ -24,8 +24,12 @@ export function patchMocha(Zone: ZoneType): void {
       throw new Error('Missing Zone.js');
     }
 
-    const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'];
-    const SyncTestZoneSpec = (Zone as any)['SyncTestZoneSpec'];
+    const ProxyZoneSpec = Object.prototype.hasOwnProperty.call(Zone, 'ProxyZoneSpec')
+        ? (Zone as any)['ProxyZoneSpec']
+        : undefined;
+    const SyncTestZoneSpec = Object.prototype.hasOwnProperty.call(Zone, 'SyncTestZoneSpec')
+        ? (Zone as any)['SyncTestZoneSpec']
+        : undefined;
 
     if (!ProxyZoneSpec) {
       throw new Error('Missing ProxyZoneSpec');
