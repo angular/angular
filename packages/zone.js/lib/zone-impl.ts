@@ -1435,10 +1435,13 @@ export function initZone(): ZoneType {
         task.runCount++;
         return task.zone.runTask(task, target, args);
       } finally {
-        if (_numberOfNestedTaskFrames === 1 && !global[enableNativeMicrotaskDraining]) {
-          drainMicroTaskQueueSynchronously();
+        try {
+          if (_numberOfNestedTaskFrames === 1 && !global[enableNativeMicrotaskDraining]) {
+            drainMicroTaskQueueSynchronously();
+          }
+        } finally {
+          _numberOfNestedTaskFrames--;
         }
-        _numberOfNestedTaskFrames--;
       }
     }
 
@@ -1551,26 +1554,31 @@ export function initZone(): ZoneType {
 
     _isDrainingMicrotaskQueue = true;
 
-    while (_microTaskQueue.length) {
-      const queue = _microTaskQueue;
-      _microTaskQueue = [];
+    try {
+      while (_microTaskQueue.length) {
+        const queue = _microTaskQueue;
+        _microTaskQueue = [];
 
-      for (const task of queue) {
-        try {
-          task.zone.runTask(task, null, null);
-        } catch (error) {
-          _api.onUnhandledError(error as Error);
+        for (const task of queue) {
+          try {
+            task.zone.runTask(task, null, null);
+          } catch (error) {
+            _api.onUnhandledError(error as Error);
+          }
         }
       }
-    }
-
-    // The order matters!
-    if (global[enableNativeMicrotaskDraining]) {
-      _isDrainingMicrotaskQueue = false;
-      _api.microtaskDrainDone();
-    } else {
-      _api.microtaskDrainDone();
-      _isDrainingMicrotaskQueue = false;
+    } finally {
+      // The order matters!
+      if (global[enableNativeMicrotaskDraining]) {
+        _isDrainingMicrotaskQueue = false;
+        _api.microtaskDrainDone();
+      } else {
+        try {
+          _api.microtaskDrainDone();
+        } finally {
+          _isDrainingMicrotaskQueue = false;
+        }
+      }
     }
   }
 
