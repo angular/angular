@@ -27,7 +27,7 @@ import {minDateError} from './validation_errors';
  *
  * @see [Signal Form Min Validation](guide/forms/signals/validation#min-and-max)
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export function minDate<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

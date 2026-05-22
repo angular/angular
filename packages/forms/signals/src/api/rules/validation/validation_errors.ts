@@ -106,7 +106,7 @@ export function minError(
  * @param options The validation error options
  *
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export function minDateError(
   minDate: Date,
@@ -118,7 +118,7 @@ export function minDateError(
  * @param options The optional validation error options
  *
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export function minDateError(
   minDate: Date,
@@ -168,7 +168,7 @@ export function maxError(
  * @param options The validation error options
  *
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export function maxDateError(
   maxDate: Date,
@@ -180,7 +180,7 @@ export function maxDateError(
  * @param options The optional validation error options
  *
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export function maxDateError(
   maxDate: Date,
@@ -436,7 +436,7 @@ export class MinValidationError extends BaseNgValidationError {
  * An error used to indicate that a date value is earlier than the minimum allowed.
  *
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export class MinDateValidationError extends BaseNgValidationError {
   override readonly kind = 'minDate';
@@ -470,7 +470,7 @@ export class MaxValidationError extends BaseNgValidationError {
  * An error used to indicate that a date value is later than the maximum allowed.
  *
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export class MaxDateValidationError extends BaseNgValidationError {
   override readonly kind = 'maxDate';
