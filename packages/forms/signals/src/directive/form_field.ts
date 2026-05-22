@@ -152,9 +152,30 @@ export class FormField<T> {
     : undefined) as NativeFormControl;
 
   /**
-   * Current focus implementation, set by `registerAsBinding`.
+   * Focuses the host element, deferred to the next animation frame.
+   *
+   * We defer focus() to the next rAF because calling it synchronously can force
+   * the browser to immediately flush any pending style recalc and layout tree
+   * updates, which is expensive. By the time a rAF callback runs, the browser
+   * has already completed its normal pre-paint lifecycle for that frame (style,
+   * layout tree, geometry), so focus() finds a clean document and runs cheaply.
+   *
+   * The typeof guard is a safety check for server-side rendering environments
+   * (Node.js) and test environments (Jest/JSDOM) where requestAnimationFrame is
+   * not available. In those cases we fall back to calling focus() synchronously,
+   * since there is no rendering pipeline to optimize against anyway.
    */
-  private focuser = (options?: FocusOptions) => this.element.focus(options);
+  private focuser = (options?: FocusOptions) => {
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => {
+        this.element.focus(options);
+      });
+    } else {
+      // Fallback for SSR and test environments: focus synchronously since
+      // there is no browser rendering pipeline to defer into.
+      this.element.focus(options);
+    }
+  };
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
   private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
