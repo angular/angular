@@ -1,3 +1,13 @@
+## 21.2.4 (2026-05-22)
+
+- fix(vscode-extension): disable language server in untrusted workspaces ([4a41831326](https://github.com/angular/angular/commit/4a41831326f4de997796fdaf561f7c9677fce243))
+- fix(vscode-extension): restrict jsdoc markdown trust and harden document opening ([6d8b156b45](https://github.com/angular/angular/commit/6d8b156b456bc1a9087d12f2662391744c8e635e))
+- fix(vscode-extension): prompt for confirmation before loading workspace tsdk ([82cf38ad95](https://github.com/angular/angular/commit/82cf38ad9539dadf47f60b8743e873d8440bccac))
+- fix(vscode-extension): Look for tsdk override in the new js/ts.tsdk.path setting ([b40b67cdc1](https://github.com/angular/angular/commit/b40b67cdc182453eb9804f03dbd1b88881d03662))
+- fix(language-service): get quick info at local var location to align with TS semantics and support type narrowing ([7797671257](https://github.com/angular/angular/commit/7797671257350665e8b3ceb2bc6a0201829dd338))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.2.3 (2026-03-11)
 
 This release contains internal refactorings only.
