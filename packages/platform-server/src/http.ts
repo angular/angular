@@ -41,10 +41,21 @@ export class ServerXhr implements XhrFactory {
   }
 }
 
+/**
+ * Regex to match a URL schema.
+ */
+const URL_SCHEMA_REGEXP = /^(?:[a-zA-Z][a-zA-Z0-9+\-.]*:)/;
+
 function relativeUrlsTransformerInterceptorFn(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
+  const trimmedUrl = request.url.trim();
+  if (URL_SCHEMA_REGEXP.test(trimmedUrl)) {
+    // URLs with a schema should be left unchanged.
+    return next(request);
+  }
+
   const platformLocation = inject(PlatformLocation);
   const {href, protocol, hostname, port} = platformLocation;
   if (!protocol.startsWith('http')) {
@@ -65,12 +76,10 @@ function relativeUrlsTransformerInterceptorFn(
     // If the request changed the origin, we check if it was authorized to do so.
     // Legitimate absolute URLs start with a scheme (e.g. http://) or are protocol-relative (//).
     // SSRF bypasses via backslashes (e.g. `/\attacker.com`, `\\attacker.com`) evade naive checks.
-    const isAbsolute = /^[\s\r\n]*(?:[a-zA-Z][a-zA-Z0-9+\-.]*:)/.test(request.url);
-    const isProtocolRelative = /^[\s\r\n]*\/\/[^/\\]/.test(request.url);
-
-    if (!isAbsolute && !isProtocolRelative) {
+    const isProtocolRelative = /^\/\/[^/\\]/.test(trimmedUrl);
+    if (!isProtocolRelative) {
       // Unrecognized structure that changed origin. Force it to be a local path.
-      parsedUrl = new URL(request.url.replace(/^[\s\r\n]*[/\\]+/, '/'), baseUrl);
+      parsedUrl = new URL(trimmedUrl.replace(/^[/\\]+/, '/'), baseUrl);
     }
   }
 
