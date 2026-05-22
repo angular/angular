@@ -36,6 +36,18 @@ jobs:
           # that the action was triggered by a team member.
           ref: ${{steps.comment-branch.outputs.head_sha}}
 
+      # We cannot use `angular/dev-infra/github-actions/npm/checkout-and-setup-node` here
+      # because it does not support checking out from a fork (as it lacks a `repository` input).
+      # Thus, we checkout and setup Node/pnpm manually.
+      - name: Install pnpm
+        uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e # v6.0.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
       - run: pnpm install --frozen-lockfile
 
       - uses: angular/dev-infra/github-actions/bazel/configure-remote@442c2fcbf06a321b5196b4c5fc70e78a49242958

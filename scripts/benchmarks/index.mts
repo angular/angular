@@ -171,14 +171,14 @@ async function runCompare(bazelTargetRaw: string | undefined, compareRef: string
     Log.log(green('Checking out comparison revision.'));
     git.run(['checkout', 'FETCH_HEAD']);
 
-    await exec('yarn');
+    await exec('pnpm', ['install', '--frozen-lockfile']);
     await runBenchmarkTarget(bazelTarget);
   } finally {
     restoreWorkingStage(git, currentRef);
   }
 
   // Re-install dependencies for `HEAD`.
-  await exec('yarn');
+  await exec('pnpm', ['install', '--frozen-lockfile']);
 
   const comparisonResults = await collectBenchmarkResults(testlogPath);
 
