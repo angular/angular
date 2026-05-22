@@ -73,6 +73,7 @@ import {
 } from './i18n_util';
 import {createTNodeAtIndex} from '../tnode_manipulation';
 import {allocExpando} from '../view/construction';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../namespaces';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
@@ -984,9 +985,34 @@ function addCreateAttribute(
   create.push((newIndex << IcuCreateOpCode.SHIFT_REF) | IcuCreateOpCode.Attr, attrName, attrValue);
 }
 
+function splitNsName(elementName: string, fatal: boolean = true): [string | null, string] {
+  if (elementName[0] != ':') {
+    return [null, elementName];
+  }
+
+  const colonIndex = elementName.indexOf(':', 1);
+
+  if (colonIndex === -1) {
+    if (fatal) {
+      throw new Error(`Unsupported format "${elementName}" expecting ":namespace:name"`);
+    } else {
+      return [null, elementName];
+    }
+  }
+
+  return [elementName.slice(1, colonIndex), elementName.slice(colonIndex + 1)];
+}
+
+function normalizeTagName(tagName: string): string {
+  const tagNameLower = tagName.toLowerCase();
+  const [ns, name] = splitNsName(tagNameLower, false);
+
+  return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
+}
+
 function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn | null {
   const lowerAttrName = attrName.toLowerCase();
-  const lowerTagName = tagName ? tagName.toLowerCase() : '*';
+  const lowerTagName = tagName ? normalizeTagName(tagName) : '*';
   const schema = SECURITY_SCHEMA();
   const schemaContext =
     schema[`${lowerTagName}|${lowerAttrName}`] ||
