@@ -209,6 +209,22 @@ describe('security integration tests', function () {
       checkEscapeOfHrefProperty(fixture);
     });
 
+    it('should escape unsafe attributes on custom namespaced elements', () => {
+      const template = `<xhtml:a xmlns:xhtml="http://www.w3.org/1999/xhtml" [attr.href]="ctxProp">Link Title</xhtml:a>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      const fixture = TestBed.createComponent(SecuredComponent);
+
+      checkEscapeOfHrefProperty(fixture);
+    });
+
+    it('should escape unsafe properties on custom namespaced elements', () => {
+      const template = `<xhtml:a xmlns:xhtml="http://www.w3.org/1999/xhtml" [href]="ctxProp">Link Title</xhtml:a>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      const fixture = TestBed.createComponent(SecuredComponent);
+
+      checkEscapeOfHrefProperty(fixture);
+    });
+
     it('should escape unsafe properties if they are used in host bindings', () => {
       @Directive({
         selector: '[dirHref]',
@@ -339,6 +355,18 @@ describe('security integration tests', function () {
     it('should sanitize translated static href attributes', () => {
       loadTranslations({[computeMsgId('/safe')]: 'javascript:alert(1)'});
       const template = `<a href="/safe" i18n-href>Link</a>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      const fixture = TestBed.createComponent(SecuredComponent);
+      fixture.detectChanges();
+
+      const link = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
+    });
+
+    it('should sanitize translated static href attributes on custom namespaced elements', () => {
+      loadTranslations({[computeMsgId('/safe')]: 'javascript:alert(1)'});
+      const template = `<xhtml:a xmlns:xhtml="http://www.w3.org/1999/xhtml" href="/safe" i18n-href>Link</xhtml:a>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
       const fixture = TestBed.createComponent(SecuredComponent);
