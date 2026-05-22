@@ -16,7 +16,8 @@
   },
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": true
+      "supported": "limited",
+      "description": "Angular language features are disabled in untrusted workspaces to prevent execution of untrusted local code."
     },
     "virtualWorkspaces": {
       "supported": "limited",
