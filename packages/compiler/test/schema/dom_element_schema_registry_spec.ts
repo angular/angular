@@ -207,17 +207,39 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     });
   });
 
-  if (!isNode) {
-    it('generate a new schema', () => {
-      let schema = '\n';
-      extractSchema()!.forEach((props, name) => {
-        schema += `'${name}|${props.join(',')}',\n`;
-      });
-      // Uncomment this line to see:
-      // the generated schema which can then be pasted to the DomElementSchemaRegistry
-      // console.log(schema);
+  describe('Custom XML / XHTML namespaces', () => {
+    it('should support elements with custom namespaces', () => {
+      expect(registry.hasElement(':xhtml:a', [])).toBeTruthy();
+      expect(registry.hasElement('xhtml:a', [])).toBeTruthy();
+      expect(registry.hasElement(':foo:div', [])).toBeTruthy();
+      expect(registry.hasElement('foo:div', [])).toBeTruthy();
     });
-  }
+
+    it('should support properties on custom namespaced elements', () => {
+      expect(registry.hasProperty(':xhtml:a', 'href', [])).toBeTruthy();
+      expect(registry.hasProperty('xhtml:a', 'href', [])).toBeTruthy();
+      expect(registry.hasProperty(':foo:div', 'id', [])).toBeTruthy();
+      expect(registry.hasProperty('foo:div', 'id', [])).toBeTruthy();
+    });
+
+    it('should return correct security contexts for custom namespaced elements', () => {
+      expect(registry.securityContext(':xhtml:a', 'href', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext('xhtml:a', 'href', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext(':foo:div', 'innerHTML', false)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('foo:div', 'innerHTML', false)).toBe(SecurityContext.HTML);
+    });
+  });
+
+  // Uncomment to see the generated schema which can then be pasted to the DomElementSchemaRegistry
+  // if (!isNode) {
+  //   it('generate a new schema', () => {
+  //     let schema = '\n';
+  //     extractSchema()!.forEach((props, name) => {
+  //       schema += `'${name}|${props.join(',')}',\n`;
+  //     });
+  //     console.log(schema);
+  //   });
+  // }
 
   describe('normalizeAnimationStyleProperty', () => {
     it('should normalize the given CSS property to camelCase', () => {
