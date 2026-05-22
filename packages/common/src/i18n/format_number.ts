@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 import {
   getLocaleNumberFormat,
   getLocaleNumberSymbol,
@@ -70,6 +73,20 @@ function formatNumberToLocaleString(
         maxFraction = parseIntAutoRadix(maxFractionPart);
       } else if (minFractionPart != null && minFraction > maxFraction) {
         maxFraction = minFraction;
+      }
+
+      // Prevent DoS via resource exhaustion by capping the maximum padding iterations
+      const MAX_ALLOWED_DIGITS = 100;
+      if (
+        minInt > MAX_ALLOWED_DIGITS ||
+        minFraction > MAX_ALLOWED_DIGITS ||
+        maxFraction > MAX_ALLOWED_DIGITS
+      ) {
+        throw new RuntimeError(
+          RuntimeErrorCode.INVALID_DIGIT_INFO,
+          ngDevMode &&
+            `${digitsInfo} is not a valid digit info. Exceeded maximum limits of ${MAX_ALLOWED_DIGITS} digits.`,
+        );
       }
     }
 
