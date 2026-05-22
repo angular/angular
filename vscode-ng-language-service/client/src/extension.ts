@@ -13,22 +13,35 @@ import {registerCommands} from './commands';
 
 export function activate(context: vscode.ExtensionContext) {
   const client = new AngularLanguageClient(context);
+  context.subscriptions.push(client);
 
-  // Push the disposable to the context's subscriptions so that the
-  // client can be deactivated on extension deactivation
-  registerCommands(client, context);
+  const startServer = async () => {
+    registerCommands(client, context);
 
-  // Restart the server on configuration change.
-  const disposable = vscode.workspace.onDidChangeConfiguration(
-    async (e: vscode.ConfigurationChangeEvent) => {
-      if (!e.affectsConfiguration('angular')) {
-        return;
-      }
-      await client.stop();
-      await client.start();
-    },
-  );
-  context.subscriptions.push(client, disposable);
+    // Restart the server on configuration change.
+    const disposable = vscode.workspace.onDidChangeConfiguration(
+      async (e: vscode.ConfigurationChangeEvent) => {
+        if (!e.affectsConfiguration('angular')) {
+          return;
+        }
+        await client.stop();
+        await client.start();
+      },
+    );
+    context.subscriptions.push(client, disposable);
 
-  client.start();
+    await client.start();
+  };
+
+  // If the workspace is untrusted, operate in limited mode:
+  // Do NOT start the language server or register commands.
+  if (!vscode.workspace.isTrusted) {
+    const trustDisposable = vscode.workspace.onDidGrantWorkspaceTrust(async () => {
+      await startServer();
+    });
+    context.subscriptions.push(trustDisposable);
+    return;
+  }
+
+  startServer();
 }
