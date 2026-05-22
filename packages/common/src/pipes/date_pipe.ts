@@ -274,6 +274,7 @@ export class DatePipe implements PipeTransform {
         timezone ?? this.defaultOptions?.timezone ?? this.defaultTimezone ?? undefined;
       return formatDate(value, _format, locale || this.locale, _timezone);
     } catch (error) {
+      // TODO: RuntimeError doesn't support `cause`, so the original error and its stack are lost.
       throw invalidPipeArgumentError(DatePipe, (error as Error).message);
     }
   }
