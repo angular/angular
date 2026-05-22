@@ -41,7 +41,6 @@ import {onViewportWrapper} from './dom_triggers';
 import {onIdle} from './idle_scheduler';
 import {
   DEFER_BLOCK_STATE,
-  DeferBlockBehavior,
   DeferBlockState,
   DeferBlockTrigger,
   DeferDependenciesLoadingState,
@@ -56,11 +55,11 @@ import {
 } from './interfaces';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
 import {
-  DEFER_BLOCK_CONFIG,
   DEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
   renderDeferBlockState,
   renderDeferStateAfterResourceLoading,
   renderPlaceholder,
+  shouldTriggerDeferBlock,
 } from './rendering';
 import {onTimer} from './timer_scheduler';
 import {
@@ -311,24 +310,6 @@ export function triggerResourceLoading(
     tDetails.loadingPromise = null;
     removeTask();
   });
-}
-
-/**
- * Defines whether we should proceed with triggering a given defer block.
- */
-function shouldTriggerDeferBlock(triggerType: TriggerType, lView: LView): boolean {
-  // prevents triggering regular triggers when on the server.
-  if (triggerType === TriggerType.Regular && typeof ngServerMode !== 'undefined' && ngServerMode) {
-    return false;
-  }
-
-  // prevents triggering in the case of a test run with manual defer block configuration.
-  const injector = lView[INJECTOR];
-  const config = injector.get(DEFER_BLOCK_CONFIG, null, {optional: true});
-  if (config?.behavior === DeferBlockBehavior.Manual) {
-    return false;
-  }
-  return true;
 }
 
 /**
