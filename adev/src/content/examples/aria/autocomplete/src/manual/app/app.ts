@@ -17,13 +17,6 @@ export class App {
     this.popupExpanded.set(false);
   }
 
-  onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      this.clear();
-      event.stopPropagation();
-    }
-  }
-
   readonly listbox = viewChild(Listbox);
   readonly combobox = viewChild(Combobox);
 
