@@ -170,11 +170,11 @@ export class NgZone {
       self._inner = self._inner.fork(new AsyncStackTaggingZoneSpec('Angular'));
     }
 
-    if ((Zone as any)['TaskTrackingZoneSpec']) {
+    if (Object.prototype.hasOwnProperty.call(Zone, 'TaskTrackingZoneSpec')) {
       self._inner = self._inner.fork(new ((Zone as any)['TaskTrackingZoneSpec'] as any)());
     }
 
-    if (enableLongStackTrace && (Zone as any)['longStackTraceZoneSpec']) {
+    if (enableLongStackTrace && Object.prototype.hasOwnProperty.call(Zone, 'longStackTraceZoneSpec')) {
       self._inner = self._inner.fork((Zone as any)['longStackTraceZoneSpec']);
     }
     // if shouldCoalesceRunChangeDetection is true, all tasks including event tasks will be
