@@ -129,7 +129,7 @@
           "files": ["forward_refs.js"]
         }
       ],
-      "compilationModeFilter": ["linked compile", "declaration-only emit"],
+      "compilationModeFilter": ["linked compile"],
       "angularCompilerOptions": {
         "linkerJitMode": true
       }
