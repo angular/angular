@@ -323,7 +323,7 @@ export function addToEndOfViewTree<T extends LView | LContainer>(
 ): T {
   // TODO(benlesh/misko): This implementation is incorrect, because it always adds the LContainer
   // to the end of the queue, which means if the developer retrieves the LContainers from RNodes out
-  // of order, the change detection will run out of order, as the act of retrieving the the
+  // of order, the change detection will run out of order, as the act of retrieving the
   // LContainer from the RNode is what adds it to the queue.
   if (lView[CHILD_HEAD]) {
     lView[CHILD_TAIL]![NEXT] = lViewOrLContainer;

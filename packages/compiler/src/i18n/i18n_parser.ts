@@ -160,7 +160,7 @@ class _I18nVisitor implements html.Visitor {
     }
 
     // Else returns a placeholder
-    // ICU placeholders should not be replaced with their original content but with the their
+    // ICU placeholders should not be replaced with their original content but with their
     // translations.
     // TODO(vicb): add a html.Node -> i18n.Message cache to avoid having to re-create the msg
     const phName = context.placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
