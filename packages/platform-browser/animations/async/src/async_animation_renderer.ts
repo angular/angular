@@ -44,7 +44,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
 
   /**
    *
-   * @param moduleImpl allows to provide a mock implmentation (or will load the animation module)
+   * @param moduleImpl allows to provide a mock implementation (or will load the animation module)
    */
   constructor(
     private doc: Document,
