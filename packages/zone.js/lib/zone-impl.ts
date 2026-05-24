@@ -1544,14 +1544,46 @@ export function initZone(): ZoneType {
     }
   }
 
-  function drainMicroTaskQueueSynchronously() {
-    if (_isDrainingMicrotaskQueue) {
-      return;
-    }
+  // Maximum number of times the microtask drain loop is allowed to re-fill
+  // and re-drain before it is forcibly terminated. Each iteration represents
+  // one full batch of microtasks — if tasks enqueue new microtasks during
+  // execution, those form the next iteration's batch.
+  //
+  // Without this cap, a pathological task chain can cause an infinite loop
+  // that blocks the main thread indefinitely (DoS). This can happen in
+  // several ways:
+  //
+  // 1. Mutual Promise recursion — two Promises that resolve each other in a
+  //    cycle, each scheduling a new microtask when resolved:
+  //
+  //      const loop = () => Promise.resolve().then(loop);
+  //      loop();
+  //
+  // 2. A compromised or buggy third-party dependency that continuously
+  //    re-schedules itself via Zone.current.scheduleMicroTask() inside its
+  //    own task callback, never yielding control back to the event loop.
+  //
+  // 3. An Angular zone-patched API (e.g. a zone-aware Promise chain inside
+  //    an HTTP interceptor or a router guard) that inadvertently creates a
+  //    microtask cycle under certain runtime conditions, causing the drain
+  //    loop to spin without making progress.
+  //
+  // 1000 iterations is far beyond any legitimate use case — Angular's own
+  // change detection and routing typically complete in fewer than 10 — but
+  // high enough to never trip on valid application code.
+  const MAX_MICROTASK_DRAIN_ITERATIONS = 1000;
 
+  function drainMicroTaskQueueSynchronously() {
+    if (_isDrainingMicrotaskQueue) return;
     _isDrainingMicrotaskQueue = true;
+    let iterations = 0;
 
     while (_microTaskQueue.length) {
+      if (++iterations > MAX_MICROTASK_DRAIN_ITERATIONS) {
+        _microTaskQueue = [];
+        break;
+      }
+
       const queue = _microTaskQueue;
       _microTaskQueue = [];
 
@@ -1564,7 +1596,7 @@ export function initZone(): ZoneType {
       }
     }
 
-    // The order matters!
+     // The order matters!
     if (global[enableNativeMicrotaskDraining]) {
       _isDrainingMicrotaskQueue = false;
       _api.microtaskDrainDone();
