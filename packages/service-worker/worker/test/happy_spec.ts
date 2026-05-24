@@ -1664,6 +1664,18 @@ import {envIsSupported} from '../testing/utils';
         expect(bazReq.credentials).toBe('omit');
       });
 
+      it(`passes 'cache' through to the server`, async () => {
+        // Request a lazy-cached asset (so that it is fetched from the network) and provide an
+        // explicit HTTP cache mode.
+        const reqInit = {cache: 'no-store'};
+        expect(await makeRequest(scope, '/baz.txt', undefined, reqInit)).toBe('this is baz');
+
+        // Verify that the explicit `cache` value was preserved (instead of being replaced by the
+        // default `'default'`).
+        const [bazReq] = server.getRequestsFor('/baz.txt');
+        expect(bazReq.cache).toBe('no-store');
+      });
+
       describe('for redirect requests', () => {
         it('passes headers through to the server', async () => {
           // Request a redirected, lazy-cached asset (so that it is fetched from the network) and
@@ -1717,6 +1729,20 @@ import {envIsSupported} from '../testing/utils';
           // reconstruction (instead of being replaced by the default `'same-origin'`).
           const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
           expect(redirectReq.credentials).toBe('omit');
+        });
+
+        it(`passes 'cache' through to the server`, async () => {
+          // Request a redirected, lazy-cached asset (so that it is fetched from the network) and
+          // provide an explicit HTTP cache mode.
+          const reqInit = {cache: 'no-store'};
+          expect(await makeRequest(scope, '/lazy/redirected.txt', undefined, reqInit)).toBe(
+            'this was a redirect too',
+          );
+
+          // Verify that the explicit `cache` value was preserved across the redirect
+          // reconstruction (instead of being replaced by the default `'default'`).
+          const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
+          expect(redirectReq.cache).toBe('no-store');
         });
       });
     });
