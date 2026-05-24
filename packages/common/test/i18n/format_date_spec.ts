@@ -61,6 +61,19 @@ describe('Format date', () => {
     it('should throw for objects', () => {
       expect(() => toDate({} as any)).toThrow();
     });
+
+    it('should warn in dev mode when passed an unrecognized string that new Date() can parse', () => {
+      spyOn(console, 'error');
+      // 'January 15, 2024' is not an ISO 8601 string, so it bypasses all explicit
+      // format checks and falls through to the new Date() fallback. The ECMAScript
+      // spec leaves non-ISO string parsing implementation-defined, but this format
+      // is widely supported across engines in practice.
+      const result = toDate('January 15, 2024');
+      expect(console.error).toHaveBeenCalledWith(
+        jasmine.stringContaining('unrecognized string date value'),
+      );
+      expect(isDate(result)).toBeTruthy();
+    });
   });
 
   describe('formatDate', () => {

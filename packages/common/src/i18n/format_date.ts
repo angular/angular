@@ -920,12 +920,9 @@ export function toDate(value: string | number | Date): Date {
     value = value.trim();
 
     if (/^(\d{4}(-\d{1,2}(-\d{1,2})?)?)$/.test(value)) {
-      /* For ISO Strings without time the day, month and year must be extracted from the ISO String
-      before Date creation to avoid time offset and errors in the new Date.
-      If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
-      date, some browsers (e.g. IE 9) will throw an invalid Date error.
-      If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the timeoffset
-      is applied.
+      /* Date-only ISO strings (YYYY, YYYY-MM, YYYY-MM-DD) are parsed as UTC midnight per the
+      ECMAScript spec, so `new Date("2015-01-01")` shifts the date in non-UTC timezones. Extract
+      the parts manually to produce a local date instead.
       Note: ISO months are 0 for January, 1 for February, ... */
       const [y, m = 1, d = 1] = value.split('-').map((val: string) => +val);
       return createDate(y, m - 1, d);
@@ -944,11 +941,39 @@ export function toDate(value: string | number | Date): Date {
     }
   }
 
+  // None of the explicit formats matched. Fall back to `new Date()` for backwards
+  // compatibility, but warn in dev mode to encourage migration to an explicit
+  // ISO 8601 format.
+  //
+  // The fallback is unsafe for three reasons:
+  //
+  // 1. Platform inconsistency — non-ISO string parsing is implementation-defined
+  //    by the ECMAScript spec, so engines may silently produce different output
+  //    from the same input string.
+  //
+  // 2. Timezone ambiguity — the ECMAScript spec leaves non-ISO string parsing
+  //    implementation-defined, so engines disagree on whether to apply a local
+  //    offset or use UTC, which can silently shift dates by hours or days.
+  //
+  // 3. Unintended acceptance — engines may silently accept crafted strings
+  //    that produce surprising but technically valid Date objects, bypassing
+  //    upstream validation that assumes only ISO 8601 is supported.
   const date = new Date(value as any);
   if (!isDate(date)) {
     throw new RuntimeError(
       RuntimeErrorCode.INVALID_TO_DATE_CONVERSION,
       ngDevMode && `Unable to convert "${value}" into a date`,
+    );
+  }
+  if (ngDevMode) {
+    // `console.error` instead of `throw` to avoid any breaking changes.
+    console.error(
+      formatRuntimeError(
+        RuntimeErrorCode.INVALID_TO_DATE_CONVERSION,
+        `toDate() received an unrecognized string date value "${value}". ` +
+          `Passing arbitrary date strings is not recommended. ` +
+          `Please use an ISO 8601 date string, a numeric timestamp, or a Date object instead.`,
+      ),
     );
   }
   return date;
