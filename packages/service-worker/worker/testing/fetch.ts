@@ -167,6 +167,7 @@ export class MockRequest extends MockBody implements Request {
     }
     return new MockRequest(this.url, {
       body: this._body,
+      cache: this.cache,
       mode: this.mode,
       credentials: this.credentials,
       headers: this.headers,
