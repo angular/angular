@@ -28,6 +28,7 @@ import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {ServerHost} from './server_host';
 import {
   filePathToUri,
+  isAngularCore,
   isConfiguredProject,
   isDebugMode,
   lspRangeToTsPositions,
@@ -755,23 +756,6 @@ export class Session {
     }
     return angularCore ?? null;
   }
-}
-
-function isAngularCore(path: string): boolean {
-  return isExternalAngularCore(path) || isInternalAngularCore(path);
-}
-
-function isExternalAngularCore(path: string): boolean {
-  return /@angular\/core\/.+\.d\.ts$/.test(path);
-}
-
-function isInternalAngularCore(path: string): boolean {
-  // path in g3
-  return (
-    path.endsWith('angular2/rc/packages/core/index.d.ts') ||
-    // angular/angular repository direct sources
-    path.includes('angular/packages/core/src')
-  );
 }
 
 function isTypeScriptFile(path: string): boolean {
