@@ -690,13 +690,15 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   private generatePlaceholder(placeholderInput: string | boolean): string | boolean | null {
     const {placeholderResolution} = this.config;
     if (placeholderInput === true) {
-      return `url(${this.callImageLoader({
-        src: this.ngSrc,
-        width: placeholderResolution,
-        isPlaceholder: true,
-      })})`;
+      return `url("${escapeCssUrl(
+        this.callImageLoader({
+          src: this.ngSrc,
+          width: placeholderResolution,
+          isPlaceholder: true,
+        }),
+      )}")`;
     } else if (typeof placeholderInput === 'string') {
-      return `url(${placeholderInput})`;
+      return `url("${escapeCssUrl(placeholderInput)}")`;
     }
     return null;
   }
@@ -1381,6 +1383,10 @@ function unwrapSafeUrl(value: string | SafeValue): string {
     return value;
   }
   return unwrapSafeValue(value);
+}
+
+function escapeCssUrl(input: string): string {
+  return input.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
 // Transform function to handle inputs which may be booleans, strings, or string representations
