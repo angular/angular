@@ -15,6 +15,8 @@ import {FieldNode} from '../../src/field/node';
 import {getInjectorFromOptions} from '../../src/field/util';
 import type {CompatFieldNodeOptions} from './compat_structure';
 
+type AbstractControlWithRequiredSignal = AbstractControl & {_hasRequired: Signal<boolean>};
+
 /**
  * Field node with additional  control property.
  *
@@ -22,10 +24,17 @@ import type {CompatFieldNodeOptions} from './compat_structure';
  */
 export class CompatFieldNode extends FieldNode {
   readonly control: Signal<AbstractControl>;
+  private controlRequired: Signal<boolean> | undefined;
 
   constructor(public readonly options: CompatFieldNodeOptions) {
     super(options);
     this.control = this.options.control;
+  }
+
+  override get required(): Signal<boolean> {
+    return (this.controlRequired ??= computed(() =>
+      (this.control() as AbstractControlWithRequiredSignal)._hasRequired(),
+    ));
   }
 }
 

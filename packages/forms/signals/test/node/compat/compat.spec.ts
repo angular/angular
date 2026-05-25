@@ -198,6 +198,48 @@ describe('Forms compat', () => {
       ]);
     });
 
+    it('reflects required validators from a form control', () => {
+      const control = new FormControl('');
+      const cat = signal({
+        name: 'pirojok-the-cat',
+        age: control,
+      });
+
+      const f = compatForm(cat, {
+        injector: TestBed.inject(Injector),
+      });
+
+      expect(f.age().required()).toBeFalse();
+
+      control.setValidators(Validators.required);
+
+      expect(f.age().required()).toBeTrue();
+
+      control.clearValidators();
+
+      expect(f.age().required()).toBeFalse();
+    });
+
+    it('picks up required validators from a new form control', () => {
+      const cat = signal({
+        name: 'pirojok-the-cat',
+        age: new FormControl(5),
+      });
+
+      const f = compatForm(cat, {
+        injector: TestBed.inject(Injector),
+      });
+
+      expect(f.age().required()).toBeFalse();
+
+      f().value.set({
+        age: new FormControl(4, Validators.required),
+        name: 'lol',
+      });
+
+      expect(f.age().required()).toBeTrue();
+    });
+
     it('supports async validation', async () => {
       let resolve: Function = () => {};
       const formControl = new FormControl<number>(5, {
