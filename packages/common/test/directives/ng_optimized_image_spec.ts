@@ -1159,6 +1159,25 @@ describe('Image directive', () => {
       );
     });
 
+    it('should escape loader output when placeholder is provided as a boolean (security regression)', () => {
+      const maliciousLoader = (config: ImageLoaderConfig) => {
+        if (config.isPlaceholder) {
+          return 'https://mysite.com/img.png"); color: red;/*';
+        }
+        return `${IMG_BASE_URL}/${config.src}`;
+      };
+      setupTestingModule({imageLoader: maliciousLoader});
+      const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const imageDirective = fixture.debugElement.children[0].injector.get(NgOptimizedImage);
+      const placeholderValue = (imageDirective as any).generatePlaceholder(true) as string;
+
+      expect(placeholderValue).toBe('url("https://mysite.com/img.png\\"); color: red;/*")');
+    });
+
     if (!isNode) {
       // DataURLs get stripped from background-image attribute in Node, but not browsers.
       it('should add a background-image tag when placeholder is provided as a data URL', () => {
@@ -1206,6 +1225,22 @@ describe('Image directive', () => {
       expect(img.getAttribute('style')?.replace(/"/g, '').replace(/\s/g, '')).toBe(
         `background-size:cover;background-position:50%50%;background-repeat:no-repeat;background-image:url(../../assets/my-image.png);filter:blur(${PLACEHOLDER_BLUR_AMOUNT}px);`,
       );
+    });
+
+    it('should prevent CSS injection through placeholder URL values', () => {
+      setupTestingModule({imageLoader});
+      const maliciousPlaceholder = 'https://mysite.com/img.png"); color: red;';
+      const template = `<img ngSrc="path/img.png" width="400" height="300" placeholder='${maliciousPlaceholder}' />`;
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const imageDirective = fixture.debugElement.children[0].injector.get(NgOptimizedImage);
+      const placeholderValue = (imageDirective as any).generatePlaceholder(
+        maliciousPlaceholder,
+      ) as string;
+
+      expect(placeholderValue).toBe('url("https://mysite.com/img.png\\"); color: red;")');
     });
 
     it('should add a background-image tag when placeholder is provided without value', () => {
