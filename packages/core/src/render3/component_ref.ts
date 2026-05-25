@@ -35,9 +35,11 @@ import {
   locateHostElement,
   setAllInputsForProperty,
 } from './instructions/shared';
+import {AttributeMarker} from './interfaces/attribute_marker';
 import {ComponentDef, ComponentTemplate, DirectiveDef, RenderFlags} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
 import {
+  TAttributes,
   TContainerNode,
   TElementContainerNode,
   TElementNode,
@@ -77,6 +79,7 @@ import {
 import {profiler} from './profiler';
 import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
+import {getLastParsedKey, parseClassName, parseClassNameNext} from './styling/styling_parser';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode, storeLViewOnDestroy} from './util/view_utils';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
@@ -297,12 +300,17 @@ export class ComponentFactory<T> {
     componentBindings?: Binding[],
   ) {
     const cmpDef = this.componentDef;
-    const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
-
     const hostRenderer = environment.rendererFactory.createRenderer(null, cmpDef);
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
       : createHostElement(cmpDef, hostRenderer);
+    const rootTView = createRootTView(
+      rootSelectorOrNode,
+      cmpDef,
+      componentBindings,
+      directives,
+      hostElement,
+    );
 
     const sharedStylesHost = rootViewInjector.get(SHARED_STYLES_HOST, null);
     const styleHost = getStyleHost(
@@ -406,11 +414,9 @@ function createRootTView(
   componentDef: ComponentDef<unknown>,
   componentBindings: Binding[] | undefined,
   directives: (Type<unknown> | DirectiveWithBindings<unknown>)[] | undefined,
+  hostElement: RElement,
 ): TView {
-  const tAttributes = rootSelectorOrNode
-    ? ['ng-version', '0.0.0-PLACEHOLDER']
-    : // Extract attributes and classes from the first selector only to match VE behavior.
-      extractAttrsAndClassesFromSelector(componentDef.selectors[0]);
+  const tAttributes = getRootTAttributes(rootSelectorOrNode, componentDef, hostElement);
   let creationBindings: Binding[] | null = null;
   let updateBindings: Binding[] | null = null;
   let varsToAllocate = 0;
@@ -487,6 +493,30 @@ function createRootTView(
   );
 
   return rootTView;
+}
+
+function getRootTAttributes(
+  rootSelectorOrNode: any,
+  componentDef: ComponentDef<unknown>,
+  hostElement: RElement,
+): TAttributes {
+  if (!rootSelectorOrNode) {
+    // Extract attributes and classes from the first selector only to match VE behavior.
+    return extractAttrsAndClassesFromSelector(componentDef.selectors[0]);
+  }
+
+  const tAttributes: TAttributes = ['ng-version', '0.0.0-PLACEHOLDER'];
+  const hostElementClasses = hostElement.getAttribute('class');
+  if (hostElementClasses !== null) {
+    const firstClassIndex = parseClassName(hostElementClasses);
+    if (firstClassIndex >= 0) {
+      tAttributes.push(AttributeMarker.Classes);
+      for (let i = firstClassIndex; i >= 0; i = parseClassNameNext(hostElementClasses, i)) {
+        tAttributes.push(getLastParsedKey(hostElementClasses));
+      }
+    }
+  }
+  return tAttributes;
 }
 
 function getStyleHost(node: RNode, doc: () => Document): Node {
