@@ -2346,7 +2346,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     const context = getSourceFile(node);
 
     return analysis.foreignImports.map((foreignMeta) => {
-      const {ref, rawExpression} = foreignMeta;
+      const {name, ref, rawExpression} = foreignMeta;
 
       const emittedRef = this.refEmitter.emit(ref, context);
       assertSuccessfulReferenceEmit(emittedRef, node.name, 'foreign component');
@@ -2354,7 +2354,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ts.setEmitFlags(rawExpression, ts.EmitFlags.NoComments | ts.EmitFlags.NoNestedComments);
 
       return {
-        name: foreignMeta.name,
+        name,
         component: new o.WrappedNodeExpr(rawExpression),
       } satisfies R3ForeignComponentMetadata;
     });

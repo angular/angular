@@ -309,6 +309,9 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
     }
     const props = propEntries.length > 0 ? o.literalMap(propEntries) : null;
 
+    // Foreign components are created in the creation block. Updates are triggered reactively
+    // through directly passed signal properties, alleviating the need for any explicit update
+    // operations.
     unit.create.push(
       ir.createForeignComponentOp(id, foreignComp.component, props, element.startSourceSpan),
     );
