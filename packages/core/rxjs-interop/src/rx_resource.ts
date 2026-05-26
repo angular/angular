@@ -59,9 +59,16 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
     stream: (params) => {
       let sub: Subscription | undefined;
 
+      // `abort` can fire synchronously while the subscription is not initialized yet.
+      // Use this flag to unsubscribe immediately once `sub` exists.
+      let aborted = false;
+
       // Track the abort listener so it can be removed if the Observable completes (as a memory
       // optimization).
-      const onAbort = () => sub?.unsubscribe();
+      const onAbort = () => {
+        aborted = true;
+        sub?.unsubscribe();
+      };
       params.abortSignal.addEventListener('abort', onAbort);
 
       // Start off stream as undefined.
@@ -101,6 +108,10 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
           params.abortSignal.removeEventListener('abort', onAbort);
         },
       });
+
+      if (aborted) {
+        sub.unsubscribe();
+      }
 
       if (resolve === undefined) {
         return stream;

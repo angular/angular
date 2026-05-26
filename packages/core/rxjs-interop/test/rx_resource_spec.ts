@@ -285,6 +285,27 @@ describe('rxResource()', () => {
       expect(transferState.hasKey(key)).toBeFalse();
     });
   });
+
+  it('should unsubscribe when the observable emits synchronously ', () => {
+    let unsubscribed = false;
+
+    const res = rxResource({
+      stream: () => {
+        return new Observable((subscriber) => {
+          // Synchronously set the resource to trigger abort during subscription initialization
+          res.set('local value');
+          subscriber.next('stream value');
+          return () => {
+            unsubscribed = true;
+          };
+        });
+      },
+      injector: TestBed.inject(Injector),
+    });
+    TestBed.tick();
+    expect(res.value()).toBe('local value');
+    expect(unsubscribed).toBeTrue();
+  });
 });
 
 async function waitFor(fn: () => boolean): Promise<void> {
