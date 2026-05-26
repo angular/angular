@@ -290,16 +290,12 @@ const attributeName: ReadonlySet<string> = new Set(['attributename']);
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-<<<<<<< HEAD
 /**
  * Set of attributes that are sensitive and should be sanitized.
  */
 const SECURITY_SENSITIVE_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(['href', 'xlink:href']);
 
-export const SECURITY_SENSITIVE_ELEMENTS: Record<
-=======
 const SECURITY_SENSITIVE_ELEMENTS: Record<
->>>>>>> 61a97f22e8 (fix(core): support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation)
   string,
   Record<string, true | undefined | ReadonlySet<string>> | undefined
 > = {
@@ -333,14 +329,11 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
 
-<<<<<<< HEAD
-=======
   const index = getSelectedIndex();
   const tNode: TNode | null = index === -1 ? null : getSelectedTNode();
   if (tNode && tNode.type !== TNodeType.Element) {
     return value;
   }
->>>>>>> 61a97f22e8 (fix(core): support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation)
 
   // Leverage tNode.namespace if active, otherwise check both namespaced and base variants.
   const fullTagName =
