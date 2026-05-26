@@ -115,20 +115,10 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       ['object', ['codebase', 'data']],
     ]);
 
-    // The below are for Script SVG
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/SVGScriptElement/href
-    registerContext(SecurityContext.RESOURCE_URL, SVG_NAMESPACE, [
-      ['script', ['src', 'href', 'xlink:href']],
-    ]);
-
     registerContext(SecurityContext.URL, SVG_NAMESPACE, [['a', ['href', 'xlink:href']]]);
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts
-    // The `unknown` elements refer to cases when we need to validate the input/binding in a directive (host bindings)
-    // and the directive can be applied to multiple different elements (with different tag names). In this case we generate
-    // a special instruction that an attribute might potentially be security-sensitive and defer the actual security check
-    // to runtime, when we apply that directive to a concrete elements, thus we can check the combination of tag+attribute
-    // against the set that requires sanitization.
+    // Unknown is the internal tag name for unknown elements example used for host-bindings.
     // These are unsafe as `attributeName` can be `href` or `xlink:href`
     // See: http://b/463880509#comment7
     registerContext(SecurityContext.ATTRIBUTE_NO_BINDING, SVG_NAMESPACE, [
