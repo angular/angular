@@ -1004,21 +1004,10 @@ function splitNsName(elementName: string, fatal: boolean = true): [string | null
 }
 
 function normalizeTagName(tagName: string): string {
-  tagName = tagName.toLowerCase();
-  if (tagName[0] === ':') {
-    const [ns, name] = splitNsName(tagName, false);
+  const tagNameLower = tagName.toLowerCase();
+  const [ns, name] = splitNsName(tagNameLower, false);
 
-    return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
-  }
-
-  const colonIdx = tagName.indexOf(':');
-  if (colonIdx > 0) {
-    const ns = tagName.substring(0, colonIdx);
-    const name = tagName.substring(colonIdx + 1);
-
-    return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
-  }
-  return tagName;
+  return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
 }
 
 function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn | null {
