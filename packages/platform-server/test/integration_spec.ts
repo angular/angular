@@ -10,6 +10,7 @@ import '@angular/compiler';
 import {animate, AnimationBuilder, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, ɵgetDOM as getDOM, isPlatformServer, PlatformLocation} from '@angular/common';
 import {
+  ɵHTTP_FETCH_MAX_RESPONSE_SIZE as HTTP_FETCH_MAX_RESPONSE_SIZE,
   HTTP_INTERCEPTORS,
   HttpClient,
   HttpClientModule,
@@ -1656,6 +1657,16 @@ class HiddenModule {}
           });
         });
       });
+    });
+
+    it('should configure max response body size when specified', () => {
+      const maxResponseBodySize = 2048;
+
+      TestBed.configureTestingModule({
+        providers: [provideServerRendering({maxResponseBodySize})],
+      });
+
+      expect(TestBed.inject(HTTP_FETCH_MAX_RESPONSE_SIZE)).toBe(maxResponseBodySize);
     });
   });
 })();
