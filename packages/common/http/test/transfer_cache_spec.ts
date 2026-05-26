@@ -40,6 +40,7 @@ interface RequestParams {
   observe?: 'body' | 'response';
   transferCache?: {includeHeaders: string[]} | boolean;
   headers?: {[key: string]: string};
+  withCredentials?: boolean;
   body?: RequestBody;
 }
 
@@ -397,6 +398,16 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test-auth', 'foo');
     });
 
+    it('should not cache requests with credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        withCredentials: true,
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        withCredentials: true,
+      });
+    });
+
     it('should cache POST with the differing body in string form', () => {
       makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'foo'});
       makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: 'foo'});
@@ -543,6 +554,16 @@ describe('TransferCache', () => {
         });
 
         makeRequestAndExpectNone('/test-auth');
+      });
+
+      it(`should not cache requests with credentials when 'includeRequestsWithAuthHeaders' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          withCredentials: true,
+        });
+
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          withCredentials: true,
+        });
       });
 
       it('should cache a POST request', () => {
