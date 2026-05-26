@@ -1,4 +1,4 @@
-@use '../../../../../styles/typography';
+@use '../../../styles/typography';
 
 @mixin inner-icon($size) {
   mat-icon {
@@ -12,29 +12,37 @@
   display: flex;
   align-items: center;
   flex-direction: row;
-  border-bottom: 1px solid var(--color-separator);
+  background: var(--ng-filter-background, var(--color-foreground));
+  border-radius: var(--ng-filter-border-radius, 1rem);
+
+  &:has(.filter-input:focus) {
+    outline: var(--ng-filter-outline, 2px solid var(--dynamic-blue-02));
+  }
 
   .search-icon {
-    display: flex;
-    align-items: center;
-    padding-right: 5px;
-    margin-left: 8px;
-    margin-top: 8px;
-
-    mat-icon {
-      font-size: 1.3em;
-    }
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    display: var(--ng-filter-icon-display, block);
+    margin-left: 0.5rem;
   }
 
   .filter-input {
     @extend %body-01;
     border: none;
-    padding: 1px;
-    width: 100%;
-    height: 30px;
+    padding: 0;
+    width: var(--ng-filter-width, 100%);
+    height: var(--ng-filter-height, 28px);
     outline: none;
-    background: var(--color-background);
+    background: transparent;
+    margin-left: 0.5rem;
+    padding-right: 0.5rem;
+    box-sizing: border-box;
     flex: 1;
+
+    &::placeholder {
+      color: var(--ng-filter-placeholder-color, var(--tertiary-contrast));
+    }
   }
 
   button {
@@ -68,7 +76,7 @@
     white-space: nowrap;
     font-size: 11px;
     color: var(--quaternary-contrast);
-    margin: 0 0.5rem;
+    margin-right: 0.5rem;
   }
 
   .clear-btn {

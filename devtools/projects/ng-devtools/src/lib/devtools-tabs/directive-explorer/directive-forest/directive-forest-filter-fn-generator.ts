@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FilterFn, FilterFnGenerator, FilterMatch} from './filter.component';
+import {FilterFn, FilterFnGenerator, FilterMatch} from '../../../shared/filter/filter.component';
 
 //
 // Types & Constants

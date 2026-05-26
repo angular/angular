@@ -23,22 +23,32 @@ import {
   viewChild,
 } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
 
 import {
   DevtoolsSignalGraph,
   DevtoolsSignalGraphCluster,
   DevtoolsSignalGraphNode,
   getNodeLabel,
+  isClusterNode,
+  isSignalNode,
 } from '../signal-graph';
 import {DependenciesHighlightEvent, SignalsGraphVisualizer} from './signals-visualizer';
 import {ElementPosition} from '../../../../../protocol';
 import {ButtonComponent} from '../button/button.component';
+import {FilterComponent, FilterFn} from '../filter/filter.component';
+import {
+  signalNodeFilterFnGenerator,
+  SignalNodeFilterSource,
+} from './signal-node-filter-fn-generator';
+
+const FILTER_INFO_TOOLTIP = 'You can filter signals by type via `type:<TYPE>`.';
 
 @Component({
   selector: 'ng-signals-visualizer',
   templateUrl: './signals-visualizer.component.html',
   styleUrl: './signals-visualizer.component.scss',
-  imports: [ButtonComponent, MatIcon],
+  imports: [ButtonComponent, MatIcon, MatTooltip, FilterComponent],
 })
 export class SignalsVisualizerComponent {
   protected readonly svgHost = viewChild.required<ElementRef>('host');
@@ -51,7 +61,11 @@ export class SignalsVisualizerComponent {
   protected readonly element = input.required<ElementPosition | undefined>();
   protected readonly nodeClick = output<DevtoolsSignalGraphNode>();
   protected readonly clusterCollapse = output<void>();
+  protected readonly searchedNodeFound = output<void>();
 
+  protected readonly searchExpanded = signal<boolean>(false);
+  protected readonly currentlyMatchedIndex = signal<number>(-1);
+  protected readonly matchedNodes = signal<string[]>([]); // Node IDs
   protected readonly highlightedNodeLabel = signal<string | null>(null);
   private readonly expandedClustersIds = signal<Set<string>>(new Set());
   protected readonly expandedClusters = computed<DevtoolsSignalGraphCluster[]>(() => {
@@ -62,6 +76,9 @@ export class SignalsVisualizerComponent {
     }
     return Array.from(clusterIds).map((id) => graph.clusters[id]);
   });
+
+  protected readonly filterGenerator = signalNodeFilterFnGenerator;
+  protected readonly FILTER_INFO_TOOLTIP = FILTER_INFO_TOOLTIP;
 
   constructor() {
     const injector = inject(Injector);
@@ -113,6 +130,13 @@ export class SignalsVisualizerComponent {
               this.signalsVisualizer!.snapToNode(id);
             }
           });
+
+          effect(() => {
+            if (!this.searchExpanded()) {
+              this.currentlyMatchedIndex.set(-1);
+              this.matchedNodes.set([]);
+            }
+          });
         });
       },
     });
@@ -138,6 +162,64 @@ export class SignalsVisualizerComponent {
     this.signalsVisualizer?.setClusterState(id, false);
   }
 
+  protected handleFilter(filterFn: FilterFn<SignalNodeFilterSource>): void {
+    this.currentlyMatchedIndex.set(-1);
+    this.matchedNodes.set([]);
+
+    for (const node of this.graph()?.nodes || []) {
+      let label = node.label || '';
+
+      if (isSignalNode(node) && node.clusterId) {
+        if (this.expandedClustersIds().has(node.clusterId)) {
+          // Get the label of nodes part of a cluster.
+          label = getNodeLabel(node);
+        } else {
+          // Exclude nodes that are part of a collapsed cluster.
+          continue;
+        }
+      }
+
+      // Exclude expanded synthetic cluster nodes.
+      if (isClusterNode(node) && this.expandedClustersIds().has(node.id)) {
+        continue;
+      }
+
+      const matches = filterFn({label, type: isSignalNode(node) ? node.kind : node.clusterType});
+
+      if (matches.length) {
+        // At this stage, we keep only the node IDs
+        // since we don't perform text highlighting based
+        // on the actual string match, similarly to the
+        // component tree filter.
+        this.matchedNodes.update((matched) => [...matched, node.id]);
+      }
+    }
+
+    // Select the first match, if there are any.
+    if (this.matchedNodes().length) {
+      this.navigateMatchedNode('next');
+    } else {
+      // Unhighlight the last selected node, if there isn't a match.
+      this.signalsVisualizer?.setSelected(null);
+    }
+  }
+
+  navigateMatchedNode(dir: 'next' | 'prev') {
+    const dirIdx = dir === 'next' ? 1 : -1;
+    const matchedNodes = this.matchedNodes();
+
+    const newMatchedIdx =
+      (this.currentlyMatchedIndex() + dirIdx + matchedNodes.length) % matchedNodes.length;
+    const newMatchId = matchedNodes[newMatchedIdx];
+
+    // Snap to the node and highlight it.
+    this.signalsVisualizer?.snapToNode(newMatchId);
+    this.signalsVisualizer?.setSelected(newMatchId);
+
+    this.currentlyMatchedIndex.set(newMatchedIdx);
+    this.searchedNodeFound.emit();
+  }
+
   private setUpSignalsVisualizer() {
     this.signalsVisualizer = new SignalsGraphVisualizer(this.svgHost().nativeElement);
 
@@ -156,6 +238,8 @@ export class SignalsVisualizerComponent {
       if (collapsed.size) {
         this.clusterCollapse.emit();
       }
+
+      this.searchExpanded.set(false);
     });
 
     this.signalsVisualizer.onDependenciesHighlight((e: DependenciesHighlightEvent) => {

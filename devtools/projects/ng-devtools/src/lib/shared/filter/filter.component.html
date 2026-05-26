@@ -1,13 +1,11 @@
-<div class="search-icon">
-  <mat-icon color="primary">search</mat-icon>
-</div>
+<mat-icon class="search-icon" color="primary">search</mat-icon>
 <input
   #input
   (input)="emitFilter($event.target.value)"
   (keydown.enter)="emitNextMatched()"
   (keydown.shift.enter)="emitPrevMatched()"
   class="filter-input"
-  placeholder="Search components"
+  [placeholder]="placeholder()"
 />
 @if (matchesCount()) {
   <div class="matches-count">
