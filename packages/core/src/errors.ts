@@ -177,8 +177,9 @@ export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
   constructor(
     public code: T,
     message: null | false | string,
+    options?: {cause?: unknown},
   ) {
-    super(formatRuntimeError<T>(code, message));
+    super(formatRuntimeError<T>(code, message), options);
   }
 }
 
