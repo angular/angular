@@ -635,7 +635,7 @@ describe('sanitization', () => {
       standalone: true,
     })
     class UnsafeUrlHostBindingDir {
-      @HostBinding() cite: any = 'http://cite-dir-value';
+      @HostBinding('href') href: any = 'http://href-dir-value';
 
       constructor() {
         hostBindingDir = this;
@@ -647,7 +647,7 @@ describe('sanitization', () => {
       standalone: true,
       imports: [UnsafeUrlHostBindingDir],
       template: `
-        <blockquote unsafeUrlHostBindingDir></blockquote>
+        <a unsafeUrlHostBindingDir></a>
       `,
     })
     class SimpleComp {}
@@ -663,16 +663,16 @@ describe('sanitization', () => {
       ],
     });
     const fixture = TestBed.createComponent(SimpleComp);
-    hostBindingDir!.cite = 'http://foo';
+    hostBindingDir!.href = 'http://foo';
     fixture.detectChanges();
 
-    const anchor = fixture.nativeElement.querySelector('blockquote')!;
-    expect(anchor.getAttribute('cite')).toEqual('http://bar');
+    const anchor = fixture.nativeElement.querySelector('a')!;
+    expect(anchor.getAttribute('href')).toEqual('http://bar');
 
-    hostBindingDir!.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
+    hostBindingDir!.href = sanitizer.bypassSecurityTrustUrl('http://foo');
     fixture.detectChanges();
 
-    expect(anchor.getAttribute('cite')).toEqual('http://foo');
+    expect(anchor.getAttribute('href')).toEqual('http://foo');
   });
 });
 
