@@ -872,7 +872,7 @@ describe('SVG <a> link sanitization', () => {
   it('should sanitize dynamic `href` bindings on <svg:a>', () => {
     @Component({
       template: '<svg><a [attr.href]="url"></a></svg>',
-      changeDetection: ChangeDetectionStrategy.Eager,
+      changeDetection: ChangeDetectionStrategy.Default,
     })
     class TestCmp {
       url = 'javascript:alert(1)';
@@ -888,7 +888,7 @@ describe('SVG <a> link sanitization', () => {
   it('should sanitize dynamic `xlink:href` bindings on <svg:a>', () => {
     @Component({
       template: '<svg><a [attr.xlink:href]="url"></a></svg>',
-      changeDetection: ChangeDetectionStrategy.Eager,
+      changeDetection: ChangeDetectionStrategy.Default,
     })
     class TestCmp {
       url = 'javascript:alert(1)';
@@ -909,7 +909,7 @@ describe('SVG <a> link sanitization', () => {
           <a xlink:href="javascript:alert(2)"></a>
         </svg>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
+      changeDetection: ChangeDetectionStrategy.Default,
     })
     class TestCmp {}
 
