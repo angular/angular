@@ -17,7 +17,6 @@ import {isNode} from '@angular/private/testing';
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 
-
 describe('DOMElementSchema', () => {
   let registry: DomElementSchemaRegistry;
   beforeEach(() => {
