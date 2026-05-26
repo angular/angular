@@ -353,6 +353,38 @@ runInEachFileSystem(() => {
     expect(diags.length).toBe(0);
   });
 
+  it('should not produce a warning when a signal is not invoked in a property binding on a foreign component', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `<FancyButton [disabled]="mySignal"></FancyButton>`,
+        },
+        source: `
+          import {signal} from '@angular/core';
+
+          export function FancyButton() {}
+
+          export class TestCmp {
+            mySignal = signal(false);
+          }`,
+        foreignComponents: ['FancyButton'],
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [interpolatedSignalFactory],
+      {},
+      /* options */
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(0);
+  });
+
   it('should produce a warning when a signal in a nested property read is not invoked', () => {
     const fileName = absoluteFrom('/main.ts');
     const {program, templateTypeChecker} = setup([
