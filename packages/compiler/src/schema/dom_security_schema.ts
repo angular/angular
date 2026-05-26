@@ -106,6 +106,12 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       ['none', ['href', 'xlink:href']],
     ]);
 
+    registerContext(SecurityContext.URL, SVG_NAMESPACE, [
+      // SVG namespace - SVG <a> elements can also carry href attributes
+      // that must be sanitized. See angular/angular#68920.
+      ['a', ['href', 'xlink:href']],
+    ]);
+
     registerContext(SecurityContext.RESOURCE_URL, /** Namespace */ undefined, [
       ['base', ['href']],
       ['embed', ['src']],
