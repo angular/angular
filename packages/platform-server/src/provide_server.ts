@@ -8,10 +8,14 @@
 
 import {EnvironmentProviders, makeEnvironmentProviders} from '@angular/core';
 
+import {ɵHTTP_FETCH_MAX_RESPONSE_SIZE as HTTP_FETCH_MAX_RESPONSE_SIZE} from '@angular/common/http';
 import {PLATFORM_SERVER_PROVIDERS} from './server';
 
 /**
  * Sets up providers necessary to enable server rendering functionality for the application.
+ *
+ * @param options An object to configure the server providers. Currently supports the following options:
+ * - `maxResponseBodySize`: The maximum allowed response body size when using the Fetch API.
  *
  * @usageNotes
  *
@@ -25,10 +29,17 @@ import {PLATFORM_SERVER_PROVIDERS} from './server';
  * @publicApi
  * @returns A set of providers to setup the server.
  */
-export function provideServerRendering(): EnvironmentProviders {
+export function provideServerRendering(options?: {
+  maxResponseBodySize: number;
+}): EnvironmentProviders {
   if (typeof ngServerMode === 'undefined') {
     globalThis['ngServerMode'] = true;
   }
 
-  return makeEnvironmentProviders([...PLATFORM_SERVER_PROVIDERS]);
+  const providers = [...PLATFORM_SERVER_PROVIDERS];
+  if (options?.maxResponseBodySize) {
+    providers.push({provide: HTTP_FETCH_MAX_RESPONSE_SIZE, useValue: options.maxResponseBodySize});
+  }
+
+  return makeEnvironmentProviders(providers);
 }

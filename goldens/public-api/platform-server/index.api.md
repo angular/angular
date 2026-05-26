@@ -43,7 +43,9 @@ export class PlatformState {
 }
 
 // @public
-export function provideServerRendering(): EnvironmentProviders;
+export function provideServerRendering(options?: {
+    maxResponseBodySize: number;
+}): EnvironmentProviders;
 
 // @public
 export function renderApplication(bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>, options: {

@@ -21,7 +21,7 @@ import {
   provideHttpClient,
 } from '../public_api';
 import {RuntimeErrorCode} from '../src/errors';
-import {FetchBackend, FetchFactory} from '../src/fetch';
+import {FetchBackend, FetchFactory, HTTP_FETCH_MAX_RESPONSE_SIZE} from '../src/fetch';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
   return obs
@@ -630,6 +630,55 @@ describe('FetchBackend', () => {
       }
     });
   });
+
+  describe('response buffering limits', () => {
+    let infiniteStreamFactory: InfiniteStreamFetchFactory = null!;
+
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: FetchFactory, useClass: InfiniteStreamFetchFactory},
+          {provide: HTTP_FETCH_MAX_RESPONSE_SIZE, useValue: 2048},
+          FetchBackend,
+        ],
+      });
+
+      backend = TestBed.inject(FetchBackend);
+      infiniteStreamFactory = TestBed.inject(FetchFactory) as InfiniteStreamFetchFactory;
+    });
+
+    it('aborts a never-ending response stream once the configured size limit is exceeded', async () => {
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      const events = await trackEvents(backend.handle(req));
+      const error = events[1] as HttpErrorResponse;
+
+      expect(events.length).toBe(2);
+      expect(error instanceof HttpErrorResponse).toBeTrue();
+      expect(error.error.code).toBe(RuntimeErrorCode.FETCH_RESPONSE_BODY_TOO_LARGE);
+      expect(infiniteStreamFactory.cancelCount).toBe(1);
+    });
+
+    it('allows disabling the size limit via dependency injection', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: FetchFactory, useClass: FiniteChunkFetchFactory},
+          {provide: HTTP_FETCH_MAX_RESPONSE_SIZE, useValue: null},
+          FetchBackend,
+        ],
+      });
+
+      backend = TestBed.inject(FetchBackend);
+
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      const events = await trackEvents(backend.handle(req));
+
+      expect(events.length).toBe(2);
+      expect(events[1].type).toBe(HttpEventType.Response);
+      expect((events[1] as HttpResponse<string>).body).toBe('ok');
+    });
+  });
 });
 
 export class MockFetchFactory extends FetchFactory {
@@ -729,6 +778,44 @@ class MockFetchRequest {
   public body: any;
   public credentials?: RequestCredentials;
   public headers?: HeadersInit;
+}
+
+class InfiniteStreamFetchFactory extends FetchFactory {
+  public cancelCount = 0;
+
+  override fetch = async (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
+    const stream = new ReadableStream<Uint8Array>({
+      pull: (controller) => {
+        controller.enqueue(new Uint8Array(1024));
+      },
+      cancel: () => {
+        this.cancelCount++;
+      },
+    });
+
+    return new Response(stream, {
+      status: HttpStatusCode.Ok,
+      statusText: 'OK',
+      headers: {'Content-Type': 'text/plain'},
+    });
+  };
+}
+
+class FiniteChunkFetchFactory extends FetchFactory {
+  override fetch = async (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
+    const stream = new ReadableStream<Uint8Array>({
+      start: (controller) => {
+        controller.enqueue(new TextEncoder().encode('ok'));
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      status: HttpStatusCode.Ok,
+      statusText: 'OK',
+      headers: {'Content-Type': 'text/plain'},
+    });
+  };
 }
 
 class MockFetchResponse {
