@@ -172,5 +172,3 @@ genrule(
     outs = ["event-dispatch-contract.min.js"],
     cmd = "cp $< $@",
 )
-
-
