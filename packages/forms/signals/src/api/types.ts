@@ -9,7 +9,7 @@
 import {Injector, Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {FormField} from '../directive/form_field';
-import type {MetadataKey, ValidationError} from './rules';
+import type {MetadataKey, NgValidationError, ValidationError} from './rules';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -545,6 +545,9 @@ export interface FieldState<
    * @param kind The kind of error (e.g. 'required', 'min').
    * @returns The first matching error, or `undefined` if none.
    */
+  getError<K extends NgValidationError['kind']>(
+    kind: K,
+  ): (Extract<NgValidationError, {kind: K}> & ValidationError.WithFieldTree) | undefined;
   getError(kind: string): ValidationError.WithFieldTree | undefined;
 
   /**

@@ -14,17 +14,28 @@ import {
   applyEach,
   debounce,
   disabled,
+  EmailValidationError,
   form,
   FormField,
   hidden,
+  MaxDateValidationError,
+  MaxLengthValidationError,
+  MaxValidationError,
+  MinDateValidationError,
+  MinLengthValidationError,
+  MinValidationError,
+  NativeInputParseError,
+  PatternValidationError,
   readonly,
   required,
   requiredError,
+  RequiredValidationError,
   Schema,
   schema,
   SchemaOrSchemaFn,
   SchemaPath,
   SchemaPathTree,
+  StandardSchemaValidationError,
   validate,
   validateTree,
   ValidationError,
@@ -77,6 +88,60 @@ describe('FieldNode', () => {
       },
     );
     expect(f.c).toBeUndefined();
+  });
+
+  it('infers built-in error types from getError', () => {
+    const f = form(signal({a: 1}), {injector: TestBed.inject(Injector)});
+    const field = f.a();
+
+    {
+      const error = field.getError('required');
+      let t: (RequiredValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('min');
+      let t: (MinValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('minDate');
+      let t: (MinDateValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('max');
+      let t: (MaxValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('maxDate');
+      let t: (MaxDateValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('minLength');
+      let t: (MinLengthValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('maxLength');
+      let t: (MaxLengthValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('pattern');
+      let t: (PatternValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('email');
+      let t: (EmailValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('standardSchema');
+      let t: (StandardSchemaValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('parse');
+      let t: (NativeInputParseError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('custom');
+      let t: ValidationError.WithFieldTree | undefined = error;
+    }
   });
 
   it('can get a child inside of a computed', () => {

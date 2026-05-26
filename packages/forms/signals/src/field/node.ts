@@ -25,7 +25,7 @@ import {
   REQUIRED,
   IS_ASYNC_VALIDATION_RESOURCE,
 } from '../api/rules/metadata';
-import type {ValidationError} from '../api/rules/validation/validation_errors';
+import type {NgValidationError, ValidationError} from '../api/rules/validation/validation_errors';
 import type {
   DisabledReason,
   FieldContext,
@@ -258,6 +258,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataState.get(key);
   }
 
+  getError<K extends NgValidationError['kind']>(
+    kind: K,
+  ): (Extract<NgValidationError, {kind: K}> & ValidationError.WithFieldTree) | undefined;
+  getError(kind: string): ValidationError.WithFieldTree | undefined;
   getError(kind: string): ValidationError.WithFieldTree | undefined {
     return this.errors().find((e) => e.kind === kind);
   }

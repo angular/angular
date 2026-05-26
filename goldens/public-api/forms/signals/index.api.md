@@ -138,6 +138,10 @@ export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = T
 export interface FieldState<TValue, TKey extends string | number = string | number> extends ReadonlyFieldState<TValue, TKey> {
     readonly controlValue: WritableSignal<TValue>;
     readonly fieldTree: FieldTree<unknown, TKey>;
+    getError<K extends NgValidationError['kind']>(kind: K): (Extract<NgValidationError, {
+        kind: K;
+    }> & ValidationError.WithFieldTree) | undefined;
+    // (undocumented)
     getError(kind: string): ValidationError.WithFieldTree | undefined;
     markAsDirty(): void;
     markAsTouched(options?: MarkAsTouchedOptions): void;
