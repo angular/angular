@@ -61,6 +61,10 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
     }
     // check bound inputs like `[prop]="mySignal"` on an element or inline template
     else if (node instanceof TmplAstElement && node.inputs.length > 0) {
+      // Allow signals to be passed directly to foreign components, without invocation.
+      if (ctx.templateTypeChecker.getForeignComponent(component, node) !== null) {
+        return [];
+      }
       const directivesOfElement = ctx.templateTypeChecker.getDirectivesOfNode(component, node);
       return node.inputs.flatMap((input) =>
         checkBoundAttribute(ctx, component, directivesOfElement, input),
