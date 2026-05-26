@@ -16,6 +16,7 @@ ng_project(
         "//:node_modules/rxjs",
         "//packages/core",
         "//packages/core/primitives/signals",
+        "//packages/core/src/util",
     ],
 )
 
