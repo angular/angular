@@ -42,7 +42,7 @@ import {HttpParams} from './params';
  *     (for example using GraphQL).
  * @param includeRequestsWithAuthHeaders Enables caching of requests containing `Authorization`,
  *     `Proxy-Authorization`, or `Cookie` headers. By default, these requests are excluded from
- *     caching.
+ *     caching. Requests sent using `withCredentials` are also excluded by default.
  *
  * @see [Configuring the caching options](guide/ssr#configuring-the-caching-options)
  *
@@ -131,6 +131,8 @@ function shouldCacheRequest(req: HttpRequest<unknown>, options: CacheOptions): b
   if (
     !isCacheActive ||
     requestOptions === false ||
+    // Do not cache requests sent with credentials.
+    req.withCredentials ||
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
