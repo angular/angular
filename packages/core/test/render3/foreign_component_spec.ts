@@ -14,6 +14,9 @@ import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/i
 import {inject, InjectionToken} from '../../src/di';
 import {ɵɵdefineDirective} from '../../src/render3/definition';
 import {ɵɵProvidersFeature} from '../../src/render3/features/providers_feature';
+import {createLView} from '../../src/render3/view/construction';
+import {renderView} from '../../src/render3/instructions/render';
+import {LView, LViewFlags, PARENT, RENDERER, T_HOST} from '../../src/render3/interfaces/view';
 
 describe('ɵɵforeignComponent', () => {
   afterEach(ViewFixture.cleanUp);
@@ -171,4 +174,58 @@ describe('ɵɵforeignComponent', () => {
 
     expect(fixture.host.innerHTML).toContain('<div id="foreign-el">templated-value</div>');
   });
+
+  it('should support reusing the same template between multiple view instances', () => {
+    const foreignComp1 = foreignImport(() => {
+      return [[document.createTextNode('foreign content')]];
+    });
+
+    const createFn = () => {
+      ɵɵelementStart(0, 'div');
+      ɵɵforeignComponent(1, foreignComp1);
+      ɵɵelementEnd();
+    };
+    const expectedHtml =
+      '' +
+      '<div>' +
+      '<!--foreign-view-head-->foreign content<!--foreign-view-tail-->' +
+      '<!--foreign-component-->' +
+      '</div>';
+
+    const fixture = new ViewFixture({
+      decls: 2,
+      vars: 0,
+      create: createFn,
+    });
+    expect(fixture.host.innerHTML).toContain(expectedHtml);
+
+    // Create second instance reusing the TView
+    const host2 = renderSecondInstance(fixture);
+    expect(fixture.host.innerHTML).toContain(expectedHtml);
+    expect(host2.innerHTML).toContain(expectedHtml);
+  });
 });
+
+function renderSecondInstance(fixture: ViewFixture): HTMLElement {
+  const hostLView = fixture.lView[PARENT] as LView;
+  const hostTNode = fixture.lView[T_HOST];
+  const hostRenderer = hostLView[RENDERER];
+  const host = hostRenderer.createElement('host-element') as HTMLElement;
+
+  const lView = createLView(
+    hostLView,
+    fixture.tView,
+    {},
+    LViewFlags.CheckAlways,
+    host,
+    hostTNode,
+    null,
+    null,
+    null,
+    null,
+    null,
+  );
+
+  renderView(fixture.tView, lView, {});
+  return host;
+}

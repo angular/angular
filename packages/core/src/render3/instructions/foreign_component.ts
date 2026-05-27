@@ -13,7 +13,7 @@ import {createForeignView} from '../foreign_view';
 import {TContainerNode, TNodeType} from '../interfaces/node';
 import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
-import {getLView, getTView, setCurrentTNodeAsNotParent} from '../state';
+import {getLView, getTView, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {addToEndOfViewTree} from '../view/construction';
 import {createLContainer} from '../view/container';
@@ -43,11 +43,12 @@ export function ɵɵforeignComponent(
   let tNode: TContainerNode;
   if (tView.firstCreatePass) {
     tNode = getOrCreateTNode(tView, adjustedIndex, TNodeType.Container, null, null);
+    // `getOrCreateTNode` unconditionally sets the current node as a parent node, which it is not.
+    setCurrentTNodeAsNotParent();
   } else {
     tNode = tView.data[adjustedIndex] as TContainerNode;
+    setCurrentTNode(tNode, false);
   }
-  // `getOrCreateTNode` unconditionally sets the current node as a parent node, which it is not.
-  setCurrentTNodeAsNotParent();
 
   // 2. Create the anchor node in the DOM
   const renderer = lView[RENDERER] as Renderer;
