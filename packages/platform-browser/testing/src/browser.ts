@@ -8,8 +8,7 @@
 import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
 import {APP_ID, createPlatformFactory, NgModule, StaticProvider, PlatformRef} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
-// g3-only import {BrowserModule, platformBrowser} from '@angular/platform-browser';
-import {BrowserModule, platformBrowser} from '../../index'; // 3p-only
+import {BrowserModule, platformBrowser} from '../../index';
 import {DOMTestComponentRenderer} from './dom_test_component_renderer';
 
 /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-/// <reference path="../../../goog.d.ts" /> // 3p-only
+/// <reference path="../../../goog.d.ts" />
 
 import {InjectionToken} from '../di/injection_token';
 import {inject} from '../di/injector_compatibility';

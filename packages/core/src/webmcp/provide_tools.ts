@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// g3-only import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types'; // 3p-only
+import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 import {EnvironmentProviders, makeEnvironmentProviders, provideEnvironmentInitializer} from '../di';
 import {declareExperimentalWebMcpTool} from './declare_tool';
 import type {ToolDescriptor} from './types';

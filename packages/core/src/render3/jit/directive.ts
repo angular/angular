@@ -376,8 +376,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
 
   return {
     name: type.name,
-    // g3-only legacyOptionalChaining: true,
-    legacyOptionalChaining: false, // 3p-only
+    legacyOptionalChaining: false,
     type: type,
     selector: metadata.selector !== undefined ? metadata.selector : null,
     host: metadata.host || EMPTY_OBJ,
