@@ -376,12 +376,32 @@ export async function renderApplication(
   }
 }
 
+export function parseAndValidateAbsoluteUrl(url: string): URL | null {
+  const isAbsoluteOrProtocolRelative = /^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/.test(url);
+  if (isAbsoluteOrProtocolRelative) {
+    try {
+      return new URL(url);
+    } catch {
+      throw new Error(`Invalid URL: ${url}`);
+    }
+  }
+
+  if (URL.canParse(url)) {
+    return new URL(url);
+  }
+
+  return null;
+}
+
 function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | undefined) {
-  if (typeof url === 'string' && URL.canParse(url)) {
-    const hostname = new URL(url).hostname;
-    const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
-    if (!isHostAllowed(hostname, allowedHostsSet)) {
-      throw new Error(`Host ${url} is not allowed. You can configure \`allowedHosts\` option.`);
+  if (typeof url === 'string') {
+    const parsedUrl = parseAndValidateAbsoluteUrl(url);
+    if (parsedUrl !== null) {
+      const hostname = parsedUrl.hostname;
+      const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
+      if (!isHostAllowed(hostname, allowedHostsSet)) {
+        throw new Error(`Host ${url} is not allowed. You can configure \`allowedHosts\` option.`);
+      }
     }
   }
 }

@@ -29,6 +29,22 @@ import {parseUrl} from '../src/location';
       expect(url.href).toBe('http://other.com/deep/path');
       expect(url.origin).toBe('http://other.com');
     });
+
+    it('should throw an error for malformed absolute URLs', () => {
+      const malformedUrls = [
+        'http://evil.com:80:80/path',
+        'https://evil.com:80:80/path',
+        'http://[google.com]/path',
+        'http://google.com:port/path',
+        'http://google.com:80a/path',
+      ];
+
+      for (const url of malformedUrls) {
+        expect(() => parseUrl(url, 'http://test.com')).toThrowError(
+          new RegExp(`Invalid URL: ${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
+        );
+      }
+    });
   });
 
   describe('PlatformLocation', () => {

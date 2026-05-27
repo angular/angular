@@ -60,6 +60,28 @@ describe('allowedHosts validation in renderApplication', () => {
       expect(error.message).not.toContain('is not allowed');
     }
   });
+
+  it('should throw an error for malformed absolute URLs (SSRF bypass attempt)', async () => {
+    const malformedUrls = [
+      'http://evil.com:80:80/path',
+      'https://evil.com:80:80/path',
+      'http://[google.com]/path',
+      'http://google.com:port/path',
+      'http://google.com:80a/path',
+    ];
+
+    for (const url of malformedUrls) {
+      await expectAsync(
+        renderApplication(bootstrap, {
+          document: '<app></app>',
+          url,
+          allowedHosts: ['test.com'],
+        }),
+      ).toBeRejectedWithError(
+        new RegExp(`Invalid URL: ${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
+      );
+    }
+  });
 });
 
 describe('allowedHosts validation in renderModule', () => {
@@ -92,6 +114,28 @@ describe('allowedHosts validation in renderModule', () => {
       });
     } catch (error: any) {
       expect(error.message).not.toContain('is not allowed');
+    }
+  });
+
+  it('should throw an error for malformed absolute URLs (SSRF bypass attempt)', async () => {
+    const malformedUrls = [
+      'http://evil.com:80:80/path',
+      'https://evil.com:80:80/path',
+      'http://[google.com]/path',
+      'http://google.com:port/path',
+      'http://google.com:80a/path',
+    ];
+
+    for (const url of malformedUrls) {
+      await expectAsync(
+        renderModule(MockModule, {
+          document: '<app></app>',
+          url,
+          allowedHosts: ['test.com'],
+        }),
+      ).toBeRejectedWithError(
+        new RegExp(`Invalid URL: ${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
+      );
     }
   });
 });

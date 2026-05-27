@@ -17,6 +17,7 @@ import {inject, Injectable, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG} from './tokens';
+import {parseAndValidateAbsoluteUrl} from './utils';
 
 /**
  * Parses a URL string and returns a URL object.
@@ -25,8 +26,9 @@ import {INITIAL_CONFIG} from './tokens';
  * @returns The parsed URL.
  */
 export function parseUrl(urlStr: string, origin: string): URL {
-  if (URL.canParse(urlStr)) {
-    return new URL(urlStr);
+  const parsedUrl = parseAndValidateAbsoluteUrl(urlStr);
+  if (parsedUrl !== null) {
+    return parsedUrl;
   }
 
   if (urlStr && urlStr[0] !== '/') {
