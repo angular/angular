@@ -616,13 +616,13 @@ export class FakeNavigation implements Navigation {
 
   set oncurrententrychange(
     _handler: // tslint:disable-next-line:no-any
-    ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
+      ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
   ) {
     throw new Error('unimplemented');
   }
 
   get oncurrententrychange(): // tslint:disable-next-line:no-any
-  ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
+    ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
     throw new Error('unimplemented');
   }
 
