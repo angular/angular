@@ -574,9 +574,6 @@ importers:
       ngx-progressbar:
         specifier: 14.0.0
         version: 14.0.0(@angular/cdk@22.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
-      open-in-idx:
-        specifier: 0.1.1
-        version: 0.1.1
       playwright-core:
         specifier: 1.60.0
         version: 1.60.0
@@ -8949,9 +8946,6 @@ packages:
 
   oniguruma-to-es@4.3.6:
     resolution: {integrity: sha512-csuQ9x3Yr0cEIs/Zgx/OEt9iBw9vqIunAPQkx19R/fiMq2oGVTgcMqO/V3Ybqefr1TBvosI6jU539ksaBULJyA==}
-
-  open-in-idx@0.1.1:
-    resolution: {integrity: sha512-4Cks2eY4bnWpBP/fEj1deRrVYbHME36g0w4/IFDG4iwnkD7CwmK9HrF3A3LR/RKHs5AXUMj49YxnwdIxEizDpA==}
 
   open@10.2.0:
     resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
@@ -20342,8 +20336,6 @@ snapshots:
       oniguruma-parser: 0.12.2
       regex: 6.1.0
       regex-recursion: 6.0.2
-
-  open-in-idx@0.1.1: {}
 
   open@10.2.0:
     dependencies:
