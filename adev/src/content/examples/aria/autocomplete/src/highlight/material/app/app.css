@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+  --primary: var(--hot-pink);
+}
+
+.autocomplete-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.material-autocomplete {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.material-symbols-outlined {
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.search-icon {
+  left: 0.75rem;
+  position: absolute;
+  color: var(--quaternary-contrast);
+}
+
+.autocomplete-input {
+  width: 13rem;
+  font-size: 1rem;
+  border-radius: 3rem;
+  padding: 0.75rem 0.5rem 0.75rem 2.5rem;
+  color: var(--primary-contrast);
+  outline: none;
+  border: 1px solid var(--quinary-contrast);
+  background-color: var(--page-background);
+}
+
+.autocomplete-input:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.autocomplete-input::placeholder {
+  color: var(--quaternary-contrast);
+}
+
+.popup {
+  width: 100%;
+  margin-top: 8px;
+  padding: 0.5rem;
+  max-height: 11rem;
+  border-radius: 2rem;
+  background-color: var(--septenary-contrast);
+  font-size: 0.9rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.no-results {
+  padding: 1rem;
+}
+
+.listbox {
+  gap: 2px;
+  height: 100%;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+  outline: none;
+}
+
+.option {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin: 1px;
+  padding: 0 1rem;
+  min-height: 3rem;
+  border-radius: 3rem;
+  outline: none;
+}
+
+.option:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+.option[data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px solid var(--primary);
+}
+
+.option[aria-selected='true'] {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.option:not([aria-selected='true']) .check-icon {
+  display: none;
+}
+
+.option-label {
+  flex: 1;
+}
+
+.check-icon {
+  font-size: 0.9rem;
+}
