@@ -164,7 +164,7 @@ Combobox can coordinate with a two-dimensional grid to create accessible datepic
 
 ### Dialog popup
 
-Popups sometimes need modal behavior with a backdrop and focus trap. The combobox dialog directive provides this pattern for specialized use cases.
+Dialog popups combine the combobox trigger with standard dialog layouts and focus traps (such as CDK's `cdkTrapFocus`). Use dialog popups when the overlay requires modal behavior or backdrop interaction.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -192,7 +192,48 @@ Popups sometimes need modal behavior with a backdrop and focus trap. The combobo
   </docs-tab>
 </docs-tab-group>
 
-Dialog popups combine the combobox trigger with standard dialog layouts and focus traps (such as CDK's `cdkTrapFocus`). Use dialog popups when the overlay requires modal behavior or backdrop interaction.
+## Testing
+
+Angular Aria provides a `ComboboxHarness` for testing combobox components.
+Here is an example of how to use the harness in a component test:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComboboxHarness} from '@angular/aria/combobox/testing';
+import {MyComboboxComponent} from './my-combobox'; // Your component
+
+describe('MyComboboxComponent', () => {
+  let fixture: ComponentFixture<MyComboboxComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyComboboxComponent],
+    });
+
+    fixture = TestBed.createComponent(MyComboboxComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should allow opening and closing the popup', async () => {
+    const combobox = await loader.getHarness(ComboboxHarness);
+
+    // Verify initial state
+    expect(await combobox.isOpen()).toBe(false);
+
+    // Open the popup
+    await combobox.open();
+    expect(await combobox.isOpen()).toBe(true);
+
+    // Close the popup
+    await combobox.close();
+    expect(await combobox.isOpen()).toBe(false);
+  });
+});
+```
 
 ## APIs
 

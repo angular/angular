@@ -149,6 +149,58 @@ Highlight mode allows the user to navigate options with arrow keys without chang
   </docs-tab>
 </docs-tab-group>
 
+## Testing
+
+The autocomplete pattern can be tested using a combination of `ComboboxHarness` and `ListboxHarness` from `@angular/aria/combobox/testing` and `@angular/aria/listbox/testing`.
+Here is an example of how to use the harnesses to test an autocomplete component:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComboboxHarness} from '@angular/aria/combobox/testing';
+import {ListboxHarness} from '@angular/aria/listbox/testing';
+import {MyAutocompleteComponent} from './my-autocomplete'; // Your component
+
+describe('MyAutocompleteComponent', () => {
+  let fixture: ComponentFixture<MyAutocompleteComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyAutocompleteComponent],
+    });
+
+    fixture = TestBed.createComponent(MyAutocompleteComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should filter options based on input', async () => {
+    const combobox = await loader.getHarness(ComboboxHarness);
+
+    // Type in the input to trigger filtering
+    await combobox.setValue('ap');
+    expect(await combobox.isOpen()).toBe(true);
+
+    // Get the listbox harness from the popup
+    const listbox = await combobox.getPopupWidget(ListboxHarness);
+    const options = await listbox.getOptions();
+
+    // Verify options are filtered (e.g., 'Apple', 'Apricot')
+    expect(options.length).toBe(2);
+    expect(await options[0].getText()).toBe('Apple');
+
+    // Select the first option
+    await options[0].click();
+
+    // Verify the input value is updated and popup is closed
+    expect(await combobox.isOpen()).toBe(false);
+    expect(await combobox.getValue()).toBe('Apple');
+  });
+});
+```
+
 ## APIs
 
 ### Combobox Directive
