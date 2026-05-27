@@ -170,7 +170,7 @@ export function locateHostElement(
   // projection.
   const preserveContent = preserveHostContent || encapsulation === ViewEncapsulation.ShadowDom;
   const rootElement = renderer.selectRootElement(elementOrSelector, preserveContent);
-  if (rootElement.tagName.toLowerCase() === 'script') {
+  if (rootElement?.tagName?.toLowerCase() === 'script') {
     throw new RuntimeError(
       RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
       ngDevMode && `"<script>" tag is not allowed as a component host element.`,
