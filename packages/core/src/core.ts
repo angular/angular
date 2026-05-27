@@ -96,7 +96,7 @@ export * from './core_private_export';
 export * from './core_render3_private_export';
 export * from './core_reactivity_export';
 export * from './resource';
-export {SecurityContext} from './sanitization/security';
+export {SecurityContext} from './sanitization/dom_security_schema';
 export {Sanitizer} from './sanitization/sanitizer';
 export {
   createNgModule,

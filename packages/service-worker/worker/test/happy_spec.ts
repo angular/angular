@@ -1618,6 +1618,12 @@ import {envIsSupported} from '../testing/utils';
           expect(redirectReq.mode).toBe('cors'); // The default value.
           expect((redirectReq as any).unknownOption).toBeUndefined();
         });
+
+        it('does not follow redirects when redirect policy is error', async () => {
+          await expectAsync(
+            makeRequest(scope, '/lazy/redirected.txt', undefined, {redirect: 'error'}),
+          ).toBeRejected();
+        });
       });
     });
 

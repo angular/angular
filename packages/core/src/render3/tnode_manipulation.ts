@@ -26,6 +26,7 @@ import {assertPureTNodeType} from './node_assert';
 import {
   getCurrentParentTNode,
   getCurrentTNodePlaceholderOk,
+  getNamespace,
   isCurrentTNodeParent,
   isInI18nBlock,
   isInSkipHydrationBlock,
@@ -288,6 +289,7 @@ export function createTNode(
     flags,
     providerIndexes: 0,
     value: value,
+    namespace: getNamespace(),
     attrs: attrs,
     mergedAttrs: null,
     localNames: null,

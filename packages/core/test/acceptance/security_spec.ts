@@ -8,8 +8,11 @@
 
 import {NgIf} from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
+  createComponent,
   Directive,
+  EnvironmentInjector,
   inject,
   TemplateRef,
   Type,
@@ -836,5 +839,120 @@ describe('innerHTML processing', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.innerHTML).not.toContain('action');
+  });
+});
+describe('Component host element validation', () => {
+  it('should throw an error when dynamically mounting a component onto a script tag', () => {
+    @Component({
+      selector: 'my-sink',
+      template: '',
+    })
+    class MySink {}
+
+    const scriptHost = document.createElement('script');
+    document.head.appendChild(scriptHost);
+
+    try {
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      expect(() => {
+        createComponent(MySink, {
+          environmentInjector,
+          hostElement: scriptHost,
+        });
+      }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+    } finally {
+      scriptHost.remove();
+    }
+  });
+
+  it('should throw an error when dynamically mounting a component onto an SVG script tag', () => {
+    @Component({
+      selector: 'my-svg-sink',
+      template: '',
+    })
+    class MySvgSink {}
+
+    const svgScriptHost = document.createElementNS('http://www.w3.org/2000/svg', 'script');
+    document.head.appendChild(svgScriptHost);
+
+    try {
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      expect(() => {
+        createComponent(MySvgSink, {
+          environmentInjector,
+          hostElement: svgScriptHost,
+        });
+      }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+    } finally {
+      svgScriptHost.remove();
+    }
+  });
+});
+
+describe('SVG <script> bindings', () => {
+  it(`should remove svg <script> element`, () => {
+    @Component({
+      template: `<svg><script src="https://bad.com/script.js"></script></svg>`,
+      changeDetection: ChangeDetectionStrategy.Default,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
+  });
+});
+
+describe('SVG <a> link sanitization', () => {
+  it('should sanitize dynamic `href` bindings on <svg:a>', () => {
+    @Component({
+      template: '<svg><a [attr.href]="url"></a></svg>',
+      changeDetection: ChangeDetectionStrategy.Default,
+    })
+    class TestCmp {
+      url = 'javascript:alert(1)';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
+  });
+
+  it('should sanitize dynamic `xlink:href` bindings on <svg:a>', () => {
+    @Component({
+      template: '<svg><a [attr.xlink:href]="url"></a></svg>',
+      changeDetection: ChangeDetectionStrategy.Default,
+    })
+    class TestCmp {
+      url = 'javascript:alert(1)';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('xlink:href')).toEqual('unsafe:javascript:alert(1)');
+  });
+
+  it('should allow static unsafe `href` and `xlink:href` on <svg:a>', () => {
+    @Component({
+      template: `
+        <svg>
+          <a href="javascript:alert(1)"></a>
+          <a xlink:href="javascript:alert(2)"></a>
+        </svg>
+      `,
+      changeDetection: ChangeDetectionStrategy.Default,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const links = fixture.nativeElement.querySelectorAll('a');
+    expect(links[0].getAttribute('href')).toEqual('javascript:alert(1)');
+    expect(links[1].getAttribute('xlink:href')).toEqual('javascript:alert(2)');
   });
 });

@@ -1680,6 +1680,8 @@ export interface SchemaMetadata {
 // @public
 export enum SecurityContext {
     // (undocumented)
+    ATTRIBUTE_NO_BINDING = 6,
+    // (undocumented)
     HTML = 1,
     // (undocumented)
     NONE = 0,

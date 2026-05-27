@@ -7,7 +7,8 @@
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '../core';
-import {isNgContainer, isNgContent} from '../ml_parser/tags';
+import {isNgContainer, isNgContent, splitNsName} from '../ml_parser/tags';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 import {dashCaseToCamelCase} from '../util';
 
 import {SECURITY_SCHEMA} from './dom_security_schema';
@@ -17,6 +18,13 @@ const BOOLEAN = 'boolean';
 const NUMBER = 'number';
 const STRING = 'string';
 const OBJECT = 'object';
+
+function normalizeTagName(tagName: string): string {
+  const tagNameLower = tagName.toLowerCase();
+  const [ns, name] = splitNsName(tagNameLower, false);
+
+  return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
+}
 
 /**
  * This array represents the DOM schema. It encodes inheritance, properties, and events.
@@ -337,8 +345,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       return true;
     }
 
-    if (tagName.indexOf('-') > -1) {
-      if (isNgContainer(tagName) || isNgContent(tagName)) {
+    const normalizedTag = normalizeTagName(tagName);
+    if (normalizedTag.includes('-')) {
+      if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
         return false;
       }
 
@@ -349,8 +358,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       }
     }
 
-    const elementProperties =
-      this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
+    const elementProperties = this._schema.get(normalizedTag) || this._schema.get('unknown')!;
     return elementProperties.has(propName);
   }
 
@@ -359,8 +367,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       return true;
     }
 
-    if (tagName.indexOf('-') > -1) {
-      if (isNgContainer(tagName) || isNgContent(tagName)) {
+    const normalizedTag = normalizeTagName(tagName);
+    if (normalizedTag.includes('-')) {
+      if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
         return true;
       }
 
@@ -370,7 +379,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       }
     }
 
-    return this._schema.has(tagName.toLowerCase());
+    return this._schema.has(normalizedTag);
   }
 
   /**
@@ -393,16 +402,16 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       propName = this.getMappedPropName(propName);
     }
 
-    // Make sure comparisons are case insensitive, so that case differences between attribute and
-    // property names do not have a security impact.
-    tagName = tagName.toLowerCase();
+    const normalizedTag = normalizeTagName(tagName);
     propName = propName.toLowerCase();
-    let ctx = SECURITY_SCHEMA()[tagName + '|' + propName];
-    if (ctx) {
-      return ctx;
-    }
-    ctx = SECURITY_SCHEMA()['*|' + propName];
-    return ctx ? ctx : SecurityContext.NONE;
+
+    const securitySchema = SECURITY_SCHEMA();
+    const ctx =
+      securitySchema[normalizedTag + '|' + propName] ??
+      securitySchema['*|' + propName] ??
+      SecurityContext.NONE;
+
+    return ctx;
   }
 
   override getMappedPropName(propName: string): string {
@@ -442,14 +451,15 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   allKnownAttributesOfElement(tagName: string): string[] {
-    const elementProperties =
-      this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
+    const normalizedTag = normalizeTagName(tagName);
+    const elementProperties = this._schema.get(normalizedTag) || this._schema.get('unknown')!;
     // Convert properties to attributes.
     return Array.from(elementProperties.keys()).map((prop) => _PROP_TO_ATTR.get(prop) ?? prop);
   }
 
   allKnownEventsOfElement(tagName: string): string[] {
-    return Array.from(this._eventSchema.get(tagName.toLowerCase()) ?? []);
+    const normalizedTag = normalizeTagName(tagName);
+    return Array.from(this._eventSchema.get(normalizedTag) ?? []);
   }
 
   override normalizeAnimationStyleProperty(propName: string): string {
