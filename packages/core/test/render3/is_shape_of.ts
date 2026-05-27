@@ -158,7 +158,6 @@ const ShapeOfTNode: ShapeOf<TNode> = {
   flags: true,
   providerIndexes: true,
   value: true,
-  namespace: true,
   attrs: true,
   mergedAttrs: true,
   localNames: true,

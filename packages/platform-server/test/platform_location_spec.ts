@@ -7,7 +7,7 @@
  */
 import '@angular/compiler';
 
-import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
+import {PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {destroyPlatform} from '@angular/core';
 import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
 
@@ -173,50 +173,7 @@ import {parseUrl} from '../src/location';
         platform.destroy();
 
         expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
-        expect(location.pathname)
-          .withContext(`pathname for URL: "${url}"`)
-          .toBe('/attacker.com/deep/path');
-      }
-    });
-
-    it('should not expose protocol-relative URLs on the location to prevent open redirect and SSRF bypasses', async () => {
-      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
-      const origins = [undefined, 'http://localhost:4200'];
-
-      for (const url of urls) {
-        for (const origin of origins) {
-          const providers: any[] = [
-            {
-              provide: INITIAL_CONFIG,
-              useValue: {
-                document: '',
-                url,
-              },
-            },
-          ];
-
-          if (origin) {
-            providers.push({
-              provide: DOCUMENT,
-              useValue: {
-                location: {
-                  origin,
-                },
-              },
-            });
-          }
-
-          const platform = platformServer(providers);
-          const location = platform.injector.get(PlatformLocation) as any;
-          platform.destroy();
-
-          // A relative redirect URL starting with // or /\ is normalized by browsers to a protocol-relative URL.
-          // The PlatformLocation.url property MUST NOT expose these unsafe patterns.
-          const isVulnerable = location.url.startsWith('//') || location.url.startsWith('/\\');
-          expect(isVulnerable)
-            .withContext(`URL: "${url}", origin: "${origin}", location.url: "${location.url}"`)
-            .toBeFalse();
-        }
+        expect(location.pathname).withContext(`pathname for URL: "${url}"`).toBe(url);
       }
     });
   });

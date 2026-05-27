@@ -378,7 +378,6 @@
   "getInjectorIndex",
   "getLView",
   "getLViewParent",
-  "getNamespace",
   "getNativeByTNode",
   "getNearestLContainer",
   "getNextLContainer",

@@ -322,7 +322,6 @@
   "getLView",
   "getLViewParent",
   "getMinimumDurationForState",
-  "getNamespace",
   "getNativeByTNode",
   "getNearestLContainer",
   "getNextLContainer",

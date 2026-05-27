@@ -18,8 +18,6 @@ import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
-const LEADING_SLASHES_REGEX = /^[/\\]+/;
-
 /**
  * Parses a URL string and returns a URL object.
  * @param urlStr The string to parse.
@@ -31,12 +29,8 @@ export function parseUrl(urlStr: string, origin: string): URL {
     return new URL(urlStr);
   }
 
-  if (urlStr) {
-    urlStr = urlStr.replace(LEADING_SLASHES_REGEX, '/');
-
-    if (urlStr[0] !== '/') {
-      urlStr = `/${urlStr}`;
-    }
+  if (urlStr && urlStr[0] !== '/') {
+    urlStr = `/${urlStr}`;
   }
 
   return new URL(origin + urlStr);

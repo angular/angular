@@ -369,11 +369,6 @@ export interface TNode {
   value: any;
 
   /**
-   * The namespace associated with this node.
-   */
-  namespace: string | null;
-
-  /**
    * Attributes associated with an element. We need to store attributes to support various
    * use-cases (attribute injection, content projection with selectors, directives matching).
    * Attributes are stored statically because reading them from the DOM would be way too slow for

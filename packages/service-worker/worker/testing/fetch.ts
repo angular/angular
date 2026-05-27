@@ -115,7 +115,7 @@ export class MockRequest extends MockBody implements Request {
   readonly keepalive: boolean = true;
   readonly method: string = 'GET';
   readonly mode: RequestMode = 'cors';
-  readonly redirect: RequestRedirect = 'follow';
+  readonly redirect: RequestRedirect = 'error';
   readonly referrer: string = '';
   readonly referrerPolicy: ReferrerPolicy = 'no-referrer';
   readonly signal: AbortSignal = null as any;
@@ -153,9 +153,6 @@ export class MockRequest extends MockBody implements Request {
     if (init.method !== undefined) {
       this.method = init.method;
     }
-    if (init.redirect !== undefined) {
-      this.redirect = init.redirect;
-    }
     if (init.destination !== undefined) {
       this.destination = init.destination;
     }
@@ -170,7 +167,6 @@ export class MockRequest extends MockBody implements Request {
       mode: this.mode,
       credentials: this.credentials,
       headers: this.headers,
-      redirect: this.redirect,
     });
   }
 }

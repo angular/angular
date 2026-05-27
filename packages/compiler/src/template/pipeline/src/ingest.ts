@@ -28,7 +28,6 @@ import {
   type ViewCompilationUnit,
 } from './compilation';
 import {BINARY_OPERATORS, namespaceForKey, prefixWithNamespace} from './conversion';
-import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 
@@ -1263,24 +1262,7 @@ function ingestElementBindings(
 
   for (const attr of element.attributes) {
     // Attribute literal bindings, such as `attr.foo="bar"`.
-    const [ns, elementName] = splitNsName(element.name);
-    let namespace = ns;
-    if (!ns) {
-      switch (op.namespace) {
-        case ir.Namespace.SVG:
-          namespace = SVG_NAMESPACE;
-          break;
-        case ir.Namespace.Math:
-          namespace = MATH_ML_NAMESPACE;
-          break;
-      }
-    }
-
-    const securityContext = domSchema.securityContext(
-      namespace ? `:${namespace}:${elementName}` : elementName,
-      attr.name,
-      true,
-    );
+    const securityContext = domSchema.securityContext(element.name, attr.name, true);
     bindings.push(
       ir.createBindingOp(
         op.xref,

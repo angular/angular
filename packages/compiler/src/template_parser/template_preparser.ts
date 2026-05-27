@@ -14,8 +14,8 @@ const LINK_ELEMENT = 'link';
 const LINK_STYLE_REL_ATTR = 'rel';
 const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
-const STYLE_ELEMENTS: ReadonlySet<string> = new Set([':svg:style', 'style']);
-const SCRIPT_ELEMENTS: ReadonlySet<string> = new Set([':svg:script', 'script']);
+const STYLE_ELEMENT = 'style';
+const SCRIPT_ELEMENT = 'script';
 const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
@@ -25,8 +25,7 @@ export function preparseElement(ast: html.Element): PreparsedElement {
   let relAttr: string | null = null;
   let nonBindable = false;
   let projectAs = '';
-
-  for (const attr of ast.attrs) {
+  ast.attrs.forEach((attr) => {
     const lcAttrName = attr.name.toLowerCase();
     if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
       selectAttr = attr.value;
@@ -41,18 +40,15 @@ export function preparseElement(ast: html.Element): PreparsedElement {
         projectAs = attr.value;
       }
     }
-  }
-
-  // Normalize selector to '*' if empty
-  selectAttr ||= '*';
-
+  });
+  selectAttr = normalizeNgContentSelect(selectAttr);
   const nodeName = ast.name.toLowerCase();
   let type = PreparsedElementType.OTHER;
   if (isNgContent(nodeName)) {
     type = PreparsedElementType.NG_CONTENT;
-  } else if (STYLE_ELEMENTS.has(nodeName)) {
+  } else if (nodeName == STYLE_ELEMENT) {
     type = PreparsedElementType.STYLE;
-  } else if (SCRIPT_ELEMENTS.has(nodeName)) {
+  } else if (nodeName == SCRIPT_ELEMENT) {
     type = PreparsedElementType.SCRIPT;
   } else if (nodeName == LINK_ELEMENT && relAttr == LINK_STYLE_REL_VALUE) {
     type = PreparsedElementType.STYLESHEET;
@@ -76,4 +72,11 @@ export class PreparsedElement {
     public nonBindable: boolean,
     public projectAs: string,
   ) {}
+}
+
+function normalizeNgContentSelect(selectAttr: string | null): string {
+  if (selectAttr === null || selectAttr.length === 0) {
+    return '*';
+  }
+  return selectAttr;
 }

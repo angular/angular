@@ -22,7 +22,6 @@ import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {throwMultipleComponentError} from '../errors';
 import {ComponentDef, ComponentTemplate, DirectiveDef, RenderFlags} from '../interfaces/definition';
 import {
@@ -170,12 +169,6 @@ export function locateHostElement(
   // projection.
   const preserveContent = preserveHostContent || encapsulation === ViewEncapsulation.ShadowDom;
   const rootElement = renderer.selectRootElement(elementOrSelector, preserveContent);
-  if (rootElement.tagName.toLowerCase() === 'script') {
-    throw new RuntimeError(
-      RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
-      ngDevMode && `"<script>" tag is not allowed as a component host element.`,
-    );
-  }
   applyRootElementTransform(rootElement as HTMLElement);
   return rootElement;
 }

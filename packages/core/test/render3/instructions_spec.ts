@@ -40,7 +40,7 @@ import {
   ɵɵsanitizeUrl,
 } from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/dom_security_schema';
+import {SecurityContext} from '../../src/sanitization/security';
 
 import {ViewFixture} from './view_fixture';
 

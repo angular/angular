@@ -117,6 +117,16 @@ export const VALID_ATTRS: BooleanRecord = merge(URI_ATTRS, HTML_ATTRS, ARIA_ATTR
 const SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS = tagSet('script,style,template');
 
 /**
+ * Attributes that are potential attach vectors and may need to be sanitized.
+ */
+export const SENSITIVE_ATTRS: BooleanRecord = merge(
+  URI_ATTRS,
+  // Note: we don't include these attributes in `URI_ATTRS`, because `URI_ATTRS` also
+  // determines whether an attribute should be dropped when sanitizing an HTML string.
+  tagSet('action,formaction,data,codebase'),
+);
+
+/**
  * SanitizingHtmlSerializer serializes a DOM fragment, stripping out any unsafe elements and unsafe
  * attributes.
  */

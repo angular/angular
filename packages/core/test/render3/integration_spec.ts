@@ -13,7 +13,7 @@ import {TestBed} from '../../testing';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/dom_security_schema';
+import {SecurityContext} from '../../src/sanitization/security';
 
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
@@ -635,7 +635,7 @@ describe('sanitization', () => {
       standalone: true,
     })
     class UnsafeUrlHostBindingDir {
-      @HostBinding('href') href: any = 'http://href-dir-value';
+      @HostBinding() cite: any = 'http://cite-dir-value';
 
       constructor() {
         hostBindingDir = this;
@@ -647,7 +647,7 @@ describe('sanitization', () => {
       standalone: true,
       imports: [UnsafeUrlHostBindingDir],
       template: `
-        <a unsafeUrlHostBindingDir></a>
+        <blockquote unsafeUrlHostBindingDir></blockquote>
       `,
     })
     class SimpleComp {}
@@ -663,16 +663,16 @@ describe('sanitization', () => {
       ],
     });
     const fixture = TestBed.createComponent(SimpleComp);
-    hostBindingDir!.href = 'http://foo';
+    hostBindingDir!.cite = 'http://foo';
     fixture.detectChanges();
 
-    const anchor = fixture.nativeElement.querySelector('a')!;
-    expect(anchor.getAttribute('href')).toEqual('http://bar');
+    const anchor = fixture.nativeElement.querySelector('blockquote')!;
+    expect(anchor.getAttribute('cite')).toEqual('http://bar');
 
-    hostBindingDir!.href = sanitizer.bypassSecurityTrustUrl('http://foo');
+    hostBindingDir!.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
     fixture.detectChanges();
 
-    expect(anchor.getAttribute('href')).toEqual('http://foo');
+    expect(anchor.getAttribute('cite')).toEqual('http://foo');
   });
 });
 

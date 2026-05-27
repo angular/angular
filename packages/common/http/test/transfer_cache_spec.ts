@@ -17,19 +17,17 @@ import {
 } from '@angular/core';
 import {fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
-import {HttpClient, HttpHeaders, HttpRequest, HttpResponse, provideHttpClient} from '../public_api';
+import {HttpClient, HttpResponse, provideHttpClient} from '../public_api';
 import {
   BODY,
-  CACHE_OPTIONS,
   HEADERS,
   HTTP_TRANSFER_CACHE_ORIGIN_MAP,
   RESPONSE_TYPE,
   STATUS,
   STATUS_TEXT,
   REQ_URL,
-  transferCacheInterceptorFn,
   withHttpTransferCache,
 } from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
@@ -40,7 +38,6 @@ interface RequestParams {
   observe?: 'body' | 'response';
   transferCache?: {includeHeaders: string[]} | boolean;
   headers?: {[key: string]: string};
-  withCredentials?: boolean;
   body?: RequestBody;
 }
 
@@ -61,102 +58,6 @@ describe('TransferCache', () => {
     standalone: false,
   })
   class SomeComponent {}
-
-  describe('transferCacheInterceptorFn', () => {
-    afterEach(() => {
-      TestBed.resetTestingModule();
-    });
-
-    function configureInterceptor(options: {includeRequestsWithAuthHeaders?: boolean} = {}): void {
-      TestBed.resetTestingModule();
-      TestBed.configureTestingModule({
-        providers: [
-          TransferState,
-          {
-            provide: CACHE_OPTIONS,
-            useValue: {
-              isCacheActive: true,
-              ...options,
-            },
-          },
-        ],
-      });
-    }
-
-    function runOnServer<T>(callback: () => T): T {
-      const previousServerMode = globalThis['ngServerMode'];
-      globalThis['ngServerMode'] = true;
-      try {
-        return callback();
-      } finally {
-        globalThis['ngServerMode'] = previousServerMode;
-      }
-    }
-
-    function runInterceptor(
-      req: HttpRequest<unknown>,
-      next: (req: HttpRequest<unknown>) => Observable<HttpResponse<unknown>>,
-    ): HttpResponse<unknown> {
-      let response!: HttpResponse<unknown>;
-      TestBed.runInInjectionContext(() => {
-        transferCacheInterceptorFn(req, next).subscribe((event) => {
-          if (event instanceof HttpResponse) {
-            response = event;
-          }
-        });
-      });
-      return response;
-    }
-
-    it('should not reuse cached responses for Cookie-bearing requests by default', () => {
-      configureInterceptor();
-
-      const firstRequest = new HttpRequest('GET', '/test-cookie', null, {
-        headers: new HttpHeaders({Cookie: 'session=user-a'}),
-      });
-      const secondRequest = new HttpRequest('GET', '/test-cookie', null, {
-        headers: new HttpHeaders({Cookie: 'session=user-b'}),
-      });
-
-      const firstNext = jasmine
-        .createSpy('firstNext')
-        .and.returnValue(of(new HttpResponse({body: 'user-a-secret'})));
-      const secondNext = jasmine
-        .createSpy('secondNext')
-        .and.returnValue(of(new HttpResponse({body: 'user-b-secret'})));
-
-      runOnServer(() => {
-        expect(runInterceptor(firstRequest, firstNext).body).toBe('user-a-secret');
-        expect(runInterceptor(secondRequest, secondNext).body).toBe('user-b-secret');
-      });
-
-      expect(firstNext).toHaveBeenCalledTimes(1);
-      expect(secondNext).toHaveBeenCalledTimes(1);
-    });
-
-    it("should preserve opt-in caching for Cookie-bearing requests when 'includeRequestsWithAuthHeaders' is true", () => {
-      configureInterceptor({includeRequestsWithAuthHeaders: true});
-
-      const request = new HttpRequest('GET', '/test-cookie', null, {
-        headers: new HttpHeaders({Cookie: 'session=user-a'}),
-      });
-
-      const firstNext = jasmine
-        .createSpy('firstNext')
-        .and.returnValue(of(new HttpResponse({body: 'user-a-secret'})));
-      const secondNext = jasmine
-        .createSpy('secondNext')
-        .and.returnValue(of(new HttpResponse({body: 'network-should-not-run'})));
-
-      runOnServer(() => {
-        expect(runInterceptor(request, firstNext).body).toBe('user-a-secret');
-        expect(runInterceptor(request, secondNext).body).toBe('user-a-secret');
-      });
-
-      expect(firstNext).toHaveBeenCalledTimes(1);
-      expect(secondNext).not.toHaveBeenCalled();
-    });
-  });
 
   describe('withHttpTransferCache', () => {
     let isStable: BehaviorSubject<boolean>;
@@ -398,16 +299,6 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test-auth', 'foo');
     });
 
-    it('should not cache requests with credentials', async () => {
-      makeRequestAndExpectOne('/test-auth', 'foo', {
-        withCredentials: true,
-      });
-
-      makeRequestAndExpectOne('/test-auth', 'foo', {
-        withCredentials: true,
-      });
-    });
-
     it('should cache POST with the differing body in string form', () => {
       makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'foo'});
       makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: 'foo'});
@@ -554,16 +445,6 @@ describe('TransferCache', () => {
         });
 
         makeRequestAndExpectNone('/test-auth');
-      });
-
-      it(`should not cache requests with credentials when 'includeRequestsWithAuthHeaders' is 'true'`, async () => {
-        makeRequestAndExpectOne('/test-auth', 'foo', {
-          withCredentials: true,
-        });
-
-        makeRequestAndExpectOne('/test-auth', 'foo', {
-          withCredentials: true,
-        });
       });
 
       it('should cache a POST request', () => {

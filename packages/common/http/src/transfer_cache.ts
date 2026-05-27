@@ -40,9 +40,8 @@ import {HttpParams} from './params';
  * @param includePostRequests Enables caching for POST requests. By default, only GET and HEAD
  *     requests are cached. This option can be enabled if POST requests are used to retrieve data
  *     (for example using GraphQL).
- * @param includeRequestsWithAuthHeaders Enables caching of requests containing `Authorization`,
- *     `Proxy-Authorization`, or `Cookie` headers. By default, these requests are excluded from
- *     caching. Requests sent using `withCredentials` are also excluded by default.
+ * @param includeRequestsWithAuthHeaders Enables caching of requests containing either `Authorization`
+ *     or `Proxy-Authorization` headers. By default, these requests are excluded from caching.
  *
  * @publicApi
  */
@@ -113,7 +112,7 @@ interface CacheOptions extends HttpTransferCacheOptions {
   isCacheActive: boolean;
 }
 
-export const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
+const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
   ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_OPTIONS' : '',
 );
 
@@ -133,12 +132,10 @@ export function transferCacheInterceptorFn(
   if (
     !isCacheActive ||
     requestOptions === false ||
-    // Do not cache requests sent with credentials.
-    req.withCredentials ||
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
-    // Do not cache requests with authentication or cookie headers unless explicitly enabled.
+    // Do not cache request that require authorization when includeRequestsWithAuthHeaders is falsey
     (!globalOptions.includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
     globalOptions.filter?.(req) === false
   ) {
@@ -235,13 +232,9 @@ export function transferCacheInterceptorFn(
   );
 }
 
-/** @returns true when the request contains authentication or cookie headers. */
+/** @returns true when the requests contains autorization related headers. */
 function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
-  return (
-    req.headers.has('authorization') ||
-    req.headers.has('proxy-authorization') ||
-    req.headers.has('cookie')
-  );
+  return req.headers.has('authorization') || req.headers.has('proxy-authorization');
 }
 
 function getFilteredHeaders(
