@@ -79,7 +79,10 @@ function relativeUrlsTransformerInterceptorFn(
     const isProtocolRelative = /^\/\/[^/\\]/.test(trimmedUrl);
     if (!isProtocolRelative) {
       // Unrecognized structure that changed origin. Force it to be a local path.
-      parsedUrl = new URL(trimmedUrl.replace(/^[/\\]+/, '/'), baseUrl);
+      // A single leading slash is prepended so the value resolves as an absolute path
+      // and cannot be reinterpreted as an absolute URL, e.g. when the scheme is hidden
+      // with embedded tabs/newlines (`ht\ttp://attacker.com`) that the URL parser strips.
+      parsedUrl = new URL('/' + trimmedUrl.replace(/^[/\\]+/, ''), baseUrl);
     }
   }
 

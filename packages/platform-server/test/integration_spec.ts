@@ -1598,6 +1598,21 @@ class HiddenModule {}
           });
         });
 
+        it('should treat scheme-obfuscated SSRF attempts as pathnames', async () => {
+          // The URL parser strips embedded tabs/newlines, so these resolve to an absolute
+          // (cross-origin) URL even though the leading characters do not look like a scheme.
+          const badUrls = ['ht\ttp://attacker.com', 'ht\ntp://attacker.com'];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const badUrl of badUrls) {
+              http.get(badUrl).subscribe((body) => {
+                expect(body).toEqual('success!');
+              });
+              mock.expectOne('http://localhost:4000/http://attacker.com').flush('success!');
+            }
+          });
+        });
+
         it('should resolve safe path-relative URLs containing backslashes without origin change', async () => {
           ref.injector.get(NgZone).run(() => {
             http.get('\\testing').subscribe((body) => {
