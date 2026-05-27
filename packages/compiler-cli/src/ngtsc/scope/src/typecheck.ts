@@ -12,13 +12,13 @@ import {
   SchemaMetadata,
   SelectorlessMatcher,
   SelectorMatcher,
-  ForeignComponentMeta,
 } from '@angular/compiler';
 
 import {Reference} from '../../imports';
 import {
   DirectiveMeta,
   flattenInheritedDirectiveMetadata,
+  ForeignComponentMeta,
   HostDirectivesResolver,
   MetadataReader,
   MetaKind,

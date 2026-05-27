@@ -142,6 +142,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
               ),
         );
         break;
+      case ir.OpKind.ForeignComponent:
+        ir.OpList.replace(
+          op,
+          ng.foreignComponent(op.handle.slot!, op.foreignComponentRef, op.props, op.sourceSpan),
+        );
+        break;
       case ir.OpKind.ElementEnd:
         ir.OpList.replace(
           op,

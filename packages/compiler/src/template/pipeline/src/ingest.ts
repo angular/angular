@@ -14,7 +14,12 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
-import {DeferBlockDepsEmitMode, R3ComponentDeferMetadata} from '../../../render3/view/api';
+import {isUnsafeObjectKey} from '../../../render3/util';
+import {
+  DeferBlockDepsEmitMode,
+  R3ComponentDeferMetadata,
+  R3ForeignComponentMetadata,
+} from '../../../render3/view/api';
 import {icuFromI18nMessage} from '../../../render3/view/i18n/util';
 import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
 import {BindingParser} from '../../../template_parser/binding_parser';
@@ -65,6 +70,7 @@ export function ingestComponent(
   relativeTemplatePath: string | null,
   enableDebugLocations: boolean,
   legacyOptionalChaining: boolean,
+  foreignImports: R3ForeignComponentMetadata[] | null,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -77,6 +83,7 @@ export function ingestComponent(
     relativeTemplatePath,
     enableDebugLocations,
     legacyOptionalChaining,
+    foreignImports,
   );
   ingestNodes(job.root, template);
   return job;
@@ -283,8 +290,35 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
 
   const id = unit.job.allocateXrefId();
 
-  const [namespaceKey, elementName] = splitNsName(element.name);
+  const foreignComp = unit.job.getForeignComponent(element);
+  if (foreignComp) {
+    const propEntries: {key: string; quoted: boolean; value: o.Expression}[] = [];
+    for (const attr of element.attributes) {
+      propEntries.push({
+        key: attr.name,
+        value: o.literal(attr.value),
+        quoted: isUnsafeObjectKey(attr.name),
+      });
+    }
+    for (const input of element.inputs) {
+      propEntries.push({
+        key: input.name,
+        value: convertAst(input.value, unit.job, input.sourceSpan),
+        quoted: isUnsafeObjectKey(input.name),
+      });
+    }
+    const props = propEntries.length > 0 ? o.literalMap(propEntries) : null;
 
+    // Foreign components are created in the creation block. Updates are triggered reactively
+    // through directly passed signal properties, alleviating the need for any explicit update
+    // operations.
+    unit.create.push(
+      ir.createForeignComponentOp(id, foreignComp.component, props, element.startSourceSpan),
+    );
+    return;
+  }
+
+  const [namespaceKey, elementName] = splitNsName(element.name);
   const startOp = ir.createElementStartOp(
     elementName,
     id,
