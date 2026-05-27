@@ -17,24 +17,7 @@ import {inject, Injectable, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG} from './tokens';
-
-/**
- * Parses a URL string and returns a URL object.
- * @param urlStr The string to parse.
- * @param origin The origin to use for resolving the URL.
- * @returns The parsed URL.
- */
-export function parseUrl(urlStr: string, origin: string): URL {
-  if (URL.canParse(urlStr)) {
-    return new URL(urlStr);
-  }
-
-  if (urlStr && urlStr[0] !== '/') {
-    urlStr = `/${urlStr}`;
-  }
-
-  return new URL(origin + urlStr);
-}
+import {parseUrl} from './url';
 
 /**
  * Server-side implementation of URL state. Implements `pathname`, `search`, and `hash`
