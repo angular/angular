@@ -1,66 +1,64 @@
 # End-to-End (E2E) Testing
 
-This project uses [Cypress](https://www.cypress.io/) for end-to-end (E2E) testing, which simulates real user interactions in a browser. The E2E tests are located primarily within the `devtools/` package.
+## Set Up E2E Testing
 
-## Running E2E Tests
+Configure E2E testing in an Angular workspace using the `ng e2e` command. If no E2E target is configured in `angular.json`, running `ng e2e` prompts to choose one of the officially integrated frameworks.
 
-The primary way to run E2E tests is through the `pnpm` script defined in the root `package.json`.
+Add supported E2E frameworks to the project using `ng add`:
 
-1.  **Build DevTools:** The E2E tests run against a built version of the devtools extension. You must build it first:
-
+*   **Cypress:**
     ```shell
-    pnpm -F ng-devtools-mcp build:dev
+    ng add @cypress/schematic
+    ```
+*   **Playwright:**
+    ```shell
+    ng add playwright-ng-schematics
+    ```
+*   **Nightwatch:**
+    ```shell
+    ng add @nightwatch/schematics
+    ```
+*   **WebdriverIO:**
+    ```shell
+    ng add @wdio/schematics
+    ```
+*   **Puppeteer:**
+    ```shell
+    ng add @puppeteer/ng-schematics
     ```
 
-2.  **Run Cypress:** Use the `cy:open` or `cy:run` script:
-    - To open the interactive Cypress Test Runner:
-      ```shell
-      pnpm -F ng-devtools-mcp cy:open
-      ```
-    - To run the tests headlessly in the terminal (ideal for CI):
-      ```shell
-      pnpm -F ng-devtools-mcp cy:run
-      ```
-
-## Test Structure
-
-- **Configuration:** The main Cypress configuration is located at `devtools/cypress.json`.
-- **Specs:** Test files (specs) are located in `devtools/cypress/integration/`.
-- **Custom Commands:** Reusable custom commands and actions are defined in `devtools/cypress/support/`.
-
-### Example E2E Test Snippet
-
-A typical test might look like this:
-
-```typescript
-// in devtools/cypress/integration/profiler.spec.ts
-
-describe('Profiler', () => {
-  beforeEach(() => {
-    cy.visit('/?e2e-app');
-    cy.wait(1000);
-    cy.get('ng-devtools-tabs').find('a').contains('Profiler').click();
-  });
-
-  it('should record and display profiling data', () => {
-    // Find the record button and click it
-    cy.get('button[aria-label="start-recording-button"]').click();
-
-    // Interact with the test application to generate profiling data
-    cy.get('body').find('#cards button').first().click();
-    cy.wait(500);
-
-    // Stop recording
-    cy.get('button[aria-label="stop-recording-button"]').click();
-
-    // Assert that the flame graph is now visible
-    cy.get('ng-devtools-recording-timeline').find('canvas').should('be.visible');
-  });
-});
+Run E2E tests:
+```shell
+ng e2e [project] [options]
 ```
 
-### Best Practices
+### Builder Configuration
 
-- **Use `data-` attributes:** Whenever possible, use `data-cy` or similar attributes for selecting elements to make tests more resilient to CSS or structural changes.
-- **Custom Commands:** Encapsulate common sequences of actions into custom commands in the `support` directory to keep tests clean and readable.
-- **Wait for Application State:** Use `cy.wait()` for arbitrary waits sparingly. Prefer to wait for specific UI elements to appear or for network requests to complete to avoid flaky tests.
+E2E runners are configured under the `e2e` target of the application in `angular.json`:
+```json
+"e2e": {
+  "builder": "@cypress/schematic:cypress",
+  "options": {
+    "devServerTarget": "my-app:serve"
+  },
+  "configurations": {
+    "production": {
+      "devServerTarget": "my-app:serve:production"
+    }
+  }
+}
+```
+
+## Creating a Custom E2E Builder
+
+For advanced runner integrations (e.g., wrapper execution with custom setup/teardown), implement a custom CLI builder following the [Angular CLI Builder Documentation](https://angular.dev/tools/cli/cli-builder#creating-a-builder).
+
+## Custom & Enterprise Testing Tools
+
+For custom enterprise runners (e.g., Katalon Studio, TestCafe, Selenium), define execution commands in `package.json` scripts.
+
+## Best Practices
+
+*   **Use Resilient Selectors:** Target dedicated attributes (`data-testid`, `data-cy`, or standard ARIA roles) rather than CSS classes or element tags.
+*   **Decouple Tests:** Assert against user-visible UI states, DOM elements, and behaviors rather than component internals or Angular-specific framework state.
+*   **Manage Asynchronous Behavior:** Use framework-provided waiting APIs (e.g., waiting for network responses or elements to become visible) instead of arbitrary timeouts/sleeps.
