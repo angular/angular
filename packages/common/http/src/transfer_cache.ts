@@ -113,7 +113,7 @@ interface CacheOptions extends HttpTransferCacheOptions {
   isCacheActive: boolean;
 }
 
-const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
+export const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
   ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_OPTIONS' : '',
 );
 
