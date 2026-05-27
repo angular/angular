@@ -1,3 +1,56 @@
+<a name="19.2.23"></a>
+
+# 19.2.23 (2026-05-27)
+
+### common
+
+| Commit                                                                                           | Type | Description                     |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------- |
+| [62dd27d6af](https://github.com/angular/angular/commit/62dd27d6afe4bfd9d4fa8956c1fa191c9db61dfa) | fix  | add upper bounds for digitsInfo |
+| [17326725ba](https://github.com/angular/angular/commit/17326725baae510a420b9a22b4c2d25927dd91b4) | fix  | sanitize placeholder            |
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                                            |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------- |
+| [932e0728db](https://github.com/angular/angular/commit/932e0728dba97d7a2dbe36e7d6429fa2087a20a9) | fix  | normalize tag names with custom namespaces in DomElementSchemaRegistry |
+| [2e3d0371ab](https://github.com/angular/angular/commit/2e3d0371ab7726cec2979d8b8dc8f2a8393f9591) | fix  | sanitize dynamic href and xlink:href bindings on SVG a elements        |
+| [fe1207e8c5](https://github.com/angular/angular/commit/fe1207e8c5d2e55dd7a3a77a3caeb12f91a409bf) | fix  | strip namespaced SVG script elements during template compilation       |
+
+### core
+
+| Commit                                                                                           | Type | Description                                                                              |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------------------------- |
+| [c6bb0692e2](https://github.com/angular/angular/commit/c6bb0692e2f6fd8f7e59e60fa964d173c60e3a74) | fix  | reject script element as a dynamic component host                                        |
+| [3960b21558](https://github.com/angular/angular/commit/3960b2155847c52e4f56d4b3c6532be700155891) | fix  | sanitize meta selectors                                                                  |
+| [3632fa4b69](https://github.com/angular/angular/commit/3632fa4b6953555dfff654f25463c5179547546b) | fix  | support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation |
+| [620230dac4](https://github.com/angular/angular/commit/620230dac4e6141f00b528c4d20e9bbb99e6e20d) | fix  | synchronize core sanitization schema with compiler                                       |
+| [d31f84116c](https://github.com/angular/angular/commit/d31f84116cafcf48462c2b230fa9c4469761292a) | fix  | wrap i18n dynamic element property updates in active index states                        |
+
+### http
+
+| Commit                                                                                           | Type | Description                                               |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------------- |
+| [9940ffd781](https://github.com/angular/angular/commit/9940ffd781de4da118848eabeeedb765f4747416) | fix  | exclude withCredentials requests from transfer cache      |
+| [0f67f0b962](https://github.com/angular/angular/commit/0f67f0b9627f67d55b857f17d6796bea89d88765) | fix  | skip TransferCache for cookie-bearing requests by default |
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                                                              |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------ |
+| [d187e8aeda](https://github.com/angular/angular/commit/d187e8aedaf7c79c9837849ab5f0b775344b14b5) | fix  | normalize path parsing in ServerPlatformLocation                         |
+| [c75f60ef8a](https://github.com/angular/angular/commit/c75f60ef8a7a690c47dc7c473ee214c5f166d281) | fix  | secure location and document initialization against SSRF and path hijack |
+
+### service-worker
+
+| Commit                                                                                           | Type | Description                                              |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------------- |
+| [37ee9ffd9e](https://github.com/angular/angular/commit/37ee9ffd9eb7c51913dba80e37b2f55950d8436b) | fix  | preserve redirect policy on reconstructed asset requests |
+| [97f796203f](https://github.com/angular/angular/commit/97f796203f0605f9a168b76e7ac2f1e6b8d3ddc4) | fix  | Preserves explicit 'credentials: omit' in asset requests |
+| [5619120931](https://github.com/angular/angular/commit/561912093104f1a3f07eedae83edaf63650beb84) | fix  | Preserves HTTP cache mode in asset group requests        |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.22"></a>
 
 # 19.2.22 (2026-05-12)
