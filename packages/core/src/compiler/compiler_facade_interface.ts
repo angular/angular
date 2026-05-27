@@ -166,7 +166,7 @@ export interface R3InjectableMetadataFacade {
   name: string;
   type: Type;
   typeArgumentCount: number;
-  providedIn?: Type | 'root' | 'platform' | 'any' | null;
+  providedIn?: Type | object | 'root' | 'platform' | 'any' | null;
   useClass?: OpaqueValue;
   useFactory?: OpaqueValue;
   useExisting?: OpaqueValue;

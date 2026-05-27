@@ -823,10 +823,12 @@ function wrapExpression(obj: any, property: string): WrappedNodeExpr<any> | unde
 }
 
 function computeProvidedIn(
-  providedIn: Function | string | null | undefined,
+  providedIn: Function | object | string | null | undefined,
 ): MaybeForwardRefExpression {
+  // Functions are class references (e.g. NgModule types) and non-null objects are runtime tokens
+  // (e.g. ProviderScopeToken instances) — both must be wrapped so the runtime value is preserved.
   const expression =
-    typeof providedIn === 'function'
+    providedIn != null && typeof providedIn !== 'string'
       ? new WrappedNodeExpr(providedIn)
       : new LiteralExpr(providedIn ?? null);
   // See `convertToProviderExpression()` for why this uses `ForwardRefHandling.None`.

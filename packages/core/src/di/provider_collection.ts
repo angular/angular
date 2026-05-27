@@ -21,6 +21,7 @@ import {resolveForwardRef} from './forward_ref';
 import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {ɵɵinject as inject} from './injector_compatibility';
 import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs';
+import {ProviderScopeToken} from './provider_scope_token';
 import {
   ClassProvider,
   ConstructorProvider,
@@ -218,7 +219,8 @@ export type SingleProvider =
   | ConstructorProvider
   | ExistingProvider
   | FactoryProvider
-  | StaticClassProvider;
+  | StaticClassProvider
+  | ProviderScopeToken;
 
 /**
  * The logic visits an `InjectorType`, an `InjectorTypeWithProviders`, or a standalone

@@ -10,6 +10,7 @@ import {Type} from '../interface/type';
 import {assertLessThan} from '../util/assert';
 
 import {ɵɵdefineInjectable} from './interface/defs';
+import {ProviderScopeToken} from './provider_scope_token';
 
 /**
  * Creates a token that can be used in a DI Provider.
@@ -88,7 +89,7 @@ export class InjectionToken<T> {
   constructor(
     _desc: string,
     options?: {
-      providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+      providedIn?: Type<any> | 'root' | 'platform' | 'any' | null | ProviderScopeToken;
       factory: () => T;
     },
   );
@@ -96,7 +97,7 @@ export class InjectionToken<T> {
   constructor(
     protected _desc: string,
     options?: {
-      providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+      providedIn?: Type<any> | 'root' | 'platform' | 'any' | null | ProviderScopeToken;
       factory: () => T;
     },
   ) {

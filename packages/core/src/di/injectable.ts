@@ -9,6 +9,7 @@
 import {Type} from '../interface/type';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
 
+import {ProviderScopeToken} from './provider_scope_token';
 import {
   ClassSansProvider,
   ConstructorSansProvider,
@@ -66,10 +67,12 @@ export interface InjectableDecorator {
    * @deprecated The `providedIn: NgModule` or `providedIn:'any'` options are deprecated. Please use the other signatures.
    */
   (options?: {providedIn: Type<any> | 'any'} & InjectableProvider): TypeDecorator;
-  (options?: {providedIn: 'root' | 'platform' | null} & InjectableProvider): TypeDecorator;
+  (options?: {providedIn: 'root' | 'platform' | null | ProviderScopeToken} & InjectableProvider): TypeDecorator;
   new (): Injectable;
   new (
-    options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
+    options?: {
+      providedIn: Type<any> | 'root' | 'platform' | 'any' | null | ProviderScopeToken;
+    } & InjectableProvider,
   ): Injectable;
 }
 
@@ -97,7 +100,7 @@ export interface Injectable {
    * modules share one instance. This option is DEPRECATED.
    *
    */
-  providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+  providedIn?: Type<any> | 'root' | 'platform' | 'any' | null | ProviderScopeToken;
 }
 
 /**

@@ -53,5 +53,6 @@ export {
   provideEnvironmentInitializer,
 } from './provider_collection';
 export {ProviderToken} from './provider_token';
+export {ProviderScopeToken} from './provider_scope_token';
 export {EnvironmentInjector, R3Injector as ɵR3Injector} from './r3_injector';
 export {Service, ServiceDecorator} from './service';

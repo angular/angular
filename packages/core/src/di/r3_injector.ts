@@ -74,6 +74,7 @@ import {
   SingleProvider,
 } from './provider_collection';
 import {ProviderToken} from './provider_token';
+import {ProviderScopeToken} from './provider_scope_token';
 import {INJECTOR_SCOPE, InjectorScope} from './scope';
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {
@@ -213,6 +214,8 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
 
   private injectorDefTypes: Set<Type<unknown>>;
 
+  private scopeTokens = new Set<ProviderScopeToken>();
+
   constructor(
     providers: Array<Provider | EnvironmentProviders>,
     readonly parent: Injector,
@@ -290,6 +293,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
       this.records.clear();
       this._ngOnDestroyHooks.clear();
       this.injectorDefTypes.clear();
+      this.scopeTokens.clear();
       setActiveConsumer(prevConsumer);
     }
   }
@@ -474,6 +478,14 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     // Determine the token from the provider. Either it's its own token, or has a {provide: ...}
     // property.
     provider = resolveForwardRef(provider);
+
+    // ProviderScopeToken instances are scope markers, not value providers. Register the scope and
+    // return early so the rest of the provider-processing logic is not applied.
+    if (provider instanceof ProviderScopeToken) {
+      this.scopeTokens.add(provider);
+      return;
+    }
+
     let token: any = isTypeProvider(provider)
       ? provider
       : resolveForwardRef(provider && provider.provide);
@@ -555,6 +567,8 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     const providedIn = resolveForwardRef(def.providedIn);
     if (typeof providedIn === 'string') {
       return providedIn === 'any' || this.scopes.has(providedIn);
+    } else if (providedIn instanceof ProviderScopeToken) {
+      return this.scopeTokens.has(providedIn);
     } else {
       return this.injectorDefTypes.has(providedIn);
     }

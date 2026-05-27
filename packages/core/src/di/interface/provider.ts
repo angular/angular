@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../../interface/type';
+import {ProviderScopeToken} from '../provider_scope_token';
 
 /**
  * Configures the `Injector` to return a value for a token.
@@ -340,6 +341,7 @@ export type Provider =
   | ConstructorProvider
   | ExistingProvider
   | FactoryProvider
+  | ProviderScopeToken
   | any[];
 
 /**
