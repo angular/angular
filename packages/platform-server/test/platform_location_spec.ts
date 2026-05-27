@@ -7,29 +7,12 @@
  */
 import '@angular/compiler';
 
-import {PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {destroyPlatform} from '@angular/core';
 import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
 
-import {parseUrl} from '../src/location';
-
 (function () {
   if (getDOM().supportsDOMEvents) return; // NODE only
-
-  describe('parseUrl', () => {
-    it('should resolve relative paths against origin', () => {
-      const url = parseUrl('/deep/path?query#hash', 'http://test.com');
-      expect(url.href).toBe('http://test.com/deep/path?query#hash');
-      expect(url.search).toBe('?query');
-      expect(url.hash).toBe('#hash');
-    });
-
-    it('should resolve absolute URLs ignoring origin', () => {
-      const url = parseUrl('http://other.com/deep/path', 'http://test.com');
-      expect(url.href).toBe('http://other.com/deep/path');
-      expect(url.origin).toBe('http://other.com');
-    });
-  });
 
   describe('PlatformLocation', () => {
     beforeEach(() => {
@@ -173,7 +156,72 @@ import {parseUrl} from '../src/location';
         platform.destroy();
 
         expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
-        expect(location.pathname).withContext(`pathname for URL: "${url}"`).toBe(url);
+        expect(location.pathname)
+          .withContext(`pathname for URL: "${url}"`)
+          .toBe('/attacker.com/deep/path');
+      }
+    });
+
+    it('should set the proper document location when the URL has leading slashes to prevent origin hijack', async () => {
+      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
+
+      for (const url of urls) {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {
+              document: '<html><head></head><body></body></html>',
+              url,
+            },
+          },
+        ]);
+
+        const doc = platform.injector.get(DOCUMENT);
+        platform.destroy();
+
+        expect(doc.location.origin).not.toBe('http://attacker.com');
+        expect(doc.location.pathname).toBe('/attacker.com/deep/path');
+      }
+    });
+
+    it('should not expose protocol-relative URLs on the location to prevent open redirect and SSRF bypasses', async () => {
+      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
+      const origins = [undefined, 'http://localhost:4200'];
+
+      for (const url of urls) {
+        for (const origin of origins) {
+          const providers: any[] = [
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '',
+                url,
+              },
+            },
+          ];
+
+          if (origin) {
+            providers.push({
+              provide: DOCUMENT,
+              useValue: {
+                location: {
+                  origin,
+                },
+              },
+            });
+          }
+
+          const platform = platformServer(providers);
+          const location = platform.injector.get(PlatformLocation) as any;
+          platform.destroy();
+
+          // A relative redirect URL starting with // or /\ is normalized by browsers to a protocol-relative URL.
+          // The PlatformLocation.url property MUST NOT expose these unsafe patterns.
+          const isVulnerable = location.url.startsWith('//') || location.url.startsWith('/\\');
+          expect(isVulnerable)
+            .withContext(`URL: "${url}", origin: "${origin}", location.url: "${location.url}"`)
+            .toBeFalse();
+        }
       }
     });
   });
