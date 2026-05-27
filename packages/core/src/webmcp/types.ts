@@ -70,7 +70,7 @@ export interface ToolDescriptor<InputSchema extends JsonSchemaForInference> {
   execute: Execute<InputSchema>;
 }
 
-/** The `window.navigator.modelContext` object for imperatively registering WebMCP tools. */
+/** The `window.document.modelContext` object for imperatively registering WebMCP tools. */
 export interface ModelContext {
   /**
    * Register a WebMCP tool for the agent to invoke.

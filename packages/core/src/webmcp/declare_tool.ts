@@ -8,8 +8,8 @@
 
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 import {assertInInjectionContext, inject, Injector, runInInjectionContext} from '../di';
-import type {ModelContext, ToolDescriptor} from './types';
 import {DestroyRef} from '../linker';
+import type {ModelContext, ToolDescriptor} from './types';
 
 /**
  * Declares a WebMCP tool.
@@ -32,9 +32,10 @@ export function declareExperimentalWebMcpTool<const InputSchema extends JsonSche
   tool: ToolDescriptor<InputSchema>,
   injector?: Injector,
 ): void {
-  const {modelContext} = globalThis.navigator as typeof globalThis.navigator & {
-    modelContext?: ModelContext;
-  };
+  // modelContext was moved from `navigator` to `document` in the spec, but we check both for compatibility with different environments.
+  const modelContext =
+    (globalThis.document as {modelContext?: ModelContext}).modelContext ??
+    (globalThis.navigator as unknown as {modelContext?: ModelContext}).modelContext;
 
   // Verify WebMCP is supported in this client.
   if (!modelContext) return;
@@ -65,11 +66,5 @@ export function declareExperimentalWebMcpTool<const InputSchema extends JsonSche
   modelContext.registerTool(wrappedTool, {signal: abortCtrl.signal});
 
   // Unregister when the associated `Injector` is destroyed.
-  destroyRef.onDestroy(() => {
-    abortCtrl.abort();
-
-    // `unregisterTool` has been removed from the spec, but we continue to
-    // call it because `@mcp-b/webmcp-polyfill` still relies on it for tests.
-    modelContext.unregisterTool?.({name: tool.name});
-  });
+  destroyRef.onDestroy(() => void abortCtrl.abort());
 }
