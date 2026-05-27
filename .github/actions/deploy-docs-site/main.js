@@ -47463,7 +47463,7 @@ var RequestError2 = class extends Error {
     this.request = requestCopy;
   }
 };
-var VERSION22 = "10.0.9";
+var VERSION22 = "10.0.10";
 var defaults_default2 = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION22} ${getUserAgent2()}`
@@ -51771,7 +51771,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-XI6A552T.mjs:
+@angular/ng-dev/bundles/chunk-4EMV7NEU.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
