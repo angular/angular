@@ -39,6 +39,8 @@ export class NavigationList {
 
   readonly linkClicked = output<void>();
 
+  protected readonly labelTruncationThreshold = 27;
+
   private readonly navigationState = inject(NavigationState);
   private readonly crossCategoryOrigin = this.navigationState.crossCategoryOrigin;
 
