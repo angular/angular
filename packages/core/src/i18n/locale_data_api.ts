@@ -119,32 +119,34 @@ export function unregisterAllLocaleData() {
 }
 
 /**
- * Index of each type of locale data from the locale data array
+ * Index of each type of locale data from the locale data array.
+ * Not an enum: TS enums compile to IIFE side-effects and are not tree-shakable,
+ * even when unused. Using a plain const object with 'as const' instead.
  */
-export enum LocaleDataIndex {
-  LocaleId = 0,
-  DayPeriodsFormat,
-  DayPeriodsStandalone,
-  DaysFormat,
-  DaysStandalone,
-  MonthsFormat,
-  MonthsStandalone,
-  Eras,
-  FirstDayOfWeek,
-  WeekendRange,
-  DateFormat,
-  TimeFormat,
-  DateTimeFormat,
-  NumberSymbols,
-  NumberFormats,
-  CurrencyCode,
-  CurrencySymbol,
-  CurrencyName,
-  Currencies,
-  Directionality,
-  PluralCase,
-  ExtraData,
-}
+export const LocaleDataIndex = {
+  LocaleId: 0,
+  DayPeriodsFormat: 1,
+  DayPeriodsStandalone: 2,
+  DaysFormat: 3,
+  DaysStandalone: 4,
+  MonthsFormat: 5,
+  MonthsStandalone: 6,
+  Eras: 7,
+  FirstDayOfWeek: 8,
+  WeekendRange: 9,
+  DateFormat: 10,
+  TimeFormat: 11,
+  DateTimeFormat: 12,
+  NumberSymbols: 13,
+  NumberFormats: 14,
+  CurrencyCode: 15,
+  CurrencySymbol: 16,
+  CurrencyName: 17,
+  Currencies: 18,
+  Directionality: 19,
+  PluralCase: 20,
+  ExtraData: 21,
+} as const;
 
 /**
  * Index of each type of locale data from the extra locale data array
