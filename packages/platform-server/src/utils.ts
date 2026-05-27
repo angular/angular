@@ -28,6 +28,7 @@ import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {createScript} from './transfer_state';
+import {parseAndValidateAbsoluteUrl} from './url';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -374,11 +375,14 @@ export async function renderApplication(
 }
 
 function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | undefined) {
-  if (typeof url === 'string' && URL.canParse(url)) {
-    const hostname = new URL(url).hostname;
-    const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
-    if (!isHostAllowed(hostname, allowedHostsSet)) {
-      throw new Error(`Host ${url} is not allowed. You can configure \`allowedHosts\` option.`);
+  if (typeof url === 'string') {
+    const parsedUrl = parseAndValidateAbsoluteUrl(url);
+    if (parsedUrl !== null) {
+      const hostname = parsedUrl.hostname;
+      const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
+      if (!isHostAllowed(hostname, allowedHostsSet)) {
+        throw new Error(`Host ${url} is not allowed. You can configure \`allowedHosts\` option.`);
+      }
     }
   }
 }

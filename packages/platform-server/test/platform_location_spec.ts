@@ -7,7 +7,7 @@
  */
 import '@angular/compiler';
 
-import {PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {destroyPlatform} from '@angular/core';
 import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
 
@@ -28,6 +28,22 @@ import {parseUrl} from '../src/location';
       const url = parseUrl('http://other.com/deep/path', 'http://test.com');
       expect(url.href).toBe('http://other.com/deep/path');
       expect(url.origin).toBe('http://other.com');
+    });
+
+    it('should throw an error for malformed absolute URLs', () => {
+      const malformedUrls = [
+        'http://evil.com:80:80/path',
+        'https://evil.com:80:80/path',
+        'http://[google.com]/path',
+        'http://google.com:port/path',
+        'http://google.com:80a/path',
+      ];
+
+      for (const url of malformedUrls) {
+        expect(() => parseUrl(url, 'http://test.com')).toThrowError(
+          new RegExp(`Invalid URL: ${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
+        );
+      }
     });
   });
 
@@ -173,7 +189,50 @@ import {parseUrl} from '../src/location';
         platform.destroy();
 
         expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
-        expect(location.pathname).withContext(`pathname for URL: "${url}"`).toBe(url);
+        expect(location.pathname)
+          .withContext(`pathname for URL: "${url}"`)
+          .toBe('/attacker.com/deep/path');
+      }
+    });
+
+    it('should not expose protocol-relative URLs on the location to prevent open redirect and SSRF bypasses', async () => {
+      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
+      const origins = [undefined, 'http://localhost:4200'];
+
+      for (const url of urls) {
+        for (const origin of origins) {
+          const providers: any[] = [
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '',
+                url,
+              },
+            },
+          ];
+
+          if (origin) {
+            providers.push({
+              provide: DOCUMENT,
+              useValue: {
+                location: {
+                  origin,
+                },
+              },
+            });
+          }
+
+          const platform = platformServer(providers);
+          const location = platform.injector.get(PlatformLocation) as any;
+          platform.destroy();
+
+          // A relative redirect URL starting with // or /\ is normalized by browsers to a protocol-relative URL.
+          // The PlatformLocation.url property MUST NOT expose these unsafe patterns.
+          const isVulnerable = location.url.startsWith('//') || location.url.startsWith('/\\');
+          expect(isVulnerable)
+            .withContext(`URL: "${url}", origin: "${origin}", location.url: "${location.url}"`)
+            .toBeFalse();
+        }
       }
     });
   });

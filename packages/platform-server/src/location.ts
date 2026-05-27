@@ -13,31 +13,92 @@ import {
   PlatformLocation,
   ɵgetDOM as getDOM,
 } from '@angular/common';
-import {Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
+import {inject, Injectable, Injector, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {INITIAL_CONFIG} from './tokens';
+import {getSafeUrl, parseAndValidateAbsoluteUrl} from './url';
+
+const LEADING_SLASHES_REGEX = /^[/\\]+/;
 
 /**
- * Parses a URL string and returns a URL object.
+ * Parses a URL string and returns a URL components object.
  * @param urlStr The string to parse.
- * @param origin The origin to use for resolving the URL.
- * @returns The parsed URL.
+ * @param origin The origin to use for resolving the URL (optional).
+ * @returns The parsed URL components.
  */
-export function parseUrl(urlStr: string, origin: string): URL {
-  if (URL.canParse(urlStr)) {
-    return new URL(urlStr);
+export function parseUrl(
+  urlStr: string,
+  origin?: string,
+): {
+  protocol: string;
+  hostname: string;
+  port: string;
+  pathname: string;
+  search: string;
+  hash: string;
+  href: string;
+  origin: string;
+} {
+  const parsedUrl = parseAndValidateAbsoluteUrl(urlStr);
+  if (parsedUrl !== null) {
+    return {
+      protocol: parsedUrl.protocol,
+      hostname: parsedUrl.hostname,
+      port: parsedUrl.port,
+      pathname: parsedUrl.pathname,
+      search: parsedUrl.search,
+      hash: parsedUrl.hash,
+      href: parsedUrl.href,
+      origin: parsedUrl.origin,
+    };
   }
 
-  if (urlStr && urlStr[0] !== '/') {
-    urlStr = `/${urlStr}`;
+  if (urlStr) {
+    urlStr = '/' + urlStr.replace(LEADING_SLASHES_REGEX, '');
   }
 
-  return new URL(origin + urlStr);
+  if (origin) {
+    try {
+      const url = new URL(urlStr, origin);
+      return {
+        protocol: url.protocol,
+        hostname: url.hostname,
+        port: url.port,
+        pathname: url.pathname,
+        search: url.search,
+        hash: url.hash,
+        href: url.href,
+        origin: url.origin,
+      };
+    } catch {
+      // Fallback to simple parser if origin is not a valid base (e.g. 'null')
+    }
+  }
+
+  const hashIdx = urlStr.indexOf('#');
+  const hash = hashIdx !== -1 ? urlStr.substring(hashIdx) : '';
+  const withoutHash = hashIdx !== -1 ? urlStr.substring(0, hashIdx) : urlStr;
+
+  const queryIdx = withoutHash.indexOf('?');
+  const search = queryIdx !== -1 ? withoutHash.substring(queryIdx) : '';
+  const pathname = queryIdx !== -1 ? withoutHash.substring(0, queryIdx) : withoutHash;
+
+  return {
+    protocol: '',
+    hostname: '',
+    port: '',
+    pathname,
+    search,
+    hash,
+    href: urlStr,
+    origin: '',
+  };
 }
 
 /**
- * Server-side implementation of URL state. Implements `pathname`, `search`, and `hash`
+ * Server-side implementation of URL state. Implements `pathname`, `search`, and
+ * `hash`
  * but not the state stack.
  */
 @Injectable()
@@ -50,27 +111,28 @@ export class ServerPlatformLocation implements PlatformLocation {
   public readonly search: string = '';
   public readonly hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
+  private injector = inject(Injector);
+  private get _doc(): any {
+    return this.injector.get(DOCUMENT);
+  }
 
-  constructor(
-    @Inject(DOCUMENT) private _doc: any,
-    @Optional() @Inject(INITIAL_CONFIG) _config: any,
-  ) {
-    const config = _config as PlatformConfig | null;
+  constructor() {
+    const config = inject(INITIAL_CONFIG, {optional: true});
     if (!config) {
       return;
     }
     if (config.url) {
-      const {protocol, hostname, port, pathname, search, hash, href} = parseUrl(
-        config.url,
-        this._doc.location.origin,
-      );
-      this.protocol = protocol;
-      this.hostname = hostname;
-      this.port = port;
-      this.pathname = pathname;
-      this.search = search;
-      this.hash = hash;
-      this.href = href;
+      const safeUrl = getSafeUrl(config.url);
+      if (safeUrl) {
+        const {protocol, hostname, port, pathname, search, hash, href} = parseUrl(safeUrl);
+        this.protocol = protocol;
+        this.hostname = hostname;
+        this.port = port;
+        this.pathname = pathname;
+        this.search = search;
+        this.hash = hash;
+        this.href = href;
+      }
     }
   }
 
