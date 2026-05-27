@@ -16,7 +16,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 19.2.0-next.2
-        version: 19.2.0-next.2(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.1.0)
+        version: 19.2.0-next.2(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.1.0)
       '@angular-devkit/core':
         specifier: 19.2.0-next.2
         version: 19.2.0-next.2(chokidar@4.0.3)
@@ -25,7 +25,7 @@ importers:
         version: 19.2.0-next.2(chokidar@4.0.3)
       '@angular/build':
         specifier: 19.2.0-next.2
-        version: 19.2.0-next.2(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)
+        version: 19.2.0-next.2(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2)
       '@angular/cdk':
         specifier: 19.2.0-next.4
         version: 19.2.0-next.4(@angular/core@19.2.11)(rxjs@7.8.2)
@@ -37,7 +37,7 @@ importers:
         version: 19.2.0-next.4(@angular/cdk@19.2.0-next.4)(@angular/core@19.2.11)(@angular/forms@20.3.21)(@angular/platform-browser@20.3.21)(rxjs@7.8.2)
       '@angular/ssr':
         specifier: 19.2.0-next.2
-        version: 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.21)
+        version: 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.22)
       '@babel/cli':
         specifier: 7.26.4
         version: 7.26.4(@babel/core@7.26.9)
@@ -350,7 +350,7 @@ importers:
         version: 19.2.11(@angular/core@19.2.11)
       '@angular/build-tooling':
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
-        version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.2.2)(postcss@8.5.2)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3)
+        version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.2.2)(postcss@8.5.2)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3)
       '@angular/core':
         specifier: ^19.2.0-next
         version: 19.2.11(rxjs@7.8.2)
@@ -800,7 +800,7 @@ packages:
     transitivePeerDependencies:
       - chokidar
 
-  /@angular-devkit/build-angular@19.2.0-next.2(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.1.0):
+  /@angular-devkit/build-angular@19.2.0-next.2(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.1.0):
     resolution: {integrity: sha512-o3/X02x4p9pCVaPB4uoc2VUL2s2YvGW58jfSHRhwtiLVoIgpnbyHyyhtIdO8rLRr09Pk1fLUvXVY4/d6hjXt1Q==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -848,9 +848,9 @@ packages:
       '@angular-devkit/architect': 0.1902.0-next.2(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.1902.0-next.2(chokidar@4.0.3)(webpack-dev-server@5.2.0)(webpack@5.97.1)
       '@angular-devkit/core': 19.2.0-next.2(chokidar@4.0.3)
-      '@angular/build': 19.2.0-next.2(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.38.2)(tsx@4.19.3)(typescript@5.8.2)
-      '@angular/compiler-cli': 19.2.21(@angular/compiler@19.2.21)(typescript@5.8.2)
-      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.21)
+      '@angular/build': 19.2.0-next.2(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.38.2)(tsx@4.19.3)(typescript@5.8.2)
+      '@angular/compiler-cli': 19.2.22(@angular/compiler@19.2.22)(typescript@5.8.2)
+      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.22)
       '@babel/core': 7.26.8
       '@babel/generator': 7.26.8
       '@babel/helper-annotate-as-pure': 7.25.9
@@ -861,7 +861,7 @@ packages:
       '@babel/preset-env': 7.26.8(@babel/core@7.26.8)
       '@babel/runtime': 7.26.7
       '@discoveryjs/json-ext': 0.6.3
-      '@ngtools/webpack': 19.2.0-next.2(@angular/compiler-cli@19.2.21)(typescript@5.8.2)(webpack@5.97.1)
+      '@ngtools/webpack': 19.2.0-next.2(@angular/compiler-cli@19.2.22)(typescript@5.8.2)(webpack@5.97.1)
       '@vitejs/plugin-basic-ssl': 1.2.0(vite@6.1.0)
       ansi-colors: 4.1.3
       autoprefixer: 10.4.20(postcss@8.5.2)
@@ -1025,7 +1025,7 @@ packages:
       - zone.js
     dev: true
 
-  /@angular/build@19.1.0-rc.0(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3):
+  /@angular/build@19.1.0-rc.0(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3):
     resolution: {integrity: sha512-ALl+MVMYBF+E7HyAQ+1MtE6sNIOAX0o2Sfs0wdIQfM2unRl6jPsz/Ker4BjnNQIK4wRCcstyzBv5mZBDulfFIQ==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1060,9 +1060,9 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1901.0-rc.0(chokidar@4.0.3)
-      '@angular/compiler': 19.2.21
-      '@angular/compiler-cli': 19.2.21(@angular/compiler@19.2.21)(typescript@5.8.2)
-      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.21)
+      '@angular/compiler': 19.2.22
+      '@angular/compiler-cli': 19.2.22(@angular/compiler@19.2.22)(typescript@5.8.2)
+      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.22)
       '@babel/core': 7.26.0
       '@babel/helper-annotate-as-pure': 7.25.9
       '@babel/helper-split-export-declaration': 7.24.7
@@ -1105,7 +1105,7 @@ packages:
       - yaml
     dev: true
 
-  /@angular/build@19.2.0-next.2(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.38.2)(tsx@4.19.3)(typescript@5.8.2):
+  /@angular/build@19.2.0-next.2(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.38.2)(tsx@4.19.3)(typescript@5.8.2):
     resolution: {integrity: sha512-FmpJla0+M+BE1bQbHIKbl5wKrHsSg6JTIl+kiW/kW4GKKZsS4FJkg56UhyI7+bjuId9s3wptpdMIFpRDaDytRg==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1140,9 +1140,9 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1902.0-next.2(chokidar@4.0.3)
-      '@angular/compiler': 19.2.21
-      '@angular/compiler-cli': 19.2.21(@angular/compiler@19.2.21)(typescript@5.8.2)
-      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.21)
+      '@angular/compiler': 19.2.22
+      '@angular/compiler-cli': 19.2.22(@angular/compiler@19.2.22)(typescript@5.8.2)
+      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.22)
       '@babel/core': 7.26.8
       '@babel/helper-annotate-as-pure': 7.25.9
       '@babel/helper-split-export-declaration': 7.24.7
@@ -1185,7 +1185,7 @@ packages:
       - yaml
     dev: false
 
-  /@angular/build@19.2.0-next.2(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2):
+  /@angular/build@19.2.0-next.2(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.8.2):
     resolution: {integrity: sha512-FmpJla0+M+BE1bQbHIKbl5wKrHsSg6JTIl+kiW/kW4GKKZsS4FJkg56UhyI7+bjuId9s3wptpdMIFpRDaDytRg==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1220,9 +1220,9 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1902.0-next.2(chokidar@4.0.3)
-      '@angular/compiler': 19.2.21
-      '@angular/compiler-cli': 19.2.21(@angular/compiler@19.2.21)(typescript@5.8.2)
-      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.21)
+      '@angular/compiler': 19.2.22
+      '@angular/compiler-cli': 19.2.22(@angular/compiler@19.2.22)(typescript@5.8.2)
+      '@angular/ssr': 19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.22)
       '@babel/core': 7.26.8
       '@babel/helper-annotate-as-pure': 7.25.9
       '@babel/helper-split-export-declaration': 7.24.7
@@ -1307,15 +1307,15 @@ packages:
       - supports-color
     dev: false
 
-  /@angular/compiler-cli@19.2.21(@angular/compiler@19.2.21)(typescript@5.8.2):
-    resolution: {integrity: sha512-eAs+krq6McyuoySyC0tbYuY+rtovdtmyNUAgxGANPYJMdkTYHcHdF0HVbbaxUpFDvRC6rV9NDpZUazgykLZoYA==}
+  /@angular/compiler-cli@19.2.22(@angular/compiler@19.2.22)(typescript@5.8.2):
+    resolution: {integrity: sha512-zwl4gh5smX95AduH60RpeToKRpRtj2oVEJ3KsgCb6KUfLbe/PK3lCQaLVW4tp1BbiCvCC05lhYC7ARtMbFFHrA==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
     hasBin: true
     peerDependencies:
-      '@angular/compiler': 19.2.21
+      '@angular/compiler': 19.2.22
       typescript: '>=5.5 <5.9'
     dependencies:
-      '@angular/compiler': 19.2.21
+      '@angular/compiler': 19.2.22
       '@babel/core': 7.26.9
       '@jridgewell/sourcemap-codec': 1.5.0
       chokidar: 4.0.3
@@ -1328,8 +1328,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@angular/compiler@19.2.21:
-    resolution: {integrity: sha512-lLWXzeLPk+4kkXKpy/h0OAie3V2YImpDrzluufJ0xR8OlCffJNpanfBjm7R4tOZB7i0ONIxhsD67Z0oRhEECCQ==}
+  /@angular/compiler@19.2.22:
+    resolution: {integrity: sha512-NO3q39TMq88MRyBM9E/cSn4KFEItPrp79izX3nRkWlGQ0D9nJPdzm2cHtZoB9dCZ3N6EOazTgBK+2jKylQrUFQ==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
     dependencies:
       tslib: 2.8.1
@@ -1403,13 +1403,13 @@ packages:
       '@angular/core': 19.2.11(rxjs@7.8.2)
       tslib: 2.8.1
 
-  /@angular/router@19.2.21(@angular/core@19.2.11)(@angular/platform-browser@20.3.21)(rxjs@7.8.2):
-    resolution: {integrity: sha512-ktGPSjzWvSWMPtE8FyH9PTRZm0Qcjy+XOjAvGuj+Wdx4VBhdmEl4qa08Idd7MkWJH0n0LyPCupJdmcH0bsF1FA==}
+  /@angular/router@19.2.22(@angular/core@19.2.11)(@angular/platform-browser@20.3.21)(rxjs@7.8.2):
+    resolution: {integrity: sha512-FNxNJ2WifZdcOzieJHHugNTZWgZArD35bnmpO3m7V9Bow43Hy42xAOpHvAGMw8wZgVFBQl6C+Wr6GZB3eQzX/w==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
     peerDependencies:
-      '@angular/common': 19.2.21
-      '@angular/core': 19.2.21
-      '@angular/platform-browser': 19.2.21
+      '@angular/common': 19.2.22
+      '@angular/core': 19.2.22
+      '@angular/platform-browser': 19.2.22
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
       '@angular/core': 19.2.11(rxjs@7.8.2)
@@ -1417,7 +1417,7 @@ packages:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  /@angular/ssr@19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.21):
+  /@angular/ssr@19.2.0-next.2(@angular/core@19.2.11)(@angular/router@19.2.22):
     resolution: {integrity: sha512-JN5Utru8xJRpCF+ArG3CCgzlCYgbnB2XUV4J6uO56KgdqK5OeCOCcsuJYBHu+ifaF4ecb74JdXWm0VgB/HQKXA==}
     peerDependencies:
       '@angular/common': ^19.0.0 || ^19.2.0-next.0
@@ -1429,7 +1429,7 @@ packages:
         optional: true
     dependencies:
       '@angular/core': 19.2.11(rxjs@7.8.2)
-      '@angular/router': 19.2.21(@angular/core@19.2.11)(@angular/platform-browser@20.3.21)(rxjs@7.8.2)
+      '@angular/router': 19.2.22(@angular/core@19.2.11)(@angular/platform-browser@20.3.21)(rxjs@7.8.2)
       tslib: 2.8.1
 
   /@antfu/install-pkg@1.0.0:
@@ -4636,7 +4636,7 @@ packages:
       '@napi-rs/nice-win32-x64-msvc': 1.0.1
     optional: true
 
-  /@ngtools/webpack@19.2.0-next.2(@angular/compiler-cli@19.2.21)(typescript@5.8.2)(webpack@5.97.1):
+  /@ngtools/webpack@19.2.0-next.2(@angular/compiler-cli@19.2.22)(typescript@5.8.2)(webpack@5.97.1):
     resolution: {integrity: sha512-YxtR1+YiXjOmaunOIt3CpmEQunV42pbG5pYd/l6Pjqg/83MHxO8h2ax51By/LIzKm6P1qKsGTEtyZBanG7JgGQ==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -4644,7 +4644,7 @@ packages:
       typescript: '>=5.5 <5.8'
       webpack: ^5.54.0
     dependencies:
-      '@angular/compiler-cli': 19.2.21(@angular/compiler@19.2.21)(typescript@5.8.2)
+      '@angular/compiler-cli': 19.2.22(@angular/compiler@19.2.22)(typescript@5.8.2)
       typescript: 5.8.2
       webpack: 5.97.1(esbuild@0.25.0)
     dev: false
@@ -19833,14 +19833,14 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: true
 
-  github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.2.2)(postcss@8.5.2)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3):
+  github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.2.2)(postcss@8.5.2)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3):
     resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-build-tooling-builds/tar.gz/5db176c0f3211663830fd3ff4064c1dff0eaccb4}
     id: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4
     name: '@angular/build-tooling'
     version: 0.0.0-d44be7e28087c3499d70dda9859d51c1cd3fe1bf
     dependencies:
       '@angular/benchpress': 0.3.0(rxjs@7.8.2)
-      '@angular/build': 19.1.0-rc.0(@angular/compiler-cli@19.2.21)(@angular/compiler@19.2.21)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)
+      '@angular/build': 19.1.0-rc.0(@angular/compiler-cli@19.2.22)(@angular/compiler@19.2.22)(@angular/ssr@19.2.0-next.2)(@types/node@18.19.84)(chokidar@4.0.3)(less@4.2.2)(postcss@8.5.2)(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)
       '@babel/core': 7.26.10
       '@babel/plugin-proposal-async-generator-functions': 7.20.7(@babel/core@7.26.10)
       '@bazel/buildifier': 6.3.3
