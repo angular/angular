@@ -734,6 +734,14 @@ describe('R3 template transform', () => {
     it('should ignore <style> elements', () => {
       expectFromHtml('<style></style>a').toEqual([['Text', 'a']]);
     });
+
+    it('should not ignore namespaced SVG <style> elements', () => {
+      expectFromHtml('<svg><style>.a { fill: none; }</style></svg>').toEqual([
+        ['Element', ':svg:svg'],
+        ['Element', ':svg:style'],
+        ['Text', '.a { fill: none; }'],
+      ]);
+    });
   });
 
   describe('<link rel="stylesheet">', () => {
