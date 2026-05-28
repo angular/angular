@@ -15,6 +15,7 @@ import {
 } from '@angular/common/http';
 import {inject, Injectable, Provider} from '@angular/core';
 import {Observable} from 'rxjs';
+import {resolveUrl} from './url';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
@@ -70,18 +71,9 @@ function relativeUrlsTransformerInterceptorFn(
   const baseHref = platformLocation.getBaseHrefFromDOM() || href;
   const baseUrl = new URL(baseHref, urlPrefix);
 
-  let parsedUrl = new URL(request.url, baseUrl);
-
-  if (parsedUrl.origin !== baseUrl.origin) {
-    // If the request changed the origin, we check if it was authorized to do so.
-    // Legitimate absolute URLs start with a scheme (e.g. http://) or are protocol-relative (//).
-    // SSRF bypasses via backslashes (e.g. `/\attacker.com`, `\\attacker.com`) evade naive checks.
-    const isProtocolRelative = /^\/\/[^/\\]/.test(trimmedUrl);
-    if (!isProtocolRelative) {
-      // Unrecognized structure that changed origin. Force it to be a local path.
-      parsedUrl = new URL(trimmedUrl.replace(/^[/\\]+/, '/'), baseUrl);
-    }
-  }
+  const parsedUrl = resolveUrl(request.url, baseUrl, {
+    allowProtocolRelative: true,
+  });
 
   return next(request.clone({url: parsedUrl.toString()}));
 }

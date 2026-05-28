@@ -6,26 +6,55 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-const LEADING_SLASHES_REGEX = /^[/\\]+/;
+/**
+ * Options for {@link resolveUrl}.
+ */
+export interface ResolveUrlOptions {
+  /**
+   * Allow protocol-relative URLs (e.g. `//example.com`).
+   */
+  allowProtocolRelative?: boolean;
+}
 
 /**
- * Parses a URL string and returns a resolved WHATWG URL object.
- * If no origin is provided, it parses and returns the URL only if it is a valid absolute URL;
- * otherwise it returns `null` (or throws if the URL is a malformed absolute URL).
- * If an origin is provided, relative URLs and protocol-relative URLs are normalized and resolved against it.
+ * Resolves a URL string.
+ *
+ * If an origin is provided, the URL is resolved against it. Otherwise, the URL is parsed as-is.
+ * @param urlStr The URL to resolve.
+ * @param origin The origin to resolve the URL against.
+ * @param options Options for resolving the URL.
+ * @returns A resolved URL object.
  */
-export function parseUrl(urlStr: string | undefined): URL | null;
-export function parseUrl(urlStr: string | undefined, origin: string): URL;
-export function parseUrl(urlStr: string | undefined, origin?: string): URL | null {
+export function resolveUrl(urlStr: string | undefined): URL | null;
+export function resolveUrl(
+  urlStr: string | undefined,
+  origin: string | URL,
+  options?: ResolveUrlOptions,
+): URL;
+export function resolveUrl(
+  urlStr: string | undefined,
+  origin?: string | URL,
+  options: ResolveUrlOptions = {},
+): URL | null {
   if (!urlStr) {
     return origin !== undefined ? new URL('/', origin) : null;
   }
 
-  if (URL.canParse(urlStr)) {
-    return new URL(urlStr);
-  }
+  urlStr = urlStr.trim();
 
-  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/.test(urlStr)) {
+  // Fast-path: if the URL is a valid, standard absolute URL, parse and return it immediately.
+  try {
+    return new URL(urlStr);
+  } catch {}
+
+  const {allowProtocolRelative = false} = options;
+
+  // We identify and throw on malformed absolute URLs (like double port).
+  // Per the WHATWG URL standard, parsing an input starting with a scheme (like 'http:') against
+  // a non-standard base ('resolve://') ignores the base argument and parses strictly as an
+  // absolute URL. Since it is malformed, the native URL constructor will throw a validation
+  // error. Standard relative/protocol-relative paths parse successfully, allowing the flow to continue.
+  if (!allowProtocolRelative && !URL.canParse(urlStr, 'resolve://')) {
     throw new Error(`Invalid URL: ${urlStr}`);
   }
 
@@ -33,10 +62,37 @@ export function parseUrl(urlStr: string | undefined, origin?: string): URL | nul
     return null;
   }
 
-  let normalizedPath = urlStr.replace(LEADING_SLASHES_REGEX, '/');
-  if (normalizedPath[0] !== '/') {
-    normalizedPath = `/${normalizedPath}`;
+  // Check if we have a legitimate protocol-relative URL (starts with '//' and not a duplicate/backslash bypass)
+  // and we are configured to allow and preserve standard cross-origin protocol-relative requests.
+  const isProtocolRelative =
+    allowProtocolRelative &&
+    urlStr[0] === '/' &&
+    urlStr[1] === '/' &&
+    urlStr.length > 2 &&
+    urlStr[2] !== '/' &&
+    urlStr[2] !== '\\';
+
+  if (isProtocolRelative) {
+    return new URL(urlStr, origin);
   }
+
+  // Safe relative path preservation: if a relative path has no leading forward or backward slashes,
+  // we do not prepend any slash so the native URL constructor can resolve it correctly relative
+  // to trailing-slash sub-paths (e.g., 'testing' against 'http://localhost/foo/' -> 'http://localhost/foo/testing').
+  const startsWithSlash = urlStr[0] === '/' || urlStr[0] === '\\';
+  if (!startsWithSlash) {
+    return new URL(urlStr, origin);
+  }
+
+  // For other relative inputs starting with slashes, we collapse all consecutive leading forward/backward
+  // slashes to a single forward slash. This guarantees consistent same-origin path representation and
+  // blocks any hostname hijack or takeover attempts.
+  let startIdx = 0;
+  while (startIdx < urlStr.length && (urlStr[startIdx] === '/' || urlStr[startIdx] === '\\')) {
+    startIdx++;
+  }
+  const pathWithoutLeadingSlashes = urlStr.slice(startIdx);
+  const normalizedPath = '/' + pathWithoutLeadingSlashes;
 
   return new URL(normalizedPath, origin);
 }
