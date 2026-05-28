@@ -307,6 +307,30 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
         quoted: isUnsafeObjectKey(input.name),
       });
     }
+
+    if (element.children.length > 0) {
+      const childView = unit.job.allocateView(unit.xref);
+      ingestNodes(childView, element.children);
+
+      const childrenTemplateOp = ir.createTemplateOp(
+        childView.xref,
+        ir.TemplateKind.NgTemplate,
+        null,
+        'Children',
+        ir.Namespace.HTML,
+        undefined,
+        element.startSourceSpan,
+        element.sourceSpan,
+      );
+      unit.create.push(childrenTemplateOp);
+
+      propEntries.push({
+        key: 'children',
+        value: new ir.ForeignContentExpr(childrenTemplateOp.xref, childrenTemplateOp.handle),
+        quoted: false,
+      });
+    }
+
     const props = propEntries.length > 0 ? o.literalMap(propEntries) : null;
 
     // Foreign components are created in the creation block. Updates are triggered reactively

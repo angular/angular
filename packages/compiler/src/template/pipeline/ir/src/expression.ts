@@ -31,6 +31,7 @@ import {
 export type Expression =
   | LexicalReadExpr
   | ReferenceExpr
+  | ForeignContentExpr
   | ContextExpr
   | NextContextExpr
   | GetCurrentViewExpr
@@ -147,6 +148,37 @@ export class ReferenceExpr extends ExpressionBase {
 
   override clone(): ReferenceExpr {
     return new ReferenceExpr(this.target, this.targetSlot, this.offset);
+  }
+}
+
+/**
+ * Runtime operation to render foreign content (children of a foreign component)
+ * and extract its root DOM nodes.
+ */
+export class ForeignContentExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ForeignContent;
+
+  constructor(
+    readonly childrenViewXref: XrefId,
+    readonly childrenViewHandle: SlotHandle,
+  ) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof ForeignContentExpr && e.childrenViewXref === this.childrenViewXref;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): ForeignContentExpr {
+    return new ForeignContentExpr(this.childrenViewXref, this.childrenViewHandle);
   }
 }
 

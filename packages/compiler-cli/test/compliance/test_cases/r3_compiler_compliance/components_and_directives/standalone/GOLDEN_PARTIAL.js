@@ -416,6 +416,31 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     ],
                 }]
         }] });
+export class TestCmpChildren {
+    title = 'Submit';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpChildren, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpChildren, isStandalone: true, selector: "main-children", ngImport: i0, template: `
+    <FancyButton [label]="title">
+      <span>Click me!</span>
+    </FancyButton>
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpChildren, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'main-children',
+                    template: `
+    <FancyButton [label]="title">
+      <span>Click me!</span>
+    </FancyButton>
+  `,
+                    // @ts-ignore: @angular/core does not expose the `foreignImports` property.
+                    foreignImports: [
+                        // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
+                        frameworkImport(FancyButton)
+                    ],
+                }]
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: foreign_component.d.ts
@@ -426,5 +451,10 @@ export declare class TestCmp {
     title: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "main", never, {}, {}, never, never, true, never>;
+}
+export declare class TestCmpChildren {
+    title: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpChildren, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmpChildren, "main-children", never, {}, {}, never, never, true, never>;
 }
 

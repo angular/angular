@@ -151,6 +151,7 @@ export {
   ɵɵelementEnd,
   ɵɵelementStart,
   ɵɵforeignComponent,
+  ɵɵforeignContent,
   ɵɵenableBindings,
   ɵɵExternalStylesFeature,
   ɵɵFactoryDeclaration,
