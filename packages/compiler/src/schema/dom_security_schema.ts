@@ -63,9 +63,10 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       ['a', ['href', 'xlink:href']],
       ['form', ['action']],
 
-      // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
+      // The below items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
       ['img', ['src']],
       ['video', ['src']],
+      ['audio', ['src']],
     ]);
 
     registerContext(SecurityContext.URL, MATH_ML_NAMESPACE, [
