@@ -28,7 +28,7 @@ const firstName = computed(() => {
   if (userResource.hasValue()) {
     // `hasValue` serves 2 purposes:
     // - It acts as type guard to strip `undefined` from the type
-    // - If protects against reading a throwing `value` when the resource is in error state
+    // - It protects against reading a throwing `value` when the resource is in error state
     return userResource.value().firstName;
   }
 
@@ -116,11 +116,11 @@ The `status` signal provides a specific `ResourceStatus` that describes the stat
 | `'idle'`      | `undefined`       | The resource has no valid request and the loader has not run.                |
 | `'error'`     | `undefined`       | The loader has encountered an error.                                         |
 | `'loading'`   | `undefined`       | The loader is running as a result of the `params` value changing.            |
-| `'reloading'` | Previous value    | The loader is running as a result calling of the resource's `reload` method. |
+| `'reloading'` | Previous value    | The loader is running as a result of calling the resource's `reload` method. |
 | `'resolved'`  | Resolved value    | The loader has completed.                                                    |
 | `'local'`     | Locally set value | The resource's value has been set locally via `.set()` or `.update()`        |
 
-You can use this status information to conditionally display user interface elements, such loading indicators and error messages.
+You can use this status information to conditionally display user interface elements, such as loading indicators and error messages.
 
 ## Reactive data fetching with `httpResource`
 
