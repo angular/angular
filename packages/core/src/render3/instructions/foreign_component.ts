@@ -11,16 +11,20 @@ import {attachPatchData} from '../context_discovery';
 import {nativeInsertBefore} from '../dom_node_manipulation';
 import {createForeignView} from '../foreign_view';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, RENDERER} from '../interfaces/view';
+import {HEADER_OFFSET, RENDERER, TVIEW} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
 import {getLView, getTView, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {addToEndOfViewTree} from '../view/construction';
-import {createLContainer} from '../view/container';
+import {createLContainer, addLViewToLContainer} from '../view/container';
 import {NodeInjector} from '../di';
 import {runInInjectionContext} from '../../di';
 import {Renderer} from '../interfaces/renderer';
 import {RNode} from '../interfaces/renderer_dom';
+import {createAndRenderEmbeddedLView} from '../view_manipulation';
+import {collectNativeNodes} from '../collect_native_nodes';
+import {assertLContainer} from '../assert';
+import {LContainer} from '../interfaces/container';
 
 /**
  * Creation phase instruction to render a foreign component.
@@ -81,4 +85,32 @@ export function ɵɵforeignComponent(
   if (dispose) {
     viewRef.onDestroy(dispose);
   }
+}
+
+/**
+ * Creation phase instruction to render foreign content (children of a foreign component)
+ * and extract its root DOM nodes.
+ *
+ * @param index The index of the container in the data array.
+ * @codeGenApi
+ */
+export function ɵɵforeignContent(index: number): any[] {
+  const lView = getLView();
+  const adjustedIndex = index + HEADER_OFFSET;
+
+  // The template is already declared at adjustedIndex, so lContainer must exist.
+  const lContainer = lView[adjustedIndex] as LContainer;
+  ngDevMode && assertLContainer(lContainer);
+
+  const tView = getTView();
+  const tNode = tView.data[adjustedIndex] as TContainerNode;
+
+  // Instantiate and render the embedded view inside the container,
+  // but do NOT add its elements to the DOM at the container anchor.
+  const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, null);
+  addLViewToLContainer(lContainer, embeddedLView, 0, /* addToDOM */ false);
+
+  // Extract and return the root nodes of the created view
+  const embeddedTView = embeddedLView[TVIEW];
+  return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
 }

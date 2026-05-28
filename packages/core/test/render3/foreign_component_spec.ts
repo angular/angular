@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵɵforeignComponent} from '../../src/render3/instructions/foreign_component';
+import {
+  ɵɵforeignComponent,
+  ɵɵforeignContent,
+} from '../../src/render3/instructions/foreign_component';
 import {foreignImport} from '../../src/render3/foreign_import';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {ViewFixture} from './view_fixture';
+import {ɵɵdomTemplate} from '../../src/render3/instructions/template';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/element';
+import {ɵɵtext} from '../../src/render3/instructions/text';
 import {inject, InjectionToken} from '../../src/di';
 import {ɵɵdefineDirective} from '../../src/render3/definition';
 import {ɵɵProvidersFeature} from '../../src/render3/features/providers_feature';
@@ -203,6 +208,38 @@ describe('ɵɵforeignComponent', () => {
     const host2 = renderSecondInstance(fixture);
     expect(fixture.host.innerHTML).toContain(expectedHtml);
     expect(host2.innerHTML).toContain(expectedHtml);
+  });
+
+  it('should render children using ɵɵforeignContent and pass root nodes to the children prop', () => {
+    const foreignComp = foreignImport<{children: Node[]}>((props) => {
+      const p = document.createElement('p');
+      // Domino doesn't implement Element.append().
+      for (const child of props.children) {
+        p.appendChild(child);
+      }
+      return [[p]];
+    });
+
+    const childrenTemplate = (rf: number, ctx: any) => {
+      if (rf & 1) {
+        ɵɵelementStart(0, 'span');
+        ɵɵtext(1, 'Hello, world!');
+        ɵɵelementEnd();
+      }
+    };
+
+    const fixture = new ViewFixture({
+      decls: 2,
+      vars: 0,
+      create: () => {
+        ɵɵdomTemplate(0, childrenTemplate, 2, 0);
+        ɵɵforeignComponent(1, foreignComp, {
+          children: ɵɵforeignContent(0),
+        });
+      },
+    });
+
+    expect(fixture.host.innerHTML).toContain('' + '<p>' + '<span>Hello, world!</span>' + '</p>');
   });
 });
 

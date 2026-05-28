@@ -788,6 +788,10 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
       return ng.nextContext(expr.steps);
     case ir.ExpressionKind.Reference:
       return ng.reference(expr.targetSlot.slot! + 1 + expr.offset);
+    case ir.ExpressionKind.ForeignContent:
+      return o
+        .importExpr(Identifiers.foreignContent)
+        .callFn([o.literal(expr.childrenViewHandle.slot!)]);
     case ir.ExpressionKind.LexicalRead:
       throw new Error(`AssertionError: unresolved LexicalRead of ${expr.name}`);
     case ir.ExpressionKind.TwoWayBindingSet:
