@@ -1,3 +1,47 @@
+<a name="22.0.0-rc.2"></a>
+# 22.0.0-rc.2 (2026-05-28)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ae2cb00398](https://github.com/angular/angular/commit/ae2cb00398954d9332e9f1f5abecce902cfc7658) | fix | add upper bounds for digitsInfo |
+| [7d1fbc170a](https://github.com/angular/angular/commit/7d1fbc170a90ca12a3c1b805645bc37d12ed744d) | fix | sanitize placeholder |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ab9154ab75](https://github.com/angular/angular/commit/ab9154ab75bdd36759c77917216b57285b243ea4) | fix | normalize tag names with custom namespaces in DomElementSchemaRegistry ([#68868](https://github.com/angular/angular/pull/68868)) |
+| [94d520fb67](https://github.com/angular/angular/commit/94d520fb671fc7774341947b872ed0e387689db9) | fix | prevent namespaced SVG <style> elements from being stripped |
+| [6ff620a033](https://github.com/angular/angular/commit/6ff620a03364d6ab60cea47de942a04ec5a26c50) | fix | sanitize dynamic href and xlink:href bindings on SVG a elements ([#68868](https://github.com/angular/angular/pull/68868)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [61a48e99aa](https://github.com/angular/angular/commit/61a48e99aad1152e9ffb2fd0b4e1b472f06649e8) | fix | do not register dom triggers when defer blocks are in manual mode |
+| [a08e4fb93c](https://github.com/angular/angular/commit/a08e4fb93c371252da16b3b22cbf78f4ac180fa2) | fix | normalize tag names in runtime i18n attribute security context lookup ([#68868](https://github.com/angular/angular/pull/68868)) |
+| [b20f0fe078](https://github.com/angular/angular/commit/b20f0fe07820362f7e3bddb892a2a229a820a028) | fix | prevent rxResource from leaking a subscription |
+| [0d9a245345](https://github.com/angular/angular/commit/0d9a245345c5bb3013849d924efbfa3676b520a0) | fix | sanitize meta selectors |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3b4ef1e2ff](https://github.com/angular/angular/commit/3b4ef1e2ffa7f33583b9d6c5d927e2148a507921) | perf | avoid redundant invalidations in parser errors signal |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [618c850282](https://github.com/angular/angular/commit/618c8502829a1f2ca8ce048fdf4d8085b956734c) | fix | exclude withCredentials requests from transfer cache |
+| [f7b3ed8db2](https://github.com/angular/angular/commit/f7b3ed8db28c69ee0de9144465da351bda7e85e4) | fix | Introduce a max buffer size for fetch requests on SSR |
+| [e6cfaf5672](https://github.com/angular/angular/commit/e6cfaf567256f5e89903f6b5625540e5a4a3bde3) | fix | prevent `httpResource` from leaking a subscription |
+| [86390f2be4](https://github.com/angular/angular/commit/86390f2be41b2aae352b0c1ce4a5285fd065ef17) | fix | skip TransferCache for cookie-bearing requests by default |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [28338a1ca4](https://github.com/angular/angular/commit/28338a1ca4c52924f3c5384e43ef9d4bee485c8c) | fix | prevent SSRF bypasses via backslash URLs in HttpClient |
+| [95522526e4](https://github.com/angular/angular/commit/95522526e4ae7aeeb4652f2bd6385775efc021ae) | fix | secure location and document initialization against SSRF and path hijack |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a02797d045](https://github.com/angular/angular/commit/a02797d045235afdcc996b2714f68d9c052be4f4) | fix | Preserves explicit 'credentials: omit' in asset requests |
+| [d0c4951a9b](https://github.com/angular/angular/commit/d0c4951a9bfd902e0388bd1bc71c8312e9aad6d7) | fix | Preserves HTTP cache mode in asset group requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.15"></a>
 # 21.2.15 (2026-05-28)
 ### common
