@@ -1,8 +1,9 @@
 # End-to-End (E2E) Testing
 
-## Set Up E2E Testing
+> [!IMPORTANT]
+> Only use the setup guidelines in this file if there is no existing E2E testing framework configured in the workspace, or if the user has explicitly requested to change or set up E2E testing.
 
-Configure E2E testing in an Angular workspace using the `ng e2e` command. If no E2E target is configured in `angular.json`, running `ng e2e` prompts to choose one of the officially integrated frameworks.
+## Setting Up and Running E2E Tests
 
 Add supported E2E frameworks to the project using `ng add`:
 
@@ -56,9 +57,3 @@ For advanced runner integrations (e.g., wrapper execution with custom setup/tear
 ## Custom & Enterprise Testing Tools
 
 For custom enterprise runners (e.g., Katalon Studio, TestCafe, Selenium), define execution commands in `package.json` scripts.
-
-## Best Practices
-
-*   **Use Resilient Selectors:** Target dedicated attributes (`data-testid`, `data-cy`, or standard ARIA roles) rather than CSS classes or element tags.
-*   **Decouple Tests:** Assert against user-visible UI states, DOM elements, and behaviors rather than component internals or Angular-specific framework state.
-*   **Manage Asynchronous Behavior:** Use framework-provided waiting APIs (e.g., waiting for network responses or elements to become visible) instead of arbitrary timeouts/sleeps.
