@@ -339,6 +339,24 @@ export class DeferredBlockError extends BlockNode implements Node {
   }
 }
 
+export class ContentBlock extends BlockNode implements Node {
+  constructor(
+    public name: string,
+    public children: Node[],
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitContentBlock(this);
+  }
+}
+
 export interface DeferredBlockTriggers {
   when?: BoundDeferredTrigger;
   idle?: IdleDeferredTrigger;
@@ -762,6 +780,7 @@ export interface Visitor<Result = any> {
   visitLetDeclaration(decl: LetDeclaration): Result;
   visitComponent(component: Component): Result;
   visitDirective(directive: Directive): Result;
+  visitContentBlock(block: ContentBlock): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -846,6 +865,9 @@ export class RecursiveVisitor implements Visitor<void> {
   visitDeferredTrigger(trigger: DeferredTrigger): void {}
   visitUnknownBlock(block: UnknownBlock): void {}
   visitLetDeclaration(decl: LetDeclaration): void {}
+  visitContentBlock(block: ContentBlock): void {
+    visitAll(this, block.children);
+  }
 }
 
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {

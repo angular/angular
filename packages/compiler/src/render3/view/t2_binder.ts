@@ -21,6 +21,7 @@ import {
   Comment,
   Component,
   Content,
+  ContentBlock,
   DeferredBlock,
   DeferredBlockError,
   DeferredBlockLoading,
@@ -353,6 +354,7 @@ class Scope implements Visitor {
       nodeOrNodes instanceof DeferredBlockError ||
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
       nodeOrNodes instanceof DeferredBlockLoading ||
+      nodeOrNodes instanceof ContentBlock ||
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
@@ -437,6 +439,10 @@ class Scope implements Visitor {
 
   visitContent(content: Content) {
     this.ingestScopedNode(content);
+  }
+
+  visitContentBlock(block: ContentBlock) {
+    this.ingestScopedNode(block);
   }
 
   visitLetDeclaration(decl: LetDeclaration) {
@@ -649,6 +655,10 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
   visitContent(content: Content): void {
     content.children.forEach((child) => child.visit(this));
+  }
+
+  visitContentBlock(block: ContentBlock): void {
+    block.children.forEach((child) => child.visit(this));
   }
 
   visitComponent(node: Component): void {
@@ -1040,6 +1050,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       nodeOrNodes instanceof DeferredBlockError ||
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
       nodeOrNodes instanceof DeferredBlockLoading ||
+      nodeOrNodes instanceof ContentBlock ||
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
@@ -1132,6 +1143,10 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
 
   override visitContent(content: Content) {
     this.ingestScopedNode(content);
+  }
+
+  override visitContentBlock(block: ContentBlock) {
+    this.ingestScopedNode(block);
   }
 
   override visitLetDeclaration(decl: LetDeclaration) {

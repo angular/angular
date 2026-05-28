@@ -208,6 +208,11 @@ export enum OpKind {
   Projection,
 
   /**
+   * Represents a projected `@content` block for a foreign component.
+   */
+  Content,
+
+  /**
    * Create a repeater creation instruction op.
    */
   RepeaterCreate,

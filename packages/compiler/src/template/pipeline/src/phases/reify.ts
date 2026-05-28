@@ -8,6 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import {CONTEXT_NAME} from '../../../../render3/view/util';
+import {isUnsafeObjectKey} from '../../../../render3/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -143,9 +144,19 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         );
         break;
       case ir.OpKind.ForeignComponent:
+        const propsExpr =
+          op.props.size > 0
+            ? o.literalMap(
+                Array.from(op.props.entries()).map(([key, value]) => ({
+                  key,
+                  value,
+                  quoted: isUnsafeObjectKey(key),
+                })),
+              )
+            : null;
         ir.OpList.replace(
           op,
-          ng.foreignComponent(op.handle.slot!, op.foreignComponentRef, op.props, op.sourceSpan),
+          ng.foreignComponent(op.handle.slot!, op.foreignComponentRef, propsExpr, op.sourceSpan),
         );
         break;
       case ir.OpKind.ElementEnd:
