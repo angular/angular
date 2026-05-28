@@ -20,7 +20,7 @@
     "jest-environment-jsdom": "30.4.1",
     "jest-environment-node": "30.4.1",
     "jest": "30.4.2",
-    "mocha": "11.7.5",
+    "mocha": "11.7.6",
     "mock-require": "3.0.3",
     "jasmine": "6.2.0",
     "source-map-support": "0.5.21",
