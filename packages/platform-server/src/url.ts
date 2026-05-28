@@ -7,6 +7,7 @@
  */
 
 const LEADING_SLASHES_REGEX = /^[/\\]+/;
+const MALFORMED_ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/;
 
 /**
  * Parses a URL string and returns a resolved WHATWG URL object.
@@ -25,7 +26,7 @@ export function parseUrl(urlStr: string | undefined, origin?: string): URL | nul
     return new URL(urlStr);
   }
 
-  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/.test(urlStr)) {
+  if (MALFORMED_ABSOLUTE_URL_REGEX.test(urlStr)) {
     throw new Error(`Invalid URL: ${urlStr}`);
   }
 
@@ -33,6 +34,10 @@ export function parseUrl(urlStr: string | undefined, origin?: string): URL | nul
     return null;
   }
 
+  // Normalizes request path parsing by collapsing multiple consecutive leading slashes
+  // and backslashes (e.g. // or /\) down to a single forward slash. This ensures consistent
+  // resolution of relative path segments and prevents unexpected absolute path overrides
+  // during URL parsing.
   let normalizedPath = urlStr.replace(LEADING_SLASHES_REGEX, '/');
   if (normalizedPath[0] !== '/') {
     normalizedPath = `/${normalizedPath}`;
