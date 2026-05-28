@@ -1,3 +1,12 @@
+<a name="19.2.24"></a>
+# 19.2.24 (2026-05-28)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ea6379123](https://github.com/angular/angular/commit/6ea6379123a7b0e191f8b9f66dfb74ca29659a6c) | fix | prevent namespaced SVG <style> elements from being stripped |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.23"></a>
 # 20.3.23 (2026-05-28)
 ### compiler
