@@ -515,27 +515,27 @@ describe('SafeOptionalChainingMigration', () => {
       {{ foo?.bar | json }}
       <div [id]="user?.id"></div>
       <div *ngIf="foo?.bar === null"></div>
+      {{ compute(my?.utility?.service(my?.optional?.argument)) }}
     `;
 
     // First pass: migrate fresh code
-    const firstPass = await migrateInlineTemplate(input);
+    const firstPass = await migrateInlineTemplateContent(input);
 
     // Verify all expressions are wrapped correctly on first pass
     expect(firstPass).toContain('{{ compute($safeNavigationMigration(foo?.bar)) }}');
     expect(firstPass).toContain('{{ $safeNavigationMigration(foo?.bar) | json }}');
     expect(firstPass).toContain('<div [id]="$safeNavigationMigration(user?.id)"></div>');
     expect(firstPass).toContain('<div *ngIf="$safeNavigationMigration(foo?.bar) === null"></div>');
+    expect(firstPass).toContain(
+      '{{ compute($safeNavigationMigration(my?.utility?.service($safeNavigationMigration(my?.optional?.argument)))) }}',
+    );
 
     // Second pass: run migration again on already-migrated code
-    const secondPass = await migrateInlineTemplate(firstPass);
+    const secondPass = await migrateInlineTemplateContent(firstPass);
 
     // Verify no double-wrapping occurred
     expect(secondPass).not.toContain('$safeNavigationMigration($safeNavigationMigration');
-    // The already-wrapped expressions should remain unchanged
-    expect(secondPass).toContain('{{ compute($safeNavigationMigration(foo?.bar)) }}');
-    expect(secondPass).toContain('{{ $safeNavigationMigration(foo?.bar) | json }}');
-    expect(secondPass).toContain('<div [id]="$safeNavigationMigration(user?.id)"></div>');
-    expect(secondPass).toContain('<div *ngIf="$safeNavigationMigration(foo?.bar) === null"></div>');
+    expect(normalizeTemplateContent(secondPass)).toBe(normalizeTemplateContent(firstPass));
   });
 });
 
@@ -552,11 +552,26 @@ async function migrateInlineTemplate(template: string): Promise<string> {
                ${template}
               \`
             })
-            export class AppComponent { foo: any; compute(a: any) {} }
+            export class AppComponent { foo: any; compute(a: any) {}; my:any; }
             `,
     },
   ]);
   return fs.readFile(absoluteFrom('/app.component.ts'));
+}
+
+async function migrateInlineTemplateContent(template: string): Promise<string> {
+  const contents = await migrateInlineTemplate(template);
+  const match = contents.match(/template:\s*`([\s\S]*?)`\s*}\)\s*export class/);
+
+  if (match === null) {
+    throw new Error('Failed to extract migrated inline template content.');
+  }
+
+  return match[1];
+}
+
+function normalizeTemplateContent(template: string): string {
+  return template.replace(/^\s+|\s+$/g, '');
 }
 
 async function migrateExternalTemplate(template: string): Promise<string> {
