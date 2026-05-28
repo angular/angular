@@ -101,7 +101,12 @@ function _document(injector: Injector) {
         ? _enableDomEmulation
           ? parseDocument(
               config.document,
-              config.url !== undefined ? parseUrl(config.url, 'http://localhost').href : undefined,
+              config.url !== undefined
+                ? // A fallback same-origin base ('http://localhost') is provided so that relative
+                  // page URLs are parsed and resolved as same-origin paths, preventing empty
+                  // or invalid location values in the parsed virtual DOM document.
+                  parseUrl(config.url, 'http://localhost').href
+                : undefined,
             )
           : window.document
         : config.document;
