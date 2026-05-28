@@ -38,7 +38,7 @@ ng e2e [project] [options]
 E2E runners are configured under the `e2e` target of the application in `angular.json`:
 ```json
 "e2e": {
-  "builder": "@cypress/schematic:cypress",
+  "builder": "<builder-package:builder-name>",
   "options": {
     "devServerTarget": "my-app:serve"
   },
