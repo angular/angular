@@ -1,3 +1,15 @@
+<a name="20.3.23"></a>
+
+# 20.3.23 (2026-05-28)
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                                 |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------------- |
+| [d40acc6431](https://github.com/angular/angular/commit/d40acc6431997b304ec54c951e55d2e52ed6f6dc) | fix  | prevent namespaced SVG <style> elements from being stripped |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.22"></a>
 
 # 20.3.22 (2026-05-27)
