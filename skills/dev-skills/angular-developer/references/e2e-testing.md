@@ -7,13 +7,13 @@
 
 Add supported E2E frameworks to the project using `ng add`:
 
-*   **Cypress:**
-    ```shell
-    ng add @cypress/schematic
-    ```
 *   **Playwright:**
     ```shell
     ng add playwright-ng-schematics
+    ```
+*   **Cypress:**
+    ```shell
+    ng add @cypress/schematic
     ```
 *   **Nightwatch:**
     ```shell
