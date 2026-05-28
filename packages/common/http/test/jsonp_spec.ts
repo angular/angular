@@ -159,7 +159,7 @@ describe('JsonpClientBackend', () => {
 
       for (const url of urls) {
         expect(() => backend.handle(SAMPLE_REQ.clone<never>({url}))).toThrowError(
-          `NG02825: ${JSONP_ERR_UNSAFE_URL}`,
+          `NG02826: ${JSONP_ERR_UNSAFE_URL}`,
         );
         expect(document.mock).toBeUndefined();
       }
