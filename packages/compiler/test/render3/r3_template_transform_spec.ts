@@ -59,6 +59,11 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.visitAll([content.attributes, content.children]);
   }
 
+  visitContentBlock(block: t.ContentBlock) {
+    this.result.push(['ContentBlock', block.name]);
+    this.visitAll([block.children]);
+  }
+
   visitVariable(variable: t.Variable) {
     this.result.push(['Variable', variable.name, variable.value]);
   }
@@ -3009,5 +3014,37 @@ describe('R3 template transform', () => {
     const template = `<ng-container *ngIf"test" [ngTemplateOutlet]="foo"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;
     expect(errors.length).toBe(0);
+  });
+
+  describe('@content blocks', () => {
+    it('should parse a valid @content block', () => {
+      expectFromHtml(`
+        @content(icon) {
+          <span>Icon content</span>
+        }
+      `).toEqual([
+        ['ContentBlock', 'icon'],
+        ['Element', 'span'],
+        ['Text', 'Icon content'],
+      ]);
+    });
+
+    it('should error on invalid name', () => {
+      expect(() => parse(`@content(inv-alid) {}`)).toThrowError(
+        /@content name must be a valid JavaScript identifier/,
+      );
+    });
+
+    it('should error if @content block has missing parameter', () => {
+      expect(() => parse(`@content {}`)).toThrowError(
+        /@content block must have exactly one parameter/,
+      );
+    });
+
+    it('should error if @content block has multiple parameters', () => {
+      expect(() => parse(`@content(icon, text) {}`)).toThrowError(
+        /@content block must have exactly one parameter/,
+      );
+    });
   });
 });

@@ -421,7 +421,13 @@ export class TestCmpChildren {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpChildren, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpChildren, isStandalone: true, selector: "main-children", ngImport: i0, template: `
     <FancyButton [label]="title">
-      <span>Click me!</span>
+      @content(icon) {
+        <span>Icon!</span>
+      }
+      @content(description) {
+        <span>Description text</span>
+      }
+      <span>Other children</span>
     </FancyButton>
   `, isInline: true });
 }
@@ -431,7 +437,13 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'main-children',
                     template: `
     <FancyButton [label]="title">
-      <span>Click me!</span>
+      @content(icon) {
+        <span>Icon!</span>
+      }
+      @content(description) {
+        <span>Description text</span>
+      }
+      <span>Other children</span>
     </FancyButton>
   `,
                     // @ts-ignore: @angular/core does not expose the `foreignImports` property.

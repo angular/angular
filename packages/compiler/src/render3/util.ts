@@ -14,6 +14,9 @@ import {Identifiers} from './r3_identifiers';
 /** Regex that includes unsafe characters in an object literal property name. */
 const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
 
+/** Pattern used to validate a JavaScript identifier. */
+export const IDENTIFIER_PATTERN = /^[$A-Z_][0-9A-Z_$]*$/i;
+
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
   if (numParams === 0) {
     return o.expressionType(type);

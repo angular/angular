@@ -210,36 +210,86 @@ describe('ɵɵforeignComponent', () => {
     expect(host2.innerHTML).toContain(expectedHtml);
   });
 
-  it('should render children using ɵɵforeignContent and pass root nodes to the children prop', () => {
-    const foreignComp = foreignImport<{children: Node[]}>((props) => {
-      const p = document.createElement('p');
-      // Domino doesn't implement Element.append().
-      for (const child of props.children) {
-        p.appendChild(child);
+  it('should support passing ɵɵforeignContent to props', () => {
+    const foreignComp = foreignImport<{
+      icon: Node[];
+      description: Node[];
+      children: Node[];
+    }>((props) => {
+      const div = document.createElement('div');
+      div.id = 'container';
+
+      const iconContainer = document.createElement('div');
+      iconContainer.id = 'icon-container';
+      for (const child of props.icon) {
+        iconContainer.appendChild(child);
       }
-      return [[p]];
+      div.appendChild(iconContainer);
+
+      const descContainer = document.createElement('div');
+      descContainer.id = 'desc-container';
+      for (const child of props.description) {
+        descContainer.appendChild(child);
+      }
+      div.appendChild(descContainer);
+
+      const mainChildren = document.createElement('div');
+      mainChildren.id = 'children-container';
+      for (const child of props.children) {
+        mainChildren.appendChild(child);
+      }
+      div.appendChild(mainChildren);
+
+      return [[div]];
     });
+
+    const iconTemplate = (rf: number, ctx: any) => {
+      if (rf & 1) {
+        ɵɵelementStart(0, 'span');
+        ɵɵtext(1, 'Icon Content');
+        ɵɵelementEnd();
+      }
+    };
+
+    const descriptionTemplate = (rf: number, ctx: any) => {
+      if (rf & 1) {
+        ɵɵelementStart(0, 'p');
+        ɵɵtext(1, 'Description Content');
+        ɵɵelementEnd();
+      }
+    };
 
     const childrenTemplate = (rf: number, ctx: any) => {
       if (rf & 1) {
         ɵɵelementStart(0, 'span');
-        ɵɵtext(1, 'Hello, world!');
+        ɵɵtext(1, 'Main Children Content');
         ɵɵelementEnd();
       }
     };
 
     const fixture = new ViewFixture({
-      decls: 2,
+      decls: 4,
       vars: 0,
       create: () => {
-        ɵɵdomTemplate(0, childrenTemplate, 2, 0);
-        ɵɵforeignComponent(1, foreignComp, {
-          children: ɵɵforeignContent(0),
+        ɵɵdomTemplate(0, iconTemplate, 2, 0);
+        ɵɵdomTemplate(1, descriptionTemplate, 2, 0);
+        ɵɵdomTemplate(2, childrenTemplate, 2, 0);
+        ɵɵforeignComponent(3, foreignComp, {
+          icon: ɵɵforeignContent(0),
+          description: ɵɵforeignContent(1),
+          children: ɵɵforeignContent(2),
         });
       },
     });
 
-    expect(fixture.host.innerHTML).toContain('' + '<p>' + '<span>Hello, world!</span>' + '</p>');
+    expect(fixture.host.innerHTML).toContain(
+      '' +
+        '<div id="container">' +
+        '<div id="icon-container"><span>Icon Content</span></div>' +
+        '<div id="desc-container"><p>Description Content</p></div>' +
+        '<div id="children-container"><span>Main Children Content</span></div>' +
+        '</div>',
+    );
   });
 });
 

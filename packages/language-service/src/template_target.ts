@@ -24,6 +24,7 @@ import {
   TmplAstBoundText,
   TmplAstComponent,
   TmplAstContent,
+  TmplAstContentBlock,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
@@ -586,6 +587,10 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   visitContent(content: TmplAstContent) {
     tmplAstVisitAll(this, content.attributes);
     this.visitAll(content.children);
+  }
+
+  visitContentBlock(block: TmplAstContentBlock) {
+    this.visitAll(block.children);
   }
 
   visitVariable(variable: TmplAstVariable) {

@@ -269,6 +269,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
       ingestLetDeclaration(unit, node);
+    } else if (node instanceof t.ContentBlock) {
+      throw new Error(`@content blocks are only valid as direct children of foreign components.`);
     } else if (node instanceof t.Component) {
       // TODO(crisbeto): account for selectorless nodes.
     } else {
@@ -308,9 +310,43 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
       });
     }
 
-    if (element.children.length > 0) {
+    const contentBlocks: t.ContentBlock[] = [];
+    const childNodes: t.Node[] = [];
+
+    for (const child of element.children) {
+      if (child instanceof t.ContentBlock) {
+        contentBlocks.push(child);
+      } else {
+        childNodes.push(child);
+      }
+    }
+
+    for (const block of contentBlocks) {
+      const blockView = unit.job.allocateView(unit.xref);
+      ingestNodes(blockView, block.children);
+
+      const blockTemplateOp = ir.createTemplateOp(
+        blockView.xref,
+        ir.TemplateKind.NgTemplate,
+        null,
+        block.name.charAt(0).toUpperCase() + block.name.slice(1),
+        ir.Namespace.HTML,
+        undefined,
+        block.startSourceSpan,
+        block.sourceSpan,
+      );
+      unit.create.push(blockTemplateOp);
+
+      propEntries.push({
+        key: block.name,
+        value: new ir.ForeignContentExpr(blockTemplateOp.xref, blockTemplateOp.handle),
+        quoted: isUnsafeObjectKey(block.name),
+      });
+    }
+
+    if (childNodes.length > 0) {
       const childView = unit.job.allocateView(unit.xref);
-      ingestNodes(childView, element.children);
+      ingestNodes(childView, childNodes);
 
       const childrenTemplateOp = ir.createTemplateOp(
         childView.xref,

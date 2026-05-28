@@ -56,6 +56,16 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([content.attributes, content.children]);
   }
 
+  visitContentBlock(block: t.ContentBlock) {
+    this.result.push([
+      'ContentBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
+    ]);
+    this.visitAll([block.children]);
+  }
+
   visitVariable(variable: t.Variable) {
     this.result.push([
       'Variable',

@@ -46,6 +46,10 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
     this.visitAllTemplateNodes(content.children);
   }
 
+  visitContentBlock(block: t.ContentBlock): void {
+    this.visitAllTemplateNodes(block.children);
+  }
+
   visitBoundAttribute(attribute: t.BoundAttribute): void {
     this.visit(attribute.value);
   }
