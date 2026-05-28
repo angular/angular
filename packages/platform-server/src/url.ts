@@ -7,6 +7,9 @@
  */
 
 const LEADING_SLASHES_REGEX = /^[/\\]+/;
+// Characters silently stripped by the WHATWG URL parser, so they can be used to
+// hide a scheme from the malformed-URL guard below.
+const URL_STRIPPED_CHARS_REGEX = /[\t\n\r]/g;
 
 /**
  * Parses a URL string and returns a resolved WHATWG URL object.
@@ -25,7 +28,7 @@ export function parseUrl(urlStr: string | undefined, origin?: string): URL | nul
     return new URL(urlStr);
   }
 
-  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/.test(urlStr)) {
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/.test(urlStr.replace(URL_STRIPPED_CHARS_REGEX, ''))) {
     throw new Error(`Invalid URL: ${urlStr}`);
   }
 

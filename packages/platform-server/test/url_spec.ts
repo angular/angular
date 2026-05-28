@@ -38,6 +38,18 @@ describe('parseUrl', () => {
         );
       }
     });
+
+    it('should throw an error for malformed absolute URLs with scheme-obfuscating control chars', () => {
+      const obfuscatedUrls = [
+        'ht\ttp://evil.com:80:80/path',
+        'ht\ntp://evil.com:80:80/path',
+        'ht\rtp://[google.com]/path',
+      ];
+
+      for (const url of obfuscatedUrls) {
+        expect(() => parseUrl(url, 'http://test.com')).toThrowError(/^Invalid URL: /);
+      }
+    });
   });
 
   describe('without origin', () => {
@@ -66,6 +78,18 @@ describe('parseUrl', () => {
         expect(() => parseUrl(url)).toThrowError(
           new RegExp(`Invalid URL: ${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
         );
+      }
+    });
+
+    it('should throw an error for malformed absolute URLs with scheme-obfuscating control chars', () => {
+      const obfuscatedUrls = [
+        'ht\ttp://evil.com:80:80/path',
+        'ht\ntp://evil.com:80:80/path',
+        'ht\rtp://[google.com]/path',
+      ];
+
+      for (const url of obfuscatedUrls) {
+        expect(() => parseUrl(url)).toThrowError(/^Invalid URL: /);
       }
     });
   });
