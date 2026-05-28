@@ -14,7 +14,6 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
-import {isUnsafeObjectKey} from '../../../render3/util';
 import {
   DeferBlockDepsEmitMode,
   R3ComponentDeferMetadata,
@@ -269,6 +268,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
       ingestLetDeclaration(unit, node);
+    } else if (node instanceof t.ContentBlock) {
+      throw new Error(`@content blocks are only valid as direct children of foreign components.`);
     } else if (node instanceof t.Component) {
       // TODO(crisbeto): account for selectorless nodes.
     } else {
@@ -292,53 +293,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
 
   const foreignComp = unit.job.getForeignComponent(element);
   if (foreignComp) {
-    const propEntries: {key: string; quoted: boolean; value: o.Expression}[] = [];
-    for (const attr of element.attributes) {
-      propEntries.push({
-        key: attr.name,
-        value: o.literal(attr.value),
-        quoted: isUnsafeObjectKey(attr.name),
-      });
-    }
-    for (const input of element.inputs) {
-      propEntries.push({
-        key: input.name,
-        value: convertAst(input.value, unit.job, input.sourceSpan),
-        quoted: isUnsafeObjectKey(input.name),
-      });
-    }
-
-    if (element.children.length > 0) {
-      const childView = unit.job.allocateView(unit.xref);
-      ingestNodes(childView, element.children);
-
-      const childrenTemplateOp = ir.createTemplateOp(
-        childView.xref,
-        ir.TemplateKind.NgTemplate,
-        null,
-        'Children',
-        ir.Namespace.HTML,
-        undefined,
-        element.startSourceSpan,
-        element.sourceSpan,
-      );
-      unit.create.push(childrenTemplateOp);
-
-      propEntries.push({
-        key: 'children',
-        value: new ir.ForeignContentExpr(childrenTemplateOp.xref, childrenTemplateOp.handle),
-        quoted: false,
-      });
-    }
-
-    const props = propEntries.length > 0 ? o.literalMap(propEntries) : null;
-
-    // Foreign components are created in the creation block. Updates are triggered reactively
-    // through directly passed signal properties, alleviating the need for any explicit update
-    // operations.
-    unit.create.push(
-      ir.createForeignComponentOp(id, foreignComp.component, props, element.startSourceSpan),
-    );
+    ingestForeignComponent(unit, id, element, foreignComp);
     return;
   }
 
@@ -382,6 +337,66 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
       endOp,
     );
   }
+}
+
+/**
+ * Ingest a foreign component's element AST from the template into the given `ViewCompilation`.
+ */
+function ingestForeignComponent(
+  unit: ViewCompilationUnit,
+  id: ir.XrefId,
+  element: t.Element,
+  foreignComp: R3ForeignComponentMetadata,
+): void {
+  const props = new Map<string, o.Expression>();
+  for (const attr of element.attributes) {
+    props.set(attr.name, o.literal(attr.value));
+  }
+  for (const input of element.inputs) {
+    props.set(input.name, convertAst(input.value, unit.job, input.sourceSpan));
+  }
+
+  const contentBlocks: t.ContentBlock[] = [];
+  const childNodes: t.Node[] = [];
+
+  for (const child of element.children) {
+    if (child instanceof t.ContentBlock) {
+      contentBlocks.push(child);
+    } else {
+      childNodes.push(child);
+    }
+  }
+
+  for (const block of contentBlocks) {
+    const blockView = unit.job.allocateView(unit.xref);
+    ingestNodes(blockView, block.children);
+
+    unit.create.push(
+      ir.createContentOp(id, blockView.xref, block.name, block.startSourceSpan, block.sourceSpan),
+    );
+  }
+
+  if (childNodes.length > 0) {
+    const childView = unit.job.allocateView(unit.xref);
+    ingestNodes(childView, childNodes);
+
+    unit.create.push(
+      ir.createContentOp(
+        id,
+        childView.xref,
+        'children',
+        element.startSourceSpan,
+        element.sourceSpan,
+      ),
+    );
+  }
+
+  // Foreign components are created in the creation block. Updates are triggered reactively
+  // through directly passed signal properties, alleviating the need for any explicit update
+  // operations.
+  unit.create.push(
+    ir.createForeignComponentOp(id, foreignComp.component, props, element.startSourceSpan),
+  );
 }
 
 /**

@@ -13,6 +13,7 @@ import {
   TmplAstBoundText,
   TmplAstComponent,
   TmplAstContent,
+  TmplAstContentBlock,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
@@ -139,6 +140,10 @@ class ClassificationVisitor implements TmplAstVisitor {
 
   visitContent(content: TmplAstContent) {
     this.visitAll(content.children);
+  }
+
+  visitContentBlock(block: TmplAstContentBlock) {
+    this.visitAll(block.children);
   }
 
   visitVariable(variable: TmplAstVariable) {}

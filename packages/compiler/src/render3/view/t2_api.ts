@@ -31,6 +31,7 @@ import {
   Template,
   TextAttribute,
   Variable,
+  ContentBlock,
 } from '../r3_ast';
 
 /** Node that has a `Scope` associated with it. */
@@ -45,6 +46,7 @@ export type ScopedNode =
   | DeferredBlockLoading
   | DeferredBlockPlaceholder
   | Content
+  | ContentBlock
   | HostElement;
 
 /** Possible values that a reference can be resolved to. */

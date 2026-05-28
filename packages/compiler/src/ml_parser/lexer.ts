@@ -153,6 +153,7 @@ const SUPPORTED_BLOCKS = [
   '@placeholder',
   '@loading',
   '@error',
+  '@content',
 ] as const;
 
 const INTERPOLATION = {start: '{{', end: '}}'} as const;

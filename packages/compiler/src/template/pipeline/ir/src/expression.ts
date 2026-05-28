@@ -1299,8 +1299,8 @@ export function transformExpressionsInOp(
       op.value = transformExpressionsInExpression(op.value, transform, flags);
       break;
     case OpKind.ForeignComponent:
-      if (op.props !== null) {
-        op.props = transformExpressionsInExpression(op.props, transform, flags);
+      for (const [key, expr] of op.props) {
+        op.props.set(key, transformExpressionsInExpression(expr, transform, flags));
       }
       break;
     case OpKind.Advance:
@@ -1326,6 +1326,7 @@ export function transformExpressionsInOp(
     case OpKind.ProjectionDef:
     case OpKind.EnableIncrementalHydrationRuntime:
     case OpKind.Template:
+    case OpKind.Content:
     case OpKind.Text:
     case OpKind.I18nAttributes:
     case OpKind.IcuPlaceholder:

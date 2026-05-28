@@ -73,6 +73,7 @@ import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
 import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDeferDepsFns} from './phases/resolve_defer_deps_fns';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
+import {resolveForeignContent} from './phases/resolve_foreign_content';
 import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
 import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
 import {resolveI18nAttrSanitizers} from './phases/resolve_i18n_attr_sanitizers';
@@ -107,6 +108,7 @@ type Phase =
     };
 
 const phases: Phase[] = [
+  {kind: Kind.Tmpl, fn: resolveForeignContent},
   {kind: Kind.Tmpl, fn: removeContentSelectors},
   {kind: Kind.Both, fn: optimizeRegularExpressions},
   {kind: Kind.Host, fn: parseHostStyleProperties},

@@ -31,7 +31,13 @@ export class TestCmp {
   selector: 'main-children',
   template: `
     <FancyButton [label]="title">
-      <span>Click me!</span>
+      @content(icon) {
+        <span>Icon!</span>
+      }
+      @content(description) {
+        <span>Description text</span>
+      }
+      <span>Other children</span>
     </FancyButton>
   `,
   // @ts-ignore: @angular/core does not expose the `foreignImports` property.
