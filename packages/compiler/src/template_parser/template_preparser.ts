@@ -14,7 +14,7 @@ const LINK_ELEMENT = 'link';
 const LINK_STYLE_REL_ATTR = 'rel';
 const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
-const STYLE_ELEMENTS: ReadonlySet<string> = new Set([':svg:style', 'style']);
+const STYLE_ELEMENT = 'style';
 const SCRIPT_ELEMENTS: ReadonlySet<string> = new Set([':svg:script', 'script']);
 const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
@@ -50,7 +50,7 @@ export function preparseElement(ast: html.Element): PreparsedElement {
   let type = PreparsedElementType.OTHER;
   if (isNgContent(nodeName)) {
     type = PreparsedElementType.NG_CONTENT;
-  } else if (STYLE_ELEMENTS.has(nodeName)) {
+  } else if (STYLE_ELEMENT === nodeName) {
     type = PreparsedElementType.STYLE;
   } else if (SCRIPT_ELEMENTS.has(nodeName)) {
     type = PreparsedElementType.SCRIPT;
