@@ -223,8 +223,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.2
       domino:
-        specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b'
+        specifier: https://github.com/angular/domino.git#f74cccd496283b6141fbdbeb25b168f4b1c9836a
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f74cccd496283b6141fbdbeb25b168f4b1c9836a'
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
@@ -1249,8 +1249,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       domino:
-        specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b'
+        specifier: https://github.com/angular/domino.git#f74cccd496283b6141fbdbeb25b168f4b1c9836a
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f74cccd496283b6141fbdbeb25b168f4b1c9836a'
       esbuild-plugin-umd-wrapper:
         specifier: 3.0.0
         version: 3.0.0
@@ -1300,8 +1300,8 @@ importers:
   packages/zone.js/test/typings:
     dependencies:
       domino:
-        specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b'
+        specifier: https://github.com/angular/domino.git#f74cccd496283b6141fbdbeb25b168f4b1c9836a
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f74cccd496283b6141fbdbeb25b168f4b1c9836a'
       zone.js:
         specifier: workspace:*
         version: link:../..
@@ -1504,9 +1504,10 @@ packages:
     resolution: {integrity: sha512-qLYVXcpSBmsA/9fITB1cT2y37V1Yo3ybWEwvafnbAh8izabrMV0hh+J9Ajh9bPk092T7LS8Xt9eTu0OquBXkbw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b':
-    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f74cccd496283b6141fbdbeb25b168f4b1c9836a':
+    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/f74cccd496283b6141fbdbeb25b168f4b1c9836a}
     version: 2.1.6
+    engines: {npm: Please use pnpm instead of NPM to install dependencies, pnpm: 10.31.0, yarn: Please use pnpm instead of Yarn to install dependencies}
 
   '@angular/material@20.2.10':
     resolution: {integrity: sha512-WkJfUu7KiQY2lqHjMZtEKBG653sPmky0nytTMASsfQ/xUs56W3CAAEOuKhSyCNKsNeFJZS/NgJnvlpRzcE5k6g==}
@@ -6191,6 +6192,10 @@ packages:
     resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
     engines: {node: '>= 0.10'}
 
+  cors@2.8.6:
+    resolution: {integrity: sha512-tJtZBBHA6vjIAaF6EnIaq6laBBP9aq/Y3ouVJjEfoHbRBcHBAHYcMh/w8LDrk2PvIMMq8gmopa5D4V8RmbrxGw==}
+    engines: {node: '>= 0.10'}
+
   corser@2.0.1:
     resolution: {integrity: sha512-utCYNzRSQIZNPIcGZdQc92UVJYAhtGAteCFg0yRaFm8f0P+CPtyGyHXJcGXnffjCybUCEx3FQ2G7U3/o9eIkVQ==}
     engines: {node: '>= 0.4.0'}
@@ -7825,6 +7830,10 @@ packages:
     resolution: {integrity: sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==}
     engines: {node: '>= 0.8'}
 
+  http-errors@2.0.1:
+    resolution: {integrity: sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==}
+    engines: {node: '>= 0.8'}
+
   http-parser-js@0.5.10:
     resolution: {integrity: sha512-Pysuw9XpUq5dVc/2SMHpuTY01RFl8fttgcyunjL7eEMhGM3cI4eOmiCycJDVCo/7O7ClfQD3SaI6ftDzqOXYMA==}
 
@@ -9222,6 +9231,10 @@ packages:
   mime-types@3.0.1:
     resolution: {integrity: sha512-xRc4oEhT6eaBpU1XF7AjpOFD+xQmXNB5OVKwp4tqCuBpHLS/ZbBDrc07mYTDqVMg6PfxUjjNp85O6Cd2Z/5HWA==}
     engines: {node: '>= 0.6'}
+
+  mime-types@3.0.2:
+    resolution: {integrity: sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A==}
+    engines: {node: '>=18'}
 
   mime@1.6.0:
     resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
@@ -10780,6 +10793,10 @@ packages:
 
   send@1.2.0:
     resolution: {integrity: sha512-uaW0WwXKpL9blXE2o0bRhoL2EGXIrZxQ2ZQ4mgcfoBxdFmQold+qWsD2jLrfZ0trjKL6vOw0j//eAwcALFjKSw==}
+    engines: {node: '>= 18'}
+
+  send@1.2.1:
+    resolution: {integrity: sha512-1gnZf7DFcoIcajTjTwjwuDjzuz4PPcY2StKPlsGAQ1+YH20IRVrBaXSWmdjowTJ6u8Rc01PoYOGHXfP1mYcZNQ==}
     engines: {node: '>= 18'}
 
   sentence-case@3.0.4:
@@ -13319,7 +13336,7 @@ snapshots:
       tslib: 2.8.1
       zone.js: 0.15.1
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f74cccd496283b6141fbdbeb25b168f4b1c9836a': {}
 
   '@angular/material@20.2.10(@angular/cdk@20.2.10(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
@@ -19032,6 +19049,11 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
+  cors@2.8.6:
+    dependencies:
+      object-assign: 4.1.1
+      vary: 1.1.2
+
   corser@2.0.1: {}
 
   cose-base@1.0.3:
@@ -21179,6 +21201,14 @@ snapshots:
       statuses: 2.0.1
       toidentifier: 1.0.1
 
+  http-errors@2.0.1:
+    dependencies:
+      depd: 2.0.0
+      inherits: 2.0.4
+      setprototypeof: 1.2.0
+      statuses: 2.0.2
+      toidentifier: 1.0.1
+
   http-parser-js@0.5.10: {}
 
   http-proxy-agent@5.0.0(supports-color@10.2.2):
@@ -22496,7 +22526,7 @@ snapshots:
       chokidar: 2.1.8
       colors: 1.4.0
       connect: 3.7.0
-      cors: 2.8.5
+      cors: 2.8.6
       event-stream: 3.3.4
       faye-websocket: 0.11.4
       http-auth: 3.1.3
@@ -22504,7 +22534,7 @@ snapshots:
       object-assign: 4.1.1
       opn: 6.0.0
       proxy-middleware: 0.15.0
-      send: 1.2.0
+      send: 1.2.1
       serve-index: 1.9.1
     transitivePeerDependencies:
       - supports-color
@@ -22904,6 +22934,10 @@ snapshots:
       mime-db: 1.52.0
 
   mime-types@3.0.1:
+    dependencies:
+      mime-db: 1.54.0
+
+  mime-types@3.0.2:
     dependencies:
       mime-db: 1.54.0
 
@@ -24687,6 +24721,22 @@ snapshots:
       fresh: 2.0.0
       http-errors: 2.0.0
       mime-types: 3.0.1
+      ms: 2.1.3
+      on-finished: 2.4.1
+      range-parser: 1.2.1
+      statuses: 2.0.2
+    transitivePeerDependencies:
+      - supports-color
+
+  send@1.2.1:
+    dependencies:
+      debug: 4.4.3(supports-color@10.2.2)
+      encodeurl: 2.0.0
+      escape-html: 1.0.3
+      etag: 1.8.1
+      fresh: 2.0.0
+      http-errors: 2.0.1
+      mime-types: 3.0.2
       ms: 2.1.3
       on-finished: 2.4.1
       range-parser: 1.2.1
