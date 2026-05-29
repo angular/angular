@@ -275,7 +275,7 @@ function getNamedFormat(locale: string, format: string): string {
 function formatDateTime(str: string, opt_values: string[]) {
   if (opt_values) {
     str = str.replace(/\{([^}]+)}/g, function (match, key) {
-      return opt_values != null && key in opt_values ? opt_values[key] : match;
+      return Object.hasOwn(opt_values, key) ? opt_values[key] : match;
     });
   }
   return str;
