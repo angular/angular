@@ -7,6 +7,11 @@
  */
 
 /**
+ * Matches http: or https:
+ */
+const HTTP_OR_HTTPS_PROTOCOL_REGEX = /^https?:/i;
+
+/**
  * Options for {@link resolveUrl}.
  */
 export interface ResolveUrlOptions {
@@ -36,16 +41,27 @@ export function resolveUrl(
   origin?: string | URL,
   options: ResolveUrlOptions = {},
 ): URL | null {
+  const originUrl = typeof origin === 'string' ? new URL('/', origin) : origin;
+
   if (!urlStr) {
-    return origin !== undefined ? new URL('/', origin) : null;
+    return originUrl || null;
   }
 
   urlStr = urlStr.trim();
 
   // Fast-path: if the URL is a valid, standard absolute URL, parse and return it immediately.
+  let resolved: URL | undefined;
   try {
-    return new URL(urlStr);
+    resolved = new URL(urlStr);
   } catch {}
+
+  if (resolved) {
+    if (originUrl && !isSafeOriginChange(resolved, originUrl, urlStr)) {
+      throwSuspiciousUrlError(urlStr);
+    }
+
+    return resolved;
+  }
 
   // We identify and throw on malformed absolute URLs (like double port).
   // Per the WHATWG URL standard, parsing an input starting with a scheme (like 'http:') against
@@ -56,7 +72,7 @@ export function resolveUrl(
     throw new Error(`Invalid URL: ${urlStr}`);
   }
 
-  if (origin === undefined) {
+  if (!originUrl) {
     return null;
   }
 
@@ -64,35 +80,40 @@ export function resolveUrl(
 
   // Check if we have a legitimate protocol-relative URL (starts with '//' and not a duplicate/backslash bypass)
   // and we are configured to allow and preserve standard cross-origin protocol-relative requests.
-  const isProtocolRelative =
-    allowProtocolRelative &&
-    urlStr[0] === '/' &&
-    urlStr[1] === '/' &&
-    urlStr.length > 2 &&
-    urlStr[2] !== '/' &&
-    urlStr[2] !== '\\';
+  if (urlStr.startsWith('//')) {
+    if (!allowProtocolRelative) {
+      throw new Error(`Protocol relative URLs are not allowed in this context. URL: ${urlStr}`);
+    }
 
-  if (isProtocolRelative) {
     return new URL(urlStr, origin);
   }
 
-  // Safe relative path preservation: if a relative path has no leading forward or backward slashes,
-  // we do not prepend any slash so the native URL constructor can resolve it correctly relative
-  // to trailing-slash sub-paths (e.g., 'testing' against 'http://localhost/foo/' -> 'http://localhost/foo/testing').
-  const startsWithSlash = urlStr[0] === '/' || urlStr[0] === '\\';
-  if (!startsWithSlash) {
-    return new URL(urlStr, origin);
+  resolved = new URL(urlStr, origin);
+
+  if (!isSafeOriginChange(resolved, originUrl, urlStr)) {
+    throwSuspiciousUrlError(urlStr);
   }
 
-  // For other relative inputs starting with slashes, we collapse all consecutive leading forward/backward
-  // slashes to a single forward slash. This guarantees consistent same-origin path representation and
-  // blocks any hostname hijack or takeover attempts.
-  let startIdx = 0;
-  while (startIdx < urlStr.length && (urlStr[startIdx] === '/' || urlStr[startIdx] === '\\')) {
-    startIdx++;
-  }
-  const pathWithoutLeadingSlashes = urlStr.slice(startIdx);
-  const normalizedPath = '/' + pathWithoutLeadingSlashes;
+  return resolved;
+}
 
-  return new URL(normalizedPath, origin);
+/**
+ * Throws a suspicious URL error indicating a security bypass attempt.
+ */
+function throwSuspiciousUrlError(urlStr: string): never {
+  throw new Error(
+    `URL ${urlStr} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+  );
+}
+
+/**
+ * Checks if the origin has changed in a safe way.
+ *
+ * @param resolved The resolved URL.
+ * @param origin The origin URL.
+ * @param urlStr The URL string.
+ * @returns True if the origin has changed in a safe way, false otherwise.
+ */
+function isSafeOriginChange(resolved: URL, origin: URL, urlStr: string): boolean {
+  return origin.origin === resolved.origin || HTTP_OR_HTTPS_PROTOCOL_REGEX.test(urlStr);
 }
