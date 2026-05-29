@@ -36,7 +36,7 @@ NOTE: The string parameter (e.g., `'api.url'`) is a description purely for debug
 
 ### InjectionToken with `providedIn: 'root'`
 
-An `InjectionToken` that has a `factory` results in `providedIn: 'root'` by default (but can be overidden via the `providedIn` prop).
+An `InjectionToken` that has a `factory` results in `providedIn: 'root'` by default (but can be overridden via the `providedIn` prop).
 
 ```ts
 // 📁 /app/config.token.ts
@@ -279,7 +279,7 @@ Provider identifiers allow Angular's dependency injection (DI) system to retriev
 
 #### Class names
 
-Class name use the imported class directly as the identifier:
+Class names use the imported class directly as the identifier:
 
 ```angular-ts
 import {Component} from '@angular/core';
