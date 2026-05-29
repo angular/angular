@@ -1594,7 +1594,9 @@ class HiddenModule {}
               http.get(badUrl).subscribe((body) => {
                 expect(body).toEqual('success!');
               });
-              mock.expectOne('http://localhost:4000/attacker.com').flush('success!');
+              mock
+                .expectOne('http://localhost:4000/attacker.com', `URL: ${badUrl}`)
+                .flush('success!');
             }
           });
         });

@@ -47,20 +47,20 @@ export function resolveUrl(
     return new URL(urlStr);
   } catch {}
 
-  const {allowProtocolRelative = false} = options;
-
   // We identify and throw on malformed absolute URLs (like double port).
   // Per the WHATWG URL standard, parsing an input starting with a scheme (like 'http:') against
-  // a non-standard base ('resolve://') ignores the base argument and parses strictly as an
+  // a standard base (like 'http://fake') ignores the base argument and parses strictly as an
   // absolute URL. Since it is malformed, the native URL constructor will throw a validation
   // error. Standard relative/protocol-relative paths parse successfully, allowing the flow to continue.
-  if (!allowProtocolRelative && !URL.canParse(urlStr, 'resolve://')) {
+  if (!URL.canParse(urlStr, 'http://fake')) {
     throw new Error(`Invalid URL: ${urlStr}`);
   }
 
   if (origin === undefined) {
     return null;
   }
+
+  const {allowProtocolRelative = false} = options;
 
   // Check if we have a legitimate protocol-relative URL (starts with '//' and not a duplicate/backslash bypass)
   // and we are configured to allow and preserve standard cross-origin protocol-relative requests.
