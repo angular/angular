@@ -42,6 +42,7 @@ interface RequestParams {
   transferCache?: {includeHeaders: string[]} | boolean;
   headers?: {[key: string]: string};
   withCredentials?: boolean;
+  credentials?: RequestCredentials;
   body?: RequestBody;
 }
 
@@ -441,6 +442,36 @@ describe('TransferCache', () => {
       });
     });
 
+    it('should not cache requests with included credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'include',
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'include',
+      });
+    });
+
+    it('should not cache requests with same-origin credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'same-origin',
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'same-origin',
+      });
+    });
+
+    it('should cache requests with omitted credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'omit',
+      });
+
+      makeRequestAndExpectNone('/test-auth', 'GET', {
+        credentials: 'omit',
+      });
+    });
+
     it('should cache POST with the differing body in string form', () => {
       makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'foo'});
       makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: 'foo'});
@@ -600,6 +631,16 @@ describe('TransferCache', () => {
 
         makeRequestAndExpectOne('/test-auth', 'foo', {
           withCredentials: true,
+        });
+      });
+
+      it(`should not cache requests with included credentials when 'includeRequestsWithAuthHeaders' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          credentials: 'include',
+        });
+
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          credentials: 'include',
         });
       });
 
