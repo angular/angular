@@ -1124,9 +1124,9 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
-"domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
+"domino@https://github.com/angular/domino.git#a9e9e17af7a54af8dde66f651bfde671c3a10444":
   version "2.1.6"
-  resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
+  resolved "https://github.com/angular/domino.git#a9e9e17af7a54af8dde66f651bfde671c3a10444"
 
 dunder-proto@^1.0.1:
   version "1.0.1"
