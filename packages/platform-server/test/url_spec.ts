@@ -17,12 +17,12 @@ describe('resolveUrl', () => {
       expect(url.hash).toBe('#hash');
     });
 
-    it('should neutralize backslash-prefixed hijack attempts by forcing them same-origin', () => {
+    it('should throw on backslash-prefixed hijack attempts', () => {
       const urls = ['/\\attacker.com/deep/path', '\\\\attacker.com/deep/path'];
       for (const url of urls) {
-        const parsed = resolveUrl(url, 'http://test.com');
-        expect(parsed.origin).toBe('http://test.com');
-        expect(parsed.pathname).toBe('/attacker.com/deep/path');
+        expect(() => resolveUrl(url, 'http://test.com')).toThrowError(
+          `URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+        );
       }
     });
 
@@ -46,6 +46,13 @@ describe('resolveUrl', () => {
           new RegExp(`Invalid URL: ${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
         );
       }
+    });
+
+    it('should throw on obfuscated protocols attempting to change origin', () => {
+      const url = 'ht\ntp://evil.com/path';
+      expect(() => resolveUrl(url, 'http://test.com')).toThrowError(
+        `URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+      );
     });
   });
 

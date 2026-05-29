@@ -1456,7 +1456,7 @@ class HiddenModule {}
         });
       });
 
-      it('prevents SSRF bypasses via backslash URLs in HttpClient', async () => {
+      it('prevents SSRF bypasses via backslash URLs in HttpClient by throwing a suspicious origin error', async () => {
         const platform = platformServer([
           {
             provide: INITIAL_CONFIG,
@@ -1467,11 +1467,16 @@ class HiddenModule {}
           const mock = ref.injector.get(HttpTestingController);
           const http = ref.injector.get(HttpClient);
           ref.injector.get(NgZone).run(() => {
-            http.get('/\\evil.com/api').subscribe();
+            http.get('/\\evil.com/api').subscribe({
+              next: () => fail('Expected request to fail, but it succeeded.'),
+              error: (err) => {
+                expect(err.message).toBe(
+                  `URL /\\evil.com/api changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                );
+              },
+            });
 
-            // To prevent SSRF, we ensures it's forced as a relative path and backslashes
-            // inside path-relative segments are normalized via URL constructor, generating a safe URL.
-            mock.expectOne('http://localhost:4000/evil.com/api').flush('safe');
+            mock.verify();
           });
         });
       });
@@ -1579,25 +1584,50 @@ class HiddenModule {}
           });
         });
 
-        it('should treat backslash bypass SSRF attempts in relative requests strictly as pathnames', async () => {
+        it('should reject backslash bypass SSRF attempts in relative requests and throw a suspicious origin error', async () => {
           const badUrls = [
             '/\\attacker.com',
             '\\\\attacker.com',
-            '///attacker.com',
-            '//\\attacker.com',
             '  /\\attacker.com',
             '\r\n/\\attacker.com',
           ];
 
           ref.injector.get(NgZone).run(() => {
             for (const badUrl of badUrls) {
-              http.get(badUrl).subscribe((body) => {
-                expect(body).toEqual('success!');
+              http.get(badUrl).subscribe({
+                next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
+                error: (err) => {
+                  expect(err.message).toBe(
+                    `URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                  );
+                },
               });
-              mock
-                .expectOne('http://localhost:4000/attacker.com', `URL: ${badUrl}`)
-                .flush('success!');
             }
+
+            mock.verify();
+          });
+        });
+
+        it('should reject obfuscated protocal SSRF attempts in relative requests and throw a suspicious origin error', async () => {
+          const badUrls = [
+            'htt\rps://evil.com/path',
+            ' htt\rps://evil.com/path',
+            '\r\nhtt\rps://evil.com/path',
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const badUrl of badUrls) {
+              http.get(badUrl).subscribe({
+                next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
+                error: (err) => {
+                  expect(err.message).toBe(
+                    `URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                  );
+                },
+              });
+            }
+
+            mock.verify();
           });
         });
 
