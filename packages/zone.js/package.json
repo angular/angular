@@ -10,7 +10,7 @@
   "devDependencies": {
     "@externs/nodejs": "^1.5.0",
     "@types/node": "^10.9.4",
-    "domino": "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af",
+    "domino": "https://github.com/angular/domino.git#a9e9e17af7a54af8dde66f651bfde671c3a10444",
     "google-closure-compiler": "^20240317.0.0",
     "jest": "^29.0",
     "jest-environment-jsdom": "^29.0.3",
