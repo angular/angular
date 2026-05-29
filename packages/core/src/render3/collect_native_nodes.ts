@@ -8,11 +8,19 @@
 
 import {assertParentView} from './assert';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
-import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags, NATIVE} from './interfaces/container';
 import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
 import {isLContainer} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW, TView, TViewType} from './interfaces/view';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  FLAGS,
+  HOST,
+  LView,
+  TVIEW,
+  TView,
+  TViewType,
+} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getProjectionNodes} from './node_manipulation';
 import {getLViewParent, unwrapRNode} from './util/view_utils';
@@ -60,7 +68,7 @@ export function collectNativeNodes(
     // A given lNode can represent either a native node or a LContainer (when it is a host of a
     // ViewContainerRef). When we find a LContainer we need to descend into it to collect root nodes
     // from the views in this container.
-    if (isLContainer(lNode)) {
+    if (isLContainer(lNode) && !(lNode[FLAGS] & LContainerFlags.LogicalOnly)) {
       collectNativeNodesInLContainer(lNode, result);
     }
 
