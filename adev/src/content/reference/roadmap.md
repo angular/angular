@@ -231,7 +231,7 @@ We will work on finding a way to implement stricter type checking for reactive f
 <docs-card title="Improve integration of Angular DevTools with framework" link="Completed Q1 2022" href="tools/devtools">
 To improve the integration of Angular DevTools with the framework, we are working on moving the codebase to the angular/angular monorepository. This includes transitioning Angular DevTools to Bazel and integrating it into the existing processes and CI pipeline.
 </docs-card>
-<docs-card title="Launch advanced compiler diagnostics" link="Completed Q1 2022" href="reference/extended-diagnostics">
+<docs-card title="Launch advanced compiler diagnostics" link="Completed Q1 2022" href="extended-diagnostics">
 Extend the diagnostics of the Angular compiler outside type checking. Introduce other correctness and conformance checks to further guarantee correctness and best practices.
 </docs-card>
 <docs-card title="Update our e2e testing strategy" link="Completed Q3 2021" href="guide/testing">
@@ -270,7 +270,7 @@ As part of the v11 release, we introduced an opt-in preview of webpack 5 in the 
 <docs-card title="Faster apps by inlining critical styles in Universal apps" link="Completed Q1 2021" href="guide/ssr">
 Loading external stylesheets is a blocking operation, which means that the browser cannot start rendering your app until it loads all the referenced CSS. Having render-blocking resources in the header of a page can significantly impact its load performance, for example, its first contentful paint. To make apps faster, we have been collaborating with the Google Chrome team on inlining critical CSS and loading the rest of the styles asynchronously.
 </docs-card>
-<docs-card title="Improve debugging with better Angular error messages" link="Completed Q1 2021" href="reference/errors">
+<docs-card title="Improve debugging with better Angular error messages" link="Completed Q1 2021" href="errors">
 Error messages often bring limited actionable information to help developers resolve them. We have been working on making error messages more discoverable by adding associated codes, developing guides, and other materials to ensure a smoother debugging experience.
 </docs-card>
 <docs-card title="Improved developer onboarding with refreshed introductory documentation" link="Completed Q1 2021" href="tutorials">
