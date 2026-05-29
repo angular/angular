@@ -11,7 +11,7 @@ import {attachPatchData} from '../context_discovery';
 import {nativeInsertBefore} from '../dom_node_manipulation';
 import {createForeignView} from '../foreign_view';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, RENDERER, TVIEW} from '../interfaces/view';
+import {HEADER_OFFSET, RENDERER, TVIEW, FLAGS} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
 import {getLView, getTView, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {getOrCreateTNode} from '../tnode_manipulation';
@@ -20,11 +20,11 @@ import {createLContainer, addLViewToLContainer} from '../view/container';
 import {NodeInjector} from '../di';
 import {runInInjectionContext} from '../../di';
 import {Renderer} from '../interfaces/renderer';
-import {RNode} from '../interfaces/renderer_dom';
+import {RElement, RNode} from '../interfaces/renderer_dom';
 import {createAndRenderEmbeddedLView} from '../view_manipulation';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {assertLContainer} from '../assert';
-import {LContainer} from '../interfaces/container';
+import {LContainer, LContainerFlags} from '../interfaces/container';
 
 /**
  * Creation phase instruction to render a foreign component.
@@ -101,12 +101,13 @@ export function ɵɵforeignContent(index: number): any[] {
   // The template is already declared at adjustedIndex, so lContainer must exist.
   const lContainer = lView[adjustedIndex] as LContainer;
   ngDevMode && assertLContainer(lContainer);
+  lContainer[FLAGS] |= LContainerFlags.LogicalOnly;
 
   const tView = getTView();
   const tNode = tView.data[adjustedIndex] as TContainerNode;
 
-  // Instantiate and render the embedded view inside the container,
-  // but do NOT add its elements to the DOM at the container anchor.
+  // Instantiate and render the embedded view inside the container, but do not add its elements to
+  // the DOM at the container anchor since the nodes will be projected into a foreign view.
   const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, null);
   addLViewToLContainer(lContainer, embeddedLView, 0, /* addToDOM */ false);
 
