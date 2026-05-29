@@ -29,7 +29,7 @@ import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {createScript} from './transfer_state';
-import {parseUrl} from './url';
+import {resolveUrl} from './url';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -379,7 +379,7 @@ export async function renderApplication(
 
 function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | undefined) {
   if (typeof url === 'string') {
-    const parsedUrl = parseUrl(url);
+    const parsedUrl = resolveUrl(url);
     if (parsedUrl !== null) {
       const hostname = parsedUrl.hostname;
       const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
