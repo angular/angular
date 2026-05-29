@@ -866,7 +866,7 @@ For a complete change log see [here](https://github.com/angular/angular/blob/11.
 
 Bug fixes:
 
-- LS not showing existing diagnotics on file open (#966)
+- LS not showing existing diagnostics on file open (#966)
 
 # v0.1100.0-rc.1
 

@@ -342,7 +342,7 @@
       ]
     },
     {
-      "description": "should handle implict contezt in ng-template",
+      "description": "should handle implicit context in ng-template",
       "inputFiles": ["ng_template_implicit.ts"],
       "expectations": [
         {

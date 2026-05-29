@@ -29,7 +29,7 @@ Prior to `v0.11.1`, Zone.js provided two distribution bundle formats in the `dis
 They were (1) `ES5` bundle distributed as `zone.js` and (2) `ES2015` bundle distributed as `zone-evergreen.js`.
 Both of these bundles were in `UMD` format, and are used for Angular's differential-loading mechanism.
 
-Starting with `v0.11.1`, Zone.js follows the [Angular Package Format](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs). Therefor the new Zone.js file layout is:
+Starting with `v0.11.1`, Zone.js follows the [Angular Package Format](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs). Therefore the new Zone.js file layout is:
 
 - `bundles`: `ES5` bundle in `UMD` format.
 - `fesm2015`: `ES5` bundle in `ESM` format.
