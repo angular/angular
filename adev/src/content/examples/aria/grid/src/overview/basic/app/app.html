@@ -1,0 +1,27 @@
+<table ngGrid #grid="ngGrid">
+  @for (row of gridData; track row) {
+    <tr ngGridRow>
+      @for (cell of row; track cell) {
+        @let flipped = {value: false};
+        <td ngGridCell [rowSpan]="cell.rowSpan" [colSpan]="cell.colSpan">
+          <button
+            ngGridCellWidget
+            class="card"
+            [class.flipped]="flipped.value"
+            (click)="flipped.value = true"
+          >
+            <div class="card-face card-front">
+              <svg viewBox="0 0 222 245" xmlns="http://www.w3.org/2000/svg" class="angular-logo">
+                <path class="shield-shape" />
+              </svg>
+            </div>
+
+            <div class="card-face card-back">
+              <div [class.explode]="flipped.value && cell.explode">{{ cell.emoji }}</div>
+            </div>
+          </button>
+        </td>
+      }
+    </tr>
+  }
+</table>

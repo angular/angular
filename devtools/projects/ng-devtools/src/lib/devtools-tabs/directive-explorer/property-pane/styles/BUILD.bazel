@@ -1,0 +1,9 @@
+load("//devtools/tools:defaults.bzl", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "view_tab_styles",
+    src = "view-tab.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
+)

@@ -1,0 +1,15 @@
+/* Keep class names in sync with ThemeService */
+
+/* Default. Target Chrome */
+@mixin chrome {
+  :host-context(.chrome-ui) {
+    @content;
+  }
+}
+
+/* Target Firefox */
+@mixin firefox {
+  :host-context(.firefox-ui) {
+    @content;
+  }
+}

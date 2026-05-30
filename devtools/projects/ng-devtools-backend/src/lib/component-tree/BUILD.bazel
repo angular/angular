@@ -1,0 +1,46 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "get-roots",
+    srcs = ["get-roots.ts"],
+)
+
+ts_project(
+    name = "core-enums",
+    srcs = ["core-enums.ts"],
+)
+
+ts_project(
+    name = "component-tree",
+    srcs = ["component-tree.ts"],
+    deps = [
+        ":core-enums",
+        ":get-roots",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":component-tree",
+        ":get-roots",
+        "//:node_modules/@angular/core",
+        "//:node_modules/jasmine",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

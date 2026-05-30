@@ -1,0 +1,7 @@
+{
+  "title": "Add search functionality",
+  "type": "local",
+  "answerSrc": "../14-http/src",
+  "answerRootDir": "../14-http/",
+  "openFiles": ["src/app/home/home.ts", "src/app/details/details.ts"]
+}

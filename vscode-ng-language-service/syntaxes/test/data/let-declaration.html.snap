@@ -1,0 +1,192 @@
+>@let basicLet = 123 + 456;
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#             ^ template.let.ng meta.definition.variable.ng
+#              ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#               ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                ^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.numeric.decimal.ts
+#                   ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                    ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.arithmetic.ts
+#                     ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                      ^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.numeric.decimal.ts
+#                         ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@let noSpaceAfterEquals =true;
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#                       ^ template.let.ng meta.definition.variable.ng
+#                        ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                         ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.language.boolean.true.ts
+#                             ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@let noSpaceBeforeEquals= true;
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#                        ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                         ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                          ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.language.boolean.true.ts
+#                              ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@let noSpaceAroundEquals=true;
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#                        ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                         ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.language.boolean.true.ts
+#                             ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@let                    lotOfSpaceAroundEquals      =            true;
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^^^^^^^^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng
+#                        ^^^^^^^^^^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#                                              ^^^^^^ template.let.ng meta.definition.variable.ng
+#                                                    ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                                                     ^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                                                                 ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.language.boolean.true.ts
+#                                                                     ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@let #invalid = true;
+#^^^^^^^^^^^^^^^^^^^^^^ template.let.ng
+>@let invalidIn#TheMiddle = true;
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#              ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#               ^^^^^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng variable.other.readwrite.ts
+#                        ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                         ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.assignment.ts
+#                          ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                           ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.language.boolean.true.ts
+#                               ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>@letinvalid = true;
+#^^^^^^^^^^^^^^^^^^^^ template.let.ng
+>
+>@let stringContainingSemicolon = 'hello ;' + 'world';
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^^^^^^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#                              ^ template.let.ng meta.definition.variable.ng
+#                               ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                                ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                                 ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                  ^^^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts
+#                                         ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                          ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                           ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.arithmetic.ts
+#                                            ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                             ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                              ^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts
+#                                                   ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                    ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@let complexExpression = something ? 123 : {prop: 'hello' + true + 'world'};
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#                      ^ template.let.ng meta.definition.variable.ng
+#                       ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                        ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                         ^^^^^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng variable.other.readwrite.ts
+#                                  ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                   ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.ternary.ts
+#                                    ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                     ^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.numeric.decimal.ts
+#                                        ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                         ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.ternary.ts
+#                                          ^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                            ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng variable.other.readwrite.ts
+#                                                ^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                  ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                   ^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts
+#                                                        ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                         ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                          ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.arithmetic.ts
+#                                                           ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                            ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.language.boolean.true.ts
+#                                                                ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                                 ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.arithmetic.ts
+#                                                                  ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                                   ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                                    ^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts
+#                                                                         ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                          ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                                           ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@let usingPipes = 123 + foo | async | multiply: 2 | separator: ';';
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#               ^ template.let.ng meta.definition.variable.ng
+#                ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                 ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                  ^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.numeric.decimal.ts
+#                     ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                      ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.arithmetic.ts
+#                       ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                        ^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng variable.other.readwrite.ts
+#                           ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                            ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.logical.ts
+#                             ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                              ^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng entity.name.function.pipe.ng
+#                                   ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                    ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.logical.ts
+#                                     ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                      ^^^^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng entity.name.function.pipe.ng
+#                                              ^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.numeric.decimal.ts
+#                                                 ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                  ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.logical.ts
+#                                                   ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                    ^^^^^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng entity.name.function.pipe.ng
+#                                                             ^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#                                                               ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                                ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts
+#                                                                 ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                  ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>@if (someExpr | async) {
+#^^^^^^^^^^^^^^^^^^^^^^^^^ template.let.ng
+>  @let inBlock = true;
+#^^ template.let.ng
+#  ^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#      ^ template.let.ng meta.definition.variable.ng
+#       ^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#              ^ template.let.ng meta.definition.variable.ng
+#               ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                 ^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.language.boolean.true.ts
+#                     ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>
+>  @for (foo of bar; track foo) {
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.let.ng
+>    @let inNestedBlock = 123;
+#^^^^ template.let.ng
+#    ^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#        ^ template.let.ng meta.definition.variable.ng
+#         ^^^^^^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+#                      ^ template.let.ng meta.definition.variable.ng
+#                       ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                        ^ template.let.ng meta.definition.variable.ng keyword.operator.assignment.ng
+#                         ^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng constant.numeric.decimal.ts
+#                            ^ template.let.ng meta.definition.variable.ng punctuation.terminator.statement.ng
+>  }
+#^^^^ template.let.ng
+>}
+#^^ template.let.ng
+>
+>@let noEquals
+#^^^^ template.let.ng meta.definition.variable.ng storage.type.ng
+#    ^ template.let.ng meta.definition.variable.ng
+#     ^^^^^^^^ template.let.ng meta.definition.variable.ng variable.other.constant.ng
+>
+>@let noValue =
+#^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+# ^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng storage.type.ts
+#    ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#     ^^^^^^^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng variable.other.readwrite.ts
+#            ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng
+#             ^ template.let.ng meta.definition.variable.ng meta.definition.variable.initializer.ng keyword.operator.assignment.ts
+>

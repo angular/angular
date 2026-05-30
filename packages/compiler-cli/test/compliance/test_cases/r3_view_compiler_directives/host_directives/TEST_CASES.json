@@ -1,0 +1,90 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create a basic hostDirectives definition",
+      "inputFiles": [
+        "basic_host_directives.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect definition",
+          "files": [
+            {
+              "expected": "basic_host_directives_definition.js",
+              "generated": "basic_host_directives.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should create hostDirective definitions for a chain of host directives",
+      "inputFiles": [
+        "chained_host_directives.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect definition",
+          "files": [
+            {
+              "expected": "chained_host_directives_definition.js",
+              "generated": "chained_host_directives.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle a forwardRef used in hostDirectives",
+      "inputFiles": [
+        "forward_ref_host_directives.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect definition",
+          "files": [
+            {
+              "expected": "forward_ref_host_directives_definition.js",
+              "generated": "forward_ref_host_directives.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle the `inputs` and `outputs` options in host directives",
+      "inputFiles": [
+        "host_directives_with_inputs_outputs.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect definition",
+          "files": [
+            {
+              "expected": "host_directives_with_inputs_outputs_definition.js",
+              "generated": "host_directives_with_inputs_outputs.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle aliases to aliased `inputs` and `outputs` of a host directive",
+      "inputFiles": [
+        "host_directives_with_host_aliases.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect definition",
+          "files": [
+            {
+              "expected": "host_directives_with_host_aliases_definition.js",
+              "generated": "host_directives_with_host_aliases.js"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+@use '../../../styles/typography';
+
+:host {
+  --padding-internal: var(--ote-padding, 0.5rem);
+  --row-indent-internal: var(--ote-row-indent, 0rem);
+  width: 100%;
+  display: block;
+  overflow: auto;
+
+  .property-list {
+    margin: var(--padding-internal);
+  }
+
+  .prop-row {
+    --wrap-indent-internal: 1rem;
+    --margin-left-internal: calc(var(--row-indent-internal) + 0.875rem);
+
+    @extend %monospaced;
+    display: inline;
+    text-indent: calc(-1 * var(--wrap-indent-internal));
+    margin-left: calc(var(--margin-left-internal) + var(--wrap-indent-internal));
+
+    &.expandable-node {
+      position: relative;
+      border: none;
+      background: none;
+      padding: 0;
+      text-align: left;
+
+      .expand-icon {
+        position: absolute;
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        top: 0.175rem;
+        left: calc(-0.875rem - var(--wrap-indent-internal));
+        text-indent: 0;
+        cursor: pointer;
+      }
+    }
+  }
+
+  mat-tree-node {
+    min-height: 1.375rem !important;
+    cursor: default;
+  }
+
+  .name {
+    color: var(--color-tree-node-element-name);
+  }
+
+  .value:not(:last-child) {
+    margin-right: 0.25rem;
+  }
+}

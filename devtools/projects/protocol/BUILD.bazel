@@ -1,0 +1,40 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.lib.json",
+    "tsconfig.spec.json",
+])
+
+ts_project(
+    name = "protocol",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_test_library(
+    name = "protocol_test",
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
+    deps = [
+        ":protocol",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":protocol_test",
+    ],
+)

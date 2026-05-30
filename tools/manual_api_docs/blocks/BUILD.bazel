@@ -1,0 +1,16 @@
+load("//tools/manual_api_docs:generate_block_api_json.bzl", "generate_block_api_json")
+load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
+
+package(default_visibility = ["//visibility:public"])
+
+generate_block_api_json(
+    name = "blocks",
+    srcs = glob(["*.md"]),
+)
+
+render_api_to_html(
+    name = "blocks_docs",
+    srcs = [
+        ":blocks",
+    ],
+)

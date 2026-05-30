@@ -1,0 +1,133 @@
+.adev-api-items-section-header {
+  display: flex;
+
+  svg {
+    fill: var(--primary-contrast);
+  }
+
+  h3 {
+    flex: 1;
+
+    display: flex;
+    gap: 0.75em;
+    align-items: flex-start;
+
+    margin-top: 1.43rem;
+    font-size: 1.25rem;
+  }
+
+  .adev-link-icon {
+    color: var(--quinary-contrast);
+    cursor: pointer;
+    &:hover {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-api-items-section-grid {
+  column-count: 3;
+  column-gap: 0.5rem;
+  padding: 0;
+
+  @container api-ref-page (max-width: 798px) {
+    column-count: 2;
+  }
+  @container api-ref-page (max-width: 600px) {
+    column-count: 1;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    border-inline-start: 1px solid var(--senary-contrast);
+    padding: 0.3rem;
+    padding-inline-start: 0.75rem;
+    font-size: 0.875rem;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    width: 100%;
+    justify-content: start;
+
+    a {
+      color: var(--quaternary-contrast);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding-block: 2px;
+    }
+
+    .adev-item-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      border-inline-start: 1px solid var(--quaternary-contrast);
+      background-color: var(--septenary-contrast);
+      a {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}
+
+.adev-api-items-section-item {
+  display: flex;
+  gap: 1em;
+}
+
+:host {
+  --item-attr-base-mix: 80%;
+
+  .docs-light-mode & {
+    --item-attr-base-mix: 20%;
+  }
+  @media screen and (prefers-color-scheme: light) {
+    --item-attr-base-mix: 20%;
+  }
+}
+
+.docs-api-item-label {
+  pointer-events: none;
+}
+
+.adev-item-attribute {
+  text-align: center;
+  border-radius: 0.5rem;
+  padding: 0rem 0.375rem;
+  margin-inline-start: 0.5rem;
+  display: block;
+  font-size: 0.625rem;
+  line-height: 1rem;
+  cursor: default;
+  user-select: none;
+  font-weight: bold;
+
+  &.adev-dev-preview {
+    background: color-mix(
+      in srgb,
+      var(--symbolic-yellow) var(--item-attr-base-mix),
+      var(--octonary-contrast)
+    );
+    color: var(--page-background);
+  }
+
+  &.adev-experimental {
+    background: color-mix(
+      in srgb,
+      var(--symbolic-green) var(--item-attr-base-mix),
+      var(--octonary-contrast)
+    );
+    color: var(--page-background);
+  }
+
+  &.adev-deprecated {
+    background-color: var(--senary-contrast);
+    color: var(--tertiary-contrast);
+  }
+}
+
+.adev-api-anchor {
+  color: inherit;
+}

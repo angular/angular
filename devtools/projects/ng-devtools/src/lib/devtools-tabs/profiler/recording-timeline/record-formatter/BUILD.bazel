@@ -1,0 +1,52 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "record-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+        exclude = [
+            "record-formatter-spec-constants.ts",
+            "record-formatter.spec.ts",
+            "frame-merger.spec.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/rxjs",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "record_formatter_spec_constants",
+    srcs = ["record-formatter-spec-constants.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "frame-merger.spec.ts",
+        "record-formatter.spec.ts",
+    ],
+    deps = [
+        ":record-formatter",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

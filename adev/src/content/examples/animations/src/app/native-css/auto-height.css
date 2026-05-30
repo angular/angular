@@ -1,0 +1,36 @@
+.container {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 1s;
+}
+
+.container.open {
+  grid-template-rows: 1fr;
+}
+
+.container .content {
+  min-height: 0;
+  transition: visibility 1s;
+  padding: 0 20px;
+  visibility: hidden;
+  margin-top: 1em;
+  font-weight: bold;
+  font-size: 20px;
+  background: #3b82f6;
+  color: #ebebeb;
+  overflow: hidden;
+}
+
+.container.open .content {
+  visibility: visible;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--primary-contrast, black);
+  color: var(--primary-contrast, black);
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+}

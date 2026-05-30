@@ -1,0 +1,27 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
+
+package(default_visibility = ["//packages/localize/tools/test/extract/integration:__pkg__"])
+
+ts_project(
+    name = "src",
+    srcs = glob(["src/*.ts"]),
+)
+
+esbuild(
+    name = "bundle",
+    entry_point = ":src/index.ts",
+    platform = "browser",
+    target = "es2015",
+    deps = [":src"],
+)
+
+# Use copy_to_bin since filegroup doesn't seem to work on Windows.
+copy_to_bin(
+    name = "test_files",
+    srcs = glob([
+        "**/*.js",
+        "**/*.txt",
+        "**/*.ts",
+    ]),
+)

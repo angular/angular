@@ -1,0 +1,2 @@
+…
+i0.ɵɵtextInterpolate1(" ", ctx.a?.b ? 1 : 2);

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "@extra",
+    "entryType": "block",
+    "description": "## This is the content of the file\n",
+    "rawComment": "## This is the content of the file\n",
+    "jsdocTags": [],
+    "source": {
+      "filePath": "/packages/core/src/extra.js",
+      "startLine": 3,
+      "endLine": 5
+    }
+  }
+]

@@ -1,0 +1,92 @@
+packages:
+  - .
+  - adev
+  - adev/shared-docs
+  - adev/shared-docs/pipeline/api-gen
+  - dev-app/
+  - devtools/
+  - modules
+  - integration
+  - packages/animations/
+  - packages/common/
+  - packages/compiler-cli/
+  - packages/compiler-cli/linker/babel/test
+  - packages/compiler/
+  - packages/core/
+  - packages/core/test/bundling
+  - packages/forms/
+  - packages/language-service/
+  - packages/platform-browser/
+  - packages/platform-server/
+  - packages/platform-browser-dynamic/
+  - packages/router/
+  - packages/localize/
+  - packages/elements/
+  - packages/benchpress/
+  - packages/service-worker/
+  - packages/upgrade/
+  - packages/zone.js/
+  - packages/zone.js/test/typings/
+  - tools/bazel/rules_angular_store/
+  - vscode-ng-language-service
+  - vscode-ng-language-service/server
+  - vscode-ng-language-service/integration/project
+
+allowBuilds:
+  '@bazel/concatjs': false
+  '@firebase/util': false
+  '@google/genai': false
+  '@parcel/watcher': false
+  '@vscode/vsce-sign': false
+  bufferutil: false
+  cypress: true
+  esbuild: false
+  keytar: false
+  lmdb: false
+  msgpackr-extract: false
+  protobufjs: false
+  re2: false
+  sleep: false
+  unrs-resolver: false
+  utf-8-validate: false
+
+allowedDeprecatedVersions:
+  angular: '*'
+  tslint: '*'
+  gulp-conventional-changelog: '5'
+  protractor: '7'
+
+# The minimum age of a release to be considered for dependency installation.
+# The value is in minutes (1440 minutes = 1 day).
+minimumReleaseAge: 1440
+# List of packages to exclude from the minimum release age check.
+minimumReleaseAgeExclude:
+  - '@angular-devkit/*'
+  - '@angular/*'
+  - '@ngtools/webpack'
+  - '@schematics/*'
+  - 'ng-packagr'
+  - 'zone.js'
+
+# Allow any version of @angular/* packages to satisfy peer dependencies, as these are managed within the monorepo.
+peerDependencyRules:
+  allowAny:
+    - '@angular/*'
+packageExtensions:
+  grpc-gcp:
+    peerDependencies:
+      protobufjs: '*'
+engineStrict: false
+
+# Disabling pnpm [hoisting](https://pnpm.io/settings#hoist) by setting `hoist:false` is recommended on
+# projects using rules_js so that pnpm outside of Bazel lays out a node_modules tree similar to what
+# rules_js lays out under Bazel (without a hidden node_modules/.pnpm/node_modules)
+hoist: false
+
+# Avoid pnpm auto-installing peer dependencies. We want to be explicit about our versions used
+# for peer dependencies, avoiding potential mismatches. In addition, it ensures we can continue
+# to rely on peer dependency placeholders substituted via Bazel.
+autoInstallPeers: false
+
+# Avoid prompting for confirmation when pnpm determines node_modules needs to be purged.
+confirmModulesPurge: false

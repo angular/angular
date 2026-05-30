@@ -1,0 +1,91 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
+import {EnvironmentInjector} from '../di/r3_injector';
+import {Type} from '../interface/type';
+import {createOrReusePlatformInjector} from '../platform/platform';
+import {assertStandaloneComponentType} from '../render3/errors';
+import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
+
+import {ApplicationRef} from './application_ref';
+import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
+import {bootstrap} from '../platform/bootstrap';
+import {profiler} from '../render3/profiler';
+import {ProfilerEvent} from '../../primitives/devtools';
+import {errorHandlerEnvironmentInitializer} from '../error_handler';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {PlatformRef} from '../platform/platform_ref';
+import {validAppIdInitializer} from './application_tokens';
+
+/**
+ * Internal create application API that implements the core application creation logic and optional
+ * bootstrap logic.
+ *
+ * Platforms (such as `platform-browser`) may require different set of application and platform
+ * providers for an application to function correctly. As a result, platforms may use this function
+ * internally and supply the necessary providers during the bootstrap, while exposing
+ * platform-specific APIs as a part of their public API.
+ *
+ * @returns A promise that returns an `ApplicationRef` instance once resolved.
+ */
+
+export function internalCreateApplication(config: {
+  rootComponent?: Type<unknown>;
+  appProviders?: Array<Provider | EnvironmentProviders>;
+  platformProviders?: Provider[];
+  platformRef?: PlatformRef;
+}): Promise<ApplicationRef> {
+  const {rootComponent, appProviders, platformProviders, platformRef} = config;
+  profiler(ProfilerEvent.BootstrapApplicationStart);
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode && !platformRef) {
+    throw new RuntimeError(
+      RuntimeErrorCode.PLATFORM_NOT_FOUND,
+      ngDevMode &&
+        'Missing Platform: This may be due to using `bootstrapApplication` on the server without passing a `BootstrapContext`. ' +
+          'Please make sure that `bootstrapApplication` is called with a `context` argument.',
+    );
+  }
+
+  try {
+    const platformInjector =
+      platformRef?.injector ?? createOrReusePlatformInjector(platformProviders as StaticProvider[]);
+
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && rootComponent !== undefined) {
+      assertStandaloneComponentType(rootComponent);
+    }
+
+    // Create root application injector based on a set of providers configured at the platform
+    // bootstrap level as well as providers passed to the bootstrap call by a user.
+    const allAppProviders = [
+      provideZonelessChangeDetectionInternal(),
+      errorHandlerEnvironmentInitializer,
+      ...(ngDevMode ? [validAppIdInitializer] : []),
+      ...(appProviders || []),
+    ];
+    const adapter = new EnvironmentNgModuleRefAdapter({
+      providers: allAppProviders,
+      parent: platformInjector as EnvironmentInjector,
+      debugName: typeof ngDevMode === 'undefined' || ngDevMode ? 'Environment Injector' : '',
+      // We skip environment initializers because we need to run them inside the NgZone, which
+      // happens after we get the NgZone instance from the Injector.
+      runEnvironmentInitializers: false,
+    });
+
+    return bootstrap({
+      r3Injector: adapter.injector,
+      platformInjector,
+      rootComponent,
+    });
+  } catch (e) {
+    return Promise.reject(e);
+  } finally {
+    profiler(ProfilerEvent.BootstrapApplicationEnd);
+  }
+}

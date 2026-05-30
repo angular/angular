@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-family: 'Press Start 2P';
+
+  --retro-button-color: #fff;
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--tertiary-contrast), 0px 4px 0px 0px var(--tertiary-contrast),
+    -4px 0px 0px 0px var(--tertiary-contrast), 0px -4px 0px 0px var(--tertiary-contrast);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast), 0px 0px 0px 0px var(--tertiary-contrast);
+}
+
+.autocomplete-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.retro-autocomplete {
+  display: flex;
+  position: relative;
+  align-items: center;
+  box-shadow: var(--retro-flat-shadow);
+  background-color: var(--retro-button-color);
+}
+
+.retro-autocomplete:focus-within {
+  box-shadow: var(--retro-pressed-shadow);
+}
+
+.material-symbols-outlined {
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.search-icon {
+  left: 0.75rem;
+  position: absolute;
+  color: #000;
+  z-index: 1;
+}
+
+.autocomplete-input {
+  width: 15rem;
+  font-size: 0.6rem;
+  border-radius: 0;
+  font-family: 'Press Start 2P';
+  word-spacing: -5px;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+  color: #000;
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
+.autocomplete-input::placeholder {
+  color: #000;
+  opacity: 0.7;
+}
+
+.popup {
+  width: 100%;
+  margin-top: 20px;
+  padding: 0.5rem;
+  max-height: 11rem;
+  border-radius: 0;
+  background-color: var(--septenary-contrast);
+  box-shadow: var(--retro-flat-shadow);
+}
+
+.no-results {
+  padding: 1rem;
+}
+
+.listbox {
+  gap: 2px;
+  height: 100%;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+  outline: none;
+}
+
+.option {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin: 1px;
+  padding: 0 1rem;
+  min-height: 2.25rem;
+  border-radius: 0;
+  outline: none;
+}
+
+.option:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+.option[data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px dashed var(--hot-pink);
+}
+
+.option[aria-selected='true'] {
+  color: var(--hot-pink);
+  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
+}
+
+.option:not([aria-selected='true']) .check-icon {
+  display: none;
+}
+
+.option-label {
+  flex: 1;
+}
+
+.check-icon {
+  font-size: 0.9rem;
+}
+
+.clear-button {
+  position: absolute;
+  right: 0.75rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--win95-gray);
+  color: var(--win95-shadow);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--win95-light) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-light);
+  box-shadow: 1px 1px 0 var(--win95-shadow);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  font-family: 'Press Start 2P';
+  font-size: 0.6rem;
+  user-select: none;
+}
+
+.clear-button:hover {
+  background: #e0e0e0;
+  outline: 1px dashed var(--win95-dark-gray);
+  outline-offset: 1px;
+}
+
+.clear-button:active {
+  border-color: var(--win95-dark-gray) var(--win95-light) var(--win95-light) var(--win95-dark-gray);
+  box-shadow: 1px 1px 0 var(--win95-shadow) inset;
+}
+
+.clear-button:focus-visible {
+  outline: 2px dashed var(--hot-pink);
+  outline-offset: 4px;
+}
+
+.clear-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

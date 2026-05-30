@@ -1,0 +1,66 @@
+{
+  "name": "add",
+  "command": "ng add <collection>",
+  "shortDescription": "Adds support for an external library to your project.",
+  "longDescriptionRelativePath": "@angular/cli/src/commands/add/long-description.md",
+  "longDescription": "Adds the npm package for a published library to your workspace, and configures\nthe project in the current working directory to use that library, as specified by the library's schematic.\nFor example, adding `@angular/pwa` configures your project for PWA support:\n\n```bash\nng add @angular/pwa\n```\n",
+  "aliases": [],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "collection",
+      "type": "string",
+      "description": "The package to be added.",
+      "positional": 0
+    },
+    {
+      "name": "defaults",
+      "type": "boolean",
+      "default": false,
+      "description": "Disable interactive input prompts for options with a default."
+    },
+    {
+      "name": "dry-run",
+      "type": "boolean",
+      "aliases": [
+        "d"
+      ],
+      "default": false,
+      "description": "Run through and reports activity without writing out results."
+    },
+    {
+      "name": "force",
+      "type": "boolean",
+      "default": false,
+      "description": "Force overwriting of existing files."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "interactive",
+      "type": "boolean",
+      "default": true,
+      "description": "Enable interactive input prompts."
+    },
+    {
+      "name": "registry",
+      "type": "string",
+      "description": "The NPM registry to use."
+    },
+    {
+      "name": "skip-confirmation",
+      "type": "boolean",
+      "default": false,
+      "description": "Skip asking a confirmation prompt before installing and executing the package. Ensure package name is correct prior to using this option."
+    },
+    {
+      "name": "verbose",
+      "type": "boolean",
+      "default": false,
+      "description": "Display additional details about internal operations during execution."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "docs-ref-button_styles",
+    src = "docs-ref-button.component.scss",
+)
+
+ng_project(
+    name = "docs-ref-button",
+    srcs = ["docs-ref-button.component.ts"],
+    angular_assets = [
+        "docs-ref-button.component.html",
+        ":docs-ref-button_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+    ],
+)

@@ -1,0 +1,22 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should throw for interpolations inside individual class bindings",
+      "inputFiles": ["individual_class_binding.ts"],
+      "expectations": [
+        {
+          "expectedErrors": [
+            {
+              "message": "Unexpected interpolation"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ]
+    }
+  ]
+}

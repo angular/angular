@@ -1,0 +1,28 @@
+/* Keep class names in sync with ThemeService */
+$dark-theme-class: 'dark-theme';
+$light-theme-class: 'light-theme';
+
+/* $top-level-style is required when the mixin is used in a global/top-level stylesheet. */
+@mixin _theme($theme, $top-level-style: false) {
+  @if $top-level-style == false {
+    :host-context(:root.#{$theme}) {
+      @content;
+    }
+  } @else {
+    .#{$theme} {
+      @content;
+    }
+  }
+}
+
+@mixin dark-theme($top-level-style: false) {
+  @include _theme($dark-theme-class, $top-level-style) {
+    @content;
+  }
+}
+
+@mixin light-theme($top-level-style: false) {
+  @include _theme($light-theme-class, $top-level-style) {
+    @content;
+  }
+}

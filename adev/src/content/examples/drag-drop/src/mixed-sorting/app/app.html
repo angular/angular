@@ -1,0 +1,10 @@
+<div
+  cdkDropList
+  cdkDropListOrientation="mixed"
+  class="example-list"
+  (cdkDropListDropped)="drop($event)"
+>
+  @for (item of items; track item) {
+    <div class="example-box" cdkDrag>{{ item }}</div>
+  }
+</div>

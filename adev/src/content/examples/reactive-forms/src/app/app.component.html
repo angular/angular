@@ -1,0 +1,14 @@
+<h1>Reactive Forms</h1>
+
+<nav>
+  <button type="button" (click)="toggleEditor('name')">Name Editor</button>
+  <button type="button" (click)="toggleEditor('profile')">Profile Editor</button>
+</nav>
+
+@if (showNameEditor()) {
+  <app-name-editor />
+}
+
+@if (showProfileEditor()) {
+  <app-profile-editor />
+}

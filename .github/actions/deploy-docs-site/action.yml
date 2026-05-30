@@ -1,0 +1,19 @@
+name: 'Deploy angular.dev site'
+description: 'Automatically deploy and set up redirects for angular.dev'
+author: 'Angular'
+inputs:
+  serviceKey:
+    description: 'The service key used for firebase deployments.'
+    required: true
+  githubReleaseTrainReadToken:
+    description: 'GitHub access token for reading release trains without rate limits.'
+    required: true
+  configPath:
+    description: 'The path to the firebase config file.'
+    required: true
+  distDir:
+    description: 'The path to the firebase dist directory.'
+    required: true
+runs:
+  using: 'node20'
+  main: 'main.js'

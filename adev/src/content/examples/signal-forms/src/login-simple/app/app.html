@@ -1,0 +1,14 @@
+<form>
+  <label>
+    Email:
+    <input type="email" [formField]="loginForm.email" />
+  </label>
+
+  <label>
+    Password:
+    <input type="password" [formField]="loginForm.password" />
+  </label>
+
+  <p>Hello {{ loginForm.email().value() }}!</p>
+  <p>Password length: {{ loginForm.password().value().length }}</p>
+</form>

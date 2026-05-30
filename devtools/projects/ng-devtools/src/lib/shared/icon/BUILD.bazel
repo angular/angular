@@ -1,0 +1,22 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "icon_component_styles",
+    src = "icon.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "icon",
+    srcs = ["icon.component.ts"],
+    angular_assets = [
+        ":icon_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)

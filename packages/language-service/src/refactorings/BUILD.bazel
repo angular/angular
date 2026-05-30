@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//packages/language-service:__subpackages__"])
+
+ts_project(
+    name = "refactorings",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/core",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/core/schematics/migrations/signal-migration/src",
+        "//packages/core/schematics/migrations/signal-queries-migration:migration",
+        "//packages/core/schematics/utils/tsurge",
+        "//packages/language-service:api",
+        "//packages/language-service/src/utils",
+    ],
+)

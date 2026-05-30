@@ -1,0 +1,1025 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should map simple element with content (full compile)",
+      "inputFiles": [
+        "simple_element.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map simple element with content (partial compile)",
+      "inputFiles": [
+        "simple_element.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "simple_element.js",
+              "expected": "simple_element_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map void element (full compile)",
+      "inputFiles": [
+        "void_element.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map void element (partial compile)",
+      "inputFiles": [
+        "void_element.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "void_element.js",
+              "expected": "void_element_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a mix of interpolated and static content (full compile)",
+      "inputFiles": [
+        "interpolation_basic.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a mix of interpolated and static content (partial compile)",
+      "inputFiles": [
+        "interpolation_basic.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "interpolation_basic.js",
+              "expected": "interpolation_basic_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a complex interpolated expression (full compile)",
+      "inputFiles": [
+        "interpolation_complex.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a complex interpolated expression (partial compile)",
+      "inputFiles": [
+        "interpolation_complex.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "interpolation_complex.js",
+              "expected": "interpolation_complex_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map interpolated properties (full compile)",
+      "inputFiles": [
+        "interpolation_properties.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map interpolated properties (partial compile)",
+      "inputFiles": [
+        "interpolation_properties.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "interpolation_properties.js",
+              "expected": "interpolation_properties_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map interpolation with pipe (full compile)",
+      "inputFiles": [
+        "interpolation_with_pipe.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map interpolation with pipe (partial compile)",
+      "inputFiles": [
+        "interpolation_with_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "interpolation_with_pipe.js",
+              "expected": "interpolation_with_pipe_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a simple input binding expression (full compile)",
+      "inputFiles": [
+        "input_binding_simple.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a simple input binding expression (partial compile)",
+      "inputFiles": [
+        "input_binding_simple.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "input_binding_simple.js",
+              "expected": "input_binding_simple_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a complex input binding expression (full compile)",
+      "inputFiles": [
+        "input_binding_complex.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a complex input binding expression (partial compile)",
+      "inputFiles": [
+        "input_binding_complex.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "input_binding_complex.js",
+              "expected": "input_binding_complex_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a longhand input binding expression (full compile)",
+      "inputFiles": [
+        "input_binding_longhand.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a longhand input binding expression (partial compile)",
+      "inputFiles": [
+        "input_binding_longhand.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "input_binding_longhand.js",
+              "expected": "input_binding_longhand_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a simple output binding expression (full compile)",
+      "inputFiles": [
+        "output_binding_simple.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a simple output binding expression (partial compile)",
+      "inputFiles": [
+        "output_binding_simple.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "output_binding_simple.js",
+              "expected": "output_binding_simple_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a complex output binding expression (full compile)",
+      "inputFiles": [
+        "output_binding_complex.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a complex output binding expression (partial compile)",
+      "inputFiles": [
+        "output_binding_complex.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "output_binding_complex.js",
+              "expected": "output_binding_complex_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a longhand output binding expression (full compile)",
+      "inputFiles": [
+        "output_binding_longhand.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a longhand output binding expression (partial compile)",
+      "inputFiles": [
+        "output_binding_longhand.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "output_binding_longhand.js",
+              "expected": "output_binding_longhand_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a two-way binding expression (full compile)",
+      "inputFiles": [
+        "two_way_binding_simple.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a two-way binding expression (partial compile)",
+      "inputFiles": [
+        "two_way_binding_simple.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "two_way_binding_simple.js",
+              "expected": "two_way_binding_simple_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a longhand two-way binding expression (full compile)",
+      "inputFiles": [
+        "two_way_binding_longhand.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a longhand two-way binding expression (partial compile)",
+      "inputFiles": [
+        "two_way_binding_longhand.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "two_way_binding_longhand.js",
+              "expected": "two_way_binding_longhand_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a class input binding (full compile)",
+      "inputFiles": [
+        "input_binding_class.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map a class input binding (partial compile)",
+      "inputFiles": [
+        "input_binding_class.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "input_binding_class.js",
+              "expected": "input_binding_class_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map *ngIf scenario (full compile)",
+      "inputFiles": [
+        "ng_if_simple.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map *ngIf scenario (partial compile)",
+      "inputFiles": [
+        "ng_if_simple.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "ng_if_simple.js",
+              "expected": "ng_if_simple_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map ng-template [ngIf] scenario (full compile)",
+      "inputFiles": [
+        "ng_if_templated.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map ng-template [ngIf] scenario (partial compile)",
+      "inputFiles": [
+        "ng_if_templated.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "ng_if_templated.js",
+              "expected": "ng_if_templated_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map *ngFor scenario (full compile)",
+      "inputFiles": [
+        "ng_for_simple.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      },
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should map *ngFor scenario (partial compile)",
+      "inputFiles": [
+        "ng_for_simple.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "ng_for_simple.js",
+              "expected": "ng_for_simple_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map ng-template [ngFor] scenario (full compile)",
+      "inputFiles": [
+        "ng_for_templated.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map ng-template [ngFor] scenario (partial compile)",
+      "inputFiles": [
+        "ng_for_templated.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "ng_for_templated.js",
+              "expected": "ng_for_templated_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map default and selected projection (full compile)",
+      "inputFiles": [
+        "projection.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should map default and selected projection (partial compile)",
+      "inputFiles": [
+        "projection.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "projection.js",
+              "expected": "projection_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create simple i18n message source-mapping (full compile)",
+      "inputFiles": [
+        "i18n_message_simple.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create simple i18n message source-mapping (partial compile)",
+      "inputFiles": [
+        "i18n_message_simple.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_simple.js",
+              "expected": "i18n_message_simple_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create placeholder i18n message source-mappings (full compile)",
+      "inputFiles": [
+        "i18n_message_placeholder.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create placeholder i18n message source-mappings (partial compile)",
+      "inputFiles": [
+        "i18n_message_placeholder.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_placeholder.js",
+              "expected": "i18n_message_placeholder_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should handle encoded entities in i18n message source-mappings (full compile)",
+      "inputFiles": [
+        "i18n_message_placeholder_entities.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should handle encoded entities in i18n message source-mappings (partial compile)",
+      "inputFiles": [
+        "i18n_message_placeholder_entities.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_placeholder_entities.js",
+              "expected": "i18n_message_placeholder_entities_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should correctly handle collapsed whitespace in interpolation placeholder i18n message source-mappings (full compile)",
+      "inputFiles": [
+        "i18n_message_interpolation_whitespace.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_interpolation_whitespace.js",
+              "expected": "i18n_message_interpolation_whitespace_template.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      },
+      "skipForTemplatePipeline": true
+    },
+    {
+      "description": "should correctly handle collapsed whitespace in interpolation placeholder i18n message source-mappings (partial compile)",
+      "inputFiles": [
+        "i18n_message_interpolation_whitespace.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_interpolation_whitespace.js",
+              "expected": "i18n_message_interpolation_whitespace_partial_template.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should correctly handle collapsed whitespace in element placeholder i18n message source-mappings (full compile)",
+      "inputFiles": [
+        "i18n_message_element_whitespace.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should correctly handle collapsed whitespace in element placeholder i18n message source-mappings (partial compile)",
+      "inputFiles": [
+        "i18n_message_element_whitespace.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_element_whitespace.js",
+              "expected": "i18n_message_element_whitespace_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create tag (container) placeholder i18n message source-mappings (full compile)",
+      "inputFiles": [
+        "i18n_message_container_tag.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create tag (container) placeholder i18n message source-mappings (partial compile)",
+      "inputFiles": [
+        "i18n_message_container_tag.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_container_tag.js",
+              "expected": "i18n_message_container_tag_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create (simple string) inline template source-mapping (full compile)",
+      "inputFiles": [
+        "update_mode.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create (simple string) inline template source-mapping (partial compile)",
+      "inputFiles": [
+        "update_mode.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "update_mode.js",
+              "expected": "update_mode_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create correct inline template source-mapping when the source contains escape sequences (full compile)",
+      "inputFiles": [
+        "escape_sequences.ts"
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    },
+    {
+      "description": "should create correct inline template source-mapping when the source contains escape sequences (partial compile)",
+      "inputFiles": [
+        "escape_sequences.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "escape_sequences.js",
+              "expected": "escape_sequences_partial.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "linked compile",
+        "declaration-only emit"
+      ],
+      "compilerOptions": {
+        "sourceMap": true
+      }
+    }
+  ]
+}

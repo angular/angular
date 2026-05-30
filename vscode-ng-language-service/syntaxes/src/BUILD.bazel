@@ -1,0 +1,17 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "src",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/node",
+    ],
+)
+
+js_binary(
+    name = "build",
+    data = [":src"],
+    entry_point = ":build.js",
+    visibility = ["//vscode-ng-language-service/syntaxes:__pkg__"],
+)

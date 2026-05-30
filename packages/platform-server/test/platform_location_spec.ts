@@ -1,0 +1,228 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import '@angular/compiler';
+
+import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
+import {destroyPlatform} from '@angular/core';
+import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
+
+(function () {
+  if (getDOM().supportsDOMEvents) return; // NODE only
+
+  describe('PlatformLocation', () => {
+    beforeEach(() => {
+      destroyPlatform();
+    });
+
+    afterEach(() => {
+      destroyPlatform();
+    });
+
+    it('is injectable', async () => {
+      const platform = platformServer([
+        {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(location.pathname).toBe('/');
+      platform.destroy();
+    });
+    it('is configurable via INITIAL_CONFIG', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://test.com/deep/path?query#hash',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(location.pathname).toBe('/deep/path');
+      expect(location.search).toBe('?query');
+      expect(location.hash).toBe('#hash');
+    });
+
+    it('parses component pieces of a URL', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://test.com:80/deep/path?query#hash',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(location.hostname).toBe('test.com');
+      expect(location.protocol).toBe('http:');
+      expect(location.port).toBe('');
+      expect(location.pathname).toBe('/deep/path');
+      expect(location.search).toBe('?query');
+      expect(location.hash).toBe('#hash');
+    });
+
+    it('handles empty search and hash portions of the url', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://test.com/deep/path',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(location.pathname).toBe('/deep/path');
+      expect(location.search).toBe('');
+      expect(location.hash).toBe('');
+    });
+
+    it('pushState causes the URL to update', async () => {
+      const platform = platformServer([
+        {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      location.pushState(null, 'Test', '/foo#bar');
+      expect(location.pathname).toBe('/foo');
+      expect(location.hash).toBe('#bar');
+      platform.destroy();
+    });
+
+    it('replaceState causes the URL to update', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://test.com/deep/path?query#hash',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      location.replaceState(null, 'Test', '/foo#bar');
+      expect(location.pathname).toBe('/foo');
+      expect(location.hash).toBe('#bar');
+      expect(location.href).toBe('http://test.com/foo#bar');
+      expect(location.protocol).toBe('http:');
+      platform.destroy();
+    });
+
+    it('allows subscription to the hash state', (done) => {
+      const platform = platformServer([
+        {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
+      ]);
+      const location = platform.injector.get(PlatformLocation);
+
+      expect(location.pathname).toBe('/');
+      location.onHashChange((e: any) => {
+        expect(e.type).toBe('hashchange');
+        expect(e.oldUrl).toBe('/');
+        expect(e.newUrl).toBe('/foo#bar');
+        platform.destroy();
+        done();
+      });
+      location.pushState(null, 'Test', '/foo#bar');
+    });
+
+    it('neutralizes hostname hijack attempts', async () => {
+      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
+
+      for (const url of urls) {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {
+              document: '',
+              // This should be treated as relative URL.
+              // Example: `req.url: '//attacker.com/deep/path'` where request
+              // to express server is 'http://localhost:4200//attacker.com/deep/path'.
+              url,
+            },
+          },
+        ]);
+
+        const location = platform.injector.get(PlatformLocation);
+        platform.destroy();
+
+        expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
+        expect(location.pathname)
+          .withContext(`pathname for URL: "${url}"`)
+          .toBe('/attacker.com/deep/path');
+      }
+    });
+
+    it('should set the proper document location when the URL has leading slashes to prevent origin hijack', async () => {
+      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
+
+      for (const url of urls) {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {
+              document: '<html><head></head><body></body></html>',
+              url,
+            },
+          },
+        ]);
+
+        const doc = platform.injector.get(DOCUMENT);
+        platform.destroy();
+
+        expect(doc.location.origin).not.toBe('http://attacker.com');
+        expect(doc.location.pathname).toBe('/attacker.com/deep/path');
+      }
+    });
+
+    it('should not expose protocol-relative URLs on the location to prevent open redirect and SSRF bypasses', async () => {
+      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
+      const origins = [undefined, 'http://localhost:4200'];
+
+      for (const url of urls) {
+        for (const origin of origins) {
+          const providers: any[] = [
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '',
+                url,
+              },
+            },
+          ];
+
+          if (origin) {
+            providers.push({
+              provide: DOCUMENT,
+              useValue: {
+                location: {
+                  origin,
+                },
+              },
+            });
+          }
+
+          const platform = platformServer(providers);
+          const location = platform.injector.get(PlatformLocation) as any;
+          platform.destroy();
+
+          // A relative redirect URL starting with // or /\ is normalized by browsers to a protocol-relative URL.
+          // The PlatformLocation.url property MUST NOT expose these unsafe patterns.
+          const isVulnerable = location.url.startsWith('//') || location.url.startsWith('/\\');
+          expect(isVulnerable)
+            .withContext(`URL: "${url}", origin: "${origin}", location.url: "${location.url}"`)
+            .toBeFalse();
+        }
+      }
+    });
+  });
+})();

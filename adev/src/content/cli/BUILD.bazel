@@ -1,0 +1,23 @@
+load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["_build-info.json"])
+
+filegroup(
+    name = "cli",
+    srcs = glob(
+        ["*.json"],
+        exclude = [
+            # Exclude _build-info.json as it is not a help entry.
+            "_build-info.json",
+        ],
+    ),
+)
+
+render_api_to_html(
+    name = "cli_docs",
+    srcs = [
+        ":cli",
+    ],
+)

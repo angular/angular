@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularInjectMigration",
+  "title": "Angular Inject Migration Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path relative to the project root which should be migrated",
+      "x-prompt": "Which path in your project should be migrated?",
+      "default": "./"
+    },
+    "migrateAbstractClasses": {
+      "type": "boolean",
+      "description": "Whether abstract classes should be migrated",
+      "x-prompt": "Do you want to migrate abstract classes? Abstract classes are not migrated by default, because their parameters aren't guaranteed to be injectable",
+      "default": false
+    },
+    "backwardsCompatibleConstructors": {
+      "type": "boolean",
+      "description": "Whether to clean up constructors or keep their signatures backwards compatible",
+      "x-prompt": "Do you want to clean up all constructors or keep them backwards compatible? Enabling this option will include an additional signature of `constructor(...args: unknown[]);` that will avoid errors for sub-classes, but will increase the amount of generated code by the migration",
+      "default": false
+    },
+    "nonNullableOptional": {
+      "type": "boolean",
+      "description": "Whether to cast the optional inject sites to be non-nullable",
+      "x-prompt": "Do you want optional inject calls to be non-nullable? Enable this option if you want the return type to be identical to @Optional(), at the expense of worse type safety",
+      "default": false
+    }
+  }
+}

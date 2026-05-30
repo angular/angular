@@ -1,0 +1,18 @@
+{
+  "name": "typings",
+  "version": "1.0.0",
+  "description": "typing test package to test zone.js.d.ts",
+  "scripts": {
+    "test": "tsc -p ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "domino": "https://github.com/angular/domino.git#a9e9e17af7a54af8dde66f651bfde671c3a10444",
+    "zone.js": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

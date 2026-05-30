@@ -1,0 +1,22 @@
+<ng-filter
+  (filter)="handleFilter($event)"
+  (nextMatched)="navigateMatchedNode('next')"
+  (prevMatched)="navigateMatchedNode('prev')"
+  [matchesCount]="matchesCount()"
+  [currentMatch]="currentlyMatchedIndex() + 1"
+  [filterFnGenerator]="filterGenerator"
+/>
+<cdk-virtual-scroll-viewport class="tree-wrapper" [itemSize]="itemHeight">
+  <ng-tree-node
+    *cdkVirtualFor="let node of dataSource; let idx = index"
+    [node]="node"
+    [selectedNode]="selectedNode()"
+    [highlightedId]="highlightIdInTreeFromElement()"
+    [treeControl]="treeControl"
+    [textMatches]="matchedNodes().get(idx) ?? []"
+    (selectNode)="selectAndEnsureVisible($event)"
+    (selectDomElement)="handleSelectDomElement($event)"
+    (highlightNode)="highlightNode($event)"
+    (removeHighlight)="removeHighlight()"
+  />
+</cdk-virtual-scroll-viewport>

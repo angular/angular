@@ -1,0 +1,33 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "tutorials",
+    srcs = glob(
+        [
+            "*.md",
+        ],
+        exclude = [
+            "README.md",
+            "**/node_modules/**/*.md",
+        ],
+    ),
+    data = [
+        "//adev/src/assets/images:ang_illustrations-04.svg",
+        "//adev/src/assets/images:learn-angular-browser.svg",
+        "//adev/src/assets/images:learn-angular-local.svg",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = [
+        "//adev/src/content/tutorials/deferrable-views:guide_files",
+        "//adev/src/content/tutorials/first-app:guide_files",
+        "//adev/src/content/tutorials/learn-angular:guide_files",
+        "//adev/src/content/tutorials/signal-forms:guide_files",
+        "//adev/src/content/tutorials/signals:guide_files",
+    ] + glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

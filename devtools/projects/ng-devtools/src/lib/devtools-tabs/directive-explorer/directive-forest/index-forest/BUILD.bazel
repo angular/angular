@@ -1,0 +1,28 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "index-forest",
+    srcs = ["index.ts"],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "index_forest_test",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":index-forest",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":index_forest_test",
+    ],
+)

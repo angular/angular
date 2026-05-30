@@ -1,0 +1,32 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app_component_styles",
+    src = "app.component.scss",
+)
+
+ng_project(
+    name = "app",
+    srcs = [
+        "app.component.ts",
+        "app.config.ts",
+        "transfer-state.ts",
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+        "//:node_modules/@angular/router",
+        "//devtools/projects/ng-devtools",
+        "//devtools/src:demo_application_environment",
+        "//devtools/src:demo_application_operations",
+        "//devtools/src/app/demo-app",
+        "//devtools/src/app/demo-app/auxiliary",
+        "//devtools/src/app/devtools-app",
+    ],
+)

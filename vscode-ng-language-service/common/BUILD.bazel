@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "common",
+    srcs = glob(["*.ts"]),
+    visibility = [
+        "//vscode-ng-language-service/client:__subpackages__",
+        "//vscode-ng-language-service/common:__subpackages__",
+        "//vscode-ng-language-service/integration:__subpackages__",
+        "//vscode-ng-language-service/server:__subpackages__",
+    ],
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/node",
+        "//vscode-ng-language-service:node_modules/vscode-jsonrpc",
+        "//vscode-ng-language-service:node_modules/vscode-languageserver-protocol",
+    ],
+)

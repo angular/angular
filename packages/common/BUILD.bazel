@@ -1,0 +1,101 @@
+load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+# This generates the `src/i18n/currencies.ts` file through the `generate-locales` tool. Since
+# the base locale file is checked-in for Google3, it is additionally stored in a golden location.
+generate_base_currencies_file(
+    name = "base_currencies_file",
+    src = "src/i18n/currencies.ts",
+)
+
+ng_project(
+    name = "common",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/core",
+        "//packages/core/primitives/dom-navigation",
+    ],
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    nested_packages = ["//packages/common/locales:npm_package"],
+    package = "@angular/common",
+    replace_prefixes = {
+        "locales/npm_package": "locales/",
+    },
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//adev/shared-docs:__subpackages__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+        "//packages/compiler-cli/test/diagnostics:__pkg__",
+        "//packages/compiler-cli/test/transformers:__pkg__",
+        "//packages/compiler/test:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/common/testing",
+        "//packages/common/upgrade",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "common_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/common",
+    npm_package = "packages/common/npm_package",
+)
+
+api_golden_test(
+    name = "common_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/common",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/common/errors.api.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "common_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/platform-browser:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/common",
+)
