@@ -393,7 +393,7 @@ export function projectionDef(def: o.Expression | null): ir.CreateOp {
 export function projection(
   slot: number,
   projectionSlotIndex: number,
-  attributes: o.LiteralArrayExpr | null,
+  attributes: o.Expression | null,
   fallbackFnName: string | null,
   fallbackDecls: number | null,
   fallbackVars: number | null,

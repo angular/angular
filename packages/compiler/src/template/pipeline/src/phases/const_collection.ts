@@ -45,7 +45,7 @@ export function collectElementConsts(job: CompilationJob): void {
           if (attributes !== undefined) {
             const attrArray = serializeAttributes(attributes);
             if (attrArray.entries.length > 0) {
-              op.attributes = attrArray;
+              op.attributes = job.pool.getConstLiteral(attrArray, true);
             }
           }
         } else if (ir.isElementOrContainerOp(op)) {
