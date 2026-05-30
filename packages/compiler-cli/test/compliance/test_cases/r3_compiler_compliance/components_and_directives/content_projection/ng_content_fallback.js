@@ -1,5 +1,6 @@
 const $_c0$ = [[["basic"]], "*", [["footer"]], [["structural"]]];
 const $_c1$ = ["basic", "*", "footer", "structural"];
+const $_c2$ = ["*ngIf", "hasStructural"];
 
 function TestComponent_ProjectionFallback_0_Template(rf, ctx) {
   if (rf & 1) {
@@ -46,7 +47,7 @@ function TestComponent_ng_content_6_ProjectionFallback_0_Template(rf, ctx) {
 
 function TestComponent_ng_content_6_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵprojection(0, 3, ["*ngIf", "hasStructural"], TestComponent_ng_content_6_ProjectionFallback_0_Template, 2, 0);
+    $r3$.ɵɵprojection(0, 3, $_c2$, TestComponent_ng_content_6_ProjectionFallback_0_Template, 2, 0);
   }
 }
 
