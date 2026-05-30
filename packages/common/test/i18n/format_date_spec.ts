@@ -351,6 +351,16 @@ describe('Format date', () => {
       });
     });
 
+    it('should throw if the date format exceeds 256 characters to prevent DoS', () => {
+      const expectedError = /Exceeded maximum length of 256 characters/;
+      expect(() => formatDate(date, 'y'.repeat(257), ɵDEFAULT_LOCALE_ID)).toThrowError(
+        expectedError,
+      );
+      expect(() => formatDate(date, "'literal'".repeat(257), ɵDEFAULT_LOCALE_ID)).toThrowError(
+        expectedError,
+      );
+    });
+
     it('should format invalid in IE ISO date', () =>
       expect(formatDate('2017-01-11T12:00:00.014-0500', defaultFormat, ɵDEFAULT_LOCALE_ID)).toEqual(
         'Jan 11, 2017',
