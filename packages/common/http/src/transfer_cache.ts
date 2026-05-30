@@ -139,6 +139,10 @@ function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions):
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
     // Do not cache requests with authentication or cookie headers unless explicitly enabled.
     (!globalOptions.includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
+    // Do not cache requests that explicitly forbid caching via Cache-Control
+    // or Fetch API cache mode.
+    hasUncacheableCacheControl(req.headers) ||
+    isNonCacheableRequest(req.cache) ||
     globalOptions.filter?.(req) === false
   ) {
     return false;
