@@ -139,6 +139,10 @@ function shouldCacheRequest(req: HttpRequest<unknown>, options: CacheOptions): b
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
     // Do not cache requests with authentication or cookie headers unless explicitly enabled.
     (!globalOptions.includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
+    // Do not cache requests that explicitly forbid caching via Cache-Control
+    // or Fetch API cache mode.
+    hasUncacheableCacheControl(req.headers) ||
+    isNonCacheableRequest(req.cache) ||
     globalOptions.filter?.(req) === false
   ) {
     return false;
@@ -271,8 +275,9 @@ export function transferCacheInterceptorFn(
     // Request not found in cache. Make the request and cache it if on the server.
     return event$.pipe(
       tap((event: HttpEvent<unknown>) => {
-        // Only cache successful HTTP responses.
-        if (event instanceof HttpResponse) {
+        // Only cache successful HTTP responses that do not have Cache-Control
+        // directives that forbid shared caching (no-store or private).
+        if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
           transferState.set<TransferHttpResponse>(storeKey, {
             [BODY]:
               req.responseType === 'arraybuffer' || req.responseType === 'blob'
@@ -299,6 +304,26 @@ function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
     req.headers.has('proxy-authorization') ||
     req.headers.has('cookie')
   );
+}
+
+const UNCACHEABLE_CACHE_CONTROL_DIRECTIVES = new Set(['no-store', 'private', 'no-cache']);
+
+function hasUncacheableCacheControl(headers: HttpHeaders): boolean {
+  const cacheControl = headers.get('cache-control');
+
+  if (!cacheControl) {
+    return false;
+  }
+
+  return cacheControl.split(',').some((directive) => {
+    const directiveName = directive.trim().split('=', 1)[0].trim().toLowerCase();
+
+    return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
+  });
+}
+
+function isNonCacheableRequest(cache: RequestCache): boolean {
+  return cache === 'no-cache' || cache === 'no-store';
 }
 
 function hasOutgoingCredentials(req: HttpRequest<unknown>): boolean {
