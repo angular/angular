@@ -1159,7 +1159,7 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
   projectionSlotIndex: number;
 
-  attributes: null | o.LiteralArrayExpr;
+  attributes: null | o.Expression;
 
   localRefs: string[];
 

@@ -1,3 +1,5 @@
+const $_c1$ = ["*ngIf", "flag"];
+
 function MyComponent_img_2_Template(rf, ctx) {
   if (rf & 1) {
     i0.ɵɵi18nStart(0, 0, 1);
@@ -34,7 +36,7 @@ function MyComponent_ng_container_5_Template(rf, ctx) {
 function MyComponent_ng_content_6_Template(rf, ctx) {
   if (rf & 1) {
     i0.ɵɵi18nStart(0, 0, 6);
-    i0.ɵɵprojection(1, 0, ["*ngIf", "flag"]);
+    i0.ɵɵprojection(1, 0, $_c1$);
     i0.ɵɵi18nEnd();
   }
 }
