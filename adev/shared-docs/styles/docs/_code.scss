@@ -80,25 +80,11 @@ $code-font-size: 0.875rem;
     &:not(pre *) {
       position: relative;
       padding: 0 0.3rem;
-      // Fallback for older browsers
-      background: #e62600;
-      background: var(--red-to-orange-horizontal-gradient);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
+      background: var(--subtle-purple);
+      color: var(--hot-pink);
       max-width: max-content;
-      display: inline;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        background: var(--subtle-purple);
-        border-radius: 0.25rem;
-        z-index: -1;
-      }
+      border-radius: 0.25rem;
+      width: 100%;
 
       a:not(.docs-anchor) > & {
         position: relative;
