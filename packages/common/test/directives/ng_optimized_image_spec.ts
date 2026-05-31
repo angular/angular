@@ -32,6 +32,7 @@ import {
   resetImagePriorityCount,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
+import {escapeCssUrl} from '../../src/directives/ng_optimized_image/url';
 
 describe('Image directive', () => {
   const PLACEHOLDER_BLUR_AMOUNT = 15;
@@ -2613,6 +2614,30 @@ describe('Image directive', () => {
         expect(img.getAttribute('srcset')).toBeNull();
       });
     });
+  });
+});
+
+describe('escapeCssUrl', () => {
+  it('strips characters that are invalid in URLs and break CSS quoted strings', () => {
+    // \n, \r, \f and \0 all terminate a CSS string per the spec, and none of
+    // them are valid URL characters either, so we just drop them.
+    expect(escapeCssUrl('http://x.com/img\n.jpg')).toBe('http://x.com/img.jpg'); // newline
+    expect(escapeCssUrl('http://x.com/img\r.jpg')).toBe('http://x.com/img.jpg'); // carriage return
+    expect(escapeCssUrl('http://x.com/img\f.jpg')).toBe('http://x.com/img.jpg'); // form feed
+    expect(escapeCssUrl('http://x.com/img\0.jpg')).toBe('http://x.com/img.jpg'); // null byte
+  });
+
+  it('escapes characters that break the CSS url("...") wrapper', () => {
+    // A bare " would end the url("...") string prematurely, so it becomes \".
+    expect(escapeCssUrl('http://x.com/img".jpg')).toBe('http://x.com/img\\".jpg');
+    // A bare \ starts a CSS escape sequence, so it must be doubled to \\.
+    expect(escapeCssUrl('http://x.com/img\\.jpg')).toBe('http://x.com/img\\\\.jpg');
+  });
+
+  it('does not double-escape backslashes', () => {
+    // The \ → \\ replacement runs first, so backslashes introduced by later
+    // replacements are never accidentally escaped a second time.
+    expect(escapeCssUrl('a\\b')).toBe('a\\\\b');
   });
 });
 

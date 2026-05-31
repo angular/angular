@@ -48,6 +48,7 @@ import {netlifyLoaderInfo} from './image_loaders/netlify_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
+import {escapeCssUrl} from './url';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -1461,10 +1462,6 @@ function unwrapSafeUrl(value: string | SafeValue): string {
     return value;
   }
   return unwrapSafeValue(value);
-}
-
-function escapeCssUrl(input: string): string {
-  return input.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
 // Transform function to handle inputs which may be booleans, strings, or string representations
