@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {SignalFormsConfig} from '../../../src/api/di';
+import type {SignalFormsConfig} from '../../../src/config/api';
 
 /**
  * A value that can be used for `SignalFormsConfig.classes` to automatically add

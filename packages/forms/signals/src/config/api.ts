@@ -8,7 +8,7 @@
 
 import {type Provider} from '@angular/core';
 import type {FormFieldBinding} from '../api/types';
-import {SIGNAL_FORMS_CONFIG} from '../field/di';
+import {SIGNAL_FORMS_CONFIG} from './di';
 
 /**
  * Configuration options for signal forms.

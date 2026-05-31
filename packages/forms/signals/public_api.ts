@@ -12,7 +12,7 @@
  * Entry point for all public APIs of this package.
  */
 export * from './src/api/control';
-export * from './src/api/di';
+export * from './src/config/api';
 export * from './src/api/rules';
 export * from './src/api/rules/debounce';
 export * from './src/api/rules/metadata';

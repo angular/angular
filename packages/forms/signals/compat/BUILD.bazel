@@ -16,6 +16,7 @@ ng_project(
         "//packages/core/rxjs-interop",
         "//packages/forms",
         "//packages/forms/signals",
+        "//packages/forms/signals:config",
     ],
 )
 

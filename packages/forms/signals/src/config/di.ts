@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from '@angular/core';
-import type {SignalFormsConfig} from '../api/di';
+import type {SignalFormsConfig} from './api';
 
 /** Injection token for the signal forms configuration. */
 export const SIGNAL_FORMS_CONFIG = new InjectionToken<SignalFormsConfig>(

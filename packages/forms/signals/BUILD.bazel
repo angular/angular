@@ -3,14 +3,29 @@ load("//tools:defaults.bzl", "generate_api_docs", "ng_project")
 package(default_visibility = ["//visibility:public"])
 
 ng_project(
+    name = "config",
+    srcs = [
+        "src/config/api.ts",
+        "src/config/di.ts",
+    ],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_project(
     name = "signals",
     srcs = glob(
         [
             "*.ts",
             "src/**/*.ts",
         ],
+        exclude = [
+            "src/config/**/*.ts",
+        ],
     ),
     deps = [
+        ":config",
         "//packages/common/http",
         "//packages/core",
         "//packages/forms",
