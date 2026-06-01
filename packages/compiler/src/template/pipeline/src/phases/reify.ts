@@ -800,9 +800,12 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
     case ir.ExpressionKind.Reference:
       return ng.reference(expr.targetSlot.slot! + 1 + expr.offset);
     case ir.ExpressionKind.ForeignContent:
-      return o
-        .importExpr(Identifiers.foreignContent)
-        .callFn([o.literal(expr.childrenViewHandle.slot!)]);
+      if (!(unit instanceof ViewCompilationUnit)) {
+        throw new Error(`AssertionError: must be compiling a component`);
+      }
+      const isFn = unit.job.views.get(expr.childrenViewXref)!.contextVariables.size > 0;
+      const identifier = isFn ? Identifiers.foreignContentFn : Identifiers.foreignContent;
+      return o.importExpr(identifier).callFn([o.literal(expr.childrenViewHandle.slot!)]);
     case ir.ExpressionKind.LexicalRead:
       throw new Error(`AssertionError: unresolved LexicalRead of ${expr.name}`);
     case ir.ExpressionKind.TwoWayBindingSet:

@@ -22,6 +22,20 @@ function TestCmpChildren_Children_2_Template(rf, ctx) {
   }
 }
 
+function TestCmpRenderProps_Items_0_Template(rf, ctx) {
+  if (rf & 1) {
+    i0.ɵɵdomElementStart(0, "span");
+    i0.ɵɵtext(1);
+    i0.ɵɵdomElementEnd();
+  }
+  if (rf & 2) {
+    const item_r1 = ctx[0];
+    const index_r2 = ctx[1];
+    i0.ɵɵadvance();
+    i0.ɵɵtextInterpolate2("#", index_r2, ": ", item_r1);
+  }
+}
+
 …
 
 export class TestCmp {
@@ -58,3 +72,23 @@ export class TestCmpChildren {
     encapsulation: 2
   });
 }
+
+…
+
+export class TestCmpRenderProps {
+  // ...
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: TestCmpRenderProps,
+    selectors: [["main-render-props"]],
+    decls: 2,
+    vars: 0,
+    template: function TestCmpRenderProps_Template(rf, ctx) {
+      if (rf & 1) {
+        i0.ɵɵdomTemplate(0, TestCmpRenderProps_Items_0_Template, 2, 2);
+        i0.ɵɵforeignComponent(1, frameworkImport(FancyButton), { label: ctx.title, items: i0.ɵɵforeignContentFn(0) });
+      }
+    },
+    encapsulation: 2
+  });
+}
+
