@@ -9,6 +9,7 @@
 import {
   ɵɵforeignComponent,
   ɵɵforeignContent,
+  ɵɵforeignContentFn,
 } from '../../src/render3/instructions/foreign_component';
 import {foreignImport} from '../../src/render3/foreign_import';
 import {destroyLView} from '../../src/render3/node_manipulation';
@@ -16,6 +17,8 @@ import {ViewFixture} from './view_fixture';
 import {ɵɵdomTemplate} from '../../src/render3/instructions/template';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/element';
 import {ɵɵtext} from '../../src/render3/instructions/text';
+import {ɵɵadvance} from '../../src/render3/instructions/advance';
+import {ɵɵtextInterpolate2} from '../../src/render3/instructions/text_interpolation';
 import {inject, InjectionToken} from '../../src/di';
 import {ɵɵdefineDirective} from '../../src/render3/definition';
 import {ɵɵProvidersFeature} from '../../src/render3/features/providers_feature';
@@ -289,6 +292,58 @@ describe('ɵɵforeignComponent', () => {
         '<div id="desc-container"><p>Description Content</p></div>' +
         '<div id="children-container"><span>Main Children Content</span></div>' +
         '</div>',
+    );
+  });
+
+  it('should support passing ɵɵforeignContentFn to props', () => {
+    const foreignComp = foreignImport<{
+      renderItem: (item: string, idx: number) => Node[];
+    }>((props) => {
+      const div = document.createElement('div');
+      div.id = 'container';
+
+      const nodes1 = props.renderItem('First', 0);
+      const nodes2 = props.renderItem('Second', 1);
+
+      for (const node of nodes1) {
+        div.appendChild(node);
+      }
+      for (const node of nodes2) {
+        div.appendChild(node);
+      }
+
+      return [[div]];
+    });
+
+    const itemTemplate = (rf: number, ctx: any) => {
+      if (rf & 1) {
+        ɵɵelementStart(0, 'span');
+        ɵɵtext(1);
+        ɵɵelementEnd();
+      }
+      if (rf & 2) {
+        const item = ctx[0];
+        const index = ctx[1];
+        ɵɵadvance(1);
+        ɵɵtextInterpolate2('#', index, ': ', item);
+      }
+    };
+
+    const fixture = new ViewFixture({
+      decls: 2,
+      vars: 0,
+      create: () => {
+        ɵɵdomTemplate(0, itemTemplate, 2, 2);
+        ɵɵforeignComponent(1, foreignComp, {
+          renderItem: ɵɵforeignContentFn(0),
+        });
+      },
+    });
+
+    fixture.update(() => {});
+
+    expect(fixture.host.innerHTML).toContain(
+      '<div id="container"><span>#0: First</span><span>#1: Second</span></div>',
     );
   });
 });

@@ -269,7 +269,7 @@ export class ViewCompilationUnit extends CompilationUnit {
    * Map of declared variables available within this view to the property on the context object
    * which they alias.
    */
-  readonly contextVariables = new Map<string, string>();
+  readonly contextVariables = new Map<string, string | number>();
 
   /**
    * Set of aliases available within this view. An alias is a variable whose provided expression is

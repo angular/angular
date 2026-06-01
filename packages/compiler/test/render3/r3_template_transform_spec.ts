@@ -61,7 +61,7 @@ class R3AstHumanizer implements t.Visitor<void> {
 
   visitContentBlock(block: t.ContentBlock) {
     this.result.push(['ContentBlock', block.name]);
-    this.visitAll([block.children]);
+    this.visitAll([block.variables, block.children]);
   }
 
   visitVariable(variable: t.Variable) {
@@ -3037,13 +3037,45 @@ describe('R3 template transform', () => {
 
     it('should error if @content block has missing parameter', () => {
       expect(() => parse(`@content {}`)).toThrowError(
-        /@content block must have exactly one parameter/,
+        /@content block must have one or two parameters/,
       );
     });
 
     it('should error if @content block has multiple parameters', () => {
       expect(() => parse(`@content(icon, text) {}`)).toThrowError(
-        /@content block must have exactly one parameter/,
+        /@content block must have exactly one name parameter/,
+      );
+    });
+
+    it('should parse a valid @content block with variables', () => {
+      expectFromHtml(`
+        @content(icon; let a, b) {
+          <span>Icon content</span>
+        }
+      `).toEqual([
+        ['ContentBlock', 'icon'],
+        ['Variable', 'a', ''],
+        ['Variable', 'b', ''],
+        ['Element', 'span'],
+        ['Text', 'Icon content'],
+      ]);
+    });
+
+    it('should error if a variable is assigned a value', () => {
+      expect(() => parse(`@content(icon; let a = 123) {}`)).toThrowError(
+        /@content block variables cannot be assigned a value/,
+      );
+      expect(() => parse(`@content(icon; let a, b = something) {}`)).toThrowError(
+        /@content block variables cannot be assigned a value/,
+      );
+    });
+
+    it('should error on invalid variable name', () => {
+      expect(() => parse(`@content(icon; let inv-alid) {}`)).toThrowError(
+        /Variable name "inv-alid" must be a valid JavaScript identifier/,
+      );
+      expect(() => parse(`@content(icon; let a, inv-alid) {}`)).toThrowError(
+        /Variable name "inv-alid" must be a valid JavaScript identifier/,
       );
     });
   });

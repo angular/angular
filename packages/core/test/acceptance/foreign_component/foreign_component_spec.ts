@@ -23,6 +23,29 @@ function FancyButton(props: {children: Node[]}): Node[] {
   return [button];
 }
 
+// TODO: support this inline.
+function InnerComp(props: {renderHeader: (innerMsg: string) => Node[]; children: Node[]}): Node[] {
+  const inner = document.createElement('div');
+  inner.className = 'inner';
+
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'inner-header';
+  const headerNodes = props.renderHeader('Inner Msg');
+  for (const child of headerNodes) {
+    headerDiv.appendChild(child);
+  }
+  inner.appendChild(headerDiv);
+
+  const bodyDiv = document.createElement('div');
+  bodyDiv.className = 'inner-body';
+  for (const child of props.children) {
+    bodyDiv.appendChild(child);
+  }
+  inner.appendChild(bodyDiv);
+
+  return [inner];
+}
+
 describe('foreign components', () => {
   describe('content projection', () => {
     it('should update foreign content', async () => {
@@ -275,18 +298,18 @@ describe('foreign components', () => {
 
       expect(fixture.nativeElement.innerHTML).toBe(
         '' +
-          '<!--container-->' +
-          '<!--foreign-view-head-->' +
+          '<!--container-->' + // @content(children) (implicit)
+          '<!--foreign-view-head-->' + // <SimpleWrapper>
           '<div class="wrapper">' +
-          '<!--container-->' +
-          '<!--foreign-component-->' +
-          '<!--foreign-view-head-->' +
+          '<!--container-->' + // @content(children) (implicit)
+          '<!--foreign-component-->' + // TODO: fix after https://github.com/angular/angular/pull/69099.
+          '<!--foreign-view-head-->' + // <FancyButton>
           '<button>' +
           '<span id="text">Inside wrapper button</span>' +
           '</button>' +
-          '<!--foreign-view-tail-->' +
+          '<!--foreign-view-tail-->' + // </FancyButton>
           '</div>' +
-          '<!--foreign-view-tail-->' +
+          '<!--foreign-view-tail-->' + // </SimpleWrapper>
           '<!--foreign-component-->',
       );
     });
@@ -327,6 +350,178 @@ describe('foreign components', () => {
           '<!--foreign-view-tail-->' +
           '<!--foreign-component-->' +
           '</angular-wrapper>',
+      );
+    });
+
+    it('should support zero parameter callback', async () => {
+      function FancyList(props: {renderHeader: () => Node[]}): Node[] {
+        const div = document.createElement('div');
+        const headerNodes = props.renderHeader();
+
+        for (const node of headerNodes) {
+          div.appendChild(node);
+        }
+
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyList>
+            @content(renderHeader; let _) {
+              <span>Header Content</span>
+            }
+          </FancyList>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyList)],
+      })
+      class TestNoParamContentFn {}
+
+      const fixture = TestBed.createComponent(TestNoParamContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // for @content(renderHeader)
+          '<!--foreign-view-head-->' +
+          '<div><span>Header Content</span></div>' +
+          '<!--foreign-view-tail-->' +
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support a single parameter callback', async () => {
+      function FancyList(props: {renderItem: (item: string) => Node[]}): Node[] {
+        const div = document.createElement('div');
+        const itemNodes = props.renderItem('Hello Single');
+
+        for (const node of itemNodes) {
+          div.appendChild(node);
+        }
+
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyList>
+            @content(renderItem; let item) {
+              <span>{{ item }}</span>
+            }
+          </FancyList>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyList)],
+      })
+      class TestOneParamContentFn {}
+
+      const fixture = TestBed.createComponent(TestOneParamContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // for @content(renderItem)
+          '<!--foreign-view-head-->' +
+          '<div><span>Hello Single</span></div>' +
+          '<!--foreign-view-tail-->' +
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support multiple parameter callback', async () => {
+      function FancyTable(props: {
+        renderRow: (row: string, index: number, isLast: boolean) => Node[];
+      }): Node[] {
+        const div = document.createElement('div');
+        const nodes = props.renderRow('RowA', 0, false);
+
+        for (const node of nodes) {
+          div.appendChild(node);
+        }
+
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyTable>
+            @content(renderRow; let row, idx, isLast) {
+              <span>{{ idx }} - {{ row }} (Last: {{ isLast }})</span>
+            }
+          </FancyTable>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyTable)],
+      })
+      class TestManyParamsContentFn {}
+
+      const fixture = TestBed.createComponent(TestManyParamsContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // for @content(renderRow)
+          '<!--foreign-view-head-->' +
+          '<div><span>0 - RowA (Last: false)</span></div>' +
+          '<!--foreign-view-tail-->' +
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support nested callbacks', async () => {
+      function OuterComp(props: {renderContent: (msg: string) => Node[]}): Node[] {
+        const outer = document.createElement('div');
+        outer.className = 'outer';
+        const nodes = props.renderContent('Outer Msg');
+        for (const node of nodes) {
+          outer.appendChild(node);
+        }
+        return [outer];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <OuterComp>
+            @content(renderContent; let message) {
+              <InnerComp>
+                @content(renderHeader; let innerMessage) {
+                  {{ message }} - {{ innerMessage }}
+                }
+                Body Content
+              </InnerComp>
+            }
+          </OuterComp>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(OuterComp), frameworkImport(InnerComp)],
+      })
+      class TestDeepNestedContentFn {}
+
+      const fixture = TestBed.createComponent(TestDeepNestedContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // @content(renderContent)
+          '<!--foreign-view-head-->' + // <OuterComp>
+          '<div class="outer">' +
+          '<!--container-->' + // @content(renderHeader)
+          '<!--container-->' + // @content(children) (implicit)
+          '<!--foreign-component-->' + // TODO: fix after https://github.com/angular/angular/pull/69099.
+          '<!--foreign-view-head-->' + // <InnerComp>
+          '<div class="inner">' +
+          '<div class="inner-header"> Outer Msg - Inner Msg </div>' +
+          '<div class="inner-body"> Body Content </div>' +
+          '</div>' +
+          '<!--foreign-view-tail-->' + // </InnerComp>
+          '</div>' +
+          '<!--foreign-view-tail-->' + // </OuterComp>
+          '<!--foreign-component-->',
       );
     });
   });

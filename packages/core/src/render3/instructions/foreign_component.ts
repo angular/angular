@@ -20,11 +20,11 @@ import {createLContainer, addLViewToLContainer} from '../view/container';
 import {NodeInjector} from '../di';
 import {runInInjectionContext} from '../../di';
 import {Renderer} from '../interfaces/renderer';
-import {RElement, RNode} from '../interfaces/renderer_dom';
+import {RNode} from '../interfaces/renderer_dom';
 import {createAndRenderEmbeddedLView} from '../view_manipulation';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {assertLContainer} from '../assert';
-import {LContainer, LContainerFlags} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags} from '../interfaces/container';
 
 /**
  * Creation phase instruction to render a foreign component.
@@ -114,4 +114,40 @@ export function ɵɵforeignContent(index: number): any[] {
   // Extract and return the root nodes of the created view
   const embeddedTView = embeddedLView[TVIEW];
   return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
+}
+
+/**
+ * Creation phase instruction to return a function for rendering foreign content dynamically
+ * with arguments.
+ *
+ * @param index The index of the container in the data array.
+ * @codeGenApi
+ */
+export function ɵɵforeignContentFn(index: number): (...args: any[]) => any[] {
+  const lView = getLView();
+  const adjustedIndex = index + HEADER_OFFSET;
+
+  // The template is already declared at adjustedIndex, so lContainer must exist.
+  const lContainer = lView[adjustedIndex] as LContainer;
+  ngDevMode && assertLContainer(lContainer);
+  lContainer[FLAGS] |= LContainerFlags.LogicalOnly;
+
+  const tView = getTView();
+  const tNode = tView.data[adjustedIndex] as TContainerNode;
+
+  return (...args: any[]) => {
+    // When the function is called, instantiate and render a new embedded view inside the container.
+    // The arguments are passed directly as the context of the view.
+    const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, args);
+    addLViewToLContainer(
+      lContainer,
+      embeddedLView,
+      lContainer.length - CONTAINER_HEADER_OFFSET,
+      /* addToDOM */ false,
+    );
+
+    // Extract and return the root nodes of the created view
+    const embeddedTView = embeddedLView[TVIEW];
+    return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
+  };
 }

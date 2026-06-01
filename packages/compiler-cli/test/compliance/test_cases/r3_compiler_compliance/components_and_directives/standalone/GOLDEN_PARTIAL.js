@@ -453,6 +453,35 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     ],
                 }]
         }] });
+export class TestCmpRenderProps {
+    title = 'Submit';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpRenderProps, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpRenderProps, isStandalone: true, selector: "main-render-props", ngImport: i0, template: `
+    <FancyButton [label]="title">
+      @content(items; let item, index) {
+        <span>#{{index}}: {{item}}</span>
+      }
+    </FancyButton>
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpRenderProps, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'main-render-props',
+                    template: `
+    <FancyButton [label]="title">
+      @content(items; let item, index) {
+        <span>#{{index}}: {{item}}</span>
+      }
+    </FancyButton>
+  `,
+                    // @ts-ignore: @angular/core does not expose the `foreignImports` property.
+                    foreignImports: [
+                        // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
+                        frameworkImport(FancyButton)
+                    ],
+                }]
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: foreign_component.d.ts
@@ -468,5 +497,10 @@ export declare class TestCmpChildren {
     title: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpChildren, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmpChildren, "main-children", never, {}, {}, never, never, true, never>;
+}
+export declare class TestCmpRenderProps {
+    title: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpRenderProps, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmpRenderProps, "main-render-props", never, {}, {}, never, never, true, never>;
 }
 
