@@ -10,6 +10,7 @@ import {HttpHeaders} from '../src/headers';
 import {
   JSONP_ERR_HEADERS_NOT_SUPPORTED,
   JSONP_ERR_NO_CALLBACK,
+  JSONP_ERR_UNSAFE_URL,
   JSONP_ERR_WRONG_METHOD,
   JSONP_ERR_WRONG_RESPONSE_TYPE,
   JsonpClientBackend,
@@ -21,7 +22,7 @@ import {toArray} from 'rxjs/operators';
 import {MockDocument} from './jsonp_mock';
 
 describe('JsonpClientBackend', () => {
-  const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
+  const SAMPLE_REQ = new HttpRequest<never>('JSONP', 'https://example.com/test');
   let home: any;
   let document: MockDocument;
   let backend: JsonpClientBackend;
@@ -86,6 +87,43 @@ describe('JsonpClientBackend', () => {
     // The script element should have been transferred to a different document to prevent it from
     // executing.
     expect(document.mock!.ownerDocument).not.toEqual(document);
+  });
+  describe('URL protocols', () => {
+    it('allows absolute HTTP(S) URLs', () => {
+      const urls = [
+        'http://example.com/test',
+        'https://example.com/test',
+        'HTTP://example.com/test',
+      ];
+
+      for (const url of urls) {
+        const subscription = backend.handle(SAMPLE_REQ.clone<never>({url})).subscribe();
+
+        subscription.unsubscribe();
+      }
+    });
+
+    it('rejects URLs without absolute HTTP(S) protocols before creating a script element', () => {
+      const urls = [
+        '//example.com/test',
+        '/test',
+        'test',
+        'data:text/javascript,alert(1)',
+        'blob:https://example.com/jsonp',
+        'javascript:alert(1)',
+        'file:///tmp/jsonp.js',
+        'filesystem:https://example.com/temporary/jsonp.js',
+        'ftp://example.com/jsonp.js',
+        'custom-scheme://example.com/jsonp.js',
+      ];
+
+      for (const url of urls) {
+        expect(() => backend.handle(SAMPLE_REQ.clone<never>({url}))).toThrowError(
+          `NG02826: ${JSONP_ERR_UNSAFE_URL}`,
+        );
+        expect(document.mock).toBeUndefined();
+      }
+    });
   });
   describe('throws an error', () => {
     it('when request method is not JSONP', () =>
