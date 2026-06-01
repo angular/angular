@@ -6,8 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-const LEADING_SLASHES_REGEX = /^[/\\]+/;
-const MALFORMED_ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/;
+/**
+ * Matches http: or https:
+ */
+const HTTP_OR_HTTPS_PROTOCOL_REGEX = /^https?:/i;
+
+/**
+ * Options for {@link parseUrl}.
+ */
+export interface ParseUrlOptions {
+  /**
+   * Allow protocol-relative URLs (e.g. `//example.com`).
+   */
+  allowProtocolRelative?: boolean;
+}
 
 /**
  * Parses a URL string and returns a resolved WHATWG URL object.
@@ -16,32 +28,89 @@ const MALFORMED_ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z0-9+.-]*:(\/\/|\\\\)/;
  * If an origin is provided, relative URLs and protocol-relative URLs are normalized and resolved against it.
  */
 export function parseUrl(urlStr: string | undefined): URL | null;
-export function parseUrl(urlStr: string | undefined, origin: string): URL;
-export function parseUrl(urlStr: string | undefined, origin?: string): URL | null {
+export function parseUrl(
+  urlStr: string | undefined,
+  origin: string | URL,
+  options?: ParseUrlOptions,
+): URL;
+export function parseUrl(
+  urlStr: string | undefined,
+  origin?: string | URL,
+  options: ParseUrlOptions = {},
+): URL | null {
+  const originUrl = typeof origin === 'string' ? new URL('/', origin) : origin;
+
   if (!urlStr) {
-    return origin !== undefined ? new URL('/', origin) : null;
+    return originUrl || null;
   }
 
-  if (URL.canParse(urlStr)) {
-    return new URL(urlStr);
+  urlStr = urlStr.trim();
+
+  // Fast-path: if the URL is a valid, standard absolute URL, parse and return it immediately.
+  let resolved: URL | undefined;
+  try {
+    resolved = new URL(urlStr);
+  } catch {}
+
+  if (resolved) {
+    if (originUrl && !isSafeOriginChange(resolved, originUrl, urlStr)) {
+      throwSuspiciousUrlError(urlStr);
+    }
+
+    return resolved;
   }
 
-  if (MALFORMED_ABSOLUTE_URL_REGEX.test(urlStr)) {
+  // We identify and throw on malformed absolute URLs (like double port).
+  // Per the WHATWG URL standard, parsing an input starting with a scheme (like 'http:') against
+  // a standard base (like 'http://fake') ignores the base argument and parses strictly as an
+  // absolute URL. Since it is malformed, the native URL constructor will throw a validation
+  // error. Standard relative/protocol-relative paths parse successfully, allowing the flow to continue.
+  if (!URL.canParse(urlStr, 'http://fake')) {
     throw new Error(`Invalid URL: ${urlStr}`);
   }
 
-  if (origin === undefined) {
+  if (!originUrl) {
     return null;
   }
 
-  // Normalizes request path parsing by collapsing multiple consecutive leading slashes
-  // and backslashes (e.g. // or /\) down to a single forward slash. This ensures consistent
-  // resolution of relative path segments and prevents unexpected absolute path overrides
-  // during URL parsing.
-  let normalizedPath = urlStr.replace(LEADING_SLASHES_REGEX, '/');
-  if (normalizedPath[0] !== '/') {
-    normalizedPath = `/${normalizedPath}`;
+  const {allowProtocolRelative = false} = options;
+
+  // Check if we have a legitimate protocol-relative URL (starts with '//' and not a duplicate/backslash bypass)
+  // and we are configured to allow and preserve standard cross-origin protocol-relative requests.
+  if (urlStr.startsWith('//')) {
+    if (!allowProtocolRelative) {
+      throw new Error(`Protocol relative URLs are not allowed in this context. URL: ${urlStr}`);
+    }
+
+    return new URL(urlStr, origin);
   }
 
-  return new URL(normalizedPath, origin);
+  resolved = new URL(urlStr, origin);
+
+  if (!isSafeOriginChange(resolved, originUrl, urlStr)) {
+    throwSuspiciousUrlError(urlStr);
+  }
+
+  return resolved;
+}
+
+/**
+ * Throws a suspicious URL error indicating a security bypass attempt.
+ */
+function throwSuspiciousUrlError(urlStr: string): never {
+  throw new Error(
+    `URL ${urlStr} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+  );
+}
+
+/**
+ * Checks if the origin has changed in a safe way.
+ *
+ * @param resolved The resolved URL.
+ * @param origin The origin URL.
+ * @param urlStr The URL string.
+ * @returns True if the origin has changed in a safe way, false otherwise.
+ */
+function isSafeOriginChange(resolved: URL, origin: URL, urlStr: string): boolean {
+  return origin.origin === resolved.origin || HTTP_OR_HTTPS_PROTOCOL_REGEX.test(urlStr);
 }
