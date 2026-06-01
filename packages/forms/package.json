@@ -13,7 +13,7 @@
     "zod": "^4.0.10"
   },
   "devDependencies": {
-    "@mcp-b/webmcp-polyfill": "^2.2.0",
+    "@mcp-b/webmcp-polyfill": "^3.0.0",
     "@mcp-b/webmcp-types": "^2.2.0"
   },
   "peerDependencies": {
