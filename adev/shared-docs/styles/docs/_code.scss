@@ -340,6 +340,17 @@ $code-font-size: 0.875rem;
     }
   }
 
+  .docs-code:has(.docs-code-header) {
+    .docs-code-header {
+      padding-inline-end: 3.5rem;
+    }
+
+    > button[docs-copy-source-code] {
+      top: 0.45rem;
+      right: 0.65rem;
+    }
+  }
+
   // Single line docs-code elements, without headers, shell code
   .docs-code:not(:has(.docs-code-header)) {
     button[docs-copy-source-code] {
