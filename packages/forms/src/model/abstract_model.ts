@@ -7,12 +7,12 @@
  */
 
 import {
-  EventEmitter,
-  signal,
-  ɵRuntimeError as RuntimeError,
-  ɵWritable as Writable,
-  untracked,
   computed,
+  EventEmitter,
+  ɵRuntimeError as RuntimeError,
+  signal,
+  untracked,
+  ɵWritable as Writable,
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
@@ -265,7 +265,7 @@ export function isOptionsObj(
 }
 
 export function assertControlPresent(parent: any, isGroup: boolean, key: string | number): void {
-  const controls = parent.controls as {[key: string | number]: unknown};
+  const controls = parent.controls as {[key: string | number]: AbstractControl<any>};
   const collection = isGroup ? Object.keys(controls) : controls;
   if (!collection.length) {
     throw new RuntimeError(
@@ -273,7 +273,7 @@ export function assertControlPresent(parent: any, isGroup: boolean, key: string 
       typeof ngDevMode === 'undefined' || ngDevMode ? noControlsError(isGroup) : '',
     );
   }
-  if (!controls[key]) {
+  if (!hasOwnControl(controls, key)) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_CONTROL,
       typeof ngDevMode === 'undefined' || ngDevMode ? missingControlError(isGroup, key) : '',
@@ -1806,4 +1806,11 @@ export abstract class AbstractControl<
   private _updateHasRequiredValidator(): void {
     untracked(() => this._hasRequired.set(this.hasValidator(Validators.required)));
   }
+}
+
+export function hasOwnControl(
+  controls: {[key: string]: AbstractControl<any>},
+  name: string | number | symbol,
+): boolean {
+  return Object.hasOwn(controls, name);
 }
