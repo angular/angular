@@ -76,4 +76,27 @@ describe('AngularJSUrlCodec', () => {
       }).toThrowError('Invalid URL (http://foo.bar) with base (abc)');
     });
   });
+
+  describe('decodePath', () => {
+    it('should decode valid percent escapes', () => {
+      expect(codec.decodePath('/a/100%2Fb')).toBe('/a/100%2Fb');
+      expect(codec.decodePath('/a%20b')).toBe('/a b');
+    });
+
+    it('should fall back to the raw segment for malformed escapes', () => {
+      expect(codec.decodePath('/a/100%done')).toBe('/a/100%done');
+      expect(codec.decodePath('/p%2')).toBe('/p%2');
+    });
+  });
+
+  describe('decodeHash', () => {
+    it('should decode valid percent escapes', () => {
+      expect(codec.decodeHash('a%20b')).toBe('a b');
+    });
+
+    it('should fall back to the raw hash for malformed escapes', () => {
+      expect(codec.decodeHash('sec%')).toBe('sec%');
+      expect(codec.decodeHash('frag%zz')).toBe('frag%zz');
+    });
+  });
 });
