@@ -11,6 +11,7 @@ export abstract class GraphRenderer<T, U> {
   abstract getInternalNodeById(id: string): U | null;
   abstract snapToNode(node: T): void;
   abstract snapToRoot(): void;
+  abstract highlightNode(node: T | null): void;
   abstract zoomScale(scale: number): void;
   abstract root: U | null;
 
