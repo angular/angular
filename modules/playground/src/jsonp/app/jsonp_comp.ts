@@ -8,7 +8,9 @@
 
 import {HttpClient} from '@angular/common/http';
 import {Component} from '@angular/core';
-
+interface Person {
+  name: string;
+}
 @Component({
   selector: 'jsonp-app',
   template: `
@@ -20,8 +22,12 @@ import {Component} from '@angular/core';
   standalone: false,
 })
 export class JsonpCmp {
-  people: Object;
+  people: Person[] = [];
   constructor(http: HttpClient) {
-    http.jsonp<Object>('./people.json', 'callback').subscribe((res: Object) => (this.people = res));
+    const peopleUrl = new URL('./people.json', window.location.href).toString();
+
+    http.jsonp(peopleUrl, 'callback').subscribe((res: unknown) => {
+      this.people = res as Person[];
+    });
   }
 }
