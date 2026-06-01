@@ -478,7 +478,7 @@ import {form, FormField, required, min, max} from '@angular/forms/signals';
   imports: [FormField],
   template: `
     <label>
-      Age (between {{ ageForm.age().min() }} and {{ ageForm.age().max() }})
+      Age (between {{ ageForm.age().min?.() }} and {{ ageForm.age().max?.() }})
       <input type="number" [formField]="ageForm.age" />
     </label>
 
@@ -519,12 +519,8 @@ import {form, FormField, max} from '@angular/forms/signals';
     </label>
 
     <label>
-      Quantity (max: {{ inventoryForm.quantity().max() }})
-      <input
-        type="number"
-        [formField]="inventoryForm.quantity"
-        [max]="inventoryForm.quantity().max()"
-      />
+      Quantity (max: {{ inventoryForm.quantity().max?.() }})
+      <input type="number" [formField]="inventoryForm.quantity" />
     </label>
   `,
 })
