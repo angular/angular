@@ -36,9 +36,9 @@ export function getNgModuleDefOrThrow<T>(type: any): NgModuleDef<T> | never {
  * explicit. This would require some sort of migration strategy.
  */
 
-export function getComponentDef<T>(type: any): ComponentDef<T> | null {
+export function getComponentDef<T>(type: any): ComponentDef<T> {
   assertTypeDefined(type, '@Component');
-  return type[NG_COMP_DEF] || null;
+  return type[NG_COMP_DEF];
 }
 
 export function getDirectiveDefOrThrow<T>(type: any): DirectiveDef<T> | never {
@@ -53,23 +53,24 @@ export function getDirectiveDefOrThrow<T>(type: any): DirectiveDef<T> | never {
   return def;
 }
 
-export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null {
+export function getDirectiveDef<T>(type: any): DirectiveDef<T> {
   assertTypeDefined(type, '@Directive');
-  return type[NG_DIR_DEF] || null;
+  return type[NG_DIR_DEF];
 }
 
-export function getPipeDef<T>(type: any): PipeDef<T> | null {
+export function getPipeDef<T>(type: any): PipeDef<T> {
   assertTypeDefined(type, '@Pipe');
-  return type[NG_PIPE_DEF] || null;
+  return type[NG_PIPE_DEF];
 }
 
 function assertTypeDefined(type: any, symbolType: string): void {
   if (type == null) {
     throw new RuntimeError(
       RuntimeErrorCode.DEF_TYPE_UNDEFINED,
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        `Cannot read ${symbolType} metadata. This can indicate a runtime ` +
-          `circular dependency in your app that needs to be resolved.`,
+      ngDevMode
+        ? `Cannot read ${symbolType} metadata. This can indicate a runtime ` +
+            `circular dependency in your app that needs to be resolved.`
+        : symbolType,
     );
   }
 }
