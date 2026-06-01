@@ -316,7 +316,7 @@ function hasUncacheableCacheControl(headers: HttpHeaders): boolean {
   }
 
   return cacheControl.split(',').some((directive) => {
-    const directiveName = directive.trim().split('=', 1)[0].trim().toLowerCase();
+    const directiveName = directive.split('=', 1)[0].trim().toLowerCase();
 
     return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
   });
