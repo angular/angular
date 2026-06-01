@@ -154,7 +154,7 @@ export function retrieveTransferredState(
   // Locate the script tag with the JSON data transferred from the server.
   // The id of the script tag is set to the Angular appId + 'state'.
   const script = doc.getElementById(appId + '-state');
-  if (script?.textContent) {
+  if (script?.tagName === 'SCRIPT' && script.textContent) {
     try {
       // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
       // Decoding of `<` is done of the box by browsers and node.js, same behaviour as G3
