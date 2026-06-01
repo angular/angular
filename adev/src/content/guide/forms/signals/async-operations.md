@@ -180,6 +180,23 @@ onSuccess: (response: { usernameTaken: boolean; profanity: boolean }) => {
 } // prettier-ignore
 ```
 
+The type for `onSuccess` can be specified either directly in the parameter, or with the `parse` property of `validateHttp`'s `options`
+
+```ts
+onSuccess: (response: { usernameTaken: boolean; profanity: boolean }) => {
+  // ...
+} // prettier-ignore
+
+// or
+
+options: {
+  parse: (response) => response as {usernameTaken: boolean; profanity: boolean};
+}
+onSuccess: (response) => {
+  // ...
+} // prettier-ignore
+```
+
 The `onError` function handles request failures like network errors or HTTP errors:
 
 ```ts
