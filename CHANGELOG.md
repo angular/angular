@@ -1,3 +1,28 @@
+<a name="22.0.0-rc.3"></a>
+# 22.0.0-rc.3 (2026-06-01)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4795b35d5b](https://github.com/angular/angular/commit/4795b35d5be5a7217f648a349c281e674294ef97) | fix | only strip a literal /index.html suffix from URLs |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2891f7e787](https://github.com/angular/angular/commit/2891f7e7879238d941a7c40ebd51896fcd2fe6bb) | fix | move projection attributes into constants |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e3e25b5a53](https://github.com/angular/angular/commit/e3e25b5a535c3e9cc08fcd2f9f85b78b8456a9f8) | fix | use Object.create(null) for LOCALE_DATA as a hardening measure |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9d9855a415](https://github.com/angular/angular/commit/9d9855a41597c116ca102e672867047ddf7b4545) | fix | Make the safe optional chaining idempotent |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7b9130931d](https://github.com/angular/angular/commit/7b9130931d14ce2d02251bc14743c3e9a77c1955) | fix | throw on suspicious URLs and restrict protocol-relative URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-rc.2"></a>
 # 22.0.0-rc.2 (2026-05-28)
 ### common
