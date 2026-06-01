@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@angular/cdk':
-        specifier: 22.0.0-rc.2
-        version: 22.0.0-rc.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
+        specifier: 22.0.0-rc.3
+        version: 22.0.0-rc.3(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
       '@angular/common':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
@@ -257,8 +257,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.0.0-rc.2':
-    resolution: {integrity: sha512-KiQInxX5WrPgsNjqqaD3/voRXNNsp0cuvH8VZerIeRUrOxsuqsyU8bUk6q6GWobL4LDj7afiqjDTEdwnq9KVww==}
+  '@angular/cdk@22.0.0-rc.3':
+    resolution: {integrity: sha512-bvieRKA8HJlbmFzk5jBtOIQGpjlSTUE0qHwwSfoCIsWso1HNqtBJTBit2cBpgt/72Df/skBjGK3EcuWmdafCuA==}
     peerDependencies:
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
@@ -4980,7 +4980,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@22.0.0-rc.2(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
+  '@angular/cdk@22.0.0-rc.3(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:in-existing-linked-by-bazel
       '@angular/core': link:in-existing-linked-by-bazel
