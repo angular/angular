@@ -674,6 +674,7 @@
       "hasModelInput",
       "hasOnDestroy",
       "hasOutput",
+      "hasOwnControl",
       "hasParentInjector",
       "hasStyleInput",
       "hasStylingInputShadow",
