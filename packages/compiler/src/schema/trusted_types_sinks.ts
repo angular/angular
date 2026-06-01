@@ -24,8 +24,11 @@ const TRUSTED_TYPES_SINKS = new Set<string>([
   // NB: no TrustedScript here, as the corresponding tags are stripped by the compiler.
 
   // TrustedScriptURL
+  'base|href',
   'embed|src',
+  'frame|src',
   'iframe|src',
+  'link|href',
   'object|codebase',
   'object|data',
 ]);

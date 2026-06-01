@@ -12,10 +12,12 @@ describe('isTrustedTypesSink', () => {
   it('should classify Trusted Types sinks', () => {
     expect(isTrustedTypesSink('iframe', 'srcdoc')).toBeTrue();
     expect(isTrustedTypesSink('p', 'innerHTML')).toBeTrue();
+    expect(isTrustedTypesSink('base', 'href')).toBeTrue();
     expect(isTrustedTypesSink('embed', 'src')).toBeTrue();
+    expect(isTrustedTypesSink('frame', 'src')).toBeTrue();
     expect(isTrustedTypesSink('iframe', 'src')).toBeTrue();
+    expect(isTrustedTypesSink('link', 'href')).toBeTrue();
     expect(isTrustedTypesSink('a', 'href')).toBeFalse();
-    expect(isTrustedTypesSink('base', 'href')).toBeFalse();
     expect(isTrustedTypesSink('div', 'style')).toBeFalse();
   });
 

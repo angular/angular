@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DomSanitizer} from '@angular/platform-browser';
-import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
+import {clearTranslations, loadTranslations} from '@angular/localize';
+import {DomSanitizer} from '@angular/platform-browser';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -374,6 +374,15 @@ describe('security integration tests', function () {
 
       const link = fixture.nativeElement.querySelector('a');
       expect(link.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
+    });
+
+    it('should throw on translated base href attributes', () => {
+      const template = `<base href="/safe" i18n-href>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'href' is disallowed for security reasons./,
+      );
     });
 
     it('should throw error on security-sensitive attributes with constant values', () => {
