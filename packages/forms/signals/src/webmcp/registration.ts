@@ -105,6 +105,7 @@ function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | und
       type: 'object',
       properties,
       required,
+      additionalProperties: false,
     };
   }
 

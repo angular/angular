@@ -68,9 +68,11 @@ describe('Signal Forms WebMCP Integration', () => {
               zip: {type: 'number'},
             },
             required: [],
+            additionalProperties: false,
           },
         },
         required: [],
+        additionalProperties: false,
       });
     });
 
@@ -114,9 +116,11 @@ describe('Signal Forms WebMCP Integration', () => {
               zip: {type: 'number'},
             },
             required: ['city'],
+            additionalProperties: false,
           },
         },
         required: ['name'],
+        additionalProperties: false,
       });
     });
 
