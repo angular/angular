@@ -10,6 +10,8 @@ import {get} from 'node:https';
 import {posix} from 'node:path';
 
 const GITHUB_API = 'https://api.github.com/repos/';
+const SHA_REGEX = /^[0-9a-f]{40}$/i;
+const BRANCH_REGEX = /^(?!.*\.\.)[a-zA-Z0-9/_.-]+$/;
 
 export class GithubClient {
   #token;
@@ -30,6 +32,12 @@ export class GithubClient {
    * @returns Promise<string[]>
    */
   async getAffectedFiles(baseSha, headSha) {
+    if (!SHA_REGEX.test(baseSha)) {
+      throw new Error(`Invalid base SHA: ${baseSha}`);
+    }
+    if (!SHA_REGEX.test(headSha)) {
+      throw new Error(`Invalid head SHA: ${headSha}`);
+    }
     const {files} = JSON.parse(await this.#httpGet(`${this.#api}/compare/${baseSha}...${headSha}`));
     return files.map((f) => f.filename);
   }
@@ -41,6 +49,9 @@ export class GithubClient {
    * @returns Promise<string>
    */
   async getShaForBranch(branch) {
+    if (!BRANCH_REGEX.test(branch)) {
+      throw new Error(`Invalid branch name: ${branch}`);
+    }
     const sha = await this.#httpGet(`${this.#api}/commits/${branch}`, {
       headers: {Accept: 'application/vnd.github.VERSION.sha'},
     });
@@ -49,7 +60,7 @@ export class GithubClient {
       throw new Error(`Unable to extract the SHA for '${branch}'.`);
     }
 
-    return sha;
+    return sha.trim();
   }
 
   #httpGet(url, options = {}) {
