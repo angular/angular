@@ -1000,8 +1000,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@mcp-b/webmcp-types':
-        specifier: ^2.2.0
-        version: 2.3.2
+        specifier: ^3.0.0
+        version: 3.0.0
 
   packages/core/test/bundling:
     dependencies:
@@ -1073,8 +1073,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@mcp-b/webmcp-types':
-        specifier: ^2.2.0
-        version: 2.3.2
+        specifier: ^3.0.0
+        version: 3.0.0
 
   packages/language-service: {}
 
@@ -3328,9 +3328,6 @@ packages:
   '@mcp-b/webmcp-polyfill@3.0.0':
     resolution: {integrity: sha512-TCrCOZCTfRWrTp8MpWU8EO4U7r7IvDDaIYW9Ej0aBD2KVR2hvwr4t3T7kPkSYssGhpIZJrq19owSzN1vZabW+A==}
     engines: {node: '>=18'}
-
-  '@mcp-b/webmcp-types@2.3.2':
-    resolution: {integrity: sha512-167nu2e5qIh8BcKvFp4dUzaeyO1+S+eMWGUaohjkwnqgc2Gq49Fv+i/Lei19019s1iCfQJ3yjtrzDK0nApivKg==}
 
   '@mcp-b/webmcp-types@3.0.0':
     resolution: {integrity: sha512-MmKHNAtlyZoK5khz5GnmgEj/ehk5esoUbgOaFndrlZvpjq3ppmIY3BDrwCv6xaihuuIMOoLLDlf0E65wUd4q7A==}
@@ -13990,8 +13987,6 @@ snapshots:
       '@cfworker/json-schema': 4.1.1
       '@mcp-b/webmcp-types': 3.0.0
       '@standard-schema/spec': 1.1.0
-
-  '@mcp-b/webmcp-types@2.3.2': {}
 
   '@mcp-b/webmcp-types@3.0.0': {}
 

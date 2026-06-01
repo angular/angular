@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@mcp-b/webmcp-polyfill": "^3.0.0",
-    "@mcp-b/webmcp-types": "^2.2.0"
+    "@mcp-b/webmcp-types": "^3.0.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
