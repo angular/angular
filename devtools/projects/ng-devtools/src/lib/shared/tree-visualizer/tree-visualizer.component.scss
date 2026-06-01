@@ -68,6 +68,12 @@
         border-width: 2px;
         font-weight: 300;
 
+        &.node-highlighted {
+          outline: 4px solid var(--blue-03);
+        }
+
+        /* Instance-specific styles below. */
+
         &.node-environment {
           border: 1px solid var(--red-05);
           background: var(--red-06);
@@ -113,15 +119,7 @@
           }
         }
 
-        &.node-search {
-          outline: 4px solid
-            color-mix(in srgb, var(--quaternary-contrast) 80%, var(--full-contrast) 20%);
-        }
-
-        &.node-faded {
-          opacity: 0.3;
-        }
-
+        /* TODO(hawkgs): Rename to something more context-specific. */
         &.highlighted,
         &.highlighted:hover {
           background: var(--blue-02);
@@ -129,6 +127,7 @@
           color: white;
         }
 
+        /* TODO(hawkgs): Rename to something more context-specific. */
         &.selected,
         &.selected:hover {
           color: var(--blue-02);
