@@ -32,6 +32,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
       expect(location.pathname).toBe('/');
       platform.destroy();
     });
+
     it('is configurable via INITIAL_CONFIG', async () => {
       const platform = platformServer([
         {
@@ -135,94 +136,38 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
       location.pushState(null, 'Test', '/foo#bar');
     });
 
-    it('neutralizes hostname hijack attempts', async () => {
-      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
-
-      for (const url of urls) {
-        const platform = platformServer([
-          {
-            provide: INITIAL_CONFIG,
-            useValue: {
-              document: '',
-              // This should be treated as relative URL.
-              // Example: `req.url: '//attacker.com/deep/path'` where request
-              // to express server is 'http://localhost:4200//attacker.com/deep/path'.
-              url,
-            },
+    it('should throw on hostname hijack attempts to prevent origin hijack', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<html><head></head><body></body></html>',
+            url: '/\\attacker.com/deep/path',
           },
-        ]);
+        },
+      ]);
 
-        const location = platform.injector.get(PlatformLocation);
-        platform.destroy();
-
-        expect(location.hostname).withContext(`hostname for URL: "${url}"`).toBe('');
-        expect(location.pathname)
-          .withContext(`pathname for URL: "${url}"`)
-          .toBe('/attacker.com/deep/path');
-      }
+      expect(() => platform.injector.get(DOCUMENT)).toThrowError(
+        `URL /\\attacker.com/deep/path changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+      );
+      platform.destroy();
     });
 
-    it('should set the proper document location when the URL has leading slashes to prevent origin hijack', async () => {
-      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
-
-      for (const url of urls) {
-        const platform = platformServer([
-          {
-            provide: INITIAL_CONFIG,
-            useValue: {
-              document: '<html><head></head><body></body></html>',
-              url,
-            },
+    it('should throw on protocol-relative URLs in INITIAL_CONFIG', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<html><head></head><body></body></html>',
+            url: '//attacker.com/deep/path',
           },
-        ]);
+        },
+      ]);
 
-        const doc = platform.injector.get(DOCUMENT);
-        platform.destroy();
-
-        expect(doc.location.origin).not.toBe('http://attacker.com');
-        expect(doc.location.pathname).toBe('/attacker.com/deep/path');
-      }
-    });
-
-    it('should not expose protocol-relative URLs on the location to prevent open redirect and SSRF bypasses', async () => {
-      const urls = ['/\\attacker.com/deep/path', '//attacker.com/deep/path'];
-      const origins = [undefined, 'http://localhost:4200'];
-
-      for (const url of urls) {
-        for (const origin of origins) {
-          const providers: any[] = [
-            {
-              provide: INITIAL_CONFIG,
-              useValue: {
-                document: '',
-                url,
-              },
-            },
-          ];
-
-          if (origin) {
-            providers.push({
-              provide: DOCUMENT,
-              useValue: {
-                location: {
-                  origin,
-                },
-              },
-            });
-          }
-
-          const platform = platformServer(providers);
-          const location = platform.injector.get(PlatformLocation) as any;
-          platform.destroy();
-
-          // A relative redirect URL starting with // or /\ is normalized by browsers to a protocol-relative URL.
-          // The PlatformLocation.url property MUST NOT expose these unsafe patterns.
-          const isVulnerable = location.url.startsWith('//') || location.url.startsWith('/\\');
-          expect(isVulnerable)
-            .withContext(`URL: "${url}", origin: "${origin}", location.url: "${location.url}"`)
-            .toBeFalse();
-        }
-      }
+      expect(() => platform.injector.get(DOCUMENT)).toThrowError(
+        `Protocol relative URLs are not allowed in this context. URL: //attacker.com/deep/path`,
+      );
+      platform.destroy();
     });
   });
 })();
