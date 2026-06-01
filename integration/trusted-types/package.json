@@ -32,7 +32,7 @@
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
-    "concurrently": "9.2.1",
+    "concurrently": "10.0.0",
     "jasmine-core": "6.2.0",
     "serve": "^14.2.5",
     "jasmine-spec-reporter": "~7.0.0",
