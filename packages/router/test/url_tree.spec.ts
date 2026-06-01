@@ -39,6 +39,20 @@ describe('UrlTree', () => {
       expect(tree.queryParams).toEqual({'first': 'http://foo/bar?baz=true', 'second': '123'});
     });
 
+    it('should keep malformed percent-encoding as-is instead of throwing', () => {
+      const tree = serializer.parse('/100%done?a=50%off#frag%');
+      expect(tree.root.children['primary'].segments[0].path).toEqual('100%done');
+      expect(tree.queryParams).toEqual({'a': '50%off'});
+      expect(tree.fragment).toEqual('frag%');
+    });
+
+    it('should still decode valid percent-encoding', () => {
+      const tree = serializer.parse('/a%20b?k=a%20b#a%20b');
+      expect(tree.root.children['primary'].segments[0].path).toEqual('a b');
+      expect(tree.queryParams).toEqual({'k': 'a b'});
+      expect(tree.fragment).toEqual('a b');
+    });
+
     it('create, serialize, parse, serialize results in same serialized tree with outlet and no primary children', () => {
       const router = TestBed.inject(Router);
       const th = router.createUrlTree(['/', {outlets: {a: ['a'], b: [{outlets: {a: ['b1']}}]}}]);

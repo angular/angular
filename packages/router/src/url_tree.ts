@@ -550,7 +550,13 @@ export function encodeUriSegment(s: string): string {
 }
 
 export function decode(s: string): string {
-  return decodeURIComponent(s);
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    // A malformed percent-escape (e.g. a stray `%`) is a legal URL character but makes
+    // decodeURIComponent throw. Fall back to the raw value so a crafted URL cannot break parsing.
+    return s;
+  }
 }
 
 // Query keys/values should have the "+" replaced first, as "+" in a query string is " ".
@@ -640,7 +646,7 @@ class UrlParser {
   }
 
   parseFragment(): string | null {
-    return this.consumeOptional('#') ? decodeURIComponent(this.remaining) : null;
+    return this.consumeOptional('#') ? decode(this.remaining) : null;
   }
 
   private parseChildren(depth = 0): {[outlet: string]: UrlSegmentGroup} {
