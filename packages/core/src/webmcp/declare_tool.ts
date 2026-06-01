@@ -33,6 +33,9 @@ export function declareExperimentalWebMcpTool<const InputSchema extends JsonSche
   tool: ToolDescriptor<InputSchema>,
   injector?: Injector,
 ): void {
+  // SSR may not have a document yet, so we abort before checking it.
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
+
   // modelContext was moved from `navigator` to `document` in the spec, but we check both for compatibility with different environments.
   const modelContext =
     (globalThis.document as {modelContext?: ModelContext}).modelContext ??
