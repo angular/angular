@@ -10,14 +10,14 @@ import {DebugSignalGraphNode} from '../../../../../protocol';
 import {FilterFn, FilterFnGenerator} from '../filter/filter.component';
 import {DevtoolsClusterNodeType} from '../signal-graph';
 
-type TokenType = 'word' | 'colon' | 'space';
+type TokenType = 'text' | 'colon' | 'space';
 
 interface Token {
   type: TokenType;
   value: string;
 }
 
-interface SingalNodeFilter {
+interface SignalNodeFilter {
   filters: {type: string; value: string}[];
   freeText: string;
 }
@@ -37,22 +37,20 @@ export function tokenizeSignalNodeFilter(text: string): Token[] {
   const tokens: Token[] = [];
   let buffer = '';
 
-  const attemptToPushToken = (i: number) => {
+  const attemptToPushToken = () => {
     if (!buffer) {
       return;
     }
     tokens.push({
       value: buffer,
-      type: 'word',
+      type: 'text',
     });
     buffer = '';
   };
 
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-
+  for (const char of Object.values(text)) {
     if (TERMINAL_CHAR.includes(char)) {
-      attemptToPushToken(i);
+      attemptToPushToken();
       tokens.push({
         type: CHAR_TO_TOKEN[char],
         value: char,
@@ -62,41 +60,46 @@ export function tokenizeSignalNodeFilter(text: string): Token[] {
     }
   }
 
-  attemptToPushToken(text.length);
+  attemptToPushToken();
 
   return tokens;
 }
 
-export function parseSignalNodeFilter(tokens: Token[]): SingalNodeFilter {
-  const filters: SingalNodeFilter['filters'] = [];
-  const wordsBuffer: string[] = [];
-  let colonMet = false;
+export function parseSignalNodeFilter(tokens: Token[]): SignalNodeFilter {
+  const filters: SignalNodeFilter['filters'] = [];
+  const textBuffer: string[] = [];
+  let tokenIdx = 0;
+  const hasTokens = () => tokenIdx < tokens.length;
+  const nextToken = () => tokens[tokenIdx++];
 
-  for (const token of tokens) {
+  while (hasTokens()) {
+    const token = nextToken();
+
     switch (token.type) {
-      case 'word':
-        if (!colonMet) {
-          wordsBuffer.push(token.value);
-        } else {
-          const lastWord = wordsBuffer.pop();
-          if (lastWord) {
-            filters.push({
-              type: lastWord,
-              value: token.value,
-            });
-          }
-          colonMet = false;
-        }
+      case 'text':
+        textBuffer.push(token.value);
         break;
+
       case 'colon':
-        colonMet = true;
+        const lastText = textBuffer.at(-1);
+
+        if (lastText) {
+          const next = hasTokens() ? nextToken() : null;
+          if (next && next.type === 'text') {
+            filters.push({
+              type: lastText,
+              value: next.value,
+            });
+            textBuffer.pop();
+          }
+        }
         break;
     }
   }
 
   return {
     filters,
-    freeText: wordsBuffer.join(' '),
+    freeText: textBuffer.join(' '),
   };
 }
 
@@ -120,6 +123,9 @@ export const signalNodeFilterFnGenerator: FilterFnGenerator<SignalNodeFilterSour
             return [];
           }
           break;
+        default:
+          // If there are any unrecognized filters, return no results.
+          return [];
       }
     }
 

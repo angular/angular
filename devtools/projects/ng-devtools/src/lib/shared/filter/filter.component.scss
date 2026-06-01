@@ -14,6 +14,7 @@
   flex-direction: row;
   background: var(--ng-filter-background, var(--color-foreground));
   border-radius: var(--ng-filter-border-radius, 1rem);
+  height: var(--ng-filter-height, auto);
 
   &:has(.filter-input:focus) {
     outline: var(--ng-filter-outline, 2px solid var(--dynamic-blue-02));

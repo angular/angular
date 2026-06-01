@@ -6,9 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ElementRef, input, output, viewChild} from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
+import {Debouncer} from '../utils/debouncer';
 
 export type FilterMatch = {
   startIdx: number;
@@ -40,6 +50,8 @@ const genericSearchGenerator: FilterFnGenerator = (filter: string) => {
     return [];
   };
 };
+
+const NOOP = () => {};
 
 /**
  * Generic filter input.
@@ -89,17 +101,20 @@ export class FilterComponent {
    */
   readonly filterFnGenerator = input<FilterFnGenerator<any>>(genericSearchGenerator);
 
-  private debounceTimeout?: ReturnType<typeof setTimeout>;
+  private searchDebouncer = new Debouncer();
 
-  emitFilter(filterStr: string): void {
-    if (this.debounceTimeout) {
-      clearTimeout(this.debounceTimeout);
-    }
+  emitFilter: (s: string) => void = NOOP;
 
-    this.debounceTimeout = setTimeout(() => {
-      const filterFn = this.filterFnGenerator()(filterStr);
-      this.filter.emit(filterFn);
-    }, this.debounce());
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.searchDebouncer.cancel());
+
+    effect(() => {
+      this.searchDebouncer = new Debouncer();
+      this.emitFilter = this.searchDebouncer.debounce((filterStr: string) => {
+        const filterFn = this.filterFnGenerator()(filterStr);
+        this.filter.emit(filterFn);
+      }, this.debounce());
+    });
   }
 
   emitNextMatched(): void {

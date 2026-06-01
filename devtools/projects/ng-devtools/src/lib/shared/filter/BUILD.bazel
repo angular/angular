@@ -24,6 +24,7 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
     ],
 )
 

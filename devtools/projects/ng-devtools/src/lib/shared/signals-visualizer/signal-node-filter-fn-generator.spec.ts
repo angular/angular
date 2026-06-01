@@ -21,54 +21,67 @@ describe('tokenizeSignalNodeFilter', () => {
   it('should tokenize a simple string', () => {
     const tokens = tokenizeSignalNodeFilter('signal name');
     expect(tokens).toEqual([
-      {type: 'word', value: 'signal'},
+      {type: 'text', value: 'signal'},
       {type: 'space', value: ' '},
-      {type: 'word', value: 'name'},
+      {type: 'text', value: 'name'},
     ]);
   });
 
   it('should tokenize a filter', () => {
     const tokens = tokenizeSignalNodeFilter('type:computed');
     expect(tokens).toEqual([
-      {type: 'word', value: 'type'},
+      {type: 'text', value: 'type'},
       {type: 'colon', value: ':'},
-      {type: 'word', value: 'computed'},
+      {type: 'text', value: 'computed'},
     ]);
   });
 
   it('should tokenize multiple filters', () => {
     const tokens = tokenizeSignalNodeFilter('type:computed foo:bar');
     expect(tokens).toEqual([
-      {type: 'word', value: 'type'},
+      {type: 'text', value: 'type'},
       {type: 'colon', value: ':'},
-      {type: 'word', value: 'computed'},
+      {type: 'text', value: 'computed'},
       {type: 'space', value: ' '},
-      {type: 'word', value: 'foo'},
+      {type: 'text', value: 'foo'},
       {type: 'colon', value: ':'},
-      {type: 'word', value: 'bar'},
+      {type: 'text', value: 'bar'},
     ]);
   });
 
-  it('should tokenize multiple filters with multiple free words', () => {
+  it('should tokenize multiple filters with multiple free text', () => {
     const tokens = tokenizeSignalNodeFilter('namedSignal type:signal  baz foo:bar  qux quux');
     expect(tokens).toEqual([
-      {type: 'word', value: 'namedSignal'},
+      {type: 'text', value: 'namedSignal'},
       {type: 'space', value: ' '},
-      {type: 'word', value: 'type'},
+      {type: 'text', value: 'type'},
       {type: 'colon', value: ':'},
-      {type: 'word', value: 'signal'},
+      {type: 'text', value: 'signal'},
       {type: 'space', value: ' '},
       {type: 'space', value: ' '},
-      {type: 'word', value: 'baz'},
+      {type: 'text', value: 'baz'},
       {type: 'space', value: ' '},
-      {type: 'word', value: 'foo'},
+      {type: 'text', value: 'foo'},
       {type: 'colon', value: ':'},
-      {type: 'word', value: 'bar'},
+      {type: 'text', value: 'bar'},
       {type: 'space', value: ' '},
       {type: 'space', value: ' '},
-      {type: 'word', value: 'qux'},
+      {type: 'text', value: 'qux'},
       {type: 'space', value: ' '},
-      {type: 'word', value: 'quux'},
+      {type: 'text', value: 'quux'},
+    ]);
+  });
+
+  it('should tokenize improperly defined or incomplete filters', () => {
+    const tokens = tokenizeSignalNodeFilter('type: computed foo:');
+    expect(tokens).toEqual([
+      {type: 'text', value: 'type'},
+      {type: 'colon', value: ':'},
+      {type: 'space', value: ' '},
+      {type: 'text', value: 'computed'},
+      {type: 'space', value: ' '},
+      {type: 'text', value: 'foo'},
+      {type: 'colon', value: ':'},
     ]);
   });
 });
@@ -109,7 +122,7 @@ describe('parseSignalNodeFilter', () => {
     ]);
   });
 
-  it('should tokenize multiple filters with multiple free words', () => {
+  it('should tokenize multiple filters with multiple free text', () => {
     const tokens = tokenizeSignalNodeFilter('namedSignal type:signal  baz foo:bar  qux quux');
     const parsed = parseSignalNodeFilter(tokens);
 
@@ -118,6 +131,22 @@ describe('parseSignalNodeFilter', () => {
       {type: 'type', value: 'signal'},
       {type: 'foo', value: 'bar'},
     ]);
+  });
+
+  it('should parse incomplete filters as free text', () => {
+    const tokens = tokenizeSignalNodeFilter('type:');
+    const parsed = parseSignalNodeFilter(tokens);
+
+    expect(parsed.freeText).toBe('type');
+    expect(parsed.filters.length).toBe(0);
+  });
+
+  it('should parse improperly defined filters as free text', () => {
+    const tokens = tokenizeSignalNodeFilter('type: signal');
+    const parsed = parseSignalNodeFilter(tokens);
+
+    expect(parsed.freeText).toBe('type signal');
+    expect(parsed.filters.length).toBe(0);
   });
 });
 
@@ -183,6 +212,13 @@ describe('signalNodeFilterFnGenerator', () => {
   it('should NOT match the source if there are multiple type filters', () => {
     const filterFn = signalNodeFilterFnGenerator('type:effect type:linkedSignal');
     const matches = filterFn({label: '', type: 'effect'});
+
+    expect(matches.length).toBe(0);
+  });
+
+  it('should NOT match the source if there are is a unrecognized filter', () => {
+    const filterFn = signalNodeFilterFnGenerator('foo:bar baz');
+    const matches = filterFn({label: 'baz', type: 'effect'});
 
     expect(matches.length).toBe(0);
   });

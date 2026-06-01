@@ -42,7 +42,7 @@ import {
   SignalNodeFilterSource,
 } from './signal-node-filter-fn-generator';
 
-const FILTER_INFO_TOOLTIP = 'You can filter signals by type via `type:<TYPE>`.';
+const FILTER_INFO_TOOLTIP = 'You can filter signals by type via `type:signal|computed|effect|...`.';
 
 @Component({
   selector: 'ng-signals-visualizer',
@@ -64,8 +64,8 @@ export class SignalsVisualizerComponent {
   protected readonly searchedNodeFound = output<void>();
 
   protected readonly searchExpanded = signal<boolean>(false);
-  protected readonly currentlyMatchedIndex = signal<number>(-1);
-  protected readonly matchedNodes = signal<string[]>([]); // Node IDs
+  protected readonly currentSearchMatchIdx = signal<number>(-1);
+  protected readonly searchMatches = signal<string[]>([]); // Node IDs
   protected readonly highlightedNodeLabel = signal<string | null>(null);
   private readonly expandedClustersIds = signal<Set<string>>(new Set());
   protected readonly expandedClusters = computed<DevtoolsSignalGraphCluster[]>(() => {
@@ -133,8 +133,8 @@ export class SignalsVisualizerComponent {
 
           effect(() => {
             if (!this.searchExpanded()) {
-              this.currentlyMatchedIndex.set(-1);
-              this.matchedNodes.set([]);
+              this.currentSearchMatchIdx.set(-1);
+              this.searchMatches.set([]);
             }
           });
         });
@@ -163,8 +163,10 @@ export class SignalsVisualizerComponent {
   }
 
   protected handleFilter(filterFn: FilterFn<SignalNodeFilterSource>): void {
-    this.currentlyMatchedIndex.set(-1);
-    this.matchedNodes.set([]);
+    this.currentSearchMatchIdx.set(-1);
+    this.searchMatches.set([]);
+
+    const newMatches: string[] = [];
 
     for (const node of this.graph()?.nodes || []) {
       let label = node.label || '';
@@ -191,12 +193,14 @@ export class SignalsVisualizerComponent {
         // since we don't perform text highlighting based
         // on the actual string match, similarly to the
         // component tree filter.
-        this.matchedNodes.update((matched) => [...matched, node.id]);
+        newMatches.push(node.id);
       }
     }
 
+    this.searchMatches.set(newMatches);
+
     // Select the first match, if there are any.
-    if (this.matchedNodes().length) {
+    if (this.searchMatches().length) {
       this.navigateMatchedNode('next');
     } else {
       // Unhighlight the last selected node, if there isn't a match.
@@ -206,17 +210,17 @@ export class SignalsVisualizerComponent {
 
   navigateMatchedNode(dir: 'next' | 'prev') {
     const dirIdx = dir === 'next' ? 1 : -1;
-    const matchedNodes = this.matchedNodes();
+    const matchedNodes = this.searchMatches();
 
     const newMatchedIdx =
-      (this.currentlyMatchedIndex() + dirIdx + matchedNodes.length) % matchedNodes.length;
+      (this.currentSearchMatchIdx() + dirIdx + matchedNodes.length) % matchedNodes.length;
     const newMatchId = matchedNodes[newMatchedIdx];
 
     // Snap to the node and highlight it.
     this.signalsVisualizer?.snapToNode(newMatchId);
     this.signalsVisualizer?.setSelected(newMatchId);
 
-    this.currentlyMatchedIndex.set(newMatchedIdx);
+    this.currentSearchMatchIdx.set(newMatchedIdx);
     this.searchedNodeFound.emit();
   }
 
