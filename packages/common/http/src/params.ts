@@ -62,7 +62,7 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
    * @returns The decoded key name.
    */
   decodeKey(key: string): string {
-    return decodeURIComponent(key);
+    return tryDecodeURIComponent(key);
   }
 
   /**
@@ -71,7 +71,19 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
    * @returns The decoded value.
    */
   decodeValue(value: string) {
+    return tryDecodeURIComponent(value);
+  }
+}
+
+// A bare `%` (or any other malformed percent-escape) is a legal character in a
+// query string but makes `decodeURIComponent` throw a `URIError`. Since the
+// raw string can come straight from `window.location.search`, fall back to the
+// undecoded value instead of letting the error escape `HttpParams`.
+function tryDecodeURIComponent(value: string): string {
+  try {
     return decodeURIComponent(value);
+  } catch {
+    return value;
   }
 }
 
