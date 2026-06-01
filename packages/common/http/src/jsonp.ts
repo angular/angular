@@ -54,6 +54,10 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
 // headers set
 export const JSONP_ERR_HEADERS_NOT_SUPPORTED = 'JSONP requests do not support headers.';
 
+// Error text given when a JSONP request URL is not absolute HTTP(S).
+export const JSONP_ERR_UNSAFE_URL =
+  'JSONP requests only support absolute URLs with HTTP(S) protocols.';
+
 /**
  * DI token/abstract type representing a map of JSONP callbacks.
  *
@@ -135,6 +139,10 @@ export class JsonpClientBackend implements HttpBackend {
         RuntimeErrorCode.JSONP_HEADERS_NOT_SUPPORTED,
         ngDevMode && JSONP_ERR_HEADERS_NOT_SUPPORTED,
       );
+    }
+
+    if (!this.isAllowedJsonpUrl(req.urlWithParams)) {
+      throw new RuntimeError(RuntimeErrorCode.JSONP_UNSAFE_URL, ngDevMode && JSONP_ERR_UNSAFE_URL);
     }
 
     // Everything else happens inside the Observable boundary.
@@ -273,6 +281,10 @@ export class JsonpClientBackend implements HttpBackend {
     foreignDocument ??= (this.document.implementation as DOMImplementation).createHTMLDocument();
 
     foreignDocument.adoptNode(script);
+  }
+
+  private isAllowedJsonpUrl(url: string): boolean {
+    return /^https?:\/\//i.test(url);
   }
 }
 
