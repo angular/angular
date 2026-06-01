@@ -2,7 +2,7 @@
 
 Field metadata is reactive data you can attach to an individual field. Angular's built-in constraint validators like `required()` and `min()` use this system internally. In other words, every time you call a validator, you're contributing to a metadata key for that particular field.
 
-This guide covers the metadata system in depth: how reducers combine contributions from multiple schema rules, how to write custom reducers, how reading composes with `hasMetadata()`, and how managed metadata ties lifecycle-aware objects to individual fields.
+This guide covers the metadata system in depth: how reducers combine contributions from multiple schema rules, how to write custom reducers, how to read metadata safely, and how managed metadata ties lifecycle-aware objects to individual fields.
 
 ## You have already been using metadata
 
@@ -126,23 +126,19 @@ The logic function receives the field's context, which exposes `value` as a sign
 
 ## Reading metadata from a field
 
-`hasMetadata(key)` returns `true` if any schema rule registered the key on this field. `state.metadata(key)` returns `undefined` when no rule has registered the key, and a signal of the current reduced value otherwise.
-
-```ts
-registrationForm.username().hasMetadata(USERNAME_HELP); // true if any metadata() rule registered this key
-```
+`state.metadata(key)` returns `undefined` when no rule has registered the key, and a signal of the current reduced value otherwise.
 
 The shape of that inner value (whether it can itself be `undefined`, what type it holds) depends on the key's reducer. Reducers are covered in the next section.
 
-When the key may not be registered, gate the read with `hasMetadata()`:
+When the key may not be registered, check the result of `metadata()` before calling the returned signal:
 
 ```angular-html
-@if (registrationForm.username().hasMetadata(USERNAME_HELP)) {
-  <p class="help">{{ registrationForm.username().metadata(USERNAME_HELP)!() }}</p>
+@if (registrationForm.username().metadata(USERNAME_HELP); as usernameHelp) {
+  <p class="help">{{ usernameHelp() }}</p>
 }
 ```
 
-When you know a rule always registers the key (because the schema in the same file does so), you can skip the `hasMetadata()` check and use optional chaining as a compact alternative:
+Optional chaining is a compact alternative when the key may not be registered:
 
 ```ts
 const message = registrationForm.username().metadata(USERNAME_HELP)?.();
