@@ -12,7 +12,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
-import {IDENTIFIER_PATTERN} from './util';
+import {IDENTIFIER_PATTERN, LET_PATTERN} from './util';
 
 /** Pattern for the expression in a for loop block. */
 const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+([\S\s]*)/;
@@ -25,9 +25,6 @@ const CONDITIONAL_ALIAS_PATTERN = /^(as\s+)(.*)/;
 
 /** Pattern used to identify an `else if` block. */
 const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
-
-/** Pattern used to identify a `let` parameter. */
-const FOR_LOOP_LET_PATTERN = /^let\s+([\S\s]*)/;
 
 /**
  * Pattern to group a string into leading whitespace, non whitespace, and trailing whitespace.
@@ -429,7 +426,7 @@ function parseForLoopParameters(
   };
 
   for (const param of secondaryParams) {
-    const letMatch = param.expression.match(FOR_LOOP_LET_PATTERN);
+    const letMatch = param.expression.match(LET_PATTERN);
 
     if (letMatch !== null) {
       const variablesSpan = new ParseSourceSpan(

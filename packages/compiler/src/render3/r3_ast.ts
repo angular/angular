@@ -342,6 +342,7 @@ export class DeferredBlockError extends BlockNode implements Node {
 export class ContentBlock extends BlockNode implements Node {
   constructor(
     public name: string,
+    public variables: Variable[],
     public children: Node[],
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,

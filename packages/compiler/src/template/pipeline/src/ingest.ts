@@ -367,6 +367,14 @@ function ingestForeignComponent(
 
   for (const block of contentBlocks) {
     const blockView = unit.job.allocateView(unit.xref);
+
+    // @content block variables map directly to the arguments array passed to the calling render
+    // function. We set the context variable's value to its index in the block's variables list
+    // so that code generation resolves it to its corresponding index in the arguments array.
+    for (let i = 0; i < block.variables.length; i++) {
+      blockView.contextVariables.set(block.variables[i].name, i);
+    }
+
     ingestNodes(blockView, block.children);
 
     unit.create.push(
