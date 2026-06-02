@@ -1487,6 +1487,27 @@ class TestComponent {
 
       expect(messages).toEqual([]);
     });
+
+    it('should narrow a let declaration with the same name as a component property', () => {
+      const messages = diagnose(
+        `
+          @let state = this.state();
+          @switch (state.mode) {
+            @case ('show') { {{ state.menu }}; }
+            @case ('hide') {}
+            @default never(state);
+          }
+        `,
+        `
+          import {InputSignal} from '@angular/core';
+          export class TestComponent {
+            state: InputSignal<{ mode: 'hide' } | { mode: 'show'; menu: number }>;
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
   });
 
   // https://github.com/angular/angular/issues/43970
