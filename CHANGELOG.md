@@ -1,3 +1,16 @@
+<a name="20.3.24"></a>
+
+# 20.3.24 (2026-06-02)
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                                                  |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------ |
+| [6ca433e56b](https://github.com/angular/angular/commit/6ca433e56bcf74fdb6ad01d3afdf59628fba69b6) | fix  | throw on suspicious URLs and restrict protocol-relative URLs |
+| [8680b5152f](https://github.com/angular/angular/commit/8680b5152fe58ebde81e331b74ba806fc86514cc) | fix  | update domino to latest version                              |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.23"></a>
 
 # 20.3.23 (2026-05-28)
