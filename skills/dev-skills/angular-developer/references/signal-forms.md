@@ -145,10 +145,10 @@ import {disabled, readonly, hidden} from '@angular/forms/signals';
 
 userForm = form(this.userModel, (schemaPath) => {
   // Conditionally disabled
-  disabled(schemaPath.password, ({valueOf}) => !valueOf(schemaPath.createAccount));
+  disabled(schemaPath.password, {when: ({valueOf}) => !valueOf(schemaPath.createAccount)});
 
   // Conditionally hidden (does NOT remove from model, just marks as hidden)
-  hidden(schemaPath.shippingAddress, ({valueOf}) => valueOf(schemaPath.sameAsBilling));
+  hidden(schemaPath.shippingAddress, {when: ({valueOf}) => valueOf(schemaPath.sameAsBilling)});
 
   // Readonly
   readonly(schemaPath.username);
@@ -598,7 +598,7 @@ export class App {
     });
 
     // valueOf is used to access values of other fields in rules
-    hidden(s.package.extras, ({valueOf}) => valueOf(s.package.tier) === 'economy');
+    hidden(s.package.extras, {when: ({valueOf}) => valueOf(s.package.tier) === 'economy'});
 
     applyEach(s.companions, (companion) => {
       required(companion.name, {message: 'Companion name required'});
