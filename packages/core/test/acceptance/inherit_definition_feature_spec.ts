@@ -108,8 +108,6 @@ describe('inheritance', () => {
         selector: 'child-cmp',
         template: `child`,
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildComponent extends BareBase {}
 
