@@ -25,10 +25,8 @@ describe('MyButtonContainerComponent', () => {
   let fixture: ComponentFixture<MyButtonContainerComponent>;
   let loader: HarnessLoader;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MyButtonContainerComponent, MatButtonModule],
-    }).compileComponents();
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
 
     fixture = TestBed.createComponent(MyButtonContainerComponent);
     // Create a harness loader for the component's fixture
