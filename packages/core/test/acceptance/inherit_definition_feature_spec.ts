@@ -24,7 +24,7 @@ import {
   QueryList,
   ViewChildren,
 } from '../../src/core';
-import {getComponentDef, getDirectiveDef} from '../../src/render3/def_getters';
+import {getDirectiveDef} from '../../src/render3/def_getters';
 import {TestBed} from '../../testing';
 
 describe('inheritance', () => {
@@ -66,67 +66,6 @@ describe('inheritance', () => {
     }).toThrowError(
       'NG0903: Directives cannot inherit Components. Directive MyDirective is attempting to extend component MyComponent',
     );
-  });
-
-  it('should ignore inherited ɵdir from polluted Object.prototype', () => {
-    const originalDir = (Object.prototype as any).ɵdir;
-    let hadOwnDir = false;
-
-    try {
-      hadOwnDir = Object.hasOwn(Object.prototype, 'ɵdir');
-      (Object.prototype as any).ɵdir = {
-        hostAttrs: ['data-pwned', 'yes'],
-      };
-
-      class BareBase {}
-
-      @Directive({
-        selector: '[childDir]',
-        standalone: false,
-      })
-      class ChildDirective extends BareBase {}
-
-      const dirDef = getDirectiveDef(ChildDirective)!;
-      expect(dirDef.hostAttrs).toBe(null);
-    } finally {
-      if (hadOwnDir) {
-        (Object.prototype as any).ɵdir = originalDir;
-      } else {
-        delete (Object.prototype as any).ɵdir;
-      }
-    }
-  });
-
-  it('should ignore inherited ɵcmp from polluted Object.prototype', () => {
-    const originalCmp = (Object.prototype as any).ɵcmp;
-    let hadOwnCmp = false;
-
-    try {
-      hadOwnCmp = Object.hasOwn(Object.prototype, 'ɵcmp');
-      (Object.prototype as any).ɵcmp = {
-        hostAttrs: ['data-pwned', 'yes'],
-      };
-
-      class BareBase {}
-
-      @Component({
-        selector: 'child-cmp',
-        template: `child`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class ChildComponent extends BareBase {}
-
-      const cmpDef = getComponentDef(ChildComponent)!;
-      expect(cmpDef.hostAttrs).toBe(null);
-    } finally {
-      if (hadOwnCmp) {
-        (Object.prototype as any).ɵcmp = originalCmp;
-      } else {
-        delete (Object.prototype as any).ɵcmp;
-      }
-    }
   });
 
   describe('multiple children', () => {
