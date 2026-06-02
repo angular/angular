@@ -532,6 +532,7 @@
       "hasLift",
       "hasMatchingDehydratedView",
       "hasOnDestroy",
+      "hasOutgoingCredentials",
       "hasParentInjector",
       "hasSkipHydrationAttrOnRElement",
       "hasSkipHydrationAttrOnTNode",
