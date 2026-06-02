@@ -59,8 +59,8 @@ import {AnalyticsLogger} from './analytics-logger.service';
 })
 export class Navbar {
   // Injecting dependencies using class field initializers
-  private router = inject(Router);
-  private analytics = inject(AnalyticsLogger);
+  private readonly router = inject(Router);
+  private readonly analytics = inject(AnalyticsLogger);
 
   navigateToDetail(event: Event) {
     event.preventDefault();
