@@ -370,12 +370,12 @@ describe('foreign components', () => {
           '<!--foreign-view-head-->' + // <SimpleWrapper>
           '<div class="wrapper">' +
           '<!--container-->' + // @content(children) (implicit)
-          '<!--foreign-component-->' + // TODO: fix after https://github.com/angular/angular/pull/69099.
           '<!--foreign-view-head-->' + // <FancyButton>
           '<button>' +
           '<span id="text">Inside wrapper button</span>' +
           '</button>' +
           '<!--foreign-view-tail-->' + // </FancyButton>
+          '<!--foreign-component-->' +
           '</div>' +
           '<!--foreign-view-tail-->' + // </SimpleWrapper>
           '<!--foreign-component-->',
@@ -605,13 +605,13 @@ describe('foreign components', () => {
           '<div class="outer">' +
           '<!--container-->' + // @content(renderHeader)
           '<!--container-->' + // @content(children) (implicit)
-          '<!--foreign-component-->' + // TODO: fix after https://github.com/angular/angular/pull/69099.
           '<!--foreign-view-head-->' + // <InnerComp>
           '<div class="inner">' +
           '<div class="inner-header"> Outer Msg - Inner Msg </div>' +
           '<div class="inner-body"> Body Content </div>' +
           '</div>' +
           '<!--foreign-view-tail-->' + // </InnerComp>
+          '<!--foreign-component-->' +
           '</div>' +
           '<!--foreign-view-tail-->' + // </OuterComp>
           '<!--foreign-component-->',

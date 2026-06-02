@@ -62,14 +62,26 @@ export function collectNativeNodes(
 
     const lNode = lView[tNode.index];
     if (lNode !== null) {
-      result.push(unwrapRNode(lNode));
-    }
+      if (isLContainer(lNode)) {
+        const anchor = lNode[NATIVE];
+        // If this is a dynamic container (ViewContainerRef on an element), the HOST element is a
+        // distinct element node and must be pushed first (before the views are collected) to
+        // preserve DOM order.
+        if (anchor !== lNode[HOST]) {
+          result.push(unwrapRNode(lNode));
+        }
 
-    // A given lNode can represent either a native node or a LContainer (when it is a host of a
-    // ViewContainerRef). When we find a LContainer we need to descend into it to collect root nodes
-    // from the views in this container.
-    if (isLContainer(lNode) && !(lNode[FLAGS] & LContainerFlags.LogicalOnly)) {
-      collectNativeNodesInLContainer(lNode, result);
+        // Collect the root nodes from the views in this container.
+        if (!(lNode[FLAGS] & LContainerFlags.LogicalOnly)) {
+          collectNativeNodesInLContainer(lNode, result);
+        }
+
+        // The container's anchor comment node is always physically positioned after any views
+        // rendered inside the container, so we always push it here at the end.
+        result.push(anchor);
+      } else {
+        result.push(unwrapRNode(lNode));
+      }
     }
 
     const tNodeType = tNode.type;
@@ -107,22 +119,5 @@ export function collectNativeNodesInLContainer(lContainer: LContainer, result: a
     if (lViewFirstChildTNode !== null) {
       collectNativeNodes(lViewInAContainer[TVIEW], lViewInAContainer, lViewFirstChildTNode, result);
     }
-  }
-
-  // When an LContainer is created, the anchor (comment) node is:
-  // - (1) either reused in case of an ElementContainer (<ng-container>)
-  // - (2) or a new comment node is created
-  // In the first case, the anchor comment node would be added to the final
-  // list by the code in the `collectNativeNodes` function
-  // (see the `result.push(unwrapRNode(lNode))` line), but the second
-  // case requires extra handling: the anchor node needs to be added to the
-  // final list manually. See additional information in the `createAnchorNode`
-  // function in the `view_container_ref.ts`.
-  //
-  // In the first case, the same reference would be stored in the `NATIVE`
-  // and `HOST` slots in an LContainer. Otherwise, this is the second case and
-  // we should add an element to the final list.
-  if (lContainer[NATIVE] !== lContainer[HOST]) {
-    result.push(lContainer[NATIVE]);
   }
 }
