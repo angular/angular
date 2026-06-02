@@ -362,7 +362,7 @@ To configure this, update your `angular.json` file as follows:
 You can customize how Angular caches HTTP responses during server‑side rendering (SSR) and reuses them during hydration by configuring `HttpTransferCacheOptions`.  
 This configuration is provided globally using `withHttpTransferCacheOptions` inside `provideClientHydration()`.
 
-By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization`, `Proxy-Authorization`, or `Cookie` headers and are not sent with `withCredentials`. You can override those settings by using `withHttpTransferCacheOptions` to the hydration configuration.
+By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization`, `Proxy-Authorization`, or `Cookie` headers and are not sent with `withCredentials` or Fetch API `credentials` modes that can send credentials. You can override those settings by using `withHttpTransferCacheOptions` to the hydration configuration.
 
 ```ts
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -417,7 +417,7 @@ Use this only when `POST` requests are **idempotent** and safe to reuse between 
 ### `includeRequestsWithAuthHeaders`
 
 Determines whether requests containing `Authorization`, `Proxy‑Authorization`, or `Cookie` headers are eligible for caching.  
-By default, these are excluded to prevent caching user‑specific responses. Requests sent with `withCredentials` are also excluded by default.
+By default, these are excluded to prevent caching user‑specific responses. Requests sent with `withCredentials` or Fetch API `credentials` set to `include` or `same-origin` are also excluded by default.
 
 ```ts
 withHttpTransferCacheOptions({
