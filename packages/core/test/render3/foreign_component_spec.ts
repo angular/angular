@@ -40,8 +40,9 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 1,
       vars: 0,
+      consts: [foreignComp],
       create: () => {
-        ɵɵforeignComponent(0, foreignComp);
+        ɵɵforeignComponent(0, 0);
       },
     });
 
@@ -58,8 +59,9 @@ describe('ɵɵforeignComponent', () => {
     new ViewFixture({
       decls: 1,
       vars: 0,
+      consts: [foreignComp],
       create: () => {
-        ɵɵforeignComponent(0, foreignComp, {name: 'Angular'});
+        ɵɵforeignComponent(0, 0, {name: 'Angular'});
       },
     });
 
@@ -80,8 +82,9 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 1,
       vars: 0,
+      consts: [foreignComp],
       create: () => {
-        ɵɵforeignComponent(0, foreignComp);
+        ɵɵforeignComponent(0, 0);
       },
     });
 
@@ -102,9 +105,10 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 3,
       vars: 0,
+      consts: [foreignComp],
       create: () => {
         ɵɵelement(0, 'p');
-        ɵɵforeignComponent(1, foreignComp);
+        ɵɵforeignComponent(1, 0);
         ɵɵelement(2, 'span');
       },
     });
@@ -130,9 +134,10 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 2,
       vars: 0,
+      consts: [foreignComp],
       create: () => {
         ɵɵelementStart(0, 'div');
-        ɵɵforeignComponent(1, foreignComp);
+        ɵɵforeignComponent(1, 0);
         ɵɵelementEnd();
       },
     });
@@ -171,11 +176,11 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 2,
       vars: 0,
-      consts: [['provider-dir', '']],
+      consts: [['provider-dir', ''], foreignComp],
       directives: [ProviderDirective],
       create: () => {
         ɵɵelementStart(0, 'div', 0);
-        ɵɵforeignComponent(1, foreignComp);
+        ɵɵforeignComponent(1, 1);
         ɵɵelementEnd();
       },
     });
@@ -190,7 +195,7 @@ describe('ɵɵforeignComponent', () => {
 
     const createFn = () => {
       ɵɵelementStart(0, 'div');
-      ɵɵforeignComponent(1, foreignComp1);
+      ɵɵforeignComponent(1, 0);
       ɵɵelementEnd();
     };
     const expectedHtml =
@@ -203,6 +208,7 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 2,
       vars: 0,
+      consts: [foreignComp1],
       create: createFn,
     });
     expect(fixture.host.innerHTML).toContain(expectedHtml);
@@ -273,11 +279,12 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 4,
       vars: 0,
+      consts: [foreignComp],
       create: () => {
         ɵɵdomTemplate(0, iconTemplate, 2, 0);
         ɵɵdomTemplate(1, descriptionTemplate, 2, 0);
         ɵɵdomTemplate(2, childrenTemplate, 2, 0);
-        ɵɵforeignComponent(3, foreignComp, {
+        ɵɵforeignComponent(3, 0, {
           icon: ɵɵforeignContent(0),
           description: ɵɵforeignContent(1),
           children: ɵɵforeignContent(2),
@@ -332,9 +339,10 @@ describe('ɵɵforeignComponent', () => {
     const fixture = new ViewFixture({
       decls: 2,
       vars: 0,
+      consts: [foreignComp],
       create: () => {
         ɵɵdomTemplate(0, itemTemplate, 2, 2);
-        ɵɵforeignComponent(1, foreignComp, {
+        ɵɵforeignComponent(1, 0, {
           renderItem: ɵɵforeignContentFn(0),
         });
       },

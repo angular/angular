@@ -25,23 +25,25 @@ import {createAndRenderEmbeddedLView} from '../view_manipulation';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {assertLContainer} from '../assert';
 import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags} from '../interfaces/container';
+import {getConstant} from '../util/view_utils';
 
 /**
  * Creation phase instruction to render a foreign component.
  *
  * @param index The index of the container in the data array.
- * @param foreignComponent The matched foreign component.
+ * @param foreignComponentIndex The index of the matched foreign component in the constant pool.
  * @param props Aggregate properties and static attributes.
  * @codeGenApi
  */
 export function ɵɵforeignComponent(
   index: number,
-  foreignComponent: ForeignComponent<any>,
+  foreignComponentIndex: number,
   props?: any,
 ): void {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
+  const foreignComponent = getConstant<ForeignComponent<any>>(tView.consts, foreignComponentIndex)!;
 
   // 1. Get or create TNode for this container slot
   let tNode: TContainerNode;
