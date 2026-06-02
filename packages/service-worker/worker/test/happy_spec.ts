@@ -135,7 +135,7 @@ import {envIsSupported} from '../testing/utils';
         name: 'other',
         installMode: 'lazy',
         updateMode: 'lazy',
-        urls: ['/baz.txt', '/qux.txt', '/lazy/redirected.txt'],
+        urls: ['/baz.txt', '/qux.txt', '/lazy/redirected.txt', '/lazy/cross-origin-redirected.txt'],
         patterns: [],
         cacheQueryOptions: {ignoreVary: true},
       },
@@ -220,6 +220,11 @@ import {envIsSupported} from '../testing/utils';
     .withStaticFiles(dist)
     .withRedirect('/redirected.txt', '/redirect-target.txt')
     .withRedirect('/lazy/redirected.txt', '/lazy/redirect-target.txt')
+    .withRedirect(
+      '/lazy/cross-origin-redirected.txt',
+      'https://example.com/lazy/redirect-target.txt',
+    )
+    .withRedirect('https://example.com/lazy/redirect-target.txt', '/lazy/redirect-target.txt')
     .withError('/error.txt');
 
   const server = serverBuilderBase.withManifest(manifest).build();
@@ -1681,7 +1686,10 @@ import {envIsSupported} from '../testing/utils';
           // Request a redirected, lazy-cached asset (so that it is fetched from the network) and
           // provide headers.
           const reqInit = {
-            headers: {SomeHeader: 'SomeValue'},
+            headers: {
+              Authorization: 'Bearer secret',
+              SomeHeader: 'SomeValue',
+            },
           };
           expect(await makeRequest(scope, '/lazy/redirected.txt', undefined, reqInit)).toBe(
             'this was a redirect too',
@@ -1689,6 +1697,29 @@ import {envIsSupported} from '../testing/utils';
 
           // Verify that the headers were passed through to the network.
           const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
+          expect(redirectReq.headers.get('Authorization')).toBe('Bearer secret');
+          expect(redirectReq.headers.get('SomeHeader')).toBe('SomeValue');
+        });
+
+        it('does not pass sensitive headers through to a different origin', async () => {
+          const reqInit = {
+            headers: {
+              Authorization: 'Bearer secret',
+              Cookie: 'session=secret',
+              'Proxy-Authorization': 'Basic secret',
+              SomeHeader: 'SomeValue',
+            },
+          };
+          expect(
+            await makeRequest(scope, '/lazy/cross-origin-redirected.txt', undefined, reqInit),
+          ).toBe('this was a redirect too');
+
+          const [redirectReq] = server.getRequestsFor(
+            'https://example.com/lazy/redirect-target.txt',
+          );
+          expect(redirectReq.headers.get('Authorization')).toBeNull();
+          expect(redirectReq.headers.get('Cookie')).toBeNull();
+          expect(redirectReq.headers.get('Proxy-Authorization')).toBeNull();
           expect(redirectReq.headers.get('SomeHeader')).toBe('SomeValue');
         });
 
