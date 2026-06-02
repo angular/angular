@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {debounceTime} from 'rxjs/operators';
 import {
   ComponentExplorerViewQuery,
   ComponentType,
@@ -23,7 +24,6 @@ import {
   SignalNodePosition,
   TransferStateValue,
 } from '../../../protocol';
-import {debounceTime} from 'rxjs/operators';
 import {
   appIsAngularInDevMode,
   appIsAngularIvy,
@@ -34,6 +34,7 @@ import {
 
 import {ComponentInspector} from './component-inspector/component-inspector';
 import {
+  getDirectiveCdStrategy,
   getElementInjectorElement,
   getInjectorFromElementNode,
   getInjectorProviders,
@@ -41,7 +42,6 @@ import {
   getLatestComponentState,
   idToInjector,
   isElementInjector,
-  getDirectiveCdStrategy,
   logValue,
   nodeInjectorToResolutionPath,
   queryDirectiveForest,
@@ -52,15 +52,15 @@ import {
 import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
+import {DirectiveForestHooks} from './hooks/hooks';
 import {ComponentTreeNode} from './interfaces';
-import {getRouterCallableConstructRef, parseRoutes, RoutePropertyType} from './router-tree';
 import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
+import {getSupportedApis} from './ng-debug-api/supported-apis';
+import {getRouterCallableConstructRef, parseRoutes, RoutePropertyType} from './router-tree';
+import {sanitizeObject} from './serialization-utils';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
-import {DirectiveForestHooks} from './hooks/hooks';
-import {getSupportedApis} from './ng-debug-api/supported-apis';
-import {sanitizeObject} from './serialization-utils';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -104,8 +104,13 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getTransferState', getTransferStateCallback(messageBus));
 
+  const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
-    console[level](`[Angular DevTools]: ${message}`);
+    if (SAFE_LOG_LEVELS.has(level)) {
+      console[level](`[Angular DevTools]: ${message}`);
+    } else {
+      console.warn(`[Angular DevTools]: Invalid log level attempted: ${level}`);
+    }
   });
 
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
