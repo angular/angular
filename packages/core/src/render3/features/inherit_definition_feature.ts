@@ -10,7 +10,6 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type, Writable} from '../../interface/type';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {fillProperties} from '../../util/property';
-import {NG_COMP_DEF, NG_DIR_DEF} from '../fields';
 import {
   ComponentDef,
   ContentQueriesFunction,
@@ -46,20 +45,13 @@ export function ɵɵInheritDefinitionFeature(
   let shouldInheritFields = true;
   const inheritanceChain: WritableDef[] = [definition];
 
-  // Only accept defs declared on the current type to avoid polluted prototype members.
-  // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-  while (superType && superType !== Function.prototype && superType !== Object.prototype) {
+  while (superType) {
     let superDef: DirectiveDef<any> | ComponentDef<any> | undefined = undefined;
-    const cmpDef = Object.hasOwn(superType, NG_COMP_DEF)
-      ? ((superType as any)[NG_COMP_DEF] as ComponentDef<any>)
-      : undefined;
-    const dirDef = Object.hasOwn(superType, NG_DIR_DEF)
-      ? ((superType as any)[NG_DIR_DEF] as DirectiveDef<any>)
-      : undefined;
     if (isComponentDef(definition)) {
-      superDef = cmpDef ?? dirDef;
+      // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
+      superDef = superType.ɵcmp || superType.ɵdir;
     } else {
-      if (cmpDef) {
+      if (superType.ɵcmp) {
         throw new RuntimeError(
           RuntimeErrorCode.INVALID_INHERITANCE,
           ngDevMode &&
@@ -68,7 +60,8 @@ export function ɵɵInheritDefinitionFeature(
             )} is attempting to extend component ${stringifyForError(superType)}`,
         );
       }
-      superDef = dirDef;
+      // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
+      superDef = superType.ɵdir;
     }
 
     if (superDef) {
