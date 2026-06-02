@@ -237,7 +237,7 @@ const ALL_COUNTRIES = [
   'Tonga',
   'Trinidad and Tobago',
   'Tunisia',
-  'Turkey',
+  'Türkiye',
   'Turkmenistan',
   'Tuvalu',
   'Uganda',
