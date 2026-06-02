@@ -40,7 +40,9 @@
   border-radius: 0.25rem;
 }
 
-[ngMenuItem][data-active='true'] {
+[ngMenuItem]:not([aria-disabled='true']):hover,
+[ngMenuItem]:not([aria-disabled='true']):focus,
+[ngMenuItem][aria-expanded='true'] {
   background: color-mix(in srgb, var(--border-color) 10%, transparent);
 }
 
