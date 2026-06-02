@@ -23,29 +23,6 @@ function FancyButton(props: {children: Node[]}): Node[] {
   return [button];
 }
 
-// TODO: support this inline.
-function InnerComp(props: {renderHeader: (innerMsg: string) => Node[]; children: Node[]}): Node[] {
-  const inner = document.createElement('div');
-  inner.className = 'inner';
-
-  const headerDiv = document.createElement('div');
-  headerDiv.className = 'inner-header';
-  const headerNodes = props.renderHeader('Inner Msg');
-  for (const child of headerNodes) {
-    headerDiv.appendChild(child);
-  }
-  inner.appendChild(headerDiv);
-
-  const bodyDiv = document.createElement('div');
-  bodyDiv.className = 'inner-body';
-  for (const child of props.children) {
-    bodyDiv.appendChild(child);
-  }
-  inner.appendChild(bodyDiv);
-
-  return [inner];
-}
-
 describe('foreign components', () => {
   describe('reactivity', () => {
     it('should update foreign content', async () => {
@@ -569,6 +546,31 @@ describe('foreign components', () => {
           outer.appendChild(node);
         }
         return [outer];
+      }
+
+      function InnerComp(props: {
+        renderHeader: (innerMsg: string) => Node[];
+        children: Node[];
+      }): Node[] {
+        const inner = document.createElement('div');
+        inner.className = 'inner';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'inner-header';
+        const headerNodes = props.renderHeader('Inner Msg');
+        for (const child of headerNodes) {
+          headerDiv.appendChild(child);
+        }
+        inner.appendChild(headerDiv);
+
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'inner-body';
+        for (const child of props.children) {
+          bodyDiv.appendChild(child);
+        }
+        inner.appendChild(bodyDiv);
+
+        return [inner];
       }
 
       @Component({

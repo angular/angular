@@ -400,8 +400,9 @@ function ingestForeignComponent(
   // Foreign components are created in the creation block. Updates are triggered reactively
   // through directly passed signal properties, alleviating the need for any explicit update
   // operations.
+  const constIndex = unit.job.addConst(foreignComp.component);
   unit.create.push(
-    ir.createForeignComponentOp(id, foreignComp.component, props, element.startSourceSpan),
+    ir.createForeignComponentOp(id, o.literal(constIndex), props, element.startSourceSpan),
   );
 }
 
