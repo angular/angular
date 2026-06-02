@@ -9,6 +9,7 @@ import {Type} from '../../interface/type';
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {AttributeMarker} from './attribute_marker';
+import {ForeignComponent} from '../../interface/foreign_component';
 
 import {TIcu} from './i18n';
 import {CssSelector} from './projection';
@@ -226,8 +227,9 @@ export type TAttributes = (string | AttributeMarker | CssSelector)[];
  * - Attribute arrays.
  * - Local definition arrays.
  * - Translated messages (i18n).
+ * - Foreign components.
  */
-export type TConstants = (TAttributes | string)[];
+export type TConstants = (TAttributes | string | ForeignComponent<any>)[];
 
 /**
  * Factory function that returns an array of consts. Consts can be represented as a function in
