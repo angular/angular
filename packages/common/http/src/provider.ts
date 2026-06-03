@@ -240,6 +240,7 @@ export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtec
  * Add JSONP support to the configuration of the current `HttpClient` instance.
  *
  * @see {@link provideHttpClient}
+ * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
  */
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
   return makeHttpFeature(HttpFeatureKind.JsonpSupport, [

@@ -26,11 +26,11 @@ export const enum RuntimeErrorCode {
     INTEGRITY_NOT_SUPPORTED_WITH_XHR = 2820,
     // (undocumented)
     INVALID_TIMEOUT_VALUE = 2822,
-    // (undocumented)
+    // @deprecated (undocumented)
     JSONP_HEADERS_NOT_SUPPORTED = 2812,
-    // (undocumented)
+    // @deprecated (undocumented)
     JSONP_WRONG_METHOD = 2810,
-    // (undocumented)
+    // @deprecated (undocumented)
     JSONP_WRONG_RESPONSE_TYPE = 2811,
     // (undocumented)
     KEEPALIVE_NOT_SUPPORTED_WITH_XHR = 2813,
