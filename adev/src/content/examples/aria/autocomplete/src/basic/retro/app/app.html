@@ -13,6 +13,15 @@
       (click)="popupExpanded.set(true)"
       (focusout)="onBlur()"
     />
+    <button
+      type="button"
+      class="clear-button"
+      aria-label="Clear"
+      (mousedown)="$event.preventDefault()"
+      (click)="clear()"
+    >
+      <span class="clear-icon" aria-hidden="true">X</span>
+    </button>
   </div>
 
   <div aria-live="polite" class="cdk-visually-hidden">

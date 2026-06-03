@@ -159,6 +159,59 @@ Selects can be disabled to prevent user interaction when certain form conditions
 
 When disabled, the select shows a disabled visual state and blocks all user interaction. Screen readers announce the disabled state to assistive technology users.
 
+## Testing
+
+The select pattern can be tested using a combination of `ComboboxHarness` and `ListboxHarness` from `@angular/aria/combobox/testing` and `@angular/aria/listbox/testing`.
+Here is an example of how to use the harnesses to test a select component:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComboboxHarness} from '@angular/aria/combobox/testing';
+import {ListboxHarness} from '@angular/aria/listbox/testing';
+import {MySelectComponent} from './my-select'; // Your component
+
+describe('MySelectComponent', () => {
+  let fixture: ComponentFixture<MySelectComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MySelectComponent],
+    });
+
+    fixture = TestBed.createComponent(MySelectComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should allow selecting an option', async () => {
+    // Load the combobox harness (which acts as the select trigger)
+    const select = await loader.getHarness(ComboboxHarness);
+
+    // Verify it is closed initially
+    expect(await select.isOpen()).toBe(false);
+
+    // Open the dropdown
+    await select.open();
+    expect(await select.isOpen()).toBe(true);
+
+    // Get the listbox harness from the popup
+    const listbox = await select.getPopupWidget(ListboxHarness);
+    const options = await listbox.getOptions();
+    expect(options.length).toBe(3);
+
+    // Click the second option
+    await options[1].click();
+
+    // Verify the dropdown closed and the value updated
+    expect(await select.isOpen()).toBe(false);
+    expect(await (await select.host()).text()).toContain('Option 2');
+  });
+});
+```
+
 ## APIs
 
 The select pattern uses the following directives from Angular's Aria library. See the full API documentation in the linked guides.
@@ -212,4 +265,4 @@ The select pattern uses `ngListbox` for the dropdown list and `ngOption` for eac
 
 ### Positioning
 
-The select pattern integrates with [CDK Overlay](api/cdk/overlay/CdkConnectedOverlay) for smart positioning. Use `cdkConnectedOverlay` to handle viewport edges and scrolling automatically.
+The select pattern integrates with [CDK Overlay](https://material.angular.io/cdk/overlay/overview) for smart positioning. Use `cdkConnectedOverlay` to handle viewport edges and scrolling automatically.

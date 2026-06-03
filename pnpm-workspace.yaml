@@ -87,3 +87,6 @@ hoist: false
 # for peer dependencies, avoiding potential mismatches. In addition, it ensures we can continue
 # to rely on peer dependency placeholders substituted via Bazel.
 autoInstallPeers: false
+
+# Avoid prompting for confirmation when pnpm determines node_modules needs to be purged.
+confirmModulesPurge: false

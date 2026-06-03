@@ -13,6 +13,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CREDENTIALS_NOT_SUPPORTED_WITH_XHR = 2818,
     // (undocumented)
+    FETCH_RESPONSE_BODY_TOO_LARGE = 2825,
+    // (undocumented)
     FETCH_UPLOAD_PROGRESS_NOT_SUPPORTED = 2824,
     // (undocumented)
     HEADERS_ALTERED_BY_TRANSFER_CACHE = -2802,

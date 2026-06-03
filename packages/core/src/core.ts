@@ -114,7 +114,7 @@ export {
 } from './render3/dynamic_bindings';
 // g3-only export {foreignImport} from './render3/foreign_import';
 export {createEnvironmentInjector, createNgModule} from './render3/ng_module_ref';
-export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
+export {publishNonCoreGlobalUtil as ɵpublishNonCoreGlobalUtil} from './render3/util/global_utils';
 export * from './resource';
 export {Sanitizer} from './sanitization/sanitizer';
 export {SecurityContext} from './sanitization/dom_security_schema';

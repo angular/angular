@@ -10,6 +10,7 @@ import {
   DestroyRef,
   ɵformatRuntimeError as formatRuntimeError,
   inject,
+  InjectionToken,
   NgZone,
   ɵRuntimeError as RuntimeError,
   Service,
@@ -37,6 +38,27 @@ const XSSI_PREFIX = /^\)\]\}',?\n/;
 
 let uploadProgressWarningLogged = false;
 
+// 1 MB by default
+const DEFAULT_SSR_MAX_RESPONSE_BODY_SIZE = 1024 * 1024;
+
+/**
+ * Configures the maximum buffered response body size for `FetchBackend`.
+ *
+ * The limit is only enabled by default in SSR mode to prevent unbounded buffering
+ * when a response stream never terminates.
+ *
+ * Set to `null` to disable the limit.
+ */
+export const HTTP_FETCH_MAX_RESPONSE_SIZE = new InjectionToken<number | null>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'HTTP_FETCH_MAX_RESPONSE_SIZE' : '',
+  {
+    factory: () =>
+      typeof ngServerMode !== 'undefined' && ngServerMode
+        ? DEFAULT_SSR_MAX_RESPONSE_BODY_SIZE
+        : null,
+  },
+);
+
 /**
  * Uses `fetch` to send requests to a backend server.
  *
@@ -57,6 +79,7 @@ export class FetchBackend implements HttpBackend {
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly maxResponseSize = inject(HTTP_FETCH_MAX_RESPONSE_SIZE);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -140,6 +163,16 @@ export class FetchBackend implements HttpBackend {
     if (response.body) {
       // Read Progress
       const contentLength = response.headers.get('content-length');
+      const contentLengthValue = contentLength !== null ? Number(contentLength) : NaN;
+
+      if (
+        this.maxResponseSize !== null &&
+        Number.isFinite(contentLengthValue) &&
+        contentLengthValue > this.maxResponseSize
+      ) {
+        throwBodyTooLargeError(this.maxResponseSize);
+      }
+
       const chunks: Uint8Array[] = [];
       const reader = response.body.getReader();
       let receivedLength = 0;
@@ -181,6 +214,11 @@ export class FetchBackend implements HttpBackend {
           chunks.push(value);
           receivedLength += value.length;
 
+          if (this.maxResponseSize !== null && receivedLength > this.maxResponseSize) {
+            await reader.cancel();
+            throwBodyTooLargeError(this.maxResponseSize);
+          }
+
           if (reportDownloadProgress) {
             partialText =
               request.responseType === 'text'
@@ -191,7 +229,7 @@ export class FetchBackend implements HttpBackend {
             const reportProgress = () =>
               observer.next({
                 type: HttpEventType.DownloadProgress,
-                total: contentLength ? +contentLength : undefined,
+                total: Number.isFinite(contentLengthValue) ? contentLengthValue : undefined,
                 loaded: receivedLength,
                 partialText,
               } as HttpDownloadProgressEvent);
@@ -406,4 +444,12 @@ function warningOptionsMessage(req: HttpRequest<any>) {
  */
 function silenceSuperfluousUnhandledPromiseRejection(promise: Promise<unknown>) {
   promise.then(noop, noop);
+}
+
+function throwBodyTooLargeError(maxResponseSize: number): never {
+  throw new RuntimeError(
+    RuntimeErrorCode.FETCH_RESPONSE_BODY_TOO_LARGE,
+    ngDevMode &&
+      `Fetch response body exceeded the configured buffer limit (${maxResponseSize} bytes).`,
+  );
 }

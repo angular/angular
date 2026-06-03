@@ -150,6 +150,7 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
   ɵɵelementStart,
+  ɵɵforeignComponent,
   ɵɵenableBindings,
   ɵɵExternalStylesFeature,
   ɵɵFactoryDeclaration,
@@ -288,8 +289,8 @@ export {
   ForLoopBlockData as ɵForLoopBlockData,
 } from './render3/util/control_flow_types';
 export {
+  ExternalCoreGlobalUtils as ɵExternalCoreGlobalUtils,
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
-  GlobalDevModeUtils as ɵGlobalDevModeUtils,
 } from './render3/util/global_utils';
 export {getTransferState as ɵgetTransferState} from './render3/util/transfer_state_utils';
 export {

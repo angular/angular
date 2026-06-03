@@ -10,7 +10,7 @@ import {AsyncPipe} from '@angular/common';
 import {Component, computed, inject, input} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ThemeManager} from '../../../../core/services/theme-manager.service';
-import {CodeHighligher} from '../../code-highlighting/code-highlighter';
+import {CodeHighlighter} from '../../code-highlighting/code-highlighter';
 
 @Component({
   selector: 'adev-code-block',
@@ -23,7 +23,7 @@ import {CodeHighligher} from '../../code-highlighting/code-highlighter';
   `,
 })
 export class CodeBlock {
-  codeHighlighter = inject(CodeHighligher);
+  codeHighlighter = inject(CodeHighlighter);
   code = input.required<string>();
   language = input<'angular-html' | 'angular-ts'>('angular-ts');
   sanitizer = inject(DomSanitizer);

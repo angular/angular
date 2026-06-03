@@ -44,11 +44,11 @@ export class App {
 ```html
 <div ngAccordionGroup [multiExpandable]="false">
   <div class="accordion-item">
-    <button ngAccordionTrigger panelId="panel-1" class="accordion-header">
+    <button ngAccordionTrigger [panel]="panel1" class="accordion-header">
       Section 1
       <span class="icon">▼</span>
     </button>
-    <div ngAccordionPanel panelId="panel-1" class="accordion-panel">
+    <div ngAccordionPanel #panel1="ngAccordionPanel" class="accordion-panel">
       <ng-template ngAccordionContent>
         <p>Lazy loaded content here.</p>
       </ng-template>
@@ -98,7 +98,7 @@ export class App {
 
 ```html
 <!-- horizontal or vertical orientation -->
-<ul ngListbox [(values)]="selectedItems" orientation="horizontal" [multi]="true">
+<ul ngListbox [(value)]="selectedItems" orientation="horizontal" [multi]="true">
   <li ngOption value="apple" class="option">Apple</li>
   <li ngOption value="banana" class="option">Banana</li>
 </ul>
@@ -126,37 +126,69 @@ Target `[aria-selected="true"]` for selected state and `:focus-visible` or `[dat
 
 ## 3. Combobox, Select, and Multiselect
 
-These patterns combine `ngCombobox` with a popup containing an `ngListbox`.
+These patterns combine the `ngCombobox` directive (applied directly to the trigger/combobox element) with a popup containing an `ngListbox` widget.
 
-- **Combobox**: Text input + popup (used for Autocomplete).
-- **Select**: Readonly Combobox + single-select Listbox.
-- **Multiselect**: Readonly Combobox + multi-select Listbox.
-
-**Usage:** The Combobox is a low-level primitive directive that synchronizes a text input with a popup, serving as the foundational logic for autocomplete, select, and multiselect patterns. Use it specifically for building custom filtering, unique selection requirements, or specialized input-to-popup coordination that deviates from standard, documented components.
+- **Combobox (Autocomplete)**: Applied to an `<input ngCombobox>` element. Ideal when typing filters the list.
+- **Select**: Applied to a focusable wrapper like a `<div ngCombobox>` or `<button ngCombobox>` element. Users select from a list of options.
+- **Multiselect**: A Combobox or Select paired with a multi-select `ngListbox`.
 
 **Imports:**
 
-```
-  import {Combobox, ComboboxInput, ComboboxPopupContainer} from '@angular/aria/combobox';
-  import {Listbox, Option} from '@angular/aria/listbox';
+```ts
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
+import {Listbox, Option} from '@angular/aria/listbox';
 ```
 
-**Directives:** `ngCombobox`, `ngComboboxInput`, `ngComboboxPopupContainer`, `ngListbox`, `ngOption`.
+**Directives:** `ngCombobox`, `ngComboboxPopup`, `ngComboboxWidget`, `ngListbox`, `ngOption`.
 
 ```html
-<!-- Example: Standard Select -->
-<div ngCombobox [readonly]="true">
-  <button ngComboboxInput class="select-trigger">
-    {{ selectedValue() || 'Choose an option' }}
-  </button>
+<!-- Example 1: Standard Autocomplete -->
+<div>
+  <input
+    ngCombobox
+    #combobox="ngCombobox"
+    [(value)]="searchString"
+    [(expanded)]="isExpanded"
+    placeholder="Search options..."
+    class="select-trigger"
+  />
 
-  <ng-template ngComboboxPopupContainer>
-    <ul ngListbox [(values)]="selectedValue" class="dropdown-menu">
-      <li ngOption value="option1">Option 1</li>
-      <li ngOption value="option2">Option 2</li>
+  <ng-template ngComboboxPopup [combobox]="combobox">
+    <ul
+      ngComboboxWidget
+      ngListbox
+      #listbox="ngListbox"
+      [(value)]="selectedValue"
+      [activeDescendant]="listbox.activeDescendant()"
+      class="dropdown-menu"
+    >
+      <li ngOption value="option1" label="Option 1" class="option">Option 1</li>
+      <li ngOption value="option2" label="Option 2" class="option">Option 2</li>
     </ul>
   </ng-template>
 </div>
+
+<!-- Example 2: Select Component (Applied directly to a div trigger) -->
+<div ngCombobox #select="ngCombobox" [(expanded)]="selectExpanded" class="select-trigger">
+  <span class="select-text">{{ selectedValue() ?? 'Choose an option' }}</span>
+  <span class="icon">▼</span>
+</div>
+
+<ng-template ngComboboxPopup [combobox]="select">
+  <ul
+    ngComboboxWidget
+    ngListbox
+    #selectListbox="ngListbox"
+    [(value)]="selectedValues"
+    [activeDescendant]="selectListbox.activeDescendant()"
+    (click)="onCommit()"
+    (keydown.enter)="onCommit()"
+    class="dropdown-menu"
+  >
+    <li ngOption value="option1" label="Option 1" class="option">Option 1</li>
+    <li ngOption value="option2" label="Option 2" class="option">Option 2</li>
+  </ul>
+</ng-template>
 ```
 
 **Styling Strategy:**
@@ -186,22 +218,30 @@ For actions, commands, and context menus (not for form selection).
 
 **Usage:** The Menubar is a high-level navigation pattern designed for building desktop-style application command bars (e.g., File, Edit, View) that stay persistent across an interface. It is best utilized for organizing complex commands into logical top-level categories with full horizontal keyboard support, but it should be avoided for simple standalone action lists or mobile-first layouts where horizontal space is constrained.
 
-**Imports:** `import {MenuBar, Menu, MenuContent, MenuItem} from '@angular/aria/menu';`
+**Imports:** `import {MenuBar, Menu, MenuContent, MenuItem, MenuTrigger} from '@angular/aria/menu';`
 
-**Directives:** `ngMenuBar`, `ngMenu`, `ngMenuItem`, `ngMenuTrigger`.
+**Directives:** `ngMenuBar`, `ngMenu`, `ngMenuItem`, `ngMenuTrigger`, `ngMenuContent`.
 
 ```html
 <!-- Menubar Example -->
-<ul ngMenuBar class="menubar">
-  <li ngMenuItem value="file">
-    <button ngMenuTrigger [menu]="fileMenu">File</button>
-  </li>
-</ul>
+<div ngMenuBar class="menubar">
+  <div ngMenuItem value="file" [submenu]="fileMenu" class="menubar-item">File</div>
+  <div ngMenuItem value="edit" [submenu]="editMenu" class="menubar-item">Edit</div>
+</div>
 
-<ul ngMenu #fileMenu="ngMenu" class="menu">
-  <li ngMenuItem value="new">New</li>
-  <li ngMenuItem value="open">Open</li>
-</ul>
+<div ngMenu #fileMenu="ngMenu" class="menu">
+  <ng-template ngMenuContent>
+    <div ngMenuItem value="new">New</div>
+    <div ngMenuItem value="open">Open</div>
+  </ng-template>
+</div>
+
+<div ngMenu #editMenu="ngMenu" class="menu">
+  <ng-template ngMenuContent>
+    <div ngMenuItem value="cut">Cut</div>
+    <div ngMenuItem value="copy">Copy</div>
+  </ng-template>
+</div>
 ```
 
 **Styling Strategy:**
@@ -239,7 +279,7 @@ Layered content sections where only one panel is visible.
 
 ```html
 <div ngTabs>
-  <ul ngTabList class="tab-list">
+  <ul ngTabList [(selectedTab)]="selectedTabValue" class="tab-list">
     <li ngTab value="profile" class="tab-btn">Profile</li>
     <li ngTab value="security" class="tab-btn">Security</li>
   </ul>
@@ -328,14 +368,17 @@ Displays hierarchical data (file systems, nested nav).
 
 **Imports:** `import {Tree, TreeItem, TreeItemGroup} from '@angular/aria/tree';`
 
-**Directives:** `ngTree`, `ngTreeItem`, `ngTreeGroup`.
+**Directives:** `ngTree`, `ngTreeItem`, `ngTreeItemGroup`.
 
 ```html
-<ul ngTree class="tree">
-  <li ngTreeItem value="documents">
+<ul ngTree #tree="ngTree" [(value)]="selectedValues" class="tree">
+  <li ngTreeItem [parent]="tree" value="documents" #docsItem="ngTreeItem">
     <span class="tree-label">Documents</span>
-    <ul ngTreeGroup class="tree-group">
-      <li ngTreeItem value="resume">Resume.pdf</li>
+    <ul role="group">
+      <ng-template ngTreeItemGroup [ownedBy]="docsItem" #docsGroup="ngTreeItemGroup">
+        <li ngTreeItem [parent]="docsGroup" value="resume">Resume.pdf</li>
+        <li ngTreeItem [parent]="docsGroup" value="cover-letter">CoverLetter.pdf</li>
+      </ng-template>
     </ul>
   </li>
 </ul>
@@ -403,8 +446,152 @@ Target `[aria-selected="true"]` for selected cells and `:focus-visible` for the 
 }
 ```
 
+## 9. Testing with Component Harnesses
+
+Angular Aria provides standard Component Harnesses (based on `@angular/cdk/testing`) to make unit testing clean, robust, and decoupled from DOM structural details.
+
+**Imports:**
+
+```ts
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {AccordionGroupHarness, AccordionHarness} from '@angular/aria/accordion/testing';
+import {ListboxHarness, ListboxOptionHarness} from '@angular/aria/listbox/testing';
+```
+
+### Example: Testing an Accordion with Harnesses
+
+```ts
+describe('MyAccordionComponent', () => {
+  let fixture: ComponentFixture<MyAccordionComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(MyAccordionComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should expand accordion on toggle', async () => {
+    // Get the harness by its trigger title
+    const accordion = await loader.getHarness(AccordionHarness.with({title: 'Section 1'}));
+
+    expect(await accordion.isExpanded()).toBeFalse();
+
+    // Expand the accordion
+    await accordion.expand();
+
+    expect(await accordion.isExpanded()).toBeTrue();
+  });
+});
+```
+
+## 10. Integration with Signal Forms
+
+Because Angular Aria directives leverage Angular's modern `model()` signals for managing interactive values, they integrate **out-of-the-box** with Angular's new Signal Forms (`@angular/forms/signals`).
+
+The `[formField]` directive automatically detects directives like `ngCombobox` or `ngListbox` as custom form controls because they expose a `value` model.
+
+**Imports:**
+
+```ts
+import {form, schema, required} from '@angular/forms/signals';
+import {Combobox, ComboboxPopup, ComboboxWidget} from '@angular/aria/combobox';
+import {Listbox, Option} from '@angular/aria/listbox';
+```
+
+### Example 1: Autocomplete Combobox inside a Form
+
+Given a form model defined in your component:
+
+```ts
+protected readonly citySignal = signal({name: '', city: ''});
+protected readonly myForm = form(this.citySignal, schema(f => {
+  required(f.city);
+}));
+```
+
+You bind it directly using `[formField]`:
+
+```html
+<div>
+  <label for="city-input">Choose your city:</label>
+  <input
+    id="city-input"
+    ngCombobox
+    #combobox="ngCombobox"
+    [formField]="myForm.city"
+    [(expanded)]="isExpanded"
+    placeholder="Search cities..."
+  />
+
+  <ng-template ngComboboxPopup [combobox]="combobox">
+    <ul
+      ngComboboxWidget
+      ngListbox
+      #listbox="ngListbox"
+      [(value)]="selectedValue"
+      [activeDescendant]="listbox.activeDescendant()"
+      class="dropdown-menu"
+    >
+      <li ngOption value="sfo" label="San Francisco">San Francisco</li>
+      <li ngOption value="nyc" label="New York">New York</li>
+    </ul>
+  </ng-template>
+</div>
+```
+
+### Example 2: Select Component inside a Form
+
+Apply `ngCombobox` directly to a focusable `div` trigger and bind to `[formField]`:
+
+```html
+<div>
+  <label for="city-select">Choose your city:</label>
+  <div
+    id="city-select"
+    ngCombobox
+    #select="ngCombobox"
+    [formField]="myForm.city"
+    [(expanded)]="isExpanded"
+    class="select-trigger"
+  >
+    <span class="select-text">{{ myForm.city.value() || 'Choose your city' }}</span>
+    <span class="icon">▼</span>
+  </div>
+
+  <ng-template ngComboboxPopup [combobox]="select">
+    <ul
+      ngComboboxWidget
+      ngListbox
+      #selectListbox="ngListbox"
+      [(value)]="selectedValues"
+      [activeDescendant]="selectListbox.activeDescendant()"
+      (click)="onCommit()"
+      (keydown.enter)="onCommit()"
+      class="dropdown-menu"
+    >
+      <li ngOption value="sfo" label="San Francisco">San Francisco</li>
+      <li ngOption value="nyc" label="New York">New York</li>
+    </ul>
+  </ng-template>
+</div>
+```
+
+### Example 3: Standalone Listbox (Multi-select) inside a Form
+
+You can bind a multi-selectable Listbox directly to a form array:
+
+```html
+<ul ngListbox [formField]="myForm.interests" [multi]="true" class="interest-list">
+  <li ngOption value="sports">Sports</li>
+  <li ngOption value="music">Music</li>
+  <li ngOption value="tech">Technology</li>
+</ul>
+```
+
 ## General Rules for Agents
 
 1. **Never use native HTML elements like `<select>`** when asked to implement these specific Aria patterns. Use the `ng*` directives.
 2. **Handle CSS manually**: Remember that `Angular Aria` does NOT provide styles. You must write the CSS, targeting the native ARIA attributes (`aria-expanded`, `aria-selected`, etc.) that the directives automatically toggle.
-3. **Lazy Loading**: Always use the provided structural directives (`ngAccordionContent`, `ngTabContent`) inside `ng-template` for heavy content panels to ensure they are lazily rendered.
+3. **Lazy Loading**: Always use the provided structural directives (`ngAccordionContent`, `ngTabContent`, `ngMenuContent`, `ngComboboxPopup`, `ngTreeItemGroup`) inside `ng-template` for heavy content panels or nested groups to ensure they are lazily rendered.

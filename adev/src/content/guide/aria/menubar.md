@@ -164,6 +164,56 @@ Menubars automatically adapt to right-to-left (RTL) languages. Arrow key navigat
 
 The `dir="rtl"` attribute enables RTL mode. Left arrow moves right, Right arrow moves left, maintaining natural navigation for RTL language users.
 
+## Testing
+
+Angular Aria provides component harnesses for testing menubar components.
+Here is an example of how to use the harnesses in a component test:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {MenuHarness} from '@angular/aria/menu/testing';
+import {MyMenubarComponent} from './my-menubar'; // Your component
+
+describe('MyMenubarComponent', () => {
+  let fixture: ComponentFixture<MyMenubarComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyMenubarComponent],
+    });
+
+    fixture = TestBed.createComponent(MyMenubarComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should interact with menubar items', async () => {
+    // Load the menubar harness (which is a MenuHarness with selector '[ngMenuBar]')
+    const menubar = await loader.getHarness(MenuHarness.with({selector: '[ngMenuBar]'}));
+
+    // Menubars are persistent and always "open"
+    expect(await menubar.isOpen()).toBe(true);
+    expect(await menubar.isMenuBar()).toBe(true);
+
+    // Get top-level items
+    const items = await menubar.getItems();
+    expect(items.length).toBe(2);
+    expect(await items[0].getText()).toBe('File');
+    expect(await items[1].getText()).toBe('Edit');
+
+    // Click an item to open its dropdown menu
+    await items[0].click();
+
+    const fileMenu = await items[0].getSubmenu();
+    expect(fileMenu).toBeTruthy();
+    expect(await fileMenu!.isOpen()).toBe(true);
+  });
+});
+```
+
 ## APIs
 
 The menubar pattern uses directives from Angular's Aria library. See the [Menu guide](guide/aria/menu) for complete API documentation.
@@ -174,11 +224,13 @@ The horizontal container for top-level menu items.
 
 #### Inputs
 
-| Property       | Type      | Default | Description                                                   |
-| -------------- | --------- | ------- | ------------------------------------------------------------- |
-| `disabled`     | `boolean` | `false` | Disables the entire menubar                                   |
-| `wrap`         | `boolean` | `true`  | Whether keyboard navigation wraps from last to first item     |
-| `softDisabled` | `boolean` | `true`  | When `true`, disabled items are focusable but not interactive |
+| Property         | Type      | Default | Description                                                   |
+| ---------------- | --------- | ------- | ------------------------------------------------------------- |
+| `disabled`       | `boolean` | `false` | Disables the entire menubar                                   |
+| `wrap`           | `boolean` | `true`  | Whether keyboard navigation wraps from last to first item     |
+| `softDisabled`   | `boolean` | `true`  | When `true`, disabled items are focusable but not interactive |
+| `value`          | `V[]`     | `[]`    | Selected menu item values (supports two-way binding)          |
+| `typeaheadDelay` | `number`  | `500`   | Milliseconds before the typeahead buffer is reset             |
 
 See the [Menu API documentation](guide/aria/menu#apis) for complete details on all available inputs and signals.
 

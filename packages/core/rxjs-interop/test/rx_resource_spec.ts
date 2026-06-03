@@ -285,6 +285,123 @@ describe('rxResource()', () => {
       expect(transferState.hasKey(key)).toBeFalse();
     });
   });
+
+  it('should unsubscribe when the observable emits synchronously ', () => {
+    let unsubscribed = false;
+
+    const res = rxResource({
+      stream: () => {
+        return new Observable((subscriber) => {
+          // Synchronously set the resource to trigger abort during subscription initialization
+          res.set('local value');
+          subscriber.next('stream value');
+          return () => {
+            unsubscribed = true;
+          };
+        });
+      },
+      injector: TestBed.inject(Injector),
+    });
+    TestBed.tick();
+    expect(res.value()).toBe('local value');
+    expect(unsubscribed).toBeTrue();
+  });
+
+  it('should release the PendingTask when abort fires synchronously during subscription (regression)', async () => {
+    // Regression: when `res.set()` is called synchronously inside the stream factory (before
+    // the subscription is returned), the abort signal fired before `sub` was assigned.
+    // The resource stayed in a loading state forever, keeping the app unstable indefinitely.
+    const appRef = TestBed.inject(ApplicationRef);
+
+    const res = rxResource({
+      stream: () => {
+        return new Observable((subscriber) => {
+          // Calling res.set() triggers an abort of this very request synchronously,
+          // before the Observable constructor has returned the subscription.
+          res.set('local value');
+          subscriber.next('stream value');
+          return () => {};
+        });
+      },
+      injector: appRef.injector,
+    });
+
+    TestBed.tick();
+
+    // The resource should have taken the locally-set value, not the stream value.
+    expect(res.value()).toBe('local value');
+    expect(res.status()).toBe('local');
+
+    // The app must become stable. Before the fix this would never resolve because
+    // the PendingTask created for the loading request was never cleaned up. If the
+    // PendingTask wasn't properly released, this would timeout after 10 seconds.
+    await appRef.whenStable();
+  });
+
+  it('should release the PendingTask when a synchronous error occurs during subscription (regression)', async () => {
+    // Regression: when an error occurs synchronously inside the stream factory (before
+    // the subscription is fully initialized), the PendingTask must still be released.
+    const appRef = TestBed.inject(ApplicationRef);
+
+    const res = rxResource({
+      stream: () => {
+        return new Observable((subscriber) => {
+          // Throw error synchronously before subscription setup completes
+          subscriber.error(new Error('synchronous error'));
+          return () => {};
+        });
+      },
+      injector: appRef.injector,
+    });
+
+    TestBed.tick();
+
+    // The resource should be in error state
+    expect(res.status()).toBe('error');
+    expect(res.error()).toBeTruthy();
+
+    // The app must become stable. If the PendingTask wasn't properly released,
+    // this would timeout after 10 seconds.
+    await appRef.whenStable();
+  });
+
+  it('should release the PendingTask when aborting a never-completing stream on params change (race condition)', async () => {
+    // Regression: the first request starts and never emits, then gets aborted by a params
+    // change. The PendingTask for the aborted request must still be released.
+    const appRef = TestBed.inject(ApplicationRef);
+    const request = signal(1);
+    let callCount = 0;
+
+    const res = rxResource({
+      params: request,
+      stream: ({params}) => {
+        callCount++;
+        if (params === 1) {
+          // First request never emits/completes and relies on abort cleanup.
+          return new Observable(() => {
+            return () => {};
+          });
+        }
+
+        return of('resolved from second request');
+      },
+      injector: appRef.injector,
+    });
+
+    TestBed.tick();
+    expect(callCount).toBe(1);
+    expect(res.status()).toBe('loading');
+
+    // Abort request 1 by changing params to start request 2.
+    request.set(2);
+
+    // Before the fix this could hang because the aborted request's PendingTask was never released.
+    await appRef.whenStable();
+
+    expect(callCount).toBe(2);
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('resolved from second request');
+  });
 });
 
 async function waitFor(fn: () => boolean): Promise<void> {

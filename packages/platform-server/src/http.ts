@@ -8,13 +8,14 @@
 
 import {PlatformLocation, XhrFactory} from '@angular/common';
 import {
+  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
   HttpEvent,
   HttpHandlerFn,
   HttpRequest,
-  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
 } from '@angular/common/http';
 import {inject, Injectable, Provider} from '@angular/core';
 import {Observable} from 'rxjs';
+import {resolveUrl} from './url';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
@@ -41,10 +42,21 @@ export class ServerXhr implements XhrFactory {
   }
 }
 
+/**
+ * Regex to match a URL schema.
+ */
+const URL_SCHEMA_REGEXP = /^(?:[a-zA-Z][a-zA-Z0-9+\-.]*:)/;
+
 function relativeUrlsTransformerInterceptorFn(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
+  const trimmedUrl = request.url.trim();
+  if (URL_SCHEMA_REGEXP.test(trimmedUrl)) {
+    // URLs with a schema should be left unchanged.
+    return next(request);
+  }
+
   const platformLocation = inject(PlatformLocation);
   const {href, protocol, hostname, port} = platformLocation;
   if (!protocol.startsWith('http')) {
@@ -58,9 +70,12 @@ function relativeUrlsTransformerInterceptorFn(
 
   const baseHref = platformLocation.getBaseHrefFromDOM() || href;
   const baseUrl = new URL(baseHref, urlPrefix);
-  const newUrl = new URL(request.url, baseUrl).toString();
 
-  return next(request.clone({url: newUrl}));
+  const parsedUrl = resolveUrl(request.url, baseUrl, {
+    allowProtocolRelative: true,
+  });
+
+  return next(request.clone({url: parsedUrl.toString()}));
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [

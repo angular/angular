@@ -37421,7 +37421,7 @@ function getCachedConfig() {
   return cachedConfig;
 }
 var CONFIG_FILE_PATH_MATCHER = ".ng-dev/config.mjs";
-async function getConfig(baseDirOrAssertions) {
+async function getConfig(baseDirOrAssertions, returnNullOnConfigNotFound = false) {
   let cachedConfig2 = getCachedConfig();
   if (cachedConfig2 === null) {
     let baseDir;
@@ -37431,7 +37431,10 @@ async function getConfig(baseDirOrAssertions) {
       baseDir = determineRepoBaseDirFromCwd();
     }
     const configPath = join32(baseDir, CONFIG_FILE_PATH_MATCHER);
-    cachedConfig2 = await readConfigFile(configPath);
+    cachedConfig2 = await readConfigFile(configPath, returnNullOnConfigNotFound);
+    if (returnNullOnConfigNotFound && !cachedConfig2) {
+      return null;
+    }
     setCachedConfig(cachedConfig2);
   }
   if (Array.isArray(baseDirOrAssertions)) {
@@ -37466,14 +37469,14 @@ function assertValidGithubConfig(config) {
     throw new ConfigValidationError("Invalid `github` configuration", errors);
   }
 }
-async function readConfigFile(configPath, returnEmptyObjectOnError = false) {
+async function readConfigFile(configPath, returnNullOnConfigNotFound = false) {
   try {
     return await import(pathToFileURL(configPath).toString());
   } catch (e) {
-    if (returnEmptyObjectOnError) {
+    if (returnNullOnConfigNotFound) {
       Log.debug(`Could not read configuration file at ${configPath}, returning empty object instead.`);
       Log.debug(e);
-      return {};
+      return null;
     }
     Log.error(`Could not read configuration file at ${configPath}.`);
     Log.error(e);
@@ -47463,7 +47466,7 @@ var RequestError2 = class extends Error {
     this.request = requestCopy;
   }
 };
-var VERSION22 = "10.0.9";
+var VERSION22 = "10.0.10";
 var defaults_default2 = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION22} ${getUserAgent2()}`
@@ -51730,7 +51733,7 @@ content-type/dist/index.js:
   (* v8 ignore next -- @preserve *)
   (* v8 ignore else -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-PVA34BB2.mjs:
+@angular/ng-dev/bundles/chunk-2FS7LFXG.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -51771,7 +51774,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-XI6A552T.mjs:
+@angular/ng-dev/bundles/chunk-WBKY7U4X.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:

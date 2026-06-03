@@ -371,11 +371,17 @@ class HttpResourceImpl<T>
     super(
       request,
       ({params: request, abortSignal}) => {
-        let sub: Subscription;
+        let sub: Subscription | undefined;
+        // In the unlikely case the request returns synchronously we want to make sure the observable
+        // is subscribe even if it isn't initialized yet.
+        let aborted = false;
 
         // Track the abort listener so it can be removed if the Observable completes (as a memory
         // optimization).
-        const onAbort = () => sub.unsubscribe();
+        const onAbort = () => {
+          aborted = true;
+          sub?.unsubscribe();
+        };
         abortSignal.addEventListener('abort', onAbort);
 
         // Start off stream as undefined.
@@ -427,6 +433,10 @@ class HttpResourceImpl<T>
             abortSignal.removeEventListener('abort', onAbort);
           },
         });
+
+        if (aborted) {
+          sub.unsubscribe();
+        }
 
         return promise;
       },

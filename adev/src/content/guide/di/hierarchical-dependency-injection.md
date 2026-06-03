@@ -364,7 +364,7 @@ A component class can provide services in two ways:
 
 In the examples below, you will see the logical tree of an Angular application.
 To illustrate how the injector works in the context of templates, the logical tree will represent the HTML structure of the application.
-For example, the logical tree will show that `<child-component>` is a direct children of `<parent-component>`.
+For example, the logical tree will show that `<child-component>` is a direct child of `<parent-component>`.
 
 In the logical tree, you will see special attributes: `@Provide`, `@Inject`, and `@ApplicationConfig`.
 These aren't real attributes but are here to demonstrate what is going on under the hood.
@@ -379,7 +379,7 @@ These aren't real attributes but are here to demonstrate what is going on under 
 
 The example application has a `FlowerService` provided in `root` with an `emoji` value of red hibiscus <code>🌺</code>.
 
-```ts {header:"lower.service.ts"}
+```ts {header:"flower.service.ts"}
 @Service()
 export class FlowerService {
   emoji = '🌺';
@@ -751,7 +751,7 @@ Visibility decorators influence where the search for the injection token begins 
 To do this, place visibility configuration at the point of injection, that is, when invoking `inject()`, rather than at a point of declaration.
 
 To alter where the injector starts looking for `FlowerService`, add `skipSelf` to the `<app-child>` `inject()` invocation where `FlowerService` is injected.
-This invocation is a property initializer the `<app-child>` as shown in `child.ts`:
+This invocation is a property initializer in `<app-child>` as shown in `child.ts`:
 
 ```typescript
 flower = inject(FlowerService, {skipSelf: true});
@@ -944,7 +944,7 @@ For example, consider we build a `VillainsList` that displays a list of villains
 It gets those villains from a `VillainsService`.
 
 If you provide `VillainsService` in the root `AppModule`, it will make `VillainsService` visible everywhere in the application.
-If you later modify the `VillainsService`, you could break something in other components that started depending this service by accident.
+If you later modify the `VillainsService`, you could break something in other components that started depending on this service by accident.
 
 Instead, you should provide the `VillainsService` in the `providers` metadata of the `VillainsList` like this:
 

@@ -72,7 +72,7 @@ Applications sometimes need selectable lists visible directly on the page rather
   <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/app/app.html" />
 </docs-code-multifile>
 
-The `values` model signal provides two-way binding to the selected items. With `selectionMode="explicit"`, users press Space or Enter to select options. For dropdown patterns that combine listbox with combobox and overlay positioning, see the [Select](guide/aria/select) pattern.
+The `value` model signal provides two-way binding to the selected items. With `selectionMode="explicit"`, users press Space or Enter to select options. For dropdown patterns that combine listbox with combobox and overlay positioning, see the [Select](guide/aria/select) pattern.
 
 ### Horizontal listbox
 
@@ -133,6 +133,55 @@ The `'follow'` mode automatically selects the focused item, providing faster int
 
 TIP: Dropdown patterns typically use `'follow'` mode for single selection.
 
+## Testing
+
+Angular Aria provides component harnesses for testing listbox components.
+Here is an example of how to use the harnesses in a component test:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ListboxHarness} from '@angular/aria/listbox/testing';
+import {MyListboxComponent} from './my-listbox'; // Your component
+
+describe('MyListboxComponent', () => {
+  let fixture: ComponentFixture<MyListboxComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyListboxComponent],
+    });
+
+    fixture = TestBed.createComponent(MyListboxComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should allow selecting options', async () => {
+    const listbox = await loader.getHarness(ListboxHarness);
+
+    // Verify listbox properties
+    expect(await listbox.isMulti()).toBe(true);
+
+    // Get all options
+    const options = await listbox.getOptions();
+    expect(options.length).toBe(2);
+
+    // Click an option
+    await options[0].click();
+
+    // Verify option is selected
+    expect(await options[0].isSelected()).toBe(true);
+
+    // Filter options by text
+    const bananaOption = await listbox.getOptions({text: 'Banana'});
+    expect(bananaOption.length).toBe(1);
+  });
+});
+```
+
 ## APIs
 
 ### Listbox Directive
@@ -158,13 +207,13 @@ The `ngListbox` directive creates an accessible list of selectable options.
 
 | Property | Type  | Description                               |
 | -------- | ----- | ----------------------------------------- |
-| `values` | `V[]` | Two-way bindable array of selected values |
+| `value`  | `V[]` | Two-way bindable array of selected values |
 
 #### Signals
 
 | Property | Type          | Description                           |
 | -------- | ------------- | ------------------------------------- |
-| `values` | `Signal<V[]>` | Currently selected values as a signal |
+| `value`  | `Signal<V[]>` | Currently selected values as a signal |
 
 #### Methods
 

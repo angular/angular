@@ -168,6 +168,12 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext(':svg:set', 'to', false)).toBe(
       SecurityContext.ATTRIBUTE_NO_BINDING,
     );
+
+    // SVG link attributes
+    expect(registry.securityContext(':svg:a', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:a', 'xlink:href', true)).toBe(SecurityContext.URL);
   });
 
   it('should detect properties on namespaced elements', () => {
@@ -195,6 +201,23 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     it('should support <ng-content>', () => {
       expect(registry.hasProperty('ng-content', 'id', [])).toBeFalsy();
       expect(registry.hasProperty('ng-content', 'select', [])).toBeFalsy();
+    });
+  });
+
+  describe('Custom XML / XHTML namespaces', () => {
+    it('should support elements with custom namespaces', () => {
+      expect(registry.hasElement(':xhtml:a', [])).toBeTruthy();
+      expect(registry.hasElement(':foo:div', [])).toBeTruthy();
+    });
+
+    it('should support properties on custom namespaced elements', () => {
+      expect(registry.hasProperty(':xhtml:a', 'href', [])).toBeTruthy();
+      expect(registry.hasProperty(':foo:div', 'id', [])).toBeTruthy();
+    });
+
+    it('should return correct security contexts for custom namespaced elements', () => {
+      expect(registry.securityContext(':xhtml:a', 'href', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext(':foo:div', 'innerHTML', false)).toBe(SecurityContext.HTML);
     });
   });
 

@@ -1,3 +1,228 @@
+<a name="19.2.25"></a>
+# 19.2.25 (2026-06-02)
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2fb854d55](https://github.com/angular/angular/commit/e2fb854d55484c87ec6b3d5e9e2e512325b389dc) | fix | throw on suspicious URLs and restrict protocol-relative URLs |
+| [0a8befb493](https://github.com/angular/angular/commit/0a8befb493e6defe033e7dabfd6462d6378c1f81) | fix | update domino to latest version |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.3.24"></a>
+# 20.3.24 (2026-06-02)
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ca433e56b](https://github.com/angular/angular/commit/6ca433e56bcf74fdb6ad01d3afdf59628fba69b6) | fix | throw on suspicious URLs and restrict protocol-relative URLs |
+| [8680b5152f](https://github.com/angular/angular/commit/8680b5152fe58ebde81e331b74ba806fc86514cc) | fix | update domino to latest version |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.0.0-rc.3"></a>
+# 22.0.0-rc.3 (2026-06-01)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4795b35d5b](https://github.com/angular/angular/commit/4795b35d5be5a7217f648a349c281e674294ef97) | fix | only strip a literal /index.html suffix from URLs |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2891f7e787](https://github.com/angular/angular/commit/2891f7e7879238d941a7c40ebd51896fcd2fe6bb) | fix | move projection attributes into constants |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e3e25b5a53](https://github.com/angular/angular/commit/e3e25b5a535c3e9cc08fcd2f9f85b78b8456a9f8) | fix | use Object.create(null) for LOCALE_DATA as a hardening measure |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9d9855a415](https://github.com/angular/angular/commit/9d9855a41597c116ca102e672867047ddf7b4545) | fix | Make the safe optional chaining idempotent |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7b9130931d](https://github.com/angular/angular/commit/7b9130931d14ce2d02251bc14743c3e9a77c1955) | fix | throw on suspicious URLs and restrict protocol-relative URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.0.0-rc.2"></a>
+# 22.0.0-rc.2 (2026-05-28)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ae2cb00398](https://github.com/angular/angular/commit/ae2cb00398954d9332e9f1f5abecce902cfc7658) | fix | add upper bounds for digitsInfo |
+| [7d1fbc170a](https://github.com/angular/angular/commit/7d1fbc170a90ca12a3c1b805645bc37d12ed744d) | fix | sanitize placeholder |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ab9154ab75](https://github.com/angular/angular/commit/ab9154ab75bdd36759c77917216b57285b243ea4) | fix | normalize tag names with custom namespaces in DomElementSchemaRegistry ([#68868](https://github.com/angular/angular/pull/68868)) |
+| [94d520fb67](https://github.com/angular/angular/commit/94d520fb671fc7774341947b872ed0e387689db9) | fix | prevent namespaced SVG <style> elements from being stripped |
+| [6ff620a033](https://github.com/angular/angular/commit/6ff620a03364d6ab60cea47de942a04ec5a26c50) | fix | sanitize dynamic href and xlink:href bindings on SVG a elements ([#68868](https://github.com/angular/angular/pull/68868)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [61a48e99aa](https://github.com/angular/angular/commit/61a48e99aad1152e9ffb2fd0b4e1b472f06649e8) | fix | do not register dom triggers when defer blocks are in manual mode |
+| [a08e4fb93c](https://github.com/angular/angular/commit/a08e4fb93c371252da16b3b22cbf78f4ac180fa2) | fix | normalize tag names in runtime i18n attribute security context lookup ([#68868](https://github.com/angular/angular/pull/68868)) |
+| [b20f0fe078](https://github.com/angular/angular/commit/b20f0fe07820362f7e3bddb892a2a229a820a028) | fix | prevent rxResource from leaking a subscription |
+| [0d9a245345](https://github.com/angular/angular/commit/0d9a245345c5bb3013849d924efbfa3676b520a0) | fix | sanitize meta selectors |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3b4ef1e2ff](https://github.com/angular/angular/commit/3b4ef1e2ffa7f33583b9d6c5d927e2148a507921) | perf | avoid redundant invalidations in parser errors signal |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [618c850282](https://github.com/angular/angular/commit/618c8502829a1f2ca8ce048fdf4d8085b956734c) | fix | exclude withCredentials requests from transfer cache |
+| [f7b3ed8db2](https://github.com/angular/angular/commit/f7b3ed8db28c69ee0de9144465da351bda7e85e4) | fix | Introduce a max buffer size for fetch requests on SSR |
+| [e6cfaf5672](https://github.com/angular/angular/commit/e6cfaf567256f5e89903f6b5625540e5a4a3bde3) | fix | prevent `httpResource` from leaking a subscription |
+| [86390f2be4](https://github.com/angular/angular/commit/86390f2be41b2aae352b0c1ce4a5285fd065ef17) | fix | skip TransferCache for cookie-bearing requests by default |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [28338a1ca4](https://github.com/angular/angular/commit/28338a1ca4c52924f3c5384e43ef9d4bee485c8c) | fix | prevent SSRF bypasses via backslash URLs in HttpClient |
+| [95522526e4](https://github.com/angular/angular/commit/95522526e4ae7aeeb4652f2bd6385775efc021ae) | fix | secure location and document initialization against SSRF and path hijack |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a02797d045](https://github.com/angular/angular/commit/a02797d045235afdcc996b2714f68d9c052be4f4) | fix | Preserves explicit 'credentials: omit' in asset requests |
+| [d0c4951a9b](https://github.com/angular/angular/commit/d0c4951a9bfd902e0388bd1bc71c8312e9aad6d7) | fix | Preserves HTTP cache mode in asset group requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.2.15"></a>
+# 21.2.15 (2026-05-28)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7f4ac78994](https://github.com/angular/angular/commit/7f4ac78994bff1576ab33f3ce48f95c17f40b4d8) | fix | add upper bounds for digitsInfo |
+| [300f61feb3](https://github.com/angular/angular/commit/300f61feb3a534bfddf16fcbd240f97b32249699) | fix | sanitize placeholder |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0b07f47bd6](https://github.com/angular/angular/commit/0b07f47bd6598ae6bd5b75a375e2c817a3c0f243) | fix | normalize tag names with custom namespaces in DomElementSchemaRegistry ([#68925](https://github.com/angular/angular/pull/68925)) |
+| [eb1cbbf2eb](https://github.com/angular/angular/commit/eb1cbbf2eb5833219a367a61c04eb07aaa36cc29) | fix | prevent namespaced SVG <style> elements from being stripped |
+| [cc1378d54b](https://github.com/angular/angular/commit/cc1378d54bd93f3882d732261be8e66720eb71b2) | fix | sanitize dynamic href and xlink:href bindings on SVG a elements ([#68925](https://github.com/angular/angular/pull/68925)) |
+| [782e01594e](https://github.com/angular/angular/commit/782e01594e2ad9134c7385dcf3b518101b23ccab) | fix | strip namespaced SVG script elements during template compilation ([#68925](https://github.com/angular/angular/pull/68925)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ff12fe55ac](https://github.com/angular/angular/commit/ff12fe55ace5e861ba261afb4c0480ff3c40a192) | fix | normalize tag names in runtime i18n attribute security context lookup ([#68925](https://github.com/angular/angular/pull/68925)) |
+| [e6fe77cc97](https://github.com/angular/angular/commit/e6fe77cc97fd10351687416f938bf754aff4eb9f) | fix | sanitize meta selectors |
+| [daaf32937f](https://github.com/angular/angular/commit/daaf32937fd5c46e411b26f7c082613716fe9550) | fix | support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation ([#68925](https://github.com/angular/angular/pull/68925)) |
+| [dada86e43d](https://github.com/angular/angular/commit/dada86e43d847204f714d1a933084617ab941c0a) | fix | synchronize core sanitization schema with compiler ([#68925](https://github.com/angular/angular/pull/68925)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [582a417bd2](https://github.com/angular/angular/commit/582a417bd27fdaf989e5065dbcdf1ad752faf70c) | fix | exclude withCredentials requests from transfer cache |
+| [5c6d6df34b](https://github.com/angular/angular/commit/5c6d6df34bbeff3ce98f3b35875444f925cc8f51) | fix | skip TransferCache for cookie-bearing requests by default |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37e8aadf87](https://github.com/angular/angular/commit/37e8aadf87b4facfcaf002a1557f8c393a362d97) | fix | prevent SSRF bypasses via backslash URLs in HttpClient |
+| [72696e244e](https://github.com/angular/angular/commit/72696e244ed7646cca9ab9afc7769a2163943bda) | fix | secure location and document initialization against SSRF and path hijack |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b8bd49341d](https://github.com/angular/angular/commit/b8bd49341ddcee10d119a9d4aa8e5736e4e5da53) | fix | Preserves explicit 'credentials: omit' in asset requests |
+| [ca32fc1000](https://github.com/angular/angular/commit/ca32fc10001301e6174804f9abcfba62252334f4) | fix | Preserves HTTP cache mode in asset group requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="19.2.24"></a>
+# 19.2.24 (2026-05-28)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ea6379123](https://github.com/angular/angular/commit/6ea6379123a7b0e191f8b9f66dfb74ca29659a6c) | fix | prevent namespaced SVG <style> elements from being stripped |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.3.23"></a>
+# 20.3.23 (2026-05-28)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d40acc6431](https://github.com/angular/angular/commit/d40acc6431997b304ec54c951e55d2e52ed6f6dc) | fix | prevent namespaced SVG <style> elements from being stripped |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.3.22"></a>
+# 20.3.22 (2026-05-27)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3d135ce59b](https://github.com/angular/angular/commit/3d135ce59bbf7426825bc493bc681f266846ac79) | fix | add upper bounds for digitsInfo |
+| [39a4b4cc8e](https://github.com/angular/angular/commit/39a4b4cc8e8d101a566a70658707bc9f53dd5883) | fix | sanitize placeholder |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8f35b182b1](https://github.com/angular/angular/commit/8f35b182b1479ed80d652f185c2c3ee5a82ea34c) | fix | normalize tag names with custom namespaces in DomElementSchemaRegistry ([#68926](https://github.com/angular/angular/pull/68926)) |
+| [64a89e917a](https://github.com/angular/angular/commit/64a89e917a0794a3d74713bdb4c9c63d703b317b) | fix | sanitize dynamic href and xlink:href bindings on SVG a elements ([#68926](https://github.com/angular/angular/pull/68926)) |
+| [6404edfe0a](https://github.com/angular/angular/commit/6404edfe0af3f27cb96737e72907553fb924d88a) | fix | strip namespaced SVG script elements during template compilation ([#68926](https://github.com/angular/angular/pull/68926)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e345a58069](https://github.com/angular/angular/commit/e345a58069ede97250af449f5b7e9b94f828d30c) | fix | normalize tag names in runtime i18n attribute security context lookup ([#68926](https://github.com/angular/angular/pull/68926)) |
+| [d86e4e7b2a](https://github.com/angular/angular/commit/d86e4e7b2ad0e667aeb0f8ed053e2cb2bd154b81) | fix | reject script element as a dynamic component host ([#68926](https://github.com/angular/angular/pull/68926)) |
+| [af04936045](https://github.com/angular/angular/commit/af04936045707dc871e135ebb7b8cd357ac154df) | fix | sanitize meta selectors |
+| [dc631efa96](https://github.com/angular/angular/commit/dc631efa96e787bee1277f324208f21c36c1fa71) | fix | support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation ([#68926](https://github.com/angular/angular/pull/68926)) |
+| [909ef047b3](https://github.com/angular/angular/commit/909ef047b3f93b44a7ba390332707239af2f73fe) | fix | synchronize core sanitization schema with compiler ([#68926](https://github.com/angular/angular/pull/68926)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de7b2a62e7](https://github.com/angular/angular/commit/de7b2a62e7eded747c2a520c177cd41f60a96dcd) | fix | exclude withCredentials requests from transfer cache |
+| [4233188d8e](https://github.com/angular/angular/commit/4233188d8e70283190ea87dbaa5a872269291b4a) | fix | skip TransferCache for cookie-bearing requests by default |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [49a60f6045](https://github.com/angular/angular/commit/49a60f60451a0772fb5de9e231a1872081b0467f) | fix | secure location and document initialization against SSRF and path hijack |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5fdfd8a998](https://github.com/angular/angular/commit/5fdfd8a9983c2a19415afe26c03ffd544278a28f) | fix | preserve redirect policy on reconstructed asset requests |
+| [83b022f2d0](https://github.com/angular/angular/commit/83b022f2d063b6b3171c2621f3d52c11971aacff) | fix | Preserves explicit 'credentials: omit' in asset requests |
+| [e617fa06eb](https://github.com/angular/angular/commit/e617fa06ebad6e8495ff8f662805a24df73a78d4) | fix | Preserves HTTP cache mode in asset group requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="19.2.23"></a>
+# 19.2.23 (2026-05-27)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [62dd27d6af](https://github.com/angular/angular/commit/62dd27d6afe4bfd9d4fa8956c1fa191c9db61dfa) | fix | add upper bounds for digitsInfo |
+| [17326725ba](https://github.com/angular/angular/commit/17326725baae510a420b9a22b4c2d25927dd91b4) | fix | sanitize placeholder |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [932e0728db](https://github.com/angular/angular/commit/932e0728dba97d7a2dbe36e7d6429fa2087a20a9) | fix | normalize tag names with custom namespaces in DomElementSchemaRegistry |
+| [2e3d0371ab](https://github.com/angular/angular/commit/2e3d0371ab7726cec2979d8b8dc8f2a8393f9591) | fix | sanitize dynamic href and xlink:href bindings on SVG a elements |
+| [fe1207e8c5](https://github.com/angular/angular/commit/fe1207e8c5d2e55dd7a3a77a3caeb12f91a409bf) | fix | strip namespaced SVG script elements during template compilation |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c6bb0692e2](https://github.com/angular/angular/commit/c6bb0692e2f6fd8f7e59e60fa964d173c60e3a74) | fix | reject script element as a dynamic component host |
+| [3960b21558](https://github.com/angular/angular/commit/3960b2155847c52e4f56d4b3c6532be700155891) | fix | sanitize meta selectors |
+| [3632fa4b69](https://github.com/angular/angular/commit/3632fa4b6953555dfff654f25463c5179547546b) | fix | support prefix-insensitive DOM schema lookups and compile-time i18n attribute validation |
+| [620230dac4](https://github.com/angular/angular/commit/620230dac4e6141f00b528c4d20e9bbb99e6e20d) | fix | synchronize core sanitization schema with compiler |
+| [d31f84116c](https://github.com/angular/angular/commit/d31f84116cafcf48462c2b230fa9c4469761292a) | fix | wrap i18n dynamic element property updates in active index states |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9940ffd781](https://github.com/angular/angular/commit/9940ffd781de4da118848eabeeedb765f4747416) | fix | exclude withCredentials requests from transfer cache |
+| [0f67f0b962](https://github.com/angular/angular/commit/0f67f0b9627f67d55b857f17d6796bea89d88765) | fix | skip TransferCache for cookie-bearing requests by default |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d187e8aeda](https://github.com/angular/angular/commit/d187e8aedaf7c79c9837849ab5f0b775344b14b5) | fix | normalize path parsing in ServerPlatformLocation |
+| [c75f60ef8a](https://github.com/angular/angular/commit/c75f60ef8a7a690c47dc7c473ee214c5f166d281) | fix | secure location and document initialization against SSRF and path hijack |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37ee9ffd9e](https://github.com/angular/angular/commit/37ee9ffd9eb7c51913dba80e37b2f55950d8436b) | fix | preserve redirect policy on reconstructed asset requests |
+| [97f796203f](https://github.com/angular/angular/commit/97f796203f0605f9a168b76e7ac2f1e6b8d3ddc4) | fix | Preserves explicit 'credentials: omit' in asset requests |
+| [5619120931](https://github.com/angular/angular/commit/561912093104f1a3f07eedae83edaf63650beb84) | fix | Preserves HTTP cache mode in asset group requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-rc.1"></a>
 # 22.0.0-rc.1 (2026-05-20)
 ## Breaking Changes
@@ -338,7 +563,7 @@
 # 22.0.0-next.8 (2026-04-15)
 ## Breaking Changes
 ### compiler
-- This change will trigger the `nullishCoalescingNotNullable` and `optionalChainNotNullable` diagnostics on exisiting projects.
+- This change will trigger the `nullishCoalescingNotNullable` and `optionalChainNotNullable` diagnostics on existing projects.
   You might want to disable those 2 diagnotiscs in your `tsconfig` temporarily.
 ### compiler
 | Commit | Type | Description |
@@ -1555,7 +1780,7 @@ No user facing changes in this release
 - Using a combination of `provideZoneChangeDetection`
   while also removing ZoneJS polyfills will no longer result in the
   internal scheduler being disabled. All Angular applications now
-  consistenly use the same scheduler, and those with the Zone change detection
+  consistently use the same scheduler, and those with the Zone change detection
   provider include additional automatic scheduling behaviors based on
   NgZone stabilization.
 - - TypeScript versions less than 5.9 are no longer supported.
@@ -2813,7 +3038,7 @@ false` in `configureTestingModule` as a last resort.
   been removed but weren't because DOM removal is delayed until animations
   are flushed.
 - `ApplicationRef.tick` will no longer catch and report
-  errors to the appplication `ErrorHandler`. Errors will instead be thrown out of
+  errors to the application `ErrorHandler`. Errors will instead be thrown out of
   the method and will allow callers to determine how to handle these
   errors, such as aborting follow-up work or reporting the error and
   continuing.
@@ -7285,7 +7510,7 @@ queryParams: newQueryParams})`. In this case, the `relativeTo` property
 | [79cdfeb392](https://github.com/angular/angular/commit/79cdfeb3921687dfbc8fea8d9f7ba4dbb14a7193) | feat | drop support for TypeScript 4.8 ([#49155](https://github.com/angular/angular/pull/49155))                                      |
 | [1407a9aeaf](https://github.com/angular/angular/commit/1407a9aeaf5edf33dfb9b52d7b2baaebef9b80ed) | feat | support multiple configuration files in `extends` ([#49125](https://github.com/angular/angular/pull/49125))                    |
 | [9de1e9da8f](https://github.com/angular/angular/commit/9de1e9da8fc7d102f74389d9a270c4608bf0dd64) | fix  | incorrectly matching directives on attribute bindings ([#49713](https://github.com/angular/angular/pull/49713))                |
-| [6623810e4d](https://github.com/angular/angular/commit/6623810e4d3347edaccbbb214fa883ab6a669936) | fix  | Produce diagnositc if directive used in host binding is not exported ([#49527](https://github.com/angular/angular/pull/49527)) |
+| [6623810e4d](https://github.com/angular/angular/commit/6623810e4d3347edaccbbb214fa883ab6a669936) | fix  | Produce diagnostic if directive used in host binding is not exported ([#49527](https://github.com/angular/angular/pull/49527)) |
 
 ### compiler-cli
 
@@ -7469,7 +7694,7 @@ queryParams: newQueryParams})`. In this case, the `relativeTo` property
 
 | Commit                                                                                           | Type | Description                                                                                                                    |
 | ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------------------------------ |
-| [b0c1a90f55](https://github.com/angular/angular/commit/b0c1a90f55ecfafb4fd5c22cdd1b4a5f12573f22) | fix  | Produce diagnositc if directive used in host binding is not exported ([#49792](https://github.com/angular/angular/pull/49792)) |
+| [b0c1a90f55](https://github.com/angular/angular/commit/b0c1a90f55ecfafb4fd5c22cdd1b4a5f12573f22) | fix  | Produce diagnostic if directive used in host binding is not exported ([#49792](https://github.com/angular/angular/pull/49792)) |
 
 ### compiler-cli
 
@@ -7930,7 +8155,7 @@ Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, Jens
 | Commit                                                                                           | Type | Description                                                                                             |
 | ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------- |
 | [fe50813664](https://github.com/angular/angular/commit/fe50813664809a1177132a77bd2a316ad0858b9e) | feat | Add BrowserPlatformLocation to the public API ([#48488](https://github.com/angular/angular/pull/48488)) |
-| [2f4f0638c7](https://github.com/angular/angular/commit/2f4f0638c74dccfc2d0522f67ab226d3227c0566) | fix  | Add data attribtue to NgOptimizedImage ([#48497](https://github.com/angular/angular/pull/48497))        |
+| [2f4f0638c7](https://github.com/angular/angular/commit/2f4f0638c74dccfc2d0522f67ab226d3227c0566) | fix  | Add data attribute to NgOptimizedImage ([#48497](https://github.com/angular/angular/pull/48497))        |
 
 ### compiler
 
@@ -9143,7 +9368,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 - Queries including + will now actually query for + instead of space.
   Most workarounds involving custom codecs will be unaffected.
   Possible server-side workarounds will need to be undone.
-- JSONP will throw an error when headers are set on a reques
+- JSONP will throw an error when headers are set on a request
 
   JSONP does not support headers being set on requests. Before when
   a request was sent to a JSONP backend that had headers set the headers
@@ -9339,9 +9564,9 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
 
 ### devtools tabs
 
-| Commit                                                                                           | Type | Description                        |
-| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------- |
-| [6c284ef32e](https://github.com/angular/angular/commit/6c284ef32e53a8dabbc368b9cf69f1b6f1a377b7) | fix  | stop scroll occuring at tabs level |
+| Commit                                                                                           | Type | Description                         |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------- |
+| [6c284ef32e](https://github.com/angular/angular/commit/6c284ef32e53a8dabbc368b9cf69f1b6f1a377b7) | fix  | stop scroll occurring at tabs level |
 
 ### forms
 

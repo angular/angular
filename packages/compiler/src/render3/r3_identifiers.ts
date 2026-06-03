@@ -25,6 +25,8 @@ export class Identifiers {
 
   static elementEnd: o.ExternalReference = {name: 'ɵɵelementEnd', moduleName: CORE};
 
+  static foreignComponent: o.ExternalReference = {name: 'ɵɵforeignComponent', moduleName: CORE};
+
   static domElement: o.ExternalReference = {name: 'ɵɵdomElement', moduleName: CORE};
   static domElementStart: o.ExternalReference = {name: 'ɵɵdomElementStart', moduleName: CORE};
   static domElementEnd: o.ExternalReference = {name: 'ɵɵdomElementEnd', moduleName: CORE};
