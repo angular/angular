@@ -25,6 +25,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     JSONP_HEADERS_NOT_SUPPORTED = 2812,
     // (undocumented)
+    JSONP_UNSAFE_URL = 2826,
+    // (undocumented)
     JSONP_WRONG_METHOD = 2810,
     // (undocumented)
     JSONP_WRONG_RESPONSE_TYPE = 2811,
