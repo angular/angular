@@ -91,6 +91,7 @@ import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set'
 import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
+import {attachSourcecodeLoc} from './phases/attach_sourcecode_loc';
 
 type Phase =
   | {
@@ -107,6 +108,9 @@ type Phase =
     };
 
 const phases: Phase[] = [
+  // attachSourcecodeLoc should run before any other phases that modify the
+  // template.
+  {kind: Kind.Tmpl, fn: attachSourcecodeLoc},
   {kind: Kind.Tmpl, fn: removeContentSelectors},
   {kind: Kind.Both, fn: optimizeRegularExpressions},
   {kind: Kind.Host, fn: parseHostStyleProperties},
