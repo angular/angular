@@ -58,7 +58,7 @@ export function getProvidersInjector(route: Route): EnvironmentInjector | undefi
 }
 
 export function validateConfig(
-  config: Routes,
+  config: Readonly<Routes>,
   parentPath: string = '',
   requireStandaloneComponents = false,
 ): void {
