@@ -25,10 +25,10 @@ This section walks you through creating a highlight directive that sets the back
 
    The `@Directive()` decorator's configuration property specifies the directive's CSS attribute selector, `[appHighlight]`.
 
-1. Import `ElementRef` from `@angular/core`.
+1. Import `ElementRef` and `inject` from `@angular/core`.
    `ElementRef` grants direct access to the host DOM element through its `nativeElement` property.
 
-1. Add `ElementRef` in the directive's `constructor()` to [inject](guide/di) a reference to the host DOM element, the element to which you apply `appHighlight`.
+1. Use [`inject`](guide/di) to obtain a reference to the host DOM element, the element to which you apply `appHighlight`.
 
 1. Add logic to the `HighlightDirective` class that sets the background to yellow.
 
@@ -46,7 +46,7 @@ To use the `HighlightDirective`, add a `<p>` element to the HTML template with t
 
 <docs-code header="app.component.html" path="adev/src/content/examples/attribute-directives/src/app/app.component.1.html" region="applied"/>
 
-Angular creates an instance of the `HighlightDirective` class and injects a reference to the `<p>` element into the directive's constructor, which sets the `<p>` element's background style to yellow.
+Angular creates an instance of the `HighlightDirective` class, which uses `inject(ElementRef)` to get a reference to the `<p>` element and set its background style to yellow.
 
 ## Handling user events
 
