@@ -58,7 +58,7 @@ export interface ToolDescriptor<InputSchema extends JsonSchemaForInference> {
   name: string;
 
   /** A description of what the tool does and how the agent should consider using it. */
-  description?: string;
+  description: string;
 
   /**
    * A schema which describes the input arguments expected by the {@link execute} function

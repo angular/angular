@@ -2137,7 +2137,7 @@ export interface WebMcpClient {
 
 // @public
 export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
-    description?: string;
+    description: string;
     execute: WebMcpToolExecute<InputSchema>;
     inputSchema: InputSchema;
     name: string;
