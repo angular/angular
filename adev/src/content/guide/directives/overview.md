@@ -109,28 +109,6 @@ For this use case, Angular applies the styles upon initialization and in case of
 To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
 However, these steps are not necessary to implement `ngStyle` on its own.
 
-## Hosting a directive without a DOM element
-
-The Angular `<ng-container>` is a grouping element that doesn't interfere with styles or layout because Angular doesn't put it in the DOM.
-
-Use `<ng-container>` when there's no single element to host the directive.
-
-Here's a conditional paragraph using `<ng-container>`.
-
-<docs-code header="app.component.html (ngif-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" region="ngif-ngcontainer"/>
-
-<img alt="ngcontainer paragraph with proper style" src="assets/images/guide/structural-directives/good-paragraph.png">
-
-1. Import the `ngModel` directive from `FormsModule`.
-
-1. Add `FormsModule` to the imports section of the relevant Angular module.
-
-1. To conditionally exclude an `<option>`, wrap the `<option>` in an `<ng-container>`.
-
-   <docs-code header="app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" region="select-ngcontainer"/>
-
-   <img alt="ngcontainer options work properly" src="assets/images/guide/structural-directives/select-ngcontainer-anim.gif">
-
 ## What's next
 
 <docs-pill-row>
