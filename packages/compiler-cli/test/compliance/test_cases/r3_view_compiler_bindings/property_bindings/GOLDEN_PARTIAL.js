@@ -838,6 +838,15 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "
     <iframe [sandbox]="evil"></iframe>
     <a href="{{evil}}{{evil}}"></a>
     <div attr.style="{{evil}}{{evil}}"></div>
+    <div [(innerHTML)]="evil"></div>
+    <div bindon-innerHTML="evil"></div>
+    <iframe [(srcdoc)]="evil"></iframe>
+    <iframe bindon-srcdoc="evil"></iframe>
+    <img [(src)]="evil" />
+    <iframe [(src)]="evil"></iframe>
+    <object [(data)]="evil"></object>
+    <link [(href)]="evil" />
+    <iframe [(sandbox)]="evil"></iframe>
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
@@ -851,6 +860,15 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <iframe [sandbox]="evil"></iframe>
     <a href="{{evil}}{{evil}}"></a>
     <div attr.style="{{evil}}{{evil}}"></div>
+    <div [(innerHTML)]="evil"></div>
+    <div bindon-innerHTML="evil"></div>
+    <iframe [(srcdoc)]="evil"></iframe>
+    <iframe bindon-srcdoc="evil"></iframe>
+    <img [(src)]="evil" />
+    <iframe [(src)]="evil"></iframe>
+    <object [(data)]="evil"></object>
+    <link [(href)]="evil" />
+    <iframe [(sandbox)]="evil"></iframe>
   `
                 }]
         }] });
