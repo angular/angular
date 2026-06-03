@@ -1,3 +1,26 @@
+<a name="21.2.16"></a>
+# 21.2.16 (2026-06-03)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f6d8e642b0](https://github.com/angular/angular/commit/f6d8e642b0b215d2f9dbf1060abd24348c6cbf66) | fix | only strip a literal /index.html suffix from URLs |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ae1c8a1f7a](https://github.com/angular/angular/commit/ae1c8a1f7a7f1d4832da3b22e3763864fa5ff098) | fix | move projection attributes into constants |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3fd6897a67](https://github.com/angular/angular/commit/3fd6897a67fd6acdc01fcde0452a98c3e0f81e21) | fix | harden inherit definition feature against polluted prototypes |
+| [7e38336dc7](https://github.com/angular/angular/commit/7e38336dc73e14d98cc6465f54e1b7d6271facb2) | fix | use Object.create(null) for LOCALE_DATA as a hardening measure |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [66821c4ed5](https://github.com/angular/angular/commit/66821c4ed5f580912a1609fc1e06a86f8793c2cf) | fix | throw on suspicious URLs and restrict protocol-relative URLs |
+| [d3170031b6](https://github.com/angular/angular/commit/d3170031b6f35508f960cba18586843925bb61ec) | fix | update domino to latest version |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.25"></a>
 # 19.2.25 (2026-06-02)
 ### platform-server
