@@ -428,7 +428,7 @@ const prepareForestForSerialization = (
   const serializedNodes: SerializableComponentTreeNode[] = [];
   for (const node of roots) {
     const serializedNode: SerializableComponentTreeNode = {
-      element: node.element,
+      tagName: node.tagName,
       component: node.component
         ? {
             name: node.component.name,

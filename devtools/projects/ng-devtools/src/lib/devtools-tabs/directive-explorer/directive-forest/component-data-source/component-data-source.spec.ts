@@ -12,7 +12,7 @@ import {DevToolsNode} from '../../../../../../../protocol';
 import {ComponentDataSource, FlatNode} from '.';
 
 const tree1: DevToolsNode = {
-  element: 'app',
+  tagName: 'app',
   directives: [
     {
       id: 1,
@@ -31,7 +31,7 @@ const tree1: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: 'bar',
+      tagName: 'bar',
       nativeElement: document.createElement('bar'),
       controlFlowBlock: null,
     },
@@ -40,7 +40,7 @@ const tree1: DevToolsNode = {
 };
 
 const tree2: DevToolsNode = {
-  element: 'app',
+  tagName: 'app',
   directives: [
     {
       id: 1,
@@ -59,7 +59,7 @@ const tree2: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: 'bar',
+      tagName: 'bar',
       nativeElement: document.createElement('bar'),
       controlFlowBlock: null,
     },
@@ -71,7 +71,7 @@ const tree2: DevToolsNode = {
         name: 'qux',
       },
       directives: [],
-      element: 'qux',
+      tagName: 'qux',
       controlFlowBlock: null,
     },
   ],
@@ -79,7 +79,7 @@ const tree2: DevToolsNode = {
 };
 
 const tree3: DevToolsNode = {
-  element: 'app',
+  tagName: 'app',
   directives: [
     {
       id: 1,
@@ -97,7 +97,7 @@ const tree3: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: '#comment',
+      tagName: '#comment',
       controlFlowBlock: null,
       nativeElement: document.createComment('bar'),
     },
@@ -109,7 +109,7 @@ const tree3: DevToolsNode = {
         name: 'qux',
       },
       directives: [],
-      element: '#comment',
+      tagName: '#comment',
       controlFlowBlock: null,
       nativeElement: document.createComment('bar'),
     },
@@ -118,7 +118,7 @@ const tree3: DevToolsNode = {
 };
 
 const tree4: DevToolsNode = {
-  element: 'app',
+  tagName: 'app',
   controlFlowBlock: null,
   directives: [
     {
@@ -144,7 +144,7 @@ const tree4: DevToolsNode = {
                         name: 'qux',
                       },
                       directives: [],
-                      element: 'bar',
+                      tagName: 'bar',
                       controlFlowBlock: null,
                       nativeElement: document.createComment('bar'),
                     },
@@ -155,7 +155,7 @@ const tree4: DevToolsNode = {
                     name: 'qux',
                   },
                   directives: [],
-                  element: '#comment',
+                  tagName: '#comment',
                   controlFlowBlock: null,
                   nativeElement: document.createComment('bar'),
                 },
@@ -166,7 +166,7 @@ const tree4: DevToolsNode = {
                 name: 'qux',
               },
               directives: [],
-              element: '#comment',
+              tagName: '#comment',
               controlFlowBlock: null,
               nativeElement: document.createComment('bar'),
             },
@@ -177,7 +177,7 @@ const tree4: DevToolsNode = {
             name: 'qux',
           },
           directives: [],
-          element: '#comment',
+          tagName: '#comment',
           controlFlowBlock: null,
           nativeElement: document.createComment('bar'),
         },
@@ -188,7 +188,7 @@ const tree4: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: '#comment',
+      tagName: '#comment',
       nativeElement: document.createComment('bar'),
       controlFlowBlock: null,
     },

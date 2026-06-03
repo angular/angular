@@ -91,7 +91,7 @@ export class LTreeStrategy {
       return {
         nativeElement: node,
         children: [],
-        element,
+        tagName: element,
         directives: [],
         component: null,
         controlFlowBlock: null, // neither there will be any control flow block
@@ -116,7 +116,7 @@ export class LTreeStrategy {
     return {
       nativeElement: node,
       children: [],
-      element,
+      tagName: element,
       directives,
       component,
       controlFlowBlock: null, // neither there will be any control flow block

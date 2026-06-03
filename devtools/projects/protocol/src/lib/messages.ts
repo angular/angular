@@ -118,10 +118,8 @@ export interface ForLoopBlock extends ControlFlowBlock {
 
 export type ChangeDetection = 'ng-on-push' | 'ng-eager' | 'acx-on-push' | 'acx-default';
 
-// TODO: refactor to remove nativeElement as it is not serializable
-// and only really exists on the ng-devtools-backend
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
-  element?: string;
+  tagName?: string;
   directives?: DirType[];
   component: CmpType | null;
   children: DevToolsNode<DirType, CmpType>[];
