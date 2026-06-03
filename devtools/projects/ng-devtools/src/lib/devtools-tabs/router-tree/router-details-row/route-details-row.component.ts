@@ -25,6 +25,9 @@ export type ActionBtnType = 'none' | 'view-source' | 'navigate';
   templateUrl: './route-details-row.component.html',
   styleUrls: ['./route-details-row.component.scss'],
   imports: [NgTemplateOutlet, ButtonComponent, MatIcon, MatTooltip, ObjectTreeExplorerComponent],
+  host: {
+    'class': 'ng-dl-row',
+  },
 })
 export class RouteDetailsRowComponent {
   readonly label = input.required<string>();

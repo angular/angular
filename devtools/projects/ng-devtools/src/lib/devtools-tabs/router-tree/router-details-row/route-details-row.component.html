@@ -1,6 +1,6 @@
 <!-- TODO: Reconsider the existence of this component. -->
-<th>{{ label() }}</th>
-<td>
+<dt>{{ label() }}</dt>
+<dd>
   @switch (type()) {
     @case ('flag') {
       <span [class]="rowValue() ? 'tag-active' : 'tag-inactive'">
@@ -45,7 +45,7 @@
       }
     }
   }
-</td>
+</dd>
 
 <ng-template #actionBtn let-value="value">
   @if (actionBtnType() !== 'none') {
