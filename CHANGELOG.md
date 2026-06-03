@@ -1,5 +1,8 @@
 <a name="22.0.0"></a>
 # 22.0.0 (2026-06-03)
+
+[Blog post "Announcing Angular v22"](https://goo.gle/angular-v22-blog).
+
 ## Breaking Changes
 ### compiler
 - This change will trigger the `nullishCoalescingNotNullable` and `optionalChainNotNullable` diagnostics on exisiting projects.
