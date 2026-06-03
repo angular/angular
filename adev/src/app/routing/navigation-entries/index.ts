@@ -1225,10 +1225,15 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     label: 'Developer Events',
     children: [
       {
+        label: 'Angular v22 Release',
+        path: 'events/v22',
+        contentPath: 'events/v22',
+        status: 'new',
+      },
+      {
         label: 'Angular v21 Release',
         path: 'events/v21',
         contentPath: 'events/v21',
-        status: 'new',
       },
     ],
   },
