@@ -33,27 +33,6 @@ Run E2E tests:
 ng e2e [project] [options]
 ```
 
-### Builder Configuration
-
-E2E runners are configured under the `e2e` target of the application in `angular.json`:
-```json
-"e2e": {
-  "builder": "<builder-package:builder-name>",
-  "options": {
-    "devServerTarget": "my-app:serve"
-  },
-  "configurations": {
-    "production": {
-      "devServerTarget": "my-app:serve:production"
-    }
-  }
-}
-```
-
-## Creating a Custom E2E Builder
-
-For advanced runner integrations (e.g., wrapper execution with custom setup/teardown), implement a custom CLI builder following the [Angular CLI Builder Documentation](https://angular.dev/tools/cli/cli-builder#creating-a-builder).
-
 ## Custom & Enterprise Testing Tools
 
 For custom enterprise runners (e.g., Katalon Studio, TestCafe, Selenium), define execution commands in `package.json` scripts.
