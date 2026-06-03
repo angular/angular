@@ -17,7 +17,7 @@ works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in 
 ```typescript
 @Component({
   selector: 'admin-menu',
-  template: 'admin-menu.html',
+  templateUrl: './admin-menu.html',
   hostDirectives: [MenuBehavior],
 })
 export class AdminMenu {}
@@ -44,7 +44,7 @@ in your component's API by expanding the entry in `hostDirectives`:
 ```typescript
 @Component({
   selector: 'admin-menu',
-  template: 'admin-menu.html',
+  templateUrl: './admin-menu.html',
   hostDirectives: [
     {
       directive: MenuBehavior,
@@ -69,7 +69,7 @@ component:
 ```typescript
 @Component({
   selector: 'admin-menu',
-  template: 'admin-menu.html',
+  templateUrl: './admin-menu.html',
   hostDirectives: [
     {
       directive: MenuBehavior,
@@ -134,7 +134,7 @@ The following example shows minimal use of a host directive:
 ```typescript
 @Component({
   selector: 'admin-menu',
-  template: 'admin-menu.html',
+  templateUrl: './admin-menu.html',
   hostDirectives: [MenuBehavior],
 })
 export class AdminMenu {}
