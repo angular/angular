@@ -318,6 +318,16 @@
       ]
     },
     {
+      "description": "should not optimize sticky regular expressions",
+      "inputFiles": ["regular_expression_with_sticky_flag.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["regular_expression_with_sticky_flag.js"]
+        }
+      ]
+    },
+    {
       "description": "should support rest arguments in a function call",
       "inputFiles": ["call_rest.ts"],
       "expectations": [
