@@ -1,3 +1,19 @@
+## 22.0.0 (2026-06-03)
+### Breaking Changes
+
+The extension now bundles TypeScript version 6.0, which itself includes breaking
+changes, including [new defaults](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html#simple-default-changes) such as `strict` being `true`. You will need to explicitly set
+`"strict": false` in your `tsconfig.json`. Alternatively, the extension supports configuring the `tsdk` in the [same way](https://code.visualstudio.com/docs/typescript/typescript-transpiling#_using-the-workspace-version-of-typescript) as the built in TS/JS extension.
+
+### Fixes and features
+- fix(language-service): Add support for `@Input` with transforms ([dc9c72da9b](https://github.com/angular/angular/commit/dc9c72da9b4ca499eebf6e78d7ccc31ea6f63580))
+- feat(language-service): add Document Symbols support for Angular templates ([cfd0f9950c](https://github.com/angular/angular/commit/cfd0f9950c08324e1c56f16d98a2e3081feeda58))
+- feat(language-service): add angular template inlay hints support ([5a6d88626b](https://github.com/angular/angular/commit/5a6d88626b604db937287a501cb723c088412a7e))
+- feat(language-service): Add support for idle timeout in defer blocks ([c6f98c723c](https://github.com/angular/angular/commit/c6f98c723cdd2c209092927855f8cbaf63ecce30))
+
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.2.3 (2026-03-11)
 
 This release contains internal refactorings only.
