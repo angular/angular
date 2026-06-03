@@ -18,7 +18,7 @@ describe('indexForest', () => {
     expect(
       indexForest([
         {
-          element: 'Parent1',
+          tagName: 'Parent1',
           directives: [],
           component: {
             isElement: false,
@@ -27,7 +27,7 @@ describe('indexForest', () => {
           },
           children: [
             {
-              element: 'Child1_1',
+              tagName: 'Child1_1',
               directives: [
                 {
                   name: 'Dir1',
@@ -45,7 +45,7 @@ describe('indexForest', () => {
               hasNativeElement: true,
             } as DevToolsNode & {hasNativeElement?: boolean},
             {
-              element: 'Child1_2',
+              tagName: 'Child1_2',
               directives: [],
               component: {
                 isElement: false,
@@ -63,12 +63,12 @@ describe('indexForest', () => {
           hasNativeElement: true,
         },
         {
-          element: 'Parent2',
+          tagName: 'Parent2',
           directives: [],
           component: null,
           children: [
             {
-              element: 'Child2_1',
+              tagName: 'Child2_1',
               directives: [
                 {
                   name: 'Dir3',
@@ -82,7 +82,7 @@ describe('indexForest', () => {
               hasNativeElement: true,
             } as DevToolsNode & {hasNativeElement?: boolean},
             {
-              element: 'Child2_2',
+              tagName: 'Child2_2',
               directives: [
                 {
                   name: 'Dir4',
@@ -107,7 +107,7 @@ describe('indexForest', () => {
       ]),
     ).toEqual([
       {
-        element: 'Parent1',
+        tagName: 'Parent1',
         directives: [],
         position: [0],
         hydration: undefined,
@@ -118,7 +118,7 @@ describe('indexForest', () => {
         },
         children: [
           {
-            element: 'Child1_1',
+            tagName: 'Child1_1',
             position: [0, 0],
             directives: [
               {
@@ -139,7 +139,7 @@ describe('indexForest', () => {
             injector: undefined,
           },
           {
-            element: 'Child1_2',
+            tagName: 'Child1_2',
             directives: [],
             position: [0, 1],
             component: {
@@ -162,14 +162,14 @@ describe('indexForest', () => {
         injector: undefined,
       },
       {
-        element: 'Parent2',
+        tagName: 'Parent2',
         directives: [],
         component: null,
         position: [1],
         hydration: undefined,
         children: [
           {
-            element: 'Child2_1',
+            tagName: 'Child2_1',
             position: [1, 0],
             directives: [
               {
@@ -186,7 +186,7 @@ describe('indexForest', () => {
             injector: undefined,
           },
           {
-            element: 'Child2_2',
+            tagName: 'Child2_2',
             position: [1, 1],
             directives: [
               {

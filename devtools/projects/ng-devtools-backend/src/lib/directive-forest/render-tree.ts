@@ -58,7 +58,7 @@ function extractViewTree(
         name: dir.constructor.name,
       };
     }),
-    element: domNode.nodeName.toLowerCase(),
+    tagName: domNode.nodeName.toLowerCase(),
     nativeElement: domNode,
     hydration: hydrationStatus(domNode),
     controlFlowBlock: null,

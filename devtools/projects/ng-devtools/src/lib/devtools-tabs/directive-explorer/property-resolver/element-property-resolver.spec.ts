@@ -31,7 +31,7 @@ const mockIndexedNode: IndexedNode = {
   controlFlowBlock: null,
   hasNativeElement: true,
   children: [],
-  element: 'foo',
+  tagName: 'foo',
   position: [0],
 };
 

@@ -166,7 +166,7 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
   const position = parentPosition.concat([idx]);
   return {
     position,
-    element: node.element,
+    tagName: node.tagName,
     component: node.component,
     directives: node.directives?.map((d) => ({position, ...d})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
