@@ -38,6 +38,10 @@ adev/src/content/aria/**/*.json
 adev/src/content/cli/**/*.json
 adev/src/content/cdk/**/*.json
 
+# Example package.json containing docregion (`// #docregion`) markers, which are
+# not valid JSON and cannot be processed by Prettier's json-stringify parser.
+adev/src/content/examples/schematics-for-libraries/projects/my-lib/package.json
+
 # Antigravity rules
 .agent/rules/agents.md
 
