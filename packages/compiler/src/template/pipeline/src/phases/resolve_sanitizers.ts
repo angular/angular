@@ -56,6 +56,7 @@ export function resolveSanitizers(job: CompilationJob): void {
         case ir.OpKind.Property:
         case ir.OpKind.Attribute:
         case ir.OpKind.DomProperty:
+        case ir.OpKind.TwoWayProperty:
           let sanitizerFn: o.ExternalReference | null = null;
           if (
             Array.isArray(op.securityContext) &&
