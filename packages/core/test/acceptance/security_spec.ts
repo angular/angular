@@ -266,6 +266,22 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
+              `using a property binding (checking \`${securityAttr}\` (attr.) with null, with \`${srcAttr}\`)`,
+            () => {
+              @Component({
+                selector: 'my-comp',
+                template: `
+                  <iframe ${srcAttr}="${TEST_IFRAME_URL}" [attr.${securityAttr}]="null"></iframe>
+                `,
+              })
+              class IframeComp {}
+
+              expectIframeCreationToFail(IframeComp);
+            },
+          );
+
+          it(
+            `should error when a security-sensitive attribute is applied ` +
               `using a property binding (checking \`${securityAttr}\` with [attr.], making ` +
               `sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
