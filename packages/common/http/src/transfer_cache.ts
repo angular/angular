@@ -536,7 +536,7 @@ function verifyMappedOrigin(url: string): void {
 /**
  * SHA-256 Constants (first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311):
  */
-const SHA256_ROUND_CONSTANTS = new Uint32Array([
+const SHA256_ROUND_CONSTANTS = /* @__PURE__ */ new Uint32Array([
   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
   0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
@@ -552,9 +552,15 @@ let textEncoder: TextEncoder | undefined;
 /**
  * Generates a SHA-256 hash representation of a string.
  *
- * Note: A custom synchronous SHA-256 implementation is used here because the
- * Web Crypto API (`crypto.subtle.digest`) is strictly asynchronous (Promise-based),
- * whereas the transfer cache state lookup and interceptor flow must operate synchronously due to the HttpResource API.
+ * Note: A custom synchronous SHA-256 implementation is used here because the Web Crypto API
+ * (`crypto.subtle.digest`) is strictly asynchronous (Promise-based), whereas the transfer cache
+ * state lookup and interceptor flow must operate synchronously due to the HttpResource API.
+ *
+ * The previous DJB2 hashing logic was vulnerable to pre-image and second-preimage attacks due to
+ * its small 64-bit keyspace and mathematical simplicity. An attacker could craft colliding request
+ * inputs to poison the cache, potentially causing a CDN or the application to serve the wrong
+ * cached response to legitimate users. SHA-256 provides strong cryptographic collision resistance,
+ * preventing cache key collision attacks.
  */
 export function generateHash(value: string): string {
   textEncoder ??= new TextEncoder();
