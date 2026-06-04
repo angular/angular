@@ -103,13 +103,13 @@ interface TransferHttpResponse {
   /** headers */
   [HEADERS]: Record<string, string[]>;
   /** status */
-  [STATUS]?: number;
+  [STATUS]: number;
   /** statusText */
-  [STATUS_TEXT]?: string;
+  [STATUS_TEXT]: string;
   /** url */
-  [REQ_URL]?: string;
+  [REQ_URL]: string;
   /** responseType */
-  [RESPONSE_TYPE]?: HttpRequest<unknown>['responseType'];
+  [RESPONSE_TYPE]: HttpRequest<unknown>['responseType'];
 }
 
 interface CacheOptions extends HttpTransferCacheOptions {
@@ -195,50 +195,49 @@ export function retrieveStateFromCache(
   const storeKey = makeCacheKey(req, requestUrl);
   const response = transferState.get(storeKey, null);
 
-  const headersToInclude = getHeadersToInclude(options, requestOptions);
-
-  if (response) {
-    const {
-      [BODY]: undecodedBody,
-      [RESPONSE_TYPE]: responseType,
-      [HEADERS]: httpHeaders,
-      [STATUS]: status,
-      [STATUS_TEXT]: statusText,
-      [REQ_URL]: url,
-    } = response;
-    // Request found in cache. Respond using it.
-    let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
-
-    switch (responseType) {
-      case 'arraybuffer':
-        body = fromBase64(undecodedBody);
-        break;
-      case 'blob':
-        body = new Blob([fromBase64(undecodedBody)]);
-        break;
-    }
-
-    // We want to warn users accessing a header provided from the cache
-    // That HttpTransferCache alters the headers
-    // The warning will be logged a single time by HttpHeaders instance
-    let headers = new HttpHeaders(httpHeaders);
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      // Append extra logic in dev mode to produce a warning when a header
-      // that was not transferred to the client is accessed in the code via `get`
-      // and `has` calls.
-      headers = appendMissingHeadersDetection(req.url, headers, headersToInclude ?? []);
-    }
-
-    return new HttpResponse({
-      body,
-      headers,
-      status,
-      statusText,
-      url,
-    });
+  if (!response) {
+    return null;
   }
 
-  return null;
+  const {
+    [BODY]: undecodedBody,
+    [RESPONSE_TYPE]: responseType,
+    [HEADERS]: httpHeaders,
+    [STATUS]: status,
+    [STATUS_TEXT]: statusText,
+    [REQ_URL]: url,
+  } = response;
+  // Request found in cache. Respond using it.
+  let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
+
+  switch (responseType) {
+    case 'arraybuffer':
+      body = fromBase64(undecodedBody);
+      break;
+    case 'blob':
+      body = new Blob([fromBase64(undecodedBody)]);
+      break;
+  }
+
+  // We want to warn users accessing a header provided from the cache
+  // That HttpTransferCache alters the headers
+  // The warning will be logged a single time by HttpHeaders instance
+  let headers = new HttpHeaders(httpHeaders);
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    // Append extra logic in dev mode to produce a warning when a header
+    // that was not transferred to the client is accessed in the code via `get`
+    // and `has` calls.
+    const headersToInclude = getHeadersToInclude(options, requestOptions);
+    headers = appendMissingHeadersDetection(req.url, headers, headersToInclude ?? []);
+  }
+
+  return new HttpResponse({
+    body,
+    headers,
+    status,
+    statusText,
+    url,
+  });
 }
 
 export function transferCacheInterceptorFn(
@@ -247,7 +246,6 @@ export function transferCacheInterceptorFn(
 ): Observable<HttpEvent<unknown>> {
   const options = inject(CACHE_OPTIONS);
   const transferState = inject(TransferState);
-
   const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {optional: true});
 
   const cachedResponse = retrieveStateFromCache(req, options, transferState, originMap);
@@ -255,46 +253,45 @@ export function transferCacheInterceptorFn(
     return of(cachedResponse);
   }
 
-  const {transferCache: requestOptions} = req;
-  const headersToInclude = getHeadersToInclude(options, requestOptions);
-
-  const requestUrl =
-    typeof ngServerMode !== 'undefined' && ngServerMode && originMap
-      ? mapRequestOriginUrl(req.url, originMap)
-      : req.url;
-  const storeKey = makeCacheKey(req, requestUrl);
-
   // In the following situations we do not want to cache the request
   if (!shouldCacheRequest(req, options)) {
     return next(req);
   }
 
   const event$ = next(req);
-
-  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
-    // Request not found in cache. Make the request and cache it if on the server.
-    return event$.pipe(
-      tap((event: HttpEvent<unknown>) => {
-        // Only cache successful HTTP responses that do not have Cache-Control
-        // directives that forbid shared caching (no-store or private).
-        if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
-          transferState.set<TransferHttpResponse>(storeKey, {
-            [BODY]:
-              req.responseType === 'arraybuffer' || req.responseType === 'blob'
-                ? toBase64(event.body)
-                : event.body,
-            [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
-            [STATUS]: event.status,
-            [STATUS_TEXT]: event.statusText,
-            [REQ_URL]: requestUrl,
-            [RESPONSE_TYPE]: req.responseType,
-          });
-        }
-      }),
-    );
+  if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+    return event$;
   }
 
-  return event$;
+  const {transferCache: requestOptions} = req;
+  const headersToInclude = getHeadersToInclude(options, requestOptions);
+
+  const requestUrl =
+    typeof ngServerMode !== 'undefined' && ngServerMode && originMap
+      ? mapRequestOriginUrl(req.urlWithParams, originMap)
+      : req.urlWithParams;
+  const storeKey = makeCacheKey(req, requestUrl);
+
+  // Request not found in cache. Make the request and cache it if on the server.
+  return event$.pipe(
+    tap((event: HttpEvent<unknown>) => {
+      // Only cache successful HTTP responses that do not have Cache-Control
+      // directives that forbid shared caching (no-store or private).
+      if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
+        transferState.set<TransferHttpResponse>(storeKey, {
+          [BODY]:
+            req.responseType === 'arraybuffer' || req.responseType === 'blob'
+              ? toBase64(event.body)
+              : event.body,
+          [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
+          [STATUS]: event.status,
+          [STATUS_TEXT]: event.statusText,
+          [REQ_URL]: requestUrl,
+          [RESPONSE_TYPE]: req.responseType,
+        });
+      }
+    }),
+  );
 }
 
 /** @returns true when the request contains authentication or cookie headers. */
@@ -378,23 +375,26 @@ function makeCacheKey(
 }
 
 /**
- * A method that returns a hash representation of a string using a variant of DJB2 hash
- * algorithm.
+ * Generates a 64-bit hash representation of a string by combining two independent 32-bit
+ * DJB2 hashes (one with multiplier 31, one with multiplier 33).
  *
- * This is the same hashing logic that is used to generate component ids.
+ * Using a 64-bit keyspace virtually eliminates the probability of any accidental transfer
+ * cache key collisions.
  */
 function generateHash(value: string): string {
-  let hash = 0;
+  let hash1 = 0;
+  let hash2 = 5381;
 
-  for (const char of value) {
-    hash = (Math.imul(31, hash) + char.charCodeAt(0)) << 0;
+  for (let i = 0; i < value.length; i++) {
+    const charCode = value.charCodeAt(i);
+    hash1 = (Math.imul(31, hash1) + charCode) << 0;
+    hash2 = (Math.imul(33, hash2) + charCode) << 0;
   }
 
-  // Force positive number hash.
-  // 2147483647 = equivalent of Integer.MAX_VALUE.
-  hash += 2147483647 + 1;
+  const hex1 = (hash1 >>> 0).toString(16);
+  const hex2 = (hash2 >>> 0).toString(16);
 
-  return hash.toString();
+  return hex1 + hex2;
 }
 
 function toBase64(buffer: unknown): string {
