@@ -155,13 +155,10 @@ function getHeadersToInclude(
   options: CacheOptions,
   requestOptions: HttpTransferCacheOptions | boolean | undefined,
 ): string[] | undefined {
-  const {includeHeaders: globalHeaders} = options;
-  let headersToInclude = globalHeaders;
-  if (typeof requestOptions === 'object' && requestOptions.includeHeaders) {
-    // Request-specific config takes precedence over the global config.
-    headersToInclude = requestOptions.includeHeaders;
-  }
-  return headersToInclude;
+  // Request-specific config takes precedence over the global config.
+  return typeof requestOptions === 'object' && requestOptions.includeHeaders
+    ? requestOptions.includeHeaders
+    : options.includeHeaders;
 }
 
 export function retrieveStateFromCache(
@@ -259,39 +256,35 @@ export function transferCacheInterceptorFn(
   }
 
   const event$ = next(req);
-  if (typeof ngServerMode === 'undefined' || !ngServerMode) {
-    return event$;
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    // Request not found in cache. Make the request and cache it if on the server.
+    return event$.pipe(
+      tap((event: HttpEvent<unknown>) => {
+        // Only cache successful HTTP responses that do not have Cache-Control
+        // directives that forbid shared caching (no-store or private).
+        if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
+          const {transferCache: requestOptions} = req;
+          const headersToInclude = getHeadersToInclude(options, requestOptions);
+          const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+          const storeKey = makeCacheKey(req, requestUrl);
+
+          transferState.set<TransferHttpResponse>(storeKey, {
+            [BODY]:
+              req.responseType === 'arraybuffer' || req.responseType === 'blob'
+                ? toBase64(event.body)
+                : event.body,
+            [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
+            [STATUS]: event.status,
+            [STATUS_TEXT]: event.statusText,
+            [REQ_URL]: requestUrl,
+            [RESPONSE_TYPE]: req.responseType,
+          });
+        }
+      }),
+    );
   }
 
-  const {transferCache: requestOptions} = req;
-  const headersToInclude = getHeadersToInclude(options, requestOptions);
-
-  const requestUrl =
-    typeof ngServerMode !== 'undefined' && ngServerMode && originMap
-      ? mapRequestOriginUrl(req.urlWithParams, originMap)
-      : req.urlWithParams;
-  const storeKey = makeCacheKey(req, requestUrl);
-
-  // Request not found in cache. Make the request and cache it if on the server.
-  return event$.pipe(
-    tap((event: HttpEvent<unknown>) => {
-      // Only cache successful HTTP responses that do not have Cache-Control
-      // directives that forbid shared caching (no-store or private).
-      if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
-        transferState.set<TransferHttpResponse>(storeKey, {
-          [BODY]:
-            req.responseType === 'arraybuffer' || req.responseType === 'blob'
-              ? toBase64(event.body)
-              : event.body,
-          [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
-          [STATUS]: event.status,
-          [STATUS_TEXT]: event.statusText,
-          [REQ_URL]: requestUrl,
-          [RESPONSE_TYPE]: req.responseType,
-        });
-      }
-    }),
-  );
+  return event$;
 }
 
 /** @returns true when the request contains authentication or cookie headers. */
@@ -382,6 +375,7 @@ function makeCacheKey(
  * cache key collisions.
  */
 function generateHash(value: string): string {
+  const padding = '00000000';
   let hash1 = 0;
   let hash2 = 5381;
 
@@ -391,8 +385,8 @@ function generateHash(value: string): string {
     hash2 = (Math.imul(33, hash2) + charCode) << 0;
   }
 
-  const hex1 = (hash1 >>> 0).toString(16);
-  const hex2 = (hash2 >>> 0).toString(16);
+  const hex1 = (padding + (hash1 >>> 0).toString(16)).slice(-8);
+  const hex2 = (padding + (hash2 >>> 0).toString(16)).slice(-8);
 
   return hex1 + hex2;
 }

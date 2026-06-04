@@ -385,7 +385,7 @@ describe('TransferCache', () => {
 
       const transferState = TestBed.inject(TransferState);
       expect(JSON.parse(transferState.toJson()) as Record<string, unknown>).toEqual({
-        'f15d057a4462f9c': {
+        '0f15d057a4462f9c': {
           [BODY]: 'foo',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -393,7 +393,7 @@ describe('TransferCache', () => {
           [REQ_URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
         },
-        'f15d418a44633dd': {
+        '0f15d418a44633dd': {
           [BODY]: 'buzz',
           [HEADERS]: {},
           [STATUS]: 200,
