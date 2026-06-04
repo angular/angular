@@ -103,13 +103,13 @@ interface TransferHttpResponse {
   /** headers */
   [HEADERS]: Record<string, string[]>;
   /** status */
-  [STATUS]?: number;
+  [STATUS]: number;
   /** statusText */
-  [STATUS_TEXT]?: string;
+  [STATUS_TEXT]: string;
   /** url */
-  [REQ_URL]?: string;
+  [REQ_URL]: string;
   /** responseType */
-  [RESPONSE_TYPE]?: HttpRequest<unknown>['responseType'];
+  [RESPONSE_TYPE]: HttpRequest<unknown>['responseType'];
 }
 
 interface CacheOptions extends HttpTransferCacheOptions {
@@ -155,13 +155,10 @@ function getHeadersToInclude(
   options: CacheOptions,
   requestOptions: HttpTransferCacheOptions | boolean | undefined,
 ): string[] | undefined {
-  const {includeHeaders: globalHeaders} = options;
-  let headersToInclude = globalHeaders;
-  if (typeof requestOptions === 'object' && requestOptions.includeHeaders) {
-    // Request-specific config takes precedence over the global config.
-    headersToInclude = requestOptions.includeHeaders;
-  }
-  return headersToInclude;
+  // Request-specific config takes precedence over the global config.
+  return typeof requestOptions === 'object' && requestOptions.includeHeaders
+    ? requestOptions.includeHeaders
+    : options.includeHeaders;
 }
 
 export function retrieveStateFromCache(
@@ -195,50 +192,49 @@ export function retrieveStateFromCache(
   const storeKey = makeCacheKey(req, requestUrl);
   const response = transferState.get(storeKey, null);
 
-  const headersToInclude = getHeadersToInclude(options, requestOptions);
-
-  if (response) {
-    const {
-      [BODY]: undecodedBody,
-      [RESPONSE_TYPE]: responseType,
-      [HEADERS]: httpHeaders,
-      [STATUS]: status,
-      [STATUS_TEXT]: statusText,
-      [REQ_URL]: url,
-    } = response;
-    // Request found in cache. Respond using it.
-    let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
-
-    switch (responseType) {
-      case 'arraybuffer':
-        body = fromBase64(undecodedBody);
-        break;
-      case 'blob':
-        body = new Blob([fromBase64(undecodedBody)]);
-        break;
-    }
-
-    // We want to warn users accessing a header provided from the cache
-    // That HttpTransferCache alters the headers
-    // The warning will be logged a single time by HttpHeaders instance
-    let headers = new HttpHeaders(httpHeaders);
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      // Append extra logic in dev mode to produce a warning when a header
-      // that was not transferred to the client is accessed in the code via `get`
-      // and `has` calls.
-      headers = appendMissingHeadersDetection(req.url, headers, headersToInclude ?? []);
-    }
-
-    return new HttpResponse({
-      body,
-      headers,
-      status,
-      statusText,
-      url,
-    });
+  if (!response) {
+    return null;
   }
 
-  return null;
+  const {
+    [BODY]: undecodedBody,
+    [RESPONSE_TYPE]: responseType,
+    [HEADERS]: httpHeaders,
+    [STATUS]: status,
+    [STATUS_TEXT]: statusText,
+    [REQ_URL]: url,
+  } = response;
+  // Request found in cache. Respond using it.
+  let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
+
+  switch (responseType) {
+    case 'arraybuffer':
+      body = fromBase64(undecodedBody);
+      break;
+    case 'blob':
+      body = new Blob([fromBase64(undecodedBody)]);
+      break;
+  }
+
+  // We want to warn users accessing a header provided from the cache
+  // That HttpTransferCache alters the headers
+  // The warning will be logged a single time by HttpHeaders instance
+  let headers = new HttpHeaders(httpHeaders);
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    // Append extra logic in dev mode to produce a warning when a header
+    // that was not transferred to the client is accessed in the code via `get`
+    // and `has` calls.
+    const headersToInclude = getHeadersToInclude(options, requestOptions);
+    headers = appendMissingHeadersDetection(req.url, headers, headersToInclude ?? []);
+  }
+
+  return new HttpResponse({
+    body,
+    headers,
+    status,
+    statusText,
+    url,
+  });
 }
 
 export function transferCacheInterceptorFn(
@@ -247,7 +243,6 @@ export function transferCacheInterceptorFn(
 ): Observable<HttpEvent<unknown>> {
   const options = inject(CACHE_OPTIONS);
   const transferState = inject(TransferState);
-
   const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {optional: true});
 
   const cachedResponse = retrieveStateFromCache(req, options, transferState, originMap);
@@ -255,22 +250,12 @@ export function transferCacheInterceptorFn(
     return of(cachedResponse);
   }
 
-  const {transferCache: requestOptions} = req;
-  const headersToInclude = getHeadersToInclude(options, requestOptions);
-
-  const requestUrl =
-    typeof ngServerMode !== 'undefined' && ngServerMode && originMap
-      ? mapRequestOriginUrl(req.url, originMap)
-      : req.url;
-  const storeKey = makeCacheKey(req, requestUrl);
-
   // In the following situations we do not want to cache the request
   if (!shouldCacheRequest(req, options)) {
     return next(req);
   }
 
   const event$ = next(req);
-
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // Request not found in cache. Make the request and cache it if on the server.
     return event$.pipe(
@@ -278,6 +263,11 @@ export function transferCacheInterceptorFn(
         // Only cache successful HTTP responses that do not have Cache-Control
         // directives that forbid shared caching (no-store or private).
         if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
+          const {transferCache: requestOptions} = req;
+          const headersToInclude = getHeadersToInclude(options, requestOptions);
+          const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+          const storeKey = makeCacheKey(req, requestUrl);
+
           transferState.set<TransferHttpResponse>(storeKey, {
             [BODY]:
               req.responseType === 'arraybuffer' || req.responseType === 'blob'
@@ -299,10 +289,10 @@ export function transferCacheInterceptorFn(
 
 /** @returns true when the request contains authentication or cookie headers. */
 function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
+  const headers = req.headers;
+
   return (
-    req.headers.has('authorization') ||
-    req.headers.has('proxy-authorization') ||
-    req.headers.has('cookie')
+    headers.has('authorization') || headers.has('proxy-authorization') || headers.has('cookie')
   );
 }
 
@@ -327,7 +317,8 @@ function isNonCacheableRequest(cache: RequestCache): boolean {
 }
 
 function hasOutgoingCredentials(req: HttpRequest<unknown>): boolean {
-  return req.withCredentials || req.credentials === 'include' || req.credentials === 'same-origin';
+  const credentials = req.credentials;
+  return req.withCredentials || credentials === 'include' || credentials === 'same-origin';
 }
 
 function getFilteredHeaders(
@@ -378,23 +369,152 @@ function makeCacheKey(
 }
 
 /**
- * A method that returns a hash representation of a string using a variant of DJB2 hash
- * algorithm.
+ * Generates a SHA-256 hash representation of a string.
  *
- * This is the same hashing logic that is used to generate component ids.
+ * Note: A custom synchronous SHA-256 implementation is used here because the
+ * Web Crypto API (`crypto.subtle.digest`) is strictly asynchronous (Promise-based),
+ * whereas the transfer cache state lookup and interceptor flow must operate synchronously due to the HttpResource API.
  */
-function generateHash(value: string): string {
-  let hash = 0;
+export function generateHash(value: string): string {
+  const inputBytes = new TextEncoder().encode(value);
 
-  for (const char of value) {
-    hash = (Math.imul(31, hash) + char.charCodeAt(0)) << 0;
+  // Initial hash values (first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
+  let hashState0 = 0x6a09e667;
+  let hashState1 = 0xbb67ae85;
+  let hashState2 = 0x3c6ef372;
+  let hashState3 = 0xa54ff53a;
+  let hashState4 = 0x510e527f;
+  let hashState5 = 0x9b05688c;
+  let hashState6 = 0x1f83d9ab;
+  let hashState7 = 0x5be0cd19;
+
+  // SHA-256 Constants (first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311):
+  const SHA256_ROUND_CONSTANTS = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+  ];
+
+  // Pre-processing (Padding):
+  const messageLengthInBits = inputBytes.length * 8;
+
+  // The total length of the padded message must be a multiple of 64 bytes (512 bits)
+  const paddedLengthInBytes = (((inputBytes.length + 8) >> 6) + 1) << 6;
+  const paddedBytes = new Uint8Array(paddedLengthInBytes);
+  paddedBytes.set(inputBytes);
+  paddedBytes[inputBytes.length] = 0x80; // Append a single '1' bit (0x80 byte)
+
+  const paddedBytesView = new DataView(paddedBytes.buffer);
+  const lowBits = messageLengthInBits >>> 0;
+  const highBits = (messageLengthInBits / 0x100000000) >>> 0;
+  paddedBytesView.setUint32(paddedLengthInBytes - 8, highBits, false);
+  paddedBytesView.setUint32(paddedLengthInBytes - 4, lowBits, false);
+
+  // Process the message in successive 64-byte chunks:
+  const messageSchedule = new Uint32Array(64);
+  for (let chunkOffset = 0; chunkOffset < paddedLengthInBytes; chunkOffset += 64) {
+    // Initialize first 16 words of the message schedule:
+    for (let i = 0; i < 16; i++) {
+      messageSchedule[i] = paddedBytesView.getUint32(chunkOffset + i * 4, false);
+    }
+
+    // Extend to 64 words:
+    for (let i = 16; i < 64; i++) {
+      const prevWord15 = messageSchedule[i - 15];
+      const sigma0 =
+        (((prevWord15 >>> 7) | (prevWord15 << 25)) ^
+          ((prevWord15 >>> 18) | (prevWord15 << 14)) ^
+          (prevWord15 >>> 3)) >>>
+        0;
+
+      const prevWord2 = messageSchedule[i - 2];
+      const sigma1 =
+        (((prevWord2 >>> 17) | (prevWord2 << 15)) ^
+          ((prevWord2 >>> 19) | (prevWord2 << 13)) ^
+          (prevWord2 >>> 10)) >>>
+        0;
+
+      messageSchedule[i] =
+        (messageSchedule[i - 16] + sigma0 + messageSchedule[i - 7] + sigma1) >>> 0;
+    }
+
+    // Initialize working variables to current hash values:
+    let workingStateA = hashState0;
+    let workingStateB = hashState1;
+    let workingStateC = hashState2;
+    let workingStateD = hashState3;
+    let workingStateE = hashState4;
+    let workingStateF = hashState5;
+    let workingStateG = hashState6;
+    let workingStateH = hashState7;
+
+    // Compression function main loop:
+    for (let i = 0; i < 64; i++) {
+      const capitalSigma1 =
+        (((workingStateE >>> 6) | (workingStateE << 26)) ^
+          ((workingStateE >>> 11) | (workingStateE << 21)) ^
+          ((workingStateE >>> 25) | (workingStateE << 7))) >>>
+        0;
+      const chFunction = ((workingStateE & workingStateF) ^ (~workingStateE & workingStateG)) >>> 0;
+      const temp1 =
+        (workingStateH +
+          capitalSigma1 +
+          chFunction +
+          SHA256_ROUND_CONSTANTS[i] +
+          messageSchedule[i]) >>>
+        0;
+
+      const capitalSigma0 =
+        (((workingStateA >>> 2) | (workingStateA << 30)) ^
+          ((workingStateA >>> 13) | (workingStateA << 19)) ^
+          ((workingStateA >>> 22) | (workingStateA << 10))) >>>
+        0;
+      const majFunction =
+        ((workingStateA & workingStateB) ^
+          (workingStateA & workingStateC) ^
+          (workingStateB & workingStateC)) >>>
+        0;
+      const temp2 = (capitalSigma0 + majFunction) >>> 0;
+
+      workingStateH = workingStateG;
+      workingStateG = workingStateF;
+      workingStateF = workingStateE;
+      workingStateE = (workingStateD + temp1) >>> 0;
+      workingStateD = workingStateC;
+      workingStateC = workingStateB;
+      workingStateB = workingStateA;
+      workingStateA = (temp1 + temp2) >>> 0;
+    }
+
+    // Update intermediate hash state:
+    hashState0 = (hashState0 + workingStateA) >>> 0;
+    hashState1 = (hashState1 + workingStateB) >>> 0;
+    hashState2 = (hashState2 + workingStateC) >>> 0;
+    hashState3 = (hashState3 + workingStateD) >>> 0;
+    hashState4 = (hashState4 + workingStateE) >>> 0;
+    hashState5 = (hashState5 + workingStateF) >>> 0;
+    hashState6 = (hashState6 + workingStateG) >>> 0;
+    hashState7 = (hashState7 + workingStateH) >>> 0;
   }
 
-  // Force positive number hash.
-  // 2147483647 = equivalent of Integer.MAX_VALUE.
-  hash += 2147483647 + 1;
-
-  return hash.toString();
+  // Produce the final 64-character hexadecimal hash:
+  return [
+    hashState0,
+    hashState1,
+    hashState2,
+    hashState3,
+    hashState4,
+    hashState5,
+    hashState6,
+    hashState7,
+  ]
+    .map((x) => x.toString(16).padStart(8, '0'))
+    .join('');
 }
 
 function toBase64(buffer: unknown): string {

@@ -571,7 +571,6 @@
       "getFirstLContainer",
       "getFirstNativeNode",
       "getGlobalLocale",
-      "getHeadersToInclude",
       "getHooks",
       "getInheritedInjectableDef",
       "getInitialLViewFlagsFromDef",
