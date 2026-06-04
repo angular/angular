@@ -260,7 +260,10 @@ export function transferCacheInterceptorFn(
 
   const transferState = inject(TransferState);
   const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {optional: true});
-  const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+  const requestUrl =
+    typeof ngServerMode !== 'undefined' && ngServerMode && originMap
+      ? mapRequestOriginUrl(req.url, originMap)
+      : req.url;
   const storeKey = makeCacheKey(req, requestUrl);
 
   const cachedResponse = retrieveStateFromCache(
