@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵPropType as PropType} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatTreeNode} from '@angular/material/tree';
 import {By} from '@angular/platform-browser';
 
 import {ObjectTreeExplorerComponent} from './object-tree-explorer.component';
 import {FlatNode} from './object-tree-types';
-import {PropType} from '../../../../../protocol';
 
 const mockDataSource: FlatNode[] = [
   {

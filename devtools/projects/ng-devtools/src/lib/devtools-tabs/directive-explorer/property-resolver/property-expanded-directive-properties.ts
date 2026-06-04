@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Descriptor, NestedProp, PropType} from '../../../../../../protocol';
+import {type ɵDescriptor as Descriptor, ɵPropType as PropType} from '@angular/core';
+import {NestedProp} from '../../../../../../protocol';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 
 export const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] => {

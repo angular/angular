@@ -7,8 +7,8 @@
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
+import type {ɵDescriptor as Descriptor} from '@angular/core';
 import {
-  Descriptor,
   DirectiveMetadata,
   DirectivePosition,
   Events,

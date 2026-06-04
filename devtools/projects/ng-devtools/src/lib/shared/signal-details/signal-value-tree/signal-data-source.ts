@@ -8,9 +8,9 @@
 
 import {CollectionViewer, DataSource, SelectionChange} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
+import type {ɵDescriptor as Descriptor} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {
-  Descriptor,
   DirectivePosition,
   Events,
   MessageBus,

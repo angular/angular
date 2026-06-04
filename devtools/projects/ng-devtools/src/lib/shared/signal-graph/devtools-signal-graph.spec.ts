@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebugSignalGraph, Descriptor, PropType} from '../../../../../protocol';
+import {type ɵDescriptor as Descriptor, ɵPropType as PropType} from '@angular/core';
+import {DebugSignalGraph} from '../../../../../protocol';
 import {convertToDevtoolsSignalGraph} from './devtools-signal-graph';
 
 const dummyPreview: Descriptor = {

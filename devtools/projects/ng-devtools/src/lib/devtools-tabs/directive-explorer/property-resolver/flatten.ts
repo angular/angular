@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {type ɵDescriptor as Descriptor, ɵPropType as PropType} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {Descriptor, PropType} from '../../../../../../protocol';
 import {Observable} from 'rxjs';
 
 import {arrayifyProps} from './arrayify-props';

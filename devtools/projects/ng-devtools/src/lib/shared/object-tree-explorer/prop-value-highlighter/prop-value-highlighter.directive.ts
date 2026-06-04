@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Directive, input} from '@angular/core';
+import {ɵPropType as PropType, computed, Directive, input} from '@angular/core';
 import {Property} from '../object-tree-types';
-import {PropType} from '../../../../../../protocol';
 
 /** Should be used in conjunction with prop-value-highlighter.scss */
 @Directive({

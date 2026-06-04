@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, ɵFramework as Framework} from '@angular/core';
-import {Properties, PropType} from '../../../../../../protocol';
+import {
+  ChangeDetectionStrategy,
+  ɵFramework as Framework,
+  ɵPropType as PropType,
+} from '@angular/core';
+import {Properties} from '../../../../../../protocol';
 
 import {DirectivePropertyResolver} from './directive-property-resolver';
 

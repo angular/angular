@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Descriptor} from '../../../../../../protocol';
+import type {ɵDescriptor as Descriptor} from '@angular/core';
 import {Property} from '../../../shared/object-tree-explorer/object-tree-types';
 
 export const arrayifyProps = (

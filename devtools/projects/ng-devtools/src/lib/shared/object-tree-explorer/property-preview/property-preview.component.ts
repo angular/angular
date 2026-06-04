@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output} from '@angular/core';
-import {PropType} from '../../../../../../protocol';
+import {ɵPropType as PropType, Component, computed, input, output} from '@angular/core';
 import {FlatNode} from '../object-tree-types';
 import {PropValueHighlighterDirective} from '../prop-value-highlighter/prop-value-highlighter.directive';
 

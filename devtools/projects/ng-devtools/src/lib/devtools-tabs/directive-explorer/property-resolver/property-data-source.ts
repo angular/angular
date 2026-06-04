@@ -8,15 +8,13 @@
 
 import {CollectionViewer, DataSource, SelectionChange} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
-import {MatTreeFlattener} from '@angular/material/tree';
 import {
-  Descriptor,
-  DirectivePosition,
-  Events,
-  MessageBus,
-  Properties,
-} from '../../../../../../protocol';
+  type ɵDescriptor as Descriptor,
+  DefaultIterableDiffer,
+  TrackByFunction,
+} from '@angular/core';
+import {MatTreeFlattener} from '@angular/material/tree';
+import {DirectivePosition, Events, MessageBus, Properties} from '../../../../../../protocol';
 import {BehaviorSubject, merge, Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 

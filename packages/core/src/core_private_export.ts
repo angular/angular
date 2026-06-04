@@ -22,6 +22,12 @@ export {
 } from '../primitives/dom-navigation';
 export {maybeUnwrapDefaultExport as ɵmaybeUnwrapDefaultExport} from './util/default_export';
 
+export {
+  type ContainerType as ɵContainerType,
+  type DebugSignalGraphNode as ɵDebugSignalGraphNode,
+  type Descriptor as ɵDescriptor,
+  PropType as ɵPropType,
+} from '../primitives/devtools';
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
 export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
 export {allLeavingAnimations as ɵallLeavingAnimations} from './animation/longest_animation';

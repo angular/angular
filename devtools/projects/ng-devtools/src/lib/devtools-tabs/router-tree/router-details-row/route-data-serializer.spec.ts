@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵPropType as PropType} from '@angular/core';
 import {buildRouteDataTree} from './route-data-serializer';
-import {PropType} from '../../../../../../protocol';
 
 describe('route-data-serializer', () => {
   describe('buildRouteDataTree', () => {

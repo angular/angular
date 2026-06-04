@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input} from '@angular/core';
+import {ɵPropType as PropType, Component, computed, inject, input} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {DataSource} from '@angular/cdk/collections';
 
-import {ElementPosition, MessageBus, PropType} from '../../../../../../protocol';
+import {ElementPosition, MessageBus} from '../../../../../../protocol';
 import {DevtoolsSignalNode} from '../../signal-graph';
 import {arrayifyProps, SignalDataSource} from './signal-data-source';
 import {ObjectTreeExplorerComponent} from '../../object-tree-explorer/object-tree-explorer.component';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PropType} from '../../../../../../protocol';
+import {ɵPropType as PropType} from '@angular/core';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 
 export function buildRouteDataTree(data: unknown, level = 0): FlatNode[] {

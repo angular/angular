@@ -7,7 +7,7 @@
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {PropType} from '../../../../../../protocol';
+import {ɵPropType as PropType} from '@angular/core';
 
 import {getTreeFlattener} from './flatten';
 import {PropertyDataSource} from './property-data-source';

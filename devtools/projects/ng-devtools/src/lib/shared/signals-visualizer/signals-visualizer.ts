@@ -17,7 +17,7 @@ import {
   DevtoolsSignalNode,
   getNodeLabel,
 } from '../signal-graph';
-import {DebugSignalGraphNode} from '../../../../../protocol';
+import type {ɵDebugSignalGraphNode as DebugSignalGraphNode} from '@angular/core';
 import type {DagreCluster, DagreEdge, DagreNode, DagreRegularNode} from './visualizer-types';
 
 export type DependenciesHighlightEvent =

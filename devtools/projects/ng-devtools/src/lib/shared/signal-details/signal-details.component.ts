@@ -6,10 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output} from '@angular/core';
+import {
+  type ɵDebugSignalGraphNode as DebugSignalGraphNode,
+  Component,
+  computed,
+  input,
+  output,
+} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 
-import {DebugSignalGraphNode, ElementPosition} from '../../../../../protocol';
+import {ElementPosition} from '../../../../../protocol';
 import {SignalValueTreeComponent} from './signal-value-tree/signal-value-tree.component';
 import {ButtonComponent} from '../button/button.component';
 import {

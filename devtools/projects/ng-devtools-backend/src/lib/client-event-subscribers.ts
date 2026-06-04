@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
+import {ɵDebugSignalGraph as InternalDebugSignalGraph, ɵDebugSignalGraphNode as DebugSignalGraphNode} from '@angular/core';
 import {debounceTime} from 'rxjs/operators';
 import {
   ComponentExplorerViewQuery,
   ComponentType,
-  DebugSignalGraphNode,
   DevToolsNode,
   DirectivePosition,
   DirectiveType,

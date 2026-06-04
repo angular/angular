@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Properties, PropType} from '../../../../../../protocol';
+import {ɵPropType as PropType} from '@angular/core';
+import {Properties} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 

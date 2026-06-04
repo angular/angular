@@ -10,6 +10,8 @@ import {
   ɵAcxChangeDetectionStrategy as AcxChangeDetectionStrategy,
   ɵAcxViewEncapsulation as AcxViewEncapsulation,
   ChangeDetectionStrategy as AngularChangeDetectionStrategy,
+  type ɵDebugSignalGraphNode as DebugSignalGraphNode,
+  type ɵDescriptor as Descriptor,
   ViewEncapsulation as AngularViewEncapsulation,
   ɵFramework as Framework,
   InjectionToken,
@@ -17,23 +19,6 @@ import {
   Injector,
   Type,
 } from '@angular/core';
-
-export interface DebugSignalGraphNode {
-  id: string;
-  kind:
-    | 'signal'
-    | 'computed'
-    | 'effect'
-    | 'template'
-    | 'linkedSignal'
-    | 'afterRenderEffectPhase'
-    | 'childSignalProp' // Represents a signal passed as a prop to a child component in a CoW app
-    | 'unknown';
-  epoch: number;
-  label?: string;
-  preview: Descriptor;
-  debuggable: boolean;
-}
 
 export interface DebugSignalGraphEdge {
   /**
@@ -158,38 +143,6 @@ export interface InjectedService {
   value: unknown;
   flags?: InjectOptions;
   providedIn: Injector;
-}
-
-export type ContainerType = 'WritableSignal' | 'ReadonlySignal' | null;
-
-export enum PropType {
-  Number,
-  String,
-  Null,
-  Undefined,
-  Symbol,
-  HTMLNode,
-  Boolean,
-  BigInt,
-  Function,
-  Object,
-  Date,
-  Array,
-  Set,
-  Map,
-  Unknown,
-
-  // Special Type when an error occurs during property access
-  Error,
-}
-
-export interface Descriptor {
-  expandable: boolean;
-  value?: any;
-  editable: boolean;
-  type: PropType;
-  preview: string;
-  containerType: ContainerType;
 }
 
 export interface DirectivesProperties {

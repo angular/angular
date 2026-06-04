@@ -9,16 +9,22 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ApplicationOperations} from '../../application-operations';
-import {DirectivePosition, MessageBus, PropType, PropertyQueryTypes} from '../../../../../protocol';
+import {DirectivePosition, MessageBus, PropertyQueryTypes} from '../../../../../protocol';
 
 import {DirectiveExplorerComponent} from './directive-explorer.component';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
 import {IndexedNode} from './directive-forest/index-forest';
 
 import SpyObj = jasmine.SpyObj;
-import {By} from '@angular/platform-browser';
 import {FrameManager} from '../../application-services/frame_manager';
-import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input, signal} from '@angular/core';
+import {
+  ɵPropType as PropType,
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  output,
+  input,
+  signal,
+} from '@angular/core';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {PropertyPaneComponent} from './property-pane/property-pane.component';
