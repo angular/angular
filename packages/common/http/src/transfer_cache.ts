@@ -125,7 +125,7 @@ export const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
  */
 const ALLOWED_METHODS = ['GET', 'HEAD'];
 
-function shouldCacheRequest(req: HttpRequest<unknown>, options: CacheOptions): boolean {
+function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions): boolean {
   const {isCacheActive, ...globalOptions} = options;
   const {transferCache: requestOptions, method: requestMethod} = req;
 
@@ -161,16 +161,24 @@ function getHeadersToInclude(
     : options.includeHeaders;
 }
 
+/**
+ * Retrieves the cached response for a given request.
+ * @param req The request to retrieve the cached response for.
+ * @param options The caching options.
+ * @param transferState The transfer state to retrieve the cached response from.
+ * @param originMap The origin map to map the request URL to the origin. (Not needed when `storeKey` is provided).
+ * @param storeKey The key to use to store the cached response in the transfer state. (If not provided, it will be computed from the request and originMap).
+ * @param skipUseCacheChecks Whether to skip the use cache checks. (Only disable when the checks have been performed beforehand).
+ */
 export function retrieveStateFromCache(
   req: HttpRequest<unknown>,
   options: CacheOptions,
   transferState: TransferState,
   originMap: Record<string, string> | null,
+  storeKey?: StateKey<TransferHttpResponse>,
+  skipUseCacheChecks = false,
 ): HttpResponse<unknown> | null {
-  const {transferCache: requestOptions} = req;
-
-  // In the following situations we do not want to cache the request
-  if (!shouldCacheRequest(req, options)) {
+  if (!skipUseCacheChecks && !canUseOrCacheRequest(req, options)) {
     return null;
   }
 
@@ -184,12 +192,15 @@ export function retrieveStateFromCache(
     );
   }
 
-  const requestUrl =
-    typeof ngServerMode !== 'undefined' && ngServerMode && originMap
-      ? mapRequestOriginUrl(req.url, originMap)
-      : req.url;
+  if (!storeKey) {
+    const requestUrl =
+      typeof ngServerMode !== 'undefined' && ngServerMode && originMap
+        ? mapRequestOriginUrl(req.url, originMap)
+        : req.url;
 
-  const storeKey = makeCacheKey(req, requestUrl);
+    storeKey = makeCacheKey(req, requestUrl);
+  }
+
   const response = transferState.get(storeKey, null);
 
   if (!response) {
@@ -224,6 +235,7 @@ export function retrieveStateFromCache(
     // Append extra logic in dev mode to produce a warning when a header
     // that was not transferred to the client is accessed in the code via `get`
     // and `has` calls.
+    const {transferCache: requestOptions} = req;
     const headersToInclude = getHeadersToInclude(options, requestOptions);
     headers = appendMissingHeadersDetection(req.url, headers, headersToInclude ?? []);
   }
@@ -242,17 +254,26 @@ export function transferCacheInterceptorFn(
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
   const options = inject(CACHE_OPTIONS);
-  const transferState = inject(TransferState);
-  const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {optional: true});
-
-  const cachedResponse = retrieveStateFromCache(req, options, transferState, originMap);
-  if (cachedResponse) {
-    return of(cachedResponse);
+  if (!canUseOrCacheRequest(req, options)) {
+    return next(req);
   }
 
-  // In the following situations we do not want to cache the request
-  if (!shouldCacheRequest(req, options)) {
-    return next(req);
+  const transferState = inject(TransferState);
+  const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {optional: true});
+  const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+  const storeKey = makeCacheKey(req, requestUrl);
+
+  const cachedResponse = retrieveStateFromCache(
+    req,
+    options,
+    transferState,
+    /** originMap */ null,
+    storeKey,
+    /** skipUseCacheChecks */ true,
+  );
+
+  if (cachedResponse) {
+    return of(cachedResponse);
   }
 
   const event$ = next(req);
@@ -260,24 +281,26 @@ export function transferCacheInterceptorFn(
     // Request not found in cache. Make the request and cache it if on the server.
     return event$.pipe(
       tap((event: HttpEvent<unknown>) => {
-        // Only cache successful HTTP responses that do not have Cache-Control
-        // directives that forbid shared caching (no-store or private).
-        if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
-          const {transferCache: requestOptions} = req;
+        if (event instanceof HttpResponse) {
+          const {headers, body, status, statusText} = event;
+
+          // Only cache successful HTTP responses that do not have Cache-Control
+          // directives that forbid shared caching (no-store or private).
+          if (hasUncacheableCacheControl(headers)) {
+            return;
+          }
+
+          const {transferCache: requestOptions, responseType} = req;
           const headersToInclude = getHeadersToInclude(options, requestOptions);
-          const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
-          const storeKey = makeCacheKey(req, requestUrl);
 
           transferState.set<TransferHttpResponse>(storeKey, {
             [BODY]:
-              req.responseType === 'arraybuffer' || req.responseType === 'blob'
-                ? toBase64(event.body)
-                : event.body,
-            [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
-            [STATUS]: event.status,
-            [STATUS_TEXT]: event.statusText,
+              responseType === 'arraybuffer' || responseType === 'blob' ? toBase64(body) : body,
+            [HEADERS]: getFilteredHeaders(headers, headersToInclude),
+            [STATUS]: status,
+            [STATUS_TEXT]: statusText,
             [REQ_URL]: requestUrl,
-            [RESPONSE_TYPE]: req.responseType,
+            [RESPONSE_TYPE]: responseType,
           });
         }
       }),
@@ -317,8 +340,9 @@ function isNonCacheableRequest(cache: RequestCache): boolean {
 }
 
 function hasOutgoingCredentials(req: HttpRequest<unknown>): boolean {
-  const credentials = req.credentials;
-  return req.withCredentials || credentials === 'include' || credentials === 'same-origin';
+  const {withCredentials, credentials} = req;
+
+  return withCredentials || credentials === 'include' || credentials === 'same-origin';
 }
 
 function getFilteredHeaders(
@@ -366,155 +390,6 @@ function makeCacheKey(
   const hash = generateHash(key);
 
   return makeStateKey(hash);
-}
-
-/**
- * Generates a SHA-256 hash representation of a string.
- *
- * Note: A custom synchronous SHA-256 implementation is used here because the
- * Web Crypto API (`crypto.subtle.digest`) is strictly asynchronous (Promise-based),
- * whereas the transfer cache state lookup and interceptor flow must operate synchronously due to the HttpResource API.
- */
-export function generateHash(value: string): string {
-  const inputBytes = new TextEncoder().encode(value);
-
-  // Initial hash values (first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
-  let hashState0 = 0x6a09e667;
-  let hashState1 = 0xbb67ae85;
-  let hashState2 = 0x3c6ef372;
-  let hashState3 = 0xa54ff53a;
-  let hashState4 = 0x510e527f;
-  let hashState5 = 0x9b05688c;
-  let hashState6 = 0x1f83d9ab;
-  let hashState7 = 0x5be0cd19;
-
-  // SHA-256 Constants (first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311):
-  const SHA256_ROUND_CONSTANTS = [
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
-  ];
-
-  // Pre-processing (Padding):
-  const messageLengthInBits = inputBytes.length * 8;
-
-  // The total length of the padded message must be a multiple of 64 bytes (512 bits)
-  const paddedLengthInBytes = (((inputBytes.length + 8) >> 6) + 1) << 6;
-  const paddedBytes = new Uint8Array(paddedLengthInBytes);
-  paddedBytes.set(inputBytes);
-  paddedBytes[inputBytes.length] = 0x80; // Append a single '1' bit (0x80 byte)
-
-  const paddedBytesView = new DataView(paddedBytes.buffer);
-  const lowBits = messageLengthInBits >>> 0;
-  const highBits = (messageLengthInBits / 0x100000000) >>> 0;
-  paddedBytesView.setUint32(paddedLengthInBytes - 8, highBits, false);
-  paddedBytesView.setUint32(paddedLengthInBytes - 4, lowBits, false);
-
-  // Process the message in successive 64-byte chunks:
-  const messageSchedule = new Uint32Array(64);
-  for (let chunkOffset = 0; chunkOffset < paddedLengthInBytes; chunkOffset += 64) {
-    // Initialize first 16 words of the message schedule:
-    for (let i = 0; i < 16; i++) {
-      messageSchedule[i] = paddedBytesView.getUint32(chunkOffset + i * 4, false);
-    }
-
-    // Extend to 64 words:
-    for (let i = 16; i < 64; i++) {
-      const prevWord15 = messageSchedule[i - 15];
-      const sigma0 =
-        (((prevWord15 >>> 7) | (prevWord15 << 25)) ^
-          ((prevWord15 >>> 18) | (prevWord15 << 14)) ^
-          (prevWord15 >>> 3)) >>>
-        0;
-
-      const prevWord2 = messageSchedule[i - 2];
-      const sigma1 =
-        (((prevWord2 >>> 17) | (prevWord2 << 15)) ^
-          ((prevWord2 >>> 19) | (prevWord2 << 13)) ^
-          (prevWord2 >>> 10)) >>>
-        0;
-
-      messageSchedule[i] =
-        (messageSchedule[i - 16] + sigma0 + messageSchedule[i - 7] + sigma1) >>> 0;
-    }
-
-    // Initialize working variables to current hash values:
-    let workingStateA = hashState0;
-    let workingStateB = hashState1;
-    let workingStateC = hashState2;
-    let workingStateD = hashState3;
-    let workingStateE = hashState4;
-    let workingStateF = hashState5;
-    let workingStateG = hashState6;
-    let workingStateH = hashState7;
-
-    // Compression function main loop:
-    for (let i = 0; i < 64; i++) {
-      const capitalSigma1 =
-        (((workingStateE >>> 6) | (workingStateE << 26)) ^
-          ((workingStateE >>> 11) | (workingStateE << 21)) ^
-          ((workingStateE >>> 25) | (workingStateE << 7))) >>>
-        0;
-      const chFunction = ((workingStateE & workingStateF) ^ (~workingStateE & workingStateG)) >>> 0;
-      const temp1 =
-        (workingStateH +
-          capitalSigma1 +
-          chFunction +
-          SHA256_ROUND_CONSTANTS[i] +
-          messageSchedule[i]) >>>
-        0;
-
-      const capitalSigma0 =
-        (((workingStateA >>> 2) | (workingStateA << 30)) ^
-          ((workingStateA >>> 13) | (workingStateA << 19)) ^
-          ((workingStateA >>> 22) | (workingStateA << 10))) >>>
-        0;
-      const majFunction =
-        ((workingStateA & workingStateB) ^
-          (workingStateA & workingStateC) ^
-          (workingStateB & workingStateC)) >>>
-        0;
-      const temp2 = (capitalSigma0 + majFunction) >>> 0;
-
-      workingStateH = workingStateG;
-      workingStateG = workingStateF;
-      workingStateF = workingStateE;
-      workingStateE = (workingStateD + temp1) >>> 0;
-      workingStateD = workingStateC;
-      workingStateC = workingStateB;
-      workingStateB = workingStateA;
-      workingStateA = (temp1 + temp2) >>> 0;
-    }
-
-    // Update intermediate hash state:
-    hashState0 = (hashState0 + workingStateA) >>> 0;
-    hashState1 = (hashState1 + workingStateB) >>> 0;
-    hashState2 = (hashState2 + workingStateC) >>> 0;
-    hashState3 = (hashState3 + workingStateD) >>> 0;
-    hashState4 = (hashState4 + workingStateE) >>> 0;
-    hashState5 = (hashState5 + workingStateF) >>> 0;
-    hashState6 = (hashState6 + workingStateG) >>> 0;
-    hashState7 = (hashState7 + workingStateH) >>> 0;
-  }
-
-  // Produce the final 64-character hexadecimal hash:
-  return [
-    hashState0,
-    hashState1,
-    hashState2,
-    hashState3,
-    hashState4,
-    hashState5,
-    hashState6,
-    hashState7,
-  ]
-    .map((x) => x.toString(16).padStart(8, '0'))
-    .join('');
 }
 
 function toBase64(buffer: unknown): string {
@@ -653,4 +528,158 @@ function verifyMappedOrigin(url: string): void {
         'without any other segments.',
     );
   }
+}
+
+/**
+ * SHA-256 Constants (first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311):
+ */
+const SHA256_ROUND_CONSTANTS = new Uint32Array([
+  0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+  0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+  0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+  0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+  0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+  0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+  0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+  0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+]);
+
+let textEncoder: TextEncoder | undefined;
+
+/**
+ * Generates a SHA-256 hash representation of a string.
+ *
+ * Note: A custom synchronous SHA-256 implementation is used here because the
+ * Web Crypto API (`crypto.subtle.digest`) is strictly asynchronous (Promise-based),
+ * whereas the transfer cache state lookup and interceptor flow must operate synchronously due to the HttpResource API.
+ */
+export function generateHash(value: string): string {
+  textEncoder ??= new TextEncoder();
+  const inputBytes = textEncoder.encode(value);
+
+  // Initial hash values (first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
+  let hashState0 = 0x6a09e667;
+  let hashState1 = 0xbb67ae85;
+  let hashState2 = 0x3c6ef372;
+  let hashState3 = 0xa54ff53a;
+  let hashState4 = 0x510e527f;
+  let hashState5 = 0x9b05688c;
+  let hashState6 = 0x1f83d9ab;
+  let hashState7 = 0x5be0cd19;
+
+  // Pre-processing (Padding):
+  const messageLengthInBits = inputBytes.length * 8;
+
+  // The total length of the padded message must be a multiple of 64 bytes (512 bits)
+  const paddedLengthInBytes = (((inputBytes.length + 8) >> 6) + 1) << 6;
+  const paddedBytes = new Uint8Array(paddedLengthInBytes);
+  paddedBytes.set(inputBytes);
+  paddedBytes[inputBytes.length] = 0x80; // Append a single '1' bit (0x80 byte)
+
+  const paddedBytesView = new DataView(paddedBytes.buffer);
+  const lowBits = messageLengthInBits >>> 0;
+  const highBits = (messageLengthInBits / 0x100000000) >>> 0;
+  paddedBytesView.setUint32(paddedLengthInBytes - 8, highBits, false);
+  paddedBytesView.setUint32(paddedLengthInBytes - 4, lowBits, false);
+
+  // Process the message in successive 64-byte chunks:
+  const messageSchedule = new Uint32Array(64);
+  for (let chunkOffset = 0; chunkOffset < paddedLengthInBytes; chunkOffset += 64) {
+    // Initialize first 16 words of the message schedule:
+    for (let i = 0; i < 16; i++) {
+      messageSchedule[i] = paddedBytesView.getUint32(chunkOffset + i * 4, false);
+    }
+
+    // Extend to 64 words:
+    for (let i = 16; i < 64; i++) {
+      const prevWord15 = messageSchedule[i - 15];
+      const sigma0 =
+        (((prevWord15 >>> 7) | (prevWord15 << 25)) ^
+          ((prevWord15 >>> 18) | (prevWord15 << 14)) ^
+          (prevWord15 >>> 3)) >>>
+        0;
+
+      const prevWord2 = messageSchedule[i - 2];
+      const sigma1 =
+        (((prevWord2 >>> 17) | (prevWord2 << 15)) ^
+          ((prevWord2 >>> 19) | (prevWord2 << 13)) ^
+          (prevWord2 >>> 10)) >>>
+        0;
+
+      messageSchedule[i] =
+        (messageSchedule[i - 16] + sigma0 + messageSchedule[i - 7] + sigma1) >>> 0;
+    }
+
+    // Initialize working variables to current hash values:
+    let workingStateA = hashState0;
+    let workingStateB = hashState1;
+    let workingStateC = hashState2;
+    let workingStateD = hashState3;
+    let workingStateE = hashState4;
+    let workingStateF = hashState5;
+    let workingStateG = hashState6;
+    let workingStateH = hashState7;
+
+    // Compression function main loop:
+    for (let i = 0; i < 64; i++) {
+      const capitalSigma1 =
+        (((workingStateE >>> 6) | (workingStateE << 26)) ^
+          ((workingStateE >>> 11) | (workingStateE << 21)) ^
+          ((workingStateE >>> 25) | (workingStateE << 7))) >>>
+        0;
+      const chFunction = ((workingStateE & workingStateF) ^ (~workingStateE & workingStateG)) >>> 0;
+      const temp1 =
+        (workingStateH +
+          capitalSigma1 +
+          chFunction +
+          SHA256_ROUND_CONSTANTS[i] +
+          messageSchedule[i]) >>>
+        0;
+
+      const capitalSigma0 =
+        (((workingStateA >>> 2) | (workingStateA << 30)) ^
+          ((workingStateA >>> 13) | (workingStateA << 19)) ^
+          ((workingStateA >>> 22) | (workingStateA << 10))) >>>
+        0;
+      const majFunction =
+        ((workingStateA & workingStateB) ^
+          (workingStateA & workingStateC) ^
+          (workingStateB & workingStateC)) >>>
+        0;
+      const temp2 = (capitalSigma0 + majFunction) >>> 0;
+
+      workingStateH = workingStateG;
+      workingStateG = workingStateF;
+      workingStateF = workingStateE;
+      workingStateE = (workingStateD + temp1) >>> 0;
+      workingStateD = workingStateC;
+      workingStateC = workingStateB;
+      workingStateB = workingStateA;
+      workingStateA = (temp1 + temp2) >>> 0;
+    }
+
+    // Update intermediate hash state:
+    hashState0 = (hashState0 + workingStateA) >>> 0;
+    hashState1 = (hashState1 + workingStateB) >>> 0;
+    hashState2 = (hashState2 + workingStateC) >>> 0;
+    hashState3 = (hashState3 + workingStateD) >>> 0;
+    hashState4 = (hashState4 + workingStateE) >>> 0;
+    hashState5 = (hashState5 + workingStateF) >>> 0;
+    hashState6 = (hashState6 + workingStateG) >>> 0;
+    hashState7 = (hashState7 + workingStateH) >>> 0;
+  }
+
+  // Produce the final 64-character hexadecimal hash:
+  return [
+    hashState0,
+    hashState1,
+    hashState2,
+    hashState3,
+    hashState4,
+    hashState5,
+    hashState6,
+    hashState7,
+  ]
+    .map((x) => x.toString(16).padStart(8, '0'))
+    .join('');
 }
