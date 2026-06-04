@@ -2404,6 +2404,31 @@ runInEachFileSystem(() => {
           '@content blocks are only valid as direct children of foreign components.',
         );
       });
+
+      it('should detect unnecessary @content (children) block on a foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @content (children) {} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(
+          ngErrorCode(ErrorCode.FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN),
+        );
+        expect(diags[0].messageText).toEqual(
+          'Defining a @content (children) block is unnecessary. ' +
+            'Pass children as direct nested content of the foreign component instead.',
+        );
+      });
     });
 
     it('should detect a duplicate variable declaration', () => {

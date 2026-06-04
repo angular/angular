@@ -470,6 +470,12 @@ export enum ErrorCode {
   INVALID_CONTENT_PLACEMENT = 8026,
 
   /**
+   * Raised when a `@content` block is named 'children', which is unnecessary because children should be passed
+   * implicitly.
+   */
+  FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN = 8027,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
