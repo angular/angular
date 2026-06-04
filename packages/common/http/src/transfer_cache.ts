@@ -289,10 +289,10 @@ export function transferCacheInterceptorFn(
 
 /** @returns true when the request contains authentication or cookie headers. */
 function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
+  const headers = req.headers;
+
   return (
-    req.headers.has('authorization') ||
-    req.headers.has('proxy-authorization') ||
-    req.headers.has('cookie')
+    headers.has('authorization') || headers.has('proxy-authorization') || headers.has('cookie')
   );
 }
 
@@ -317,7 +317,8 @@ function isNonCacheableRequest(cache: RequestCache): boolean {
 }
 
 function hasOutgoingCredentials(req: HttpRequest<unknown>): boolean {
-  return req.withCredentials || req.credentials === 'include' || req.credentials === 'same-origin';
+  const credentials = req.credentials;
+  return req.withCredentials || credentials === 'include' || credentials === 'same-origin';
 }
 
 function getFilteredHeaders(
