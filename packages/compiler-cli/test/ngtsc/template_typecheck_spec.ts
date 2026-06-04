@@ -2429,6 +2429,171 @@ runInEachFileSystem(() => {
             'Pass children as direct nested content of the foreign component instead.',
         );
       });
+
+      it('should detect duplicate @content blocks under the same foreign component', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @content (icon) {} @content (icon) {} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_DECLARATION));
+        expect(diags[0].messageText).toEqual(
+          "A @content block with the name 'icon' has already been defined for this component.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The @content block 'icon' was first defined here.",
+        );
+      });
+
+      it('should allow the same @content block name under different foreign components', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <FancyButton> @content (icon) {} </FancyButton>
+              <FancyButton> @content (icon) {} </FancyButton>
+            \`,
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(0);
+      });
+
+      it('should detect a conflict between a @content block name and an input property binding', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton [icon]="myIcon"> @content (icon) {square} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myIcon = document.createTextNode('circle');
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A @content block with the name 'icon' conflicts with a property on the parent component.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The property 'icon' is defined here.",
+        );
+      });
+
+      it('should detect a conflict between a @content block name and a static attribute', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton icon="circle"> @content (icon) {square} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A @content block with the name 'icon' conflicts with a property on the parent component.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The property 'icon' is defined here.",
+        );
+      });
+
+      it('should detect a conflict between implicit children and a [children] property binding', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton [children]="myChildren"> <div>child</div> </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myChildren = [];
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A foreign component cannot have both a 'children' property and child nodes.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[children]="myChildren"');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          'Child nodes are defined here.',
+        );
+      });
+
+      it('should detect a conflict between implicit children and a children static attribute', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton children="Hello, property!">Hello, content!</FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].messageText).toEqual(
+          "A foreign component cannot have both a 'children' property and child nodes.",
+        );
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('children="Hello, property!"');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          'Child nodes are defined here.',
+        );
+      });
     });
 
     it('should detect a duplicate variable declaration', () => {
