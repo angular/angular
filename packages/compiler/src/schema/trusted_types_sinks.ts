@@ -28,6 +28,13 @@ const TRUSTED_TYPES_SINKS = new Set<string>([
   'iframe|src',
   'object|codebase',
   'object|data',
+
+  // RESOURCE_URL sinks missing from original Trusted Types integration.
+  // These are classified as RESOURCE_URL in dom_security_schema.ts and must
+  // be blocked in i18n attribute bindings (same as embed|src, iframe|src).
+  'base|href',
+  'frame|src',
+  'link|href',
 ]);
 
 /**
