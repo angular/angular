@@ -23,8 +23,8 @@
     "zone.js": "0.16.2"
   },
   "devDependencies": {
-    "@angular/build": "22.0.0-rc.3",
-    "@angular/cli": "22.0.0-rc.3",
+    "@angular/build": "22.0.0",
+    "@angular/cli": "22.0.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "ts-node": "10.9.2",
     "typescript": "6.0.3"
