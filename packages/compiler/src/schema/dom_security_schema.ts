@@ -64,8 +64,19 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       ['form', ['action']],
 
       // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
-      ['img', ['src']],
-      ['video', ['src']],
+      ['img', ['src', 'srcset']],
+      ['video', ['src', 'poster']],
+
+      // Media elements that load external resources
+      ['audio', ['src']],
+      ['source', ['src', 'srcset']],
+      ['track', ['src']],
+
+      // Legacy HTML4 background attributes
+      ['body', ['background']],
+      ['table', ['background']],
+      ['td', ['background']],
+      ['th', ['background']],
     ]);
 
     registerContext(SecurityContext.URL, MATH_ML_NAMESPACE, [
@@ -115,7 +126,12 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       ['object', ['codebase', 'data']],
     ]);
 
-    registerContext(SecurityContext.URL, SVG_NAMESPACE, [['a', ['href', 'xlink:href']]]);
+    registerContext(SecurityContext.URL, SVG_NAMESPACE, [
+      ['a', ['href', 'xlink:href']],
+      ['image', ['href', 'xlink:href']],
+      ['feImage', ['href', 'xlink:href']],
+      ['use', ['href', 'xlink:href']],
+    ]);
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts
     // The `unknown` elements refer to cases when we need to validate the input/binding in a directive (host bindings)
