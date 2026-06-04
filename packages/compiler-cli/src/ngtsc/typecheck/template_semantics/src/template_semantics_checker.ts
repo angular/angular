@@ -9,14 +9,12 @@
 import {
   AST,
   ASTWithSource,
-  BindingType,
   ImplicitReceiver,
   ParsedEventType,
   PropertyRead,
   Binary,
   RecursiveAstVisitor,
   TmplAstBoundEvent,
-  TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
@@ -43,12 +41,7 @@ export class TemplateSemanticsCheckerImpl implements TemplateSemanticsChecker {
 
 /** Visitor that verifies the semantics of a template. */
 class TemplateSemanticsVisitor extends TmplAstRecursiveVisitor {
-  private constructor(
-    private expressionVisitor: ExpressionsSemanticsVisitor,
-    private templateTypeChecker: TemplateTypeChecker,
-    private component: ts.ClassDeclaration,
-    private diagnostics: TemplateDiagnostic[],
-  ) {
+  private constructor(private expressionVisitor: ExpressionsSemanticsVisitor) {
     super();
   }
 
@@ -63,12 +56,7 @@ class TemplateSemanticsVisitor extends TmplAstRecursiveVisitor {
       component,
       diagnostics,
     );
-    const templateVisitor = new TemplateSemanticsVisitor(
-      expressionVisitor,
-      templateTypeChecker,
-      component,
-      diagnostics,
-    );
+    const templateVisitor = new TemplateSemanticsVisitor(expressionVisitor);
     nodes.forEach((node) => node.visit(templateVisitor));
     return diagnostics;
   }
@@ -76,51 +64,6 @@ class TemplateSemanticsVisitor extends TmplAstRecursiveVisitor {
   override visitBoundEvent(event: TmplAstBoundEvent): void {
     super.visitBoundEvent(event);
     event.handler.visit(this.expressionVisitor, event);
-  }
-
-  override visitElement(element: TmplAstElement): void {
-    super.visitElement(element);
-
-    const foreignMeta = this.templateTypeChecker.getForeignComponent(this.component, element);
-    if (foreignMeta !== null) {
-      this.validateForeignComponent(element);
-    }
-  }
-
-  private validateForeignComponent(element: TmplAstElement) {
-    if (element.outputs.length > 0) {
-      this.diagnostics.push(
-        this.templateTypeChecker.makeTemplateDiagnostic(
-          this.component,
-          element.sourceSpan,
-          ts.DiagnosticCategory.Error,
-          ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
-          `Foreign components do not support event bindings.`,
-        ),
-      );
-    }
-    if (element.references.length > 0) {
-      this.diagnostics.push(
-        this.templateTypeChecker.makeTemplateDiagnostic(
-          this.component,
-          element.sourceSpan,
-          ts.DiagnosticCategory.Error,
-          ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
-          `Foreign components do not support references.`,
-        ),
-      );
-    }
-    if (element.inputs.some((input) => input.type !== BindingType.Property)) {
-      this.diagnostics.push(
-        this.templateTypeChecker.makeTemplateDiagnostic(
-          this.component,
-          element.sourceSpan,
-          ts.DiagnosticCategory.Error,
-          ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
-          `Foreign components only support static attributes and property bindings.`,
-        ),
-      );
-    }
   }
 }
 

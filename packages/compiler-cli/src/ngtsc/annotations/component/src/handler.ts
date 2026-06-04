@@ -177,6 +177,7 @@ import {getTemplateDiagnostics} from '../../../typecheck';
 import {getProjectRelativePath} from '../../../util/src/path';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {analyzeTemplateForAnimations} from './animations';
+import {analyzeForeignComponentFeatures} from './foreign_component';
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
 import {
   ComponentAnalysisData,
@@ -861,6 +862,14 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           ),
         );
       }
+    }
+
+    const foreignMatcher = createForeignComponentMatcher(foreignImports);
+    const foreignComponentDiagnostics = analyzeForeignComponentFeatures(template, foreignMatcher);
+    if (foreignComponentDiagnostics.length > 0) {
+      isPoisoned = true;
+      diagnostics ??= [];
+      diagnostics.push(...foreignComponentDiagnostics);
     }
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
