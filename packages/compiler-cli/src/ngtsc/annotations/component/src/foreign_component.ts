@@ -206,7 +206,21 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
   }
 
   override visitContentBlock(block: TmplAstContentBlock): void {
-    if (!this.parentNodeIsForeignComponent()) {
+    if (this.parentNodeIsForeignComponent()) {
+      if (block.name === 'children') {
+        this.diagnostics.push(
+          makeTemplateDiagnostic(
+            '' as TypeCheckId,
+            this.sourceMapping,
+            block.sourceSpan,
+            ts.DiagnosticCategory.Error,
+            ngErrorCode(ErrorCode.FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN),
+            'Defining a @content (children) block is unnecessary. ' +
+              'Pass children as direct nested content of the foreign component instead.',
+          ),
+        );
+      }
+    } else {
       this.diagnostics.push(
         makeTemplateDiagnostic(
           '' as TypeCheckId,
