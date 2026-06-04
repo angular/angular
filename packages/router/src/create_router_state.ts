@@ -21,21 +21,28 @@ export function createRouterState(
   routeReuseStrategy: RouteReuseStrategy,
   curr: RouterStateSnapshot,
   prevState: RouterState,
-): RouterState {
-  const root = createNode(routeReuseStrategy, curr._root, prevState ? prevState._root : undefined);
-  return new RouterState(root, curr);
+): {newlyCreatedRoutes: Set<ActivatedRoute>; state: RouterState} {
+  const newlyCreatedRoutes = new Set<ActivatedRoute>();
+  const root = createNode(
+    routeReuseStrategy,
+    curr._root,
+    prevState ? prevState._root : undefined,
+    newlyCreatedRoutes,
+  );
+  return {newlyCreatedRoutes, state: new RouterState(root, curr)};
 }
 
 function createNode(
   routeReuseStrategy: RouteReuseStrategy,
   curr: TreeNode<ActivatedRouteSnapshot>,
-  prevState?: TreeNode<ActivatedRoute>,
+  prevState: TreeNode<ActivatedRoute> | undefined,
+  newlyCreatedRoutes: Set<ActivatedRoute>,
 ): TreeNode<ActivatedRoute> {
   // reuse an activated route that is currently displayed on the screen
   if (prevState && routeReuseStrategy.shouldReuseRoute(curr.value, prevState.value.snapshot)) {
     const value = prevState.value;
     value._futureSnapshot = curr.value;
-    const children = createOrReuseChildren(routeReuseStrategy, curr, prevState);
+    const children = createOrReuseChildren(routeReuseStrategy, curr, prevState, newlyCreatedRoutes);
     return new TreeNode<ActivatedRoute>(value, children);
   } else {
     if (routeReuseStrategy.shouldAttach(curr.value)) {
@@ -44,13 +51,18 @@ function createNode(
       if (detachedRouteHandle !== null) {
         const tree = (detachedRouteHandle as DetachedRouteHandleInternal).route;
         tree.value._futureSnapshot = curr.value;
-        tree.children = curr.children.map((c) => createNode(routeReuseStrategy, c));
+        tree.children = curr.children.map((c) =>
+          createNode(routeReuseStrategy, c, undefined, newlyCreatedRoutes),
+        );
         return tree;
       }
     }
 
     const value = createActivatedRoute(curr.value);
-    const children = curr.children.map((c) => createNode(routeReuseStrategy, c));
+    newlyCreatedRoutes.add(value);
+    const children = curr.children.map((c) =>
+      createNode(routeReuseStrategy, c, undefined, newlyCreatedRoutes),
+    );
     return new TreeNode<ActivatedRoute>(value, children);
   }
 }
@@ -59,14 +71,15 @@ function createOrReuseChildren(
   routeReuseStrategy: RouteReuseStrategy,
   curr: TreeNode<ActivatedRouteSnapshot>,
   prevState: TreeNode<ActivatedRoute>,
+  newlyCreatedRoutes: Set<ActivatedRoute>,
 ) {
   return curr.children.map((child) => {
     for (const p of prevState.children) {
       if (routeReuseStrategy.shouldReuseRoute(child.value, p.value.snapshot)) {
-        return createNode(routeReuseStrategy, child, p);
+        return createNode(routeReuseStrategy, child, p, newlyCreatedRoutes);
       }
     }
-    return createNode(routeReuseStrategy, child);
+    return createNode(routeReuseStrategy, child, undefined, newlyCreatedRoutes);
   });
 }
 

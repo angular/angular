@@ -63,6 +63,8 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
+import {ACTIVATED_ROUTE_INJECTOR_FEATURE} from './activated_route_injector_feature';
+import {setupActivatedRouteInjectors} from './operators/setup_activated_route_injectors';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -881,6 +883,20 @@ export function withViewTransitions(
     {
       provide: VIEW_TRANSITION_OPTIONS,
       useValue: {skipNextTransition: !!options?.skipInitialTransition, ...options},
+    },
+  ];
+  return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
+}
+
+export type ActivatedRouteInjectorFeature =
+  RouterFeature<RouterFeatureKind.ViewTransitionsFeature /* temporary - not public API. Must reuse existing */>;
+export function withActivatedRouteInjectors(): ActivatedRouteInjectorFeature {
+  const providers = [
+    {
+      provide: ACTIVATED_ROUTE_INJECTOR_FEATURE,
+      useValue: {
+        operator: setupActivatedRouteInjectors,
+      },
     },
   ];
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
