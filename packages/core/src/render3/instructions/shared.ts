@@ -14,14 +14,15 @@ import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 
+import {ProfilerEvent} from '../../../primitives/devtools';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
 import {assertIndexInRange, assertNotSame} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
-import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
 import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertHasParent, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {throwMultipleComponentError} from '../errors';
 import {ComponentDef, ComponentTemplate, DirectiveDef, RenderFlags} from '../interfaces/definition';
 import {
@@ -56,7 +57,6 @@ import {
 import {assertTNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {profiler} from '../profiler';
-import {ProfilerEvent} from '../../../primitives/devtools';
 import {
   getCurrentDirectiveIndex,
   getCurrentTNode,
@@ -76,13 +76,13 @@ import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify} from '../util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapLView} from '../util/view_utils';
 
+import {isDetachedByI18n} from '../../i18n/utils';
 import {clearElementContents, setupStaticAttributes} from '../dom_node_manipulation';
+import {appendChild} from '../node_manipulation';
 import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
-import {isDetachedByI18n} from '../../i18n/utils';
-import {appendChild} from '../node_manipulation';
 
 export function executeTemplate<T>(
   tView: TView,
@@ -535,6 +535,10 @@ export function setElementAttribute(
   sanitizer: SanitizerFn | null | undefined,
 ) {
   if (value == null) {
+    if (sanitizer != null) {
+      // Execute sanitizer to enforce security controls (e.g., neutralizing iframe)
+      sanitizer(value, tagName || '', name);
+    }
     renderer.removeAttribute(element, name, namespace);
   } else {
     const strValue =
