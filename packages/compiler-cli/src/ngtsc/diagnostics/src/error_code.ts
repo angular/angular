@@ -465,6 +465,11 @@ export enum ErrorCode {
   FOREIGN_COMPONENT_UNSUPPORTED_BINDING = 8025,
 
   /**
+   * Raised when a `@content` block is not used as a direct child of a foreign component.
+   */
+  INVALID_CONTENT_PLACEMENT = 8026,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *

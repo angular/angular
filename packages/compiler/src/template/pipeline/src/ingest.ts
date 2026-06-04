@@ -268,8 +268,6 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
       ingestLetDeclaration(unit, node);
-    } else if (node instanceof t.ContentBlock) {
-      throw new Error(`@content blocks are only valid as direct children of foreign components.`);
     } else if (node instanceof t.Component) {
       // TODO(crisbeto): account for selectorless nodes.
     } else {
