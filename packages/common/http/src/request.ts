@@ -408,8 +408,20 @@ export class HttpRequest<T> implements HttpRequestOptions {
         // No parameters, the visible URL is just the URL given at creation time.
         this.urlWithParams = url;
       } else {
+        // Strip the fragment (e.g. #bypass) from the URL before checking for existing query parameters.
+        // This ensures that new query parameters are inserted before the fragment, preventing
+        // situations where parameters are mistakenly appended after the fragment and thus
+        // only exposed to the frontend, which could bypass security checks.
+        let urlWithoutFragment = url;
+        let fragment = '';
+        const hashIdx = url.indexOf('#');
+        if (hashIdx !== -1) {
+          fragment = url.substring(hashIdx);
+          urlWithoutFragment = url.substring(0, hashIdx);
+        }
+
         // Does the URL already have query parameters? Look for '?'.
-        const qIdx = url.indexOf('?');
+        const qIdx = urlWithoutFragment.indexOf('?');
         // There are 3 cases to handle:
         // 1) No existing parameters -> append '?' followed by params.
         // 2) '?' exists and is followed by existing query string ->
@@ -417,8 +429,8 @@ export class HttpRequest<T> implements HttpRequestOptions {
         // 3) '?' exists at the end of the url -> append params directly.
         // This basically amounts to determining the character, if any, with
         // which to join the URL and parameters.
-        const sep: string = qIdx === -1 ? '?' : qIdx < url.length - 1 ? '&' : '';
-        this.urlWithParams = url + sep + params;
+        const sep: string = qIdx === -1 ? '?' : qIdx < urlWithoutFragment.length - 1 ? '&' : '';
+        this.urlWithParams = urlWithoutFragment + sep + params + fragment;
       }
     }
   }

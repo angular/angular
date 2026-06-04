@@ -286,5 +286,22 @@ describe('HttpRequest', () => {
       const req = baseReq.clone({setParams: {'test': 'false'}});
       expect(req.urlWithParams).toEqual('/test?test=false');
     });
+    it('appends parameters before a fragment', () => {
+      const fragmentParams = new HttpParams({fromString: 'auth_token=secret'});
+      const req = baseReq.clone({params: fragmentParams, url: '/api/data/123#bypass'});
+      expect(req.urlWithParams).toEqual('/api/data/123?auth_token=secret#bypass');
+    });
+    it('appends parameters before a URL fragment', () => {
+      const req = baseReq.clone({params, url: '/test#fragment'});
+      expect(req.urlWithParams).toEqual('/test?test=true#fragment');
+    });
+    it('appends parameters before a URL fragment when URL has a query string', () => {
+      const req = baseReq.clone({params, url: '/test?other=false#fragment'});
+      expect(req.urlWithParams).toEqual('/test?other=false&test=true#fragment');
+    });
+    it('appends parameters before a URL fragment when URL has multiple hash characters', () => {
+      const req = baseReq.clone({params, url: '/test#frag1#frag2'});
+      expect(req.urlWithParams).toEqual('/test?test=true#frag1#frag2');
+    });
   });
 });
