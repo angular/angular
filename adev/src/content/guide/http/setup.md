@@ -66,11 +66,17 @@ When you add `withRequestsMadeViaParent()`, `HttpClient` is configured to instea
 
 CRITICAL: You must configure an instance of `HttpClient` above the current injector, or this option is not valid and you'll get a runtime error when you try to use it.
 
-### `withJsonpSupport()`
+### `withDangerousJsonpSupport()`
 
-Including `withJsonpSupport` enables the `.jsonp()` method on `HttpClient`, which makes a GET request via the [JSONP convention](https://en.wikipedia.org/wiki/JSONP) for cross-domain loading of data.
+Including `withDangerousJsonpSupport` enables the `.jsonp()` method on `HttpClient`, which makes a GET request via the [JSONP convention](https://en.wikipedia.org/wiki/JSONP) for cross-domain loading of data.
 
-HELPFUL: Prefer using [CORS](https://developer.mozilla.org/docs/Web/HTTP/CORS) to make cross-domain requests instead of JSONP when possible.
+CRITICAL:
+JSONP works by loading and executing JavaScript from a remote origin
+via a <script> tag. Unlike standard XHR/fetch requests, the response
+is executed as code in the page's context, which bypasses normal
+same-origin protections and can lead to XSS-style attacks if the
+endpoint is compromised or untrusted.
+Please avoid using this and transition over to CORS-enabled APIs. This API would be removed in v23.
 
 ### `withXsrfConfiguration(...)`
 
@@ -89,7 +95,7 @@ This table lists the NgModules available from `@angular/common/http` and how the
 | **NgModule**                            | `provideHttpClient()` equivalent                         |
 | --------------------------------------- | -------------------------------------------------------- |
 | `HttpClientModule`                      | `provideHttpClient(withInterceptorsFromDi(), withXhr())` |
-| `HttpClientJsonpModule`                 | `withJsonpSupport()`                                     |
+| `DangerousHttpClientJsonpModule`        | `withDangerousJsonpSupport()`                            |
 | `HttpClientXsrfModule.withOptions(...)` | `withXsrfConfiguration(...)`                             |
 | `HttpClientXsrfModule.disable()`        | `withNoXsrfProtection()`                                 |
 

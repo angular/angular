@@ -11,8 +11,8 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 import {HTTP_INTERCEPTORS} from './interceptor';
 import {
   provideHttpClient,
+  withDangerousJsonpSupport,
   withInterceptorsFromDi,
-  withJsonpSupport,
   withNoXsrfProtection,
   withXhr,
   withXsrfConfiguration,
@@ -112,10 +112,17 @@ export class HttpClientModule {}
  * Without this module, Jsonp requests reach the backend
  * with method JSONP, where they are rejected.
  *
+ * IMPORTANT: JSONP works by loading and executing JavaScript from a remote origin
+ * via a `<script>` tag. Unlike standard XHR/fetch requests, the response
+ * is executed as code in the page's context, which bypasses normal
+ * same-origin protections and can lead to XSS-style attacks if the
+ * endpoint is compromised or untrusted.
+ * Please avoid using this and transition over to CORS-enabled APIs. This API would be removed in v23.
+ *
  * @publicApi
  * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Intent to remove in future versions of Angular.
  */
 @NgModule({
-  providers: [withJsonpSupport().ɵproviders],
+  providers: [withDangerousJsonpSupport().ɵproviders],
 })
-export class HttpClientJsonpModule {}
+export class DangerousHttpClientJsonpModule {}

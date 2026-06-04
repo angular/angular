@@ -1480,7 +1480,7 @@ export class HttpClient {
    * @param url The resource URL.
    * @param callbackParam The callback function name.
    *
-   * You must install a suitable interceptor, such as one provided by `HttpClientJsonpModule`.
+   * You must install a suitable interceptor, such as one provided by `DangerousHttpClientJsonpModule`.
    * If no such interceptor is reached,
    * then the `JSONP` request can be rejected by the configured backend.
    *

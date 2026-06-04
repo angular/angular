@@ -6,6 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  ApplicationRef,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  ErrorHandler,
+  inject,
+  InjectionToken,
+  PLATFORM_ID,
+  Provider,
+} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {EMPTY, from, Observable} from 'rxjs';
 import {DOCUMENT, XhrFactory} from '../../index';
 import {
   FetchBackend,
@@ -22,33 +34,21 @@ import {
   JsonpClientBackend,
 } from '../index';
 import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '../testing';
-import {
-  ApplicationRef,
-  createEnvironmentInjector,
-  EnvironmentInjector,
-  ErrorHandler,
-  inject,
-  InjectionToken,
-  PLATFORM_ID,
-  Provider,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {EMPTY, Observable, from} from 'rxjs';
 
+import {resetFetchBackendWarningFlag} from '../src/backend';
 import {HttpInterceptorFn} from '../src/interceptor';
 import {
   HttpFeature,
   HttpFeatureKind,
   provideHttpClient,
+  withDangerousJsonpSupport,
   withInterceptors,
   withInterceptorsFromDi,
-  withJsonpSupport,
   withNoXsrfProtection,
   withRequestsMadeViaParent,
   withXhr,
   withXsrfConfiguration,
 } from '../src/provider';
-import {resetFetchBackendWarningFlag} from '../src/backend';
 
 describe('without provideHttpClientTesting', () => {
   it('should contribute to stability', async () => {
@@ -344,10 +344,10 @@ describe('provideHttpClient', () => {
       TestBed.inject(HttpTestingController).expectOne('/test?callback=JSONP_CALLBACK').flush('');
     });
 
-    it('should be enabled when using withJsonpSupport()', () => {
+    it('should be enabled when using withDangerousJsonpSupport()', () => {
       TestBed.configureTestingModule({
         providers: [
-          provideHttpClient(withJsonpSupport()),
+          provideHttpClient(withDangerousJsonpSupport()),
           provideHttpClientTesting(),
           FAKE_JSONP_BACKEND_PROVIDER,
         ],
