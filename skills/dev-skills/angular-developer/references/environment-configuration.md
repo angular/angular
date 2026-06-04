@@ -29,9 +29,8 @@ ng generate environments
 This creates environment-specific files such as:
 
 ```ts
-// environment.ts (production)
+// environment.ts
 export const environment = {
-  production: true,
   apiUrl: 'https://api.example.com',
 };
 ```
@@ -39,7 +38,6 @@ export const environment = {
 ```ts
 // environment.development.ts
 export const environment = {
-  production: false,
   apiUrl: 'http://localhost:3000',
 };
 ```
@@ -47,12 +45,14 @@ export const environment = {
 Import the environment where needed:
 
 ```ts
-import { environment } from '../environments/environment';
+import {environment} from '../environments/environment';
 
 const apiUrl = environment.apiUrl;
 ```
 
 The Angular CLI replaces the appropriate file based on the build configuration.
+
+If you need a development-mode check, use `isDevMode()` from `@angular/core` instead of relying on a manually maintained `production` flag.
 
 > Changes to environment files require rebuilding the application.
 
@@ -79,20 +79,20 @@ initialization.
 Load the configuration before the application starts:
 
 ```ts
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Service, inject} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppConfigService {
-  private config!: { apiUrl: string };
+  private config!: {apiUrl: string};
 
   private readonly http = inject(HttpClient);
 
   loadConfig() {
     return this.http.get<AppConfig>('/assets/config.json').pipe(
-      tap(data => {
+      tap((data) => {
         this.config = data;
-      })
+      }),
     );
   }
 
@@ -105,7 +105,7 @@ export class AppConfigService {
 Register the loader during application bootstrap:
 
 ```ts
-import { provideAppInitializer, inject } from '@angular/core';
+import {provideAppInitializer, inject} from '@angular/core';
 
 provideAppInitializer(() => {
   const config = inject(AppConfigService);
@@ -121,12 +121,12 @@ This ensures configuration is available before the application renders.
 
 ## Choosing a strategy
 
-| Criteria | Build-time | Runtime |
-|----------|-----------|---------|
-| Change without rebuild | No | Yes |
-| Startup performance | Faster | Slight delay |
-| Complexity | Low | Moderate |
-| Deployment flexibility | Limited | High |
+| Criteria               | Build-time | Runtime      |
+| ---------------------- | ---------- | ------------ |
+| Change without rebuild | No         | Yes          |
+| Startup performance    | Faster     | Slight delay |
+| Complexity             | Low        | Moderate     |
+| Deployment flexibility | Limited    | High         |
 
 Use build-time configuration for most applications, and runtime configuration when you need to
 deploy the same build across multiple environments.
