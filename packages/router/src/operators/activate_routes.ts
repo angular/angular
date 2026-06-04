@@ -139,6 +139,12 @@ export class ActivateRoutes {
       context.attachRef = null;
       context.route = null;
     }
+    // Destroy `_localInjector` here when the route is
+    // unmounted by the Router. This method (`deactivateRouteAndOutlet`) is
+    // skipped when a route is being detached for `RouteReuseStrategy`, preserving
+    // its injector. Those preserved injectors are eventually managed and destroyed
+    // manually via `destroyDetachedRouteHandle()` or if the route is deactivated later rather than detached.
+    route.value._localInjector?.destroy();
   }
 
   private activateChildRoutes(

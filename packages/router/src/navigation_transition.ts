@@ -83,6 +83,7 @@ import {UrlSerializer, UrlTree} from './url_tree';
 import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
+import {ACTIVATED_ROUTE_INJECTOR_FEATURE} from './activated_route_injector_feature';
 
 /**
  * @description
@@ -327,6 +328,7 @@ export interface NavigationTransition {
   targetRouterState: RouterState | null;
   guards: Checks;
   guardsResult: GuardResult | null;
+  newlyCreatedRoutes?: Set<ActivatedRoute>;
 
   routesRecognizeHandler: {deferredHandle?: Promise<void>};
   beforeActivateHandler: {deferredHandle?: Promise<void>};
@@ -367,6 +369,9 @@ export class NavigationTransitions {
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
   private readonly navigationErrorHandler = inject(NAVIGATION_ERROR_HANDLER, {optional: true});
+  private readonly activatedRouteInjectorFeature = inject(ACTIVATED_ROUTE_INJECTOR_FEATURE, {
+    optional: true,
+  });
 
   navigationId = 0;
   get hasRequestedNavigation() {
@@ -740,18 +745,27 @@ export class NavigationTransitions {
           }),
 
           switchMap((t: NavigationTransition) => {
-            const targetRouterState = createRouterState(
+            const {newlyCreatedRoutes, state} = createRouterState(
               router.routeReuseStrategy,
               t.targetSnapshot!,
               t.currentRouterState,
             );
-            this.currentTransition = overallTransitionState = t = {...t, targetRouterState};
+            this.currentTransition =
+              overallTransitionState =
+              t =
+                {
+                  ...t,
+                  targetRouterState: state,
+                  newlyCreatedRoutes,
+                };
             this.currentNavigation.update((nav) => {
-              nav!.targetRouterState = targetRouterState;
+              nav!.targetRouterState = state;
               return nav;
             });
             return of(t);
           }),
+
+          this.activatedRouteInjectorFeature?.operator() ?? ((t) => t),
 
           switchTap(() => this.afterPreactivation()),
 
@@ -791,6 +805,9 @@ export class NavigationTransitions {
               (evt: Event) => this.events.next(evt),
               this.inputBindingEnabled,
             ).activate(this.rootContexts);
+
+            // Prevent any cleanup of newly created routes once activated.
+            t.newlyCreatedRoutes?.clear();
 
             if (!shouldContinueNavigation()) {
               return;
@@ -876,6 +893,7 @@ export class NavigationTransitions {
           }),
           catchError((e) => {
             completedOrAborted = true;
+            discardNewActivatedRoutes(overallTransitionState);
             // If the application is already destroyed, the catch block should not
             // execute anything in practice because other resources have already
             // been released and destroyed.
@@ -974,6 +992,7 @@ export class NavigationTransitions {
     reason: string,
     code: NavigationCancellationCode,
   ) {
+    discardNewActivatedRoutes(t);
     const navCancel = new NavigationCancel(
       t.id,
       this.urlSerializer.serialize(t.extractedUrl),
@@ -1025,4 +1044,13 @@ export class NavigationTransitions {
 
 export function isBrowserTriggeredNavigation(source: NavigationTrigger) {
   return source !== IMPERATIVE_NAVIGATION;
+}
+
+function discardNewActivatedRoutes(t: NavigationTransition): void {
+  if (!t.newlyCreatedRoutes) {
+    return;
+  }
+  for (const r of t.newlyCreatedRoutes) {
+    r._localInjector?.destroy();
+  }
 }

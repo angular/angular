@@ -49,6 +49,12 @@ export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void {
   const internalHandle = handle as DetachedRouteHandleInternal;
   if (internalHandle && internalHandle.componentRef) {
     internalHandle.componentRef.destroy();
+    // It is critical to destroy the `_localInjector` here. When a route is detached
+    // by the `RouteReuseStrategy`, the `_localInjector` is retained because the
+    // ActivatedRoute object is stored and can be attached later.
+    // When the developer drops the handle (e.g., deciding not to reuse it),
+    // they must manually invoke `destroyDetachedRouteHandle` to prevent a memory leak.
+    internalHandle.route.value._localInjector?.destroy();
   }
 }
 
