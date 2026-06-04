@@ -38,6 +38,22 @@ describe('I18nSelectPipe', () => {
       expect(() => pipe.transform('male', 'hey' as any)).toThrowError();
     });
 
+    it('should work with null-prototype mappings (Object.create(null))', () => {
+      const nullProtoMapping = Object.assign(Object.create(null), {
+        greeting: 'hello',
+        other: 'fallback',
+      }) as {[key: string]: string};
+      expect(pipe.transform('greeting', nullProtoMapping)).toEqual('hello');
+    });
+
+    it('should work when hasOwnProperty is shadowed by a mapping key', () => {
+      const shadowedMapping = {
+        hasOwnProperty: () => false,
+        greeting: 'hello',
+      } as unknown as {[key: string]: string};
+      expect(pipe.transform('greeting', shadowedMapping)).toEqual('hello');
+    });
+
     it('should be available as a standalone pipe', () => {
       @Component({
         selector: 'test-component',
