@@ -21,6 +21,14 @@ interface JitCompilerUsageRequest {
 }
 
 export function getCompilerFacade(request: JitCompilerUsageRequest): CompilerFacade {
+  if ((ngDevMode as any) === false && (globalThis as any).dangerousAllowJitInProduction !== true) {
+    console.error(
+      `JIT compilation requested for ${request.kind} '${request.type.name}' in production mode. This is not recommended!` +
+        ` If you understand the security implications and want to allow JIT compilation in production, invoke \`dangerousAllowJitInProduction()\` before bootstrapping.`,
+    );
+    throw new Error('JIT compiler unavailable');
+  }
+
   const globalNg: ExportedCompilerFacade = global['ng'];
   if (globalNg && globalNg.ɵcompilerFacade) {
     return globalNg.ɵcompilerFacade;

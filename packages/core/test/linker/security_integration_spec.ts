@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DomSanitizer} from '@angular/platform-browser';
-import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
+import {clearTranslations, loadTranslations} from '@angular/localize';
+import {DomSanitizer} from '@angular/platform-browser';
 import {
   ChangeDetectionStrategy,
   Component,
+  dangerousAllowJitInProduction,
   Directive,
   HostBinding,
   Input,
@@ -101,6 +102,7 @@ describe('security integration tests', function () {
       it(`should disallow binding to attr.on* in host bindings with ngDevMode=${ngDevModeValue}`, () => {
         const originalNgDevMode = (globalThis as any).ngDevMode;
         (globalThis as any).ngDevMode = ngDevModeValue;
+        dangerousAllowJitInProduction();
 
         @Directive({
           selector: '[dirOnclick]',

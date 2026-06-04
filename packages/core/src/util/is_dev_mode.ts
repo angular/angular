@@ -42,3 +42,16 @@ export function enableProdMode(): void {
     global['ngDevMode'] = false;
   }
 }
+
+/**
+ *
+ * This is a global function that can be used to allow JIT compilation in production mode.
+ *
+ * IMPORTANT: Using the JIT compiler is a potential XSS vector attack surface.
+ * Only use this function if you have a very specific use case and understand the security implications.
+ *
+ * @publicApi
+ */
+export function dangerousAllowJitInProduction() {
+  global['dangerousAllowJitInProduction'] = true;
+}
