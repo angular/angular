@@ -104,6 +104,22 @@ describe('BrowserViewportScroller', () => {
       cleanup();
     });
 
+    it('should scroll when a shadow DOM anchor name contains CSS selector metacharacters', () => {
+      const trickyName = 'a"]),(*';
+      const {anchorNode, cleanup} = createTallElementWithShadowRoot();
+      anchorNode.name = trickyName;
+      scroller.scrollToAnchor(trickyName);
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+      cleanup();
+    });
+
+    it('should not throw when the anchor would form an invalid shadow DOM selector', () => {
+      const {cleanup} = createTallElementWithShadowRoot();
+      expect(() => scroller.scrollToAnchor('"><script>')).not.toThrow();
+      expect(scroller.getScrollPosition()[1]).toEqual(0);
+      cleanup();
+    });
+
     it('should not allow overwriting position with options', () => {
       const {anchorNode, cleanup} = createTallElementWithShadowRoot();
       anchorNode.name = anchor;

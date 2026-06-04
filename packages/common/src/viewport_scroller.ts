@@ -200,7 +200,8 @@ function findAnchorFromDocument(document: Document, target: string): HTMLElement
         // Note that `ShadowRoot` doesn't support `getElementsByName`
         // so we have to fall back to `querySelector`.
         const result =
-          shadowRoot.getElementById(target) || shadowRoot.querySelector(`[name="${target}"]`);
+          shadowRoot.getElementById(target) ||
+          shadowRoot.querySelector(`[name="${CSS.escape(target)}"]`);
         if (result) {
           return result;
         }
