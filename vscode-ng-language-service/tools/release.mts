@@ -470,6 +470,7 @@ async function createGithubRelease(version: string, changelog: string): Promise<
     },
     body: JSON.stringify({
       draft: false,
+      make_latest: 'false',
     }),
   });
 
