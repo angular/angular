@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '../../src/core';
 import {
   _ATTR_TO_PROP,
   DomElementSchemaRegistry,
   SCHEMA,
 } from '../../src/schema/dom_element_schema_registry';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '../../src/core';
 
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
@@ -174,6 +174,22 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext(':svg:a', 'xlink:href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':svg:a', 'href', true)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':svg:a', 'xlink:href', true)).toBe(SecurityContext.URL);
+
+    // MathML link attributes
+    expect(registry.securityContext(':math:math', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:math', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:math', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:math', 'xlink:href', true)).toBe(SecurityContext.URL);
+    // Making sure we're have a wild card match for MathML elements with the correct security context
+    expect(registry.securityContext(':math:foobar', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:foobar', 'xlink:href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:foobar', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':math:foobar', 'xlink:href', false)).toBe(SecurityContext.URL);
+    // Ensure MathML wildcard does not apply outside of the MathML namespace.
+    expect(registry.securityContext(':svg:foobar', 'href', false)).toBe(SecurityContext.NONE);
+    expect(registry.securityContext(':svg:foobar', 'xlink:href', false)).toBe(SecurityContext.NONE);
+
+    expect(registry.securityContext('p', 'href', false)).toBe(SecurityContext.NONE);
   });
 
   it('should detect properties on namespaced elements', () => {
