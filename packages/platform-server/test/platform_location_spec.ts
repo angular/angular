@@ -168,5 +168,58 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
       );
       platform.destroy();
     });
+
+    it('should throw on replaceState with different origin', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<html><head></head><body></body></html>',
+            url: 'http://test.com/deep/path',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(() => location.replaceState(null, 'Title', 'http://attacker.com/foo')).toThrowError(
+        `NG05703: URL http://attacker.com/foo changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+      );
+      platform.destroy();
+    });
+
+    it('should throw on pushState with different origin', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<html><head></head><body></body></html>',
+            url: 'http://test.com/deep/path',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(() => location.pushState(null, 'Title', 'http://attacker.com/foo')).toThrowError(
+        `NG05703: URL http://attacker.com/foo changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+      );
+      platform.destroy();
+    });
+
+    it('should allow replaceState/pushState with same origin', async () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<html><head></head><body></body></html>',
+            url: 'http://test.com/deep/path',
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(() => location.replaceState(null, 'Title', '/other-path')).not.toThrow();
+      expect(() => location.pushState(null, 'Title', 'http://test.com/other-path')).not.toThrow();
+      platform.destroy();
+    });
   });
 })();

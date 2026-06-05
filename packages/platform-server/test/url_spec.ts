@@ -32,6 +32,26 @@ describe('resolveUrl', () => {
       expect(url.origin).toBe('http://other.com');
     });
 
+    it('should throw when allowOriginChange is false and origin changes', () => {
+      expect(() =>
+        resolveUrl('http://other.com/deep/path', 'http://test.com', {allowOriginChange: false}),
+      ).toThrowError(
+        `NG05703: URL http://other.com/deep/path changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+      );
+    });
+
+    it('should resolve same origin when allowOriginChange is false', () => {
+      const url = resolveUrl('http://test.com/other-path', 'http://test.com', {
+        allowOriginChange: false,
+      });
+      expect(url.href).toBe('http://test.com/other-path');
+    });
+
+    it('should resolve relative paths when allowOriginChange is false', () => {
+      const url = resolveUrl('/other-path', 'http://test.com', {allowOriginChange: false});
+      expect(url.href).toBe('http://test.com/other-path');
+    });
+
     it('should throw an error for malformed absolute URLs', () => {
       const malformedUrls = [
         'http://evil.com:80:80/path',

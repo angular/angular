@@ -25,6 +25,8 @@ import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
  *  - animations: 3000-3999
  *  - router: 4000-4999
  *  - platform-browser: 5000-5500
+ *  - service-worker: 5600-5699
+ *  - platform-server: 5700-5800
  */
 export const enum RuntimeErrorCode {
   // Change Detection Errors
