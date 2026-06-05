@@ -16,12 +16,8 @@ import {
 import {inject, Injectable, Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable} from 'rxjs';
 
-<<<<<<< HEAD
-import {parseUrl} from './url';
-=======
 import {RuntimeErrorCode} from './errors';
-import {resolveUrl} from './url';
->>>>>>> 29b5cb51b0 (refactor(platform-server): replace standard Error with RuntimeError)
+import {parseUrl} from './url';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
