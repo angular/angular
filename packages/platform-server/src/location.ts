@@ -33,20 +33,25 @@ export class ServerPlatformLocation implements PlatformLocation {
   public readonly search: string = '';
   public readonly hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
+  public readonly origin: string;
 
   constructor(
     @Inject(DOCUMENT) private _doc: any,
     @Optional() @Inject(INITIAL_CONFIG) _config: any,
   ) {
+    let origin = this._doc.location.origin;
     const config = _config as PlatformConfig | null;
-    if (!config) {
-      return;
-    }
-    if (config.url) {
-      const {protocol, hostname, port, pathname, search, hash, href} = parseUrl(
-        config.url,
-        this._doc.location.origin,
-      );
+    if (config && config.url) {
+      const {
+        protocol,
+        hostname,
+        port,
+        pathname,
+        search,
+        hash,
+        href,
+        origin: parsedOrigin,
+      } = parseUrl(config.url, origin);
       this.protocol = protocol;
       this.hostname = hostname;
       this.port = port;
@@ -54,7 +59,9 @@ export class ServerPlatformLocation implements PlatformLocation {
       this.search = search;
       this.hash = hash;
       this.href = href;
+      origin = parsedOrigin;
     }
+    this.origin = origin;
   }
 
   getBaseHrefFromDOM(): string {
@@ -95,7 +102,9 @@ export class ServerPlatformLocation implements PlatformLocation {
 
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
-    const {pathname, search, hash, href, protocol} = parseUrl(newUrl, this._doc.location.origin);
+    const {pathname, search, hash, href, protocol} = parseUrl(newUrl, this.origin, {
+      allowOriginChange: false,
+    });
     const writableThis = this as Writable<this>;
     writableThis.pathname = pathname;
     writableThis.search = search;
