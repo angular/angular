@@ -82,7 +82,7 @@ export function resolveUrl(
   if (!URL.canParse(urlStr, 'http://fake')) {
     throw new RuntimeError(
       RuntimeErrorCode.INVALID_URL,
-      ngDevMode ? `Invalid URL: ${urlStr}` : urlStr,
+      typeof ngDevMode === 'undefined' || ngDevMode ? `Invalid URL: ${urlStr}` : urlStr,
     );
   }
 
@@ -96,7 +96,7 @@ export function resolveUrl(
     if (!allowProtocolRelative) {
       throw new RuntimeError(
         RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
-        ngDevMode
+        typeof ngDevMode === 'undefined' || ngDevMode
           ? `Protocol relative URLs are not allowed in this context. URL: ${urlStr}`
           : urlStr,
       );
@@ -120,7 +120,7 @@ export function resolveUrl(
 function throwSuspiciousUrlError(urlStr: string): never {
   throw new RuntimeError(
     RuntimeErrorCode.SUSPICIOUS_URL_CHANGE_ORIGIN,
-    ngDevMode
+    typeof ngDevMode === 'undefined' || ngDevMode
       ? `URL ${urlStr} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`
       : urlStr,
   );

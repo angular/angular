@@ -388,7 +388,7 @@ function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | 
       if (!isHostAllowed(hostname, allowedHostsSet)) {
         throw new RuntimeError(
           RuntimeErrorCode.HOST_NOT_ALLOWED,
-          ngDevMode
+          typeof ngDevMode === 'undefined' || ngDevMode
             ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
             : url,
         );
