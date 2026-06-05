@@ -22,9 +22,11 @@ import {
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵstartMeasuring as startMeasuring,
   ɵstopMeasuring as stopMeasuring,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {BootstrapContext} from '@angular/platform-browser';
 
+import {RuntimeErrorCode} from './errors';
 import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
@@ -384,7 +386,12 @@ function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | 
       const hostname = parsedUrl.hostname;
       const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
       if (!isHostAllowed(hostname, allowedHostsSet)) {
-        throw new Error(`Host ${url} is not allowed. You can configure \`allowedHosts\` option.`);
+        throw new RuntimeError(
+          RuntimeErrorCode.HOST_NOT_ALLOWED,
+          ngDevMode
+            ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
+            : url,
+        );
       }
     }
   }

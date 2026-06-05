@@ -62,6 +62,24 @@ export function renderModule<T>(moduleType: Type<T>, options: {
 }): Promise<string>;
 
 // @public
+export const enum RuntimeErrorCode {
+    // (undocumented)
+    DISABLED_DOM_EMULATION_IN_NON_BROWSER = 5704,
+    // (undocumented)
+    GET_COOKIE_NOT_IMPLEMENTED = 5700,
+    // (undocumented)
+    HOST_NOT_ALLOWED = 5706,
+    // (undocumented)
+    INVALID_URL = 5701,
+    // (undocumented)
+    PROTOCOL_RELATIVE_URL_NOT_ALLOWED = 5702,
+    // (undocumented)
+    SUSPICIOUS_URL_CHANGE_ORIGIN = 5703,
+    // (undocumented)
+    XHR_NOT_LOADED = 5705
+}
+
+// @public
 export class ServerModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ServerModule, never>;
