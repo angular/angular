@@ -242,11 +242,14 @@ $code-font-size: 0.875rem;
     border-radius: 0.25rem;
     cursor: pointer;
     z-index: var(--z-index-icon);
+    opacity: 0;
+    pointer-events: none;
     background-color: var(--octonary-contrast);
     border: 1px solid var(--senary-contrast);
     transition:
       background-color 0.3s ease,
-      border-color 0.3s ease;
+      border-color 0.3s ease,
+      opacity 0.3s ease;
 
     .docs-icon {
       transition: opacity 0.3s ease-out;
@@ -270,6 +273,9 @@ $code-font-size: 0.875rem;
     }
 
     &.docs-copy-source-code-button-success {
+      opacity: 1;
+      pointer-events: auto;
+
       .docs-copy {
         opacity: 0;
       }
@@ -284,6 +290,32 @@ $code-font-size: 0.875rem;
           fill: var(--primary-contrast);
         }
       }
+    }
+  }
+
+  .docs-code:hover,
+  .docs-code:focus-within,
+  .docs-example-viewer-code-wrapper:hover,
+  .docs-example-viewer-code-wrapper:focus-within {
+    > button[docs-copy-source-code] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  button[docs-copy-source-code]:focus-visible,
+  button[docs-copy-source-code].docs-copy-source-code-button-failed {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .docs-code:has(.docs-code-header) {
+    button[docs-copy-source-code] {
+      top: 0.45rem;
+    }
+
+    .docs-code-header {
+      padding-inline-end: 3rem;
     }
   }
 
