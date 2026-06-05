@@ -379,7 +379,7 @@ export class HttpRequest<T> implements HttpRequestOptions {
         this.integrity = options.integrity;
       }
 
-      if (options.referrer) {
+      if (options.referrer !== undefined) {
         this.referrer = options.referrer;
       }
 
@@ -555,7 +555,8 @@ export class HttpRequest<T> implements HttpRequestOptions {
     const mode = update.mode || this.mode;
     const redirect = update.redirect || this.redirect;
     const credentials = update.credentials || this.credentials;
-    const referrer = update.referrer || this.referrer;
+
+    const referrer = update.referrer ?? this.referrer;
     const integrity = update.integrity || this.integrity;
     const referrerPolicy = update.referrerPolicy || this.referrerPolicy;
     // Carefully handle the transferCache to differentiate between

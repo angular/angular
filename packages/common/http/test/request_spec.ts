@@ -95,6 +95,10 @@ describe('HttpRequest', () => {
       const req = new HttpRequest('GET', '/test', {referrer: 'about:client'});
       expect(req.referrer).toBe('about:client');
     });
+    it('should preserve an empty string referrer (used to suppress the Referer header)', () => {
+      const req = new HttpRequest('GET', '/test', {referrer: ''});
+      expect(req.referrer).toBe('');
+    });
     it('should allow setting referrerPolicy option', () => {
       const req = new HttpRequest('GET', '/test', {referrerPolicy: 'no-referrer'});
       expect(req.referrerPolicy).toBe('no-referrer');
@@ -193,6 +197,13 @@ describe('HttpRequest', () => {
     });
     it('and updates the referrer', () => {
       expect(req.clone({referrer: 'https://example.com'}).referrer).toBe('https://example.com');
+    });
+    it('and preserves an existing empty string referrer when the update omits it', () => {
+      const emptyReferrerReq = new HttpRequest('GET', '/test', {referrer: ''});
+      expect(emptyReferrerReq.clone().referrer).toBe('');
+    });
+    it('and can update the referrer to an empty string', () => {
+      expect(req.clone({referrer: ''}).referrer).toBe('');
     });
     it('and updates the integrity', () => {
       expect(req.clone({integrity: 'sha512-...'}).integrity).toBe('sha512-...');
