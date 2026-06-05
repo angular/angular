@@ -9,8 +9,17 @@
 import {signalGraphTool} from '../../../src/debug/ai/signal_graph';
 import {registerAiTools} from '../../../src/debug/ai';
 import {DevtoolsToolDiscoveryEvent} from '../../../src/debug/ai/tool_definitions';
+import {destroyPlatform} from '../../../src/core';
 
 describe('registration', () => {
+  beforeEach(() => {
+    // Destroy any pre-existing platform created by other tests which wasn't properly destroyed.
+    // Creating a platform calls `registerAiTools` in its production code path and unregisters when the platform is destroyed.
+    // If a platform leaks between tests, then there is an extra active AI tools event listener which can break these tests.
+    // The easiest solution is to just destroy any leaked platforms to make sure the environment is stable before we run.
+    destroyPlatform();
+  });
+
   describe('registerAiTools', () => {
     it('should register the tools', () => {
       const unregister = registerAiTools();
