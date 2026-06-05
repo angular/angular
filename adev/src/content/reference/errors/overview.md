@@ -60,3 +60,7 @@
 | `NG8003` | [Missing Reference Target](errors/NG8003)                  |
 | `NG8023` | [Multiple Components Match Same Element](errors/NG8023)    |
 | `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)        |
+
+## Error codes without a guide
+
+Not every error code has a guide. The full list of error codes can be found at <https://github.com/angular/angular/blob/main/packages/core/src/errors.ts>.
