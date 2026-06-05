@@ -13,10 +13,15 @@ import {
   HttpRequest,
   ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
 } from '@angular/common/http';
-import {inject, Injectable, Provider} from '@angular/core';
+import {inject, Injectable, Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable} from 'rxjs';
 
+<<<<<<< HEAD
 import {parseUrl} from './url';
+=======
+import {RuntimeErrorCode} from './errors';
+import {resolveUrl} from './url';
+>>>>>>> 29b5cb51b0 (refactor(platform-server): replace standard Error with RuntimeError)
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
@@ -36,7 +41,11 @@ export class ServerXhr implements XhrFactory {
   build(): XMLHttpRequest {
     const impl = this.xhrImpl;
     if (!impl) {
-      throw new Error('Unexpected state in ServerXhr: XHR implementation is not loaded.');
+      throw new RuntimeError(
+        RuntimeErrorCode.XHR_NOT_LOADED,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'Unexpected state in ServerXhr: XHR implementation is not loaded.',
+      );
     }
 
     return new impl.XMLHttpRequest();
