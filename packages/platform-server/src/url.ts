@@ -21,8 +21,14 @@ const HTTP_OR_HTTPS_PROTOCOL_REGEX = /^https?:/i;
 export interface ParseUrlOptions {
   /**
    * Allow protocol-relative URLs (e.g. `//example.com`).
+   * @default false
    */
   allowProtocolRelative?: boolean;
+  /**
+   * Allow origin changes.
+   * @default true
+   */
+  allowOriginChange?: boolean;
 }
 
 /**
@@ -55,9 +61,10 @@ export function parseUrl(
   try {
     resolved = new URL(urlStr);
   } catch {}
+  const {allowProtocolRelative = false, allowOriginChange = true} = options;
 
   if (resolved) {
-    if (originUrl && !isSafeOriginChange(resolved, originUrl, urlStr)) {
+    if (originUrl && !isSafeOriginChange(resolved, originUrl, urlStr, allowOriginChange)) {
       throwSuspiciousUrlError(urlStr);
     }
 
@@ -80,8 +87,6 @@ export function parseUrl(
     return null;
   }
 
-  const {allowProtocolRelative = false} = options;
-
   // Check if we have a legitimate protocol-relative URL (starts with '//' and not a duplicate/backslash bypass)
   // and we are configured to allow and preserve standard cross-origin protocol-relative requests.
   if (urlStr.startsWith('//')) {
@@ -99,7 +104,7 @@ export function parseUrl(
 
   resolved = new URL(urlStr, origin);
 
-  if (!isSafeOriginChange(resolved, originUrl, urlStr)) {
+  if (!isSafeOriginChange(resolved, originUrl, urlStr, allowOriginChange)) {
     throwSuspiciousUrlError(urlStr);
   }
 
@@ -124,8 +129,22 @@ function throwSuspiciousUrlError(urlStr: string): never {
  * @param resolved The resolved URL.
  * @param origin The origin URL.
  * @param urlStr The URL string.
+ * @param allowOriginChange Whether to allow origin changes.
  * @returns True if the origin has changed in a safe way, false otherwise.
  */
-function isSafeOriginChange(resolved: URL, origin: URL, urlStr: string): boolean {
-  return origin.origin === resolved.origin || HTTP_OR_HTTPS_PROTOCOL_REGEX.test(urlStr);
+function isSafeOriginChange(
+  resolved: URL,
+  origin: URL,
+  urlStr: string,
+  allowOriginChange: boolean,
+): boolean {
+  if (origin.origin === resolved.origin) {
+    return true;
+  }
+
+  if (!allowOriginChange) {
+    return false;
+  }
+
+  return HTTP_OR_HTTPS_PROTOCOL_REGEX.test(urlStr);
 }
