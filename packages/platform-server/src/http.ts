@@ -13,8 +13,10 @@ import {
   HttpHandlerFn,
   HttpRequest,
 } from '@angular/common/http';
-import {inject, Injectable, Provider} from '@angular/core';
+import {inject, Injectable, Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable} from 'rxjs';
+
+import {RuntimeErrorCode} from './errors';
 import {resolveUrl} from './url';
 
 @Injectable()
@@ -35,7 +37,11 @@ export class ServerXhr implements XhrFactory {
   build(): XMLHttpRequest {
     const impl = this.xhrImpl;
     if (!impl) {
-      throw new Error('Unexpected state in ServerXhr: XHR implementation is not loaded.');
+      throw new RuntimeError(
+        RuntimeErrorCode.XHR_NOT_LOADED,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'Unexpected state in ServerXhr: XHR implementation is not loaded.',
+      );
     }
 
     return new impl.XMLHttpRequest();
