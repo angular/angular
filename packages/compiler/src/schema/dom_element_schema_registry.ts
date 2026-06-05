@@ -10,7 +10,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContex
 import {isNgContainer, isNgContent, splitNsName} from '../ml_parser/tags';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 import {dashCaseToCamelCase} from '../util';
-import {SECURITY_SCHEMA} from './dom_security_schema';
+import {checkSecurityContext, SECURITY_SCHEMA} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
 const BOOLEAN = 'boolean';
@@ -453,16 +453,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       propName = this.getMappedPropName(propName);
     }
 
-    const normalizedTag = normalizeTagName(tagName);
-    propName = propName.toLowerCase();
-
-    const securitySchema = SECURITY_SCHEMA();
-    const ctx =
-      securitySchema[normalizedTag + '|' + propName] ??
-      securitySchema['*|' + propName] ??
-      SecurityContext.NONE;
-
-    return ctx;
+    const [ns, name] = splitNsName(tagName, false);
+    return checkSecurityContext(name, propName, ns);
   }
 
   override getMappedPropName(propName: string): string {

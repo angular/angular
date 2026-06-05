@@ -71,39 +71,7 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     registerContext(SecurityContext.URL, MATH_ML_NAMESPACE, [
       // MathML namespace
       // https://crsrc.org/c/third_party/blink/renderer/core/sanitizer/sanitizer.cc;l=753-768;drc=b3eb16372dcd3317d65e9e0265015e322494edcd;bpv=1;bpt=1
-      ['annotation', ['href', 'xlink:href']],
-      ['annotation-xml', ['href', 'xlink:href']],
-      ['maction', ['href', 'xlink:href']],
-      ['malignmark', ['href', 'xlink:href']],
-      ['math', ['href', 'xlink:href']],
-      ['mroot', ['href', 'xlink:href']],
-      ['msqrt', ['href', 'xlink:href']],
-      ['merror', ['href', 'xlink:href']],
-      ['mfrac', ['href', 'xlink:href']],
-      ['mglyph', ['href', 'xlink:href']],
-      ['msub', ['href', 'xlink:href']],
-      ['msup', ['href', 'xlink:href']],
-      ['msubsup', ['href', 'xlink:href']],
-      ['mmultiscripts', ['href', 'xlink:href']],
-      ['mprescripts', ['href', 'xlink:href']],
-      ['mi', ['href', 'xlink:href']],
-      ['mn', ['href', 'xlink:href']],
-      ['mo', ['href', 'xlink:href']],
-      ['mpadded', ['href', 'xlink:href']],
-      ['mphantom', ['href', 'xlink:href']],
-      ['mrow', ['href', 'xlink:href']],
-      ['ms', ['href', 'xlink:href']],
-      ['mspace', ['href', 'xlink:href']],
-      ['mstyle', ['href', 'xlink:href']],
-      ['mtable', ['href', 'xlink:href']],
-      ['mtd', ['href', 'xlink:href']],
-      ['mtr', ['href', 'xlink:href']],
-      ['mtext', ['href', 'xlink:href']],
-      ['mover', ['href', 'xlink:href']],
-      ['munder', ['href', 'xlink:href']],
-      ['munderover', ['href', 'xlink:href']],
-      ['semantics', ['href', 'xlink:href']],
-      ['none', ['href', 'xlink:href']],
+      ['*', ['href', 'xlink:href']],
     ]);
 
     registerContext(SecurityContext.RESOURCE_URL, /** Namespace */ undefined, [
@@ -161,12 +129,45 @@ function registerContext(
   specs: readonly [tagName: string, attributeNames: readonly string[]][],
 ): void {
   for (const [element, attributeNames] of specs) {
-    let tagName =
-      namespace && element !== '*' && element !== 'unknown' ? `:${namespace}:${element}` : element;
+    let tagName = element;
+    if (namespace && element !== 'unknown') {
+      tagName = `:${namespace}:${element}`;
+    }
     tagName = tagName.toLowerCase();
 
     for (const attr of attributeNames) {
       _SECURITY_SCHEMA[`${tagName}|${attr.toLowerCase()}`] = ctx;
     }
   }
+}
+
+/**
+ * Checks the SecurityContext for a given tag and property.
+ * @param tagName The tag name (e.g. 'div', or 'a')
+ * @param propName The property or attribute name
+ * @param namespace The namespace of the element, if any (e.g. 'svg' or 'math')
+ */
+export function checkSecurityContext(
+  tagName: string,
+  propName: string,
+  namespace?: string | null,
+): SecurityContext {
+  const securitySchema = SECURITY_SCHEMA();
+  propName = propName.toLowerCase();
+  tagName = tagName.toLowerCase();
+
+  let namespacedTag = tagName;
+  let nsWildcardTag: string | undefined;
+
+  if (namespace === SVG_NAMESPACE || namespace === MATH_ML_NAMESPACE) {
+    namespacedTag = `:${namespace}:${tagName}`;
+    nsWildcardTag = `:${namespace}:*`;
+  }
+
+  return (
+    securitySchema[namespacedTag + '|' + propName] ??
+    (nsWildcardTag !== undefined ? securitySchema[nsWildcardTag + '|' + propName] : undefined) ??
+    securitySchema['*|' + propName] ??
+    SecurityContext.NONE
+  );
 }

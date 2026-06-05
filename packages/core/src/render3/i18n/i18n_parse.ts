@@ -9,17 +9,17 @@ import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
+import {checkSecurityContext, SecurityContext} from '../../sanitization/dom_security_schema';
 import {getTemplateContent, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
-import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
 import {
   ɵɵsanitizeHtml as _sanitizeHtml,
-  ɵɵsanitizeStyle as _sanitizeStyle,
-  ɵɵsanitizeScript as _sanitizeScript,
   ɵɵsanitizeResourceUrl as _sanitizeResourceUrl,
+  ɵɵsanitizeScript as _sanitizeScript,
+  ɵɵsanitizeStyle as _sanitizeStyle,
   ɵɵvalidateAttribute as _validateAttribute,
 } from '../../sanitization/sanitization';
-import {SECURITY_SCHEMA, SecurityContext} from '../../sanitization/dom_security_schema';
+import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
 import {
   assertDefined,
   assertEqual,
@@ -56,6 +56,8 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
 
+import {createTNodeAtIndex} from '../tnode_manipulation';
+import {allocExpando} from '../view/construction';
 import {
   i18nCreateOpCodesToString,
   i18nRemoveOpCodesToString,
@@ -71,9 +73,6 @@ import {
   setTIcu,
   setTNodeInsertBeforeIndex,
 } from './i18n_util';
-import {createTNodeAtIndex} from '../tnode_manipulation';
-import {allocExpando} from '../view/construction';
-import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../namespaces';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
@@ -1003,21 +1002,15 @@ function splitNsName(elementName: string, fatal: boolean = true): [string | null
   return [elementName.slice(1, colonIndex), elementName.slice(colonIndex + 1)];
 }
 
-function normalizeTagName(tagName: string): string {
-  const tagNameLower = tagName.toLowerCase();
-  const [ns, name] = splitNsName(tagNameLower, false);
-
-  return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
-}
-
 function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn | null {
-  const lowerAttrName = attrName.toLowerCase();
-  const lowerTagName = tagName ? normalizeTagName(tagName) : '*';
-  const schema = SECURITY_SCHEMA();
-  const schemaContext =
-    schema[`${lowerTagName}|${lowerAttrName}`] ||
-    schema[`*|${lowerAttrName}`] ||
-    SecurityContext.NONE;
+  let schemaContext = SecurityContext.NONE;
+
+  if (tagName) {
+    const [ns, name] = splitNsName(tagName, false);
+    schemaContext = checkSecurityContext(name, attrName, ns);
+  } else {
+    schemaContext = checkSecurityContext('*', attrName);
+  }
 
   switch (schemaContext) {
     case SecurityContext.HTML:
