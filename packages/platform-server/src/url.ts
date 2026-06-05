@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from './errors';
+
 /**
  * Matches http: or https:
  */
@@ -69,7 +73,10 @@ export function resolveUrl(
   // absolute URL. Since it is malformed, the native URL constructor will throw a validation
   // error. Standard relative/protocol-relative paths parse successfully, allowing the flow to continue.
   if (!URL.canParse(urlStr, 'http://fake')) {
-    throw new Error(`Invalid URL: ${urlStr}`);
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_URL,
+      ngDevMode ? `Invalid URL: ${urlStr}` : urlStr,
+    );
   }
 
   if (!originUrl) {
@@ -82,7 +89,12 @@ export function resolveUrl(
   // and we are configured to allow and preserve standard cross-origin protocol-relative requests.
   if (urlStr.startsWith('//')) {
     if (!allowProtocolRelative) {
-      throw new Error(`Protocol relative URLs are not allowed in this context. URL: ${urlStr}`);
+      throw new RuntimeError(
+        RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
+        ngDevMode
+          ? `Protocol relative URLs are not allowed in this context. URL: ${urlStr}`
+          : urlStr,
+      );
     }
 
     return new URL(urlStr, origin);
@@ -101,8 +113,11 @@ export function resolveUrl(
  * Throws a suspicious URL error indicating a security bypass attempt.
  */
 function throwSuspiciousUrlError(urlStr: string): never {
-  throw new Error(
-    `URL ${urlStr} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+  throw new RuntimeError(
+    RuntimeErrorCode.SUSPICIOUS_URL_CHANGE_ORIGIN,
+    ngDevMode
+      ? `URL ${urlStr} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`
+      : urlStr,
   );
 }
 
