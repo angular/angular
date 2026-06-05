@@ -94,7 +94,7 @@ describe('directive-forest-filter-fn-generator', () => {
   });
 
   describe('parseDirectiveForestFilter', () => {
-    it('should parse an empty string to an empty tokens array', () => {
+    it('should parse an empty string to an empty filter object', () => {
       const tokens = tokenizeDirectiveForestFilter('');
       const parsed = parseDirectiveForestFilter(tokens);
 

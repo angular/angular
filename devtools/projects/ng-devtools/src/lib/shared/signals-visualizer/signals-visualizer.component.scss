@@ -243,53 +243,92 @@ $cluster-expand-anim-duration: 1s;
     }
   }
 
-  .menu {
+  .floating-cont {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     top: 0.2rem;
     left: 0.2rem;
-    border-radius: 0.375rem;
-    padding: 0.25rem 0.375rem;
-    background-color: color-mix(in srgb, var(--color-background) 30%, transparent 70%);
-    backdrop-filter: blur(5px);
 
-    p {
-      @extend %body-bold-01;
-      margin: 0;
-      padding: 0;
-      margin-bottom: 0.5rem;
+    .search-btn.open-search {
+      margin: 0.3rem 0 0 0.3rem;
+    }
 
-      &:not(:first-child) {
-        margin-top: 0.5rem;
+    .search-btn {
+      $size: 18px;
+      width: $size;
+      height: $size;
+
+      mat-icon {
+        width: $size;
+        height: $size;
+        font-size: $size;
       }
     }
 
-    button {
+    .search,
+    .menu {
+      background-color: color-mix(in srgb, var(--color-background) 30%, transparent 70%);
+      backdrop-filter: blur(5px);
+      border-radius: 0.375rem;
+    }
+
+    .search {
       display: flex;
       align-items: center;
-      gap: 0.1rem;
-      margin-bottom: 0.375rem;
-      max-width: 100px;
-      color: var(--gray-800);
+      gap: 0.5rem;
+      padding: 0.25rem;
 
-      &.collapse {
-        background-color: var(--yellow-02);
+      ng-filter {
+        --ng-filter-width: 140px;
+        --ng-filter-height: 24px;
+        --ng-filter-icon-display: none;
+      }
+    }
+
+    .menu {
+      padding: 0.25rem 0.375rem;
+
+      p {
+        @extend %body-bold-01;
+        margin: 0;
+        padding: 0;
+        margin-bottom: 0.5rem;
+
+        &:not(:first-child) {
+          margin-top: 0.5rem;
+        }
       }
 
-      &.unhighlight {
-        background-color: var(--purple-03);
-      }
+      .pill {
+        display: flex;
+        align-items: center;
+        gap: 0.1rem;
+        margin-bottom: 0.375rem;
+        max-width: 100px;
+        color: var(--gray-800);
 
-      mat-icon {
-        width: 16px;
-        height: 16px;
-        font-size: 16px;
-      }
+        &.collapse {
+          background-color: var(--yellow-02);
+        }
 
-      span {
-        flex: 1;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+        &.unhighlight {
+          background-color: var(--purple-03);
+        }
+
+        mat-icon {
+          width: 16px;
+          height: 16px;
+          font-size: 16px;
+        }
+
+        span {
+          flex: 1;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
       }
     }
   }
