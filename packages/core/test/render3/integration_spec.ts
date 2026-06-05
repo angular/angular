@@ -651,6 +651,30 @@ describe('sanitization', () => {
 
     expect(anchor.getAttribute('href')).toEqual('http://foo');
   });
+
+  // The SVG `attributeName` is case-sensitive when accessed via the DOM API
+  // (i.e. `setAttribute('attributename', ...)` and `setAttribute('attributeName', ...)`
+  // create two distinct attributes). However, the browser tokenizer normalizes
+  // the lowercase form `attributename` to `attributeName` on initial parsing,
+  // which means the client-side sanitizer still ends up seeing `attributeName`.
+  // The SSR renderer (Domino) does not perform this normalization, so we
+  // explicitly look up the lowercase form as well to make sure the sanitizer
+  // is triggered consistently in both environments.
+  it('should throw when binding to set element with attributename="href"', () => {
+    @Component({
+      selector: 'test-comp',
+      template: `<svg><set attributename="href" [attr.to]="'foo'"></set></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
 });
 
 class LocalSanitizedValue {

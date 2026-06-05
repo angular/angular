@@ -274,6 +274,7 @@ function getSanitizer(): Sanitizer | null {
 }
 
 const attributeName: ReadonlySet<string> = new Set(['attributename']);
+const SVG_ANIMATION_ATTRIBUTE_NAME_CANDIDATES = ['attributeName', 'attributename'] as const;
 
 /**
  * @remarks Keep this in sync with DOM Security Schema.
@@ -358,9 +359,12 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
     }
 
     const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
-    const attributeNameValue = element.getAttribute('attributeName');
+    const attributeNameValue = getSecuritySensitiveSVGAnimationAttributeName(
+      element,
+      validationConfig,
+    );
 
-    if (attributeNameValue && validationConfig.has(attributeNameValue.toLowerCase())) {
+    if (attributeNameValue) {
       const errorMessage =
         ngDevMode &&
         `Angular has detected that the \`${attributeName}\` was applied ` +
@@ -384,4 +388,18 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
       `To fix this, switch the \`${attributeName}\` binding to a static attribute ` +
       `in a template or in host bindings section.`;
   throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
+}
+
+function getSecuritySensitiveSVGAnimationAttributeName(
+  element: SVGAnimateElement,
+  validationConfig: ReadonlySet<string>,
+): string | null {
+  for (const attributeName of SVG_ANIMATION_ATTRIBUTE_NAME_CANDIDATES) {
+    const attributeNameValue = element.getAttribute(attributeName);
+    if (attributeNameValue !== null && validationConfig.has(attributeNameValue.toLowerCase())) {
+      return attributeNameValue;
+    }
+  }
+
+  return null;
 }
