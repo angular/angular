@@ -516,7 +516,7 @@ export class HttpRequest<T> {
         this.integrity = options.integrity;
       }
 
-      if (options.referrer) {
+      if (options.referrer !== undefined) {
         this.referrer = options.referrer;
       }
 
@@ -720,7 +720,8 @@ export class HttpRequest<T> {
     const mode = update.mode || this.mode;
     const redirect = update.redirect || this.redirect;
     const credentials = update.credentials || this.credentials;
-    const referrer = update.referrer || this.referrer;
+
+    const referrer = update.referrer ?? this.referrer;
     const integrity = update.integrity || this.integrity;
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
