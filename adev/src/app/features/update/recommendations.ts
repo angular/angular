@@ -2123,7 +2123,8 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     material: true,
     step: 'update @angular/material',
-    action: 'Run `ng update @angular/material@17`.',
+    action:
+      'Run `ng update @angular/material@17`. If your application still uses legacy Angular Material components (deprecated in v15 and removed in v17), run `ng generate @angular/material:mdc-migration` before upgrading to Material v17.',
   },
   {
     possibleIn: 1700,
