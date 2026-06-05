@@ -1444,6 +1444,31 @@ class HiddenModule {}
         });
       });
 
+      it('prevents SSRF bypasses via backslash URLs in HttpClient by throwing a suspicious origin error', async () => {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {document: '<app></app>', url: 'http://localhost:4000/base'},
+          },
+        ]);
+        await platform.bootstrapModule(HttpClientExampleModule).then((ref) => {
+          const mock = ref.injector.get(HttpTestingController);
+          const http = ref.injector.get(HttpClient);
+          ref.injector.get(NgZone).run(() => {
+            http.get('/\\evil.com/api').subscribe({
+              next: () => fail('Expected request to fail, but it succeeded.'),
+              error: (err) => {
+                expect(err.message).toBe(
+                  `NG05703: URL /\\evil.com/api changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                );
+              },
+            });
+
+            mock.verify();
+          });
+        });
+      });
+
       it('can use HttpInterceptor that injects HttpClient', async () => {
         const platform = platformServer([
           {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
@@ -1567,7 +1592,7 @@ class HiddenModule {}
                 next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
                 error: (err) => {
                   expect(err.message).toBe(
-                    `URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                    `NG05703: URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
                   );
                 },
               });
@@ -1590,7 +1615,7 @@ class HiddenModule {}
                 next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
                 error: (err) => {
                   expect(err.message).toBe(
-                    `URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                    `NG05703: URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
                   );
                 },
               });

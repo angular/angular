@@ -148,7 +148,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
       ]);
 
       expect(() => platform.injector.get(DOCUMENT)).toThrowError(
-        `URL /\\attacker.com/deep/path changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+        `NG05703: URL /\\attacker.com/deep/path changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
       );
       platform.destroy();
     });
@@ -165,7 +165,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
       ]);
 
       expect(() => platform.injector.get(DOCUMENT)).toThrowError(
-        `Protocol relative URLs are not allowed in this context. URL: //attacker.com/deep/path`,
+        `NG05702: Protocol relative URLs are not allowed in this context. URL: //attacker.com/deep/path`,
       );
       platform.destroy();
     });

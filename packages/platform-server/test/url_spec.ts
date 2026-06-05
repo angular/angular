@@ -21,7 +21,7 @@ describe('parseUrl', () => {
       const urls = ['/\\attacker.com/deep/path', '\\\\attacker.com/deep/path'];
       for (const url of urls) {
         expect(() => parseUrl(url, 'http://test.com')).toThrowError(
-          `URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+          `NG05703: URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
         );
       }
     });
@@ -51,7 +51,7 @@ describe('parseUrl', () => {
     it('should throw on obfuscated protocols attempting to change origin', () => {
       const url = 'ht\ntp://evil.com/path';
       expect(() => parseUrl(url, 'http://test.com')).toThrowError(
-        `URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+        `NG05703: URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
       );
     });
   });
