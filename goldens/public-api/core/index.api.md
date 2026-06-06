@@ -1514,7 +1514,7 @@ export function provideNgReflectAttributes(): EnvironmentProviders;
 export function providePlatformInitializer(initializerFn: () => void): StaticProvider;
 
 // @public
-export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
+export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | ReadonlyArray<any>;
 
 // @public
 export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;

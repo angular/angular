@@ -723,7 +723,7 @@ function couldBeInjectableType(value: any): value is ProviderToken<any> {
 }
 
 function forEachSingleProvider(
-  providers: Array<Provider | EnvironmentProviders>,
+  providers: ReadonlyArray<Provider | EnvironmentProviders>,
   fn: (provider: SingleProvider) => void,
 ): void {
   for (const provider of providers) {

@@ -253,7 +253,7 @@ function resolveProvider(
  */
 function registerDestroyHooksIfSupported(
   tView: TView,
-  provider: Exclude<Provider, any[]>,
+  provider: Exclude<Provider, ReadonlyArray<any>>,
   contextIndex: number,
   indexInFactory?: number,
 ) {

@@ -386,7 +386,7 @@ function validateProvider(
 }
 
 function deepForEachProvider(
-  providers: Array<Provider | InternalEnvironmentProviders>,
+  providers: ReadonlyArray<Provider | InternalEnvironmentProviders>,
   fn: (provider: SingleProvider) => void,
 ): void {
   for (let provider of providers) {

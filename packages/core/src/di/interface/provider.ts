@@ -340,7 +340,14 @@ export type Provider =
   | ConstructorProvider
   | ExistingProvider
   | FactoryProvider
-  | any[];
+  | ReadonlyArray<any>;
+
+// We use this override of `Array.isArray` to narrow the type of `ReadonlyArray` to `Array`
+declare global {
+  export interface ArrayConstructor {
+    isArray(arg: ReadonlyArray<any>): arg is ReadonlyArray<any>;
+  }
+}
 
 /**
  * Encapsulated `Provider`s that are only accepted during creation of an `EnvironmentInjector` (e.g.

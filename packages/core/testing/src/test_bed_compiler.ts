@@ -731,7 +731,10 @@ export class TestBedCompiler {
     this.existingComponentStyles.clear();
   }
 
-  private queueTypeArray(arr: any[], moduleType: Type<any> | TestingModuleOverride): void {
+  private queueTypeArray(
+    arr: ReadonlyArray<any>,
+    moduleType: Type<any> | TestingModuleOverride,
+  ): void {
     for (const value of arr) {
       if (Array.isArray(value)) {
         this.queueTypeArray(value, moduleType);
@@ -817,7 +820,7 @@ export class TestBedCompiler {
     // can skip ones that have already been seen encountered. In some test setups, this caching
     // resulted in 10X runtime improvement.
     const processedDefs = new Set();
-    const queueTypesFromModulesArrayRecur = (arr: any[]): void => {
+    const queueTypesFromModulesArrayRecur = (arr: ReadonlyArray<any>): void => {
       for (const value of arr) {
         if (Array.isArray(value)) {
           queueTypesFromModulesArrayRecur(value);
@@ -868,10 +871,10 @@ export class TestBedCompiler {
   // if we have the following module hierarchy: A -> B -> C (where `->` means `imports`) and module
   // `C` is overridden, we consider `A` and `B` as affected, since their scopes might become
   // invalidated with the override.
-  private collectModulesAffectedByOverrides(arr: any[]): Set<NgModuleType<any>> {
+  private collectModulesAffectedByOverrides(arr: ReadonlyArray<any>): Set<NgModuleType<any>> {
     const seenModules = new Set<NgModuleType<any>>();
     const affectedModules = new Set<NgModuleType<any>>();
-    const calcAffectedModulesRecur = (arr: any[], path: NgModuleType<any>[]): void => {
+    const calcAffectedModulesRecur = (arr: ReadonlyArray<any>, path: NgModuleType<any>[]): void => {
       for (const value of arr) {
         if (Array.isArray(value)) {
           // If the value is an array, just flatten it (by invoking this function recursively),
@@ -1181,7 +1184,7 @@ function maybeUnwrapFn<T>(maybeFn: (() => T) | T): T {
   return maybeFn instanceof Function ? maybeFn() : maybeFn;
 }
 
-function flatten<T>(values: any[]): T[] {
+function flatten<T>(values: ReadonlyArray<any>): T[] {
   const out: T[] = [];
   values.forEach((value) => {
     if (Array.isArray(value)) {
@@ -1198,12 +1201,14 @@ function identityFn<T>(value: T): T {
 }
 
 function flattenProviders<T>(
-  providers: Array<Provider | InternalEnvironmentProviders>,
+  providers: ReadonlyArray<Provider | InternalEnvironmentProviders>,
   mapFn: (provider: Provider) => T,
 ): T[];
-function flattenProviders(providers: Array<Provider | InternalEnvironmentProviders>): Provider[];
 function flattenProviders(
-  providers: Array<Provider | InternalEnvironmentProviders>,
+  providers: ReadonlyArray<Provider | InternalEnvironmentProviders>,
+): Provider[];
+function flattenProviders(
+  providers: ReadonlyArray<Provider | InternalEnvironmentProviders>,
   mapFn: (provider: Provider) => any = identityFn,
 ): any[] {
   const out: any[] = [];
