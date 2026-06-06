@@ -925,6 +925,9 @@ importers:
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
 
   packages/common:
     dependencies:
