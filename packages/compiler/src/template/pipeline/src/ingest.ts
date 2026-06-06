@@ -401,9 +401,7 @@ function ingestForeignComponent(
   // through directly passed signal properties, alleviating the need for any explicit update
   // operations.
   const constIndex = unit.job.addConst(foreignComp.component);
-  unit.create.push(
-    ir.createForeignComponentOp(id, o.literal(constIndex), props, element.startSourceSpan),
-  );
+  unit.create.push(ir.createForeignComponentOp(id, constIndex, props, element.startSourceSpan));
 }
 
 /**

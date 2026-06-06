@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ElementRef, computed, signal, viewChildren} from '@angular/core';
+import {Component, ElementRef, computed, effect, signal, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ForeignComponent} from '../../../src/interface/foreign_component';
 import {foreignImport} from '../../../src/render3/foreign_import';
 
 function frameworkImport<TProps>(component: (props: TProps) => Node[]): ForeignComponent<TProps> {
-  return foreignImport((props) => [component(props)]);
+  return foreignImport(
+    (props) => [component(props)],
+    () => {},
+  );
 }
 
 function FancyButton(props: {children: Node[]}): Node[] {
@@ -685,6 +688,96 @@ describe('foreign components', () => {
       await fixture.whenStable();
 
       expect(clicked).toBeTrue();
+    });
+  });
+
+  describe('lifecycle', () => {
+    it('should destroy projected content when its foreign container is destroyed', async () => {
+      // Track the destroy callback registered by the projected content.
+      let destroy: VoidFunction | undefined;
+      function frameworkOnDestroy(callback: VoidFunction) {
+        destroy = callback;
+      }
+
+      function frameworkImport<TProps>(
+        component: (props: TProps) => Node[],
+      ): ForeignComponent<TProps> {
+        return foreignImport((props) => [component(props)], frameworkOnDestroy);
+      }
+
+      // A foreign component that acts like a conditional container (e.g. @if).
+      function Conditional(props: {when: () => boolean; then: () => Node[]}) {
+        effect((onCleanup) => {
+          // On cleanup (when `when()` changes or the component is destroyed), call the destroy
+          // callback registered by Angular for the projected content.
+          onCleanup(() => destroy?.());
+
+          if (props.when()) {
+            // Render the conditional content, instantiating any Angular views contained within.
+            // Internally this will call `frameworkOnDestroy` to register a callback to destroy the
+            // views when this effect's cleanup is run.
+            props.then();
+          }
+        });
+
+        // We don't care about returning any nodes since we're just testing the content lifecycle.
+        return [];
+      }
+
+      const ngOnDestroySpy = jasmine.createSpy();
+
+      @Component({
+        selector: 'disposable',
+        template: ``,
+      })
+      class Disposable {
+        ngOnDestroy() {
+          ngOnDestroySpy();
+        }
+      }
+
+      @Component({
+        template: `
+          <Conditional [when]="visible">
+            @content (then; let _) {
+              <disposable />
+            }
+          </Conditional>
+        `,
+        imports: [Disposable],
+        // @ts-ignore
+        foreignImports: [frameworkImport(Conditional)],
+      })
+      class TestDisposal {
+        readonly visible = signal(true);
+      }
+
+      const fixture = TestBed.createComponent(TestDisposal);
+      await fixture.whenStable();
+
+      // Initially, visible is true, so the <disposable> component is created and NOT destroyed.
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+
+      // Toggle visible to false: this triggers the Conditional component's effect cleanup,
+      // which calls the destroy callback registered during props.then() invocation.
+      fixture.componentInstance.visible.set(false);
+      await fixture.whenStable();
+
+      // The projected Angular content <disposable> should be destroyed.
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+
+      // Toggle visible back to true: a new instance of <disposable> is created.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      // Since the new instance is not yet destroyed, the destroy spy count remains at 1.
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+
+      // Toggle visible to false again: the new instance is destroyed.
+      fixture.componentInstance.visible.set(false);
+      await fixture.whenStable();
+
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(2);
     });
   });
 });

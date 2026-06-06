@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
@@ -48,7 +47,11 @@ export function resolveForeignContent(job: CompilationJob): void {
 
       ir.OpList.replace<ir.CreateOp>(op, templateOp);
 
-      const foreignContent = new ir.ForeignContentExpr(templateOp.xref, templateOp.handle);
+      const foreignContent = new ir.ForeignContentExpr(
+        templateOp.xref,
+        templateOp.handle,
+        target.constIndex,
+      );
       target.props.set(op.propertyName, foreignContent);
     }
   }

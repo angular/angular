@@ -251,9 +251,9 @@ export interface ForeignComponentOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   xref: XrefId;
 
   /**
-   * Reference to the foreign component class/function itself as an output AST expression.
+   * Index of the foreign component class/function in the constant pool.
    */
-  foreignComponentRef: o.Expression;
+  constIndex: ConstIndex;
 
   /**
    * Static attributes and property bindings.
@@ -268,7 +268,7 @@ export interface ForeignComponentOp extends Op<CreateOp>, ConsumesSlotOpTrait {
  */
 export function createForeignComponentOp(
   xref: XrefId,
-  foreignComponentRef: o.Expression,
+  constIndex: ConstIndex,
   props: Map<string, o.Expression>,
   sourceSpan: ParseSourceSpan | null,
 ): ForeignComponentOp {
@@ -276,7 +276,7 @@ export function createForeignComponentOp(
     kind: OpKind.ForeignComponent,
     xref,
     handle: new SlotHandle(),
-    foreignComponentRef,
+    constIndex,
     props,
     sourceSpan,
     ...TRAIT_CONSUMES_SLOT,
