@@ -383,9 +383,9 @@ function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | 
   if (typeof url === 'string') {
     const parsedUrl = resolveUrl(url);
     if (parsedUrl !== null) {
-      const hostname = parsedUrl.hostname;
+      const host = parsedUrl.host;
       const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
-      if (!isHostAllowed(hostname, allowedHostsSet)) {
+      if (!isHostAllowed(host, allowedHostsSet)) {
         throw new RuntimeError(
           RuntimeErrorCode.HOST_NOT_ALLOWED,
           typeof ngDevMode === 'undefined' || ngDevMode
@@ -398,15 +398,15 @@ function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | 
 }
 
 /**
- * Checks if the hostname is allowed.
- * @param hostname - The hostname to check.
- * @param allowedHosts - A set of allowed hostnames.
- * @returns `true` if the hostname is allowed, `false` otherwise.
+ * Checks if the host is allowed.
+ * @param host - The host to check.
+ * @param allowedHosts - A set of allowed hosts.
+ * @returns `true` if the host is allowed, `false` otherwise.
  * @note Used also in `@angular/ssr`.
  * @private
  */
-export function isHostAllowed(hostname: string, allowedHosts: ReadonlySet<string>): boolean {
-  if (allowedHosts.has('*') || allowedHosts.has(hostname)) {
+export function isHostAllowed(host: string, allowedHosts: ReadonlySet<string>): boolean {
+  if (allowedHosts.has('*') || allowedHosts.has(host)) {
     return true;
   }
 
@@ -416,7 +416,7 @@ export function isHostAllowed(hostname: string, allowedHosts: ReadonlySet<string
     }
 
     const domain = allowedHost.slice(1);
-    if (hostname.endsWith(domain)) {
+    if (host.endsWith(domain)) {
       return true;
     }
   }

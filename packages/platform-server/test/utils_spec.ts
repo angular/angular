@@ -76,6 +76,16 @@ describe('allowedHosts validation in renderApplication', () => {
     }
   });
 
+  it('should reject URLs on ports that are not in the allowedHosts list', async () => {
+    await expectAsync(
+      renderApplication(bootstrap, {
+        document: '<app></app>',
+        url: 'http://test.com:4201/deep/path',
+        allowedHosts: ['test.com'],
+      }),
+    ).toBeRejectedWithError(/Host .+ is not allowed/);
+  });
+
   it('should not throw a host validation error on bootstrap if host is allowed', async () => {
     try {
       await renderApplication(bootstrap, {
