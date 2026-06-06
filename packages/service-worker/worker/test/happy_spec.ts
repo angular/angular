@@ -7,8 +7,10 @@
  */
 
 import {processNavigationUrls} from '../../config/src/generator';
+import {LazyAssetGroup} from '../src/assets';
 import {CacheDatabase} from '../src/db-cache';
 import {Driver, DriverReadyState} from '../src/driver';
+import {IdleScheduler} from '../src/idle';
 import {Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {clearAllCaches, MockCache} from '../testing/cache';
@@ -376,6 +378,57 @@ import {envIsSupported} from '../testing/utils';
       server.clearRequests();
       expect(await makeRequest(scope, '/redirected.txt')).toEqual('this was a redirect');
       server.assertNoOtherRequests();
+    });
+
+    it('rejects a re-fetched redirected hashed response with mismatched bytes', async () => {
+      class TestAssetGroup extends LazyAssetGroup {
+        fetchFromNetworkForTest(req: Request): Promise<Response> {
+          return this.fetchFromNetwork(req);
+        }
+      }
+
+      const expectedBody = 'expected redirected body';
+      const redirectedFs = new MockFileSystemBuilder()
+        .addFile('/redirect-target.txt', 'unexpected redirected body')
+        .build();
+      const redirectedAssetGroup = {
+        name: 'assets',
+        installMode: 'lazy' as const,
+        updateMode: 'lazy' as const,
+        urls: ['/hashed-redirected.txt'],
+        patterns: [],
+        cacheQueryOptions: {ignoreVary: true},
+      };
+      const redirectedManifest: Manifest = {
+        configVersion: 1,
+        timestamp: 1234567890123,
+        index: '/hashed-redirected.txt',
+        assetGroups: [redirectedAssetGroup],
+        navigationUrls: [],
+        navigationRequestStrategy: 'performance',
+        hashTable: {'/hashed-redirected.txt': sha1(expectedBody)},
+      };
+      const redirectedServer = new MockServerStateBuilder()
+        .withStaticFiles(redirectedFs)
+        .withManifest(redirectedManifest)
+        .withRedirectedResponse('/hashed-redirected.txt', '/redirect-target.txt', expectedBody)
+        .build();
+      const redirectedScope = new SwTestHarnessBuilder().withServerState(redirectedServer).build();
+      const assetGroup = new TestAssetGroup(
+        redirectedScope,
+        redirectedScope,
+        new IdleScheduler(redirectedScope, 0, 0, {log: () => undefined}),
+        redirectedAssetGroup,
+        new Map([['/hashed-redirected.txt', sha1(expectedBody)]]),
+        new CacheDatabase(redirectedScope),
+        'test',
+      );
+
+      await expectAsync(
+        assetGroup.fetchFromNetworkForTest(redirectedScope.newRequest('/hashed-redirected.txt')),
+      ).toBeRejectedWithError(/Hash mismatch \(fetchFromNetwork redirect\)/);
+      redirectedServer.assertSawRequestFor('/hashed-redirected.txt');
+      redirectedServer.assertSawRequestFor('/redirect-target.txt');
     });
 
     it('caches lazy content on-request', async () => {
