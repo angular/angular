@@ -30,12 +30,15 @@ describe('ɵɵforeignComponent', () => {
   afterEach(ViewFixture.cleanUp);
 
   it("should render a foreign component's native elements", () => {
-    const foreignComp = foreignImport(() => {
-      const el = document.createElement('div');
-      el.id = 'foreign-el';
-      el.textContent = 'Foreign Content';
-      return [[el]];
-    });
+    const foreignComp = foreignImport(
+      () => {
+        const el = document.createElement('div');
+        el.id = 'foreign-el';
+        el.textContent = 'Foreign Content';
+        return [[el]];
+      },
+      () => {},
+    );
 
     const fixture = new ViewFixture({
       decls: 1,
@@ -51,10 +54,13 @@ describe('ɵɵforeignComponent', () => {
 
   it('should pass props to a foreign component', () => {
     let passedProps: any = null;
-    const foreignComp = foreignImport<{name: string}>((props) => {
-      passedProps = props;
-      return [[]];
-    });
+    const foreignComp = foreignImport<{name: string}>(
+      (props) => {
+        passedProps = props;
+        return [[]];
+      },
+      () => {},
+    );
 
     new ViewFixture({
       decls: 1,
@@ -70,14 +76,17 @@ describe('ɵɵforeignComponent', () => {
 
   it('should call the dispose function when the containing view is destroyed', () => {
     let disposeCalled = false;
-    const foreignComp = foreignImport(() => {
-      return [
-        [],
-        () => {
-          disposeCalled = true;
-        },
-      ];
-    });
+    const foreignComp = foreignImport(
+      () => {
+        return [
+          [],
+          () => {
+            disposeCalled = true;
+          },
+        ];
+      },
+      () => {},
+    );
 
     const fixture = new ViewFixture({
       decls: 1,
@@ -96,11 +105,14 @@ describe('ɵɵforeignComponent', () => {
   });
 
   it('should render foreign view between sibling elements', () => {
-    const foreignComp = foreignImport(() => {
-      const el = document.createElement('div');
-      el.textContent = 'Foreign Content';
-      return [[el]];
-    });
+    const foreignComp = foreignImport(
+      () => {
+        const el = document.createElement('div');
+        el.textContent = 'Foreign Content';
+        return [[el]];
+      },
+      () => {},
+    );
 
     const fixture = new ViewFixture({
       decls: 3,
@@ -125,11 +137,14 @@ describe('ɵɵforeignComponent', () => {
   });
 
   it('should render foreign view as a child of a parent element', () => {
-    const foreignComp = foreignImport(() => {
-      const el = document.createElement('span');
-      el.textContent = 'Foreign Content';
-      return [[el]];
-    });
+    const foreignComp = foreignImport(
+      () => {
+        const el = document.createElement('span');
+        el.textContent = 'Foreign Content';
+        return [[el]];
+      },
+      () => {},
+    );
 
     const fixture = new ViewFixture({
       decls: 2,
@@ -156,13 +171,16 @@ describe('ɵɵforeignComponent', () => {
   it('should execute the RENDER function inside the template injection context', () => {
     const TEST_TOKEN = new InjectionToken<string>('test-token');
 
-    const foreignComp = foreignImport(() => {
-      const value = inject(TEST_TOKEN, {optional: true}) ?? 'null';
-      const el = document.createElement('div');
-      el.id = 'foreign-el';
-      el.textContent = value;
-      return [[el]];
-    });
+    const foreignComp = foreignImport(
+      () => {
+        const value = inject(TEST_TOKEN, {optional: true}) ?? 'null';
+        const el = document.createElement('div');
+        el.id = 'foreign-el';
+        el.textContent = value;
+        return [[el]];
+      },
+      () => {},
+    );
 
     class ProviderDirective {
       static ɵfac = () => new ProviderDirective();
@@ -189,9 +207,12 @@ describe('ɵɵforeignComponent', () => {
   });
 
   it('should support reusing the same template between multiple view instances', () => {
-    const foreignComp1 = foreignImport(() => {
-      return [[document.createTextNode('foreign content')]];
-    });
+    const foreignComp1 = foreignImport(
+      () => {
+        return [[document.createTextNode('foreign content')]];
+      },
+      () => {},
+    );
 
     const createFn = () => {
       ɵɵelementStart(0, 'div');
@@ -224,33 +245,36 @@ describe('ɵɵforeignComponent', () => {
       icon: Node[];
       description: Node[];
       children: Node[];
-    }>((props) => {
-      const div = document.createElement('div');
-      div.id = 'container';
+    }>(
+      (props) => {
+        const div = document.createElement('div');
+        div.id = 'container';
 
-      const iconContainer = document.createElement('div');
-      iconContainer.id = 'icon-container';
-      for (const child of props.icon) {
-        iconContainer.appendChild(child);
-      }
-      div.appendChild(iconContainer);
+        const iconContainer = document.createElement('div');
+        iconContainer.id = 'icon-container';
+        for (const child of props.icon) {
+          iconContainer.appendChild(child);
+        }
+        div.appendChild(iconContainer);
 
-      const descContainer = document.createElement('div');
-      descContainer.id = 'desc-container';
-      for (const child of props.description) {
-        descContainer.appendChild(child);
-      }
-      div.appendChild(descContainer);
+        const descContainer = document.createElement('div');
+        descContainer.id = 'desc-container';
+        for (const child of props.description) {
+          descContainer.appendChild(child);
+        }
+        div.appendChild(descContainer);
 
-      const mainChildren = document.createElement('div');
-      mainChildren.id = 'children-container';
-      for (const child of props.children) {
-        mainChildren.appendChild(child);
-      }
-      div.appendChild(mainChildren);
+        const mainChildren = document.createElement('div');
+        mainChildren.id = 'children-container';
+        for (const child of props.children) {
+          mainChildren.appendChild(child);
+        }
+        div.appendChild(mainChildren);
 
-      return [[div]];
-    });
+        return [[div]];
+      },
+      () => {},
+    );
 
     const iconTemplate = (rf: number, ctx: any) => {
       if (rf & 1) {
@@ -305,22 +329,25 @@ describe('ɵɵforeignComponent', () => {
   it('should support passing ɵɵforeignContentFn to props', () => {
     const foreignComp = foreignImport<{
       renderItem: (item: string, idx: number) => Node[];
-    }>((props) => {
-      const div = document.createElement('div');
-      div.id = 'container';
+    }>(
+      (props) => {
+        const div = document.createElement('div');
+        div.id = 'container';
 
-      const nodes1 = props.renderItem('First', 0);
-      const nodes2 = props.renderItem('Second', 1);
+        const nodes1 = props.renderItem('First', 0);
+        const nodes2 = props.renderItem('Second', 1);
 
-      for (const node of nodes1) {
-        div.appendChild(node);
-      }
-      for (const node of nodes2) {
-        div.appendChild(node);
-      }
+        for (const node of nodes1) {
+          div.appendChild(node);
+        }
+        for (const node of nodes2) {
+          div.appendChild(node);
+        }
 
-      return [[div]];
-    });
+        return [[div]];
+      },
+      () => {},
+    );
 
     const itemTemplate = (rf: number, ctx: any) => {
       if (rf & 1) {
@@ -343,7 +370,7 @@ describe('ɵɵforeignComponent', () => {
       create: () => {
         ɵɵdomTemplate(0, itemTemplate, 2, 2);
         ɵɵforeignComponent(1, 0, {
-          renderItem: ɵɵforeignContentFn(0),
+          renderItem: ɵɵforeignContentFn(0, 0),
         });
       },
     });

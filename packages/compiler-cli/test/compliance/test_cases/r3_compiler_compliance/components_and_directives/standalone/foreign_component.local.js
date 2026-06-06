@@ -88,7 +88,7 @@ export class TestCmpRenderProps {
     template: function TestCmpRenderProps_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵtemplate(0, TestCmpRenderProps_Items_0_Template, 2, 2);
-        i0.ɵɵforeignComponent(1, 0, { label: ctx.title, items: i0.ɵɵforeignContentFn(0) });
+        i0.ɵɵforeignComponent(1, 0, { label: ctx.title, items: i0.ɵɵforeignContentFn(0, 0) });
       }
     },
     encapsulation: 2

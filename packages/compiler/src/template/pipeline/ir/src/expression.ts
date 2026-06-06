@@ -14,7 +14,7 @@ import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
 import {OpList, type XrefId} from './operations';
-import type {CreateOp} from './ops/create';
+import type {ConstIndex, CreateOp} from './ops/create';
 import {createStatementOp} from './ops/shared';
 import {Interpolation, type UpdateOp} from './ops/update';
 import {
@@ -161,6 +161,7 @@ export class ForeignContentExpr extends ExpressionBase {
   constructor(
     readonly childrenViewXref: XrefId,
     readonly childrenViewHandle: SlotHandle,
+    readonly foreignComponentConstIndex: ConstIndex,
   ) {
     super();
   }
@@ -168,7 +169,11 @@ export class ForeignContentExpr extends ExpressionBase {
   override visitExpression(): void {}
 
   override isEquivalent(e: o.Expression): boolean {
-    return e instanceof ForeignContentExpr && e.childrenViewXref === this.childrenViewXref;
+    return (
+      e instanceof ForeignContentExpr &&
+      e.childrenViewXref === this.childrenViewXref &&
+      e.foreignComponentConstIndex === this.foreignComponentConstIndex
+    );
   }
 
   override isConstant(): boolean {
@@ -178,7 +183,11 @@ export class ForeignContentExpr extends ExpressionBase {
   override transformInternalExpressions(): void {}
 
   override clone(): ForeignContentExpr {
-    return new ForeignContentExpr(this.childrenViewXref, this.childrenViewHandle);
+    return new ForeignContentExpr(
+      this.childrenViewXref,
+      this.childrenViewHandle,
+      this.foreignComponentConstIndex,
+    );
   }
 }
 
