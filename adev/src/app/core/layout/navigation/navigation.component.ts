@@ -57,12 +57,12 @@ export class Navigation {
 
   protected miniMenuPositions = [
     new ConnectionPositionPair(
-      {originX: 'end', originY: 'center'},
-      {overlayX: 'start', overlayY: 'center'},
-    ),
-    new ConnectionPositionPair(
       {originX: 'end', originY: 'top'},
       {overlayX: 'start', overlayY: 'top'},
+    ),
+    new ConnectionPositionPair(
+      {originX: 'end', originY: 'bottom'},
+      {overlayX: 'start', overlayY: 'bottom'},
     ),
   ];
 
