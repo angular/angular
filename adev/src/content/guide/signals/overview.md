@@ -124,6 +124,65 @@ If you set `showCount` to `true` and then read `conditionalCount` again, the der
 
 Note that dependencies can be removed during a derivation as well as added. If you later set `showCount` back to `false`, then `count` will no longer be considered a dependency of `conditionalCount`.
 
+## Mental model
+
+Signals are best understood as a reactive state graph.
+
+Each signal represents a piece of state. Computed values derive state from other state. Effects react to state changes and interact with the outside world.
+
+A useful rule of thumb is:
+
+- Use `signal` for state.
+- Use `computed` for derived state.
+- Use `effect` for side effects.
+
+When working with signals, prefer deriving values over synchronizing values. If one value can be calculated from another, represent that relationship with `computed` instead of manually keeping multiple signals in sync.
+
+### Prefer derivation over synchronization
+
+When a value can be expressed as a function of other state, model it as a derivation instead of maintaining multiple sources of truth.
+
+Prefer:
+
+```ts
+const fullName = computed(() => `${firstName()} ${lastName()}`);
+```
+
+Over:
+
+```ts
+const fullName = signal('');
+
+effect(() => {
+  fullName.set(`${firstName()} ${lastName()}`);
+});
+```
+
+Derived state stays consistent automatically and avoids unnecessary mutable state.
+
+### Choosing between computed and effect
+
+Both `computed` and `effect` react to signal changes, but they serve different purposes.
+
+Use `computed` when you need to calculate a value from other signals:
+
+```ts
+const total = computed(() => price() * quantity());
+```
+
+Use `effect` when you need to interact with APIs, browser storage, logging, analytics, or other non-reactive systems:
+
+```ts
+effect(() => {
+  localStorage.setItem('theme', theme());
+});
+```
+
+A simple guideline is:
+
+- If you're calculating a value, use `computed`.
+- If you're causing something to happen, use `effect`.
+
 ## Reactive contexts
 
 A **reactive context** is a runtime state where Angular monitors signal reads to establish a dependency. The code reading the signal is the _consumer_, and the signal being read is the _producer_.
@@ -273,6 +332,37 @@ const doubled = computed(() => count() * 2);
 isWritableSignal(count); // true
 isWritableSignal(doubled); // false
 ```
+
+## Signals and RxJS
+
+Signals and RxJS solve different problems and are often used together.
+Signals model state and relationships between values.
+RxJS models events and asynchronous streams over time.
+
+A signal answers:
+
+> What is the current value?
+
+An Observable answers:
+
+> What values may be emitted over time?
+
+Signals are typically a good fit for:
+
+- Component state
+- UI state
+- Derived state
+- Relationships between values
+
+RxJS is typically a better fit for:
+
+- Event streams
+- WebSocket messages
+- Request orchestration
+- Cancellation and retry logic
+- Complex asynchronous workflows
+
+Signals are not intended to replace RxJS. Instead, they provide a simpler model for representing and deriving application state.
 
 ## Using signals with RxJS
 
