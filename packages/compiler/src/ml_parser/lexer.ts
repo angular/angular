@@ -806,11 +806,20 @@ class _Tokenizer {
   }
 
   private _consumeSingleLineComment() {
+    const contentStart = this._cursor.clone();
     this._attemptCharCodeUntilFn((code) => chars.isNewLine(code) || code === chars.$EOF);
+
+    const spanEnd = this._cursor.clone();
+    const content = spanEnd.getChars(contentStart);
+
+    this._beginToken(TokenType.IN_ELEMENT_COMMENT, contentStart);
+    this._endToken([content], spanEnd);
+
     this._attemptCharCodeUntilFn(isNotWhitespace);
   }
 
   private _consumeMultiLineComment() {
+    const contentStart = this._cursor.clone();
     this._attemptCharCodeUntilFn((code) => {
       if (code === chars.$EOF) {
         return true;
@@ -822,9 +831,16 @@ class _Tokenizer {
       }
       return false;
     });
+
+    const spanEnd = this._cursor.clone();
+    const content = spanEnd.getChars(contentStart);
+
     if (this._attemptStr('*/')) {
       this._attemptCharCodeUntilFn(isNotWhitespace);
     }
+
+    this._beginToken(TokenType.IN_ELEMENT_COMMENT, contentStart);
+    this._endToken([content], spanEnd);
   }
 
   private _consumeTagOpen(start: CharacterCursor) {

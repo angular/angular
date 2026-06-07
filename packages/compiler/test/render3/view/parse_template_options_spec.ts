@@ -23,6 +23,11 @@ describe('collectCommentNodes', () => {
           <!-- some nested comment -->
           <span>Text</span>
         </p>
+        <div
+        // some comment in the middle of an element
+        /*some other comment*/
+        /* some other comment with trailing space */
+        ></div>
       </div>
     `;
 
@@ -33,7 +38,8 @@ describe('collectCommentNodes', () => {
     expect(templateCommentsOptionDisabled.commentNodes).toBeUndefined();
 
     const templateCommentsOptionEnabled = parseTemplate(html, '', {collectCommentNodes: true});
-    expect(templateCommentsOptionEnabled.commentNodes!.length).toEqual(2);
+    expect(templateCommentsOptionEnabled.commentNodes!.length).toEqual(5);
+
     expect(templateCommentsOptionEnabled.commentNodes![0]).toBeInstanceOf(Comment);
     expect(templateCommentsOptionEnabled.commentNodes![0].value).toEqual(
       'eslint-disable-next-line',
@@ -51,6 +57,38 @@ describe('collectCommentNodes', () => {
     );
     expect(templateCommentsOptionEnabled.commentNodes![1].sourceSpan.toString()).toEqual(
       '<!-- some nested comment -->',
+    );
+
+    expect(templateCommentsOptionEnabled.commentNodes![2]).toBeInstanceOf(Comment);
+    expect(templateCommentsOptionEnabled.commentNodes![2].value).toEqual(
+      ' some comment in the middle of an element',
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![2].sourceSpan).toBeInstanceOf(
+      ParseSourceSpan,
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![2].sourceSpan.toString()).toEqual(
+      'some comment in the middle of an element',
+    );
+
+    expect(templateCommentsOptionEnabled.commentNodes![3]).toBeInstanceOf(Comment);
+    expect(templateCommentsOptionEnabled.commentNodes![3].value).toEqual('some other comment');
+    expect(templateCommentsOptionEnabled.commentNodes![3].sourceSpan).toBeInstanceOf(
+      ParseSourceSpan,
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![3].sourceSpan.toString()).toEqual(
+      'some other comment',
+    );
+
+    // This is capturing the trailing space behavior
+    expect(templateCommentsOptionEnabled.commentNodes![4]).toBeInstanceOf(Comment);
+    expect(templateCommentsOptionEnabled.commentNodes![4].value).toEqual(
+      ' some other comment with trailing space ',
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![4].sourceSpan).toBeInstanceOf(
+      ParseSourceSpan,
+    );
+    expect(templateCommentsOptionEnabled.commentNodes![4].sourceSpan.toString()).toEqual(
+      'some other comment with trailing space ',
     );
   });
 });
