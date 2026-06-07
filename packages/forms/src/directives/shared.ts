@@ -284,7 +284,12 @@ function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
 
 function updateControl(control: FormControl, dir: NgControl): void {
   if (control._pendingDirty) control.markAsDirty();
-  control.setValue(control._pendingValue, {emitModelToViewChange: false});
+  
+  // If we suppress emitModelToViewChange, other directives bound to the same
+  // control instance (e.g., multiple inputs sharing a FormControl) will not
+  // be notified to update their view values.
+  control.setValue(control._pendingValue, {emitModelToViewChange: true});
+  
   dir.viewToModelUpdate(control._pendingValue);
   control._pendingChange = false;
 }
