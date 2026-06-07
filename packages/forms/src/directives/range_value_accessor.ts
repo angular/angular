@@ -64,7 +64,8 @@ export class RangeValueAccessor
    * @docs-private
    */
   writeValue(value: any): void {
-    this.setProperty('value', parseFloat(value));
+    const normalizedValue = value == null ? '' : value;
+    this.setProperty('value', normalizedValue);
   }
 
   /**
