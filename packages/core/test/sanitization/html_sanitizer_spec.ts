@@ -55,6 +55,15 @@ describe('HTML sanitizer', () => {
     );
   });
 
+  it('supports MathML elements', () => {
+    expect(sanitizeHtml(defaultDoc, '<math><mrow><mi>a</mi><mo>+</mo><mi>b</mi></mrow></math>')).toEqual(
+      '<math><mrow><mi>a</mi><mo>+</mo><mi>b</mi></mrow></math>',
+    );
+    expect(sanitizeHtml(defaultDoc, '<math><mfrac><mn>1</mn><mn>2</mn></mfrac></math>')).toEqual(
+      '<math><mfrac><mn>1</mn><mn>2</mn></mfrac></math>',
+    );
+  });
+
   it('supports HTML5 elements', () => {
     expect(sanitizeHtml(defaultDoc, '<main><summary>Works</summary></main>')).toEqual(
       '<main><summary>Works</summary></main>',

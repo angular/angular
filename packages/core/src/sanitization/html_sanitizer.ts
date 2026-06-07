@@ -68,11 +68,18 @@ const INLINE_ELEMENTS = merge(
   ),
 );
 
+// MathML Elements - W3C MathML Core
+// https://w3c.github.io/mathml-core/
+const MATHML_ELEMENTS = tagSet(
+  'math,merror,mfrac,mi,mmultiscripts,mn,mo,mover,mpadded,mphantom,mprescripts,mroot,mrow,ms,mspace,msqrt,mstyle,msub,msubsup,msup,mtable,mtd,mtext,mtr,munder,munderover,semantics'
+);
+
 export const VALID_ELEMENTS: BooleanRecord = merge(
   VOID_ELEMENTS,
   BLOCK_ELEMENTS,
   INLINE_ELEMENTS,
   OPTIONAL_END_TAG_ELEMENTS,
+  MATHML_ELEMENTS,
 );
 
 // Attributes that have href and hence need to be sanitized
