@@ -55,6 +55,15 @@ describe('HTML sanitizer', () => {
     );
   });
 
+  it('supports MathML elements and attributes', () => {
+    expect(sanitizeHtml(defaultDoc, '<math><mi>x</mi><mo>+</mo><mn>2</mn></math>')).toEqual(
+      '<math><mi>x</mi><mo>+</mo><mn>2</mn></math>',
+    );
+    expect(sanitizeHtml(defaultDoc, '<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>')).toEqual(
+      '<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>',
+    );
+  });
+
   it('supports HTML5 elements', () => {
     expect(sanitizeHtml(defaultDoc, '<main><summary>Works</summary></main>')).toEqual(
       '<main><summary>Works</summary></main>',

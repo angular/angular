@@ -73,6 +73,9 @@ export const VALID_ELEMENTS: BooleanRecord = merge(
   BLOCK_ELEMENTS,
   INLINE_ELEMENTS,
   OPTIONAL_END_TAG_ELEMENTS,
+  tagSet(
+    'math,mi,mn,mo,ms,mspace,mtext,menclose,merror,mfrac,mpadded,mphantom,mroot,mrow,msqrt,mstyle,mmultiscripts,mover,mprescripts,msub,msubsup,msup,munder,munderover,mtable,mtd,mtr,maction,semantics,annotation,annotation-xml'
+  )
 );
 
 // Attributes that have href and hence need to be sanitized
@@ -99,6 +102,11 @@ const ARIA_ATTRS = tagSet(
     'aria-setsize,aria-sort,aria-valuemax,aria-valuemin,aria-valuenow,aria-valuetext',
 );
 
+const MATHML_ATTRS = tagSet(
+  'dir,href,mathbackground,mathcolor,mathsize,nonce,scriptlevel,style,tabindex,' +
+    'class,id,style,cdgroup,altimg,altimg-width,altimg-height,altimg-valign,alttext,display,indentalign,indentshift,indenttarget,indentalignfirst,indentshiftfirst,indentalignlast,indentshiftlast,macros,mode,scriptminsize,scriptsizemultiplier,accent,alt,bevelled,charalign,close,columnalign,columnlines,columnspacing,columnspan,crossout,decimalpoint,denomalign,depth,dir,display,displaystyle,edge,encoding,fence,frame,framespacing,groupalign,height,href,id,indentalign,indentalignfirst,indentalignlast,indentshift,indentshiftfirst,indentshiftlast,indenttarget,infixlinebreakstyle,largeop,length,linebreak,linebreakmultchar,linebreakstyle,linethickness,location,longdivstyle,lquote,lspace,mathcolor,mathsize,mathvariant,maxsize,minlabelspacing,minsize,movablelimits,notation,numalign,open,rowalign,rowlines,rowspacing,rowspan,rquote,rspace,scriptlevel,scriptminsize,scriptsizemultiplier,selection,separator,separators,shift,side,src,stackalign,stretchy,subscriptshift,superscriptshift,symmetric,valign,width,xmlns'
+);
+
 // NB: This currently consciously doesn't support SVG. SVG sanitization has had several security
 // issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
 // innerHTML is required, SVG attributes should be added here.
@@ -107,7 +115,7 @@ const ARIA_ATTRS = tagSet(
 // can be sanitized, but they increase security surface area without a legitimate use case, so they
 // are left out here.
 
-export const VALID_ATTRS: BooleanRecord = merge(URI_ATTRS, HTML_ATTRS, ARIA_ATTRS);
+export const VALID_ATTRS: BooleanRecord = merge(URI_ATTRS, HTML_ATTRS, ARIA_ATTRS, MATHML_ATTRS);
 
 // Elements whose content should not be traversed/preserved, if the elements themselves are invalid.
 //
