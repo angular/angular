@@ -31,6 +31,7 @@ import {
   IncompleteComponentOpenToken,
   IncompleteLetToken,
   IncompleteTagOpenToken,
+  InElementCommentToken,
   InterpolatedAttributeToken,
   InterpolatedTextToken,
   LetEndToken,
@@ -517,12 +518,16 @@ class _TreeBuilder {
   ) {
     while (
       this._peek.type === TokenType.ATTR_NAME ||
-      this._peek.type === TokenType.DIRECTIVE_NAME
+      this._peek.type === TokenType.DIRECTIVE_NAME ||
+      this._peek.type === TokenType.IN_ELEMENT_COMMENT
     ) {
       if (this._peek.type === TokenType.DIRECTIVE_NAME) {
         directivesResult.push(this._consumeDirective(this._peek));
-      } else {
+      } else if (this._peek.type === TokenType.ATTR_NAME) {
         attributesResult.push(this._consumeAttr(this._advance<AttributeNameToken>()));
+      } else {
+        const commentToken = this._advance<InElementCommentToken>();
+        this._addToParent(new html.Comment(commentToken.parts[0], commentToken.sourceSpan));
       }
     }
   }
