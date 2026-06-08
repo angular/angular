@@ -210,20 +210,32 @@ export function getInlayHintsForTemplate(
   compiler: NgCompiler,
   typeCheckInfo: TypeCheckInfo,
   span: ts.TextSpan,
+  targetFileName: string,
   config: InlayHintsConfig = {},
 ): AngularInlayHint[] {
   const mergedConfig = {...DEFAULT_CONFIG, ...config};
   const hints: AngularInlayHint[] = [];
   const ttc = compiler.getTemplateTypeChecker();
+
+  // Get the template AST (may be null for directives without templates)
+  const template = ttc.getTemplate(typeCheckInfo.declaration);
+  const templateFileUrl =
+    template && template.length > 0 ? template[0].sourceSpan.start.file.url : null;
+
+  const shouldProcessTemplate = templateFileUrl !== null && templateFileUrl === targetFileName;
+  const shouldProcessHostBindings =
+    typeCheckInfo.declaration.getSourceFile().fileName === targetFileName;
+
+  if (!shouldProcessTemplate && !shouldProcessHostBindings) {
+    return hints;
+  }
+
   const typeChecker = compiler.getCurrentProgram().getTypeChecker();
 
   // Get the Type Check Block for accessing resolved types
   // The TCB has TypeScript's resolved types for all expressions, including
   // overloaded function calls and generic type inference
   const tcb = ttc.getTypeCheckBlock(typeCheckInfo.declaration);
-
-  // Get the template AST (may be null for directives without templates)
-  const template = ttc.getTemplate(typeCheckInfo.declaration);
 
   // Helper to check if a position is within our requested span
   const isInSpan = (pos: number): boolean => {
@@ -1805,7 +1817,7 @@ export function getInlayHintsForTemplate(
   }
 
   // Visit the template (if it exists - directives without templates will skip this)
-  if (template) {
+  if (template && shouldProcessTemplate) {
     const visitor = new InlayHintVisitor();
     tmplAstVisitAll(visitor, template);
   }
@@ -1817,7 +1829,7 @@ export function getInlayHintsForTemplate(
   // positions might be outside that range, but they should still be shown since they belong
   // to this component. We create a helper function that checks if we're requesting the whole file.
   const hostElement = ttc.getHostElement(typeCheckInfo.declaration);
-  if (hostElement) {
+  if (hostElement && shouldProcessHostBindings) {
     // For host bindings, check if the position is within the requested span.
     // Host binding keySpan positions are absolute TypeScript file positions.
     const isHostBindingInSpan = (pos: number): boolean => {

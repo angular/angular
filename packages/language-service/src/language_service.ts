@@ -282,6 +282,7 @@ export class LanguageService {
                     compiler,
                     typeCheckInfo,
                     span,
+                    fileName,
                     config,
                   );
                   hints.push(...templateHints);
@@ -298,7 +299,13 @@ export class LanguageService {
           // For external template files (HTML), find the associated component
           const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, span.start, compiler);
           if (typeCheckInfo) {
-            const templateHints = getInlayHintsForTemplate(compiler, typeCheckInfo, span, config);
+            const templateHints = getInlayHintsForTemplate(
+              compiler,
+              typeCheckInfo,
+              span,
+              fileName,
+              config,
+            );
             hints.push(...templateHints);
           }
         }
