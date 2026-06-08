@@ -744,6 +744,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     if (bindParts) {
       if (bindParts[KW_BIND_IDX] != null) {
+        // 3p-only-start
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BIND_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
@@ -758,6 +759,7 @@ class HtmlAstToIvyAst implements html.Visitor {
           parsedProperties,
           keySpan,
         );
+        // 3p-only-end
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
           const identifier = bindParts[IDENT_KW_IDX];
@@ -771,6 +773,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         const keySpan = createKeySpan(srcSpan, bindParts[KW_REF_IDX], identifier);
         this.parseReference(identifier, value, srcSpan, keySpan, attribute.valueSpan, references);
       } else if (bindParts[KW_ON_IDX]) {
+        // 3p-only-start
         const events: ParsedEvent[] = [];
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_ON_IDX], identifier);
@@ -785,7 +788,9 @@ class HtmlAstToIvyAst implements html.Visitor {
           keySpan,
         );
         addEvents(events, boundEvents);
+        // 3p-only-end
       } else if (bindParts[KW_BINDON_IDX]) {
+        // 3p-only-start
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BINDON_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
@@ -810,6 +815,7 @@ class HtmlAstToIvyAst implements html.Visitor {
           keySpan,
           absoluteOffset,
         );
+        // 3p-only-end
       } else if (bindParts[KW_AT_IDX]) {
         const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(
