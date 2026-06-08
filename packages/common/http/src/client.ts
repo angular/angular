@@ -43,24 +43,7 @@ export interface HttpClientCommonOptions extends Omit<HttpRequestOptions, 'heade
 function addBody<T>(options: HttpClientCommonOptions, body: T | null): any {
   return {
     body,
-    headers: options.headers,
-    context: options.context,
-    observe: options.observe,
-    params: options.params,
-    reportProgress: options.reportProgress,
-    responseType: options.responseType,
-    withCredentials: options.withCredentials,
-    credentials: options.credentials,
-    transferCache: options.transferCache,
-    timeout: options.timeout,
-    keepalive: options.keepalive,
-    priority: options.priority,
-    cache: options.cache,
-    mode: options.mode,
-    redirect: options.redirect,
-    integrity: options.integrity,
-    referrer: options.referrer,
-    referrerPolicy: options.referrerPolicy,
+    ...options,
   };
 }
 
