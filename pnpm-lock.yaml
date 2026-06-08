@@ -254,8 +254,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#0c7da2485aad100da29118ca4c66e03261457cac
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0c7da2485aad100da29118ca4c66e03261457cac(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#74db100f1fee202d031c5f306778b847f577398c
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/74db100f1fee202d031c5f306778b847f577398c(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^7.27.1
         version: 7.29.0(@babel/core@7.29.7)
@@ -1662,9 +1662,9 @@ packages:
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0c7da2485aad100da29118ca4c66e03261457cac':
-    resolution: {gitHosted: true, integrity: sha512-UJjBHFtjz3EB14l9KFzPnl7xYceg6nb4gmsEtGv/TMhzZ0a25B46RSCTL1DAbErWGxtxAdLb4mfnk2n9kUTdog==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0c7da2485aad100da29118ca4c66e03261457cac}
-    version: 0.0.0-7ba841c3c224954fc17eac72150483284751e074
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/74db100f1fee202d031c5f306778b847f577398c':
+    resolution: {gitHosted: true, integrity: sha512-DolaJQq/Bl29sdXrd8YUw+a/T0Xf2hzug0mbuWk4poeLAQ7GQpx1C+fw1TyRvu89HONzhLDYj8RMGkESZlYxwQ==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/74db100f1fee202d031c5f306778b847f577398c}
+    version: 0.0.0-e78f06f32bc0780cfda374af155a1b5dc84fa14d
     hasBin: true
 
   '@angular/ssr@22.0.0':
@@ -11960,7 +11960,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0c7da2485aad100da29118ca4c66e03261457cac(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/74db100f1fee202d031c5f306778b847f577398c(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
