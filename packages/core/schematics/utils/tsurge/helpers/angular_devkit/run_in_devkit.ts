@@ -79,6 +79,9 @@ export async function runMigrationInDevkit<Stats>(
   for (const tsconfigPath of tsconfigPaths) {
     config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Analysis);
     const info = migration.createProgram(tsconfigPath, fs);
+    // Devkit tree updates need workspace-relative paths. Keep `sortedRootDirs`
+    // intact for logical file IDs, but make `rootRelativePath` resolve from `/`.
+    info.projectRoot = fs.pwd();
 
     modifyProgramInfoToEnsureNonOverlappingFiles(tsconfigPath, info, compilationUnitAssignments);
 
@@ -107,6 +110,7 @@ export async function runMigrationInDevkit<Stats>(
     for (const tsconfigPath of tsconfigPaths) {
       config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Migrate);
       const info = migration.createProgram(tsconfigPath, fs);
+      info.projectRoot = fs.pwd();
       modifyProgramInfoToEnsureNonOverlappingFiles(tsconfigPath, info, compilationUnitAssignments);
 
       config.afterProgramCreation?.(info, fs, MigrationStage.Migrate);
