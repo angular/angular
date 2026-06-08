@@ -116,7 +116,7 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 
 The validation rule only runs when the `when` function returns `true`.
 
-NOTE: `required` will return `true` for empty array. Use [`minLength()`](#minlength-and-maxlength) to validate arrays.
+Note: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items; it treats `false` as missing (invalid), matching `<input type="checkbox" required>`.
 
 ### email()
 
