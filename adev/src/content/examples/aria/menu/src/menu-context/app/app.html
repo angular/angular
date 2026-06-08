@@ -17,7 +17,14 @@
 <!-- Overlay container for the menu -->
 <ng-template
   [cdkConnectedOverlayOpen]="trigger.expanded()"
-  [cdkConnectedOverlay]="{origin: triggerEl, usePopover: 'inline'}"
+  [cdkConnectedOverlay]="{
+    origin: triggerEl,
+    usePopover: 'inline',
+    hasBackdrop: true,
+    backdropClass: 'cdk-overlay-transparent-backdrop',
+  }"
+  (backdropClick)="closeContextMenu()"
+  (overlayKeydown)="onOverlayKeydown($event)"
   cdkAttachPopoverAsChild
 >
   <div ngMenu #contextMenu="ngMenu" (itemSelected)="onItemSelected($event)">
