@@ -170,7 +170,7 @@ Use `computed` when you need to calculate a value from other signals:
 const total = computed(() => price() * quantity());
 ```
 
-Use `effect` when you need to interact with APIs, browser storage, logging, analytics, or other non-reactive systems:
+Use `effect` when you need to update something outside Angular’s signal model, such as browser storage, logging, analytics, or a third-party UI library.
 
 ```ts
 effect(() => {
