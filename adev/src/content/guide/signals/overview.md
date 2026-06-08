@@ -181,7 +181,7 @@ effect(() => {
 A simple guideline is:
 
 - If you're calculating a value, use `computed`.
-- If you're causing something to happen, use `effect`.
+- If you need to synchronize signal state to an external non-reactive system, use `effect`.
 
 ## Reactive contexts
 
