@@ -287,24 +287,28 @@ describe('Format date', () => {
 
     it('should format with timezones', () => {
       const dateFixtures: any = {
-        z: /GMT(\+|-)\d/,
-        zz: /GMT(\+|-)\d/,
-        zzz: /GMT(\+|-)\d/,
+        z: /GMT(\+|-)\d\:30/,
+        zz: /GMT(\+|-)\d\:30/,
+        zzz: /GMT(\+|-)\d\:30/,
         zzzz: /GMT(\+|-)\d{2}\:30/,
         Z: /(\+|-)\d{2}30/,
         ZZ: /(\+|-)\d{2}30/,
         ZZZ: /(\+|-)\d{2}30/,
         ZZZZ: /GMT(\+|-)\d{2}\:30/,
         ZZZZZ: /(\+|-)\d{2}\:30/,
-        O: /GMT(\+|-)\d/,
+        O: /GMT(\+|-)\d\:30/,
         OOOO: /GMT(\+|-)\d{2}\:30/,
       };
 
-      Object.keys(dateFixtures).forEach((pattern: string) => {
-        expect(formatDate(date, pattern, ɵDEFAULT_LOCALE_ID, '+0430')).toMatch(
-          dateFixtures[pattern],
-        );
-      });
+      // Both a positive and a negative fractional offset, so the short GMT
+      // format is exercised for each sign with non-zero minutes.
+      for (const offset of ['+0430', '-0330']) {
+        Object.keys(dateFixtures).forEach((pattern: string) => {
+          expect(formatDate(date, pattern, ɵDEFAULT_LOCALE_ID, offset)).toMatch(
+            dateFixtures[pattern],
+          );
+        });
+      }
     });
 
     it('should format common multi component patterns', () => {
@@ -527,6 +531,13 @@ describe('Format date', () => {
 
       const dateEst = formatDate(isoDate, 'long', 'en', 'EST');
       expect(dateEst).toBe('February 17, 2024, 7:00:00 AM GMT-5');
+
+      // Short GMT (`O`) keeps non-zero minutes for fractional zones, drops them
+      // for whole-hour zones, for both signs.
+      expect(formatDate(isoDate, 'O', 'en', '+0530')).toBe('GMT+5:30');
+      expect(formatDate(isoDate, 'O', 'en', '+0545')).toBe('GMT+5:45');
+      expect(formatDate(isoDate, 'O', 'en', '-0330')).toBe('GMT-3:30');
+      expect(formatDate(isoDate, 'O', 'en', '-0500')).toBe('GMT-5');
 
       const dateOffset = formatDate(isoDate, 'long', 'en', '+0500');
       expect(dateOffset).toBe('February 17, 2024, 5:00:00 PM GMT+5');

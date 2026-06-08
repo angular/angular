@@ -174,7 +174,7 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  *  | Zone                    | z, zz & zzz | Short specific non location format (fallback to O)            | GMT-8                                                      |
  *  |                         | zzzz        | Long specific non location format (fallback to OOOO)          | GMT-08:00                                                  |
  *  |                         | Z, ZZ & ZZZ | ISO8601 basic format                                          | -0800                                                      |
- *  |                         | ZZZZ        | Long localized GMT format                                     | GMT-8:00                                                   |
+ *  |                         | ZZZZ        | Long localized GMT format                                     | GMT-08:00                                                  |
  *  |                         | ZZZZZ       | ISO8601 extended format + Z indicator for offset 0 (= XXXXX)  | -08:00                                                     |
  *  |                         | O, OO & OOO | Short localized GMT format                                    | GMT-8                                                      |
  *  |                         | OOOO        | Long localized GMT format                                     | GMT-08:00                                                  |

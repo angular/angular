@@ -458,7 +458,7 @@ function getDateTranslation(
 
 /**
  * Returns a date formatter that transforms a date and an offset into a timezone with ISO8601 or
- * GMT format depending on the width (eg: short = +0430, short:GMT = GMT+4, long = GMT+04:30,
+ * GMT format depending on the width (eg: short = +0430, short:GMT = GMT+4:30, long = GMT+04:30,
  * extended = +04:30)
  */
 function timeZoneGetter(width: ZoneWidth): DateFormatter {
@@ -473,8 +473,18 @@ function timeZoneGetter(width: ZoneWidth): DateFormatter {
           padNumber(hours, 2, minusSign) +
           padNumber(Math.abs(zone % 60), 2, minusSign)
         );
-      case ZoneWidth.ShortGMT:
-        return 'GMT' + (zone >= 0 ? '+' : '') + padNumber(hours, 1, minusSign);
+      case ZoneWidth.ShortGMT: {
+        // The short localized GMT format omits a leading zero on the hours but,
+        // per CLDR, still includes the minutes when they are non-zero (e.g.
+        // `GMT+5:30` for India, `GMT-4` for New York).
+        const minutes = Math.abs(zone % 60);
+        return (
+          'GMT' +
+          (zone >= 0 ? '+' : '') +
+          padNumber(hours, 1, minusSign) +
+          (minutes ? ':' + padNumber(minutes, 2, minusSign) : '')
+        );
+      }
       case ZoneWidth.Long:
         return (
           'GMT' +
