@@ -1,0 +1,22 @@
+name: Publish Release
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+.x'
+
+# Ensure only one release runs at a time PER BRANCH to avoid race conditions.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write # Required for the reusable workflow to create releases and tags
+
+jobs:
+  release:
+    # Reference the reusable workflow on the development branch in dev-infra.
+    uses: angular/dev-infra/.github/workflows/reusable-release.yml@task-3.1-reusable-workflow
+    secrets:
+      wombot-token: ${{ secrets.WOMBOT_TOKEN }}
