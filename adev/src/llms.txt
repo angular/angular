@@ -64,6 +64,7 @@ Angular — Deliver web apps with confidence 🚀
 - [Setting up the HttpClient](https://angular.dev/guide/http/setup)
 - [Making requests](https://angular.dev/guide/http/making-requests)
 - [Intercepting requests](https://angular.dev/guide/http/interceptors)
+- [Reactive data fetching with httpResource](https://angular.dev/guide/http/http-resource)
 - [Testing](https://angular.dev/guide/http/testing)
 
 ## Forms
@@ -73,6 +74,10 @@ Angular — Deliver web apps with confidence 🚀
 - [Template driven forms](https://angular.dev/guide/forms/template-driven-forms)
 - [Validate forms input](https://angular.dev/guide/forms/form-validation)
 - [Building dynamic forms](https://angular.dev/guide/forms/dynamic-forms)
+- [Signal Forms](https://angular.dev/guide/forms/signals/overview)
+
+## Accessibility
+- [Angular Aria overview](https://angular.dev/guide/aria/overview)
 
 ## Routing
 - [Routing overview](https://angular.dev/guide/routing)
