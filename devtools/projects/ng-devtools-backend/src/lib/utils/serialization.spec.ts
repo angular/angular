@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {sanitizeObject} from './serialization-utils';
+import {sanitizeObject} from './serialization';
 
 describe('sanitizeObject', () => {
   it('should not change valid object', () => {

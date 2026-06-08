@@ -7,7 +7,7 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import {isSignal} from './utils';
+import {isSignal} from './utils/general';
 
 /** Represents a property access operation. */
 interface PropertyAccess {

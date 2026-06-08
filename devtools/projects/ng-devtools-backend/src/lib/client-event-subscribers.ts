@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
 import {debounceTime} from 'rxjs/operators';
 import {
   ComponentExplorerViewQuery,
@@ -57,10 +58,11 @@ import {ComponentTreeNode} from './interfaces';
 import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {getSupportedApis} from './ng-debug-api/supported-apis';
 import {getRouterCallableConstructRef, parseRoutes, RoutePropertyType} from './router-tree';
-import {sanitizeObject} from './serialization-utils';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
-import {runOutsideAngular, unwrapSignal} from './utils';
+import {runOutsideAngular, unwrapSignal} from './utils/general';
+import {sanitizeObject} from './utils/serialization';
+import {SignalGraphRef} from './utils/signal-graph-ref';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -256,23 +258,37 @@ const getSignalNestedPropertiesCallback =
       position.element,
       initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
     );
-    if (!node) {
+    if (!node || !node.nativeElement) {
       return emitEmpty();
     }
 
-    const injector = getInjectorFromElementNode(node.nativeElement!);
+    const injector = getInjectorFromElementNode(node.nativeElement);
     if (!injector) {
       return emitEmpty();
     }
 
     const ng = ngDebugClient();
 
-    const signalGraph = ng.ɵgetSignalGraph?.(injector);
+    let signalGraph: InternalDebugSignalGraph | undefined;
+
+    // Considering that the inspection of signal value nested properties
+    // usually involves multiple requests, we store the signal graph
+    // during the first call. We keep only the last requested signal graph
+    // to avoid filling the heap with graphs that may not be needed.
+    if (componentSignalGraphRef.exists(node.nativeElement)) {
+      signalGraph = componentSignalGraphRef.deref(node.nativeElement);
+    } else {
+      signalGraph = ng.ɵgetSignalGraph?.(injector);
+      if (signalGraph) {
+        componentSignalGraphRef.set(node.nativeElement, signalGraph);
+      }
+    }
+
     if (!signalGraph) {
       return emitEmpty();
     }
 
-    const current = signalGraph.nodes.find((node) => node.id === position.signalId);
+    const current = signalGraph.nodes.find((n) => n.id === position.signalId);
     if (!current) {
       return emitEmpty();
     }
@@ -498,7 +514,7 @@ const getInjectorProvidersCallback =
 
     const serializedProviderRecords: SerializedProviderRecord[] = [];
 
-    for (const [token, records] of tokenToRecords.entries()) {
+    for (const records of tokenToRecords.values()) {
       const multiRecords = records.filter((record) => record.multi);
       const nonMultiRecords = records.filter((record) => !record.multi);
 
@@ -622,6 +638,10 @@ const getInjectorInstance = (
 };
 
 const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
+  // We assume that a new request for a signal graph
+  // should invalidate the current ref cache.
+  componentSignalGraphRef.clear();
+
   const ng = ngDebugClient();
 
   // get injector from position
@@ -669,3 +689,13 @@ export function sanitizeRouteData(route: Route): Route {
 
   return route;
 }
+
+/**
+ * Keeps a reference to the last requested signal graph.
+ * This should save us from needlessly calling `ng.ɵgetSignalGraph`
+ * when we are still managing the same/last graph (e.g. inspecting
+ * signal value nested properties). The ref is tied to the host element.
+ *
+ * Note: If the element is destroyed, the graph is garbage collected.
+ */
+const componentSignalGraphRef = new SignalGraphRef<Node>();
