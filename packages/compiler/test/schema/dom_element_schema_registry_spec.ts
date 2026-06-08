@@ -152,7 +152,10 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext('iframe', 'srcdoc', false)).toBe(SecurityContext.HTML);
     expect(registry.securityContext('p', 'innerHTML', false)).toBe(SecurityContext.HTML);
     expect(registry.securityContext('a', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('a', 'protocol', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('a', 'style', false)).toBe(SecurityContext.STYLE);
+    expect(registry.securityContext('area', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('area', 'protocol', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
 
     // SVG animate and set attributes
