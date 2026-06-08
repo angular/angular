@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FileSystem, setFileSystem} from '@angular/compiler-cli';
+import {absoluteFrom, FileSystem, setFileSystem} from '@angular/compiler-cli';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {DevkitMigrationFilesystem} from './devkit_filesystem';
 import {groupReplacementsByFile} from '../group_replacements';
@@ -79,6 +79,9 @@ export async function runMigrationInDevkit<Stats>(
   for (const tsconfigPath of tsconfigPaths) {
     config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Analysis);
     const info = migration.createProgram(tsconfigPath, fs);
+    // Devkit tree updates need workspace-relative paths. Keep `sortedRootDirs`
+    // intact for logical file IDs, but make `rootRelativePath` resolve from `/`.
+    info.projectRoot = absoluteFrom(info.program.getCurrentDirectory());
 
     modifyProgramInfoToEnsureNonOverlappingFiles(tsconfigPath, info, compilationUnitAssignments);
 
@@ -107,6 +110,10 @@ export async function runMigrationInDevkit<Stats>(
     for (const tsconfigPath of tsconfigPaths) {
       config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Migrate);
       const info = migration.createProgram(tsconfigPath, fs);
+      // Devkit tree updates need workspace-relative paths. Keep `sortedRootDirs`
+      // intact for logical file IDs, but make `rootRelativePath` resolve from `/`.
+      info.projectRoot = absoluteFrom(info.program.getCurrentDirectory());
+
       modifyProgramInfoToEnsureNonOverlappingFiles(tsconfigPath, info, compilationUnitAssignments);
 
       config.afterProgramCreation?.(info, fs, MigrationStage.Migrate);
