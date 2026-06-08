@@ -178,7 +178,7 @@ effect(() => {
 });
 ```
 
-A simple guideline is:
+In general, you'll want to follow the general guidelines:
 
 - If you're calculating a value, use `computed`.
 - If you need to synchronize signal state to an external non-reactive system, use `effect`.
