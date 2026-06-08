@@ -1,118 +1,73 @@
-<docs-decorative-header title="Built-in directives" imgSrc="adev/src/assets/images/directives.svg"> <!-- markdownlint-disable-line -->
-Directives are classes that add additional behavior to elements in your Angular applications.
+<docs-decorative-header title="Directives" imgSrc="adev/src/assets/images/directives.svg"> <!-- markdownlint-disable-line -->
+Directives add behavior to elements and components in your Angular applications.
 </docs-decorative-header>
 
-Use Angular's built-in directives to manage forms, lists, styles, and what users see.
+A directive can change how an element looks, how it behaves, or how it fits into the DOM. Angular ships with several built-in directives, and you can write your own.
 
-The different types of Angular directives are as follows:
+## When to use a directive
 
-| Directive Types                                                  | Details                                                                           |
-| :--------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
-| [Components](guide/components)                                   | Used with a template. This type of directive is the most common directive type.   |
-| [Attribute directives](#built-in-attribute-directives)           | Change the appearance or behavior of an element, component, or another directive. |
-| [Structural directives](/guide/directives/structural-directives) | Change the DOM layout by adding and removing DOM elements.                        |
+Directives are most effective when they encapsulate **reusable** behavior that you want to apply to an existing element or component.
 
-This guide covers built-in [attribute directives](#built-in-attribute-directives).
+Common examples include:
 
-## Built-in attribute directives
+- Applying the same appearance or behavior across many elements, such as autofocus or a tooltip.
+- Reading from or writing to the host element's DOM, attributes, or classes.
+- Adding behavior to a component you don't own without changing its source.
 
-Attribute directives listen to and modify the behavior of other HTML elements, attributes, properties, and components.
+If you need to render your own markup or manage a piece of UI with its own template, reach for a [component](guide/components) rather than a directive.
 
-The most common attribute directives are as follows:
+## A quick example
 
-| Common directives                                      | Details                                            |
-| :----------------------------------------------------- | :------------------------------------------------- |
-| [`NgClass`](#adding-and-removing-classes-with-ngclass) | Adds and removes a set of CSS classes.             |
-| [`NgStyle`](#setting-inline-styles-with-ngstyle)       | Adds and removes a set of HTML styles.             |
-| [`NgModel`](guide/forms/template-driven-forms)         | Adds two-way data binding to an HTML form element. |
+Suppose you want elements to highlight when the user hovers over them, changing their background color to yellow. Rather than repeat the same event-handling logic on every element, you can package that behavior in a directive and apply it wherever you need it.
 
-HELPFUL: Built-in directives use only public APIs. They do not have special access to any private APIs that other directives can't access.
-
-## Adding and removing classes with `NgClass`
-
-Add or remove multiple CSS classes simultaneously with `ngClass`.
-
-HELPFUL: To add or remove a _single_ class, use [class binding](/guide/templates/binding#css-class-and-style-property-bindings) rather than `NgClass`.
-
-### Import `NgClass` in the component
-
-To use `NgClass`, add it to the component's `imports` list.
+The following `appHighlight` directive sets the host element's background color when the pointer enters and clears it when the pointer leaves:
 
 ```angular-ts
-import {NgClass} from '@angular/common';
+import {Directive, ElementRef, inject} from '@angular/core';
 
-@Component({
-  /* ... */
-  imports: [NgClass],
+@Directive({
+  selector: '[appHighlight]',
+  host: {
+    '(mouseenter)': 'onMouseEnter()',
+    '(mouseleave)': 'onMouseLeave()',
+  },
 })
-export class AppComponent {}
+export class HighlightDirective {
+  private el = inject(ElementRef);
+
+  onMouseEnter() {
+    this.el.nativeElement.style.backgroundColor = 'yellow';
+  }
+
+  onMouseLeave() {
+    this.el.nativeElement.style.backgroundColor = '';
+  }
+}
 ```
 
-### Using `NgClass` with an expression
+Apply the directive by adding its selector as an attribute on an element:
 
-On the element you'd like to style, add `[ngClass]` and set it equal to an expression.
-In this case, `isSpecial` is a boolean set to `true` in `app.component.ts`.
-Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<div>`.
-
-<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="special-div"/>
-
-### Using `NgClass` with a method
-
-1. To use `NgClass` with a method, add the method to the component class.
-   In the following example, `setCurrentClasses()` sets the property `currentClasses` with an object that adds or removes three classes based on the `true` or `false` state of three other component properties.
-
-   Each key of the object is a CSS class name.
-   If a key is `true`, `ngClass` adds the class.
-   If a key is `false`, `ngClass` removes the class.
-
-   <docs-code header="app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="setClasses"/>
-
-1. In the template, add the `ngClass` property binding to `currentClasses` to set the element's classes:
-
-   <docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgClass-1"/>
-
-For this use case, Angular applies the classes on initialization and in case of changes caused by reassigning the `currentClasses` object.
-The full example calls `setCurrentClasses()` initially with `ngOnInit()` when the user clicks on the `Refresh currentClasses` button.
-These steps are not necessary to implement `ngClass`.
-
-## Setting inline styles with `NgStyle`
-
-HELPFUL: To add or remove a _single_ style, use [style bindings](guide/templates/binding#css-class-and-style-property-bindings) rather than `NgStyle`.
-
-### Import `NgStyle` in the component
-
-To use `NgStyle`, add it to the component's `imports` list.
-
-```angular-ts
-import {NgStyle} from '@angular/common';
-
-@Component({
-  /* ... */
-  imports: [NgStyle],
-})
-export class AppComponent {}
+```angular-html
+<p appHighlight>Highlight me!</p>
 ```
 
-Use `NgStyle` to set multiple inline styles simultaneously, based on the state of the component.
+Every element that carries the `appHighlight` attribute gains the same hover behavior, with the logic defined in one place.
 
-1. To use `NgStyle`, add a method to the component class.
+## Types of directives
 
-   In the following example, `setCurrentStyles()` sets the property `currentStyles` with an object that defines three styles, based on the state of three other component properties.
+Angular has two primary types of directives:
 
-   <docs-code header="app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="setStyles"/>
-
-1. To set the element's styles, add an `ngStyle` property binding to `currentStyles`.
-
-   <docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgStyle-2"/>
-
-For this use case, Angular applies the styles upon initialization and in case of changes.
-To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
-However, these steps are not necessary to implement `ngStyle` on its own.
+| Directive type                                                  | Details                                                                           |
+| :-------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
+| [Attribute directives](guide/directives/attribute-directives)   | Change the appearance or behavior of an element, component, or another directive. |
+| [Structural directives](guide/directives/structural-directives) | Change the DOM layout by adding and removing DOM elements.                        |
 
 ## What's next
 
+Learn more about each type of directive in the following guides.
+
 <docs-pill-row>
-  <docs-pill href="guide/directives/attribute-directives" title="Attribute Directives"/>
-  <docs-pill href="guide/directives/structural-directives" title="Structural Directives"/>
+  <docs-pill href="guide/directives/attribute-directives" title="Attribute directives"/>
+  <docs-pill href="guide/directives/structural-directives" title="Structural directives"/>
   <docs-pill href="guide/directives/directive-composition-api" title="Directive composition API"/>
 </docs-pill-row>
