@@ -31,9 +31,9 @@
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
-    "concurrently": "10.0.0",
-    "jasmine": "6.2.0",
-    "jasmine-core": "6.2.0",
+    "concurrently": "10.0.3",
+    "jasmine": "6.3.0",
+    "jasmine-core": "6.3.0",
     "puppeteer": "25.1.0",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"
