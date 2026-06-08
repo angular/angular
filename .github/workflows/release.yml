@@ -18,6 +18,6 @@ permissions:
 jobs:
   release:
     # Reference the reusable workflow on the development branch in dev-infra.
-    uses: angular/dev-infra/.github/workflows/reusable-release.yml@task-3.1-reusable-workflow
+    uses: josephperrott/dev-infra/.github/workflows/reusable-release.yml@task-3.1-reusable-workflow
     secrets:
       wombot-token: ${{ secrets.WOMBOT_TOKEN }}
