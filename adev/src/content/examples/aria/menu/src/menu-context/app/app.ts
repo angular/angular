@@ -28,4 +28,16 @@ export class App {
   onItemSelected(value: string) {
     console.log(`Action selected: ${value}`);
   }
+
+  onOverlayKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.closeContextMenu();
+    }
+  }
+
+  closeContextMenu() {
+    if (this.trigger().expanded()) {
+      this.trigger().close();
+    }
+  }
 }
