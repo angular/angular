@@ -15,6 +15,7 @@ import {
   forwardRef,
   Pipe,
   Type,
+  AbstractType,
   ViewEncapsulation,
   ɵɵngDeclareComponent,
 } from '../../../src/core';
@@ -685,7 +686,7 @@ function expectComponentDef(
   expect(actual.styles).withContext('styles').toEqual(expectation.styles);
   expect(actual.data).withContext('data').toEqual(expectation.data);
 
-  const convertNullToEmptyArray = <T extends Type<any>[] | null>(arr: T): T =>
+  const convertNullToEmptyArray = <T extends (Type<any> | AbstractType<any>)[] | null>(arr: T): T =>
     arr ?? ([] as unknown as T);
 
   const directiveDefs =

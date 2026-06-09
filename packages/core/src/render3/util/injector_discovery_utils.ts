@@ -16,7 +16,7 @@ import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
 import {NullInjector} from '../../di/null_injector';
 import {SingleProvider, walkProviderTree} from '../../di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
 import {throwError} from '../../util/assert';
@@ -251,10 +251,13 @@ function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
  *
  */
 function getProviderImportPaths(
-  providerImportsContainer: Type<unknown>,
-): Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]> {
-  const providerToPath = new Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]>();
-  const visitedContainers = new Set<Type<unknown>>();
+  providerImportsContainer: Type<unknown> | AbstractType<unknown>,
+): Map<SingleProvider, (Type<unknown> | AbstractType<unknown> | InjectorType<unknown>)[]> {
+  const providerToPath = new Map<
+    SingleProvider,
+    (Type<unknown> | AbstractType<unknown> | InjectorType<unknown>)[]
+  >();
+  const visitedContainers = new Set<Type<unknown> | AbstractType<unknown>>();
   const visitor = walkProviderTreeToDiscoverImportPaths(providerToPath, visitedContainers);
 
   walkProviderTree(providerImportsContainer, visitor, [], new Set());
@@ -355,10 +358,19 @@ function getProviderImportPaths(
  *     void
  */
 function walkProviderTreeToDiscoverImportPaths(
-  providerToPath: Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]>,
-  visitedContainers: Set<Type<unknown>>,
-): (provider: SingleProvider, container: Type<unknown> | InjectorType<unknown>) => void {
-  return (provider: SingleProvider, container: Type<unknown> | InjectorType<unknown>) => {
+  providerToPath: Map<
+    SingleProvider,
+    (Type<unknown> | AbstractType<unknown> | InjectorType<unknown>)[]
+  >,
+  visitedContainers: Set<Type<unknown> | AbstractType<unknown>>,
+): (
+  provider: SingleProvider,
+  container: Type<unknown> | AbstractType<unknown> | InjectorType<unknown>,
+) => void {
+  return (
+    provider: SingleProvider,
+    container: Type<unknown> | AbstractType<unknown> | InjectorType<unknown>,
+  ) => {
     // If the provider is not already in the providerToPath map,
     // add an entry with the provider as the key and an array containing the current container as
     // the value
