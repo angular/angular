@@ -161,7 +161,7 @@ ng_application(
 )
 
 ng_application(
-    name = "build.production",
+    name = "build.production.original",
     srcs = APPLICATION_FILES + APPLICATION_DEPS,
     args = [
         "--configuration",
@@ -182,6 +182,21 @@ ng_application(
         "manual",
         # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
         # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
+)
+
+genrule(
+    name = "build.production",
+    srcs = [":build.production.original"],
+    outs = ["dist_firebase"],
+    cmd = """
+    mkdir -p $@
+    cp -R $(location :build.production.original)/. $@
+    cp $@/browser/index.csr.html $@/browser/404.html
+    """,
+    tags = [
+        "manual",
         "no-remote-exec",
     ],
 )
