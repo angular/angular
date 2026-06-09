@@ -34,8 +34,7 @@ export enum ChangeDetectionStrategy {
   Eager = 1,
 
   /**
-   * Use the default `CheckAlways` strategy, in which change detection is automatic until
-   * explicitly deactivated.
+   * This value is equivalent to setting `Eager` and is due to be removed.
    * @deprecated Use `Eager` instead.
    */
   // 3p-only-start
