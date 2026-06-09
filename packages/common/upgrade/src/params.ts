@@ -271,7 +271,7 @@ function parseKeyValue(keyValue: string): {[k: string]: unknown} {
       key = tryDecodeURIComponent(key);
       if (typeof key !== 'undefined') {
         val = typeof val !== 'undefined' ? tryDecodeURIComponent(val) : true;
-        if (!obj.hasOwnProperty(key)) {
+        if (!Object.hasOwn(obj, key)) {
           obj[key] = val;
         } else if (Array.isArray(obj[key])) {
           (obj[key] as unknown[]).push(val);
