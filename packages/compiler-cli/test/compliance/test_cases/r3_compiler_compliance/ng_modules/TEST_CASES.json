@@ -10,7 +10,7 @@
           "files": ["basic_linked.js"]
         }
       ],
-      "compilationModeFilter": ["linked compile", "declaration-only emit"]
+      "compilationModeFilter": ["linked compile", "declaration-only emit", "instruction compile"]
     },
     {
       "description": "should define a basic NgModule (full/local)",
