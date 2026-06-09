@@ -20,6 +20,12 @@ import {RuntimeErrorCode} from './errors';
 import {resolveUrl} from './url';
 
 @Injectable()
+/**
+ * @deprecated Use the HttpClient fetch backend instead. Intent to remove in Angular 23.
+ * XHR support in `@angular/platform-server` is deprecated because the underlying `xhr2`
+ * library does not safely handle redirects (e.g. it can forward `Authorization` headers
+ * on cross-origin redirects and is susceptible to denial-of-service (DoS) via redirect loops).
+ */
 export class ServerXhr implements XhrFactory {
   private xhrImpl: typeof import('xhr2') | undefined;
 
@@ -29,6 +35,16 @@ export class ServerXhr implements XhrFactory {
   // server platform (via shims, etc).
   private async ɵloadImpl(): Promise<void> {
     if (!this.xhrImpl) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        console.warn(
+          'XHR support in `@angular/platform-server` is deprecated and will be removed ' +
+            'in Angular 23. It has known security and performance issues in server ' +
+            'environments, such as forwarding `Authorization` headers on cross-origin ' +
+            'redirects and susceptibility to denial-of-service (DoS) via redirect loops. ' +
+            'Please use the HttpClient fetch backend instead, which is the default since Angular 22.',
+        );
+      }
+
       const {default: xhr} = await import('xhr2');
       this.xhrImpl = xhr;
     }
