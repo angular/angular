@@ -399,7 +399,13 @@ class ExpressionMigrator extends RecursiveAstVisitor {
   // ---------------------------------------------------------------------------
 
   override visitBinary(ast: Binary, nullSensitive: boolean): any {
-    if (ast.operation === '||' || ast.operation === '&&' || ast.operation === '??') {
+    if (
+      ast.operation === '||' ||
+      ast.operation === '&&' ||
+      ast.operation === '??' ||
+      ast.operation === '==' ||
+      ast.operation === '!='
+    ) {
       // These operators normalise null and undefined (both produce the same result),
       // so the operands are not null-sensitive.
       this.visit(ast.left, false);
