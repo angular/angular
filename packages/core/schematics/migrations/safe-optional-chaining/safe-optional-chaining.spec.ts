@@ -197,6 +197,10 @@ describe('SafeOptionalChainingMigration', () => {
       <my-comp [userInput]="foo?.bar >= 0"/>
       <my-comp [userInput]="foo?.bar < 0"/>
       <my-comp [userInput]="foo?.bar <= 0"/>
+      <my-comp [userInput]="foo?.bar === null"/>
+      <my-comp [userInput]="foo?.bar !== null"/>
+      <my-comp [userInput]="foo?.bar === undefined"/>
+      <my-comp [userInput]="foo?.bar !== undefined"/>
 
     `);
     expect(actual).toContain('<div [id]="$safeNavigationMigration(user?.id)"></div>');
@@ -215,6 +219,18 @@ describe('SafeOptionalChainingMigration', () => {
     expect(actual).toContain('<my-comp [userInput]="$safeNavigationMigration(foo?.bar) >= 0"/>');
     expect(actual).toContain('<my-comp [userInput]="$safeNavigationMigration(foo?.bar) < 0"/>');
     expect(actual).toContain('<my-comp [userInput]="$safeNavigationMigration(foo?.bar) <= 0"/>');
+    expect(actual).toContain(
+      '<my-comp [userInput]="$safeNavigationMigration(foo?.bar) === null"/>',
+    );
+    expect(actual).toContain(
+      '<my-comp [userInput]="$safeNavigationMigration(foo?.bar) !== null"/>',
+    );
+    expect(actual).toContain(
+      '<my-comp [userInput]="$safeNavigationMigration(foo?.bar) === undefined"/>',
+    );
+    expect(actual).toContain(
+      '<my-comp [userInput]="$safeNavigationMigration(foo?.bar) !== undefined"/>',
+    );
   });
 
   it('should not migrate binding expressions when not necessary', async () => {
@@ -224,6 +240,13 @@ describe('SafeOptionalChainingMigration', () => {
       <my-comp [userInput]="user?.name ?? 'default'"/>
       <my-comp [userInput]="foo?.isActive ? 'a' : 'b'"/>
       <my-comp [userInput]="!foo?.bar"/>
+      <my-comp [userInput]="foo?.bar != null"/>
+      <my-comp [userInput]="foo?.bar == null"/>
+      <my-comp [userInput]="foo?.bar == null ? 'A' : 'B'"/>
+      <my-comp [userInput]="foo?.bar == 3"/>
+      <my-comp [userInput]="foo?.bar === 3"/>
+      <my-comp [userInput]="foo?.bar == 0"/>
+      <my-comp [userInput]="foo?.bar === 0"/> 
     `);
 
     expect(actual).toContain('<my-comp [userInput]="user?.name || \'default\'"/>');
@@ -231,6 +254,13 @@ describe('SafeOptionalChainingMigration', () => {
     expect(actual).toContain('<my-comp [userInput]="user?.name ?? \'default\'"/>');
     expect(actual).toContain(`<my-comp [userInput]="foo?.isActive ? 'a' : 'b'"/>`);
     expect(actual).toContain('<my-comp [userInput]="!foo?.bar"/>');
+    expect(actual).toContain('<my-comp [userInput]="foo?.bar != null"/>');
+    expect(actual).toContain('<my-comp [userInput]="foo?.bar == null"/>');
+    expect(actual).toContain(`<my-comp [userInput]="foo?.bar == null ? 'A' : 'B'"/>`);
+    expect(actual).toContain('<my-comp [userInput]="foo?.bar == 3"/>');
+    expect(actual).toContain('<my-comp [userInput]="foo?.bar === 3"/>');
+    expect(actual).toContain('<my-comp [userInput]="foo?.bar == 0"/>');
+    expect(actual).toContain('<my-comp [userInput]="foo?.bar === 0"/>');
   });
 
   it('should skip interpolation with no function and no pipe', async () => {
