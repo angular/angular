@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {getComponentDef} from '../def_getters';
 import type {ClassDebugInfo} from '../interfaces/definition';
 
@@ -45,7 +45,7 @@ export function stringifyForError(value: any): string {
  *
  * Important! This function contains a megamorphic read and should only be used for error messages.
  */
-export function debugStringifyTypeForError(type: Type<any>): string {
+export function debugStringifyTypeForError(type: Type<any> | AbstractType<any>): string {
   const componentDef = getComponentDef(type);
 
   if (componentDef !== null && componentDef.debugInfo) {

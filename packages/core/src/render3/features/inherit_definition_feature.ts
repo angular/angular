@@ -7,7 +7,7 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {Type, Writable} from '../../interface/type';
+import {AbstractType, Type, Writable} from '../../interface/type';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {fillProperties} from '../../util/property';
 import {
@@ -25,8 +25,8 @@ import {mergeHostAttrs} from '../util/attrs_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
 export function getSuperType(
-  type: Type<any>,
-): Type<any> & {ɵcmp?: ComponentDef<any>; ɵdir?: DirectiveDef<any>} {
+  type: Type<any> | AbstractType<any>,
+): (Type<any> | AbstractType<any>) & {ɵcmp?: ComponentDef<any>; ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
 

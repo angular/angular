@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {AttributeMarker} from './attribute_marker';
@@ -935,7 +935,7 @@ export type HostDirectiveOutputs = Record<string, (number | string)[]>;
  * ```
  */
 export type DirectiveIndexMap = Map<
-  Type<unknown>,
+  Type<unknown> | AbstractType<unknown>,
   number | [directiveIndex: number, hostDirectivesStart: number, hostDirectivesEnd: number]
 >;
 

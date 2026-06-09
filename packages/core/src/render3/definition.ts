@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
-import {Type, Writable} from '../interface/type';
+import {AbstractType, Type, Writable} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
@@ -111,7 +111,7 @@ interface DirectiveDefinition<T> {
   /**
    * Directive type, needed to configure the injector.
    */
-  type: Type<T>;
+  type: Type<T> | AbstractType<T>;
 
   /** The selectors that will be used to match nodes to this directive. */
   selectors?: (string | number)[][];
@@ -215,6 +215,9 @@ interface DirectiveDefinition<T> {
 }
 
 interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'> {
+  /** Component type, needed to configure the injector. */
+  type: Type<T>;
+
   /**
    * The number of nodes, local refs, and pipes in this component template.
    *
@@ -344,6 +347,7 @@ export function ɵɵdefineComponent<T>(
     const baseDef = getNgDirectiveDef(componentDefinition as DirectiveDefinition<T>);
     const def: Writable<ComponentDef<T>> = {
       ...baseDef,
+      type: componentDefinition.type,
       decls: componentDefinition.decls,
       vars: componentDefinition.vars,
       template: componentDefinition.template,

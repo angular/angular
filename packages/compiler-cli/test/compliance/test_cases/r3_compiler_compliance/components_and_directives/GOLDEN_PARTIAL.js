@@ -733,3 +733,28 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 export {};
 
+/****************************************************************************************************
+ * PARTIAL FILE: abstract_directive.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AbstractDir {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AbstractDir, isStandalone: true, selector: "[test-dir]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[test-dir]',
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: abstract_directive.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare abstract class AbstractDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AbstractDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractDir, "[test-dir]", never, {}, {}, never, never, true, never>;
+}
+
