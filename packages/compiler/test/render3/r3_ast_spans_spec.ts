@@ -406,21 +406,9 @@ describe('R3 AST source spans', () => {
     });
 
     it('is correct for bound properties via @', () => {
-      expectFromHtml('<div bind-@animation="v"></div>').toEqual([
-        ['Element', '<div bind-@animation="v"></div>', '<div bind-@animation="v">', '</div>'],
-        ['BoundAttribute', 'bind-@animation="v"', 'animation', 'v'],
-      ]);
-    });
-
-    it('is correct for bound properties via animation-', () => {
-      expectFromHtml('<div bind-animate-animationName="v"></div>').toEqual([
-        [
-          'Element',
-          '<div bind-animate-animationName="v"></div>',
-          '<div bind-animate-animationName="v">',
-          '</div>',
-        ],
-        ['BoundAttribute', 'bind-animate-animationName="v"', 'animationName', 'v'],
+      expectFromHtml('<div [@animation]="v"></div>').toEqual([
+        ['Element', '<div [@animation]="v"></div>', '<div [@animation]="v">', '</div>'],
+        ['BoundAttribute', '[@animation]="v"', 'animation', 'v'],
       ]);
     });
 

@@ -898,6 +898,7 @@ export class MyComponent {
     <a href="{{evil}}{{evil}}"></a>
     <div attr.style="{{evil}}{{evil}}"></div>
     <div [(innerHTML)]="evil"></div>
+    <iframe [(srcdoc)]="evil"></iframe>
     <img [(src)]="evil" />
     <iframe [(src)]="evil"></iframe>
     <object [(data)]="evil"></object>

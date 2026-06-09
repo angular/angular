@@ -715,7 +715,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       describe('reading directives', () => {
         it('should read directive properties', fakeAsync(() => {
           const ctx = createCompFixture(
-            '<div testDirective [a]="42" ref-dir="testDirective" [id]="dir.a"></div>',
+            '<div testDirective [a]="42" #dir="testDirective" [id]="dir.a"></div>',
           );
           ctx.detectChanges(false);
           expect(renderLog.loggedValues).toEqual([42]);
