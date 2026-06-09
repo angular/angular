@@ -17,18 +17,11 @@ import {
   Injector,
   Type,
 } from '@angular/core';
+import {ReactiveNodeKind} from '@angular/core/primitives/signals';
 
 export interface DebugSignalGraphNode {
   id: string;
-  kind:
-    | 'signal'
-    | 'computed'
-    | 'effect'
-    | 'template'
-    | 'linkedSignal'
-    | 'afterRenderEffectPhase'
-    | 'childSignalProp' // Represents a signal passed as a prop to a child component in a CoW app
-    | 'unknown';
+  kind: ReactiveNodeKind;
   epoch: number;
   label?: string;
   preview: Descriptor;
