@@ -745,7 +745,7 @@ class UrlParser {
     const decodedKey = decodeQuery(key);
     const decodedVal = decodeQuery(value);
 
-    if (params.hasOwnProperty(decodedKey)) {
+    if (Object.hasOwn(params, decodedKey)) {
       // Append to existing values
       let currentVal = params[decodedKey];
       if (!Array.isArray(currentVal)) {
