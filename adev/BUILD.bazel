@@ -2,6 +2,7 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
 load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
 load("@rules_angular//src/architect:ng_test.bzl", "ng_test")
+load("//adev:firebase_build.bzl", "copy_dir_and_add_404")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -186,15 +187,9 @@ ng_application(
     ],
 )
 
-genrule(
+copy_dir_and_add_404(
     name = "build.production",
-    srcs = [":build.production.original"],
-    outs = ["dist_firebase"],
-    cmd = """
-    mkdir -p $@
-    cp -R $(location :build.production.original)/. $@
-    cp $@/browser/index.csr.html $@/browser/404.html
-    """,
+    src = ":build.production.original",
     tags = [
         "manual",
         "no-remote-exec",

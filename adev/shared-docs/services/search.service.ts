@@ -8,6 +8,7 @@
 
 import {
   InjectionToken,
+  PLATFORM_ID,
   Provider,
   Service,
   debounced,
@@ -16,6 +17,7 @@ import {
   resource,
   signal,
 } from '@angular/core';
+import {isPlatformServer} from '@angular/common';
 import {
   SearchResult as AlgoliaSearchResult,
   LiteClient,
@@ -36,7 +38,15 @@ export const ALGOLIA_CLIENT: InjectionToken<LiteClient> = new InjectionToken<Lit
 export const provideAlgoliaSearchClient = (config: Environment): Provider => {
   return {
     provide: ALGOLIA_CLIENT,
-    useFactory: () => algoliasearch(config.algolia.appId, config.algolia.apiKey),
+    useFactory: () => {
+      const platformId = inject(PLATFORM_ID);
+      if (isPlatformServer(platformId)) {
+        return {
+          search: () => Promise.resolve({results: []}),
+        } as unknown as LiteClient;
+      }
+      return algoliasearch(config.algolia.appId, config.algolia.apiKey);
+    },
   };
 };
 
@@ -51,7 +61,13 @@ export class Search {
 
   readonly resultsResource = resource({
     params: () => this.debounceParams.value() || undefined, // coerces empty string to undefined
-    loader: async ({params}) => this.searchWithQuery(params),
+    loader: async ({params}) => {
+      console.log('Search loader executing with params:', params);
+      if (!params) {
+        return [];
+      }
+      return this.searchWithQuery(params);
+    },
   });
 
   readonly searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
