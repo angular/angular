@@ -391,13 +391,6 @@ describe('R3 AST source spans', () => {
       ]);
     });
 
-    it('is correct for bound properties via bind- ', () => {
-      expectFromHtml('<div bind-prop="v"></div>').toEqual([
-        ['Element', '<div bind-prop="v"></div>', '<div bind-prop="v">', '</div>'],
-        ['BoundAttribute', 'bind-prop="v"', 'prop', 'v'],
-      ]);
-    });
-
     it('is correct for bound properties via {{...}}', () => {
       expectFromHtml('<div prop="{{v}}"></div>').toEqual([
         ['Element', '<div prop="{{v}}"></div>', '<div prop="{{v}}">', '</div>'],
@@ -506,13 +499,6 @@ describe('R3 AST source spans', () => {
           '</ng-template>',
         ],
         ['Reference', '#a="b"', 'a', 'b'],
-      ]);
-    });
-
-    it('is correct for reference via ref-...', () => {
-      expectFromHtml('<ng-template ref-a></ng-template>').toEqual([
-        ['Template', '<ng-template ref-a></ng-template>', '<ng-template ref-a>', '</ng-template>'],
-        ['Reference', 'ref-a', 'a', '<empty>'],
       ]);
     });
 
@@ -667,13 +653,6 @@ describe('R3 AST source spans', () => {
       ]);
     });
 
-    it('is correct for bound events via on-', () => {
-      expectFromHtml('<div on-event="v"></div>').toEqual([
-        ['Element', '<div on-event="v"></div>', '<div on-event="v">', '</div>'],
-        ['BoundEvent', 'on-event="v"', 'event', 'v'],
-      ]);
-    });
-
     it('is correct for text attribute via data-on-', () => {
       expectFromHtml('<div data-on-event="v"></div>').toEqual([
         ['Element', '<div data-on-event="v"></div>', '<div data-on-event="v">', '</div>'],
@@ -686,21 +665,6 @@ describe('R3 AST source spans', () => {
         ['Element', '<div [(prop)]="v"></div>', '<div [(prop)]="v">', '</div>'],
         ['BoundAttribute', '[(prop)]="v"', 'prop', 'v'],
         ['BoundEvent', '[(prop)]="v"', 'prop', 'v'],
-      ]);
-    });
-
-    it('is correct for bound events and properties via bindon-', () => {
-      expectFromHtml('<div bindon-prop="v"></div>').toEqual([
-        ['Element', '<div bindon-prop="v"></div>', '<div bindon-prop="v">', '</div>'],
-        ['BoundAttribute', 'bindon-prop="v"', 'prop', 'v'],
-        ['BoundEvent', 'bindon-prop="v"', 'prop', 'v'],
-      ]);
-    });
-
-    it('is correct for TextAttribute and properties via data-bindon-', () => {
-      expectFromHtml('<div data-bindon-prop="v"></div>').toEqual([
-        ['Element', '<div data-bindon-prop="v"></div>', '<div data-bindon-prop="v">', '</div>'],
-        ['TextAttribute', 'data-bindon-prop="v"', 'data-bindon-prop', 'v'],
       ]);
     });
 
@@ -724,13 +688,6 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div #a="b"></div>').toEqual([
         ['Element', '<div #a="b"></div>', '<div #a="b">', '</div>'],
         ['Reference', '#a="b"', 'a', 'b'],
-      ]);
-    });
-
-    it('is correct for references via ref-', () => {
-      expectFromHtml('<div ref-a></div>').toEqual([
-        ['Element', '<div ref-a></div>', '<div ref-a>', '</div>'],
-        ['Reference', 'ref-a', 'a', '<empty>'],
       ]);
     });
   });

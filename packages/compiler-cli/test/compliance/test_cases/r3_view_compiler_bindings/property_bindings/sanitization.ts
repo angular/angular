@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'my-component',
@@ -11,9 +11,7 @@ import {Component} from '@angular/core';
     <a href="{{evil}}{{evil}}"></a>
     <div attr.style="{{evil}}{{evil}}"></div>
     <div [(innerHTML)]="evil"></div>
-    <div bindon-innerHTML="evil"></div>
     <iframe [(srcdoc)]="evil"></iframe>
-    <iframe bindon-srcdoc="evil"></iframe>
     <img [(src)]="evil" />
     <iframe [(src)]="evil"></iframe>
     <object [(data)]="evil"></object>

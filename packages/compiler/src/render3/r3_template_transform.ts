@@ -25,6 +25,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
+import {createContentBlock} from './r3_content_blocks';
 import {
   createForLoop,
   createIfBlock,
@@ -33,25 +34,18 @@ import {
   isConnectedIfLoopBlock,
 } from './r3_control_flow';
 import {createDeferredBlock, isConnectedDeferLoopBlock} from './r3_deferred_blocks';
-import {createContentBlock} from './r3_content_blocks';
 import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
 
-const BIND_NAME_REGEXP = /^(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*)$/;
+const BIND_NAME_REGEXP = /^(?:(let-)|(#)|(@))(.*)$/;
 
-// Group 1 = "bind-"
-const KW_BIND_IDX = 1;
-// Group 2 = "let-"
-const KW_LET_IDX = 2;
-// Group 3 = "ref-/#"
-const KW_REF_IDX = 3;
-// Group 4 = "on-"
-const KW_ON_IDX = 4;
-// Group 5 = "bindon-"
-const KW_BINDON_IDX = 5;
-// Group 6 = "@"
-const KW_AT_IDX = 6;
-// Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
-const IDENT_KW_IDX = 7;
+// Group 1 = "let-"
+const KW_LET_IDX = 1;
+// Group 2 = "#"
+const KW_REF_IDX = 2;
+// Group 3 = "@"
+const KW_AT_IDX = 3;
+// Group 4 = the identifier after "let-", "#" or "@"
+const IDENT_KW_IDX = 4;
 
 const BINDING_DELIMS = {
   BANANA_BOX: {start: '[(', end: ')]'},
@@ -728,22 +722,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     const bindParts = name.match(BIND_NAME_REGEXP);
 
     if (bindParts) {
-      if (bindParts[KW_BIND_IDX] != null) {
-        const identifier = bindParts[IDENT_KW_IDX];
-        const keySpan = createKeySpan(srcSpan, bindParts[KW_BIND_IDX], identifier);
-        this.bindingParser.parsePropertyBinding(
-          identifier,
-          value,
-          false,
-          false,
-          srcSpan,
-          absoluteOffset,
-          attribute.valueSpan,
-          matchableAttributes,
-          parsedProperties,
-          keySpan,
-        );
-      } else if (bindParts[KW_LET_IDX]) {
+      if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
           const identifier = bindParts[IDENT_KW_IDX];
           const keySpan = createKeySpan(srcSpan, bindParts[KW_LET_IDX], identifier);
@@ -755,46 +734,6 @@ class HtmlAstToIvyAst implements html.Visitor {
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_REF_IDX], identifier);
         this.parseReference(identifier, value, srcSpan, keySpan, attribute.valueSpan, references);
-      } else if (bindParts[KW_ON_IDX]) {
-        const events: ParsedEvent[] = [];
-        const identifier = bindParts[IDENT_KW_IDX];
-        const keySpan = createKeySpan(srcSpan, bindParts[KW_ON_IDX], identifier);
-        this.bindingParser.parseEvent(
-          identifier,
-          value,
-          /* isAssignmentEvent */ false,
-          srcSpan,
-          attribute.valueSpan || srcSpan,
-          matchableAttributes,
-          events,
-          keySpan,
-        );
-        addEvents(events, boundEvents);
-      } else if (bindParts[KW_BINDON_IDX]) {
-        const identifier = bindParts[IDENT_KW_IDX];
-        const keySpan = createKeySpan(srcSpan, bindParts[KW_BINDON_IDX], identifier);
-        this.bindingParser.parsePropertyBinding(
-          identifier,
-          value,
-          false,
-          true,
-          srcSpan,
-          absoluteOffset,
-          attribute.valueSpan,
-          matchableAttributes,
-          parsedProperties,
-          keySpan,
-        );
-        this.parseAssignmentEvent(
-          identifier,
-          value,
-          srcSpan,
-          attribute.valueSpan,
-          matchableAttributes,
-          boundEvents,
-          keySpan,
-          absoluteOffset,
-        );
       } else if (bindParts[KW_AT_IDX]) {
         const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(

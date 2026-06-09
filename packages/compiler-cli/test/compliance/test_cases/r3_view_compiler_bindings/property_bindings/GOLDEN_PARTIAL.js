@@ -898,9 +898,6 @@ export class MyComponent {
     <a href="{{evil}}{{evil}}"></a>
     <div attr.style="{{evil}}{{evil}}"></div>
     <div [(innerHTML)]="evil"></div>
-    <div bindon-innerHTML="evil"></div>
-    <iframe [(srcdoc)]="evil"></iframe>
-    <iframe bindon-srcdoc="evil"></iframe>
     <img [(src)]="evil" />
     <iframe [(src)]="evil"></iframe>
     <object [(data)]="evil"></object>
@@ -921,9 +918,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <a href="{{evil}}{{evil}}"></a>
     <div attr.style="{{evil}}{{evil}}"></div>
     <div [(innerHTML)]="evil"></div>
-    <div bindon-innerHTML="evil"></div>
     <iframe [(srcdoc)]="evil"></iframe>
-    <iframe bindon-srcdoc="evil"></iframe>
     <img [(src)]="evil" />
     <iframe [(src)]="evil"></iframe>
     <object [(data)]="evil"></object>

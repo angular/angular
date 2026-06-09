@@ -336,17 +336,6 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should parse bound properties via bind- ', () => {
-      expectFromHtml('<div bind-prop="v"></div>').toEqual([
-        ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
-      ]);
-    });
-
-    it('should report missing property names in bind- syntax', () => {
-      expect(() => parse('<div bind-></div>')).toThrowError(/Property name is missing in binding/);
-    });
-
     it('should parse bound properties via {{...}}', () => {
       expectFromHtml('<div prop="{{v}}"></div>').toEqual([
         ['Element', 'div'],
@@ -499,13 +488,6 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should support reference via ref-...', () => {
-      expectFromHtml('<ng-template ref-a></ng-template>').toEqual([
-        ['Template'],
-        ['Reference', 'a', ''],
-      ]);
-    });
-
     it('should report an error if a reference is used multiple times on the same template', () => {
       expect(() => parse('<ng-template #a #a></ng-template>')).toThrowError(
         /Reference "#a" is defined more than once/,
@@ -602,17 +584,6 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should parse bound events via on-', () => {
-      expectFromHtml('<div on-event="v"></div>').toEqual([
-        ['Element', 'div'],
-        ['BoundEvent', ParsedEventType.Regular, 'event', null, 'v'],
-      ]);
-    });
-
-    it('should report missing event names in on- syntax', () => {
-      expect(() => parse('<div on-></div>')).toThrowError(/Event name is missing in binding/);
-    });
-
     it('should parse bound events and properties via [(...)]', () => {
       expectFromHtml('<div [(prop)]="v"></div>').toEqual([
         ['Element', 'div'],
@@ -626,14 +597,6 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['BoundAttribute', BindingType.TwoWay, 'prop', '$any(v)'],
         ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, '$any(v)'],
-      ]);
-    });
-
-    it('should parse bound events and properties via bindon-', () => {
-      expectFromHtml('<div bindon-prop="v"></div>').toEqual([
-        ['Element', 'div'],
-        ['BoundAttribute', BindingType.TwoWay, 'prop', 'v'],
-        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v'],
       ]);
     });
 
@@ -723,12 +686,6 @@ describe('R3 template transform', () => {
       );
     });
 
-    it('should report missing property names in bindon- syntax', () => {
-      expect(() => parse('<div bindon-></div>')).toThrowError(
-        /Property name is missing in binding/,
-      );
-    });
-
     it('should report an error on empty expression', () => {
       expect(() => parse('<div (event)="">')).toThrowError(/Empty expressions are not allowed/);
       expect(() => parse('<div (event)="   ">')).toThrowError(/Empty expressions are not allowed/);
@@ -774,13 +731,6 @@ describe('R3 template transform', () => {
   describe('references', () => {
     it('should parse references via #...', () => {
       expectFromHtml('<div #a></div>').toEqual([
-        ['Element', 'div'],
-        ['Reference', 'a', ''],
-      ]);
-    });
-
-    it('should parse references via ref-', () => {
-      expectFromHtml('<div ref-a></div>').toEqual([
         ['Element', 'div'],
         ['Reference', 'a', ''],
       ]);
