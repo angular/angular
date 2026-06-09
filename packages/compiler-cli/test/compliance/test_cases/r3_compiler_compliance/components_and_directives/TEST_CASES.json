@@ -163,6 +163,22 @@
           "files": ["nested_component_definition.js"]
         }
       ]
+    },
+    {
+      "description": "should support abstract directives",
+      "inputFiles": ["abstract_directive.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output",
+          "files": [
+            {
+              "expected": "abstract_directive.js",
+              "generated": "abstract_directive.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "instruction compile"]
     }
   ]
 }
