@@ -361,7 +361,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpNamespaceEmulated],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpNamespaceEmulated);
         fixture.detectChanges();
@@ -384,7 +384,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpNamespaceNone],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpNamespaceNone);
         fixture.detectChanges();
@@ -407,7 +407,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpNamespaceShadow],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpNamespaceShadow);
         fixture.detectChanges();
@@ -510,7 +510,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpStylePropNamespace],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpStylePropNamespace);
         fixture.detectChanges();
@@ -531,7 +531,7 @@ describe('DefaultDomRendererV2', () => {
         expect(() => {
           TestBed.configureTestingModule({
             imports: [CmpStylePropError],
-            providers: [provideCssVarNamespacing('my-namespace_')],
+            providers: [provideCssVarNamespacing('my-namespace')],
           });
         }).toThrowError(/CSS variable "--global-foo" has a single hyphen after "--global"/);
       });
@@ -548,7 +548,7 @@ describe('DefaultDomRendererV2', () => {
 
         TestBed.configureTestingModule({
           imports: [CmpRendererSetStyle],
-          providers: [provideCssVarNamespacing('my-namespace_')],
+          providers: [provideCssVarNamespacing('my-namespace')],
         });
         const fixture = TestBed.createComponent(CmpRendererSetStyle);
         const comp = fixture.componentInstance;
