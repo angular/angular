@@ -36,7 +36,7 @@ import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/to
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../directive_matching';
-import {getInvalidCssGlobalError, splitAtColon, splitAtPeriod} from '../util';
+import {namespaceCssVariable, splitAtColon, splitAtPeriod} from '../util';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
@@ -598,13 +598,10 @@ export class BindingParser {
         if (!boundName.startsWith('--')) {
           boundPropertyName = boundName;
         } else {
-          if (boundName.startsWith('--global-') && !boundName.startsWith('--global--')) {
-            this._reportError(getInvalidCssGlobalError(boundName), boundProp.sourceSpan);
-          }
-          if (boundName.startsWith('--global--')) {
-            boundPropertyName = '--' + boundName.substring('--global--'.length);
-          } else {
-            boundPropertyName = '--%NS%' + boundName.substring('--'.length);
+          try {
+            boundPropertyName = namespaceCssVariable(boundName);
+          } catch (e) {
+            this._reportError((e as Error).message, boundProp.sourceSpan);
           }
         }
         bindingType = BindingType.Style;

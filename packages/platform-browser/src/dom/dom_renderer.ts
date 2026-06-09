@@ -78,20 +78,23 @@ export const REMOVE_STYLES_ON_COMPONENT_DESTROY = new InjectionToken<boolean>(
  *
  * Typically set via {@link provideCssVarNamespacing}.
  */
-export const CSS_VAR_NAMESPACE = new InjectionToken<string>('CSS_VAR_NAMESPACE');
+export const CSS_VAR_NAMESPACE = new InjectionToken<string>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CSS_VAR_NAMESPACE' : '',
+);
 
 /**
  * Configures the application to use the given namespace for all CSS variables.
  *
- * @param namespace The prefix string to use as a namespace. This is typically the `APP_ID`
- *     followed by a separator, such as 'my-app_'.
+ * @param namespace The prefix string to use as a namespace. If not provided, it defaults
+ *     to the `APP_ID`. An underscore is appended unconditionally.
  * @publicApi
  */
-export function provideCssVarNamespacing(namespace: string): EnvironmentProviders {
+export function provideCssVarNamespacing(namespace?: string): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: CSS_VAR_NAMESPACE,
-      useValue: namespace,
+      useFactory: (appId: string) => `${namespace ?? appId}_`,
+      deps: [APP_ID],
     },
   ]);
 }
@@ -419,10 +422,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
-    if (style.startsWith('--')) {
+    const isVariable = style.startsWith('--');
+    if (isVariable) {
       style = style.replace('%NS%', this.cssVarNamespace);
-      el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
-    } else if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
+    }
+    if (isVariable || flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
       el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {
       el.style[style] = value;
@@ -430,10 +434,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
-    if (style.startsWith('--')) {
+    const isVariable = style.startsWith('--');
+    if (isVariable) {
       style = style.replace('%NS%', this.cssVarNamespace);
-      el.style.removeProperty(style);
-    } else if (flags & RendererStyleFlags2.DashCase) {
+    }
+    if (isVariable || flags & RendererStyleFlags2.DashCase) {
       // removeProperty has no effect when used on camelCased properties.
       el.style.removeProperty(style);
     } else {
