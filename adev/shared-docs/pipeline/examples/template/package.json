@@ -16,7 +16,6 @@
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
-    "@angular/platform-browser-dynamic": "^22.0.0",
     "@angular/router": "^22.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -26,14 +25,7 @@
     "@angular/build": "^22.0.0",
     "@angular/cli": "^22.0.0",
     "@angular/compiler-cli": "^22.0.0",
-    "@types/jasmine": "~6.0.0",
     "@types/node": "^20.14.8",
-    "jasmine-core": "~6.3.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.2.0",
-    "typescript": "~5.9.2"
+    "typescript": "~6.0.3"
   }
 }
