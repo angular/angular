@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
-import {signal} from '@angular/core';
-import {form, required, provideExperimentalWebMcpForms} from '@angular/forms/signals';
+import {ApplicationRef, Component, input, linkedSignal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {form, provideExperimentalWebMcpForms, required} from '@angular/forms/signals';
+import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 
 describe('Signal Forms WebMCP Integration', () => {
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('Signal Forms WebMCP Integration', () => {
       });
     });
 
-    it('should infer schema and register form as a tool', () => {
+    it('should infer schema and register form as a tool', async () => {
       const model = signal({
         name: 'John',
         age: 30,
@@ -47,6 +47,7 @@ describe('Signal Forms WebMCP Integration', () => {
           },
         });
       });
+      await TestBed.inject(ApplicationRef).whenStable();
 
       const registeredTools = globalThis.navigator.modelContextTesting!.listTools();
       expect(registeredTools[0].name).toBe('testFormTool');
@@ -76,7 +77,7 @@ describe('Signal Forms WebMCP Integration', () => {
       });
     });
 
-    it('should infer required validators in schema', () => {
+    it('should infer required validators in schema', async () => {
       const model = signal({
         name: 'John',
         age: 30,
@@ -101,6 +102,7 @@ describe('Signal Forms WebMCP Integration', () => {
           },
         );
       });
+      await TestBed.inject(ApplicationRef).whenStable();
 
       const registeredTools = globalThis.navigator.modelContextTesting!.listTools();
       const tool = registeredTools.find((t) => t.name === 'requiredTestTool')!;
@@ -143,6 +145,7 @@ describe('Signal Forms WebMCP Integration', () => {
           },
         });
       });
+      await TestBed.inject(ApplicationRef).whenStable();
 
       const result = await globalThis.navigator.modelContextTesting!.executeTool(
         'testFormSubmitTool',
@@ -184,6 +187,7 @@ describe('Signal Forms WebMCP Integration', () => {
           },
         );
       });
+      await TestBed.inject(ApplicationRef).whenStable();
 
       const result = await globalThis.navigator.modelContextTesting!.executeTool(
         'testFormInvalidTool',
@@ -219,6 +223,7 @@ describe('Signal Forms WebMCP Integration', () => {
           },
         });
       });
+      await TestBed.inject(ApplicationRef).whenStable();
 
       const result = await globalThis.navigator.modelContextTesting!.executeTool(
         'testFormSubmitFailTool',
@@ -251,6 +256,7 @@ describe('Signal Forms WebMCP Integration', () => {
           },
         });
       });
+      await TestBed.inject(ApplicationRef).whenStable();
 
       await expectAsync(
         globalThis.navigator.modelContextTesting!.executeTool(
@@ -270,6 +276,7 @@ describe('Signal Forms WebMCP Integration', () => {
               description: 'A null tool',
             },
           });
+          TestBed.inject(ApplicationRef).tick();
         }).toThrowError(/Could not accurately infer WebMCP schema/);
       });
       expect(
@@ -285,6 +292,7 @@ describe('Signal Forms WebMCP Integration', () => {
               description: 'An empty array tool',
             },
           });
+          TestBed.inject(ApplicationRef).tick();
         }).toThrowError(/Could not accurately infer WebMCP schema/);
       });
       expect(
@@ -302,11 +310,30 @@ describe('Signal Forms WebMCP Integration', () => {
               description: 'A symbol tool',
             },
           });
+          TestBed.inject(ApplicationRef).tick();
         }).toThrowError(/Could not accurately infer WebMCP schema/);
       });
       expect(
         globalThis.navigator.modelContextTesting!.listTools().some((t) => t.name === 'symbolTool'),
       ).toBeFalse();
+    });
+
+    it('should not throw an error when reading the model', async () => {
+      @Component({
+        selector: 'app-root',
+        template: ``,
+      })
+      class App {
+        id = input.required<string>();
+        model = linkedSignal(() => ({id: this.id()}));
+
+        form = form(this.model, () => {}, {
+          experimentalWebMcpTool: {description: 'foo', name: 'foo'},
+        });
+      }
+
+      await TestBed.inject(ApplicationRef).whenStable();
+      expect(() => TestBed.createComponent(App)).not.toThrow();
     });
   });
 
