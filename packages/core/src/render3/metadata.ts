@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {noSideEffects} from '../util/closure';
 
 interface TypeWithMetadata extends Type<any> {
@@ -58,10 +58,10 @@ export function hasAsyncClassMetadata(type: Type<unknown>): boolean {
  * @param metadataSetterFn Function that forms a scope in which the `setClassMetadata` is invoked
  */
 export function setClassMetadataAsync(
-  type: Type<any>,
-  dependencyLoaderFn: () => Array<Promise<Type<unknown>>>,
-  metadataSetterFn: (...types: Type<unknown>[]) => void,
-): () => Promise<Array<Type<unknown>>> {
+  type: Type<any> | AbstractType<any>,
+  dependencyLoaderFn: () => Array<Promise<Type<unknown> | AbstractType<unknown>>>,
+  metadataSetterFn: (...types: (Type<unknown> | AbstractType<unknown>)[]) => void,
+): () => Promise<Array<Type<unknown> | AbstractType<unknown>>> {
   const componentClass = type as any; // cast to `any`, so that we can monkey-patch it
   componentClass[ASYNC_COMPONENT_METADATA_FN] = () =>
     Promise.all(dependencyLoaderFn()).then((dependencies) => {
