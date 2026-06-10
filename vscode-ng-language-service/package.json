@@ -415,7 +415,7 @@
     "@types/jasmine-reporters": "~2.5.3",
     "@types/node": "^24.5.2",
     "@types/vscode": "^1.74.3",
-    "@vscode/test-electron": "~2.5.2",
+    "@vscode/test-electron": "~3.0.0",
     "@vscode/vsce": "~3.9.0",
     "jasmine": "6.3.0",
     "jasmine-core": "6.3.0",
