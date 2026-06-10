@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { Component, Directive } from '@angular/core';
 import * as i0 from "@angular/core";
 
 …
@@ -12,5 +12,14 @@ export class AbstractDir {
     type: AbstractDir,
     selectors: [["", "test-dir", ""]]
   });
+}
+…
+export class AbstractComp {
+  …
+  static ɵfac = function AbstractComp_Factory(__ngFactoryType__) {
+    …
+    return new (__ngFactoryType__ || AbstractComp)();
+  };
+    …
 }
 …

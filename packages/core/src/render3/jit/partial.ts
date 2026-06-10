@@ -19,7 +19,7 @@ import {
   R3DeclarePipeFacade,
   R3DeclareServiceFacade,
 } from '../../compiler/compiler_facade';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {setClassMetadata, setClassMetadataAsync} from '../metadata';
 
 import {angularCoreEnv} from './environment';
@@ -75,10 +75,14 @@ export function ɵɵngDeclareClassMetadataAsync(decl: {
     propDecorators: {[field: string]: any} | null;
   };
 }): void {
-  setClassMetadataAsync(decl.type, decl.resolveDeferredDeps, (...types: Type<unknown>[]) => {
-    const meta = decl.resolveMetadata(...types);
-    setClassMetadata(decl.type, meta.decorators, meta.ctorParameters, meta.propDecorators);
-  });
+  setClassMetadataAsync(
+    decl.type,
+    decl.resolveDeferredDeps,
+    (...types: (Type<unknown> | AbstractType<unknown>)[]) => {
+      const meta = decl.resolveMetadata(...(types as Type<unknown>[]));
+      setClassMetadata(decl.type, meta.decorators, meta.ctorParameters, meta.propDecorators);
+    },
+  );
 }
 
 /**

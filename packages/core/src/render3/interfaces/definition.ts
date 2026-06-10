@@ -295,9 +295,6 @@ export interface DirectiveDef<T> {
  * See: {@link defineComponent}
  */
 export interface ComponentDef<T> extends DirectiveDef<T> {
-  /** Token representing the component. Used by DI. */
-  readonly type: Type<T>;
-
   /**
    * Unique ID for the component. Used in view encapsulation and
    * to keep track of the injector in standalone components.
