@@ -191,7 +191,11 @@ class HtmlAstToIvyAst implements html.Visitor {
     let parsedElement: t.Content | t.Template | t.Element | undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       const selector = preparsedElement.selectAttr;
+
+      this.reportUnsupportedNgContentBindings(parsedProperties, boundEvents);
+
       const attrs: t.TextAttribute[] = element.attrs.map((attr) => this.visitAttribute(attr));
+
       parsedElement = new t.Content(
         selector,
         attrs,
@@ -297,6 +301,27 @@ class HtmlAstToIvyAst implements html.Visitor {
     return this.processedNodes.has(text)
       ? null
       : this._visitTextWithInterpolation(text.value, text.sourceSpan, text.tokens, text.i18n);
+  }
+
+  private reportUnsupportedNgContentBindings(
+    properties: ParsedProperty[],
+    events: t.BoundEvent[],
+  ): void {
+    const reported = new Set<string>();
+
+    for (const binding of [...properties, ...events]) {
+      const sourceSpan = binding.sourceSpan;
+      const key = `${sourceSpan.start.offset}:${sourceSpan.end.offset}`;
+      if (reported.has(key)) {
+        continue;
+      }
+      reported.add(key);
+
+      this.reportError(
+        `Property and event bindings are not supported on <ng-content>. Binding "${sourceSpan.toString()}" will be ignored.`,
+        sourceSpan,
+      );
+    }
   }
 
   visitExpansion(expansion: html.Expansion): t.Icu | null {
