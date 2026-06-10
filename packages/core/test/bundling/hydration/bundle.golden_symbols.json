@@ -563,6 +563,7 @@
       "getCurrentTNodePlaceholderOk",
       "getDOM",
       "getDeclarationTNode",
+      "getDeclarationView",
       "getDeferBlockDataIndex",
       "getDirectiveDef",
       "getDocument",

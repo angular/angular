@@ -662,6 +662,7 @@
       "getData",
       "getDataKeys",
       "getDeclarationTNode",
+      "getDeclarationView",
       "getDirectiveDef",
       "getDocument",
       "getElementDepthCount",

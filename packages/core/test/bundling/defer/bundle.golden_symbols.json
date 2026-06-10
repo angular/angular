@@ -445,6 +445,7 @@
       "getCurrentTNode",
       "getCurrentTNodePlaceholderOk",
       "getDeclarationTNode",
+      "getDeclarationView",
       "getDeferBlockDataIndex",
       "getDirectiveDef",
       "getDocument",

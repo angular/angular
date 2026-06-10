@@ -403,6 +403,7 @@
       "getCurrentTNodePlaceholderOk",
       "getDOM",
       "getDeclarationTNode",
+      "getDeclarationView",
       "getDirectiveDef",
       "getDocument",
       "getFactoryDef",

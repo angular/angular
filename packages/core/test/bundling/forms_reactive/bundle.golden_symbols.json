@@ -590,6 +590,7 @@
       "getCurrentTNodePlaceholderOk",
       "getDOM",
       "getDeclarationTNode",
+      "getDeclarationView",
       "getDirectiveDef",
       "getDocument",
       "getElementDepthCount",

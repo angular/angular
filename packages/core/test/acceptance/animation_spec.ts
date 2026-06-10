@@ -23,6 +23,7 @@ import {
   EnvironmentInjector,
   ErrorHandler,
   inject,
+  input,
   NgModule,
   OnDestroy,
   provideZonelessChangeDetection,
@@ -2600,6 +2601,115 @@ describe('Animation', () => {
 
       // Clean up overlay panes
       document.querySelectorAll('.overlay-pane').forEach((p) => p.remove());
+    }));
+
+    it('should run animate.leave for a sibling instance when another instance of the same template enters', fakeAsync(() => {
+      // Regression test for a case where two *separate* instances of the same
+      // component (which therefore share a `TNode`) are toggled in the same
+      // change-detection tick: one panel collapses (`animate.leave`) while a
+      // sibling panel expands (`animate.enter`). Because the leaving and entering
+      // elements live in different DOM parents (each instance has its own host),
+      // the cross-parent de-duplication in `cancelLeavingNodes` used to rip the
+      // leaving element out synchronously, skipping its leave animation. The two
+      // elements belong to different declaration views, so it must be left alone.
+      const animateStyles = `
+        .panel {
+          overflow: hidden;
+        }
+        .enter {
+          animation: grow 10ms;
+        }
+        .leave {
+          animation: shrink 10ms forwards;
+        }
+        @keyframes grow {
+          from { height: 0; }
+          to { height: 60px; }
+        }
+        @keyframes shrink {
+          from { height: 60px; }
+          to { height: 0; }
+        }
+      `;
+
+      @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
+        selector: 'expandable-cmp',
+        styles: [animateStyles],
+        template: `
+          @if (open()) {
+            <div class="panel" animate.enter="enter" animate.leave="leave">Panel {{ id }}</div>
+          }
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ExpandableComponent {
+        id = '';
+        open = signal(false);
+      }
+
+      @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
+        selector: 'test-cmp',
+        imports: [ExpandableComponent],
+        // Two instances of the SAME template; only one open at a time.
+        template: `
+          <expandable-cmp #a />
+          <expandable-cmp #b />
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        @ViewChild('a', {read: ExpandableComponent}) a!: ExpandableComponent;
+        @ViewChild('b', {read: ExpandableComponent}) b!: ExpandableComponent;
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.a.id = 'A';
+      cmp.b.id = 'B';
+      // Initially only A is open.
+      cmp.a.open.set(true);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      const panels = () => Array.from(fixture.nativeElement.querySelectorAll('.panel'));
+      const panelByText = (text: string) =>
+        panels().find((el) => (el as HTMLElement).textContent?.includes(text)) as
+          | HTMLElement
+          | undefined;
+
+      expect(panels().length).toBe(1);
+      expect(panelByText('Panel A')).toBeTruthy();
+
+      const leavingPanelA = panelByText('Panel A')!;
+
+      // Open B (and close A) in the same change-detection tick. A and B are two
+      // separate instances of the same component, so their panels share a `TNode`
+      // but live in different DOM parents (their respective hosts).
+      cmp.a.open.set(false);
+      cmp.b.open.set(true);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      // B's panel should have entered.
+      expect(panelByText('Panel B')).toBeTruthy();
+
+      // A's panel must NOT have been removed synchronously — its leave animation
+      // should still be running, so the element stays connected to the DOM.
+      expect(leavingPanelA.isConnected).toBe(true);
+      expect(panelByText('Panel A')).toBeTruthy();
+
+      // Once A's leave animation completes, it is removed as usual.
+      leavingPanelA.dispatchEvent(new AnimationEvent('animationend', {animationName: 'shrink'}));
+      tickAnimationFrames(1);
+      fixture.detectChanges();
+
+      expect(leavingPanelA.isConnected).toBe(false);
+      expect(panelByText('Panel A')).toBeUndefined();
+      expect(panelByText('Panel B')).toBeTruthy();
     }));
   });
 
