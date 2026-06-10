@@ -188,8 +188,12 @@ a,
 }
 
 .docs-navigation-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 0.5rem 0.5rem 1rem;
   background: var(--septenary-contrast);
+
   &:not(:first-child) {
     margin-top: 2rem;
   }
