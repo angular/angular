@@ -35,7 +35,7 @@ const registerWebMcpForm: RegisterWebMcpForm = async (formTree, options) => {
 
 function initWebMcpForm(
   formTree: FieldTree<unknown>,
-  options: {name: string; description?: string},
+  options: {name: string; description: string},
   injector: Injector,
 ) {
   const node = formTree() as FieldNode;
