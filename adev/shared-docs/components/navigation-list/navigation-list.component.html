@@ -9,11 +9,17 @@
   >
     @for (itemGroup of groupItems(navigationItems, preserveOtherCategoryOrder); track $index) {
       @let groupLabel = itemGroup[0];
-      @let items = itemGroup[1];
+      @let group = itemGroup[1];
+      @let items = group.items;
       @let firstItem = items[0];
 
       @if (groupLabel && collapsableLevel() !== firstItem.level && items.length > 1) {
-        <li class="docs-navigation-group">{{ groupLabel }}</li>
+        <li class="docs-navigation-group">
+          <span>{{ groupLabel }}</span>
+          <ng-container
+            *ngTemplateOutlet="itemStatus; context: {$implicit: {status: group.status}}"
+          />
+        </li>
       }
       @for (item of items; track $index) {
         <li
