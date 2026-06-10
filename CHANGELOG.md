@@ -1,3 +1,41 @@
+<a name="21.2.17"></a>
+# 21.2.17 (2026-06-10)
+## Deprecations
+### platform-server
+- XHR support in `@angular/platform-server` is deprecated. Use standard `fetch` APIs instead.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [86a56dc279](https://github.com/angular/angular/commit/86a56dc279e71159d09a073a3cb138f49131995b) | fix | Limits date format string length |
+| [d846326b07](https://github.com/angular/angular/commit/d846326b071e0a4ab090e068d934b182926c6b15) | fix | skip transfer cache for uncacheable HTTP traffic |
+| [bc55749698](https://github.com/angular/angular/commit/bc55749698ce3917160cd8e9f7108f3c5d1c0b32) | fix | use cryptographically secure SHA-256 for transfer cache key generation |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dc9c99636d](https://github.com/angular/angular/commit/dc9c99636d3471ed5a3c5cda54b95f604cd2b9a4) | fix | sanitize two-way properties |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1523061137](https://github.com/angular/angular/commit/152306113760e13196653699b42046d9f4129a37) | fix | harden TransferState restoration against DOM clobbering |
+| [88832c84f8](https://github.com/angular/angular/commit/88832c84f8a3cd88d80adcde539a6f91a1f30b74) | fix | validate lowercase SVG animation attribute names ([#69269](https://github.com/angular/angular/pull/69269)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bcb1b7ea25](https://github.com/angular/angular/commit/bcb1b7ea2575b140f7bf202ad4f779e402cd6094) | fix | preserve empty referrer option in HttpRequest |
+| [a810a319d1](https://github.com/angular/angular/commit/a810a319d10a8254307eb8f0598e7a888ce09ec0) | fix | Rejects non-HTTP(S) URLs in JSONP requests |
+| [e245d40c4d](https://github.com/angular/angular/commit/e245d40c4d05665ab4814c594b8e0849b6e88a2d) | fix | skip transfer cache for fetch credentialed requests |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [35510746b7](https://github.com/angular/angular/commit/35510746b7d6b5c3de41de04c0586fc286c9e748) | fix | harden platform location origin validation during SSR |
+| [13fb0afe93](https://github.com/angular/angular/commit/13fb0afe93b45e3c2383969f70d3ee1f0146ecfb) | refactor | deprecate ServerXhr ([#69255](https://github.com/angular/angular/pull/69255)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b9d29381bb](https://github.com/angular/angular/commit/b9d29381bb4442164b19d9b7e0baa147a7b25629) | fix | Strips sensitive headers on cross-origin redirects |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.16"></a>
 # 21.2.16 (2026-06-03)
 ### common
