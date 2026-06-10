@@ -20,6 +20,7 @@ import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-co
 import {CopyLinkButton} from '../../copy-link-anchor/copy-link-anchor.component';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
 import {Clipboard} from '@angular/cdk/clipboard';
+import {isFirefox} from '../../../utils';
 
 describe('DocViewer', () => {
   let exampleContentSpy: jasmine.SpyObj<ExampleViewerContentLoader>;
@@ -62,6 +63,23 @@ describe('DocViewer', () => {
         <code>
           <div class="hljs-ln-line"></div>
         </code>
+    </div>
+  `;
+
+  const exampleContentWithVideoFacade = `
+    <div class="docs-video-container">
+      <a
+        class="docs-video-facade"
+        href="https://www.youtube.com/watch?v=abc123&autoplay=1"
+        target="_blank"
+        rel="noopener"
+        aria-label="Play video: Test video"
+        data-video-src="https://www.youtube.com/embed/abc123"
+        data-video-title="Test video"
+      >
+        <img class="docs-video-thumbnail" src="https://i.ytimg.com/vi/abc123/maxresdefault.jpg" alt="" loading="lazy" />
+        <span class="docs-video-play-button" aria-hidden="true"></span>
+      </a>
     </div>
   `;
 
@@ -236,5 +254,26 @@ describe('DocViewer', () => {
     // Because the copyButton click bubbles up to an anchor tag, causing a navigation, it is
     // necessary to undo this location change by going back in the history.
     window.history.back();
+  });
+
+  it('should upgrade a video facade to an iframe in browsers that can embed it', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.componentRef.setInput('docContent', exampleContentWithVideoFacade);
+
+    await fixture.whenStable();
+
+    const iframe = fixture.nativeElement.querySelector('iframe.docs-video');
+    const facade = fixture.nativeElement.querySelector('a.docs-video-facade');
+
+    if (isFirefox) {
+      // Firefox can't load the cross-origin embed under COEP, so the facade stays a link.
+      expect(facade).toBeTruthy();
+      expect(iframe).toBeNull();
+    } else {
+      expect(iframe).toBeTruthy();
+      expect(iframe.getAttribute('src')).toContain('youtube.com/embed/abc123');
+      expect(iframe.hasAttribute('credentialless')).toBeTrue();
+      expect(facade).toBeNull();
+    }
   });
 });
