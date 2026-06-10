@@ -260,8 +260,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#68eef04ac1e37b69e3e61d3e32802e0a6046d54c
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/68eef04ac1e37b69e3e61d3e32802e0a6046d54c(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#5d9842518819d66cfb65994e2dda90354410a449
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5d9842518819d66cfb65994e2dda90354410a449(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^7.27.1
         version: 7.29.0(@babel/core@7.29.0)
@@ -1664,9 +1664,9 @@ packages:
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/68eef04ac1e37b69e3e61d3e32802e0a6046d54c':
-    resolution: {gitHosted: true, integrity: sha512-T6Drp02fXuaD+9yiRcv4bXTKsMROEIuCATiKQSgcILd02lT9FoyqBzNHdNHzHEYNtOZeLhMn+hkhooTTAlcpPw==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/68eef04ac1e37b69e3e61d3e32802e0a6046d54c}
-    version: 0.0.0-cef5e36af124e7442d7e2868be3f8c0bba496952
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5d9842518819d66cfb65994e2dda90354410a449':
+    resolution: {gitHosted: true, integrity: sha512-sp07Jlt/pO9uei3u6ZJdLgnOJ+Dj4/Jl30FjapEWoQf+M9f2UQ2waL1rN5thZCcHQnwNfbNbIHDCcXPFQjFeUg==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5d9842518819d66cfb65994e2dda90354410a449}
+    version: 0.0.0-b9d15e3de22a6b8b161046d1ed5cea574a2537ca
     hasBin: true
 
   '@angular/ssr@22.0.0':
@@ -7276,8 +7276,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  ejs@5.0.2:
-    resolution: {integrity: sha512-IpbUaI/CAW86l3f+T8zN0iggSc0LmMZLcIW5eRVStLVNCoTXkE0YlncbbH50fp8Cl6zHIky0sW2uUbhBqGw0Jw==}
+  ejs@6.0.1:
+    resolution: {integrity: sha512-UaaM14yby8U3k02ihS1Bmj5Kz2d7CCQM1scxpgs4Mhkq8F1wR2gl3+Ts4h5Ne4Mnt7M9m4Dw7jsuMr3+xO4vZA==}
     engines: {node: '>=0.12.18'}
     hasBin: true
 
@@ -13415,7 +13415,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/68eef04ac1e37b69e3e61d3e32802e0a6046d54c(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5d9842518819d66cfb65994e2dda90354410a449(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
@@ -13449,7 +13449,7 @@ snapshots:
       cli-progress: 3.12.0
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.4.0
-      ejs: 5.0.2
+      ejs: 6.0.1
       encoding: 0.1.13
       fast-glob: 3.3.3
       firebase: 12.14.0
@@ -19874,7 +19874,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  ejs@5.0.2: {}
+  ejs@6.0.1: {}
 
   electron-to-chromium@1.5.361: {}
 
