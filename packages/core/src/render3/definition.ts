@@ -215,9 +215,6 @@ interface DirectiveDefinition<T> {
 }
 
 interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'> {
-  /** Component type, needed to configure the injector. */
-  type: Type<T>;
-
   /**
    * The number of nodes, local refs, and pipes in this component template.
    *
@@ -347,7 +344,6 @@ export function ɵɵdefineComponent<T>(
     const baseDef = getNgDirectiveDef(componentDefinition as DirectiveDefinition<T>);
     const def: Writable<ComponentDef<T>> = {
       ...baseDef,
-      type: componentDefinition.type,
       decls: componentDefinition.decls,
       vars: componentDefinition.vars,
       template: componentDefinition.template,
@@ -680,7 +676,7 @@ export function extractDefListOrFactory<T>(
 /**
  * A map that contains the generated component IDs and type.
  */
-export const GENERATED_COMP_IDS = new Map<string, Type<unknown>>();
+export const GENERATED_COMP_IDS = new Map<string, Type<unknown> | AbstractType<unknown>>();
 
 /**
  * A method can returns a component ID from the component definition using a variant of DJB2 hash
