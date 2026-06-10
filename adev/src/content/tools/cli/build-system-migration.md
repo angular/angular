@@ -12,8 +12,8 @@ This new build system is stable and fully supported for use with Angular applica
 You can migrate to the new build system with applications that use the `browser` builder.
 If using a custom builder, please refer to the documentation for that builder on possible migration options.
 
-IMPORTANT: The existing webpack-based build system is still considered stable and fully supported.
-Applications can continue to use the `browser` builder and projects can opt-out of migrating during an update.
+IMPORTANT: The existing webpack-based build system and `browser` builder are deprecated.
+Applications can temporarily continue to use the `browser` builder and projects can opt-out of migrating during an update, but the Angular team recommends migrating to the new build system.
 
 ## For new applications
 
