@@ -120,6 +120,26 @@ The `status` signal provides a specific `ResourceStatus` that describes the stat
 
 You can use this status information to conditionally display user interface elements, such as loading indicators and error messages.
 
+## Caching `resource` data with SSR
+
+When an application renders on the server, a resource loader runs once to produce the initial HTML. During hydration, the browser normally runs the same loader again.
+
+To reuse the server result, provide an `id` for the resource. Angular stores the resolved value in `TransferState` on the server and uses it on the client to initialize the resource in a `'resolved'` state.
+
+```ts
+const userId: Signal<string> = getUserId();
+
+const userResource = resource({
+  params: () => ({id: userId()}),
+  loader: ({params}) => fetchUser(params),
+  id: 'user-unique-id',
+});
+```
+
+The `id` value must be unique within your application and identical on the server and the client so that Angular can match the cached entry to the resource that requested it.
+
+IMPORTANT: Because the cached value is serialized into the page's HTML, avoid setting `id` on resources that load data specific to the user who triggered the server-side render, especially if the rendered HTML can be cached or shared between users.
+
 ## Reactive data fetching with `httpResource`
 
 [`httpResource`](/guide/http/http-resource) is a wrapper around `HttpClient` that gives you the request status and response as signals. It makes HTTP requests through the Angular HTTP stack, including interceptors.
