@@ -1,3 +1,57 @@
+<a name="20.3.25"></a>
+
+# 20.3.25 (2026-06-10)
+
+## Deprecations
+
+### platform-server
+
+- XHR support in `@angular/platform-server` is deprecated. Use standard `fetch` APIs instead.
+
+### common
+
+| Commit                                                                                           | Type | Description                                                            |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------- |
+| [9f443bc24c](https://github.com/angular/angular/commit/9f443bc24c79dca998c9434d1e235dc19dc29bba) | fix  | Limits date format string length                                       |
+| [566ad05f20](https://github.com/angular/angular/commit/566ad05f20732c38855353c3e73771ef9a34dadc) | fix  | skip transfer cache for uncacheable HTTP traffic                       |
+| [1a62130a6b](https://github.com/angular/angular/commit/1a62130a6bb313e4441f005e480768a360c71be5) | fix  | use cryptographically secure SHA-256 for transfer cache key generation |
+
+### compiler
+
+| Commit                                                                                           | Type | Description                 |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------- |
+| [a68ec702a0](https://github.com/angular/angular/commit/a68ec702a056a2706a152fce29081241fd276f12) | fix  | sanitize two-way properties |
+
+### core
+
+| Commit                                                                                           | Type | Description                                                                                                |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------------------------------------------- |
+| [768a349e6e](https://github.com/angular/angular/commit/768a349e6e54ff16deba4c1bfe12be9d0f55f443) | fix  | harden TransferState restoration against DOM clobbering                                                    |
+| [ca48b4728d](https://github.com/angular/angular/commit/ca48b4728d5f6770be63a08f64a6432207ad54c0) | fix  | validate lowercase SVG animation attribute names ([#69270](https://github.com/angular/angular/pull/69270)) |
+
+### http
+
+| Commit                                                                                           | Type | Description                                         |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------- |
+| [06be298267](https://github.com/angular/angular/commit/06be29826741212ca00e21efb6abff653e4541b5) | fix  | preserve empty referrer option in HttpRequest       |
+| [fa940e1f4d](https://github.com/angular/angular/commit/fa940e1f4de75c33ccca50357d941be53a5a0950) | fix  | Rejects non-HTTP(S) URLs in JSONP requests          |
+| [e2ef1ce72a](https://github.com/angular/angular/commit/e2ef1ce72ae084e01a76950c731052f4fa97fcdd) | fix  | skip transfer cache for fetch credentialed requests |
+
+### platform-server
+
+| Commit                                                                                           | Type     | Description                                                                   |
+| ------------------------------------------------------------------------------------------------ | -------- | ----------------------------------------------------------------------------- |
+| [49368c1859](https://github.com/angular/angular/commit/49368c185907edb48467074c56e305abbfa3544a) | fix      | harden platform location origin validation during SSR                         |
+| [d55c94ad81](https://github.com/angular/angular/commit/d55c94ad811a15c9c255164a0d66892c645f602e) | refactor | deprecate ServerXhr ([#69256](https://github.com/angular/angular/pull/69256)) |
+
+### service-worker
+
+| Commit                                                                                           | Type | Description                                        |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------- |
+| [d65a5f457b](https://github.com/angular/angular/commit/d65a5f457b1afd6bdd4d952d3f213c6aa1aabcbc) | fix  | Strips sensitive headers on cross-origin redirects |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.24"></a>
 
 # 20.3.24 (2026-06-02)
