@@ -151,10 +151,10 @@ function applyToElementOrContainer(
     } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
       maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
-      cancelLeavingNodes(tNode, rNode as HTMLElement);
+      cancelLeavingNodes(tNode, rNode as HTMLElement, parentLView);
     } else if (action === WalkTNodeTreeAction.Detach) {
       if (parentLView?.[ANIMATIONS]?.leave?.has(tNode.index)) {
-        trackLeavingNodes(tNode, rNode as HTMLElement);
+        trackLeavingNodes(tNode, rNode as HTMLElement, parentLView);
       }
       reusedNodes.delete(rNode as HTMLElement);
       runLeaveAnimationsWithCallback(
