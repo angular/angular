@@ -92,17 +92,17 @@ export const initializeOrGetDirectiveForestHooks = (
       }
       endMark(getDirectiveName(component), 'changeDetection');
     },
-    onLifecycleHookStart(component: any, lifecyle: keyof LifecycleProfile): void {
+    onLifecycleHookStart(component: any, lifecycle: keyof LifecycleProfile): void {
       if (!timingAPIEnabled()) {
         return;
       }
-      recordMark(getDirectiveName(component), lifecyle);
+      recordMark(getDirectiveName(component), lifecycle);
     },
-    onLifecycleHookEnd(component: any, lifecyle: keyof LifecycleProfile): void {
+    onLifecycleHookEnd(component: any, lifecycle: keyof LifecycleProfile): void {
       if (!timingAPIEnabled()) {
         return;
       }
-      endMark(getDirectiveName(component), lifecyle);
+      endMark(getDirectiveName(component), lifecycle);
     },
     onOutputStart(component: any, output: string): void {
       if (!timingAPIEnabled()) {
