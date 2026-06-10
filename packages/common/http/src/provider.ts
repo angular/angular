@@ -310,6 +310,15 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
  *
  * Use this feature if you want to report progress on uploads as the Xhr API supports it.
  *
+ * <div class="docs-alert docs-alert-critical">
+ *
+ * Do not use {@link withXhr} in server-side rendering (SSR) environments. XHR support on the
+ * server is **deprecated** and is intended to be removed in Angular 23 because the underlying `xhr2`
+ * library does not safely handle redirects (e.g. it can forward `Authorization` headers on
+ * cross-origin redirects and is susceptible to denial-of-service via redirect loops).
+ *
+ * </div>
+ *
  * @see {@link provideHttpClient}
  * @publicApi
  */

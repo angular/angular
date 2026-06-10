@@ -3034,6 +3034,14 @@ export const RECOMMENDATIONS: Step[] = [
     possibleIn: 2200,
     necessaryAsOf: 2200,
     level: ApplicationComplexity.Medium,
+    step: '22.0.0-deprecate-server-xhr',
+    action:
+      'XHR support in `@angular/platform-server` is deprecated and is intended to be removed in Angular 23. The underlying `xhr2` library does not safely handle redirects (e.g. it can forward `Authorization` headers on cross-origin redirects and is susceptible to DoS via redirect loops). For server-side rendering, use the default `fetch` backend instead of `withXhr()`.',
+  },
+  {
+    possibleIn: 2200,
+    necessaryAsOf: 2200,
+    level: ApplicationComplexity.Medium,
     step: '22.0.0-provide-routes-removed',
     action:
       '`provideRoutes()` has been removed. Use `provideRouter()` instead, or configure routes as a multi token using `ROUTES` if necessary. Update your application bootstrap configuration.',
