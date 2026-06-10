@@ -53,6 +53,8 @@ function resolveWithMinVersion(
 /**
  * Resolve `typescript/lib/tsserverlibrary` from the given locations.
  * @param probeLocations
+ * TODO: Remove probeLocations entirely and require the client to pass the exact TypeScript path
+ * to load (either the bundled version or the user-configured tsdk version as an absolute path).
  */
 export function resolveTsServer(probeLocations: string[], tsdk: string | null): NodeModule {
   if (tsdk !== null) {

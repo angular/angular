@@ -649,6 +649,18 @@ export class AngularLanguageClient implements vscode.Disposable {
         const isApproved = this.context.workspaceState.get<boolean>(stateKey);
 
         if (isApproved) {
+          if (!path.isAbsolute(workspaceTsdk)) {
+            const workspaceFolders = vscode.workspace.workspaceFolders || [];
+            for (const folder of workspaceFolders) {
+              const absolutePath = path.join(folder.uri.fsPath, workspaceTsdk);
+              if (fs.existsSync(path.join(absolutePath, 'tsserverlibrary.js'))) {
+                return absolutePath;
+              }
+            }
+            if (workspaceFolders.length > 0) {
+              return path.join(workspaceFolders[0].uri.fsPath, workspaceTsdk);
+            }
+          }
           return workspaceTsdk;
         }
 
