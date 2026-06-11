@@ -252,7 +252,7 @@ Pros of keeping event contract:
 
 - JSAction's event delegation drastically reduces the number of event
   listeners registered with the browser. In extreme cases, registering
-  thousands of listeners in your app can be noticably slow.
+  thousands of listeners in your app can be noticeably slow.
 - There may be slight behavior differences when your event is dispatched via
   JSAction vs native event listeners. Always using JSAction dispatch keeps
   things consistent.
