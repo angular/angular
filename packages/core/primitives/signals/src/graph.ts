@@ -72,7 +72,6 @@ export const REACTIVE_NODE: ReactiveNode = {
   recomputing: false,
   consumerAllowSignalWrites: false,
   consumerIsAlwaysLive: false,
-  impureReactivity: false,
   kind: 'unknown',
   producerMustRecompute: () => false,
   producerRecomputeValue: () => {},
@@ -88,16 +87,6 @@ interface ReactiveLink {
    * Stores the epoch that holds when this link was observed, allowing subsequent observations of the same producer to
    * realize that there's an existing link, avoiding the creation of a new, redundant link. A value of `null` indicates
    * that the link cannot be assumed to be valid based on the epoch counter.
-   *
-   * For reactive nodes that may execute multiple times during the same epoch (`ReactiveNode.impureReactivity: true`),
-   * this field is reset to `null` at the start of their computation. Pure reactive nodes don't do this as a
-   * performance optimization.
-   *
-   * For the optimization for pure reactive nodes to be sound, this field will not be assigned the current epoch when
-   * observing the link if the consumer has been marked dirty (i.e. a signal write has occurred during the
-   * consumer's evaluation, incrementing epoch E to E+1). The dirty state causes the consumer to be recomputed again,
-   * and the epoch E+1 must not have been captured in any link as the reevaluation may also execute during epoch E+1, at
-   * which point the links from the evaluation that started in epoch E must not be assumed valid.
    */
   knownValidAtEpoch: Version | null;
   lastReadVersion: number;
@@ -188,12 +177,6 @@ export interface ReactiveNode {
   readonly consumerIsAlwaysLive: boolean;
 
   /**
-   * Whether this node is guaranteed to only be evaluated because one of its producers changes. Defaults to `false` in
-   * `REACTIVE_NODE` prototype.
-   */
-  readonly impureReactivity: boolean;
-
-  /**
    * Tracks whether producers need to recompute their value independently of the reactive graph (for
    * example, if no initial value has been computed).
    */
@@ -264,10 +247,7 @@ export function producerAccessed(node: ReactiveNode): void {
       // last read version, update the tail of the producers list of this rerun, and return.
       activeConsumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
-
-      if (!activeConsumer.dirty) {
-        nextProducerLink.knownValidAtEpoch = epoch;
-      }
+      nextProducerLink.knownValidAtEpoch = epoch;
       return;
     }
   }
@@ -297,10 +277,7 @@ export function producerAccessed(node: ReactiveNode): void {
     // the link is actually inserted. Setting it eagerly would create a dangling
     // reference into the consumer list that prevents GC of removed entries.
     prevConsumer: undefined,
-    // If a signal write has occurred that has marked the consumer dirty, subsequent reads of the same consumer cannot
-    // be considered valid as the active consumer may rerun from scratch while still on the same epoch. During that
-    // rerun, the link can therefore not be assumed to be valid based on the epoch counter.
-    knownValidAtEpoch: activeConsumer.dirty ? null : epoch,
+    knownValidAtEpoch: epoch,
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
@@ -423,18 +400,20 @@ export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNo
  * `consumerBeforeComputation` instead of calling this directly.
  */
 export function resetConsumerBeforeComputation(node: ReactiveNode): void {
-  node.producersTail = undefined;
-  node.recomputing = true;
-
-  // Impure reactive nodes may reevaluate multiple times during the same epoch, so the epoch counter cannot be used to
-  // determine whether a producer link is valid during an evaluation. As such, reset link validity.
-  if (node.impureReactivity) {
+  // Clear link validity state before running a computation, such that links that were captured in a prior computation
+  // (which may have happened in the same epoch) are not mistakenly considered valid. This is only necessary if any of
+  // the links has `knownValidAtEpoch` equal to the current epoch, for which the producer that was accessed last is used
+  // as proxy: any earlier producers cannot exceed its epoch.
+  if (node.producersTail?.knownValidAtEpoch === epoch) {
     let producer = node.producers;
     while (producer !== undefined) {
       producer.knownValidAtEpoch = null;
       producer = producer.nextProducer;
     }
   }
+
+  node.producersTail = undefined;
+  node.recomputing = true;
 }
 
 /**
