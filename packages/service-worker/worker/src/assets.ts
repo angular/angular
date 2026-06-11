@@ -16,6 +16,22 @@ import {AssetGroupConfig} from './manifest';
 import {NamedCache} from './named-cache-storage';
 import {sha1Binary} from './sha1';
 
+const UNCACHEABLE_CACHE_CONTROL_DIRECTIVES = new Set(['no-store', 'private', 'no-cache']);
+
+function hasUncacheableCacheControl(headers: Headers): boolean {
+  const cacheControl = headers.get('cache-control');
+
+  if (!cacheControl) {
+    return false;
+  }
+
+  return cacheControl.split(',').some((directive) => {
+    const directiveName = directive.split('=', 1)[0].trim().toLowerCase();
+
+    return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
+  });
+}
+
 /**
  * A group of assets that are cached in a `Cache` and managed by a given policy.
  *
@@ -151,16 +167,20 @@ export abstract class AssetGroup {
           // the response.
           return cachedResponse;
         } else {
-          // This resource has no hash, and yet exists in the cache. Check how old this request is
-          // to make sure it's still usable.
-          if (await this.needToRevalidate(req, cachedResponse)) {
-            this.idle.schedule(`revalidate(${cache.name}): ${req.url}`, async () => {
-              await this.fetchAndCacheOnce(req);
-            });
-          }
+          if (hasUncacheableCacheControl(cachedResponse.headers)) {
+            await this.removeCachedResource(req, cache);
+          } else {
+            // This resource has no hash, and yet exists in the cache. Check how old this request
+            // is to make sure it's still usable.
+            if (await this.needToRevalidate(req, cachedResponse)) {
+              this.idle.schedule(`revalidate(${cache.name}): ${req.url}`, async () => {
+                await this.fetchAndCacheOnce(req);
+              });
+            }
 
-          // In either case (revalidation or not), the cached response must be good.
-          return cachedResponse;
+            // In either case (revalidation or not), the cached response must be good.
+            return cachedResponse;
+          }
         }
       }
 
@@ -298,6 +318,8 @@ export abstract class AssetGroup {
    * Fetch the given resource from the network, and cache it if able.
    */
   protected async fetchAndCacheOnce(req: Request, used: boolean = true): Promise<Response> {
+    const url = this.adapter.normalizeUrl(req.url);
+
     // The `inFlightRequests` map holds information about which caching operations are currently
     // underway for known resources. If this request appears there, another "thread" is already
     // in the process of caching it, and this work should not be duplicated.
@@ -327,6 +349,10 @@ export abstract class AssetGroup {
         throw new Error(
           `Response not Ok (fetchAndCacheOnce): request for ${req.url} returned response ${res.status} ${res.statusText}`,
         );
+      }
+
+      if (!this.hashes.has(url) && hasUncacheableCacheControl(res.headers)) {
+        return res;
       }
 
       try {
@@ -381,6 +407,15 @@ export abstract class AssetGroup {
     }
 
     return res;
+  }
+
+  private async removeCachedResource(req: Request, cache: Cache): Promise<void> {
+    await cache.delete(req, this.config.cacheQueryOptions);
+
+    if (!this.hashes.has(this.adapter.normalizeUrl(req.url))) {
+      const metaTable = await this.metadata;
+      await metaTable.delete(req.url);
+    }
   }
 
   /**
@@ -645,6 +680,10 @@ export class PrefetchAssetGroup extends AssetGroup {
           const res = await updateFrom.lookupResourceWithoutHash(url);
           if (res === null || res.metadata === undefined) {
             // Unexpected, but not harmful.
+            return;
+          }
+
+          if (hasUncacheableCacheControl(res.response.headers)) {
             return;
           }
 
