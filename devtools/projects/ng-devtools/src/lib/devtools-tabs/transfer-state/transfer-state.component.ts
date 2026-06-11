@@ -21,6 +21,7 @@ import {
   MatCellDef,
   MatHeaderRowDef,
   MatRowDef,
+  MatNoDataRow,
 } from '@angular/material/table';
 import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
 import {FormsModule} from '@angular/forms';
@@ -77,6 +78,7 @@ function getByteSize(key: string, value: TransferStateValue): number | null {
     MatHeaderCellDef,
     MatCellDef,
     MatHeaderRowDef,
+    MatNoDataRow,
     MatRowDef,
     MatSort,
     MatSortHeader,

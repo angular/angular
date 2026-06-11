@@ -57,6 +57,7 @@
           </div>
         </div>
         <div class="filter">
+          <!-- TODO(hawkgs): Consider substituting with ng-filter -->
           <input
             type="text"
             class="ng-input filter-input"
@@ -138,8 +139,12 @@
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+          <tr *matNoDataRow>
+            <td [attr.colspan]="displayedColumns.length">No such key</td>
+          </tr>
         </table>
       </div>
     </div>

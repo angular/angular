@@ -6,6 +6,7 @@ sass_binary(
     name = "transfer_state_component_styles",
     src = "transfer-state.component.scss",
     deps = [
+        "//devtools/projects/ng-devtools/src/styles:material_sass_deps",
         "//devtools/projects/ng-devtools/src/styles:typography",
     ],
 )
