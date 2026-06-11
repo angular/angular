@@ -321,13 +321,13 @@ function createCtorDepType(dep: R3DependencyMetadata): o.LiteralMapExpr | null {
 export function isDelegatedFactoryMetadata(
   meta: R3FactoryMetadata,
 ): meta is R3DelegatedFnOrClassMetadata {
-  return (meta as any).delegateType !== undefined;
+  return 'delegateType' in meta;
 }
 
 export function isExpressionFactoryMetadata(
   meta: R3FactoryMetadata,
 ): meta is R3ExpressionFactoryMetadata {
-  return (meta as any).expression !== undefined;
+  return 'expression' in meta;
 }
 
 function getInjectFn(target: FactoryTarget): o.ExternalReference {
