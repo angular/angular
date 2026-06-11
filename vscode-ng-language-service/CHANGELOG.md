@@ -1,3 +1,11 @@
+## 22.0.1 (2026-06-11)
+
+- fix(vscode-extension): resolve relative workspace tsdk paths to absolute ([f6695b0eb2](https://github.com/angular/angular/commit/f6695b0eb26e70a92579666396a5ff417b8874ff))
+- fix(language-service): prevent external template inlay hints from appearing in TS files ([43a0e28729](https://github.com/angular/angular/commit/43a0e2872908d1a614139317e8dfeb52d9f69f75))
+- fix(vscode-extension): inspect tsdk configurations correctly ([102ffb65d1](https://github.com/angular/angular/commit/102ffb65d1b5dd95feaf39182ee4248e8ea01be2))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 22.0.0 (2026-06-03)
 ### Breaking Changes
 
