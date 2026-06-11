@@ -814,7 +814,7 @@ export function initZone(): ZoneType {
     }
 
     static __load_patch(name: string, fn: PatchFn, ignoreDuplicate = false): void {
-      if (patches.hasOwnProperty(name)) {
+      if (Object.hasOwn(patches, name)) {
         // `checkDuplicate` option is defined from global variable
         // so it works for all modules.
         // `ignoreDuplicate` can work for the specified module
@@ -1601,7 +1601,7 @@ export function initZone(): ZoneType {
     macroTask: 'macroTask' = 'macroTask',
     eventTask: 'eventTask' = 'eventTask';
 
-  const patches: {[key: string]: any} = {};
+  const patches: {[key: string]: any} = Object.create(null);
   const _api: ZonePrivate = {
     symbol: __symbol__,
     currentZoneFrame: () => _currentZoneFrame,
