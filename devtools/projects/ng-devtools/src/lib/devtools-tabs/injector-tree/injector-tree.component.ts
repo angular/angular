@@ -62,6 +62,9 @@ const HIERARCHY_HOR_SIZE = 50;
 const INIT_SNAP_ZOOM_SCALE = 0.7;
 const SNAP_ZOOM_SCALE = 0.8;
 
+const HIGHLIGHTED_NODE_CLASS = 'it-highlighted';
+const SELECTED_NODE_CLASS = 'it-selected';
+
 @Component({
   selector: 'ng-injector-tree',
   imports: [
@@ -378,9 +381,9 @@ export class InjectorTreeComponent {
       return;
     }
     if (this.selectedNode()!.data.injector.id === id) {
-      node.classList.add('selected');
+      node.classList.add(SELECTED_NODE_CLASS);
     }
-    node.classList.add('highlighted');
+    node.classList.add(HIGHLIGHTED_NODE_CLASS);
   }
 
   private highlightEdgeById(tree: InjectorTreeVisualizer, id: string): void {
@@ -389,21 +392,21 @@ export class InjectorTreeComponent {
       return;
     }
 
-    edge.classList.add('highlighted');
+    edge.classList.add(HIGHLIGHTED_NODE_CLASS);
   }
 
   private unhighlightAllEdges(tree: InjectorTreeVisualizer): void {
     const edges = tree.svg.querySelectorAll('.link');
     for (const edge of edges) {
-      edge.classList.remove('highlighted');
+      edge.classList.remove(HIGHLIGHTED_NODE_CLASS);
     }
   }
 
   private unhighlightAllNodes(tree: InjectorTreeVisualizer): void {
     const nodes = tree.svg.querySelectorAll('.node');
     for (const node of nodes) {
-      node.classList.remove('selected');
-      node.classList.remove('highlighted');
+      node.classList.remove(SELECTED_NODE_CLASS);
+      node.classList.remove(HIGHLIGHTED_NODE_CLASS);
     }
   }
 
