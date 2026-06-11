@@ -385,6 +385,13 @@ describe('security integration tests', function () {
       );
     });
 
+    it('should not throw error on translating "on" attribute', () => {
+      const template = `<div on="some-value" i18n-on></div>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => TestBed.createComponent(SecuredComponent)).not.toThrow();
+    });
+
     it('should throw error on security-sensitive attributes with constant values', () => {
       const template = `<iframe srcdoc="foo" i18n-srcdoc></iframe>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
