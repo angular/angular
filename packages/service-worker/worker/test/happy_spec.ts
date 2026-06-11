@@ -43,6 +43,17 @@ import {envIsSupported} from '../testing/utils';
     .addFile('/lazy/redirect-target.txt', 'this was a redirect too')
     .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
     .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
+    .addUnhashedFile('/unhashed/no-store.txt', 'this is no-store', {
+      'Cache-Control': 'no-store, max-age=60',
+      Pragma: 'no-cache',
+      Expires: '0',
+    })
+    .addUnhashedFile('/unhashed/private.txt', 'this is private', {
+      'Cache-Control': 'private, max-age=60',
+    })
+    .addUnhashedFile('/unhashed/becomes-private.txt', 'this is public', {
+      'Cache-Control': 'max-age=10',
+    })
     .addUnhashedFile('/api/foo', 'this is api foo', {'Cache-Control': 'no-cache'})
     .addUnhashedFile('/api-static/bar', 'this is static api bar', {'Cache-Control': 'no-cache'})
     .build();
@@ -58,6 +69,18 @@ import {envIsSupported} from '../testing/utils';
     .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
     .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
     .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
+    .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b v2', {'Cache-Control': 'no-cache'})
+    .addUnhashedFile('/unhashed/no-store.txt', 'this is no-store v2', {
+      'Cache-Control': 'no-store, max-age=60',
+      Pragma: 'no-cache',
+      Expires: '0',
+    })
+    .addUnhashedFile('/unhashed/private.txt', 'this is private v2', {
+      'Cache-Control': 'private, max-age=60',
+    })
+    .addUnhashedFile('/unhashed/becomes-private.txt', 'this is private now', {
+      'Cache-Control': 'private, max-age=10',
+    })
     .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
     .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
     .build();
@@ -1849,11 +1872,96 @@ import {envIsSupported} from '../testing/utils';
         server.assertNoOtherRequests();
       });
 
-      it(`don't error when 'Cache-Control' is 'no-cache'`, async () => {
-        expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
-        server.assertSawRequestFor('/unhashed/b.txt');
-        expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
-        server.assertNoOtherRequests();
+      const uncacheableUnhashedResponses: {
+        description: string;
+        url: string;
+        first: string;
+        second: string;
+        firstInit?: Object;
+        secondInit?: Object;
+      }[] = [
+        {
+          description: '`Cache-Control: no-cache`',
+          url: '/unhashed/b.txt',
+          first: 'this is unhashed b',
+          second: 'this is unhashed b v2',
+        },
+        {
+          description: '`Cache-Control: no-store`',
+          url: '/unhashed/no-store.txt',
+          first: 'this is no-store',
+          second: 'this is no-store v2',
+          secondInit: {cache: 'no-store'},
+        },
+        {
+          description: '`Cache-Control: private`',
+          url: '/unhashed/private.txt',
+          first: 'this is private',
+          second: 'this is private v2',
+        },
+      ];
+
+      uncacheableUnhashedResponses.forEach(
+        ({description, url, first, second, firstInit, secondInit}) => {
+          it(`do not cache responses with ${description}`, async () => {
+            expect(await makeRequest(scope, url, 'default', firstInit)).toEqual(first);
+            server.assertSawRequestFor(url);
+            server.assertNoOtherRequests();
+            expect(await scope.caches.original.match(new MockRequest(url))).toBeUndefined();
+
+            scope.updateServerState(serverUpdate);
+
+            expect(await makeRequest(scope, url, 'default', secondInit)).toEqual(second);
+            serverUpdate.assertSawRequestFor(url);
+            serverUpdate.assertNoOtherRequests();
+            expect(await scope.caches.original.match(new MockRequest(url))).toBeUndefined();
+          });
+        },
+      );
+
+      it(`does not serve a previously cached response with 'Cache-Control: no-store'`, async () => {
+        const cache = await scope.caches.open(`${manifestHash}:assets:assets:cache`);
+        await cache.put(
+          new MockRequest('/unhashed/no-store.txt'),
+          new MockResponse('stale no-store response', {
+            headers: {'Cache-Control': 'no-store'},
+          }),
+        );
+        expect(
+          await scope.caches.original.match(new MockRequest('/unhashed/no-store.txt')),
+        ).toBeDefined();
+
+        scope.updateServerState(serverUpdate);
+
+        expect(
+          await makeRequest(scope, '/unhashed/no-store.txt', 'default', {cache: 'no-store'}),
+        ).toEqual('this is no-store v2');
+        serverUpdate.assertSawRequestFor('/unhashed/no-store.txt');
+        serverUpdate.assertNoOtherRequests();
+        expect(
+          await scope.caches.original.match(new MockRequest('/unhashed/no-store.txt')),
+        ).toBeUndefined();
+      });
+
+      it(`stops serving a cached response once the server returns 'Cache-Control: private'`, async () => {
+        const url = '/unhashed/becomes-private.txt';
+        expect(await makeRequest(scope, url)).toEqual('this is public');
+        server.clearRequests();
+
+        scope.updateServerState(serverUpdate);
+
+        // Make the cached response stale, so that it is revalidated in the background.
+        scope.advance(15000);
+        expect(await makeRequest(scope, url)).toEqual('this is public');
+        scope.advance(6000);
+        await driver.idle.empty;
+        await new Promise((resolve) => setTimeout(resolve)); // Wait for async operations to complete.
+        serverUpdate.assertSawRequestFor(url);
+
+        // The stale copy was removed, so the private response comes from the network.
+        expect(await makeRequest(scope, url)).toEqual('this is private now');
+        serverUpdate.assertSawRequestFor(url);
+        expect(await scope.caches.original.match(new MockRequest(url))).toBeUndefined();
       });
 
       it('avoid opaque responses', async () => {
@@ -1940,6 +2048,33 @@ import {envIsSupported} from '../testing/utils';
 
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed v2');
         serverUpdate.assertNoOtherRequests();
+      });
+
+      it(`do not get carried over during updates with 'Cache-Control: private'`, async () => {
+        expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
+
+        // Simulate a private response cached by an older version of the SW.
+        const cache = await scope.caches.open(`${manifestHash}:assets:assets:cache`);
+        await cache.put(
+          new MockRequest('/unhashed/a.txt'),
+          new MockResponse('stale private response', {headers: {'Cache-Control': 'private'}}),
+        );
+        server.clearRequests();
+
+        scope = new SwTestHarnessBuilder()
+          .withCacheState(scope.caches.original.dehydrate())
+          .withServerState(serverUpdate)
+          .build();
+        driver = new Driver(scope, scope, new CacheDatabase(scope));
+        expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+        await driver.initialized;
+
+        scope.advance(15000);
+        await driver.idle.empty;
+
+        const updatedCache = await scope.caches.open(`${manifestUpdateHash}:assets:assets:cache`);
+        expect(await updatedCache.match(new MockRequest('/foo.txt'))).toBeDefined();
+        expect(await updatedCache.match(new MockRequest('/unhashed/a.txt'))).toBeUndefined();
       });
     });
 
