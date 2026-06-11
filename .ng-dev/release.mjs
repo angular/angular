@@ -12,7 +12,7 @@ export const release = {
       deprecated: {
         version: '>=20.2.0-next.3',
         message:
-          '@angular/animations is deprecated. Use `animate.enter` and `animate.leave` instead.',
+          '@angular/animations is deprecated. Use `animate.enter` and `animate.leave` instead. For more information see: https://v22.angular.dev/guide/animations.',
       },
     },
     {name: '@angular/common'},
