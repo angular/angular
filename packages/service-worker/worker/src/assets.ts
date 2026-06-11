@@ -326,14 +326,15 @@ export abstract class AssetGroup {
    */
   protected async fetchAndCacheOnce(req: Request, used: boolean = true): Promise<Response> {
     const url = this.adapter.normalizeUrl(req.url);
+    const inFlightKey = this.inFlightRequestKey(req, url);
 
     // The `inFlightRequests` map holds information about which caching operations are currently
     // underway for known resources. If this request appears there, another "thread" is already
     // in the process of caching it, and this work should not be duplicated.
-    if (this.inFlightRequests.has(req.url)) {
+    if (inFlightKey !== null && this.inFlightRequests.has(inFlightKey)) {
       // There is a caching operation already in progress for this request. Wait for it to
       // complete, and hopefully it will have yielded a useful response.
-      return this.inFlightRequests.get(req.url)!;
+      return this.inFlightRequests.get(inFlightKey)!;
     }
 
     // No other caching operation is being attempted for this resource, so it will be owned here.
@@ -342,7 +343,9 @@ export abstract class AssetGroup {
 
     // Save this operation in `inFlightRequests` so any other "thread" attempting to cache it
     // will block on this chain instead of duplicating effort.
-    this.inFlightRequests.set(req.url, fetchOp);
+    if (inFlightKey !== null) {
+      this.inFlightRequests.set(inFlightKey, fetchOp);
+    }
 
     // Make sure this attempt is cleaned up properly on failure.
     try {
@@ -397,8 +400,29 @@ export abstract class AssetGroup {
     } finally {
       // Finally, it can be removed from `inFlightRequests`. This might result in a double-remove
       // if some other chain was already making this request too, but that won't hurt anything.
-      this.inFlightRequests.delete(req.url);
+      if (inFlightKey !== null) {
+        this.inFlightRequests.delete(inFlightKey);
+      }
     }
+  }
+
+  /**
+   * Get the key under which a request can share an in-flight request for the same resource, or
+   * `null` if it must not share one.
+   *
+   * The content of a hashed resource is checked against its hash, so any request for it can share.
+   * The response for an unhashed resource can depend on the request, so a request with an
+   * `Authorization` header never shares one, and other requests only share one with requests that
+   * have the same credentials and cache mode.
+   */
+  private inFlightRequestKey(req: Request, url: NormalizedUrl): string | null {
+    if (this.hashes.has(url)) {
+      return req.url;
+    }
+    if (req.headers.has('Authorization')) {
+      return null;
+    }
+    return `${req.credentials}:${req.cache}:${req.url}`;
   }
 
   protected async fetchFromNetwork(req: Request, redirectLimit: number = 3): Promise<Response> {

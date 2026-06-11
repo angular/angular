@@ -1920,6 +1920,38 @@ import {envIsSupported} from '../testing/utils';
         expect(await makeRequest(scope, url)).toEqual('this is no-store now');
       });
 
+      (
+        [
+          ['credentials', {credentials: 'omit'}],
+          ['cache modes', {cache: 'no-store'}],
+          ['`Authorization` headers', {headers: {'Authorization': 'Bearer token'}}],
+        ] as [string, RequestInit][]
+      ).forEach(([description, init]) => {
+        it(`are not deduplicated when they have different ${description}`, async () => {
+          server.pause();
+          const firstNetworkRequest = server.nextRequest;
+          const [firstResponse, firstDone] = scope.handleFetch(
+            new MockRequest('/unhashed/a.txt'),
+            'default',
+          );
+          await firstNetworkRequest;
+
+          let sawSecondNetworkRequest = false;
+          server.nextRequest.then(() => (sawSecondNetworkRequest = true));
+          const [secondResponse, secondDone] = scope.handleFetch(
+            new MockRequest('/unhashed/a.txt', init),
+            'default',
+          );
+          await new Promise((resolve) => setTimeout(resolve)); // Wait for async operations to complete.
+          expect(sawSecondNetworkRequest).toBeTrue();
+
+          server.unpause();
+          await Promise.all([firstDone, secondDone]);
+          expect(await (await firstResponse)?.text()).toEqual('this is unhashed');
+          expect(await (await secondResponse)?.text()).toEqual('this is unhashed');
+        });
+      });
+
       it('avoid opaque responses', async () => {
         expect(
           await makeRequest(scope, '/unhashed/a.txt', 'default', {
