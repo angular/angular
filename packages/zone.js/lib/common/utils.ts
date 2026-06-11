@@ -129,7 +129,8 @@ export const isMix: boolean =
   !isWebWorker &&
   !!(isWindowExists && internalWindow['HTMLElement']);
 
-const zoneSymbolEventNames: {[eventName: string]: string} = {};
+// tslint:disable-next-line:no-toplevel-property-access
+const zoneSymbolEventNames: {[eventName: string]: string} = Object.create(null);
 
 const enableBeforeunloadSymbol = zoneSymbol('enable_beforeunload');
 
