@@ -1,4 +1,5 @@
 @use '../../../styles/typography';
+@use '@angular/material' as mat;
 
 .transfer-state-container {
   padding: 1rem;
@@ -150,27 +151,38 @@
       }
 
       .filter {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
+        position: relative;
         min-width: 12rem;
-        flex: 1;
         max-width: 20rem;
 
         .filter-input {
-          flex: 1;
+          display: block;
+          width: 100%;
+          padding-right: 1.75rem;
+        }
+
+        button {
+          position: absolute;
+          top: 5px;
+          right: 7px;
+
+          mat-icon {
+            width: 18px;
+            height: 18px;
+            font-size: 18px;
+          }
         }
       }
     }
 
     .table-container {
-      flex: 1;
       min-height: 0;
       border: 1px solid var(--color-separator);
       border-radius: 0.25rem;
       overflow-y: auto;
 
       .transfer-state-table {
+        @include mat.table-density(-2);
         width: 100%;
         background: var(--color-background);
 
@@ -180,7 +192,7 @@
           @extend %body-01;
           text-transform: uppercase;
           letter-spacing: 0.03rem;
-          padding: 0.75rem 1rem;
+          padding: 0.5rem 0.75rem;
           border-bottom: 2px solid var(--color-separator);
         }
 
@@ -191,11 +203,12 @@
           color: var(--secondary-contrast);
           display: inline-block;
           vertical-align: bottom;
+          margin-left: 0.125rem;
         }
 
         tr {
           td {
-            padding: 0.75rem 1rem;
+            padding: 0.625rem 0.75rem;
           }
 
           &:not(:last-of-type) {
@@ -252,10 +265,9 @@
           display: inline-block;
           padding: 0.125rem 0.5rem;
           border-radius: 0.75rem;
-          @extend %body-01;
+          @extend %caption-text;
           font-weight: 500;
           text-transform: uppercase;
-          letter-spacing: 0.03rem;
           background: transparent;
           border: 1px solid currentColor;
 

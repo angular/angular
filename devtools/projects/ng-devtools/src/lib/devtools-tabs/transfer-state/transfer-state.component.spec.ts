@@ -12,8 +12,6 @@ import {Clipboard} from '@angular/cdk/clipboard';
 import {Events, MessageBus, TransferStateValue} from '../../../../../protocol';
 import {LOADING_TIMEOUT, TransferStateComponent} from './transfer-state.component';
 
-type DataCallback = (data: Record<string, TransferStateValue> | null) => void;
-
 class MessageBusMock implements Pick<MessageBus<Events>, 'on' | 'emit' | 'once' | 'destroy'> {
   readonly emit = jasmine.createSpy('emit');
   readonly once = jasmine.createSpy('once');
