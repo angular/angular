@@ -104,7 +104,7 @@ export class SignalsVisualizerComponent {
 
           effect(() => {
             const selected = this.selectedNodeId();
-            this.signalsVisualizer!.setSelected(selected);
+            this.signalsVisualizer!.highlightNode(selected);
           });
 
           let lastElement: ElementPosition | undefined;
@@ -204,7 +204,7 @@ export class SignalsVisualizerComponent {
       this.navigateMatchedNode('next');
     } else {
       // Unhighlight the last selected node, if there isn't a match.
-      this.signalsVisualizer?.setSelected(null);
+      this.signalsVisualizer?.highlightNode(null);
     }
   }
 
@@ -218,7 +218,7 @@ export class SignalsVisualizerComponent {
 
     // Snap to the node and highlight it.
     this.signalsVisualizer?.snapToNode(newMatchId);
-    this.signalsVisualizer?.setSelected(newMatchId);
+    this.signalsVisualizer?.highlightNode(newMatchId);
 
     this.currentSearchMatchIdx.set(newMatchedIdx);
     this.searchedNodeFound.emit();

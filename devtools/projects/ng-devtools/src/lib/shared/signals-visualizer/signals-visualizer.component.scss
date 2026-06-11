@@ -61,7 +61,7 @@ $cluster-expand-anim-duration: 1s;
       }
 
       .edge {
-        &.highlighted {
+        &.highlighted-dep {
           .path {
             stroke: var(--purple-03);
             stroke-width: 1.75px;
@@ -153,32 +153,32 @@ $cluster-expand-anim-duration: 1s;
         }
       }
 
-      .selected rect,
-      .highlighted-origin rect,
-      .highlighted rect {
+      .highlighted rect,
+      .highlighted-dep-origin rect,
+      .highlighted-dep rect {
         ry: 8px;
         rx: 8px;
       }
 
-      .selected rect {
+      .highlighted rect {
         stroke-width: 3px;
       }
 
-      .highlighted-origin rect,
-      .highlighted rect {
+      .highlighted-dep-origin rect,
+      .highlighted-dep rect {
         stroke-width: 6px;
       }
 
-      .highlighted rect {
+      .highlighted-dep rect {
         stroke: var(--purple-03);
       }
 
-      .highlighted-origin rect {
+      .highlighted-dep-origin rect {
         stroke: var(--purple-02);
       }
 
       /* Note: It's important to keep the following `<class> rect` order to achieve the intended coloring. */
-      .selected rect {
+      .highlighted rect {
         stroke: var(--blue-03);
       }
 
