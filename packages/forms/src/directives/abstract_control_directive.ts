@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {computed, signal} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model/abstract_model';
@@ -35,6 +36,22 @@ export abstract class AbstractControlDirective {
    * @returns the control that backs this directive. Most properties fall through to that instance.
    */
   abstract get control(): AbstractControl | null;
+
+  /**
+   * Set once the underlying control has been resolved by a deferred registration
+   * (see `NgForm.addControl` and `NgForm.addFormGroup`). Status host bindings read
+   * this signal so that views are re-checked when the control becomes available,
+   * even if `control` was still `null` when the bindings were first evaluated.
+   *
+   * @internal
+   */
+  readonly _controlResolved = computed(() => this.controlResolvedReactive());
+  private readonly controlResolvedReactive = signal(false);
+
+  /** @internal */
+  _markControlResolved(): void {
+    this.controlResolvedReactive.set(true);
+  }
 
   /**
    * @description
