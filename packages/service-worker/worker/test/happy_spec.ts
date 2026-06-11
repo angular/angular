@@ -1812,6 +1812,36 @@ import {envIsSupported} from '../testing/utils';
         server.assertNoOtherRequests();
       });
 
+      it('does not deduplicate concurrent unhashed requests', async () => {
+        server.pause();
+
+        const firstNetworkRequest = server.nextRequest;
+        const [firstResponse, firstDone] = scope.handleFetch(
+          new MockRequest('/unhashed/a.txt'),
+          'default',
+        );
+        await firstNetworkRequest;
+
+        const secondNetworkRequest = server.nextRequest;
+        const [secondResponse, secondDone] = scope.handleFetch(
+          new MockRequest('/unhashed/a.txt'),
+          'default',
+        );
+        let sawSecondNetworkRequest = false;
+        secondNetworkRequest.then(() => (sawSecondNetworkRequest = true));
+        await new Promise((resolve) => setTimeout(resolve)); // Wait for async operations to complete.
+        expect(sawSecondNetworkRequest).toBeTrue();
+
+        server.unpause();
+        await Promise.all([firstDone, secondDone]);
+
+        expect(await (await firstResponse)?.text()).toEqual('this is unhashed');
+        expect(await (await secondResponse)?.text()).toEqual('this is unhashed');
+        server.assertSawRequestFor('/unhashed/a.txt');
+        server.assertSawRequestFor('/unhashed/a.txt');
+        server.assertNoOtherRequests();
+      });
+
       const uncacheableUnhashedResponses: {
         description: string;
         url: string;
