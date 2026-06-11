@@ -9,7 +9,7 @@
     "rxjs": "7.8.2"
   },
   "devDependencies": {
-    "ng-packagr": "22.1.0-next.1",
+    "ng-packagr": "22.1.0-next.2",
     "typescript": "6.0.3"
   },
   "scripts": {
