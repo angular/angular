@@ -39,7 +39,10 @@ import {
 } from './injector_discovery_utils';
 import {DebugSignalGraph, getSignalGraph} from './signal_debug';
 
-import {enableProfiling} from '../debug/chrome_dev_tools_performance';
+import {
+  enableProfiling,
+  getComponentInstanceDeepLinkId,
+} from '../debug/chrome_dev_tools_performance';
 import {getTransferState} from './transfer_state_utils';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
@@ -117,7 +120,7 @@ export interface ExternalCoreGlobalUtils {
   ɵgetSignalGraph(injector: Injector): DebugSignalGraph;
   ɵgetControlFlowBlocks(node: Node): ControlFlowBlock[];
   ɵgetTransferState(injector: Injector): Record<string, unknown>;
-
+  ɵgetComponentInstanceDeepLinkId(instance: unknown): number | undefined;
   getDirectiveMetadata(directiveOrComponentInstance: any): DirectiveDebugMetadata | null;
   getComponent<T>(element: Element): T | null;
   getContext<T extends {}>(element: Element): T | null;
@@ -146,6 +149,7 @@ const externalCoreGlobalUtils: ExternalCoreGlobalUtils = {
   'ɵgetSignalGraph': getSignalGraph,
   'ɵgetControlFlowBlocks': getControlFlowBlocks,
   'ɵgetTransferState': getTransferState,
+  'ɵgetComponentInstanceDeepLinkId': getComponentInstanceDeepLinkId,
 
   getDirectiveMetadata,
   getComponent,
