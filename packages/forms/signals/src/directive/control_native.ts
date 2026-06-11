@@ -88,7 +88,7 @@ export function nativeControlCreate(
         if (!updateMode) {
           return;
         }
-        input.value = parent.state().controlValue() as string;
+        setNativeControlValue(input, parent.state().controlValue());
       },
       parent.destroyRef,
     );
