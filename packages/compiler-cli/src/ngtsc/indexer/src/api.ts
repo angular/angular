@@ -8,7 +8,6 @@
 
 import {
   AST,
-  ParseSourceFile,
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
@@ -182,10 +181,10 @@ export class AbsoluteSourceSpan {
 export interface IndexedComponent<T = DeclarationNode> {
   name: string;
   selector: string | null;
-  file: ParseSourceFile;
+  fileUrl: string;
   template: {
     identifiers: Set<TopLevelIdentifier<T>>;
-    file: ParseSourceFile;
+    fileUrl: string;
   };
   errors: Error[];
 }
@@ -219,5 +218,4 @@ export interface AbstractBoundTemplate<T> {
 export interface NodeAdapter<T> {
   getName(node: T): string;
   getFileName(node: T): string;
-  getContent(node: T): string;
 }
