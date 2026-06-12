@@ -6,6 +6,12 @@ import {Component, Directive} from '@angular/core';
 export abstract class AbstractDir {
 }
 
+@Directive({
+  selector: '[dir2]',
+})
+export abstract class AbstractInherited extends AbstractDir {
+}
+
 @Component({
   selector: 'test-comp',
   template: ''
