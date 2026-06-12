@@ -21,6 +21,7 @@ export const enum TokenType {
   ENCODED_ENTITY,
   COMMENT_START,
   COMMENT_END,
+  IN_ELEMENT_COMMENT,
   CDATA_START,
   CDATA_END,
   ATTR_NAME,
@@ -64,6 +65,7 @@ export type Token =
   | EncodedEntityToken
   | CommentStartToken
   | CommentEndToken
+  | InElementCommentToken
   | CdataStartToken
   | CdataEndToken
   | AttributeNameToken
@@ -158,6 +160,11 @@ export interface CommentStartToken extends TokenBase {
 export interface CommentEndToken extends TokenBase {
   type: TokenType.COMMENT_END;
   parts: [];
+}
+
+export interface InElementCommentToken extends TokenBase {
+  type: TokenType.IN_ELEMENT_COMMENT;
+  parts: [content: string];
 }
 
 export interface CdataStartToken extends TokenBase {
