@@ -123,6 +123,7 @@ describe('iframe processing', () => {
     'referrerPolicy',
     'csp',
     'fetchPriority',
+    'credentialless',
   ];
 
   const TEST_IFRAME_URL = 'https://angular.io/assets/images/logos/angular/angular.png';
