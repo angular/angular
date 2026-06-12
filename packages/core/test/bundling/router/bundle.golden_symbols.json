@@ -1,6 +1,7 @@
 {
   "chunks": {
     "main": [
+      "ACTIVATED_ROUTE_INJECTOR_FEATURE",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "ANIMATION_QUEUE",
@@ -572,6 +573,7 @@
       "diPublicInInjector",
       "directiveHostEndFirstCreatePass",
       "directiveHostFirstCreatePass",
+      "discardNewActivatedRoutes",
       "documentSupported",
       "domOnlyFirstCreatePass",
       "elementAttributeInternal",
