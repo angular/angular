@@ -138,9 +138,21 @@ export function SECURITY_SCHEMA(): SecuritySchema {
         'referrerPolicy',
         'csp',
         'fetchPriority',
+        'credentialless',
       ],
     ],
-    ['iframe', ['sandbox', 'allow', 'allowFullscreen', 'referrerPolicy', 'csp', 'fetchPriority']],
+    [
+      'iframe',
+      [
+        'sandbox',
+        'allow',
+        'allowFullscreen',
+        'referrerPolicy',
+        'csp',
+        'fetchPriority',
+        'credentialless',
+      ],
+    ],
   ]);
 
   return _SECURITY_SCHEMA;

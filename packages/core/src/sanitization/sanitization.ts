@@ -294,6 +294,7 @@ const SECURITY_SENSITIVE_ELEMENTS: Record<
     'referrerpolicy': true,
     'csp': true,
     'fetchpriority': true,
+    'credentialless': true,
   },
   ':svg:animate': {
     'attributename': true,

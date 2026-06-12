@@ -154,6 +154,9 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext('a', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('a', 'style', false)).toBe(SecurityContext.STYLE);
     expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
+    expect(registry.securityContext('iframe', 'credentialless', false)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
 
     // SVG animate and set attributes
     expect(registry.securityContext(':svg:animate', 'to', false)).toBe(
