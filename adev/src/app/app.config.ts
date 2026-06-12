@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, Location} from '@angular/common';
 import {
   ApplicationConfig,
   ErrorHandler,
@@ -33,6 +33,7 @@ import {ExampleContentLoader} from './core/services/example-content-loader.servi
 import {routerProviders} from './routing/router_providers';
 import {TYPESCRIPT_VFS_WORKER_PROVIDER} from './editor/code-editor/workers/factory-provider';
 import {AdevUrlSerializer} from './core/services/routing/adev-url-serializer';
+import {TextFragmentPreservingLocation} from './core/services/routing/text-fragment-preserving-location';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -51,6 +52,10 @@ export const appConfig: ApplicationConfig = {
       deps: [DOCUMENT],
     },
     TYPESCRIPT_VFS_WORKER_PROVIDER,
+    {
+      provide: Location,
+      useClass: TextFragmentPreservingLocation,
+    },
     {
       provide: UrlSerializer,
       useClass: AdevUrlSerializer,

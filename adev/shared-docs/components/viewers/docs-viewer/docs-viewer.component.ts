@@ -30,8 +30,9 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
 import {fromEvent} from 'rxjs';
 import {Snippet} from '../../../interfaces';
+import {WINDOW} from '../../../providers';
 import {NavigationState, TOC_SKIP_CONTENT_MARKER} from '../../../services';
-import {handleHrefClickEventWithRouter} from '../../../utils';
+import {currentTextFragmentUrl, handleHrefClickEventWithRouter} from '../../../utils';
 import {IconComponent} from '../../icon/icon.component';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
 
@@ -69,6 +70,7 @@ export class DocViewer {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject(ElementRef);
+  private readonly window = inject(WINDOW, {optional: true});
   private readonly location = inject(Location);
   private readonly navigationState = inject(NavigationState);
   private readonly router = inject(Router);
@@ -82,6 +84,7 @@ export class DocViewer {
   private readonly pendingTasks = inject(PendingTasks);
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private preserveInitialTextFragmentContent = currentTextFragmentUrl(this.window) !== undefined;
 
   private countOfExamples = 0;
 
@@ -97,7 +100,14 @@ export class DocViewer {
     const contentContainer = this.elementRef.nativeElement;
 
     if (content) {
-      if (this.isBrowser && !(this.document as any).startViewTransition) {
+      const shouldPreserveExistingContent =
+        this.shouldPreserveExistingContentForTextFragment(contentContainer);
+
+      if (
+        this.isBrowser &&
+        !shouldPreserveExistingContent &&
+        !(this.document as any).startViewTransition
+      ) {
         // Apply a special class to the host node to trigger animation.
         // Note: when a page is hydrated, the `content` would be empty,
         // so we don't trigger an animation to avoid a content flickering
@@ -105,11 +115,19 @@ export class DocViewer {
         this.animateContent = true;
       }
 
-      contentContainer.innerHTML = content;
+      this.preserveInitialTextFragmentContent = false;
+
+      // Chrome applies native text-fragment highlights before the docs app finishes
+      // client setup. Replacing the existing SSR/SSG DOM with the same HTML removes
+      // the highlighted text nodes. On the initial text-fragment load, keep the
+      // existing content and only run the client setup below.
+      if (!shouldPreserveExistingContent) {
+        contentContainer.innerHTML = content;
+      }
     }
 
     if (this.isBrowser) {
-      // First we setup event listeners on the HTML we just loaded.
+      // First we set up event listeners on the HTML we just loaded.
       // We want to do this before things like the example viewers are loaded.
       this.setupAnchorListeners(contentContainer);
       // Rewrite relative anchors (hrefs starting with `#`) because relative hrefs are relative to the base URL, which is '/'
@@ -136,6 +154,14 @@ export class DocViewer {
     this.renderTableOfContents(contentContainer);
 
     this.contentLoaded.emit();
+  }
+
+  private shouldPreserveExistingContentForTextFragment(contentContainer: HTMLElement): boolean {
+    return (
+      this.preserveInitialTextFragmentContent &&
+      (contentContainer.childElementCount > 0 ||
+        (contentContainer.textContent?.trim() ?? '') !== '')
+    );
   }
 
   /**
