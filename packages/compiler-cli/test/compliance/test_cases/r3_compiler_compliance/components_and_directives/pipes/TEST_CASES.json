@@ -3,9 +3,7 @@
   "cases": [
     {
       "description": "should render pipes",
-      "inputFiles": [
-        "pipes.ts"
-      ],
+      "inputFiles": ["pipes.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid pipe definition",
@@ -56,23 +54,17 @@
     },
     {
       "description": "should use appropriate function for a given no of pipe arguments",
-      "inputFiles": [
-        "pipe_invocation.ts"
-      ],
+      "inputFiles": ["pipe_invocation.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid MyApp definition",
-          "files": [
-            "pipe_invocation.js"
-          ]
+          "files": ["pipe_invocation.js"]
         }
       ]
     },
     {
       "description": "should generate the proper instruction when injecting ChangeDetectorRef into a pipe",
-      "inputFiles": [
-        "pipe_di_change_detector_ref.ts"
-      ],
+      "inputFiles": ["pipe_di_change_detector_ref.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid pipe definition",
@@ -114,15 +106,21 @@
     },
     {
       "description": "should handle a pipe that does not have a name",
-      "inputFiles": [
-        "nameless_pipe.ts"
-      ],
+      "inputFiles": ["nameless_pipe.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid definition",
-          "files": [
-            "nameless_pipe.js"
-          ]
+          "files": ["nameless_pipe.js"]
+        }
+      ]
+    },
+    {
+      "description": "should optimize constant object literals by skipping pureFunction0",
+      "inputFiles": ["optimized_constant_object_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": ["optimized_constant_object_literals.js"]
         }
       ]
     }

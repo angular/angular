@@ -211,6 +211,8 @@ export {
   ɵɵpureFunction7,
   ɵɵpureFunction8,
   ɵɵpureFunctionV,
+  ɵɵcloneObject,
+  ɵɵcloneArray,
   ɵɵqueryAdvance,
   ɵɵqueryRefresh,
   ɵɵreadContextLet,
