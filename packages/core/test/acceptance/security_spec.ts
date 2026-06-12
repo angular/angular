@@ -9,8 +9,10 @@
 import {NgIf} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
 import {
+  ChangeDetectionStrategy,
   Component,
   createComponent,
+  dangerousAllowJitInProduction,
   Directive,
   EnvironmentInjector,
   inject,
@@ -19,7 +21,6 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
-  ChangeDetectionStrategy,
 } from '../../src/core';
 import {RuntimeErrorCode} from '../../src/errors';
 import {global} from '../../src/util/global';
@@ -140,6 +141,7 @@ describe('iframe processing', () => {
   [true, false].forEach((devModeFlag) => {
     beforeAll(() => {
       global['ngDevMode'] = devModeFlag;
+      dangerousAllowJitInProduction();
 
       // TestBed and JIT compilation have some dependencies on the ngDevMode state, so we need to
       // reset TestBed to ensure we get a 'clean' JIT compilation under the new rules.

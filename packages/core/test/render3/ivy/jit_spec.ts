@@ -17,13 +17,13 @@ import {
   HostBinding,
   HostListener,
   Input,
+  ɵɵngDeclareComponent as ngDeclareComponent,
   NgModule,
+  ɵNgModuleDef as NgModuleDef,
   Pipe,
   QueryList,
   ViewChild,
   ViewChildren,
-  ɵNgModuleDef as NgModuleDef,
-  ɵɵngDeclareComponent as ngDeclareComponent,
 } from '../../../src/core';
 import {Injectable} from '../../../src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '../../../src/di/injector_compatibility';
@@ -518,6 +518,25 @@ describe('render3 jit', () => {
       expect(() => TestDirAny.ɵfac()).toThrowError(
         /constructor is not compatible with Angular Dependency Injection because its dependency at index 0 of the parameter list is invalid/,
       );
+    });
+  });
+
+  describe('prod only JIT', () => {
+    let originalDevMode: any;
+    beforeAll(() => {
+      originalDevMode = (globalThis as any).ngDevMode;
+      (globalThis as any).ngDevMode = false;
+    });
+
+    afterAll(() => {
+      (globalThis as any).ngDevMode = originalDevMode;
+    });
+
+    it('should throw an error when JIT compilation is attempted in prod mode', () => {
+      @Component({template: 'test', selector: 'test-cmp', jit: true})
+      class SomeCmp {}
+
+      expect(() => (SomeCmp as any).ɵcmp).toThrowError(/JIT compiler unavailable/);
     });
   });
 });

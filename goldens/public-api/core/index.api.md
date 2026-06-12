@@ -477,6 +477,9 @@ export const CSP_NONCE: InjectionToken<string | null>;
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 // @public
+export function dangerousAllowJitInProduction(): void;
+
+// @public
 export function debounced<T>(source: () => T, wait: NoInfer<DebounceTimer<T>>, options?: NoInfer<DebouncedOptions<T>>): Resource<T>;
 
 // @public
