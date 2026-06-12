@@ -783,6 +783,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   deferOp.placeholderSlot = placeholder?.handle ?? null;
   deferOp.loadingSlot = loading?.handle ?? null;
   deferOp.errorSlot = error?.handle ?? null;
+  deferOp.errorRetryCount = deferBlock.error?.retryCount ?? null;
   deferOp.placeholderMinimumTime = deferBlock.placeholder?.minimumTime ?? null;
   deferOp.loadingMinimumTime = deferBlock.loading?.minimumTime ?? null;
   deferOp.loadingAfterTime = deferBlock.loading?.afterTime ?? null;

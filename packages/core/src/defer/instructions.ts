@@ -57,7 +57,7 @@ import {
   assertSsrIdDefined,
   isIncrementalHydrationEnabled,
 } from '../hydration/utils';
-import {ɵɵdeferEnableTimerScheduling, renderPlaceholder} from './rendering';
+import {ɵɵdeferEnableTimerScheduling, ɵɵdeferEnableRetry, renderPlaceholder} from './rendering';
 
 import {
   getHydrateTriggers,
@@ -133,6 +133,8 @@ export function ɵɵdefer(
   placeholderConfigIndex?: number | null,
   enableTimerScheduling?: typeof ɵɵdeferEnableTimerScheduling | null,
   flags?: TDeferDetailsFlags | null,
+  enableRetry?: typeof ɵɵdeferEnableRetry | null,
+  retryCount?: number | null,
 ) {
   const lView = getLView();
   const tView = getTView();
@@ -167,8 +169,12 @@ export function ɵɵdefer(
       hydrateTriggers: null,
       debug: null,
       flags: flags ?? TDeferDetailsFlags.Default,
+      maxRetryCount: null,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
+    if (enableRetry != null && retryCount != null) {
+      enableRetry(tDetails, retryCount);
+    }
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
   }
 
@@ -199,6 +205,7 @@ export function ɵɵdefer(
     ssrBlockState, // SSR_BLOCK_STATE
     null, // ON_COMPLETE_FNS
     null, // HYDRATE_TRIGGER_CLEANUP_FNS
+    retryCount ?? null, // RETRY_ATTEMPTS_REMAINING
   ];
   setLDeferBlockDetails(lView, adjustedIndex, lDetails);
 
