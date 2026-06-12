@@ -203,7 +203,7 @@ runInEachFileSystem(() => {
           return fail('Error should be a FatalDiagnosticError');
         }
         const diag = err.toDiagnostic();
-        expect(diag.code).toEqual(ivyCode(ErrorCode.DECORATOR_ARG_NOT_LITERAL));
+        expect(diag.code).toEqual(ngErrorCode(ErrorCode.DECORATOR_ARG_NOT_LITERAL));
         expect(diag.file.fileName.endsWith('entry.ts')).toBe(true);
         expect(diag.start).toBe(detected.metadata.args![0].getStart());
       }
@@ -1296,8 +1296,4 @@ runInEachFileSystem(() => {
       });
     });
   });
-
-  function ivyCode(code: ErrorCode): number {
-    return Number('-99' + code.valueOf());
-  }
 });
