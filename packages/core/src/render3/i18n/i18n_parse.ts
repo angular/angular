@@ -1003,7 +1003,7 @@ function splitNsName(elementName: string, fatal: boolean = true): [string | null
 }
 
 function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn | null {
-  let schemaContext = SecurityContext.NONE;
+  let schemaContext: SecurityContext;
 
   if (tagName) {
     const [ns, name] = splitNsName(tagName, false);
