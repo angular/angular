@@ -170,9 +170,19 @@ Do _NOT_ bind the `name` field.
 When using `[formField]`, you MUST NOT set the following attributes in the template (either static or bound):
 
 - `min`, `max` (Use validators in the schema instead)
-- `value`, `[value]`, `[attr.value]` (Already handled by `[formField]`)
+- `value`, `[value]`, `[attr.value]` on **text/number/date inputs** (Already handled by `[formField]`)
 - `[attr.min]`, `[attr.max]`
 - `[disabled]`, `[readonly]` (Already handled by `[formField]`)
+
+**Exception**: Static `value` on `<input type="radio">` and `<input type="checkbox">` is **allowed and required** — it identifies which option the input represents, not the bound field value.
+
+```html
+<!-- CORRECT: value on radio specifies which option this button represents -->
+<input type="radio" value="economy" [formField]="bookingForm.package.tier" />
+
+<!-- WRONG: value binding on a regular input -->
+<input [value]="someVar" [formField]="form.name" />
+```
 
 Do NOT do this: `<input min="1" [formField]>` or `<input [value]="val" [formField]>`.
 
@@ -506,32 +516,32 @@ form(
 
 ## Common Pitfalls (DO NOT DO THESE)
 
-| Error Scenario         | WRONG (Common Mistake)                        | RIGHT (Correct Way)                                         |
-| :--------------------- | :-------------------------------------------- | :---------------------------------------------------------- |
-| **Accessing Flags**    | `form.field.valid()`                          | `form.field().valid()`                                      |
-| **Accessing value**    | `form.field.value()`                          | `form.field().value()`                                      |
-| **Setting value**      | `form.field.set(x)`                           | Update model signal: `this.model.update(...)`               |
-| **Form root flags**    | `form.invalid()`                              | `form().invalid()`                                          |
-| **Double-calling**     | `form.field()()`                              | `form.field().value()`                                      |
-| **Rules Context**      | `({ touched }) => touched()`                  | `({ state }) => state.touched()`                            |
-| **Calling Paths**      | `applyWhen(p.foo, () => p.foo() === 'x')`     | `applyWhen(p.foo, ({ valueOf }) => valueOf(p.foo) === 'x')` |
-| **applyWhen args**     | `applyWhen(condition, () => {...})`           | `applyWhen(path, condition, schemaFn)` - needs 3 args       |
-| **Array length**       | `form.items().length`                         | `form.items.length` (structural)                            |
-| **Multi-select array** | `<select [formField]="form.tags">` (string[]) | Use checkboxes for array fields                             |
-| **readonly attribute** | `<input readonly [formField]>`                | Use `readonly()` rule in schema                             |
-| **min/max attributes** | `<input min="1" max="10">`                    | Use `min()` and `max()` rules in schema                     |
-| **value binding**      | `<input [value]="val">`                       | Do NOT use `[value]` with `[formField]`                     |
-| **when option**        | `pattern(p.x, /.../, {when: ...})`            | `when` only works with `required()`                         |
-| **Submit callback**    | `submit(form, () => { ... })`                 | `submit(form, async () => { ... })`                         |
-| **Async params**       | `params: s.field`                             | `params: ({ value }) => value()`                            |
-| **Async onError**      | Omitting `onError`                            | `onError` is REQUIRED in `validateAsync`                    |
-| **resource() API**     | `request: signal`                             | `params: signal`                                            |
-| **applyEach args**     | `applyEach(s.items, (item, index) => ...)`    | `applyEach(s.items, (item) => ...)`                         |
-| **Nested @for**        | `$parent.$index`                              | Use `let outerIndex = $index`                               |
-| **FormState import**   | `import { FormState }`                        | `FormState` does not exist, use `FieldState`                |
-| **Null in model**      | `signal({ name: null })`                      | `signal({ name: '' })` or `signal({ age: 0 })`              |
-| **Validate syntax**    | `validate(s.field, { value } => ...)`         | `validate(s.field, ({ value }) => ...)`                     |
-| **Checkbox Array**     | `[formField]="form.tags"` (string[])          | Checkboxes ONLY bind to `boolean`                           |
+| Error Scenario         | WRONG (Common Mistake)                        | RIGHT (Correct Way)                                                              |
+| :--------------------- | :-------------------------------------------- | :------------------------------------------------------------------------------- |
+| **Accessing Flags**    | `form.field.valid()`                          | `form.field().valid()`                                                           |
+| **Accessing value**    | `form.field.value()`                          | `form.field().value()`                                                           |
+| **Setting value**      | `form.field.set(x)`                           | Update model signal: `this.model.update(...)`                                    |
+| **Form root flags**    | `form.invalid()`                              | `form().invalid()`                                                               |
+| **Double-calling**     | `form.field()()`                              | `form.field().value()`                                                           |
+| **Rules Context**      | `({ touched }) => touched()`                  | `({ state }) => state.touched()`                                                 |
+| **Calling Paths**      | `applyWhen(p.foo, () => p.foo() === 'x')`     | `applyWhen(p.foo, ({ valueOf }) => valueOf(p.foo) === 'x')`                      |
+| **applyWhen args**     | `applyWhen(condition, () => {...})`           | `applyWhen(path, condition, schemaFn)` - needs 3 args                            |
+| **Array length**       | `form.items().length`                         | `form.items.length` (structural)                                                 |
+| **Multi-select array** | `<select [formField]="form.tags">` (string[]) | Use checkboxes for array fields                                                  |
+| **readonly attribute** | `<input readonly [formField]>`                | Use `readonly()` rule in schema                                                  |
+| **min/max attributes** | `<input min="1" max="10">`                    | Use `min()` and `max()` rules in schema                                          |
+| **value binding**      | `<input [value]="val">`                       | Do NOT use `[value]` with `[formField]` (static `value` on radio/checkbox is OK) |
+| **when option**        | `pattern(p.x, /.../, {when: ...})`            | `when` only works with `required()`                                              |
+| **Submit callback**    | `submit(form, () => { ... })`                 | `submit(form, async () => { ... })`                                              |
+| **Async params**       | `params: s.field`                             | `params: ({ value }) => value()`                                                 |
+| **Async onError**      | Omitting `onError`                            | `onError` is REQUIRED in `validateAsync`                                         |
+| **resource() API**     | `request: signal`                             | `params: signal`                                                                 |
+| **applyEach args**     | `applyEach(s.items, (item, index) => ...)`    | `applyEach(s.items, (item) => ...)`                                              |
+| **Nested @for**        | `$parent.$index`                              | Use `let outerIndex = $index`                                                    |
+| **FormState import**   | `import { FormState }`                        | `FormState` does not exist, use `FieldState`                                     |
+| **Null in model**      | `signal({ name: null })`                      | `signal({ name: '' })` or `signal({ age: 0 })`                                   |
+| **Validate syntax**    | `validate(s.field, { value } => ...)`         | `validate(s.field, ({ value }) => ...)`                                          |
+| **Checkbox Array**     | `[formField]="form.tags"` (string[])          | Checkboxes ONLY bind to `boolean`                                                |
 
 ## Big Form Example
 
