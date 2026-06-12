@@ -36,11 +36,26 @@ export enum SecurityContext {
 // =================================================================================================
 
 /**
- * Map from property name to namespace and tag name to SecurityContext.
- * Properties applying to all tags use '*'.
- * Properties applying to all namespaces use ''.
+ * A security schema mapping property or attribute names to namespaces,
+ * tag names, and finally their corresponding `SecurityContext`.
+ *
+ * - The first level keys are lowercase property or attribute names (e.g., `'href'`, `'srcdoc'`).
+ * - The second level keys are lowercase namespaces (e.g., `''` for HTML/default, `'svg'`, `'math'`).
+ * - The third level keys are lowercase tag names (e.g., `'a'`, `'iframe'`, or `'*'` for all elements)
+ *   mapping to the appropriate `SecurityContext` value.
  */
-let _SECURITY_SCHEMA!: Record<string, Record<string, Record<string, SecurityContext>>>;
+type SecuritySchema = Record<
+  string, // Property/Attribute Name
+  Record<
+    string, // Namespace
+    Record<
+      string, // Tag Name
+      SecurityContext
+    >
+  >
+>;
+
+let _SECURITY_SCHEMA!: SecuritySchema;
 const SVG_NAMESPACE = 'svg';
 const MATH_ML_NAMESPACE = 'math';
 const NO_NAMESPACE = '';
@@ -50,7 +65,7 @@ const MATCH_ALL_ELEMENTS = '*';
  * @remarks Keep is a copy of DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-export function SECURITY_SCHEMA(): Record<string, Record<string, Record<string, SecurityContext>>> {
+export function SECURITY_SCHEMA(): SecuritySchema {
   if (_SECURITY_SCHEMA) {
     return _SECURITY_SCHEMA;
   }
