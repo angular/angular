@@ -73,16 +73,29 @@ interface LruState {
  * Manages an instance of `LruState` and moves URLs to the head of the
  * chain when requested.
  */
-class LruList {
+export class LruList {
   state: LruState;
   constructor(state?: LruState) {
     if (state === undefined) {
       state = {
         head: null,
         tail: null,
-        map: {},
+        map: Object.create(null) as LruState['map'],
         count: 0,
       };
+    } else {
+      // Re-create the map with a null prototype so that keys that are also
+      // property names on Object.prototype (e.g. "__proto__", "constructor")
+      // are treated as plain string keys rather than triggering inherited
+      // accessors. Object.getOwnPropertyDescriptor is used to read the stored
+      // value for "__proto__" because bracket-notation access for that key
+      // invokes the inherited getter and returns the object's prototype chain
+      // instead of the cached LruNode.
+      const safeMap: LruState['map'] = Object.create(null);
+      for (const key of Object.getOwnPropertyNames(state.map)) {
+        safeMap[key] = Object.getOwnPropertyDescriptor(state.map, key)!.value as LruNode;
+      }
+      state = {...state, map: safeMap};
     }
     this.state = state;
   }
@@ -123,7 +136,7 @@ class LruList {
         // This is the only node. Reset the cache to be empty.
         this.state.head = null;
         this.state.tail = null;
-        this.state.map = {};
+        this.state.map = Object.create(null) as LruState['map'];
         this.state.count = 0;
         return true;
       }
