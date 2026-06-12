@@ -233,6 +233,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       dir._setupWithForm(this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.add(dir);
+      dir._markControlResolved();
     });
   }
 
@@ -275,6 +276,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       setUpFormContainer(group, dir);
       container.registerControl(dir.name, group);
       group.updateValueAndValidity({emitEvent: false});
+      dir._markControlResolved();
     });
   }
 
