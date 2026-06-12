@@ -60,6 +60,7 @@ const SVG_NAMESPACE = 'svg';
 const MATH_ML_NAMESPACE = 'math';
 const NO_NAMESPACE = '';
 const MATCH_ALL_ELEMENTS = '*';
+const createNullObj = () => Object.create(null);
 
 /**
  * @remarks Keep is a copy of DOM Security Schema.
@@ -70,7 +71,7 @@ export function SECURITY_SCHEMA(): SecuritySchema {
     return _SECURITY_SCHEMA;
   }
 
-  _SECURITY_SCHEMA = {};
+  _SECURITY_SCHEMA = createNullObj();
 
   // Case is insignificant below, all element and attribute names are lower-cased for lookup.
 
@@ -156,8 +157,8 @@ function registerContext(
 
     for (const attr of attributeNames) {
       const attrLower = attr.toLowerCase();
-      const attrSchema = (_SECURITY_SCHEMA[attrLower] ??= {});
-      const nsSchema = (attrSchema[nsKey] ??= {});
+      const attrSchema = (_SECURITY_SCHEMA[attrLower] ??= createNullObj());
+      const nsSchema = (attrSchema[nsKey] ??= createNullObj());
       nsSchema[tagName] = ctx;
     }
   }
