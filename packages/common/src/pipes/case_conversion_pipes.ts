@@ -124,6 +124,6 @@ export class UpperCasePipe implements PipeTransform {
 
 function assertPipeArgument(pipe: Type<any>, value: Object): void {
   if (typeof value !== 'string') {
-    throw invalidPipeArgumentError(pipe, value);
+    throw invalidPipeArgumentError(pipe, typeof value);
   }
 }

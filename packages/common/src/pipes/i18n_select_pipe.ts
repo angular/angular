@@ -42,7 +42,7 @@ export class I18nSelectPipe implements PipeTransform {
     if (value == null) return '';
 
     if (typeof mapping !== 'object' || typeof value !== 'string') {
-      throw invalidPipeArgumentError(I18nSelectPipe, mapping);
+      throw invalidPipeArgumentError(I18nSelectPipe, typeof mapping);
     }
 
     if (mapping.hasOwnProperty(value)) {

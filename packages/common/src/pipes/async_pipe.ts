@@ -220,7 +220,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
       return _subscribableStrategy;
     }
 
-    throw invalidPipeArgumentError(AsyncPipe, obj);
+    throw invalidPipeArgumentError(AsyncPipe, typeof obj);
   }
 
   private _dispose(): void {
