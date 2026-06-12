@@ -87,7 +87,7 @@ export function extractValue<T>(
   field: FieldTree<T>,
   filter?: ExtractFilter,
 ): RawValue<T> | DeepPartial<RawValue<T>> {
-  return untracked(() => visitFieldTree(field, filter)) as RawValue<T> | DeepPartial<RawValue<T>>;
+  return visitFieldTree(field, filter) as RawValue<T> | DeepPartial<RawValue<T>>;
 }
 
 function visitFieldTree(
