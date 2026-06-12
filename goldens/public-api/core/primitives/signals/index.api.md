@@ -159,7 +159,7 @@ export interface ReactiveNode {
 }
 
 // @public (undocumented)
-export type ReactiveNodeKind = 'signal' | 'computed' | 'effect' | 'template' | 'linkedSignal' | 'afterRenderEffectPhase' | 'unknown';
+export type ReactiveNodeKind = 'signal' | 'computed' | 'effect' | 'template' | 'linkedSignal' | 'afterRenderEffectPhase' | 'childSignalProp' | 'unknown';
 
 // @public
 export function resetConsumerBeforeComputation(node: ReactiveNode): void;
