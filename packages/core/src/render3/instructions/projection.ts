@@ -5,14 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {isDetachedByI18n} from '../../i18n/utils';
+import {ViewEncapsulation} from '../../metadata/view';
 import {newArray} from '../../util/array_utils';
 import {assertLContainer, assertTNode} from '../assert';
+import {getComponentDef} from '../def_getters';
 import {ComponentTemplate} from '../interfaces/definition';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
 import {
+  CONTEXT,
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
   HYDRATION,
@@ -94,7 +98,20 @@ export function matchingProjectionSlotIndex(
  * @codeGenApi
  */
 export function ɵɵprojectionDef(projectionSlots?: (string | (string | number)[][])[]): void {
-  const componentNode = getLView()[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
+  const componentLView = getLView();
+  const componentNode = componentLView[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
+
+  const componentDef = getComponentDef(
+    (componentLView[CONTEXT] as {constructor: unknown}).constructor,
+  );
+  if (componentDef?.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) {
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_ISOLATED_SHADOW_DOM_CONTENT_PROJECTION,
+      ngDevMode &&
+        `ng-content projection is not supported with ViewEncapsulation.ExperimentalIsolatedShadowDom. ` +
+          `Use native <slot> elements instead. Content will remain in the light DOM and be projected via slots.`,
+    );
+  }
 
   if (!componentNode.projection) {
     // If no explicit projection slots are defined, fall back to a single

@@ -11,6 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
+import {allLeavingAnimations} from '../../src/animation/longest_animation';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -331,6 +332,136 @@ describe('hot module replacement', () => {
       getShadowRoot(),
       `<style>strong {background: pink;}</style>Changed <strong>1</strong>!`,
     );
+  });
+
+  it('should preserve native slot content when replacing an isolated shadow DOM component', () => {
+    // Domino doesn't support shadow DOM.
+    if (isNode) {
+      return;
+    }
+
+    let instance!: ChildCmp;
+    const initialMetadata: Component = {
+      encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
+      selector: 'child-cmp',
+      template: '<slot></slot><span>{{state}}</span>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {
+      state = 0;
+
+      constructor() {
+        instance = this;
+      }
+    }
+
+    @Component({
+      selector: 'projected-cmp',
+      template: '<button>Projected</button>',
+    })
+    class ProjectedCmp {}
+
+    @Component({
+      imports: [ChildCmp, ProjectedCmp],
+      template: '<child-cmp>Projected text <projected-cmp></projected-cmp></child-cmp>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    const getHost = () => fixture.nativeElement.querySelector('child-cmp') as HTMLElement;
+    const getSlot = () => getHost().shadowRoot!.querySelector('slot') as HTMLSlotElement;
+
+    expect(
+      getSlot()
+        .assignedNodes()
+        .map((node) => node.textContent?.trim()),
+    ).toEqual(['Projected text', 'Projected']);
+
+    instance.state = 1;
+    fixture.detectChanges();
+    expectHTML(getHost().shadowRoot!, '<slot></slot><span>1</span>');
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      template: '<slot></slot><span>Changed {{state}}</span>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    });
+    fixture.detectChanges();
+
+    expect(
+      getSlot()
+        .assignedNodes()
+        .map((node) => node.textContent?.trim()),
+    ).toEqual(['Projected text', 'Projected']);
+    expectHTML(getHost().shadowRoot!, '<slot></slot><span>Changed 1</span>');
+  });
+
+  it('should reinsert child component styles when replacing an isolated shadow DOM component with delayed style teardown', () => {
+    // Domino doesn't support shadow DOM.
+    if (isNode) {
+      return;
+    }
+
+    @Component({
+      selector: 'styled-cmp',
+      template: '<strong>Styled</strong>',
+      styles: 'strong {color: red;}',
+    })
+    class StyledCmp {}
+
+    let instance!: ChildCmp;
+    const initialMetadata: Component = {
+      encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
+      imports: [StyledCmp],
+      selector: 'child-cmp',
+      template: '<styled-cmp /><span>{{state}}</span>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {
+      state = 0;
+
+      constructor() {
+        instance = this;
+      }
+    }
+
+    @Component({
+      imports: [ChildCmp, StyledCmp],
+      template: '<child-cmp/>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    const getShadowRoot = () => fixture.nativeElement.querySelector('child-cmp').shadowRoot!;
+
+    expect(shadowRootStyleText(getShadowRoot())).toContain('color: red');
+
+    allLeavingAnimations.add(999);
+    try {
+      instance.state = 1;
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: '<styled-cmp /><span>Changed {{state}}</span>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
+    } finally {
+      allLeavingAnimations.delete(999);
+    }
+
+    expect(shadowRootStyleText(getShadowRoot())).toContain('color: red');
+    expect(getShadowRoot().querySelector('styled-cmp strong')?.textContent).toBe('Styled');
+    expect(getShadowRoot().querySelector('span')?.textContent).toBe('Changed 1');
   });
 
   it('should continue binding inputs to a component that is replaced', () => {
@@ -2400,13 +2531,20 @@ describe('hot module replacement', () => {
     );
   }
 
-  function expectHTML(element: HTMLElement, expectation: string) {
+  function expectHTML(element: HTMLElement | ShadowRoot, expectation: string) {
     const actual = element.innerHTML
       .replace(/<!--(\W|\w)*?-->/g, '')
       .replace(/\s(ng-reflect|_nghost|_ngcontent)-\S*="[^"]*"/g, '');
     expect(actual.replace(/\s/g, '') === expectation.replace(/\s/g, ''))
       .withContext(`HTML does not match expectation. Actual HTML:\n${actual}`)
       .toBe(true);
+  }
+
+  function shadowRootStyleText(shadowRoot: ShadowRoot): string {
+    return Array.from(
+      shadowRoot.querySelectorAll('style'),
+      (style) => style.textContent ?? '',
+    ).join('\n');
   }
 
   function setMarker(node: Node) {
