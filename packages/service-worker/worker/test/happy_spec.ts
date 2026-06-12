@@ -2383,8 +2383,10 @@ import {envIsSupported} from '../testing/utils';
       });
 
       it('should not enter degraded mode if manifest for latest hash is missing upon initialization', async () => {
+        const ownSW = scope.registration.active as unknown as MessageEventSource;
+
         // Initialize the SW.
-        scope.handleMessage({action: 'INITIALIZE'}, null);
+        scope.handleMessage({action: 'INITIALIZE'}, null, ownSW);
         await driver.initialized;
         expect(driver.state).toBe(DriverReadyState.NORMAL);
 
@@ -2399,10 +2401,24 @@ import {envIsSupported} from '../testing/utils';
 
         // Re-initialize the SW and ensure it does not enter a degraded mode.
         driver.initialized = null;
-        scope.handleMessage({action: 'INITIALIZE'}, null);
+        scope.handleMessage({action: 'INITIALIZE'}, null, ownSW);
         await driver.initialized;
         expect(driver.state).toBe(DriverReadyState.NORMAL);
         expect(await getLatestHashFromDb()).toBe(manifestHash);
+      });
+
+      it('should silently drop INITIALIZE from an untrusted source', async () => {
+        await driver.initialized;
+        expect(driver.state).toBe(DriverReadyState.NORMAL);
+
+        // Reset so we can detect whether ensureInitialized is triggered again.
+        driver.initialized = null;
+
+        const untrustedSource = {postMessage: () => {}} as unknown as MessageEventSource;
+        await scope.handleMessage({action: 'INITIALIZE'}, null, untrustedSource);
+
+        // driver.initialized must still be null — ensureInitialized was not called.
+        expect(driver.initialized).toBeNull();
       });
 
       it('ignores invalid `only-if-cached` requests ', async () => {

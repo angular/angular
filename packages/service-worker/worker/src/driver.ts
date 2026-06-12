@@ -309,9 +309,19 @@ export class Driver implements Debuggable, UpdateSource {
 
     event.waitUntil(
       (async () => {
-        // Initialization is the only event which is sent directly from the SW to itself, and thus
-        // `event.source` is not a `Client`. Handle it here, before the check for `Client` sources.
+        // INITIALIZE is sent by the SW to itself on activation, so event.source is
+        // the SW registration (not a Client). Only accept it from the SW itself to
+        // prevent arbitrary sources from triggering initialization.
         if (data.action === 'INITIALIZE') {
+          const isOwnSW =
+            event.source === this.scope.registration.active ||
+            event.source === this.scope.registration.installing ||
+            event.source === this.scope.registration.waiting;
+
+          if (!isOwnSW) {
+            return;
+          }
+
           return this.ensureInitialized(event);
         }
 

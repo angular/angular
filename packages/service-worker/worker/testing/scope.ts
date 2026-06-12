@@ -109,7 +109,11 @@ export class SwTestHarnessImpl
       this.selfMessageQueue = [];
       await queue.reduce(async (previous, msg) => {
         await previous;
-        await this.handleMessage(msg, null);
+        await this.handleMessage(
+          msg,
+          null,
+          this.registration.active as unknown as MessageEventSource,
+        );
       }, Promise.resolve());
     }
   }
@@ -215,7 +219,11 @@ export class SwTestHarnessImpl
     return [event.response, event.ready];
   }
 
-  handleMessage(data: Object, clientId: string | null): Promise<void> {
+  handleMessage(
+    data: Object,
+    clientId: string | null,
+    source?: MessageEventSource | null,
+  ): Promise<void> {
     if (!this.eventHandlers.has('message')) {
       throw new Error('No message handler registered');
     }
@@ -224,9 +232,11 @@ export class SwTestHarnessImpl
       this.clients.add(clientId, this.scopeUrl);
     }
 
+    const eventSource =
+      source !== undefined ? source : (clientId && this.clients.getMock(clientId)) || null;
     const event = new MockExtendableMessageEvent(
       data,
-      (clientId && this.clients.getMock(clientId)) || null,
+      eventSource as Client | MessagePort | ServiceWorker | null,
     );
     this.eventHandlers.get('message')!.call(this, event);
 
