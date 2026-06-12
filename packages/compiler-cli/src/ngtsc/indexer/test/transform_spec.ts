@@ -46,9 +46,6 @@ const adapter: NodeAdapter<DeclarationNode> = {
   getFileName(node: DeclarationNode): string {
     return node.getSourceFile().fileName;
   },
-  getContent(node: DeclarationNode): string {
-    return node.getSourceFile().getFullText();
-  },
 };
 
 runInEachFileSystem(() => {
@@ -66,11 +63,11 @@ runInEachFileSystem(() => {
       expect(info).toEqual({
         name: 'C',
         selector: 'c-selector',
-        file: new ParseSourceFile('class C {}', decl.getSourceFile().fileName),
+        fileUrl: decl.getSourceFile().fileName,
         template: {
           identifiers: getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>'))
             .identifiers,
-          file: new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
+          fileUrl: decl.getSourceFile().fileName,
         },
         errors: [],
       });
@@ -94,9 +91,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info!.template.file).toEqual(
-        new ParseSourceFile('class C {}', decl.getSourceFile().fileName),
-      );
+      expect(info!.template.fileUrl).toEqual(decl.getSourceFile().fileName);
     });
 
     it('should give external templates their own source file', () => {
@@ -110,9 +105,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info!.template.file).toEqual(
-        new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
-      );
+      expect(info!.template.fileUrl).toEqual(decl.getSourceFile().fileName);
     });
   });
 });

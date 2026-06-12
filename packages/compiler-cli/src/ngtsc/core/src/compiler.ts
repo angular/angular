@@ -928,9 +928,6 @@ export class NgCompiler {
       getFileName(node: DeclarationNode): string {
         return node.getSourceFile().fileName;
       },
-      getContent(node: DeclarationNode): string {
-        return node.getSourceFile().getFullText();
-      },
     };
 
     return generateAnalysis(context, adapter);

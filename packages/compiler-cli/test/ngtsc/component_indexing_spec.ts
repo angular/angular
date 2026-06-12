@@ -13,7 +13,6 @@ import {
   IndexedComponent,
   TopLevelIdentifier,
 } from '../../src/ngtsc/indexer';
-import {ParseSourceFile} from '@angular/compiler';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -54,7 +53,7 @@ runInEachFileSystem(() => {
           jasmine.objectContaining<IndexedComponent>({
             name: 'TestCmp',
             selector: 'test-cmp',
-            file: new ParseSourceFile(componentContent, testSourceFile),
+            fileUrl: testSourceFile,
           }),
         );
       });
@@ -83,7 +82,7 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          file: new ParseSourceFile(componentContent, testSourceFile),
+          fileUrl: testSourceFile,
         });
       });
 
@@ -114,7 +113,7 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          file: new ParseSourceFile('{{foo}}', testTemplateFile),
+          fileUrl: testTemplateFile,
         });
       });
 
@@ -149,7 +148,7 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          file: new ParseSourceFile('  \n  {{foo}}', testTemplateFile),
+          fileUrl: testTemplateFile,
         });
       });
 
