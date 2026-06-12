@@ -261,6 +261,14 @@
         padding-inline: 0.5rem;
       }
 
+      &[aria-controls='social-mini-menu'] {
+        anchor-name: --social-trigger;
+      }
+
+      &[aria-controls='theme-mini-menu'] {
+        anchor-name: --theme-trigger;
+      }
+
       docs-icon {
         color: var(--quaternary-contrast);
         font-size: 1.5rem;

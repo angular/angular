@@ -170,7 +170,7 @@
           </button>
 
           <ng-template #docsVersionMiniMenu>
-            <ul class="adev-mini-menu adev-version-picker" cdkMenu>
+            <ul class="adev-mini-menu adev-mini-menu--version adev-version-picker" cdkMenu>
               @for (item of versions(); track item) {
                 <li>
                   <a type="button" cdkMenuItem [href]="item.url" [aria-label]="item.displayName">
@@ -300,12 +300,13 @@
           aria-label="Open social media links"
           (cdkMenuClosed)="closeMenu()"
           (cdkMenuOpened)="openMenu('social')"
+          aria-controls="social-mini-menu"
         >
           <docs-icon role="presentation">more_horiz</docs-icon>
         </button>
 
         <ng-template #socialMiniMenu>
-          <ul class="adev-mini-menu" cdkMenu>
+          <ul class="adev-mini-menu adev-mini-menu--social" cdkMenu id="social-mini-menu">
             <li>
               <a
                 [href]="ngLinks.YOUTUBE"
@@ -491,7 +492,7 @@
 
         <ng-template #themeMiniMenu>
           <ul
-            class="adev-mini-menu"
+            class="adev-mini-menu adev-mini-menu--theme"
             cdkMenu
             id="theme-mini-menu"
             role="menu"

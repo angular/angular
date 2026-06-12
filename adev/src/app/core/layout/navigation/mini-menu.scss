@@ -20,9 +20,30 @@
     animation: none;
   }
 
+  // Tablet drop-down: anchor the menu centered under its trigger. The
+  // `--social`/`--theme`/`--version` modifiers select which trigger to anchor to.
   @include mq.for-tablet {
-    top: 75px;
-    left: 5px;
+    position: fixed;
+    inset-block-start: calc(anchor(bottom) + 8px);
+    justify-self: anchor-center;
+  }
+
+  &--social {
+    @include mq.for-tablet {
+      position-anchor: --social-trigger;
+    }
+  }
+
+  &--theme {
+    @include mq.for-tablet {
+      position-anchor: --theme-trigger;
+    }
+  }
+
+  &--version {
+    @include mq.for-tablet {
+      position-anchor: --version-trigger;
+    }
   }
 
   li {
@@ -99,10 +120,6 @@
   }
 
   @include mq.for-tablet {
-    position: fixed;
-    position-anchor: --version-trigger;
-    inset-block-start: calc(anchor(bottom) + 8px);
-    justify-self: anchor-center;
     margin-inline-start: 0;
   }
 }
