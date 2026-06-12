@@ -25,6 +25,7 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8115` | [`uninvokedTrackFunction`](extended-diagnostics/NG8115)               |
 | `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)           |
 | `NG8117` | [`uninvokedFunctionInTextInterpolation`](extended-diagnostics/NG8117) |
+| `NG8119` | [`numericCssPropertyRequiresUnit`](extended-diagnostics/NG8119)       |
 | `NG8021` | [`deferTriggerMisconfiguration`](extended-diagnostics/NG8021)         |
 
 ## Configuration
