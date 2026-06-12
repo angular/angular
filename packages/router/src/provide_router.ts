@@ -813,10 +813,11 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * from the route.
  *
  * Importantly, when an input does not have an item in the route data with a matching key, this
- * input is set to `undefined`. This prevents previous information from being
- * retained if the data got removed from the route (i.e. if a query parameter is removed).
- * Default values can be provided with a resolver on the route to ensure the value is always present
- * or an input and use an input transform in the component.
+ * input is set to `undefined` by default only if it was previously available in the router data
+ * during the lifetime of the active route in the outlet. This prevents previous information from
+ * being retained if the data got removed from the route (i.e. if a query parameter is removed)
+ * while preserving the initial value of the input if it was never set by the router.
+ * This behavior can be configured using the `unmatchedInputBehavior` option.
  *
  * Advanced example of how you can disable binding from certain sources:
  * ```ts
