@@ -18,7 +18,7 @@ import {
 } from '../interfaces/container';
 import {TNode} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
-import {isLView} from '../interfaces/type_checks';
+import {isDestroyed, isLView} from '../interfaces/type_checks';
 import {
   DECLARATION_COMPONENT_VIEW,
   DECLARATION_LCONTAINER,
@@ -153,6 +153,9 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView |
   const viewToDetach = lContainer[indexInContainer];
 
   if (viewToDetach) {
+    if (isDestroyed(viewToDetach)) {
+      return;
+    }
     const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
     if (declarationLContainer !== null && declarationLContainer !== lContainer) {
       detachMovedView(declarationLContainer, viewToDetach);
