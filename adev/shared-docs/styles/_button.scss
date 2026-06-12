@@ -43,6 +43,12 @@
     color: transparent;
     user-select: none;
 
+    // We explicitly apply font styles since the class
+    // may be used for non-button elements (e.g. <a>) as well.
+    font-family: var(--inter-font);
+    font-size: 0.875rem;
+    font-weight: 600;
+
     // border gradient / background
     --angle: 90deg;
     background: linear-gradient(
