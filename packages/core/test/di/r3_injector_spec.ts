@@ -509,5 +509,31 @@ describe('InjectorDef-based createInjector()', () => {
         /NG0204: Can't resolve all parameters for MissingArgumentType: \(\?\)./,
       );
     });
+
+    it('should not throw when injected object has a throwing name getter', () => {
+      class ThrowingNameService {
+        get name(): string {
+          throw new Error('name getter throws');
+        }
+        static ɵprov = ɵɵdefineInjectable({
+          token: ThrowingNameService,
+          providedIn: 'root',
+          factory: () => new ThrowingNameService(),
+        });
+      }
+      class ConsumerService {
+        constructor(readonly dep: ThrowingNameService) {}
+        static ɵprov = ɵɵdefineInjectable({
+          token: ConsumerService,
+          providedIn: 'root',
+          factory: () => new ConsumerService(ɵɵinject(ThrowingNameService)),
+        });
+      }
+      class ThrowingNameModule {
+        static ɵinj = ɵɵdefineInjector({providers: [ThrowingNameService, ConsumerService]});
+      }
+      const testInjector = createInjector(ThrowingNameModule);
+      expect(() => testInjector.get(ConsumerService)).not.toThrow();
+    });
   });
 });
