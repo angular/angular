@@ -7,28 +7,29 @@
  */
 
 import {
+  BASE_EFFECT_NODE,
+  BaseEffectNode,
   SIGNAL,
   consumerDestroy,
   isInNotificationPhase,
-  setActiveConsumer,
-  BaseEffectNode,
-  BASE_EFFECT_NODE,
   runEffect,
+  setActiveConsumer,
 } from '../../../primitives/signals';
-import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
-import {markAncestorsForTraversal} from '../util/view_utils';
-import {inject} from '../../di/injector_compatibility';
-import {Injector} from '../../di/injector';
-import {assertNotInReactiveContext} from './asserts';
-import {assertInInjectionContext} from '../../di/contextual';
-import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
-import {ViewContext} from '../view_context';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from '../../change_detection/scheduling/zoneless_scheduling';
+import {assertInInjectionContext} from '../../di/contextual';
+import {Injector} from '../../di/injector';
+import {inject} from '../../di/injector_compatibility';
+import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
+import {EFFECTS, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {setIsRefreshingViews} from '../state';
+import {markAncestorsForTraversal} from '../util/view_utils';
+import {ViewContext} from '../view_context';
+import {assertNotInReactiveContext} from './asserts';
 import {EffectScheduler, SchedulableEffect} from './root_effect_scheduler';
+import {untracked} from './untracked';
 
 import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
 
@@ -331,4 +332,29 @@ function createEffectFn(node: EffectNode, fn: (onCleanup: EffectCleanupRegisterF
   return () => {
     fn((cleanupFn) => (node.cleanupFns ??= []).push(cleanupFn));
   };
+}
+
+/**
+ * A reactive effect that separates tracking and side-effects.
+ *
+ * `splitEffect` behaves similarly to `effect`, but completely separates the tracking of
+ * reactive dependencies from the execution of the side-effect. The `reactiveFn` is executed
+ * in a reactive context to track inputs, and its result is passed to `effectFn`, which runs
+ * asynchronously in a non-reactive context.
+ *
+ * @param reactiveFn The tracking phase computations.
+ * @param effectFn The side-effect phase execution.
+ * @param options Effect creation options.
+ *
+ * @publicApi 22.1
+ */
+export function splitEffect<T>(
+  reactiveFn: () => T,
+  effectFn: (params: T, onCleanup: EffectCleanupRegisterFn) => void,
+  options?: CreateEffectOptions,
+): EffectRef {
+  return effect((onCleanup) => {
+    const params = reactiveFn();
+    untracked(() => effectFn(params, onCleanup));
+  }, options);
 }
