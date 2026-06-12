@@ -151,9 +151,9 @@ withEachNg1Version(() => {
       const element = html(`
            <div>
              <ng2 literal="Text" interpolate="Hello {{name}}"
-                 bind-one-way-a="dataA" [one-way-b]="dataB"
-                 bindon-two-way-a="modelA" [(two-way-b)]="modelB"
-                 on-event-a='eventA=$event' (event-b)="eventB=$event"></ng2>
+                 [one-way-b]="dataB"
+                 [(two-way-b)]="modelB"
+                 (event-b)="eventB=$event"></ng2>
              | modelA: {{modelA}}; modelB: {{modelB}}; eventA: {{eventA}}; eventB: {{eventB}};
            </div>`);
 

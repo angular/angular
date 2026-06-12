@@ -244,14 +244,6 @@ describe('quick info', () => {
           });
         });
 
-        it('should work for bind- syntax', () => {
-          expectQuickInfo({
-            templateOverride: `<test-comp bind-tcN¦ame="name"></test-comp>`,
-            expectedSpanText: 'tcName',
-            expectedDisplayString: '(property) TestComponent.name: string',
-          });
-        });
-
         it('should work for structural directive inputs ngForTrackBy', () => {
           expectQuickInfo({
             templateOverride: `<div *ngFor="let item of heroes; tr¦ackBy: trackByFn;"></div>`,
@@ -297,14 +289,6 @@ describe('quick info', () => {
           });
         });
 
-        it('should work for on- syntax binding', () => {
-          expectQuickInfo({
-            templateOverride: `<test-comp on-te¦st="myClick($event)"></test-comp>`,
-            expectedSpanText: 'test',
-            expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>',
-          });
-        });
-
         it('should work for $event from EventEmitter', () => {
           expectQuickInfo({
             templateOverride: `<div string-model (modelChange)="myClick($e¦vent)"></div>`,
@@ -342,14 +326,6 @@ describe('quick info', () => {
           templateOverride: `<div string-model #dir¦Ref="stringModel"></div>`,
           expectedSpanText: 'dirRef',
           expectedDisplayString: '(reference) dirRef: StringModel',
-        });
-      });
-
-      it('should work for ref- syntax', () => {
-        expectQuickInfo({
-          templateOverride: `<div ref-ch¦art></div>`,
-          expectedSpanText: 'chart',
-          expectedDisplayString: '(reference) chart: HTMLDivElement',
         });
       });
 

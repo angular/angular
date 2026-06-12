@@ -62,21 +62,12 @@ describe('expression AST absolute source spans', () => {
       'foo(); bar();',
       new AbsoluteSourceSpan(14, 26),
     ]);
-
-    expect(humanizeExpressionSource(parse('<div on-click="foo();bar();"></div>').nodes)).toContain([
-      'foo(); bar();',
-      new AbsoluteSourceSpan(15, 27),
-    ]);
   });
 
   it('should provide absolute offsets of an expression in a bound attribute', () => {
     expect(
       humanizeExpressionSource(parse('<input [disabled]="condition ? true : false" />').nodes),
     ).toContain(['condition ? true : false', new AbsoluteSourceSpan(19, 43)]);
-
-    expect(
-      humanizeExpressionSource(parse('<input bind-disabled="condition ? true : false" />').nodes),
-    ).toContain(['condition ? true : false', new AbsoluteSourceSpan(22, 46)]);
   });
 
   it('should provide absolute offsets of an expression in a template attribute', () => {

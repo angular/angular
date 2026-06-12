@@ -290,42 +290,6 @@
       }
     },
     {
-      "description": "should map a longhand input binding expression (full compile)",
-      "inputFiles": [
-        "input_binding_longhand.ts"
-      ],
-      "compilationModeFilter": [
-        "full compile",
-        "declaration-only emit"
-      ],
-      "compilerOptions": {
-        "sourceMap": true
-      }
-    },
-    {
-      "description": "should map a longhand input binding expression (partial compile)",
-      "inputFiles": [
-        "input_binding_longhand.ts"
-      ],
-      "expectations": [
-        {
-          "files": [
-            {
-              "generated": "input_binding_longhand.js",
-              "expected": "input_binding_longhand_partial.js"
-            }
-          ]
-        }
-      ],
-      "compilationModeFilter": [
-        "linked compile",
-        "declaration-only emit"
-      ],
-      "compilerOptions": {
-        "sourceMap": true
-      }
-    },
-    {
       "description": "should map a simple output binding expression (full compile)",
       "inputFiles": [
         "output_binding_simple.ts"
@@ -398,42 +362,6 @@
       }
     },
     {
-      "description": "should map a longhand output binding expression (full compile)",
-      "inputFiles": [
-        "output_binding_longhand.ts"
-      ],
-      "compilationModeFilter": [
-        "full compile",
-        "declaration-only emit"
-      ],
-      "compilerOptions": {
-        "sourceMap": true
-      }
-    },
-    {
-      "description": "should map a longhand output binding expression (partial compile)",
-      "inputFiles": [
-        "output_binding_longhand.ts"
-      ],
-      "expectations": [
-        {
-          "files": [
-            {
-              "generated": "output_binding_longhand.js",
-              "expected": "output_binding_longhand_partial.js"
-            }
-          ]
-        }
-      ],
-      "compilationModeFilter": [
-        "linked compile",
-        "declaration-only emit"
-      ],
-      "compilerOptions": {
-        "sourceMap": true
-      }
-    },
-    {
       "description": "should map a two-way binding expression (full compile)",
       "inputFiles": [
         "two_way_binding_simple.ts"
@@ -457,42 +385,6 @@
             {
               "generated": "two_way_binding_simple.js",
               "expected": "two_way_binding_simple_partial.js"
-            }
-          ]
-        }
-      ],
-      "compilationModeFilter": [
-        "linked compile",
-        "declaration-only emit"
-      ],
-      "compilerOptions": {
-        "sourceMap": true
-      }
-    },
-    {
-      "description": "should map a longhand two-way binding expression (full compile)",
-      "inputFiles": [
-        "two_way_binding_longhand.ts"
-      ],
-      "compilationModeFilter": [
-        "full compile",
-        "declaration-only emit"
-      ],
-      "compilerOptions": {
-        "sourceMap": true
-      }
-    },
-    {
-      "description": "should map a longhand two-way binding expression (partial compile)",
-      "inputFiles": [
-        "two_way_binding_longhand.ts"
-      ],
-      "expectations": [
-        {
-          "files": [
-            {
-              "generated": "two_way_binding_longhand.js",
-              "expected": "two_way_binding_longhand_partial.js"
             }
           ]
         }

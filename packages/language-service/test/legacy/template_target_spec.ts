@@ -23,6 +23,7 @@ import {
   EmptyExpr,
   TmplAstForLoopBlock as ForLoopBlock,
   TmplAstForLoopBlockEmpty as ForLoopBlockEmpty,
+  TmplAstIdleDeferredTrigger as IdleDeferredTrigger,
   TmplAstIfBlockBranch as IfBlockBranch,
   KeyedRead,
   TmplAstLetDeclaration as LetDeclaration,
@@ -42,7 +43,6 @@ import {
   TmplAstSwitchExhaustiveCheck as SwitchExhaustiveCheck,
   TmplAstTemplate as Template,
   TmplAstTextAttribute as TextAttribute,
-  TmplAstIdleDeferredTrigger as IdleDeferredTrigger,
   TmplAstTimerDeferredTrigger as TimerDeferredTrigger,
   TmplAstVariable as Variable,
 } from '@angular/compiler';
@@ -330,29 +330,8 @@ describe('getTargetAtPosition for template AST', () => {
     expect((node as PropertyRead).name).toBe('myInputFoo');
   });
 
-  it('should locate template reference key via the ref- notation', () => {
-    const {errors, nodes, position} = parse(`<ng-template ref-fo¦o></ng-template>`);
-    expect(errors).toBe(null);
-    const {context} = getTargetAtPosition(nodes, position)!;
-    const {node} = context as SingleNodeTarget;
-    expect(isTemplateNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(Reference);
-    expect((node as Reference).name).toBe('foo');
-  });
-
   it('should locate template reference value via the # notation', () => {
     const {errors, nodes, position} = parse(`<ng-template #foo="export¦As"></ng-template>`);
-    expect(errors).toBe(null);
-    const {context} = getTargetAtPosition(nodes, position)!;
-    const {node} = context as SingleNodeTarget;
-    expect(isTemplateNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(Reference);
-    expect((node as Reference).value).toBe('exportAs');
-    // TODO: Note that we do not have the ability to distinguish LHS and RHS
-  });
-
-  it('should locate template reference value via the ref- notation', () => {
-    const {errors, nodes, position} = parse(`<ng-template ref-foo="export¦As"></ng-template>`);
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
