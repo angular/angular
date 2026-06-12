@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  ɵRuntimeError as RuntimeError,
+  ɵtryDecodeURIComponent as tryDecodeURIComponent,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 
@@ -62,7 +65,7 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
    * @returns The decoded key name.
    */
   decodeKey(key: string): string {
-    return decodeURIComponent(key);
+    return tryDecodeURIComponent(key) ?? key;
   }
 
   /**
@@ -71,7 +74,7 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
    * @returns The decoded value.
    */
   decodeValue(value: string) {
-    return decodeURIComponent(value);
+    return tryDecodeURIComponent(value) ?? value;
   }
 }
 
