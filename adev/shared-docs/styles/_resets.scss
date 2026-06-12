@@ -34,6 +34,7 @@
       color 0.3s ease,
       background-color 0.3s ease;
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   @media (prefers-reduced-motion) {
