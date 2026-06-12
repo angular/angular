@@ -14,6 +14,7 @@ export {
   platformBrowser,
   provideProtractorTestingSupport,
 } from './browser';
+export {Link, LinkDefinition} from './browser/link';
 export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
