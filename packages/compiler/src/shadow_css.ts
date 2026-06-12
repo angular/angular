@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as chars from './chars';
+import {namespaceCssVariable} from './util';
 
 /**
  * The following set contains all keywords that can be used in the animation css shorthand
@@ -1032,6 +1033,37 @@ const COLON_IN_PLACEHOLDER = '%COLON_IN_PLACEHOLDER%';
 const _cssCommaInPlaceholderReGlobal = new RegExp(COMMA_IN_PLACEHOLDER, 'g');
 const _cssSemiInPlaceholderReGlobal = new RegExp(SEMI_IN_PLACEHOLDER, 'g');
 const _cssColonInPlaceholderReGlobal = new RegExp(COLON_IN_PLACEHOLDER, 'g');
+
+// Matches any CSS variable name, defined by a double-hyphen followed by any valid ident.
+// https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
+const _cssVariableRe = /(var\(\s*)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
+
+/**
+ * Transforms CSS variables within a stylesheet to include a namespace placeholder.
+ *
+ * E.g. `--foo: bar;` becomes `--%NS%foo: bar;`
+ * E.g. `color: var(--foo);` becomes `color: var(--%NS%foo);`
+ *
+ * If a variable is prefixed with `--global--`, it is NOT namespaced and the prefix is removed.
+ * E.g. `--global--mycolor: red;` becomes `--mycolor: red;`
+ */
+export function namespaceCssVariables(cssText: string): string {
+  return cssText.replace(_cssVariableRe, (match, leadingVar, varName, trailingColon) => {
+    // Check for a leading `var(` or trailing `:` to approximate whether we're operating on a
+    // real CSS variable, not another piece of syntax that resembles it. For example, this
+    // guards against:
+    // - `.foo--bar {}`
+    // - `/* --foo */`
+    // - `p { content: "--foo" }`
+    // - `[data---bar] {}`
+    // - `[data-status=foo--bar] {}`
+    // etc.
+    if (!leadingVar && !trailingColon) {
+      return match;
+    }
+    return (leadingVar ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
+  });
+}
 
 export class CssRule {
   constructor(

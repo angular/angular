@@ -14,6 +14,7 @@ import {By} from '../../src/dom/debug/by';
 import {
   addBaseHrefToCssSourceMap,
   NAMESPACE_URIS,
+  provideCssVarNamespacing,
   REMOVE_STYLES_ON_COMPONENT_DESTROY,
 } from '../../src/dom/dom_renderer';
 
@@ -337,6 +338,233 @@ describe('DefaultDomRendererV2', () => {
     );
 
     document.head.innerHTML = '';
+  });
+
+  describe('CSS namespacing', () => {
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+    });
+
+    describe('with provided namespace', () => {
+      it('should replace `%NS%` in styles for `Emulated` encapsulation', async () => {
+        @Component({
+          selector: 'cmp-namespace-emulated',
+          template: '',
+          styles: `
+            :host {
+              color: var(--%NS%foo);
+            }
+          `,
+          encapsulation: ViewEncapsulation.Emulated,
+        })
+        class CmpNamespaceEmulated {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpNamespaceEmulated],
+          providers: [provideCssVarNamespacing('my-namespace')],
+        });
+        const fixture = TestBed.createComponent(CmpNamespaceEmulated);
+        fixture.detectChanges();
+
+        expect(await styleCount(fixture, 'var(--my-namespace_foo)')).toBe(1);
+      });
+
+      it('should replace `%NS%` in styles for `None` encapsulation', async () => {
+        @Component({
+          selector: 'cmp-namespace-none',
+          template: '',
+          styles: `
+            :host {
+              color: var(--%NS%foo);
+            }
+          `,
+          encapsulation: ViewEncapsulation.None,
+        })
+        class CmpNamespaceNone {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpNamespaceNone],
+          providers: [provideCssVarNamespacing('my-namespace')],
+        });
+        const fixture = TestBed.createComponent(CmpNamespaceNone);
+        fixture.detectChanges();
+
+        expect(await styleCount(fixture, 'var(--my-namespace_foo)')).toBe(1);
+      });
+
+      it('should replace `%NS%` in styles for `ShadowDom` encapsulation', () => {
+        @Component({
+          selector: 'cmp-namespace-shadow',
+          template: '',
+          styles: `
+            :host {
+              color: var(--%NS%foo);
+            }
+          `,
+          encapsulation: ViewEncapsulation.ShadowDom,
+        })
+        class CmpNamespaceShadow {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpNamespaceShadow],
+          providers: [provideCssVarNamespacing('my-namespace')],
+        });
+        const fixture = TestBed.createComponent(CmpNamespaceShadow);
+        fixture.detectChanges();
+
+        const styles = fixture.nativeElement.shadowRoot.querySelectorAll(
+          'style',
+        ) as NodeListOf<HTMLStyleElement>;
+        const css = Array.from(styles)
+          .map((s) => s.textContent)
+          .join('\n\n');
+        expect(css).toContain('var(--my-namespace_foo)');
+      });
+    });
+
+    describe('with default (empty) namespace', () => {
+      it('should replace `%NS%` in styles for `Emulated` encapsulation', async () => {
+        @Component({
+          selector: 'cmp-namespace-emulated',
+          template: '',
+          styles: `
+            :host {
+              color: var(--%NS%foo);
+            }
+          `,
+          encapsulation: ViewEncapsulation.Emulated,
+        })
+        class CmpNamespaceEmulated {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpNamespaceEmulated],
+          providers: [], // No `provideCssVarNamespacing`.
+        });
+        const fixture = TestBed.createComponent(CmpNamespaceEmulated);
+        fixture.detectChanges();
+
+        expect(await styleCount(fixture, 'var(--foo)')).toBe(1);
+      });
+
+      it('should replace `%NS%` in styles for `None` encapsulation', async () => {
+        @Component({
+          selector: 'cmp-namespace-none',
+          template: '',
+          styles: `
+            :host {
+              color: var(--%NS%foo);
+            }
+          `,
+          encapsulation: ViewEncapsulation.None,
+        })
+        class CmpNamespaceNone {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpNamespaceNone],
+          providers: [], // No `provideCssVarNamespacing`.
+        });
+        const fixture = TestBed.createComponent(CmpNamespaceNone);
+        fixture.detectChanges();
+
+        expect(await styleCount(fixture, 'var(--foo)')).toBe(1);
+      });
+
+      it('should replace `%NS%` in styles for `ShadowDom` encapsulation', () => {
+        @Component({
+          selector: 'cmp-namespace-shadow',
+          template: '',
+          styles: `
+            :host {
+              color: var(--%NS%foo);
+            }
+          `,
+          encapsulation: ViewEncapsulation.ShadowDom,
+        })
+        class CmpNamespaceShadow {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpNamespaceShadow],
+          providers: [], // No `provideCssVarNamespacing`.
+        });
+        const fixture = TestBed.createComponent(CmpNamespaceShadow);
+        fixture.detectChanges();
+
+        const styles = fixture.nativeElement.shadowRoot.querySelectorAll(
+          'style',
+        ) as NodeListOf<HTMLStyleElement>;
+        const css = Array.from(styles)
+          .map((s) => s.textContent)
+          .join('\n\n');
+        expect(css).toContain('var(--foo)');
+      });
+    });
+
+    describe('style property bindings namespacing', () => {
+      it('should namespace style property bindings starting with `--`', () => {
+        @Component({
+          selector: 'cmp-style-prop-namespace',
+          template: `<div [style.--foo]="'blue'"></div>`,
+          standalone: true,
+        })
+        class CmpStylePropNamespace {}
+
+        TestBed.configureTestingModule({
+          imports: [CmpStylePropNamespace],
+          providers: [provideCssVarNamespacing('my-namespace')],
+        });
+        const fixture = TestBed.createComponent(CmpStylePropNamespace);
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div');
+        expect(div.style.getPropertyValue('--my-namespace_foo')).toBe('blue');
+        expect(div.style.getPropertyValue('--foo')).toBe('');
+      });
+
+      it('should throw an error if style property binding starts with `--global-` with a single hyphen', () => {
+        @Component({
+          selector: 'cmp-style-prop-error',
+          template: `<div [style.--global-foo]="'blue'"></div>`,
+          standalone: true,
+        })
+        class CmpStylePropError {}
+
+        expect(() => {
+          TestBed.configureTestingModule({
+            imports: [CmpStylePropError],
+            providers: [provideCssVarNamespacing('my-namespace')],
+          });
+        }).toThrowError(/CSS variable "--global-foo" has a single hyphen after "--global"/);
+      });
+
+      it('should namespace styles set via Renderer2.setStyle/removeStyle', () => {
+        @Component({
+          selector: 'cmp-renderer-set-style',
+          template: '',
+          standalone: true,
+        })
+        class CmpRendererSetStyle {
+          constructor(public renderer: Renderer2) {}
+        }
+
+        TestBed.configureTestingModule({
+          imports: [CmpRendererSetStyle],
+          providers: [provideCssVarNamespacing('my-namespace')],
+        });
+        const fixture = TestBed.createComponent(CmpRendererSetStyle);
+        const comp = fixture.componentInstance;
+        const div = document.createElement('div');
+
+        comp.renderer.setStyle(div, '--%NS%foo', 'blue');
+        expect(div.style.getPropertyValue('--my-namespace_foo')).toBe('blue');
+
+        comp.renderer.setStyle(div, '--bar', 'red');
+        expect(div.style.getPropertyValue('--bar')).toBe('red');
+        expect(div.style.getPropertyValue('--my-namespace_bar')).toBe('');
+
+        comp.renderer.removeStyle(div, '--%NS%foo');
+        expect(div.style.getPropertyValue('--my-namespace_foo')).toBe('');
+      });
+    });
   });
 });
 
