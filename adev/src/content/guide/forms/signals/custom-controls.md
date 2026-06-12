@@ -245,7 +245,7 @@ The minimal controls shown above work, but they don't respond to form state. You
 Here's a comprehensive example that implements common state properties:
 
 ```angular-ts
-import {Component, model, input, ChangeDetectionStrategy} from '@angular/core';
+import {Component, model, input, output, ChangeDetectionStrategy} from '@angular/core';
 import {
   FormValueControl,
   WithOptionalFieldTree,
@@ -266,7 +266,7 @@ import {
           [readonly]="readonly()"
           [class.invalid]="invalid()"
           [attr.aria-invalid]="invalid()"
-          (blur)="touched.set(true)"
+          (blur)="touch.emit()"
         />
 
         @if (invalid()) {
@@ -293,7 +293,8 @@ export class StatefulInput implements FormValueControl<string> {
   value = model<string>('');
 
   // Writable interaction state - control updates these
-  touched = model<boolean>(false);
+  touched = input<boolean>(false);
+  touch = output<void>();
 
   // Read-only state - form system manages these
   disabled = input<boolean>(false);
