@@ -116,20 +116,27 @@ describe('sanitization', () => {
       [SecurityContext.URL, ɵɵsanitizeUrl],
       [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl],
     ]);
-    Object.entries(schema).forEach(([key, context]) => {
-      if (context === SecurityContext.URL || context === SecurityContext.RESOURCE_URL) {
-        const [tag, prop] = key.split('|');
-        const contexts = contextsByProp.get(prop) || new Set<number>();
-        contexts.add(context);
-        contextsByProp.set(prop, contexts);
-        // check only in case a prop can be a part of both URL contexts
-        if (contexts.size === 2) {
-          expect(getUrlSanitizer(tag, prop))
-            .withContext(`key: ${key}, context: ${context}`)
-            .toEqual(sanitizerNameByContext.get(context)!);
+
+    for (const [prop, nsSchema] of Object.entries(schema)) {
+      for (const [ns, tagSchema] of Object.entries(nsSchema)) {
+        for (const [tag, context] of Object.entries(tagSchema)) {
+          if (context !== SecurityContext.URL && context !== SecurityContext.RESOURCE_URL) {
+            continue;
+          }
+
+          const contexts = contextsByProp.get(prop) || new Set<number>();
+          contexts.add(context);
+          contextsByProp.set(prop, contexts);
+
+          // check only in case a prop can be a part of both URL contexts
+          if (contexts.size === 2) {
+            expect(getUrlSanitizer(tag, prop))
+              .withContext(`ns: ${ns}, tag: ${tag}, prop: ${prop}, context: ${context}`)
+              .toEqual(sanitizerNameByContext.get(context)!);
+          }
         }
       }
-    });
+    }
   });
 
   it('should select URL sanitizer case-insensitively', () => {
