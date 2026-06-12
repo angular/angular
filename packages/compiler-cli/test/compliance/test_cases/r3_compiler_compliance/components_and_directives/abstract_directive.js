@@ -14,6 +14,16 @@ export class AbstractDir {
   });
 }
 …
+export class AbstractInherited extends AbstractDir {
+  …
+  static ɵfac = /*@__PURE__*/ (() => { let ɵAbstractInherited_BaseFactory; return function AbstractInherited_Factory(__ngFactoryType__) { return (ɵAbstractInherited_BaseFactory || (ɵAbstractInherited_BaseFactory = i0.ɵɵgetInheritedFactory(AbstractInherited)))(__ngFactoryType__ || AbstractInherited); }; })();
+  static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({
+    type: AbstractInherited,
+    selectors: [["", "dir2", ""]],
+    features: [i0.ɵɵInheritDefinitionFeature]
+  });
+}
+…
 export class AbstractComp {
   …
   static ɵfac = function AbstractComp_Factory(__ngFactoryType__) {
@@ -22,4 +32,3 @@ export class AbstractComp {
   };
     …
 }
-…
