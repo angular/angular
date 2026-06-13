@@ -104,11 +104,15 @@ export function getLocalePluralCase(locale: string): (value: number) => number {
  */
 export function getLocaleData(normalizedLocale: string): any {
   if (!(normalizedLocale in LOCALE_DATA)) {
-    LOCALE_DATA[normalizedLocale] =
+    const globalLocaleData =
       global.ng &&
       global.ng.common &&
       global.ng.common.locales &&
       global.ng.common.locales[normalizedLocale];
+    if (globalLocaleData !== undefined) {
+      LOCALE_DATA[normalizedLocale] = globalLocaleData;
+    }
+    return globalLocaleData;
   }
   return LOCALE_DATA[normalizedLocale];
 }
