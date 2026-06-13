@@ -63,12 +63,12 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: pnpm benchmarks prepare-for-github-action "$COMMENT_BODY"
 
-      - run: pnpm benchmarks run-compare "$COMPARE_SHA" "$BENCHMARK_TARGET"
+      - env:
+          COMPARE_SHA: ${{steps.info.outputs.compareSha}}
+          BENCHMARK_TARGET: ${{steps.info.outputs.benchmarkTarget}}
+        run: pnpm benchmarks run-compare "$COMPARE_SHA" "$BENCHMARK_TARGET"
         id: benchmark
         name: Running benchmark
-        env:
-          BENCHMARK_TARGET: ${{steps.info.outputs.benchmarkTarget}}
-          COMPARE_SHA: ${{steps.info.outputs.compareSha}}
 
       - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
         with:
