@@ -45,5 +45,17 @@ describe('comment node text escaping', () => {
       expect(escapeCommentText('.->')).toEqual('.->');
       expect(escapeCommentText('<!-.')).toEqual('<!-.');
     });
+
+    it('should escape delimiters that overlap an earlier match', () => {
+      // `<!-->` contains both `<!--` and a `-->` that shares its `--`; both must be neutralized.
+      expect(escapeCommentText('<!-->')).toEqual('\u200b<\u200b!--\u200b>\u200b');
+      expect(escapeCommentText('<!--!>')).toEqual('\u200b<\u200b!--!\u200b>\u200b');
+      expect(escapeCommentText('a<!-->b')).toEqual('a\u200b<\u200b!--\u200b>\u200bb');
+
+      const escaped = escapeCommentText('<!--><svg onload="alert(1)">');
+      expect(escaped).not.toContain('<!--');
+      expect(escaped).not.toContain('-->');
+      expect(escaped).not.toContain('--!>');
+    });
   });
 });
