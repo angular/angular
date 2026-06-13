@@ -25,12 +25,15 @@ import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting
 import {
   ApplicationRef,
   createEnvironmentInjector,
+  effect,
   EnvironmentInjector,
   ErrorHandler,
   inject,
+  Injector,
   InjectionToken,
   PLATFORM_ID,
   Provider,
+  signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable, from} from 'rxjs';
@@ -671,3 +674,98 @@ const FAKE_JSONP_BACKEND_PROVIDER = {
     handle: (req: HttpRequest<never>) => EMPTY,
   },
 };
+
+describe('HttpInterceptor signal tracking', () => {
+  afterEach(() => {
+    try {
+      TestBed.inject(HttpTestingController).verify();
+    } catch {}
+  });
+
+  it('should not track signal reads in interceptors from a calling effect', () => {
+    const interceptorSignal = signal(1);
+    let effectRunCount = 0;
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(
+          withInterceptors([
+            (req, next) => {
+              // Reading a signal here must not be tracked by a calling reactive context.
+              interceptorSignal();
+              return next(req);
+            },
+          ]),
+        ),
+        provideHttpClientTesting(),
+      ],
+    });
+
+    const http = TestBed.inject(HttpClient);
+    const injector = TestBed.inject(Injector);
+    const controller = TestBed.inject(HttpTestingController);
+
+    effect(
+      () => {
+        effectRunCount++;
+        http.get('/test').subscribe();
+      },
+      {injector},
+    );
+
+    // Run the initial effect.
+    TestBed.tick();
+    expect(effectRunCount).toBe(1);
+    controller.expectOne('/test').flush('');
+
+    // Mutate the signal that was read inside the interceptor.
+    interceptorSignal.set(2);
+    TestBed.tick();
+
+    // The effect must NOT have re-run — interceptor signal reads are untracked.
+    expect(effectRunCount).toBe(1);
+    controller.verify();
+  });
+
+  it('should not track signal reads in legacy class interceptors from a calling effect', () => {
+    const interceptorSignal = signal(1);
+    let effectRunCount = 0;
+
+    class SignalReadingInterceptor implements HttpInterceptor {
+      intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        interceptorSignal();
+        return next.handle(req);
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        {provide: HTTP_INTERCEPTORS, useClass: SignalReadingInterceptor, multi: true},
+        provideHttpClientTesting(),
+      ],
+    });
+
+    const http = TestBed.inject(HttpClient);
+    const injector = TestBed.inject(Injector);
+    const controller = TestBed.inject(HttpTestingController);
+
+    effect(
+      () => {
+        effectRunCount++;
+        http.get('/test').subscribe();
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    expect(effectRunCount).toBe(1);
+    controller.expectOne('/test').flush('');
+
+    interceptorSignal.set(2);
+    TestBed.tick();
+
+    expect(effectRunCount).toBe(1);
+    controller.verify();
+  });
+});
