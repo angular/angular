@@ -46,7 +46,17 @@ const COMMENT_DELIMITER_ESCAPED = '\u200B$1\u200B';
  *     sequence.
  */
 export function escapeCommentText(value: string): string {
-  return value.replace(COMMENT_DISALLOWED, (text) =>
-    text.replace(COMMENT_DELIMITER, COMMENT_DELIMITER_ESCAPED),
-  );
+  // `COMMENT_DISALLOWED` matches are non-overlapping, so a single pass can leave a delimiter that
+  // overlapped an earlier match untouched (e.g. `<!-->` matches `<!--` and skips the `-->` that
+  // shares its `--`). Re-run the replacement until the text stabilizes so every delimiter is
+  // neutralized.
+  let result = value;
+  let current: string;
+  do {
+    current = result;
+    result = current.replace(COMMENT_DISALLOWED, (text) =>
+      text.replace(COMMENT_DELIMITER, COMMENT_DELIMITER_ESCAPED),
+    );
+  } while (result !== current);
+  return result;
 }
