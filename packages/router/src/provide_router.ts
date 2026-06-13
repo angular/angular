@@ -101,7 +101,7 @@ import {
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to setup a Router.
  */
-export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
+export function provideRouter(routes: Readonly<Routes>, ...features: readonly RouterFeatures[]): EnvironmentProviders {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     // Publish this util when the router is provided so that the devtools can use it.
     ɵpublishNonCoreGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
