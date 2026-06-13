@@ -37,7 +37,6 @@ import {
   ElementIdentifier,
   IdentifierKind,
   LetDeclarationIdentifier,
-  MethodIdentifier,
   PropertyIdentifier,
   ReferenceIdentifier,
   TemplateNodeIdentifier,
@@ -45,7 +44,7 @@ import {
   VariableIdentifier,
 } from './api';
 
-type ExpressionIdentifier<T = DeclarationNode> = PropertyIdentifier<T> | MethodIdentifier<T>;
+type ExpressionIdentifier<T = DeclarationNode> = PropertyIdentifier<T>;
 type TmplTarget = TmplAstReference | TmplAstVariable | TmplAstLetDeclaration;
 type TargetIdentifier<T = DeclarationNode> =
   | ReferenceIdentifier<T>

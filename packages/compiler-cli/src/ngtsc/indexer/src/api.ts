@@ -25,7 +25,6 @@ import {DeclarationNode} from '../../reflection';
  */
 export enum IdentifierKind {
   Property,
-  Method, // TODO: No longer being used. To be removed together with `MethodIdentifier`.
   Element,
   Template,
   Attribute,
@@ -58,14 +57,6 @@ interface ExpressionIdentifier<T = DeclarationNode> extends TemplateIdentifier {
 /** Describes a property accessed in a template. */
 export interface PropertyIdentifier<T = DeclarationNode> extends ExpressionIdentifier<T> {
   kind: IdentifierKind.Property;
-}
-
-/**
- * Describes a method accessed in a template.
- * @deprecated No longer being used. To be removed.
- */
-export interface MethodIdentifier<T = DeclarationNode> extends ExpressionIdentifier<T> {
-  kind: IdentifierKind.Method;
 }
 
 /** Describes an element attribute in a template. */
@@ -154,7 +145,6 @@ export type TopLevelIdentifier<T = DeclarationNode> =
   | TemplateNodeIdentifier<T>
   | ReferenceIdentifier<T>
   | VariableIdentifier
-  | MethodIdentifier<T>
   | LetDeclarationIdentifier
   | ComponentNodeIdentifier<T>
   | DirectiveNodeIdentifier<T>;
