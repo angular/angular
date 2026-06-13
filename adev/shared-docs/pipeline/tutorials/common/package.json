@@ -9,7 +9,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^22.1.0-next",
+    "@angular/common": "^19.2.16",
     "@angular/compiler": "^22.1.0-next",
     "@angular/core": "^22.1.0-next",
     "@angular/platform-browser": "^22.1.0-next",
