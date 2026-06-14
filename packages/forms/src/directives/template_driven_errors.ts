@@ -76,3 +76,13 @@ export function modelGroupParentException(): Error {
     ${ngModelGroupExample}`,
   );
 }
+
+export function duplicateNgModelNameException(name: string): Error {
+  return new RuntimeError(
+    RuntimeErrorCode.DUPLICATE_NGMODEL_NAME,
+    `NgForm detected duplicate name "${name}" for NgModel controls within the same form group. ` +
+      `Each NgModel within a form group must have a unique name. ` +
+      `Use the [ngModelOptions]="{standalone: true}" option to exclude a control from the form group, ` +
+      `or ensure each control has a unique name attribute.`,
+  );
+}

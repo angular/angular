@@ -483,6 +483,27 @@ describe('template-driven forms integration tests', () => {
       expect(() => fixture.detectChanges()).toThrowError(new RegExp(`name attribute must be set`));
     });
 
+    it('should throw when two NgModels in the same form group share the same name', async () => {
+      const fixture = initTest(DuplicateNgModelName);
+      fixture.detectChanges();
+
+      await expectAsync(timeout()).toBeRejectedWithError(/NG01354|duplicate/i);
+    });
+
+    it('should not throw when two NgModels with the same name are in different NgModelGroups', async () => {
+      const fixture = initTest(DuplicateNgModelNameInGroups);
+      fixture.detectChanges();
+
+      await expectAsync(timeout()).toBeResolved();
+    });
+
+    it('should not throw when a duplicate-named NgModel uses standalone option', async () => {
+      const fixture = initTest(DuplicateNgModelNameStandalone);
+      fixture.detectChanges();
+
+      await expectAsync(timeout()).toBeResolved();
+    });
+
     it('should not throw if ngModel has a parent form, no name attr, and a standalone label', () => {
       const fixture = initTest(NgModelOptionsStandalone);
       expect(() => fixture.detectChanges()).not.toThrow();
@@ -3123,4 +3144,56 @@ class NgModelNoMinMaxValidator {
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
+}
+
+@Component({
+  selector: 'duplicate-ng-model-name',
+  template: `
+    <form>
+      <input name="myField" type="checkbox" [(ngModel)]="valueA" />
+      <input name="myField" type="checkbox" [(ngModel)]="valueB" />
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class DuplicateNgModelName {
+  valueA = false;
+  valueB = false;
+}
+
+@Component({
+  selector: 'duplicate-ng-model-name-in-groups',
+  template: `
+    <form>
+      <ng-container ngModelGroup="groupA">
+        <input name="field" type="text" [(ngModel)]="valueA" />
+      </ng-container>
+      <ng-container ngModelGroup="groupB">
+        <input name="field" type="text" [(ngModel)]="valueB" />
+      </ng-container>
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class DuplicateNgModelNameInGroups {
+  valueA = '';
+  valueB = '';
+}
+
+@Component({
+  selector: 'duplicate-ng-model-name-standalone',
+  template: `
+    <form>
+      <input name="myField" type="text" [(ngModel)]="valueA" />
+      <input name="myField" type="text" [(ngModel)]="valueB" [ngModelOptions]="{standalone: true}" />
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class DuplicateNgModelNameStandalone {
+  valueA = '';
+  valueB = '';
 }
