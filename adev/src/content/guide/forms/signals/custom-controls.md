@@ -399,6 +399,83 @@ export class NumberInput implements FormValueControl<number> {
 
 When you add `min()` and `max()` validation rules to the schema, the FormField directive passes these values to your control. Use them to apply HTML5 attributes or show constraint hints in your template.
 
+### Range inputs and binding order
+
+When building a custom range control, you may be tempted to bind `value`, `min`, and `max` as separate property bindings:
+
+```angular-html {avoid}
+<!-- Avoid: value may be clamped by the browser if min/max are applied after value -->
+<input
+  type="range"
+  [value]="value()"
+  [min]="_min()"
+  [max]="_max()"
+/>
+```
+
+This can silently produce wrong values. Browsers clamp `input[type="range"].value` to the current `[min, max]` range at the moment the `value` property is set. If Angular applies `value` before `min` and `max` (which is not guaranteed), the browser clamps the value to the default `[0, 100]` range instead of your intended range.
+
+The recommended solution is to let `[formField]` manage binding order for you by wrapping the inner `<input>` in its own form field:
+
+```angular-ts {prefer}
+import {Component, computed, input, model} from '@angular/core';
+import {form, FormField, FormValueControl, min, max, required, disabled} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-range-control',
+  imports: [FormField],
+  template: `<input type="range" [formField]="field" [step]="step()" />`,
+})
+export class RangeControl implements FormValueControl<number> {
+  readonly value = model.required<number>();
+  readonly min = input<number | undefined>(undefined);
+  readonly max = input<number | undefined>(undefined);
+  readonly step = input<number>(1);
+  readonly required = input<boolean>(false);
+  readonly disabled = input<boolean>(false);
+
+  protected readonly _min = computed(() => this.min() ?? 0);
+  protected readonly _max = computed(() => this.max() ?? 100);
+
+  protected readonly field = form(this.value, (value) => {
+    min(value, () => this._min());
+    max(value, () => this._max());
+    required(value, {when: () => this.required()});
+    disabled(value, {when: () => this.disabled()});
+  });
+}
+```
+
+The `[formField]` directive applies `min` and `max` before `value`, so the browser always clamps to the correct range.
+
+If you cannot use `[formField]` on the inner element, set `value` programmatically after `min` and `max` are applied using `afterRenderEffect`:
+
+```angular-ts
+import {afterRenderEffect, Component, ElementRef, input, model, viewChild} from '@angular/core';
+
+@Component({
+  selector: 'app-range-control',
+  template: `<input #rangeInput type="range" [min]="_min()" [max]="_max()" [step]="step()" />`,
+})
+export class RangeControl implements FormValueControl<number> {
+  readonly value = model.required<number>();
+  readonly min = input<number | undefined>(undefined);
+  readonly max = input<number | undefined>(undefined);
+  readonly step = input<number>(1);
+
+  protected readonly _min = computed(() => this.min() ?? 0);
+  protected readonly _max = computed(() => this.max() ?? 100);
+
+  private readonly rangeInput = viewChild.required<ElementRef<HTMLInputElement>>('rangeInput');
+
+  constructor() {
+    afterRenderEffect(() => {
+      this.rangeInput().nativeElement.value = String(this.value());
+    });
+  }
+}
+```
+
 IMPORTANT: Don't implement validation logic in your control. Define validation rules in the form schema and let your control display the results:
 
 ```ts {avoid}

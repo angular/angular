@@ -43,6 +43,7 @@ import {
   setUpFormContainer,
   syncPendingControls,
 } from './shared';
+import {duplicateNgModelNameException} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 const formDirectiveProvider: Provider = {
@@ -226,6 +227,14 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    */
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        const newPath = dir.path.join('/');
+        for (const existing of this._directives) {
+          if (existing.path.join('/') === newPath) {
+            throw duplicateNgModelNameException(dir.name);
+          }
+        }
+      }
       const container = this._findContainer(dir.path);
       (dir as Writable<NgModel>).control = <FormControl>(
         container.registerControl(dir.name, dir.control)
