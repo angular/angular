@@ -102,11 +102,20 @@ export function getLocalePluralCase(locale: string): (value: number) => number {
  */
 export function getLocaleData(normalizedLocale: string): any {
   if (!(normalizedLocale in LOCALE_DATA)) {
-    LOCALE_DATA[normalizedLocale] =
+    const globalLocaleData =
       global.ng &&
       global.ng.common &&
       global.ng.common.locales &&
       global.ng.common.locales[normalizedLocale];
+    // Only cache global locale data when an entry is actually found, to avoid
+    // caching missing lookups. In SSR this cache is process-wide across requests,
+    // so caching `undefined` would retain attacker-controlled locale identifiers
+    // indefinitely. It would also make the `in` check above short-circuit on
+    // subsequent lookups and skip the global fallback.
+    if (globalLocaleData !== undefined) {
+      LOCALE_DATA[normalizedLocale] = globalLocaleData;
+    }
+    return globalLocaleData;
   }
   return LOCALE_DATA[normalizedLocale];
 }
