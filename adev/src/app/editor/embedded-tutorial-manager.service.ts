@@ -113,6 +113,45 @@ export class EmbeddedTutorialManager {
     this._shouldChangeTutorial$.next(true);
   }
 
+  /**
+   * Opens answer files as additional read-only tabs alongside the student's current
+   * work, prefixed with "answer:" so they are visually distinct. Does not replace or
+   * write any files to the sandbox, preserving the student's WIP code.
+   */
+  compareAnswer() {
+    const answerFilenames = Object.keys(this.answerFiles());
+    const compareKeys = answerFilenames.map((f) => `answer:${f}`);
+
+    const answerAsCompareFiles = Object.fromEntries(
+      answerFilenames.map((f) => [`answer:${f}`, this.answerFiles()[f]]),
+    );
+
+    const openFilesWithCompare = [
+      ...this.openFiles().filter((f) => !f.startsWith('answer:')),
+      ...compareKeys,
+    ];
+
+    this.tutorialFiles.update((existing) => ({...existing, ...answerAsCompareFiles}));
+    this.openFiles.set(openFilesWithCompare);
+    this._shouldChangeTutorial$.next(true);
+  }
+
+  /**
+   * Removes the answer comparison tabs and restores the original open-file list.
+   */
+  stopCompareAnswer() {
+    const openFilesWithoutCompare = this.openFiles().filter((f) => !f.startsWith('answer:'));
+    this.tutorialFiles.update((existing) => {
+      const withoutCompare = {...existing};
+      for (const key of Object.keys(withoutCompare)) {
+        if (key.startsWith('answer:')) delete withoutCompare[key];
+      }
+      return withoutCompare;
+    });
+    this.openFiles.set(openFilesWithoutCompare);
+    this._shouldChangeTutorial$.next(true);
+  }
+
   resetRevealAnswer() {
     const allFilesWithoutAnswer = this.metadata()!.allFiles;
     const filesToDelete = this.computeFilesToRemove(allFilesWithoutAnswer, this.allFiles());

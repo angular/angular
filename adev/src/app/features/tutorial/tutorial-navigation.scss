@@ -162,6 +162,23 @@
   width: 120px;
 }
 
+.docs-compare-answer-button {
+  height: 2.875rem;
+  width: 120px;
+  background: transparent;
+  border: 1px solid var(--quinary-contrast);
+  color: var(--primary-contrast);
+
+  &:hover:not(:disabled) {
+    background: var(--octonary-contrast);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
 .adev-reset-answer-button {
   background: var(--senary-contrast);
   transition:

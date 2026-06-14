@@ -10,7 +10,12 @@
       @for (file of files(); track file) {
         <mat-tab #tab>
           <ng-template mat-tab-label>
-            @if (tab.isActive && isRenamingFile()) {
+            @if (file.filename.startsWith('answer:')) {
+              <span class="adev-answer-tab-label">
+                {{ file.filename.replace('answer:src/', '') }}
+                <span class="adev-answer-tab-badge">answer</span>
+              </span>
+            } @else if (tab.isActive && isRenamingFile()) {
               <form (submit)="renameFile($event, file.filename)">
                 <input
                   name="rename-file"
@@ -27,29 +32,31 @@
               {{ file.filename.replace('src/', '') }}
             }
 
-            @if (tab.isActive && canRenameFile(file.filename)) {
-              <button
-                type="button"
-                class="docs-rename-file"
-                aria-label="rename file"
-                matTooltip="Rename file"
-                matTooltipPosition="above"
-                (click)="onRenameButtonClick()"
-              >
-                <docs-icon>edit</docs-icon>
-              </button>
-            }
-            @if (tab.isActive && canDeleteFile(file.filename)) {
-              <button
-                type="button"
-                class="docs-delete-file"
-                aria-label="Delete file"
-                matTooltip="Delete file"
-                matTooltipPosition="above"
-                (click)="deleteFile(file.filename)"
-              >
-                <docs-icon>delete</docs-icon>
-              </button>
+            @if (!file.filename.startsWith('answer:')) {
+              @if (tab.isActive && canRenameFile(file.filename)) {
+                <button
+                  type="button"
+                  class="docs-rename-file"
+                  aria-label="rename file"
+                  matTooltip="Rename file"
+                  matTooltipPosition="above"
+                  (click)="onRenameButtonClick()"
+                >
+                  <docs-icon>edit</docs-icon>
+                </button>
+              }
+              @if (tab.isActive && canDeleteFile(file.filename)) {
+                <button
+                  type="button"
+                  class="docs-delete-file"
+                  aria-label="Delete file"
+                  matTooltip="Delete file"
+                  matTooltipPosition="above"
+                  (click)="deleteFile(file.filename)"
+                >
+                  <docs-icon>delete</docs-icon>
+                </button>
+              }
             }
           </ng-template>
         </mat-tab>
