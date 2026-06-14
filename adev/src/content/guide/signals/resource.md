@@ -140,6 +140,68 @@ The `id` value must be unique within your application and identical on the serve
 
 IMPORTANT: Because the cached value is serialized into the page's HTML, avoid setting `id` on resources that load data specific to the user who triggered the server-side render, especially if the rendered HTML can be cached or shared between users.
 
+## Chaining resources
+
+Sometimes one resource depends on the result of another. You can express this dependency using the `chain` function available in the `params` context object.
+
+```typescript
+import {resource} from '@angular/core';
+
+const userResource = resource({
+  params: () => ({id: getUserId()}),
+  loader: ({params}) => fetchUser(params),
+});
+
+const userPostsResource = resource({
+  params: ({chain}) => ({userId: chain(userResource).id}),
+  loader: ({params}) => fetchPostsForUser(params.userId),
+});
+```
+
+`chain(userResource)` returns the resolved value of `userResource` and automatically propagates its status to `userPostsResource`:
+
+- If `userResource` is **loading**, `userPostsResource` also enters the `loading` state and its loader does not run.
+- If `userResource` is **idle**, `userPostsResource` also becomes `idle`.
+- If `userResource` is in an **error** state, `userPostsResource` also enters the `error` state.
+- If `userResource` is **resolved**, `chain` returns its value so `userPostsResource` can use it as params.
+
+This means you never need to manually guard against `undefined` when chaining — the status propagates automatically.
+
+### Chaining vs. reading resource values directly
+
+You might be tempted to read a resource's value directly inside `params`:
+
+```typescript
+// Avoid: reads value() directly without status propagation
+const userPostsResource = resource({
+  params: () => {
+    const user = userResource.value(); // may be undefined
+    return user ? {userId: user.id} : undefined;
+  },
+  loader: ({params}) => fetchPostsForUser(params.userId),
+});
+```
+
+While this works, returning `undefined` from `params` makes the resource go `idle` rather than reflecting the actual state of the upstream resource. Using `chain` is preferred because it correctly mirrors `loading` and `error` states.
+
+### Synchronously transforming a resource value
+
+`chain` is also useful when you want to map a resource's resolved value synchronously while the loader remains async:
+
+```typescript
+const numericResource = resource({
+  params: () => ({}),
+  loader: async () => 42,
+});
+
+const stringResource = resource({
+  params: ({chain}) => ({value: chain(numericResource)}),
+  loader: async ({params}) => `The answer is ${params.value}`,
+});
+```
+
+Note that `stringResource` will only start loading once `numericResource` has resolved. If you only need a synchronous transformation and no additional async work, prefer `computed` over a chained resource.
+
 ## Reactive data fetching with `httpResource`
 
 [`httpResource`](/guide/http/http-resource) is a wrapper around `HttpClient` that gives you the request status and response as signals. It makes HTTP requests through the Angular HTTP stack, including interceptors.
