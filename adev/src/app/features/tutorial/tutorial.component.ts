@@ -99,6 +99,7 @@ export default class Tutorial {
 
   canRevealAnswer: Signal<boolean> = signal(false);
   readonly answerRevealed = signal<boolean>(false);
+  readonly compareRevealed = signal<boolean>(false);
 
   constructor() {
     this.route.data
@@ -180,12 +181,24 @@ export default class Tutorial {
     this.answerRevealed.set(false);
   }
 
+  handleCompareAnswer() {
+    if (!this.canRevealAnswer()) return;
+    this.embeddedTutorialManager.compareAnswer();
+    this.compareRevealed.set(true);
+  }
+
+  handleStopCompare() {
+    this.embeddedTutorialManager.stopCompareAnswer();
+    this.compareRevealed.set(false);
+  }
+
   /**
    * Set tutorial data based on current tutorial
    */
   private async setTutorialData(tutorialNavigationItem: TutorialNavigationItem): Promise<void> {
     this.showNavigationDropdown.set(false);
     this.answerRevealed.set(false);
+    this.compareRevealed.set(false);
     this.restrictedMode.set(tutorialNavigationItem.tutorialData.restrictedMode);
 
     this.setRouteData(tutorialNavigationItem);

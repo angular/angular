@@ -422,6 +422,8 @@ export class CodeMirrorEditor {
   }
 
   private createEditorState(): EditorState {
+    const isAnswerTab = this.currentFile().filename.startsWith('answer:');
+
     const newEditorState = EditorState.create({
       doc: this.currentFile().content,
       extensions: [
@@ -431,7 +433,7 @@ export class CodeMirrorEditor {
 
         placeholderExtension('Type your code here...'),
 
-        ...this.getLanguageExtensions(),
+        ...(isAnswerTab ? [EditorState.readOnly.of(true)] : this.getLanguageExtensions()),
       ],
     });
 

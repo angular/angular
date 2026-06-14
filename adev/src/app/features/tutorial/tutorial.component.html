@@ -64,6 +64,16 @@
         >
           {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
         </button>
+        <button
+          type="button"
+          (click)="compareRevealed() ? handleStopCompare() : handleCompareAnswer()"
+          [disabled]="!canRevealAnswer() || answerRevealed()"
+          class="docs-compare-answer-button adev-reveal-desktop-button docs-primary-btn"
+          [attr.aria-label]="compareRevealed() ? 'Stop Comparing' : 'Compare'"
+          [class.adev-reset-answer-button]="compareRevealed()"
+        >
+          {{ compareRevealed() ? 'Stop Comparing' : 'Compare' }}
+        </button>
       }
 
       <!-- Download code -->
@@ -117,6 +127,16 @@
             [class.adev-reset-answer-button]="answerRevealed()"
           >
             {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
+          </button>
+          <button
+            type="button"
+            (click)="compareRevealed() ? handleStopCompare() : handleCompareAnswer()"
+            [disabled]="!canRevealAnswer() || answerRevealed()"
+            class="docs-compare-answer-button adev-reveal-mobile-button docs-primary-btn"
+            [attr.aria-label]="compareRevealed() ? 'Stop Comparing' : 'Compare'"
+            [class.adev-reset-answer-button]="compareRevealed()"
+          >
+            {{ compareRevealed() ? 'Stop Comparing' : 'Compare' }}
           </button>
         }
       </div>
