@@ -185,9 +185,14 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext(':math:foobar', 'xlink:href', true)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':math:foobar', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':math:foobar', 'xlink:href', false)).toBe(SecurityContext.URL);
-    // Ensure MathML wildcard does not apply outside of the MathML namespace.
-    expect(registry.securityContext(':svg:foobar', 'href', false)).toBe(SecurityContext.NONE);
-    expect(registry.securityContext(':svg:foobar', 'xlink:href', false)).toBe(SecurityContext.NONE);
+    // SVG href/xlink:href should be sanitized as URL for all SVG elements.
+    expect(registry.securityContext(':svg:foobar', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:foobar', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:image', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:image', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:use', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:use', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:feImage', 'href', false)).toBe(SecurityContext.URL);
 
     expect(registry.securityContext('p', 'href', false)).toBe(SecurityContext.NONE);
   });
