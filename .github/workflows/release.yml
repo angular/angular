@@ -13,10 +13,11 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write # Required for the reusable workflow to create releases and tags
+  contents: read # Required to checkout the repository
 
 jobs:
   release:
-    uses: angular/dev-infra/.github/workflows/reusable-release.yml@11ee1f5400aa3220ff42546c8e1fe75ea0041e6b
+    uses: angular/dev-infra/.github/workflows/reusable-release.yml@e9faacd5b4df391f59989b6fb448b2c24115d592
     secrets:
       wombot-token: ${{ secrets.WOMBOT_TOKEN }}
+      angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
