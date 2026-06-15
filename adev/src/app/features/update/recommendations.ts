@@ -3001,6 +3001,14 @@ export const RECOMMENDATIONS: Step[] = [
   {
     possibleIn: 2200,
     necessaryAsOf: 2200,
+    level: ApplicationComplexity.Medium,
+    step: '22.0.0-resource-stream-synchronous-resolution',
+    action:
+      'The `stream` property on `Resource`, including `rxResource`, now resolves synchronously when the stream or observable emits synchronously. Tests that assumed asynchronous resolution may need to wait for the value immediately instead.',
+  },
+  {
+    possibleIn: 2200,
+    necessaryAsOf: 2200,
     level: ApplicationComplexity.Advanced,
     step: '22.0.0-remove-in-expressions',
     action:
