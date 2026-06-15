@@ -118,7 +118,7 @@ export class TcbInvalidReferenceOp extends TcbOp {
 
   override execute(): TcbExpr {
     const id = new TcbExpr(this.tcb.allocateId());
-    this.scope.addStatement(new TcbExpr(`var ${id.print()} = any`));
+    this.scope.addStatement(new TcbExpr(`var ${id.print()} = null! as any`));
     return id;
   }
 }
