@@ -392,6 +392,19 @@
           "isRequiredInput": false
         },
         {
+          "name": "readonly",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the combobox is readonly.",
+          "jsdocTags": [],
+          "inputAlias": "readonly",
+          "isRequiredInput": false
+        },
+        {
           "name": "softDisabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
@@ -548,7 +561,7 @@
       "source": {
         "filePath": "/src/aria/combobox/combobox.ts",
         "startLine": 59,
-        "endLine": 159
+        "endLine": 164
       }
     }
   ],
@@ -707,6 +720,10 @@
     ],
     [
       "Combobox.disabled",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.readonly",
       "@angular/aria/combobox"
     ],
     [
