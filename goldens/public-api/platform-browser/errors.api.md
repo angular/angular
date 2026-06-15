@@ -27,7 +27,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_SYNTHETIC_PROPERTY = 5105,
     // (undocumented)
-    UNSUPPORTED_EVENT_TARGET = 5102,
+    UNSUPPORTED_EVENT_TARGET = -5102,
     // (undocumented)
     UNSUPPORTED_ZONEJS_INSTANCE = -5000
 }
