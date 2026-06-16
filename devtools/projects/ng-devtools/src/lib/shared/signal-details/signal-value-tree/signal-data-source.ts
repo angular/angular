@@ -11,7 +11,6 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {
   Descriptor,
-  DirectivePosition,
   Events,
   MessageBus,
   Properties,
@@ -117,17 +116,14 @@ export class SignalDataSource extends DataSource<FlatNode> {
 
     this.messageBus.emit('getSignalNestedProperties', [this.entityPosition, parentPath]);
 
-    this.messageBus.once(
-      'signalNestedProperties',
-      (_position: DirectivePosition, data: Properties, _path: string[]) => {
-        node.prop.descriptor.value = data.props;
-        this.treeControl.expand(node);
-        const props = arrayifyProps(data.props, node.prop);
-        const flatNodes = this.treeFlattener.flattenNodes(props);
-        flatNodes.forEach((f) => (f.level += node.level + 1));
-        this.data.value.splice(index + 1, 0, ...flatNodes);
-        this.data.next(this.data.value);
-      },
-    );
+    this.messageBus.once('signalNestedProperties', (data: Properties) => {
+      node.prop.descriptor.value = data.props;
+      this.treeControl.expand(node);
+      const props = arrayifyProps(data.props, node.prop);
+      const flatNodes = this.treeFlattener.flattenNodes(props);
+      flatNodes.forEach((f) => (f.level += node.level + 1));
+      this.data.value.splice(index + 1, 0, ...flatNodes);
+      this.data.next(this.data.value);
+    });
   }
 }
