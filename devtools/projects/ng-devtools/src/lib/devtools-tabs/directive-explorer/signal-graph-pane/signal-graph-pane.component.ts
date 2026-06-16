@@ -104,6 +104,17 @@ export class SignalGraphPaneComponent {
     );
   }
 
+  setBreakpoint(node: DevtoolsSignalGraphNode) {
+    const frame = this.frameManager.selectedFrame();
+    this.appOperations.setSignalBreakpoint(
+      {
+        element: this.signalGraph.element()!,
+        signalId: node.id,
+      },
+      frame!,
+    );
+  }
+
   expandCluster(clusterId: string) {
     this.visualizer().expandCluster(clusterId);
   }

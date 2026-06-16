@@ -57,6 +57,7 @@ export class SignalDetailsComponent {
   protected readonly element = input.required<ElementPosition>();
 
   protected readonly gotoSource = output<DevtoolsSignalGraphNode>();
+  protected readonly setBreakpoint = output<DevtoolsSignalGraphNode>();
   protected readonly expandCluster = output<string>();
   protected readonly highlightDeps = output<{
     node: DevtoolsSignalGraphNode;

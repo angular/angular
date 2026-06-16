@@ -49,6 +49,21 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     this.runInInspectedWindow(inspectSignal, target);
   }
 
+  override setSignalBreakpoint(position: SignalNodePosition, target: Frame): void {
+    const setBreakpoint = `
+      (() => {
+        const fn = inspectedApplication.findSignalNodeByPosition('${JSON.stringify(position)}');
+        if (fn) {
+          debug(fn);
+          inspect(fn);
+        } else {
+          console.warn('Could not find signal function to debug');
+        }
+      })()
+    `;
+    this.runInInspectedWindow(setBreakpoint, target);
+  }
+
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
     const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter('${name}', '${type}'))`;
     this.runInInspectedWindow(viewSource, target);
