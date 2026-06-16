@@ -12,9 +12,9 @@ import {
   METADATA_PROPERTY_NAME,
 } from '../../directive-forest';
 import {runOutsideAngular} from '../../utils/general';
-import {IdentityTracker, NodeArray} from '../identity-tracker';
-
+import {IdentityTracker, NodeArray} from '../../directive-forest/identity-tracker';
 import {getLifeCycleName, Profiler} from './shared';
+import {ComponentInstance, DirectiveInstance} from '../../interfaces';
 
 const hookTViewProperties = [
   'preOrderHooks',
@@ -27,14 +27,14 @@ const hookTViewProperties = [
 ];
 
 // Only used in older Angular versions prior to the introduction of `getDirectiveMetadata`
-const componentMetadata = (instance: any) => instance?.constructor?.ɵcmp;
+const componentMetadata = (instance: ComponentInstance) => instance?.constructor?.ɵcmp;
 
 /**
  * Implementation of Profiler that uses monkey patching of directive templates and lifecycle
  * methods to fire profiler hooks.
  */
 export class PatchingProfiler extends Profiler {
-  private _patched = new Map<any, () => void>();
+  private _patched = new Map<ComponentInstance, () => void>();
   private _undoLifecyclePatch: (() => void)[] = [];
   private _tracker = IdentityTracker.getInstance();
 
@@ -47,7 +47,7 @@ export class PatchingProfiler extends Profiler {
       meta.tView.template = template;
     }
 
-    this._patched = new Map<any, () => void>();
+    this._patched = new Map<ComponentInstance, () => void>();
     this._undoLifecyclePatch.forEach((p) => p());
     this._undoLifecyclePatch = [];
   }
@@ -64,19 +64,19 @@ export class PatchingProfiler extends Profiler {
     });
   }
 
-  private _fireCreationCallback(component: any, isComponent: boolean): void {
+  private _fireCreationCallback(component: ComponentInstance, isComponent: boolean): void {
     const position = this._tracker.getDirectivePosition(component);
     const id = this._tracker.getDirectiveId(component);
     this._onCreate(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
-  private _fireDestroyCallback(component: any, isComponent: boolean): void {
+  private _fireDestroyCallback(component: ComponentInstance, isComponent: boolean): void {
     const position = this._tracker.getDirectivePosition(component);
     const id = this._tracker.getDirectiveId(component);
     this._onDestroy(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
-  private _observeComponent(cmp: any): void {
+  private _observeComponent(cmp: ComponentInstance): void {
     const declarations = componentMetadata(cmp);
     if (!declarations) {
       return;
@@ -86,7 +86,7 @@ export class PatchingProfiler extends Profiler {
     if (original.patched) {
       return;
     }
-    declarations.tView.template = function (_: any, component: any): void {
+    declarations.tView.template = function (_: any, component: ComponentInstance): void {
       if (!self._inChangeDetection) {
         self._inChangeDetection = true;
         runOutsideAngular(() => {
@@ -109,7 +109,7 @@ export class PatchingProfiler extends Profiler {
     this._patched.set(cmp, original);
   }
 
-  private _observeLifecycle(directive: any, isComponent: boolean): void {
+  private _observeLifecycle(directive: DirectiveInstance, isComponent: boolean): void {
     const ctx = getLViewFromDirectiveOrElementInstance(directive);
     if (!ctx) {
       return;

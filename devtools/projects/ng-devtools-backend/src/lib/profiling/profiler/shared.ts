@@ -9,10 +9,11 @@
 import {ElementPosition, LifecycleProfile} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
-import {NodeArray} from '../identity-tracker';
+import {NodeArray} from '../../directive-forest/identity-tracker';
+import {ComponentInstance, DirectiveInstance} from '../../interfaces';
 
 type CreationHook = (
-  componentOrDirective: any,
+  componentOrDirective: DirectiveInstance,
   node: Node,
   id: number,
   isComponent: boolean,
@@ -20,7 +21,7 @@ type CreationHook = (
 ) => void;
 
 type LifecycleStartHook = (
-  componentOrDirective: any,
+  componentOrDirective: DirectiveInstance,
   hook: keyof LifecycleProfile,
   node: Node,
   id: number,
@@ -28,7 +29,7 @@ type LifecycleStartHook = (
 ) => void;
 
 type LifecycleEndHook = (
-  componentOrDirective: any,
+  componentOrDirective: DirectiveInstance,
   hook: keyof LifecycleProfile,
   node: Node,
   id: number,
@@ -36,21 +37,21 @@ type LifecycleEndHook = (
 ) => void;
 
 type ChangeDetectionStartHook = (
-  component: any,
+  component: ComponentInstance,
   node: Node,
   id: number,
   position: ElementPosition,
 ) => void;
 
 type ChangeDetectionEndHook = (
-  component: any,
+  component: ComponentInstance,
   node: Node,
   id: number,
   position: ElementPosition,
 ) => void;
 
 type DestroyHook = (
-  componentOrDirective: any,
+  componentOrDirective: DirectiveInstance,
   node: Node,
   id: number,
   isComponent: boolean,
@@ -58,14 +59,15 @@ type DestroyHook = (
 ) => void;
 
 type OutputStartHook = (
-  componentOrDirective: any,
+  componentOrDirective: DirectiveInstance,
   outputName: string,
   node: Node,
   id: number | undefined,
   isComponent: boolean,
 ) => void;
+
 type OutputEndHook = (
-  componentOrDirective: any,
+  componentOrDirective: DirectiveInstance,
   outputName: string,
   node: Node,
   id: number | undefined,
@@ -113,7 +115,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onCreate(
-    _: any,
+    _: DirectiveInstance,
     hook: Node,
     id: number | undefined,
     node: boolean,
@@ -127,7 +129,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onDestroy(
-    _: any,
+    _: DirectiveInstance,
     hook: Node,
     id: number | undefined,
     node: boolean,
@@ -141,7 +143,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onChangeDetectionStart(
-    _: any,
+    _: ComponentInstance,
     hook: Node,
     id: number | undefined,
     position: ElementPosition | undefined,
@@ -154,7 +156,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onChangeDetectionEnd(
-    _: any,
+    _: ComponentInstance,
     hook: Node,
     id: number | undefined,
     position: ElementPosition | undefined,
@@ -167,7 +169,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onLifecycleHookStart(
-    componentOrDirective: any,
+    componentOrDirective: DirectiveInstance,
     hook: keyof LifecycleProfile | 'unknown',
     node: Node,
     id: number | undefined,
@@ -188,7 +190,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onLifecycleHookEnd(
-    componentOrDirective: any,
+    componentOrDirective: DirectiveInstance,
     hook: keyof LifecycleProfile | 'unknown',
     node: Node,
     id: number | undefined,
@@ -202,7 +204,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onOutputStart(
-    componentOrDirective: any,
+    componentOrDirective: DirectiveInstance,
     hook: string,
     node: Node,
     id: number | undefined,
@@ -216,7 +218,7 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onOutputEnd(
-    componentOrDirective: any,
+    componentOrDirective: DirectiveInstance,
     hook: string,
     node: Node,
     id: number | undefined,

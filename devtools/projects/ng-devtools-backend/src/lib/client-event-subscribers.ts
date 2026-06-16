@@ -51,9 +51,9 @@ import {
   updateState,
 } from './component-tree/component-tree';
 import {unHighlight} from './highlighter';
-import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
-import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
-import {DirectiveForestHooks} from './hooks/hooks';
+import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
+import {disableTimingAPI, enableTimingAPI} from './profiling/timing-api';
+import {getProfiler, Profiler} from './profiling/profiler';
 import {ComponentTreeNode} from './interfaces';
 import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {getSupportedApis} from './ng-debug-api/supported-apis';
@@ -63,13 +63,14 @@ import {serializeDirectiveState, serializeValue} from './state-serializer/state-
 import {runOutsideAngular, unwrapSignal} from './utils/general';
 import {sanitizeObject} from './utils/serialization';
 import {SignalGraphRef} from './utils/signal-graph-ref';
+import {getDirectiveForestManager} from './directive-forest/manager';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
   depsForTestOnly?: {
-    directiveForestHooks?: typeof DirectiveForestHooks;
+    profiler?: new (...args: any[]) => Profiler;
   },
 ): void => {
   const inspector: InspectorRef = {ref: null};
@@ -125,8 +126,8 @@ export const subscribeToClientEvents = (
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      initializeOrGetDirectiveForestHooks(depsForTestOnly)
-        .profiler.changeDetection$.pipe(debounceTime(250))
+      getProfiler(depsForTestOnly)
+        .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
   }
@@ -145,10 +146,10 @@ const getLatestComponentExplorerViewCallback =
     // We want to force re-indexing of the component tree.
     // Pressing the refresh button means the user saw stuck UI.
 
-    initializeOrGetDirectiveForestHooks().indexForest();
+    getDirectiveForestManager().indexForest();
 
     const forest = prepareForestForSerialization(
-      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+      getDirectiveForestManager().getIndexedDirectiveForest(),
       ngDebugDependencyInjectionApiIsSupported(),
     );
 
@@ -157,10 +158,7 @@ const getLatestComponentExplorerViewCallback =
       return;
     }
 
-    const state = getLatestComponentState(
-      query,
-      initializeOrGetDirectiveForestHooks().getDirectiveForest(),
-    );
+    const state = getLatestComponentState(query, getDirectiveForestManager().getDirectiveForest());
 
     if (state) {
       const {directiveProperties} = state;
@@ -214,7 +212,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
   const node = queryDirectiveForest(
     position,
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    getDirectiveForestManager().getIndexedDirectiveForest(),
   );
   setConsoleReference({node, position});
   inspector.ref?.highlightByPosition(position);
@@ -225,7 +223,7 @@ const getNestedPropertiesCallback =
     const emitEmpty = () => messageBus.emit('nestedProperties', [position, {props: {}}, propPath]);
     const node = queryDirectiveForest(
       position.element,
-      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+      getDirectiveForestManager().getIndexedDirectiveForest(),
     );
     if (!node) {
       return emitEmpty();
@@ -256,7 +254,7 @@ const getSignalNestedPropertiesCallback =
       messageBus.emit('signalNestedProperties', [position, {props: {}}, propPath]);
     const node = queryDirectiveForest(
       position.element,
-      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+      getDirectiveForestManager().getIndexedDirectiveForest(),
     );
     if (!node || !node.nativeElement) {
       return emitEmpty();
@@ -340,7 +338,7 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
   }
 
   if (appIsIvy && appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
-    initializeOrGetDirectiveForestHooks();
+    getDirectiveForestManager();
   }
 
   const devMode = appIsAngularInDevMode();
@@ -402,7 +400,7 @@ export interface SerializableComponentTreeNode extends DevToolsNode<
 }
 
 function getRouterInstance() {
-  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  const forest = getDirectiveForestManager().getIndexedDirectiveForest();
   const rootNode = forest[0];
 
   if (!rootNode || !rootNode.nativeElement) {
@@ -433,12 +431,12 @@ const prepareForestForSerialization = (
         ? {
             name: node.component.name,
             isElement: node.component.isElement,
-            id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance)!,
+            id: getDirectiveForestManager().getDirectiveId(node.component.instance)!,
           }
         : null,
       directives: node.directives?.map((d) => ({
         name: d.name,
-        id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance)!,
+        id: getDirectiveForestManager().getDirectiveId(d.instance)!,
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
@@ -582,7 +580,7 @@ const logProvider = (
 const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
   const ng = ngDebugClient();
 
-  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  const forest = getDirectiveForestManager().getIndexedDirectiveForest();
   if (forest.length === 0) {
     messageBus.emit('transferStateData', [null]);
     return;
@@ -641,7 +639,7 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
   // get injector from position
   const node = queryDirectiveForest(
     element,
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    getDirectiveForestManager().getIndexedDirectiveForest(),
   );
   if (!node) {
     messageBus.emit('latestSignalGraph', [null]);

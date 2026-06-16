@@ -1,6 +1,6 @@
 load("//devtools/tools:defaults.bzl", "ts_project")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
     name = "profiler",
@@ -11,8 +11,9 @@ ts_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks:identity_tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:identity-tracker",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/utils",
         "//devtools/projects/protocol",
