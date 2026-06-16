@@ -77,6 +77,12 @@ describe('DatePipe', () => {
     it('should give precedence to the passed in format', () =>
       expect(pipe.transform('2017-01-11T10:14:39+0000', 'shortDate')).toEqual('1/11/17'));
 
+    it('should reject date formats that are too long', () => {
+      expect(() => pipe.transform(date, 'y'.repeat(257))).toThrowError(
+        /NG02100: InvalidPipeArgument: 'Date format is too long/,
+      );
+    });
+
     it('should use format provided in component as default format when no format is passed in', () => {
       @Component({
         selector: 'test-component',

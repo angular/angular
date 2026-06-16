@@ -31,6 +31,7 @@ export const ISO8601_DATE_REGEX =
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
   /((?:[^BEGHLMOSWYZabcdhmswyz']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|c{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
+const MAX_DATE_FORMAT_LENGTH = 256;
 
 const enum ZoneWidth {
   Short,
@@ -84,6 +85,7 @@ export function formatDate(
   timezone?: string,
 ): string {
   let date = toDate(value);
+  assertValidDateFormatLength(format);
   const namedFormat = getNamedFormat(locale, format);
   format = namedFormat || format;
 
@@ -121,6 +123,14 @@ export function formatDate(
   });
 
   return text;
+}
+
+function assertValidDateFormatLength(format: string) {
+  if (format.length > MAX_DATE_FORMAT_LENGTH) {
+    throw new Error(
+      `Date format is too long. Exceeded maximum length of ${MAX_DATE_FORMAT_LENGTH} characters.`,
+    );
+  }
 }
 
 /**
