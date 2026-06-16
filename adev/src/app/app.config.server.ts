@@ -11,7 +11,12 @@ import {provideServerRendering, withRoutes, RenderMode} from '@angular/ssr';
 import {appConfig} from './app.config';
 
 const serverConfig: ApplicationConfig = {
-  providers: [provideServerRendering(withRoutes([{path: '**', renderMode: RenderMode.Prerender}]))],
+  providers: [
+    provideServerRendering(
+      {maxResponseBodySize: 2 * 1024 * 1024},
+      withRoutes([{path: '**', renderMode: RenderMode.Prerender}]),
+    ),
+  ],
 };
 
 export const config: ApplicationConfig = mergeApplicationConfig(appConfig, serverConfig);
