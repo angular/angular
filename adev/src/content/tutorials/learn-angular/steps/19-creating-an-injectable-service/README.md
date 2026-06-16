@@ -10,31 +10,25 @@ In this activity, you'll learn how to create an `injectable` service.
 
 One way to use a service is to act as a way to interact with data and APIs. To make a service reusable you should keep the logic in the service and share it throughout the application when it is needed.
 
-To make a service eligible to be injected by the DI system use the `@Injectable` decorator. For example:
+To make a class eligible to be injected by the DI system, use the `@Service` decorator. For example:
 
-```ts {highlight:[1,2,3]}
-@Injectable({
-  providedIn: 'root',
-})
+```ts {highlight:[1]}
+@Service()
 class UserService {
   // methods to retrieve and return data
 }
 ```
 
-The `@Injectable` decorator notifies the DI system that the `UserService` is available to be requested in a class. `providedIn` sets the scope in which this resource is available. For now, it is good enough to understand that `providedIn: 'root'` means that the `UserService` is available to the entire application.
+The `@Service` decorator marks the class as a service and notifies the DI system that `UserService` can be accessed anywhere in your application. By default, Angular provides the service across your entire application, so you don't need to write any extra configuration.
+
+NOTE: By default, `@Service` provides the class at the root injector. If you want to provide it manually, for example, to scope it to a specific route or component, set `autoProvided: false`. Learn more in the [guide on creating and using services](guide/di/creating-and-using-services#using-the-service-decorator).
 
 Alright, you try:
 
 <docs-workflow>
 
-<docs-step title="Add the `@Injectable` decorator">
-Update the code in `car.service.ts` by adding the `@Injectable` decorator.
-</docs-step>
-
-<docs-step title="Configure the decorator">
-The values in the object passed to the decorator are considered to be the configuration for the decorator.
-<br>
-Update the `@Injectable` decorator in `car.service.ts` to include the configuration for `providedIn: 'root'`.
+<docs-step title="Add the `@Service` decorator">
+Update the code in `car.service.ts` by adding the `@Service()` decorator to the `CarService` class.
 
 TIP: Use the above example to find the correct syntax.
 
