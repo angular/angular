@@ -16,13 +16,12 @@ import {
 } from '../../../../protocol';
 
 import {getDirectiveName} from '../highlighter';
-import {ComponentTreeNode} from '../interfaces';
+import {ComponentInstance, ComponentTreeNode, DirectiveInstance} from '../interfaces';
 import {isCustomElement, runOutsideAngular} from '../utils/general';
 
-import {initializeOrGetDirectiveForestHooks} from '.';
-import {DirectiveForestHooks} from './hooks';
-import {IdentityTracker} from './identity-tracker';
-import {Hooks} from './profiler';
+import {DirectiveForestManager, getDirectiveForestManager} from '../directive-forest/manager';
+import {IdentityTracker} from '../directive-forest/identity-tracker';
+import {getProfiler, Hooks} from './profiler';
 
 let inProgress = false;
 let inChangeDetection = false;
@@ -41,28 +40,39 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   }
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
-  IdentityTracker.getInstance().setProfilingActive(true);
+
+  // Enable preservation mode. While it is active, removed directive
+  // entries are kept so the profiler can still resolve IDs and positions.
+  // When profiling stops, the mode is changed back to `normal` and
+  // deferred removals are flushed.
+  IdentityTracker.getInstance().selectMode('preservation');
+
   hooks = getHooks(onFrame);
-  initializeOrGetDirectiveForestHooks().profiler.subscribe(hooks);
+  getProfiler().subscribe(hooks);
 };
 
 export const stop = (): ProfilerFrame => {
-  const directiveForestHooks = initializeOrGetDirectiveForestHooks();
-  const result = flushBuffer(directiveForestHooks);
-  initializeOrGetDirectiveForestHooks().profiler.unsubscribe(hooks);
-  hooks = {};
+  const directiveForestManager = getDirectiveForestManager();
+  const result = flushBuffer(directiveForestManager);
+  getProfiler().unsubscribe(hooks);
   inProgress = false;
-  IdentityTracker.getInstance().setProfilingActive(false);
+  hooks = {};
+  IdentityTracker.getInstance().selectMode('normal');
+
   return result;
 };
 
-const startEvent = (map: Record<string, number>, directive: any, label: string) => {
+const startEvent = (map: Record<string, number>, directive: DirectiveInstance, label: string) => {
   const name = getDirectiveName(directive);
   const key = `${name}#${label}`;
   map[key] = performance.now();
 };
 
-const getEventStart = (map: Record<string, number>, directive: any, label: string) => {
+const getEventStart = (
+  map: Record<string, number>,
+  directive: DirectiveInstance,
+  label: string,
+) => {
   const name = getDirectiveName(directive);
   const key = `${name}#${label}`;
   return map[key];
@@ -73,13 +83,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
   return {
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
-    onCreate(
-      directive: any,
-      node: Node,
-      _: number,
-      isComponent: boolean,
-      position: ElementPosition,
-    ): void {
+    onCreate(directive: DirectiveInstance, node: Node, _: number, isComponent: boolean): void {
       eventMap.set(directive, {
         isElement: isCustomElement(node),
         name: getDirectiveName(directive),
@@ -88,7 +92,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         outputs: {},
       });
     },
-    onChangeDetectionStart(component: any, node: Node): void {
+    onChangeDetectionStart(component: ComponentInstance, node: Node): void {
       startEvent(timeStartMap, component, 'changeDetection');
       if (!inChangeDetection) {
         inChangeDetection = true;
@@ -96,7 +100,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         runOutsideAngular(() => {
           Promise.resolve().then(() => {
             inChangeDetection = false;
-            onFrame(flushBuffer(initializeOrGetDirectiveForestHooks(), source));
+            onFrame(flushBuffer(getDirectiveForestManager(), source));
           });
         });
       }
@@ -111,7 +115,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         });
       }
     },
-    onChangeDetectionEnd(component: any): void {
+    onChangeDetectionEnd(component: ComponentInstance): void {
       const profile = eventMap.get(component);
 
       if (profile) {
@@ -131,7 +135,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       }
     },
     onDestroy(
-      directive: any,
+      directive: DirectiveInstance,
       node: Node,
       _: number,
       isComponent: boolean,
@@ -149,10 +153,10 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       }
     },
     onLifecycleHookStart(
-      directive: any,
+      directive: DirectiveInstance,
       hookName: keyof LifecycleProfile,
       node: Node,
-      id: number,
+      _: number,
       isComponent: boolean,
     ): void {
       startEvent(timeStartMap, directive, hookName);
@@ -167,7 +171,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       }
     },
     onLifecycleHookEnd(
-      directive: any,
+      directive: DirectiveInstance,
       hookName: keyof LifecycleProfile,
       _: Node,
       __: number,
@@ -187,10 +191,10 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       frameDuration += duration;
     },
     onOutputStart(
-      componentOrDirective: any,
+      componentOrDirective: DirectiveInstance,
       outputName: string,
       node: Node,
-      id: number | undefined,
+      _: number | undefined,
       isComponent: boolean,
     ): void {
       startEvent(timeStartMap, componentOrDirective, outputName);
@@ -204,7 +208,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         });
       }
     },
-    onOutputEnd(componentOrDirective: any, outputName: string): void {
+    onOutputEnd(componentOrDirective: DirectiveInstance, outputName: string): void {
       const name = outputName;
       const entry = eventMap.get(componentOrDirective);
       const startTimestamp = getEventStart(timeStartMap, componentOrDirective, name);
@@ -293,16 +297,16 @@ const prepareInitialFrame = (source: string, duration: number) => {
     duration,
     directives: [],
   };
-  const directiveForestHooks = initializeOrGetDirectiveForestHooks();
-  const directiveForest = directiveForestHooks.getIndexedDirectiveForest();
+  const directiveForestManager = getDirectiveForestManager();
+  const directiveForest = directiveForestManager.getIndexedDirectiveForest();
   const traverse = (node: ComponentTreeNode, children = frame.directives) => {
     let position: ElementPosition | undefined;
     if (node.component) {
-      position = directiveForestHooks.getDirectivePosition(node.component.instance);
+      position = directiveForestManager.getDirectivePosition(node.component.instance);
     } else if (node.directives?.[0]) {
-      position = directiveForestHooks.getDirectivePosition(node.directives[0].instance);
+      position = directiveForestManager.getDirectivePosition(node.directives[0].instance);
     } else if (node.controlFlowBlock) {
-      position = directiveForestHooks.getDirectivePosition(node.controlFlowBlock);
+      position = directiveForestManager.getDirectivePosition(node.controlFlowBlock);
     }
 
     if (position === undefined) {
@@ -339,12 +343,12 @@ const prepareInitialFrame = (source: string, duration: number) => {
   return frame;
 };
 
-const flushBuffer = (directiveForestHooks: DirectiveForestHooks, source: string = '') => {
+const flushBuffer = (directiveForestManager: DirectiveForestManager, source: string = '') => {
   const items = Array.from(eventMap.keys());
   const positions: ElementPosition[] = [];
-  const positionDirective = new Map<ElementPosition, any>();
+  const positionDirective = new Map<ElementPosition, DirectiveInstance>();
   items.forEach((dir) => {
-    const position = directiveForestHooks.getDirectivePosition(dir);
+    const position = directiveForestManager.getDirectivePosition(dir);
     if (position === undefined) {
       return;
     }

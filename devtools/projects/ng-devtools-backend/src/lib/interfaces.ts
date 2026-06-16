@@ -9,22 +9,29 @@
 import {DevToolsNode} from '../../../protocol';
 
 export interface DebuggingAPI {
-  getComponent(node: Node): any;
-  getDirectives(node: Node): any[];
-  getHostElement(cmp: any): HTMLElement;
+  getComponent(node: Node): ComponentInstance;
+  getDirectives(node: Node): DirectiveInstance[];
+  getHostElement(cmp: ComponentInstance): HTMLElement;
 }
+
+export type DirectiveInstance = any;
+
+export type ComponentInstance = DirectiveInstance;
+
 export interface DirectiveInstanceType {
-  instance: any;
+  instance: DirectiveInstance;
   name: string;
 }
 
 export interface ComponentInstanceType {
-  instance: any;
+  instance: ComponentInstance;
   name: string;
   isElement: boolean;
 }
 
-export interface ComponentTreeNode
-  extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
+export interface ComponentTreeNode extends DevToolsNode<
+  DirectiveInstanceType,
+  ComponentInstanceType
+> {
   children: ComponentTreeNode[];
 }

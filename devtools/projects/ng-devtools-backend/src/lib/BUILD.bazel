@@ -1,6 +1,6 @@
 load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
     name = "lib",
@@ -9,8 +9,8 @@ ts_project(
         ":client_event_subscribers",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/protocol",
     ],
@@ -130,8 +130,8 @@ ts_test_library(
     ],
     deps = [
         ":client_event_subscribers",
-        "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:identity-tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
     ],
@@ -149,8 +149,10 @@ ts_project(
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/ng-devtools-backend/src/lib/utils",
         "//devtools/projects/protocol",
