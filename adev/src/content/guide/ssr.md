@@ -427,6 +427,27 @@ To configure this, update your `angular.json` file as follows:
 
 `HttpClient` caches outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
 
+### Configuring the response body size limit
+
+When `HttpClient` uses the default fetch backend during server-side rendering, Angular limits each response body to 1 MB. This limit prevents the server from buffering unexpectedly large responses during rendering. If a response exceeds the configured limit, the request fails.
+
+If your application needs to fetch larger responses during server rendering, set `maxResponseBodySize` in the `provideServerRendering` options:
+
+```ts
+import {provideServerRendering, withRoutes} from '@angular/ssr';
+import {serverRoutes} from './app.routes.server';
+
+const serverConfig: ApplicationConfig = {
+  providers: [
+    provideServerRendering({maxResponseBodySize: 5 * 1024 * 1024}, withRoutes(serverRoutes)),
+  ],
+};
+```
+
+`maxResponseBodySize` is configured in bytes and applies globally to server-side `HttpClient` requests that use the fetch backend.
+
+IMPORTANT: Keep this limit as small as your application allows. Increasing it lets server-side requests buffer larger response bodies, which can increase memory use and denial-of-service risk. Prefer moving large downloads outside server rendering.
+
 ### Configuring the caching options
 
 You can customize how Angular caches HTTP responses during server‑side rendering (SSR) and reuses them during hydration by configuring `HttpTransferCacheOptions`.  
