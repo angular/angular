@@ -43,6 +43,13 @@ export class DemoApplicationOperations extends ApplicationOperations {
     return;
   }
 
+  override removeSignalBreakpoint(position: SignalNodePosition): void {
+    console.warn(
+      'removeSignalBreakpoint() is not implemented because the demo app runs in an Iframe',
+    );
+    return;
+  }
+
   override viewSourceFromRouter(name: string, type: string): void {
     console.warn(
       'viewSourceFromRouter() is not implemented because the demo app runs in an Iframe',

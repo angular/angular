@@ -21,11 +21,11 @@
         size="compact"
         class="action-btn"
         btnType="secondary"
-        (click)="setBreakpoint.emit(node)"
+        (click)="hasBreakpoint() ? removeBreakpoint.emit(node) : setBreakpoint.emit(node)"
         [disabled]="!node.debuggable"
-        matTooltip="Set breakpoint"
+        [matTooltip]="hasBreakpoint() ? 'Remove breakpoint' : 'Set breakpoint'"
       >
-        <mat-icon> fiber_manual_record </mat-icon>
+        <mat-icon [style.color]="hasBreakpoint() ? '#f44336' : 'inherit'"> fiber_manual_record </mat-icon>
       </button>
     } @else if (isClusterNode) {
       <button

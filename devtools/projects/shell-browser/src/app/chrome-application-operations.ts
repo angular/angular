@@ -50,18 +50,39 @@ export class ChromeApplicationOperations extends ApplicationOperations {
   }
 
   override setSignalBreakpoint(position: SignalNodePosition, target: Frame): void {
-    const setBreakpoint = `
-      (() => {
-        const fn = inspectedApplication.findSignalNodeByPosition('${JSON.stringify(position)}');
-        if (fn) {
-          debug(fn);
-          inspect(fn);
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    chrome.runtime.sendMessage(
+      {
+        action: 'setSignalBreakpoint',
+        tabId,
+        position,
+      },
+      (response) => {
+        if (response && response.success) {
+          console.log('Breakpoint set successfully via CDP');
         } else {
-          console.warn('Could not find signal function to debug');
+          console.error('Failed to set breakpoint via CDP:', response?.error);
         }
-      })()
-    `;
-    this.runInInspectedWindow(setBreakpoint, target);
+      },
+    );
+  }
+
+  override removeSignalBreakpoint(position: SignalNodePosition, target: Frame): void {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    chrome.runtime.sendMessage(
+      {
+        action: 'removeSignalBreakpoint',
+        tabId,
+        position,
+      },
+      (response) => {
+        if (response && response.success) {
+          console.log('Breakpoint removed successfully via CDP');
+        } else {
+          console.error('Failed to remove breakpoint via CDP:', response?.error);
+        }
+      },
+    );
   }
 
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
