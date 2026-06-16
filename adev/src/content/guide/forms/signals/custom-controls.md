@@ -340,6 +340,54 @@ When the user types an invalid email, the FormField directive automatically upda
 
 Most state properties use `input()` (read-only from the form). Use `model()` for `touched` when your control updates it on user interaction. The `touched` property uniquely supports `model()`, `input()`, or `OutputRef` depending on your needs.
 
+### Working with `debounce('blur')`
+
+The [`debounce('blur')`](api/forms/signals/debounce) rule delays updates from the UI to the form model until the field is blurred, instead of applying them on every keystroke. Built-in controls report a blur to the form automatically. A custom control only participates if it emits its `touch` output in response to the native [`blur` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event):
+
+```angular-ts
+import {Component, model, output} from '@angular/core';
+import {FormValueControl} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-custom-input',
+  template: `
+    <input
+      type="text"
+      [value]="value()"
+      (input)="value.set($event.target.value)"
+      (blur)="touch.emit()"
+    />
+  `,
+})
+export class CustomInput implements FormValueControl<string> {
+  value = model('');
+  touch = output<void>();
+}
+```
+
+With the `touch` output in place, `debounce('blur')` behaves the same for your control as it does for built-in inputs:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {debounce, form, FormField} from '@angular/forms/signals';
+import {CustomInput} from './custom-input';
+
+@Component({
+  selector: 'app-root',
+  imports: [CustomInput, FormField],
+  template: `<app-custom-input [formField]="userForm.name" />`,
+})
+export class App {
+  userModel = signal({name: ''});
+
+  userForm = form(this.userModel, (schemaPath) => {
+    debounce(schemaPath.name, 'blur');
+  });
+}
+```
+
+IMPORTANT: Emit `touch` on `blur` (when focus leaves the control), not on `focus`. Without the `touch` output the field never registers as blurred, so `debounce('blur')` has no effect on your control.
+
 ## Value transformation
 
 Controls sometimes display values differently than the form model stores them - a date picker might display "January 15, 2024" while storing "2024-01-15", or a currency input might show "$1,234.56" while storing 1234.56.
