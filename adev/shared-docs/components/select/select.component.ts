@@ -39,7 +39,6 @@ export class Select implements FormValueControl<string | null> {
   readonly id = input.required<string>({alias: 'selectId'});
   readonly name = input.required<string>();
   readonly options = input.required<SelectOption[]>();
-  readonly disabled = input(false);
 
   readonly listbox = viewChild(Listbox);
   readonly combobox = viewChild(Combobox);
@@ -76,7 +75,7 @@ export class Select implements FormValueControl<string | null> {
     const values = this.selectedValues();
     if (values.length) {
       this.value.set(values[0]);
-      //this.popupExpanded.set(false);
+      this.popupExpanded.set(false);
     }
   }
 
