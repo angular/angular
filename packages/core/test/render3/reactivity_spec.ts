@@ -1010,4 +1010,37 @@ describe('reactivity', () => {
       });
     });
   });
+
+  describe('graph', () => {
+    it('should keep links alive in a dynamic graph', () => {
+      const source = signal('initial');
+
+      @Component({
+        selector: 'test-cmp',
+        template: `{{ dynamic() }}{{ source() }}`,
+      })
+      class TestCmp {
+        @Input()
+        nonreactive: unknown;
+
+        get dynamic() {
+          return signal('');
+        }
+
+        source = source;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      fixture.componentRef.setInput('nonreactive', 'force_check');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('initial');
+
+      source.set('updated');
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('updated');
+    });
+  });
 });
