@@ -232,8 +232,14 @@ export function transferCacheInterceptorFn(
     return event$.pipe(
       tap((event: HttpEvent<unknown>) => {
         // Only cache successful HTTP responses that do not have Cache-Control
-        // directives that forbid shared caching (no-store or private).
-        if (event instanceof HttpResponse && !hasUncacheableCacheControl(event.headers)) {
+        // directives that forbid shared caching (no-store or private) and do not
+        // carry a Set-Cookie header. A Set-Cookie header marks the response as
+        // user-specific.
+        if (
+          event instanceof HttpResponse &&
+          !hasUncacheableCacheControl(event.headers) &&
+          !hasSetCookieHeader(event.headers)
+        ) {
           transferState.set<TransferHttpResponse>(storeKey, {
             [BODY]: event.body,
             [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
@@ -273,6 +279,10 @@ function hasUncacheableCacheControl(headers: HttpHeaders): boolean {
 
     return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
   });
+}
+
+function hasSetCookieHeader(headers: HttpHeaders): boolean {
+  return headers.has('set-cookie');
 }
 
 function isNonCacheableRequest(cache: RequestCache): boolean {
