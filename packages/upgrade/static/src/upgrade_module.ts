@@ -341,7 +341,7 @@ export class UpgradeModule {
     );
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
-    const windowAngular = (window as any)['angular'];
+    const windowAngular = ɵangular1.getAngularJSGlobal();
     windowAngular.resumeBootstrap = undefined;
 
     // Bootstrap the AngularJS application inside our zone
