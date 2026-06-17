@@ -243,15 +243,16 @@ Coordinates an interactive trigger element (such as a text input, button, or div
 
 #### Inputs / Model
 
-| Property           | Type                   | Default | Description                                                         |
-| ------------------ | ---------------------- | ------- | ------------------------------------------------------------------- |
-| `value`            | `ModelSignal<string>`  | `''`    | Two-way bindable text value of the combobox                         |
-| `expanded`         | `ModelSignal<boolean>` | `false` | Two-way bindable open/closed expanded state of the popup            |
-| `disabled`         | `boolean`              | `false` | Disables the combobox trigger element                               |
-| `softDisabled`     | `boolean`              | `true`  | Disables interaction while keeping the element keyboard focusable   |
-| `alwaysExpanded`   | `boolean`              | `false` | Forces the popup to always remain open                              |
-| `inlineSuggestion` | `string \| undefined`  | -       | Sets an inline suggestion to be highlighted at the end of the input |
-| `tabIndex`         | `number \| undefined`  | -       | Tabindex of the combobox element (aliased to `tabindex`)            |
+| Property           | Type                   | Default | Description                                                                                                          |
+| ------------------ | ---------------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| `value`            | `ModelSignal<string>`  | `''`    | Two-way bindable text value of the combobox                                                                          |
+| `expanded`         | `ModelSignal<boolean>` | `false` | Two-way bindable open/closed expanded state of the popup                                                             |
+| `disabled`         | `boolean`              | `false` | Disables the combobox trigger element                                                                                |
+| `softDisabled`     | `boolean`              | `true`  | Disables interaction while keeping the element keyboard focusable                                                    |
+| `readonly`         | `boolean`              | `false` | Makes the combobox read-only. Prevents the user from changing the value while keeping the element keyboard focusable |
+| `alwaysExpanded`   | `boolean`              | `false` | Forces the popup to always remain open                                                                               |
+| `inlineSuggestion` | `string \| undefined`  | -       | Sets an inline suggestion to be highlighted at the end of the input                                                  |
+| `tabIndex`         | `number \| undefined`  | -       | Tabindex of the combobox element (aliased to `tabindex`)                                                             |
 
 All keyboard events, focus coordination, and ARIA state properties (including `role="combobox"`, `aria-autocomplete`, and `aria-expanded`) are handled automatically on the host element.
 
