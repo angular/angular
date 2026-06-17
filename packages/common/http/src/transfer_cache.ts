@@ -288,8 +288,10 @@ export function transferCacheInterceptorFn(
           const {headers, body, status, statusText} = event;
 
           // Only cache successful HTTP responses that do not have Cache-Control
-          // directives that forbid shared caching (no-store or private).
-          if (hasUncacheableCacheControl(headers)) {
+          // directives that forbid shared caching (no-store or private) and do not
+          // carry a Set-Cookie header. A Set-Cookie header marks the response as
+          // user-specific.
+          if (hasUncacheableCacheControl(headers) || hasSetCookieHeader(headers)) {
             return;
           }
 
@@ -342,6 +344,10 @@ function hasUncacheableCacheControl(headers: HttpHeaders): boolean {
 
     return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
   });
+}
+
+function hasSetCookieHeader(headers: HttpHeaders): boolean {
+  return headers.has('set-cookie');
 }
 
 function isNonCacheableRequest(cache: RequestCache): boolean {
