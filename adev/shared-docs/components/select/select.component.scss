@@ -5,8 +5,12 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.docs-combobox-container {
   border: 1px solid var(--border-color);
   border-radius: 0.25rem;
+  overflow: hidden;
 }
 
 .docs-select-input-container {
@@ -69,6 +73,8 @@
 
 .docs-select-dialog {
   position: absolute;
+  box-sizing: border-box;
+  width: 100%;
   left: auto;
   right: auto;
   top: auto;
@@ -76,6 +82,7 @@
   padding: 0;
   border: 1px solid var(--border-color);
   border-radius: 0.25rem;
+  overflow: hidden;
   background-color: var(--septenary-contrast);
   color: inherit;
 
@@ -178,16 +185,8 @@
     color: var(--vivid-pink);
     background-color: color-mix(in srgb, var(--vivid-pink) 5%, transparent);
   }
-
-  &:not([aria-selected='true']) .docs-select-check-icon {
-    display: none;
-  }
 }
 
 .docs-select-option-label {
   flex: 1;
-}
-
-.docs-select-check-icon {
-  font-size: 0.9rem;
 }
