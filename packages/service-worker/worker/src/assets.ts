@@ -501,10 +501,10 @@ export abstract class AssetGroup {
    * Create a new `Request` based on the specified URL and `RequestInit` options, preserving only
    * metadata that are known to be safe.
    *
-   * Currently, headers, redirect policy, an explicit `credentials: 'omit'`, and the HTTP cache
-   * mode are preserved. On cross-origin redirects, sensitive headers are removed. This includes
-   * `Authorization`, as required by the Fetch redirect algorithm, and forbidden request headers
-   * that could contain credentials.
+   * Currently, headers, referrer, redirect policy, an explicit `credentials: 'omit'`, and the HTTP
+   * cache mode are preserved. On cross-origin redirects, sensitive headers are removed. This
+   * includes `Authorization`, as required by the Fetch redirect algorithm, and forbidden request
+   * headers that could contain credentials.
    *
    * NOTE:
    *   `credentials: 'same-origin'` and `credentials: 'include'` are intentionally not preserved.
@@ -532,6 +532,7 @@ export abstract class AssetGroup {
 
     const init: RequestInit = {
       headers,
+      referrer: options.referrer,
       redirect: options.redirect,
     };
 
