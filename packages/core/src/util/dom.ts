@@ -11,7 +11,7 @@
  *
  * see: https://html.spec.whatwg.org/multipage/syntax.html#comments
  */
-const COMMENT_DISALLOWED = />|->|<!--|-->|--!>|<!-$/g;
+const COMMENT_DISALLOWED = /^>|^->|<!--|-->|--!>|<!-$/g;
 /**
  * Delimiter in the disallowed strings which needs to be wrapped with zero with character.
  */
