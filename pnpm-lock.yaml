@@ -22,17 +22,17 @@ importers:
         specifier: workspace:*
         version: link:packages/animations
       '@angular/aria':
-        specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.1.0-next.1
+        version: 22.1.0-next.1(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/benchpress':
         specifier: 'workspace: *'
         version: link:packages/benchpress
       '@angular/build':
         specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(0971d950abed3440c8b267d86dbb082b)
+        version: 22.1.0-next.0(9761fb5ef2adeecb61ca3c7e6caca236)
       '@angular/cdk':
-        specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.1.0-next.1
+        version: 22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 22.1.0-next.0
         version: 22.1.0-next.0(@cfworker/json-schema@4.1.1)(@types/node@20.19.41)(chokidar@5.0.0)(supports-color@8.1.1)
@@ -61,8 +61,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.1.0-next.1
+        version: 22.1.0-next.1(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -185,7 +185,7 @@ importers:
         version: 2.5.2
       karma:
         specifier: ~6.4.0
-        version: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+        version: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)
       karma-chrome-launcher:
         specifier: ^3.1.0
         version: 3.2.0
@@ -194,7 +194,7 @@ importers:
         version: 2.1.3
       karma-jasmine:
         specifier: ^5.0.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1))
       karma-sourcemap-loader:
         specifier: ^0.4.0
         version: 0.4.0
@@ -254,8 +254,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdd4a4146520ed794b0342d0a86a0e2b31f129e3
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#b60a64b6e6341a831bfeda0f28aa5f3fa4077184
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b60a64b6e6341a831bfeda0f28aa5f3fa4077184(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^7.27.1
         version: 7.29.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
@@ -315,7 +315,7 @@ importers:
         version: 2.2.1(supports-color@8.1.1)
       karma-jasmine-html-reporter:
         specifier: ^2.2.0
-        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)))(karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1))
       prettier:
         specifier: ^3.8.0
         version: 3.8.3
@@ -353,14 +353,14 @@ importers:
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/aria':
-        specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.1.0-next.1
+        version: 22.1.0-next.1(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 22.1.0-next.0
         version: 22.1.0-next.0(646191d77128f63171c04c00326b6976)
       '@angular/cdk':
-        specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.1.0-next.1
+        version: 22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 22.1.0-next.0
         version: 22.1.0-next.0(@cfworker/json-schema@4.1.1)(@types/node@24.13.1)(chokidar@5.0.0)
@@ -383,8 +383,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.1.0-next.1
+        version: 22.1.0-next.1(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -573,7 +573,7 @@ importers:
         version: 11.15.0
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       playwright-core:
         specifier: 1.60.0
         version: 1.60.0
@@ -625,7 +625,7 @@ importers:
         version: 10.5.0(postcss@8.5.15)
       karma:
         specifier: ~6.4.4
-        version: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+        version: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       postcss:
         specifier: 8.5.15
         version: 8.5.15
@@ -1518,10 +1518,10 @@ packages:
     resolution: {integrity: sha512-g5yPQBHFdYOoOL44lgcd5xVLSPR8jeQZtiK6wREFlOj1a/slif3hMGluXzqbiPvfSzMwsBrhxARRaNbcM9R+sQ==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@angular/aria@22.1.0-next.0':
-    resolution: {integrity: sha512-odVXfmUmz58YyQSIUlr+ya8lACUQTKTEdhNkEEPcujl4YDZRr6cPaeu11qm97hNZd/1m2MmlGnKKuWlzyoRLng==}
+  '@angular/aria@22.1.0-next.1':
+    resolution: {integrity: sha512-++hQHHKuQndQyHxNo0TTV/o4U7/Pc8tUq7vSoaJuYsBXm93ecsWToTMtHoabKv14Yx4vJb0zpPViPaO9NFT4XQ==}
     peerDependencies:
-      '@angular/cdk': 22.1.0-next.0
+      '@angular/cdk': 22.1.0-next.1
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
 
   '@angular/build@22.1.0-next.0':
@@ -1573,8 +1573,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.1.0-next.0':
-    resolution: {integrity: sha512-LlWJs+rf8PUCM9HMJ8KZqqFTw6gQWoIrAnDuKi1KjBULURYjY7iQomtYEl6fQ+Zi1Ta+erRz6oIPftgdAV5p/g==}
+  '@angular/cdk@22.1.0-next.1':
+    resolution: {integrity: sha512-P0WNlisE+SxJecsl4sv55xq1LSUAF8OdvqfPhwNBnLPUaQDPs5hIdyNFxQnBmCqd0zygafZPk7dAQBcYSSLIeA==}
     peerDependencies:
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
@@ -1599,19 +1599,19 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-v8Dm8di7rv/S1kWC+KsZ3Qidlt6gvWilfZTXIczxBsjmYeKBNyn5RXhR6DEuzh5Kie3JsFHOD/8aGsKXbj3jBg==, tarball: https://codeload.github.com/angular/domino/tar.gz/a9e9e17af7a54af8dde66f651bfde671c3a10444}
     version: 2.1.6
 
-  '@angular/material@22.1.0-next.0':
-    resolution: {integrity: sha512-7ey//rQjKTC1IvhQ/F9D2feN5DPkoUUtUdpExMSCUaeN/fA74+msdxIMHX0nylB9eFDRuyToCJ5AAsCDW4IsMA==}
+  '@angular/material@22.1.0-next.1':
+    resolution: {integrity: sha512-K/iuxpcreMdtYLGop79QF8CQQtdhYb1xUryRpQnA8bgyj0Wx10sQsPm6IBdARV1cWpIhjZbVRBrfBtVgJWCnfw==}
     peerDependencies:
-      '@angular/cdk': 22.1.0-next.0
+      '@angular/cdk': 22.1.0-next.1
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/forms': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/platform-browser': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3':
-    resolution: {gitHosted: true, integrity: sha512-77lzhDNz78hakS5ahbzVbcCKSJgwLSbDlCwQgLQWphzdaaMid0ILM5eHywGCkgBqzg6jrrScrEfN62io2eFz7A==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3}
-    version: 0.0.0-e9faacd5b4df391f59989b6fb448b2c24115d592
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b60a64b6e6341a831bfeda0f28aa5f3fa4077184':
+    resolution: {gitHosted: true, integrity: sha512-ABDcmiW4xta67kWMCqG0wtRiLWW8a7w98OWVTo8UzGM6+JEcRRUfh4bMGFnsEq/J6qbFS7osWYkpgbEdlbDFpg==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b60a64b6e6341a831bfeda0f28aa5f3fa4077184}
+    version: 0.0.0-a8a341bd2b49b931c92408d497588b6acd012eeb
     hasBin: true
 
   '@angular/ssr@22.1.0-next.0':
@@ -11678,70 +11678,11 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/aria@22.1.0-next.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
+  '@angular/aria@22.1.0-next.1(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
     dependencies:
-      '@angular/cdk': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/core': link:packages/core
       tslib: 2.8.1
-
-  '@angular/build@22.1.0-next.0(0971d950abed3440c8b267d86dbb082b)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2201.0-next.0(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.29.7(supports-color@8.1.1)
-      '@babel/helper-annotate-as-pure': 7.29.7
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.1.1(@types/node@20.19.41)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.41)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0))
-      beasties: 0.4.2
-      browserslist: 4.28.2
-      esbuild: 0.28.0
-      https-proxy-agent: 9.0.0(supports-color@8.1.1)
-      jsonc-parser: 3.3.1
-      listr2: 10.2.1
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.4
-      piscina: 5.1.4
-      rollup: 4.61.0
-      sass: 1.100.0
-      semver: 7.8.1
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.17
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 7.3.5(@types/node@20.19.41)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0)
-      watchpack: 2.5.1
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
-      less: 4.6.4
-      lmdb: 3.5.5
-      ng-packagr: 22.1.0-next.2(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.15
-      tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
-      vitest: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@20.19.41)(esbuild@0.28.0)(jiti@1.21.7)(jsdom@29.1.1)(less@4.6.4)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
 
   '@angular/build@22.1.0-next.0(1f181f4695468c542e49b88dcd07b0ad)':
     dependencies:
@@ -11782,7 +11723,7 @@ snapshots:
       '@angular/service-worker': link:packages/service-worker
       '@angular/ssr': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.4
       lmdb: 3.5.5
       ng-packagr: 22.1.0-next.2(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
@@ -11841,7 +11782,7 @@ snapshots:
       '@angular/service-worker': link:packages/service-worker
       '@angular/ssr': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.4
       lmdb: 3.5.5
       ng-packagr: 22.1.0-next.2(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
@@ -11900,7 +11841,7 @@ snapshots:
       '@angular/service-worker': link:packages/service-worker
       '@angular/ssr': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.4
       lmdb: 3.5.5
       ng-packagr: 22.1.0-next.2(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
@@ -11920,7 +11861,66 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/build@22.1.0-next.0(9761fb5ef2adeecb61ca3c7e6caca236)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2201.0-next.0(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.7(supports-color@8.1.1)
+      '@babel/helper-annotate-as-pure': 7.29.7
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 6.1.1(@types/node@20.19.41)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.41)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0))
+      beasties: 0.4.2
+      browserslist: 4.28.2
+      esbuild: 0.28.0
+      https-proxy-agent: 9.0.0(supports-color@8.1.1)
+      jsonc-parser: 3.3.1
+      listr2: 10.2.1
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.4
+      piscina: 5.1.4
+      rollup: 4.61.0
+      sass: 1.100.0
+      semver: 7.8.1
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.17
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 7.3.5(@types/node@20.19.41)(jiti@1.21.7)(less@4.6.4)(lightningcss@1.32.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3
+      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)
+      less: 4.6.4
+      lmdb: 3.5.5
+      ng-packagr: 22.1.0-next.2(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.15
+      tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
+      vitest: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@20.19.41)(esbuild@0.28.0)(jiti@1.21.7)(jsdom@29.1.1)(less@4.6.4)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -12017,9 +12017,9 @@ snapshots:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/a9e9e17af7a54af8dde66f651bfde671c3a10444': {}
 
-  '@angular/material@22.1.0-next.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/material@22.1.0-next.1(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -12027,7 +12027,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b60a64b6e6341a831bfeda0f28aa5f3fa4077184(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
@@ -14546,7 +14546,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.8.1
+      semver: 7.8.4
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -14556,7 +14556,7 @@ snapshots:
       lru-cache: 11.5.0
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.8.1
+      semver: 7.8.4
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -14573,7 +14573,7 @@ snapshots:
       hosted-git-info: 9.0.3
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.8.1
+      semver: 7.8.4
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -17590,7 +17590,24 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.8(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6):
+  engine.io@6.6.8(bufferutil@4.1.0)(supports-color@8.1.1):
+    dependencies:
+      '@types/cors': 2.8.19
+      '@types/node': 24.13.1
+      '@types/ws': 8.18.1
+      accepts: 1.3.8
+      base64id: 2.0.0
+      cookie: 0.7.2
+      cors: 2.8.6
+      debug: 4.4.3(supports-color@8.1.1)
+      engine.io-parser: 5.2.3
+      ws: 8.20.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  engine.io@6.6.8(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@types/cors': 2.8.19
       '@types/node': 24.13.1
@@ -17894,7 +17911,7 @@ snapshots:
       promise-breaker: 6.0.0
       qs: 6.15.2
       raw-body: 2.5.3
-      semver: 7.8.1
+      semver: 7.8.4
     transitivePeerDependencies:
       - supports-color
 
@@ -19740,7 +19757,7 @@ snapshots:
       jest-message-util: 30.4.1
       jest-util: 30.4.1
       pretty-format: 30.4.1
-      semver: 7.8.1
+      semver: 7.8.4
       synckit: 0.11.12
     transitivePeerDependencies:
       - supports-color
@@ -19928,7 +19945,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.8.1
+      semver: 7.8.4
 
   jsprim@1.4.2:
     dependencies:
@@ -19993,22 +20010,33 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
+  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)))(karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)):
+    dependencies:
+      jasmine-core: 6.3.0
+      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)
+      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1))
+
   karma-jasmine-html-reporter@2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 6.3.0
-      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+
+  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)):
+    dependencies:
+      jasmine-core: 4.6.1
+      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)
 
   karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 4.6.1
-      karma: 6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
   karma-sourcemap-loader@0.4.0:
     dependencies:
       graceful-fs: 4.2.11
 
-  karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6):
+  karma@6.4.4(bufferutil@4.1.0)(supports-color@8.1.1):
     dependencies:
       '@colors/colors': 1.5.0
       body-parser: 1.20.5
@@ -20029,7 +20057,39 @@ snapshots:
       qjobs: 1.2.0
       range-parser: 1.2.1
       rimraf: 3.0.2
-      socket.io: 4.8.3(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+      socket.io: 4.8.3(bufferutil@4.1.0)(supports-color@8.1.1)
+      source-map: 0.6.1
+      tmp: 0.2.5
+      ua-parser-js: 0.7.41
+      yargs: 16.2.0
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - supports-color
+      - utf-8-validate
+
+  karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+    dependencies:
+      '@colors/colors': 1.5.0
+      body-parser: 1.20.5
+      braces: 3.0.3
+      chokidar: 3.6.0
+      connect: 3.7.0
+      di: 0.0.1
+      dom-serialize: 2.2.1
+      glob: 7.2.3
+      graceful-fs: 4.2.11
+      http-proxy: 1.18.1
+      isbinaryfile: 4.0.10
+      lodash: 4.18.1
+      log4js: 6.9.1(supports-color@8.1.1)
+      mime: 2.6.0
+      minimatch: 3.1.5
+      mkdirp: 0.5.6
+      qjobs: 1.2.0
+      range-parser: 1.2.1
+      rimraf: 3.0.2
+      socket.io: 4.8.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       source-map: 0.6.1
       tmp: 0.2.5
       ua-parser-js: 0.7.41
@@ -20308,7 +20368,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.8.1
+      semver: 7.8.4
 
   make-error@1.3.6: {}
 
@@ -20696,9 +20756,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 22.1.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.1.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
@@ -20712,7 +20772,7 @@ snapshots:
 
   node-abi@3.92.0:
     dependencies:
-      semver: 7.8.1
+      semver: 7.8.4
     optional: true
 
   node-addon-api@4.3.0:
@@ -20759,7 +20819,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.8.1
+      semver: 7.8.4
       tar: 7.5.15
       tinyglobby: 0.2.17
       undici: 6.25.0
@@ -20781,7 +20841,7 @@ snapshots:
   normalize-package-data@6.0.2:
     dependencies:
       hosted-git-info: 7.0.2
-      semver: 7.8.1
+      semver: 7.8.4
       validate-npm-package-license: 3.0.4
 
   normalize-package-data@7.0.1:
@@ -20806,7 +20866,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.8.1
+      semver: 7.8.4
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -20814,14 +20874,14 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.3
       proc-log: 6.1.0
-      semver: 7.8.1
+      semver: 7.8.4
       validate-npm-package-name: 7.0.2
 
   npm-package-arg@14.0.0:
     dependencies:
       hosted-git-info: 10.1.1
       proc-log: 7.0.0
-      semver: 7.8.1
+      semver: 7.8.4
       validate-npm-package-name: 8.0.0
 
   npm-packlist@10.0.4:
@@ -20834,7 +20894,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.8.1
+      semver: 7.8.4
 
   npm-registry-fetch@19.1.1:
     dependencies:
@@ -22200,7 +22260,16 @@ snapshots:
 
   smart-buffer@4.2.0: {}
 
-  socket.io-adapter@2.5.7(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6):
+  socket.io-adapter@2.5.7(bufferutil@4.1.0)(supports-color@8.1.1):
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+      ws: 8.20.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  socket.io-adapter@2.5.7(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.20.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
@@ -22216,14 +22285,28 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.3(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6):
+  socket.io@4.8.3(bufferutil@4.1.0)(supports-color@8.1.1):
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       cors: 2.8.6
       debug: 4.4.3(supports-color@8.1.1)
-      engine.io: 6.6.8(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
-      socket.io-adapter: 2.5.7(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)
+      engine.io: 6.6.8(bufferutil@4.1.0)(supports-color@8.1.1)
+      socket.io-adapter: 2.5.7(bufferutil@4.1.0)(supports-color@8.1.1)
+      socket.io-parser: 4.2.6(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  socket.io@4.8.3(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+    dependencies:
+      accepts: 1.3.8
+      base64id: 2.0.0
+      cors: 2.8.6
+      debug: 4.4.3(supports-color@8.1.1)
+      engine.io: 6.6.8(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      socket.io-adapter: 2.5.7(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       socket.io-parser: 4.2.6(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
@@ -23130,7 +23213,7 @@ snapshots:
       pupa: 2.1.1
       registry-auth-token: 5.1.1
       registry-url: 5.1.0
-      semver: 7.8.1
+      semver: 7.8.4
       semver-diff: 3.1.1
       xdg-basedir: 4.0.0
     transitivePeerDependencies:

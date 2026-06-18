@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@angular/cdk':
-        specifier: 22.1.0-next.0
-        version: 22.1.0-next.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
+        specifier: 22.1.0-next.1
+        version: 22.1.0-next.1(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
       '@angular/common':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
@@ -257,8 +257,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.1.0-next.0':
-    resolution: {integrity: sha512-LlWJs+rf8PUCM9HMJ8KZqqFTw6gQWoIrAnDuKi1KjBULURYjY7iQomtYEl6fQ+Zi1Ta+erRz6oIPftgdAV5p/g==}
+  '@angular/cdk@22.1.0-next.1':
+    resolution: {integrity: sha512-P0WNlisE+SxJecsl4sv55xq1LSUAF8OdvqfPhwNBnLPUaQDPs5hIdyNFxQnBmCqd0zygafZPk7dAQBcYSSLIeA==}
     peerDependencies:
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
@@ -1613,6 +1613,7 @@ packages:
   '@ngtools/webpack@22.1.0-next.0':
     resolution: {integrity: sha512-S7s7pu3b0Igdww8SvbRvkObaJ6jOSTYEFEUGQBbw4/7CyxCBPJA0CQSh0esoxlZEvMLQeLOfXCIqbo8x9ljR7g==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.1.0-next.0
       typescript: '>=6.0 <6.1'
@@ -4775,7 +4776,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@22.1.0-next.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
+  '@angular/cdk@22.1.0-next.1(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:in-existing-linked-by-bazel
       '@angular/core': link:in-existing-linked-by-bazel
