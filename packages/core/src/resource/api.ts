@@ -39,7 +39,11 @@ export class ResourceParamsStatus extends Error {
   static readonly LOADING = new ResourceParamsStatus('LOADING');
 }
 
-/** Context received by a resource's `params` or `request` function. */
+/**
+ * Context received by a resource's `params` or `request` function.
+ *
+ * @see [Chaining resources](guide/signals/resource#chaining-resources)
+ */
 export interface ResourceParamsContext {
   /**
    * Chains the current params off of the value of another resource, returning the value
