@@ -7,8 +7,8 @@
  */
 
 import {LifecycleProfile} from '../../../../protocol';
-import {getDirectiveName} from '../highlighter';
 import {getProfiler} from './profiler';
+import {getDirectiveName} from '../component-tree/component-tree';
 import type {ComponentInstance, DirectiveInstance} from '../interfaces';
 
 type Method = keyof LifecycleProfile | 'changeDetection' | string;

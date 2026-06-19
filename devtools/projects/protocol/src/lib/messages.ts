@@ -463,6 +463,7 @@ export interface Events {
   detectAngular: (detectionResult: AngularDetection) => void;
   backendInstalled: (detectionResult: AngularDetection) => void;
   backendReady: () => void;
+  devtoolsShutdown: () => void;
 
   log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;
 }
