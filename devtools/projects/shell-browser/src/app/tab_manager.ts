@@ -85,6 +85,7 @@ export class TabManager {
       tab.devtools = null;
 
       for (const connection of Object.values(tab.contentScripts)) {
+        connection.port?.postMessage({topic: 'devtoolsShutdown'});
         connection.enabled = false;
       }
     });

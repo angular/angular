@@ -16,34 +16,6 @@ ts_project(
     ],
 )
 
-zoneless_web_test_suite(
-    name = "highlighter_test",
-    deps = [
-        ":highlighter_test_lib",
-    ],
-)
-
-ts_test_library(
-    name = "highlighter_test_lib",
-    srcs = [
-        "highlighter.spec.ts",
-    ],
-    deps = [
-        ":highlighter",
-        "//:node_modules/@angular/core",
-    ],
-)
-
-ts_project(
-    name = "highlighter",
-    srcs = ["highlighter.ts"],
-    deps = [
-        "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
-        "//devtools/projects/protocol",
-    ],
-)
-
 ts_project(
     name = "interfaces",
     srcs = ["interfaces.ts"],
@@ -141,7 +113,7 @@ ts_project(
     name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
     deps = [
-        ":highlighter",
+        ":hydration-highlighting",
         ":interfaces",
         ":router_tree",
         ":set_console_reference",
@@ -150,6 +122,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
@@ -157,5 +130,16 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/utils",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
+    ],
+)
+
+ts_project(
+    name = "hydration-highlighting",
+    srcs = ["hydration-highlighting.ts"],
+    deps = [
+        ":interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/highlighter",
+        "//devtools/projects/protocol",
     ],
 )

@@ -15,13 +15,13 @@ import {
   ProfilerFrame,
 } from '../../../../protocol';
 
-import {getDirectiveName} from '../highlighter';
 import {ComponentInstance, ComponentTreeNode, DirectiveInstance} from '../interfaces';
 import {isCustomElement, runOutsideAngular} from '../utils/general';
 
 import {DirectiveForestManager, getDirectiveForestManager} from '../directive-forest/manager';
 import {IdentityTracker} from '../directive-forest/identity-tracker';
 import {getProfiler, Hooks} from './profiler';
+import {getDirectiveName} from '../component-tree/component-tree';
 
 let inProgress = false;
 let inChangeDetection = false;
