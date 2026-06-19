@@ -3,6 +3,13 @@
   Right-click inside this area to open the context menu.
 </div>
 
+@if (lastAction()) {
+  <p class="last-action">
+    <span class="material-symbols-outlined" translate="no" aria-hidden="true">check_circle</span>
+    Action performed: <strong>{{ lastAction() }}</strong>
+  </p>
+}
+
 <!-- Hidden trigger positioned dynamically at cursor coordinates -->
 <div
   #triggerEl

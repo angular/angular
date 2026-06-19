@@ -76,6 +76,34 @@
   font-size: 0.875rem;
 }
 
+.last-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  animation: fade-in 0.2s ease;
+}
+
+.last-action .material-symbols-outlined {
+  font-size: 1.1rem;
+  color: var(--vivid-pink);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 [ngMenu] .separator {
   border-top: 1px solid var(--border-color);
   margin: 0.25rem 0;
