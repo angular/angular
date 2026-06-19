@@ -589,7 +589,6 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly disabled: Signal<boolean>;
     // (undocumented)
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
-    // (undocumented)
     readonly errors: Signal<ValidationError.WithFieldTree[]>;
     readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
     readonly fieldTree: ReadonlyFieldTree<unknown, TKey>;

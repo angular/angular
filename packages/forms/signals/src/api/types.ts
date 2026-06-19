@@ -430,6 +430,10 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
    */
   readonly hidden: Signal<boolean>;
   readonly disabledReasons: Signal<readonly DisabledReason[]>;
+
+  /**
+   * A signal containing the {@link errors} of the field itself, excluding its descendants.
+   */
   readonly errors: Signal<ValidationError.WithFieldTree[]>;
 
   /**
