@@ -138,7 +138,7 @@
   "devDependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#b60a64b6e6341a831bfeda0f28aa5f3fa4077184",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#38a8db7ae818fd8f88bd3fe50ad2cb225d9021df",
     "@babel/plugin-transform-async-generator-functions": "^7.27.1",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
