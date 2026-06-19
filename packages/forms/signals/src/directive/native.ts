@@ -7,20 +7,27 @@
  */
 
 import {untracked} from '@angular/core';
-import {NativeInputParseError, WithoutFieldTree} from '../api/rules';
+import {NativeInputParseError, ValidationErrorOptions, WithoutFieldTree} from '../api/rules';
 import type {ParseResult} from '../api/transformed_value';
 import type {InputValidityMonitor} from './input_validity_monitor';
 
 // Re-export shared native utilities from main forms package
 export {
   ɵisNativeFormElement as isNativeFormElement,
+  ɵisFormAssociatedCustomElement as isFormAssociatedCustomElement,
   ɵelementAcceptsMinMax as elementAcceptsMinMax,
+  ɵelementAcceptsMinMaxLength as elementAcceptsMinMaxLength,
   ɵisTextualFormElement as isTextualFormElement,
   ɵsetNativeDomProperty as setNativeDomProperty,
   type ɵNativeFormControl as NativeFormControl,
+  type ɵFormAssociatedCustomElement as FormAssociatedCustomElement,
 } from '@angular/forms';
 
-import type {ɵNativeFormControl as NativeFormControl} from '@angular/forms';
+import {
+  ɵisFormAssociatedCustomElement as isFormAssociatedCustomElement,
+  type ɵNativeFormControl as NativeFormControl,
+  type ɵFormAssociatedCustomElement as FormAssociatedCustomElement,
+} from '@angular/forms';
 
 /**
  * Returns the value from a native control element.
@@ -42,8 +49,14 @@ export function getNativeControlValue(
   let modelValue: unknown;
 
   if (isInput(element) && validityMonitor.isBadInput(element)) {
+    // We use the the validationMessage, if a custom element implements and exposes it.
+    // See https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/validationMessage
+    const options: ValidationErrorOptions | undefined =
+      element.tagName.includes('-') && element.validationMessage
+        ? {message: element.validationMessage}
+        : undefined;
     return {
-      error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>,
+      error: new NativeInputParseError(options) as WithoutFieldTree<NativeInputParseError>,
     };
   }
 
@@ -77,7 +90,7 @@ export function getNativeControlValue(
   }
 
   // For text-like <input> elements, parse numeric values if the model is numeric.
-  if (element.tagName === 'INPUT' && element.type === 'text') {
+  if (isInput(element) && element.type === 'text') {
     modelValue ??= untracked(currentValue);
     if (typeof modelValue === 'number' || modelValue === null) {
       if (element.value === '') {
@@ -139,7 +152,7 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
   }
 
   // For text-like <input> elements, handle numeric and null values.
-  if (element.tagName === 'INPUT' && element.type === 'text') {
+  if (isInput(element) && element.type === 'text') {
     if (typeof value === 'number') {
       element.value = isNaN(value) ? '' : String(value);
       return;
@@ -155,7 +168,10 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
 }
 
 /** Writes a value to a native <input type="number">. */
-export function setNativeNumberControlValue(element: HTMLInputElement, value: number) {
+export function setNativeNumberControlValue(
+  element: HTMLInputElement | FormAssociatedCustomElement,
+  value: number,
+) {
   // Writing `NaN` causes a warning in the console, so we instead write `''`.
   // This allows the user to safely use `NaN` as a number value that means "clear the input".
   if (isNaN(value)) {
@@ -164,11 +180,15 @@ export function setNativeNumberControlValue(element: HTMLInputElement, value: nu
     element.valueAsNumber = value;
   }
 }
-export function isInput(element: HTMLElement): element is HTMLInputElement {
-  return element.tagName === 'INPUT';
+export function isInput(
+  element: HTMLElement,
+): element is HTMLInputElement | FormAssociatedCustomElement {
+  return element.tagName === 'INPUT' || isFormAssociatedCustomElement(element);
 }
 
-export function inputRequiresValidityTracking(input: HTMLInputElement): boolean {
+export function inputRequiresValidityTracking(
+  input: HTMLInputElement | FormAssociatedCustomElement,
+): boolean {
   return (
     input.type === 'date' ||
     input.type === 'datetime-local' ||
@@ -189,7 +209,11 @@ function formatDateForInput(date: Date, type: 'date' | 'month'): string {
   return `${year}-${month}-${day}`;
 }
 
-export function formatDateForMinMax(name: string, value: unknown, type: string): unknown {
+export function formatDateForMinMax(
+  name: string,
+  value: unknown,
+  type: string | undefined,
+): unknown {
   if (
     value instanceof Date &&
     (name === 'min' || name === 'max') &&

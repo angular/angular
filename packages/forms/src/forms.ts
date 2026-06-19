@@ -126,10 +126,13 @@ export {VERSION} from './version';
 
 export {
   isNativeFormElement as ɵisNativeFormElement,
+  isFormAssociatedCustomElement as ɵisFormAssociatedCustomElement,
   elementAcceptsMinMax as ɵelementAcceptsMinMax,
+  elementAcceptsMinMaxLength as ɵelementAcceptsMinMaxLength,
   isTextualFormElement as ɵisTextualFormElement,
   setNativeDomProperty as ɵsetNativeDomProperty,
   type NativeFormControl as ɵNativeFormControl,
+  type FormAssociatedCustomElement as ɵFormAssociatedCustomElement,
 } from './directives/native';
 
 export * from './form_providers';

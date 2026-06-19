@@ -15,6 +15,7 @@ import {
   forwardRef,
   type DestroyRef,
 } from '@angular/core';
+import {FormAssociatedCustomElement} from './native';
 
 /**
  * Service that monitors validity state changes on native form elements.
@@ -27,10 +28,10 @@ import {
 export abstract class InputValidityMonitor {
   abstract watchValidity(
     destroyRef: DestroyRef,
-    element: HTMLInputElement,
+    element: HTMLInputElement | FormAssociatedCustomElement,
     callback: () => void,
   ): void;
-  abstract isBadInput(element: HTMLInputElement): boolean;
+  abstract isBadInput(element: HTMLInputElement | FormAssociatedCustomElement): boolean;
 }
 
 @Injectable()
@@ -42,7 +43,7 @@ export class AnimationInputValidityMonitor extends InputValidityMonitor implemen
   /** Starts watching the given element for validity state changes. */
   override watchValidity(
     destroyRef: DestroyRef,
-    element: HTMLInputElement,
+    element: HTMLInputElement | FormAssociatedCustomElement,
     callback: () => void,
   ): void {
     if (typeof ngServerMode !== 'undefined' && ngServerMode) {
@@ -69,7 +70,7 @@ export class AnimationInputValidityMonitor extends InputValidityMonitor implemen
     });
   }
 
-  override isBadInput(element: HTMLInputElement): boolean {
+  override isBadInput(element: HTMLInputElement | FormAssociatedCustomElement): boolean {
     return element.validity?.badInput ?? false;
   }
 
