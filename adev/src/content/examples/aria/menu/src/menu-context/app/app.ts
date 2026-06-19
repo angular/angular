@@ -25,8 +25,10 @@ export class App {
     this.trigger().open();
   }
 
+  lastAction = signal<string | null>(null);
+
   onItemSelected(value: string) {
-    console.log(`Action selected: ${value}`);
+    this.lastAction.set(value);
   }
 
   onOverlayKeydown(event: KeyboardEvent) {
