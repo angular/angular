@@ -613,6 +613,13 @@ describe('ControlValueAccessor', () => {
     @Component({
       selector: 'custom-control-writeback-test',
       template: `<input [value]="value" (input)="onInput($event.target.value)" />`,
+      providers: [
+        {
+          provide: NG_VALUE_ACCESSOR,
+          useExisting: CustomControlWritebackTest,
+          multi: true,
+        },
+      ],
     })
     class CustomControlWritebackTest implements ControlValueAccessor {
       value = '';
@@ -659,7 +666,7 @@ describe('ControlValueAccessor', () => {
     act(() => cvaInstance.onInput('updated'));
 
     expect(cvaInstance.value).toBe('updated');
-
+    expect(fixture.componentInstance.f().value()).toBe('initial');
     expect(writeValues).toEqual([]);
   });
 
