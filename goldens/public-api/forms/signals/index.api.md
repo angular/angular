@@ -17,7 +17,7 @@ import { InputSignalWithTransform } from '@angular/core';
 import { ModelSignal } from '@angular/core';
 import { OutputRef } from '@angular/core';
 import { Provider } from '@angular/core';
-import { ResourceRef } from '@angular/core';
+import { Resource } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { WritableSignal } from '@angular/core';
@@ -46,7 +46,7 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
 // @public
 export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root> {
     readonly debounce?: DebounceTimer<TParams | undefined>;
-    readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
+    readonly factory: (params: Signal<TParams | undefined>) => Resource<TResult | undefined>;
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;

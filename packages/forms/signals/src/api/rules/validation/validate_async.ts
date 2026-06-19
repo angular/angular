@@ -6,15 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  computed,
-  DebounceTimer,
-  ResourceRef,
-  ResourceSnapshot,
-  Signal,
-  debounced,
-  ɵchain,
-} from '@angular/core';
+import {DebounceTimer, Resource, Signal, computed, debounced, ɵchain} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -90,7 +82,7 @@ export interface AsyncValidatorOptions<
    * @param params The params to use for constructing the resource
    * @returns A reference to the constructed resource.
    */
-  readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
+  readonly factory: (params: Signal<TParams | undefined>) => Resource<TResult | undefined>;
   /**
    * A function to handle errors thrown by httpResource (HTTP errors, network errors, etc.).
    * Receives the error and the field context, returns a list of validation errors.
