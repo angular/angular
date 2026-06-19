@@ -613,6 +613,13 @@ describe('ControlValueAccessor', () => {
     @Component({
       selector: 'custom-control-writeback-test',
       template: `<input [value]="value" (input)="onInput($event.target.value)" />`,
+      providers: [
+        {
+          provide: NG_VALUE_ACCESSOR,
+          useExisting: CustomControlWritebackTest,
+          multi: true,
+        },
+      ],
     })
     class CustomControlWritebackTest implements ControlValueAccessor {
       value = '';
