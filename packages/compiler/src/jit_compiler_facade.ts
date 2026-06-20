@@ -21,6 +21,7 @@ import {
   R3DeclareFactoryFacade,
   R3DeclareInjectableFacade,
   R3DeclareInjectorFacade,
+  R3DeclareNgModuleDependencyFacade,
   R3DeclareNgModuleFacade,
   R3DeclarePipeDependencyFacade,
   R3DeclarePipeFacade,
@@ -87,6 +88,7 @@ import {
   R3DirectiveMetadata,
   R3HostMetadata,
   R3InputMetadata,
+  R3NgModuleDependencyMetadata,
   R3PipeDependencyMetadata,
   R3QueryMetadata,
   R3TemplateDependency,
@@ -678,6 +680,9 @@ function convertDeclareComponentFacadeToMetadata(
         case 'pipe':
           declarations.push(convertPipeDeclarationToMetadata(innerDep));
           break;
+        case 'ngmodule':
+          declarations.push(convertNgModuleDeclarationToMetadata(innerDep));
+          break;
       }
     }
   } else if (decl.components || decl.directives || decl.pipes) {
@@ -769,6 +774,15 @@ function convertPipeDeclarationToMetadata(
     kind: R3TemplateDependencyKind.Pipe,
     name: pipe.name,
     type: new WrappedNodeExpr(pipe.type),
+  };
+}
+
+function convertNgModuleDeclarationToMetadata(
+  ngModule: R3DeclareNgModuleDependencyFacade,
+): R3NgModuleDependencyMetadata {
+  return {
+    kind: R3TemplateDependencyKind.NgModule,
+    type: new WrappedNodeExpr(ngModule.type),
   };
 }
 
