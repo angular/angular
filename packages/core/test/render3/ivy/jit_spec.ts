@@ -116,6 +116,32 @@ describe('render3 jit', () => {
     expect(directiveDefs[0].type).toBe(InnerCmp);
   });
 
+  it('compiles a partially compiled component with ngmodule dependency', () => {
+    @NgModule()
+    class InnerMod {}
+
+    class OuterCmp {
+      static ɵcmp = ngDeclareComponent({
+        template: '<inner-cmp></inner-cmp>',
+        type: OuterCmp,
+        version: '21.0.0',
+        dependencies: [
+          {
+            kind: 'ngmodule',
+            type: InnerMod,
+          },
+        ],
+      });
+    }
+
+    const rawDependencies = (OuterCmp.ɵcmp as ComponentDef<OuterCmp>).dependencies;
+    expect(rawDependencies).not.toBeNull();
+    const dependencies =
+      rawDependencies! instanceof Function ? rawDependencies!() : rawDependencies!;
+    expect(dependencies.length).toBe(1);
+    expect(dependencies[0]).toBe(InnerMod);
+  });
+
   it('compiles an injectable with a type provider', () => {
     @Injectable({providedIn: 'root'})
     class Service {}
