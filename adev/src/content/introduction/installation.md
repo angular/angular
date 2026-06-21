@@ -55,7 +55,6 @@ Open a terminal (if you're using [Visual Studio Code](https://code.visualstudio.
     >
     bun install -g @angular/cli
     </docs-code>
-
 </docs-code-multifile>
 
 If you are having issues running this command in Windows or Unix, check out the [CLI docs](/tools/cli/setup-local#install-the-angular-cli) for more info.
