@@ -80,6 +80,12 @@
       "description": "Replaces deprecated RouterTestingModule with provideRouter() as recommended in the deprecation note",
       "factory": "./bundles/router-testing-module-migration.cjs#migrate",
       "schema": "./ng-generate/router-testing-module-migration/schema.json"
+    },
+    "service-migration": {
+      "description": "Converts @Injectable to @Service where applicable",
+      "factory": "./bundles/service-migration.cjs#migrate",
+      "schema": "./ng-generate/service-migration/schema.json",
+      "aliases": ["service"]
     }
   }
 }
