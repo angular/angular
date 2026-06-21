@@ -9,14 +9,13 @@
 import ts from 'typescript';
 import {ChangeTracker, PendingChange} from '../../utils/change_tracker';
 import {getAngularDecorators} from '../../utils/ng_decorators';
+import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 
 export function migrateFile(
   sourceFile: ts.SourceFile,
   typeChecker: ts.TypeChecker,
 ): PendingChange[] {
-  const printer = ts.createPrinter();
-  const tracker = new ChangeTracker(printer);
-
+  const tracker = new ChangeTracker(ts.createPrinter());
   let totalInjectables = 0;
   let migratedInjectables = 0;
 
@@ -27,7 +26,7 @@ export function migrateFile(
       );
 
       if (decorator) {
-        const analysis = analyzeClass(node, decorator.node.expression.arguments);
+        const analysis = analyzeClass(node, decorator.node.expression.arguments, typeChecker);
         totalInjectables++;
 
         if (analysis.canMigrate) {
@@ -52,18 +51,18 @@ export function migrateFile(
   return tracker.recordChanges().get(sourceFile) || [];
 }
 
-function analyzeClass(node: ts.ClassDeclaration, decoratorArgs: readonly ts.Expression[]) {
+function analyzeClass(
+  node: ts.ClassDeclaration,
+  decoratorArgs: readonly ts.Expression[],
+  typeChecker: ts.TypeChecker,
+) {
   const analysis = {
     canMigrate: false,
     providedInRoot: false,
   };
 
-  const constructorNode = node.members.find((member): member is ts.ConstructorDeclaration => {
-    return ts.isConstructorDeclaration(member) && !!member.body;
-  });
-
   // We can't migrate if the class is using constructor DI.
-  if (constructorNode && constructorNode.parameters.length > 0) {
+  if (usesConstructorDI(node, typeChecker)) {
     return analysis;
   } else if (decoratorArgs.length === 0) {
     analysis.canMigrate = true;
@@ -96,4 +95,22 @@ function analyzeClass(node: ts.ClassDeclaration, decoratorArgs: readonly ts.Expr
   // If we made it this, it's possible to migrate.
   analysis.canMigrate = true;
   return analysis;
+}
+
+/** Determines whether a class uses constructor-based dependency injection. */
+function usesConstructorDI(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker): boolean {
+  const baseClasses = [node, ...findBaseClassDeclarations(node, typeChecker).map((c) => c.node)];
+
+  for (const current of baseClasses) {
+    const constructorNode = current.members.find(
+      (member): member is ts.ConstructorDeclaration =>
+        ts.isConstructorDeclaration(member) && !!member.body,
+    );
+
+    if (constructorNode) {
+      return constructorNode.parameters.length > 0;
+    }
+  }
+
+  return false;
 }
