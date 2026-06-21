@@ -55,7 +55,7 @@ describe('service migration schematic', () => {
 
   it('should convert root injectable to @Service', async () => {
     writeFile(
-      'comp.ts',
+      'service.ts',
       `
         import {Injectable} from '@angular/core';
 
@@ -65,7 +65,7 @@ describe('service migration schematic', () => {
     );
 
     await runMigration();
-    const contents = tree.readContent('comp.ts');
+    const contents = tree.readContent('service.ts');
 
     expect(contents).toContain('@Service()');
     expect(contents).not.toContain('@Injectable');
@@ -75,7 +75,7 @@ describe('service migration schematic', () => {
 
   it('should convert non-root injectable to @Service with autoProvided: false', async () => {
     writeFile(
-      'comp.ts',
+      'service.ts',
       `
         import {Injectable} from '@angular/core';
 
@@ -85,7 +85,7 @@ describe('service migration schematic', () => {
     );
 
     await runMigration();
-    const contents = tree.readContent('comp.ts');
+    const contents = tree.readContent('service.ts');
 
     expect(contents).toContain('@Service({ autoProvided: false })');
     expect(contents).not.toContain('@Injectable');
@@ -100,10 +100,10 @@ describe('service migration schematic', () => {
       @Injectable({providedIn: 'platform'})
       export class MyService {}
     `;
-    writeFile('comp.ts', initialContent);
+    writeFile('service.ts', initialContent);
 
     await runMigration();
-    const contents = tree.readContent('comp.ts');
+    const contents = tree.readContent('service.ts');
 
     expect(contents).toContain(`providedIn: 'platform'`);
     expect(contents).toContain('@Injectable');
@@ -119,10 +119,10 @@ describe('service migration schematic', () => {
       @Injectable({providedIn: 'root', useClass: OtherService})
       export class MyService {}
     `;
-    writeFile('comp.ts', initialContent);
+    writeFile('service.ts', initialContent);
 
     await runMigration();
-    const contents = tree.readContent('comp.ts');
+    const contents = tree.readContent('service.ts');
 
     expect(contents).toContain(`useClass:`);
     expect(contents).toContain('@Injectable');
@@ -130,27 +130,127 @@ describe('service migration schematic', () => {
   });
 
   it('should skip injectable if the class is using constructor DI', async () => {
-    const initialContent = `
+    writeFile(
+      'service.ts',
+      `
       import {Injectable, NgZone} from '@angular/core';
 
       @Injectable({providedIn: 'root'})
       export class MyService {
         constructor(private ngZone: NgZone) {}
       }
-    `;
-    writeFile('comp.ts', initialContent);
+    `,
+    );
 
     await runMigration();
-    const contents = tree.readContent('comp.ts');
+    const contents = tree.readContent('service.ts');
 
     expect(contents).toContain(`providedIn: 'root'`);
     expect(contents).toContain('@Injectable');
     expect(contents).not.toContain('@Service');
   });
 
+  it('should skip injectable if a parent class is using constructor DI', async () => {
+    writeFile(
+      'grandparent.ts',
+      `
+      import {Injectable, NgZone} from '@angular/core';
+
+      @Injectable({providedIn: 'root'})
+      export class Grandparent {
+        constructor(private ngZone: NgZone) {}
+      }
+    `,
+    );
+
+    writeFile(
+      'parent.ts',
+      `
+      import {Injectable} from '@angular/core';
+      import {Grandparent} from './grandparent';
+
+      @Injectable({providedIn: 'root'})
+      export class Parent extends Grandparent {}
+    `,
+    );
+
+    writeFile(
+      'service.ts',
+      `
+      import {Injectable} from '@angular/core';
+      import {Parent} from './parent';
+
+      @Injectable({providedIn: 'root'})
+      export class MyService extends Parent {}
+    `,
+    );
+
+    await runMigration();
+
+    for (const file of ['grandparent.ts', 'parent.ts', 'service.ts']) {
+      const contents = tree.readContent(file);
+      expect(contents).withContext(file).toContain(`providedIn: 'root'`);
+      expect(contents).withContext(file).toContain('@Injectable');
+      expect(contents).withContext(file).not.toContain('@Service');
+    }
+  });
+
+  it('should account for parent class that overrides a grandparent using constructor DI', async () => {
+    writeFile(
+      'grandparent.ts',
+      `
+      import {Injectable, NgZone} from '@angular/core';
+
+      @Injectable({providedIn: 'root'})
+      export class Grandparent {
+        constructor(private ngZone: NgZone) {}
+      }
+    `,
+    );
+
+    writeFile(
+      'parent.ts',
+      `
+      import {Injectable, inject, NgZone} from '@angular/core';
+      import {Grandparent} from './grandparent';
+
+      @Injectable({providedIn: 'root'})
+      export class Parent extends Grandparent {
+        constructor() {
+          super(inject(NgZone));
+        }
+      }
+    `,
+    );
+
+    writeFile(
+      'service.ts',
+      `
+      import {Injectable} from '@angular/core';
+      import {Parent} from './parent';
+
+      @Injectable({providedIn: 'root'})
+      export class MyService extends Parent {}
+    `,
+    );
+
+    await runMigration();
+
+    const grandparentContents = tree.readContent('grandparent.ts');
+    expect(grandparentContents).toContain(`providedIn: 'root'`);
+    expect(grandparentContents).toContain('@Injectable');
+    expect(grandparentContents).not.toContain('@Service');
+
+    for (const file of ['parent.ts', 'service.ts']) {
+      const contents = tree.readContent(file);
+      expect(contents).withContext(file).toContain('@Service()');
+      expect(contents).withContext(file).not.toContain('Injectable');
+    }
+  });
+
   it('should not remove Injectable import if there are skipped injectables left in the file', async () => {
     writeFile(
-      'comp.ts',
+      'service.ts',
       `
         import {Injectable} from '@angular/core';
 
@@ -163,7 +263,7 @@ describe('service migration schematic', () => {
     );
 
     await runMigration();
-    const contents = tree.readContent('comp.ts');
+    const contents = tree.readContent('service.ts');
 
     expect(contents).toContain('@Service()');
     expect(contents).toContain(`providedIn: 'platform'`);
@@ -172,7 +272,7 @@ describe('service migration schematic', () => {
 
   it('should convert injectable if `providedIn` is quoted', async () => {
     writeFile(
-      'comp.ts',
+      'service.ts',
       `
         import {Injectable} from '@angular/core';
 
@@ -182,7 +282,7 @@ describe('service migration schematic', () => {
     );
 
     await runMigration();
-    const contents = tree.readContent('comp.ts');
+    const contents = tree.readContent('service.ts');
 
     expect(contents).toContain('@Service()');
     expect(contents).not.toContain('@Injectable');
