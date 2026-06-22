@@ -187,11 +187,21 @@ export class DirectiveExplorerComponent {
 
   handleNodeSelection(node: IndexedNode | null): void {
     if (node) {
+      const isSameNode = this._clickedElement && sameDirectives(this._clickedElement, node);
+      const isSamePosition =
+        this._clickedElement && String(this._clickedElement.position) === String(node.position);
+
+      if (isSameNode && isSamePosition) {
+        this._clickedElement = node;
+        this.currentSelectedElement.set(node);
+        return;
+      }
+
       // We want to guarantee that we're not reusing any of the previous properties.
       // That's possible if the user has selected an NgForOf and after that
       // they select another NgForOf instance. In this case, we don't want to diff the props
       // we want to render from scratch.
-      if (this._clickedElement && !sameDirectives(this._clickedElement, node)) {
+      if (this._clickedElement && !isSameNode) {
         this._propResolver.clearProperties();
       }
       this._clickedElement = node;
