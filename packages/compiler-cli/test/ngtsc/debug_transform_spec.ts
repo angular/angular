@@ -2992,6 +2992,7 @@ runInEachFileSystem(() => {
         env.write(
           'test.ts',
           `
+            import {Component} from '@angular/core';
             import {of} from 'rxjs';
             declare function toSignal(source: any): any;
 
@@ -3012,6 +3013,7 @@ runInEachFileSystem(() => {
         env.write(
           'test.ts',
           `
+            import {Component} from '@angular/core';
             import {toSignal} from '@angular/core/rxjs-interop';
             import {of} from 'rxjs';
 
