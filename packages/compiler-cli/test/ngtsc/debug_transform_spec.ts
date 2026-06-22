@@ -1319,6 +1319,139 @@ runInEachFileSystem(() => {
           `viewChild("foo", { debugName: "testViewChild", read: ElementRef })`,
         );
       });
+
+      describe('.required', () => {
+        it('should insert debug info into .required', () => {
+          env.write(
+            'test.ts',
+            `
+            import {viewChild, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComponent {
+              testViewChild = viewChild.required('foo');
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          expect(cleanNewLines(jsContents)).toContain(
+            `viewChild.required('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testViewChild" }] : /* istanbul ignore next */ []))`,
+          );
+        });
+
+        it('should insert debug info into .required with existing options', () => {
+          env.write(
+            'test.ts',
+            `
+              import {viewChild, Component, ElementRef} from '@angular/core';
+
+              @Component({
+                template: ''
+              }) class MyComponent {
+                testViewChild = viewChild.required('foo', { read: ElementRef });
+              }
+            `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          expect(cleanNewLines(jsContents)).toContain(
+            `viewChild.required('foo', { ...(ngDevMode ? { debugName: "testViewChild" } : /* istanbul ignore next */ {}), read: ElementRef })`,
+          );
+        });
+
+        it('should tree-shake away debug info if in prod mode', () => async () => {
+          env.write(
+            'test.ts',
+            `
+            import {viewChild, Component} from '@angular/core';
+
+            @Component({
+              template: ''
+            })
+            class MyComponent {
+              testViewChild = viewChild.required('foo');
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
+          expect(builtContent).not.toContain('debugName');
+          expect(cleanNewLines(builtContent)).toContain(`viewChild( "foo" )`);
+        });
+
+        it('should not tree-shake away debug info if in dev mode', async () => {
+          env.write(
+            'test.ts',
+            `
+            import {viewChild, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComponent {
+              testViewChild = viewChild.required('foo');
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
+          expect(cleanNewLines(builtContent)).toContain(
+            `viewChild.required( "foo", { debugName: "testViewChild" } )`,
+          );
+        });
+
+        it('should tree-shake away debug info if in prod mode with custom options', async () => {
+          env.write(
+            'test.ts',
+            `
+            import {viewChild, Component, ElementRef} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testViewChild = viewChild.required('foo', { read: ElementRef });
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
+          expect(builtContent).not.toContain('debugName');
+          expect(builtContent).toContain('viewChild.required("foo", { read: ElementRef })');
+        });
+
+        it('should not tree-shake away debug info if in dev mode with custom options', async () => {
+          env.write(
+            'test.ts',
+            `
+            import {viewChild, Component, ElementRef} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testViewChild = viewChild.required('foo', { read: ElementRef });
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
+          expect(cleanNewLines(builtContent)).toContain(
+            `viewChild.required("foo", { debugName: "testViewChild", read: ElementRef })`,
+          );
+        });
+      });
     });
 
     describe('viewChildren', () => {
@@ -1574,6 +1707,139 @@ runInEachFileSystem(() => {
         expect(cleanNewLines(builtContent)).toContain(
           `contentChild("foo", { debugName: "testContentChild", read: ElementRef })`,
         );
+      });
+
+      describe('.required', () => {
+        it('should insert debug info into .required', () => {
+          env.write(
+            'test.ts',
+            `
+            import {contentChild, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComponent {
+              testContentChild = contentChild.required('foo');
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          expect(cleanNewLines(jsContents)).toContain(
+            `contentChild.required('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testContentChild" }] : /* istanbul ignore next */ []))`,
+          );
+        });
+
+        it('should insert debug info into .required with existing options', () => {
+          env.write(
+            'test.ts',
+            `
+              import {contentChild, Component, ElementRef} from '@angular/core';
+
+              @Component({
+                template: ''
+              }) class MyComponent {
+                testContentChild = contentChild.required('foo', { read: ElementRef });
+              }
+            `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          expect(cleanNewLines(jsContents)).toContain(
+            `contentChild.required('foo', { ...(ngDevMode ? { debugName: "testContentChild" } : /* istanbul ignore next */ {}), read: ElementRef })`,
+          );
+        });
+
+        it('should tree-shake away debug info if in prod mode', () => async () => {
+          env.write(
+            'test.ts',
+            `
+            import {contentChild, Component} from '@angular/core';
+
+            @Component({
+              template: ''
+            })
+            class MyComponent {
+              testContentChild = contentChild.required('foo');
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
+          expect(builtContent).not.toContain('debugName');
+          expect(cleanNewLines(builtContent)).toContain(`contentChild( "foo" )`);
+        });
+
+        it('should not tree-shake away debug info if in dev mode', async () => {
+          env.write(
+            'test.ts',
+            `
+            import {contentChild, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComponent {
+              testContentChild = contentChild.required('foo');
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
+          expect(cleanNewLines(builtContent)).toContain(
+            `contentChild.required( "foo", { debugName: "testContentChild" } )`,
+          );
+        });
+
+        it('should tree-shake away debug info if in prod mode with custom options', async () => {
+          env.write(
+            'test.ts',
+            `
+            import {contentChild, Component, ElementRef} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testContentChild = contentChild.required('foo', { read: ElementRef });
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
+          expect(builtContent).not.toContain('debugName');
+          expect(builtContent).toContain('contentChild.required("foo", { read: ElementRef })');
+        });
+
+        it('should not tree-shake away debug info if in dev mode with custom options', async () => {
+          env.write(
+            'test.ts',
+            `
+            import {contentChild, Component, ElementRef} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testContentChild = contentChild.required('foo', { read: ElementRef });
+            }
+          `,
+          );
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
+          expect(cleanNewLines(builtContent)).toContain(
+            `contentChild.required("foo", { debugName: "testContentChild", read: ElementRef })`,
+          );
+        });
       });
     });
 
