@@ -91,6 +91,8 @@ export function extractRawJsDoc(node: ts.HasJSDoc): string {
   return unescapeAngularDecorators(comment);
 }
 
+const escapedNodeCache = new WeakMap<ts.Node, ts.HasJSDoc>();
+
 /**
  * Gets an "escaped" version of the node by copying its raw JsDoc into a new source file
  * on top of a dummy class declaration. For the purposes of JsDoc extraction, we don't actually
@@ -104,10 +106,17 @@ function getEscapedNode(node: ts.HasJSDoc): ts.HasJSDoc {
     return node;
   }
 
+  const cached = escapedNodeCache.get(node);
+  if (cached) {
+    return cached;
+  }
+
   const rawComment = extractRawJsDoc(node);
   const escaped = escapeAngularDecorators(rawComment);
   const file = ts.createSourceFile('x.ts', `${escaped}class X {}`, ts.ScriptTarget.ES2020, true);
-  return file.statements.find((s) => ts.isClassDeclaration(s)) as ts.ClassDeclaration;
+  const result = file.statements.find((s) => ts.isClassDeclaration(s)) as ts.ClassDeclaration;
+  escapedNodeCache.set(node, result);
+  return result;
 }
 
 /** Escape the `@` character for Angular decorators and template control flow syntax. */
