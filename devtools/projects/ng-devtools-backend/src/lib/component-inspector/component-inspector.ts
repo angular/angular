@@ -19,10 +19,6 @@ import {
 import {getDirectiveForestManager} from '../directive-forest/manager';
 import {ComponentTreeNode} from '../interfaces';
 
-interface Type<T> extends Function {
-  new (...args: any[]): T;
-}
-
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
   onComponentSelect: (id: number) => void;
@@ -30,7 +26,7 @@ export interface ComponentInspectorOptions {
 }
 
 export class ComponentInspector {
-  private _selectedComponent!: {component: Type<unknown>; host: HTMLElement | null};
+  private _selectedComponent!: {directive: unknown; host: Element | null};
   private readonly _onComponentEnter;
   private readonly _onComponentSelect;
   private readonly _onComponentLeave;
@@ -64,9 +60,9 @@ export class ComponentInspector {
     e.stopImmediatePropagation();
     e.preventDefault();
 
-    if (this._selectedComponent.component && this._selectedComponent.host) {
+    if (this._selectedComponent.directive && this._selectedComponent.host) {
       this._onComponentSelect(
-        getDirectiveForestManager().getDirectiveId(this._selectedComponent.component)!,
+        getDirectiveForestManager().getDirectiveId(this._selectedComponent.directive)!,
       );
     }
   }
@@ -74,16 +70,16 @@ export class ComponentInspector {
   elementMouseOver(e: MouseEvent): void {
     this.cancelEvent(e);
 
-    const el = e.target as HTMLElement;
-    if (el) {
+    const el = e.target;
+    if (el instanceof Node) {
       this._selectedComponent = findComponentAndHost(el);
     }
 
     unHighlight();
-    if (this._selectedComponent.component && this._selectedComponent.host) {
+    if (this._selectedComponent.directive && this._selectedComponent.host) {
       highlightSelectedElement(this._selectedComponent.host);
       this._onComponentEnter(
-        getDirectiveForestManager().getDirectiveId(this._selectedComponent.component)!,
+        getDirectiveForestManager().getDirectiveId(this._selectedComponent.directive)!,
       );
     }
   }
@@ -104,7 +100,7 @@ export class ComponentInspector {
 
   highlightByPosition(position: ElementPosition): void {
     const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
-    const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
+    const elementToHighlight: Element | null = findNodeInForest(position, forest);
     if (elementToHighlight) {
       highlightSelectedElement(elementToHighlight);
     }

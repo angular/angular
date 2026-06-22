@@ -723,9 +723,10 @@ export const queryDirectiveForest = (
 export const findNodeInForest = (
   position: ElementPosition,
   forest: ComponentTreeNode[],
-): HTMLElement | null => {
+): Element | null => {
   const foundComponent: ComponentTreeNode | null = queryDirectiveForest(position, forest);
-  return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
+  const nativeElement = foundComponent?.nativeElement;
+  return nativeElement instanceof Element ? nativeElement : null;
 };
 
 export const findNodeFromSerializedPosition = (

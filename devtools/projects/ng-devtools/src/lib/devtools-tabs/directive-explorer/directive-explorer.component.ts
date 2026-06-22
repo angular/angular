@@ -282,7 +282,7 @@ export class DirectiveExplorerComponent {
   }
 
   highlight(node: FlatNode): void {
-    if (!node.original.component) {
+    if (!node.hasNativeElement) {
       return;
     }
     this._messageBus.emit('createHighlightOverlay', [node.position]);
