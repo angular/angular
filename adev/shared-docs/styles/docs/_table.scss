@@ -20,6 +20,10 @@
       border-block: 1px solid var(--senary-contrast);
       font-size: 0.75rem;
       font-weight: 600;
+
+      code {
+        white-space: nowrap;
+      }
     }
 
     tr {
