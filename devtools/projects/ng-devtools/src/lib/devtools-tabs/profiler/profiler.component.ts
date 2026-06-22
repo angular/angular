@@ -11,7 +11,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatProgressBar} from '@angular/material/progress-bar';
-import {Events, MessageBus, ProfilerFrame} from '../../../../../protocol';
+import {ElementPosition, Events, MessageBus, ProfilerFrame} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {FileApiService} from './file-api-service';
@@ -94,10 +94,12 @@ export class ProfilerComponent {
     this._messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
       this.stream.next([chunkOfRecords]);
       this._buffer.push(chunkOfRecords);
+      this._highlightRenderScanOverlay(chunkOfRecords);
     });
   }
 
   startRecording(): void {
+    this._messageBus.emit('removeRenderScanOverlay');
     this.state.set('recording');
     this._messageBus.emit('startProfiling');
   }
@@ -105,6 +107,7 @@ export class ProfilerComponent {
   stopRecording(): void {
     this.state.set('visualizing');
     this._messageBus.emit('stopProfiling');
+    this._messageBus.emit('removeRenderScanOverlay');
     this.stream.complete();
   }
 
@@ -121,8 +124,49 @@ export class ProfilerComponent {
   }
 
   discardRecording(): void {
+    this._messageBus.emit('removeRenderScanOverlay');
     this.stream = new Subject<ProfilerFrame[]>();
     this.state.set('idle');
     this._buffer = [];
   }
+
+  private _highlightRenderScanOverlay(frame: ProfilerFrame): void {
+    const positions = collectRenderScanPositions(frame.directives);
+    if (!positions.length) {
+      this._messageBus.emit('removeRenderScanOverlay');
+      return;
+    }
+
+    this._messageBus.emit('createRenderScanOverlay', [positions]);
+  }
+}
+
+function collectRenderScanPositions(
+  elements: ProfilerFrame['directives'],
+  path: ElementPosition = [],
+  positions: ElementPosition[] = [],
+): ElementPosition[] {
+  elements.forEach((element, index) => {
+    if (!element) {
+      return;
+    }
+
+    const position = [...path, index];
+    if (didRunChangeDetection(element)) {
+      positions.push(position);
+    }
+
+    collectRenderScanPositions(element.children, position, positions);
+  });
+
+  return positions;
+}
+
+function didRunChangeDetection(profile: ProfilerFrame['directives'][number]): boolean {
+  const components = profile.directives.filter((directive) => directive.isComponent);
+  if (!components.length) {
+    return false;
+  }
+
+  return components.some((component) => component.changeDetection !== undefined);
 }
