@@ -166,7 +166,73 @@ Interaction state tracks whether users have interacted with fields, enabling pat
 
 ### Touched state
 
-The `touched()` signal tracks whether a user has focused and then blurred a field. It becomes `true` when a user focuses and then blurs a field through user interaction (not programmatically). Hidden, disabled, and readonly fields are non-interactive and don't become touched from user interactions.
+The `touched()` signal tracks whether a user has focused and then blurred a field, or whether the field has been marked as touched programmatically. Only interactive fields can become touched; hidden, disabled, and readonly fields don't become touched from user interactions or `markAsTouched()`.
+
+When you need a section-level action to reveal validation errors within that section, call `markAsTouched()` on the section field. The default value of `skipDescendants` is `false`, so the call marks the section field and each descendant field as touched.
+
+For example, a checkout flow can validate the shipping section before allowing the user to continue to the next step:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, required} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-checkout-shipping',
+  imports: [FormField],
+  template: `
+    <label>
+      Name
+      <input [formField]="checkoutForm.shipping.name" />
+    </label>
+    @if (checkoutForm.shipping.name().touched() && checkoutForm.shipping.name().invalid()) {
+      <p>{{ checkoutForm.shipping.name().errors()[0].message }}</p>
+    }
+
+    <label>
+      Address
+      <input [formField]="checkoutForm.shipping.address" />
+    </label>
+    @if (checkoutForm.shipping.address().touched() && checkoutForm.shipping.address().invalid()) {
+      <p>{{ checkoutForm.shipping.address().errors()[0].message }}</p>
+    }
+
+    <button type="button" (click)="continueToPayment()">Continue</button>
+
+    @if (showPayment() && checkoutForm.shipping().valid()) {
+      <p>Ready for payment.</p>
+    }
+  `,
+})
+export class CheckoutShipping {
+  checkoutModel = signal({
+    shipping: {
+      name: '',
+      address: '',
+    },
+  });
+
+  showPayment = signal(false);
+
+  checkoutForm = form(this.checkoutModel, (schemaPath) => {
+    required(schemaPath.shipping.name, {message: 'Enter a name'});
+    required(schemaPath.shipping.address, {message: 'Enter an address'});
+  });
+
+  continueToPayment() {
+    this.checkoutForm.shipping().markAsTouched();
+
+    if (this.checkoutForm.shipping().invalid()) {
+      return;
+    }
+
+    this.showPayment.set(true);
+  }
+}
+```
+
+When `continueToPayment()` calls `markAsTouched()` on `checkoutForm.shipping()`, it uses the default `skipDescendants: false` behavior. Angular marks `shipping`, `shipping.name`, and `shipping.address` as touched, so the child `touched() && invalid()` error messages become visible before the whole form is submitted.
+
+NOTE: Pass `{skipDescendants: true}` only when the field receiving the call should become touched without changing the touched state of its descendants.
 
 ### Dirty state
 
@@ -197,11 +263,11 @@ Use `dirty()` for "unsaved changes" warnings or to enable save buttons only when
 
 ### Touched vs dirty
 
-These signals track different user interactions:
+These signals track different kinds of interaction state:
 
 | Signal      | When it becomes true                                                                                                            |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `touched()` | User has focused and blurred an interactive field (even if they didn't change anything)                                         |
+| `touched()` | User has focused and blurred an interactive field, or the field was marked as touched programmatically                          |
 | `dirty()`   | User has modified an interactive field (even if they never blurred it, and even if the current value matches the initial value) |
 
 A field can be in different combinations:
@@ -381,7 +447,7 @@ Because the root form is a field, it has the same signals (such as `valid()`, `i
 | `valid()`   | All interactive fields are valid and no validators are pending |
 | `invalid()` | At least one interactive field has validation errors           |
 | `pending()` | At least one interactive field has pending async validation    |
-| `touched()` | User has touched at least one interactive field                |
+| `touched()` | The form, or at least one interactive descendant, is touched   |
 | `dirty()`   | User has modified at least one interactive field               |
 
 ### When to use form-level vs field-level
