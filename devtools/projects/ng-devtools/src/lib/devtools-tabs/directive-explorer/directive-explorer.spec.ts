@@ -262,6 +262,36 @@ describe('DirectiveExplorerComponent', () => {
     });
   });
 
+  describe('highlight', () => {
+    it('should create a highlight overlay for directive-only nodes', () => {
+      comp.highlight({
+        original: {
+          component: null,
+          directives: [{id: 9, name: 'RouterLink'}],
+          hasNativeElement: true,
+        },
+        position: [0],
+        hasNativeElement: true,
+      } as any);
+
+      expect(messageBusMock.emit).toHaveBeenCalledWith('createHighlightOverlay', [[0]]);
+    });
+
+    it('should not create a highlight overlay for nodes without native elements', () => {
+      comp.highlight({
+        original: {
+          component: null,
+          directives: [{id: 9, name: 'RouterLink'}],
+          hasNativeElement: false,
+        },
+        position: [0],
+        hasNativeElement: false,
+      } as any);
+
+      expect(messageBusMock.emit).not.toHaveBeenCalledWith('createHighlightOverlay', [[0]]);
+    });
+  });
+
   describe('applicaton operations', () => {
     describe('view source', () => {
       it('should not call application operations view source if no frames are detected', () => {
