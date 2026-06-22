@@ -812,7 +812,7 @@ class _Tokenizer {
     const content = spanEnd.getChars(contentStart);
 
     this._beginToken(TokenType.IN_ELEMENT_COMMENT, start);
-    this._endToken([content], spanEnd);
+    this._endToken([content, 'single'], spanEnd);
 
     this._attemptCharCodeUntilFn(isNotWhitespace);
   }
@@ -841,7 +841,7 @@ class _Tokenizer {
     }
 
     this._beginToken(TokenType.IN_ELEMENT_COMMENT, start);
-    this._endToken([content], spanEnd);
+    this._endToken([content, 'multi'], spanEnd);
   }
 
   private _consumeTagOpen(start: CharacterCursor) {

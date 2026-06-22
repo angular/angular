@@ -164,7 +164,7 @@ export interface CommentEndToken extends TokenBase {
 
 export interface InElementCommentToken extends TokenBase {
   type: TokenType.IN_ELEMENT_COMMENT;
-  parts: [content: string];
+  parts: [content: string, type: 'single' | 'multi'];
 }
 
 export interface CdataStartToken extends TokenBase {

@@ -25,6 +25,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
+import {createContentBlock} from './r3_content_blocks';
 import {
   createForLoop,
   createIfBlock,
@@ -263,6 +264,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       );
     }
 
+    if (this.options.collectCommentNodes) {
+      element.comments.forEach((comment) => {
+        this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
+      });
+    }
+
     if (elementHasInlineTemplate) {
       // If this node is an inline-template (e.g. has *ngFor) then we need to create a template
       // node that contains this node.
@@ -342,6 +349,13 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   visitComment(comment: html.Comment): null {
+    if (this.options.collectCommentNodes) {
+      this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
+    }
+    return null;
+  }
+
+  visitAttributeComment(comment: html.StartTagComment): null {
     if (this.options.collectCommentNodes) {
       this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
     }
@@ -430,6 +444,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       component.endSourceSpan,
       component.i18n,
     );
+
+    if (this.options.collectCommentNodes) {
+      component.comments.forEach((comment) => {
+        this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
+      });
+    }
 
     if (elementHasInlineTemplate) {
       node = this.wrapInTemplate(
