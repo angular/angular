@@ -37,6 +37,7 @@ ts_project(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/primitives/devtools",
         "//packages/core/rxjs-interop",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",

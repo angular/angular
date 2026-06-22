@@ -8,7 +8,7 @@
 
 import {diGraphTool} from './di_graph';
 import {signalGraphTool} from './signal_graph';
-import {DevtoolsToolDiscoveryEvent} from './tool_definitions';
+import {DevtoolsToolDiscoveryEvent} from '../../../primitives/devtools';
 
 /**
  * Registers Angular AI tools with Chrome DevTools.
