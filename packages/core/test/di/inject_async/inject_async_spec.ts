@@ -301,4 +301,39 @@ describe('injectAsync', () => {
 
     jasmine.clock().uninstall();
   });
+
+  it('should not cause an unhandled promise rejection if prefetch trigger rejects', async () => {
+    await TestBed.runInInjectionContext(async () => {
+      const fooPromise = injectAsync(() => Promise.resolve(FooService), {
+        prefetch: () => Promise.reject(new Error('prefetch error')),
+      });
+
+      await Promise.resolve();
+
+      const foo = await fooPromise();
+      expect(foo).toBeInstanceOf(FooService);
+    });
+  });
+
+  it('should not cause an unhandled promise rejection if loader rejects during prefetch', async () => {
+    await TestBed.runInInjectionContext(async () => {
+      const fooPromise = injectAsync(() => Promise.reject(new Error('loader error')), {
+        prefetch: () => Promise.resolve(),
+      });
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      let error!: Error;
+      try {
+        await fooPromise();
+      } catch (e: any) {
+        error = e;
+      }
+
+      expect(error).toBeDefined();
+      expect(error.message).toBe('loader error');
+    });
+  });
 });
