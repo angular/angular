@@ -81,6 +81,7 @@ export class WhitespaceVisitor implements html.Visitor {
         element.endSourceSpan,
         element.isVoid,
         element.i18n,
+        element.comments,
       );
       this.originalNodeMap?.set(newElement, element);
       return newElement;
@@ -97,6 +98,7 @@ export class WhitespaceVisitor implements html.Visitor {
       element.endSourceSpan,
       element.isVoid,
       element.i18n,
+      element.comments,
     );
     this.originalNodeMap?.set(newElement, element);
     return newElement;
@@ -229,6 +231,7 @@ export class WhitespaceVisitor implements html.Visitor {
         node.startSourceSpan,
         node.endSourceSpan,
         node.i18n,
+        node.comments,
       );
       this.originalNodeMap?.set(newElement, node);
       return newElement;
@@ -246,6 +249,7 @@ export class WhitespaceVisitor implements html.Visitor {
       node.startSourceSpan,
       node.endSourceSpan,
       node.i18n,
+      node.comments,
     );
     this.originalNodeMap?.set(newElement, node);
     return newElement;
