@@ -30,7 +30,12 @@ import {DevToolsNode, ElementPosition, Events, MessageBus} from '../../../../../
 import {TabUpdate} from '../../tab-update/index';
 
 import {ComponentDataSource, FlatNode} from './component-data-source';
-import {getFullNodeNameString, isChildOf, parentCollapsed} from './directive-forest-utils';
+import {
+  getFullNodeNameString,
+  isChildOf,
+  matchesDirectiveOrComponentId,
+  parentCollapsed,
+} from './directive-forest-utils';
 import {IndexedNode} from './index-forest';
 import {FilterComponent, FilterFn} from '../../../shared/filter/filter.component';
 import {TreeNodeComponent, NodeTextMatch} from './tree-node/tree-node.component';
@@ -368,7 +373,7 @@ export class DirectiveForestComponent {
   }
 
   private selectNodeByComponentId(id: number): void {
-    const foundNode = this.dataSource.data.find((node) => node.original.component?.id === id);
+    const foundNode = this.dataSource.data.find((node) => matchesDirectiveOrComponentId(node, id));
     if (foundNode) {
       this.selectAndEnsureVisible(foundNode);
     }

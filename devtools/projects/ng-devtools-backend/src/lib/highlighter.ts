@@ -58,24 +58,30 @@ function createOverlay(color: RgbColor): {overlay: HTMLElement; overlayContent: 
 }
 
 export function findComponentAndHost(el: Node | undefined): {
-  component: any;
-  host: HTMLElement | null;
+  directive: any;
+  host: Element | null;
 } {
   const ng = ngDebugClient();
   if (!el) {
-    return {component: null, host: null};
+    return {directive: null, host: null};
   }
   while (el) {
-    const component = el instanceof HTMLElement && ng.getComponent!(el);
-    if (component) {
-      return {component, host: el as HTMLElement};
+    if (el instanceof Element) {
+      const component = ng.getComponent?.(el);
+      if (component) {
+        return {directive: component, host: el};
+      }
+      const directive = ng.getDirectives?.(el)?.[0];
+      if (directive) {
+        return {directive, host: el};
+      }
     }
     if (!el.parentElement) {
       break;
     }
     el = el.parentElement;
   }
-  return {component: null, host: null};
+  return {directive: null, host: null};
 }
 
 // Todo(aleksanderbodurri): this should not be part of the highlighter, move this somewhere else
@@ -84,12 +90,12 @@ export function getDirectiveName(dir: Type<unknown> | undefined | null): string 
 }
 
 export function highlightSelectedElement(el: Node): void {
-  if (el === selectedElement) {
+  if (el === selectedElement && selectedElementOverlay?.isConnected) {
     return;
   }
   unHighlight();
   selectedElementOverlay = addHighlightForElement(el);
-  selectedElement = el;
+  selectedElement = selectedElementOverlay ? el : null;
 }
 
 export function highlightHydrationElement(el: Node, status: HydrationStatus) {
@@ -109,23 +115,18 @@ export function highlightHydrationElement(el: Node, status: HydrationStatus) {
 
 export function unHighlight(): void {
   if (!selectedElementOverlay) {
+    selectedElement = null;
     return;
   }
 
-  for (const node of document.body.childNodes) {
-    if (node === selectedElementOverlay) {
-      document.body.removeChild(selectedElementOverlay);
-
-      break;
-    }
-  }
-
+  selectedElementOverlay.remove();
   selectedElementOverlay = null;
+  selectedElement = null;
 }
 
 export function removeHydrationHighlights(): void {
   hydrationOverlayItems.forEach((overlay) => {
-    document.body.removeChild(overlay);
+    overlay.remove();
   });
   hydrationOverlayItems = [];
 }
@@ -146,7 +147,7 @@ function addHighlightForElement(
   color: RgbColor = COLORS.blue,
   overlayType?: NonNullable<HydrationStatus>['status'],
 ): HTMLElement | null {
-  const cmp = findComponentAndHost(el).component;
+  const directive = findComponentAndHost(el).directive;
   const rect = getComponentRect(el);
   if (rect?.height === 0 || rect?.width === 0) {
     // display nothing in case the component is not visible
@@ -157,7 +158,7 @@ function addHighlightForElement(
   if (!rect) return null;
 
   const content: Node[] = [];
-  const componentName = getDirectiveName(cmp);
+  const directiveName = getDirectiveName(directive);
 
   // We display an icon inside the overlay if the container computer is wide enough
   if (overlayType) {
@@ -169,8 +170,8 @@ function addHighlightForElement(
       const svg = createOverlaySvgElement(overlayType!);
       content.push(svg);
     }
-  } else if (componentName) {
-    const middleText = document.createTextNode(componentName);
+  } else if (directiveName) {
+    const middleText = document.createTextNode(directiveName);
     const pre = document.createElement('span');
     pre.innerText = `<`;
     const post = document.createElement('span');
@@ -182,7 +183,7 @@ function addHighlightForElement(
 }
 
 function getComponentRect(el: Node): DOMRect | undefined {
-  if (!(el instanceof HTMLElement)) {
+  if (!(el instanceof Element)) {
     return;
   }
   if (!inDoc(el)) {
@@ -199,10 +200,10 @@ function showOverlay(
   labelPosition: 'inside' | 'outside',
 ): void {
   const {width, height, top, left} = dimensions;
-  overlay.style.width = ~~width + 'px';
-  overlay.style.height = ~~height + 'px';
-  overlay.style.top = ~~top + window.scrollY + 'px';
-  overlay.style.left = ~~left + window.scrollX + 'px';
+  overlay.style.width = `${width}px`;
+  overlay.style.height = `${height}px`;
+  overlay.style.top = `${top + window.scrollY}px`;
+  overlay.style.left = `${left + window.scrollX}px`;
 
   positionOverlayContent(overlayContent, dimensions, labelPosition);
   overlayContent.replaceChildren();
