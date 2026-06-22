@@ -13,7 +13,7 @@ import {INJECTOR, LView, T_HOST, TVIEW, TViewType} from '../../render3/interface
 import {DiGraph, SerializedInjector, serializeInjector} from './serialized_di_graph';
 import {ChainedInjector} from '../../render3/chained_injector';
 import {Injector} from '../../di/injector';
-import {ToolDefinition} from './tool_definitions';
+import {ToolDefinition} from '../../../primitives/devtools';
 import {walkLViewDirectives} from './traversal';
 import {getLViewParent} from '../../render3/util/view_utils';
 import {R3Injector} from '../../di/r3_injector';
