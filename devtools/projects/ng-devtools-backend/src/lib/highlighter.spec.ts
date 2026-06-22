@@ -25,6 +25,34 @@ describe('highlighter', () => {
       expect(data.component).toEqual(data.host);
     });
 
+    it('should return same component and host if component exists on an SVG element', () => {
+      (window as any).ng = {
+        getComponent: (el: any) => el,
+      };
+      const element = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const data = highlighter.findComponentAndHost(element);
+      expect(data.component).toBeTruthy();
+      expect(data.host).toBeTruthy();
+      expect(data.component).toEqual(data.host);
+    });
+
+    it('should return a directive-only host before a parent component host', () => {
+      const parentComponent = new (class ParentComponent {})();
+      const routerLink = new (class RouterLink {})();
+      const parent = document.createElement('app-parent');
+      const anchor = document.createElement('a');
+      parent.appendChild(anchor);
+
+      (window as any).ng = {
+        getComponent: (el: Element) => (el === parent ? parentComponent : undefined),
+        getDirectives: (el: Element) => (el === anchor ? [routerLink] : []),
+      };
+
+      const data = highlighter.findComponentAndHost(anchor);
+      expect(data.component).toBe(routerLink);
+      expect(data.host).toBe(anchor);
+    });
+
     it('should return null component and host if component do not exists', () => {
       (window as any).ng = {
         getComponent: () => undefined,
@@ -184,6 +212,12 @@ describe('highlighter', () => {
   });
 
   describe('highlightSelectedElement', () => {
+    afterEach(() => {
+      highlighter.unHighlight();
+      document.body.innerHTML = '';
+      delete (window as any).ng;
+    });
+
     function createElement(name: string) {
       const element = document.createElement(name);
       element.style.width = '25px';
@@ -221,6 +255,97 @@ describe('highlighter', () => {
       highlighter.highlightSelectedElement(appNode2);
       const overlay = document.body.querySelectorAll('.ng-devtools-overlay');
       expect(overlay.length).toBe(1);
+    });
+
+    it('should show overlay again when highlighting the same element after unhighlighting', () => {
+      const appNode = createElement('app');
+      (window as any).ng = {
+        getComponent: (el: any) => new (class FakeComponent {})(),
+      };
+
+      highlighter.highlightSelectedElement(appNode);
+      highlighter.unHighlight();
+      highlighter.highlightSelectedElement(appNode);
+
+      const overlay = document.body.querySelectorAll('.ng-devtools-overlay');
+      expect(overlay.length).toBe(1);
+    });
+
+    it('should show overlay again if the previous overlay was removed externally', () => {
+      const appNode = createElement('app');
+      (window as any).ng = {
+        getComponent: (el: any) => new (class FakeComponent {})(),
+      };
+
+      highlighter.highlightSelectedElement(appNode);
+      document.body.querySelector('.ng-devtools-overlay')?.remove();
+      highlighter.highlightSelectedElement(appNode);
+
+      const overlay = document.body.querySelectorAll('.ng-devtools-overlay');
+      expect(overlay.length).toBe(1);
+    });
+
+    it('should retry overlay creation for the same element if it was initially hidden', () => {
+      const appNode = createElement('app');
+      spyOn(appNode, 'getBoundingClientRect').and.returnValues(
+        new DOMRect(0, 0, 0, 0),
+        new DOMRect(0, 0, 25, 20),
+      );
+      (window as any).ng = {
+        getComponent: (el: any) => new (class FakeComponent {})(),
+      };
+
+      highlighter.highlightSelectedElement(appNode);
+      expect(document.body.querySelectorAll('.ng-devtools-overlay').length).toBe(0);
+
+      highlighter.highlightSelectedElement(appNode);
+
+      const overlay = document.body.querySelectorAll('.ng-devtools-overlay');
+      expect(overlay.length).toBe(1);
+    });
+
+    it('should preserve subpixel overlay dimensions', () => {
+      const appNode = createElement('app');
+      spyOn(appNode, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 0, 0.5, 0.5));
+      (window as any).ng = {
+        getComponent: (el: any) => new (class FakeComponent {})(),
+      };
+
+      highlighter.highlightSelectedElement(appNode);
+
+      const overlay = document.body.querySelector<HTMLElement>('.ng-devtools-overlay');
+      expect(overlay?.style.width).toBe('0.5px');
+      expect(overlay?.style.height).toBe('0.5px');
+    });
+
+    it('should show overlay for an SVG element', () => {
+      const svgNode = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      spyOn(svgNode, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 0, 25, 20));
+      document.body.appendChild(svgNode);
+      (window as any).ng = {
+        getComponent: (el: any) => el,
+      };
+
+      highlighter.highlightSelectedElement(svgNode);
+
+      const overlay = document.body.querySelectorAll('.ng-devtools-overlay');
+      expect(overlay.length).toBe(1);
+      expect(overlay[0].innerHTML).toContain('SVGGElement');
+    });
+
+    it('should show overlay for a directive-only element', () => {
+      const anchor = createElement('a');
+      const routerLink = new (class RouterLink {})();
+      (window as any).ng = {
+        getComponent: () => undefined,
+        getDirectives: (el: Element) => (el === anchor ? [routerLink] : []),
+      };
+
+      highlighter.highlightSelectedElement(anchor);
+
+      const overlay = document.body.querySelectorAll('.ng-devtools-overlay');
+      expect(overlay.length).toBe(1);
+      expect(overlay[0].innerHTML).toContain('RouterLink');
     });
   });
 });

@@ -136,6 +136,21 @@ describe('TreeNodeComponent', () => {
     expect(classList.contains('highlighted')).toBeTrue();
   });
 
+  it('should handle highlighting a directive-only node', async () => {
+    fixture.componentRef.setInput('node', {
+      ...srcNode,
+      original: {
+        component: null,
+        directives: [{id: 9, name: 'RouterLink'}],
+      },
+    });
+    fixture.componentRef.setInput('highlightedId', 9);
+    await fixture.whenStable();
+
+    const classList = fixture.debugElement.nativeElement.classList;
+    expect(classList.contains('highlighted')).toBeTrue();
+  });
+
   it('should add respective class, if a new node', async () => {
     fixture.componentRef.setInput('node', {
       ...srcNode,

@@ -19,9 +19,6 @@ import {
 import {initializeOrGetDirectiveForestHooks} from '../hooks';
 import {ComponentTreeNode} from '../interfaces';
 
-interface Type<T> extends Function {
-  new (...args: any[]): T;
-}
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
   onComponentSelect: (id: number) => void;
@@ -29,7 +26,7 @@ export interface ComponentInspectorOptions {
 }
 
 export class ComponentInspector {
-  private _selectedComponent!: {component: Type<unknown>; host: HTMLElement | null};
+  private _selectedComponent!: {component: unknown; host: Element | null};
   private readonly _onComponentEnter;
   private readonly _onComponentSelect;
   private readonly _onComponentLeave;
@@ -73,8 +70,8 @@ export class ComponentInspector {
   elementMouseOver(e: MouseEvent): void {
     this.cancelEvent(e);
 
-    const el = e.target as HTMLElement;
-    if (el) {
+    const el = e.target;
+    if (el instanceof Node) {
       this._selectedComponent = findComponentAndHost(el);
     }
 
@@ -103,7 +100,7 @@ export class ComponentInspector {
 
   highlightByPosition(position: ElementPosition): void {
     const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
-    const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
+    const elementToHighlight: Element | null = findNodeInForest(position, forest);
     if (elementToHighlight) {
       highlightSelectedElement(elementToHighlight);
     }
