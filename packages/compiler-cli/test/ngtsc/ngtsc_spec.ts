@@ -3256,6 +3256,25 @@ runInEachFileSystem((os: string) => {
         );
       });
 
+      it('should report a diagnostic instead of crashing when a host property binding has a non-static value', () => {
+        env.tsconfig({});
+        env.write(
+          'test.ts',
+          `
+              import {Directive} from '@angular/core';
+
+              declare function getValue(): string;
+
+              @Directive({
+                selector: 'test-dir',
+                host: {'[class.foo]': getValue()}
+              })
+              export class TestDir {}
+            `,
+        );
+        verifyThrownError(ErrorCode.HOST_BINDING_PARSE_ERROR, 'Property binding must be string');
+      });
+
       it('should throw error if @Directive.queries field has wrong type', () => {
         env.tsconfig({});
         env.write(

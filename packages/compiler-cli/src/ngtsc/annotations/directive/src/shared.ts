@@ -2046,7 +2046,16 @@ function evaluateHostExpressionBindings(
     }
   });
 
-  const bindings = parseHostBindings(hostMetadata);
+  let bindings: ParsedHostBindings;
+  try {
+    bindings = parseHostBindings(hostMetadata);
+  } catch (e) {
+    throw new FatalDiagnosticError(
+      ErrorCode.HOST_BINDING_PARSE_ERROR,
+      hostExpr,
+      (e as Error).message,
+    );
+  }
 
   const errors = verifyHostBindings(bindings, createSourceSpan(hostExpr));
   if (errors.length > 0) {
