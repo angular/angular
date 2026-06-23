@@ -9,6 +9,7 @@ import {types as t} from '@babel/core';
 
 import {assert} from '../../../../linker';
 import {
+  AssignmentOperator,
   AstFactory,
   BinaryOperator,
   BuiltInType,
@@ -49,7 +50,7 @@ export class BabelAstFactory implements AstFactory<
 
   createAssignment(
     target: t.Expression,
-    operator: BinaryOperator,
+    operator: AssignmentOperator,
     value: t.Expression,
   ): t.Expression {
     assert(target, isLExpression, 'must be a left hand side expression');
@@ -76,6 +77,12 @@ export class BabelAstFactory implements AstFactory<
       case '&&=':
       case '||=':
       case '??=':
+      case '|=':
+      case '&=':
+      case '>>=':
+      case '>>>=':
+      case '<<=':
+      case '^=':
         throw new Error(`Unexpected assignment operator ${operator}`);
       default:
         return t.binaryExpression(operator, leftOperand, rightOperand);
@@ -179,18 +186,17 @@ export class BabelAstFactory implements AstFactory<
   createIfStatement = t.ifStatement;
 
   createDynamicImport(url: string | t.Expression): t.Expression {
-    return this.createCallExpression(
-      t.import(),
-      [typeof url === 'string' ? t.stringLiteral(url) : url],
-      false /* pure */,
-    );
+    return t.importExpression(typeof url === 'string' ? t.stringLiteral(url) : url);
   }
 
   createLiteral(value: string | number | boolean | null | undefined): t.Expression {
     if (typeof value === 'string') {
       return t.stringLiteral(value);
     } else if (typeof value === 'number') {
-      return t.numericLiteral(value);
+      if (Number.isNaN(value)) {
+        return t.identifier('NaN');
+      }
+      return t.valueToNode(value);
     } else if (typeof value === 'boolean') {
       return t.booleanLiteral(value);
     } else if (value === undefined) {
@@ -366,7 +372,9 @@ export class BabelAstFactory implements AstFactory<
   }
 }
 
-function getEntityTypeFromExpression(expression: t.Expression): t.Identifier | t.TSQualifiedName {
+function getEntityTypeFromExpression(
+  expression: t.Expression | t.Super,
+): t.Identifier | t.TSQualifiedName {
   if (t.isIdentifier(expression)) {
     return expression;
   }

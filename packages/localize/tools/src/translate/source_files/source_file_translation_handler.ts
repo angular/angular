@@ -11,7 +11,7 @@ import {
   FileSystem,
   PathSegment,
 } from '@angular/compiler-cli/private/localize';
-import babel, {types as t} from '@babel/core';
+import {parseSync, types as t, transformFromAstSync} from '@babel/core';
 
 import {Diagnostics} from '../../diagnostics';
 import {TranslatePluginOptions} from '../../source_file_utils';
@@ -69,7 +69,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
         this.writeSourceFile(diagnostics, outputPathFn, sourceLocale, relativeFilePath, contents);
       }
     } else {
-      const ast = babel.parseSync(sourceCode, {sourceRoot, filename: relativeFilePath});
+      const ast = parseSync(sourceCode, {sourceRoot, filename: relativeFilePath});
       if (!ast) {
         diagnostics.error(
           `Unable to parse source file: ${this.fs.join(sourceRoot, relativeFilePath)}`,
@@ -113,13 +113,14 @@ export class SourceFileTranslationHandler implements TranslationHandler {
     outputPathFn: OutputPathFn,
     options: TranslatePluginOptions,
   ) {
-    const translated = babel.transformFromAstSync(ast, undefined, {
+    const translated = transformFromAstSync(ast, '', {
       compact: true,
       generatorOpts: {minified: true},
       plugins: [
-        makeLocalePlugin(translationBundle.locale),
-        makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
-        makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
+        () => makeLocalePlugin(translationBundle.locale),
+        () =>
+          makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
+        () => makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
       ],
       cwd: sourceRoot,
       filename,
