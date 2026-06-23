@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {inject, Service} from '@angular/core';
 
 /**
  * Represents the attributes of an HTML `<meta>` element. The element itself is
@@ -55,12 +55,12 @@ export type MetaDefinition = {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class Meta {
-  private _dom: DomAdapter;
-  constructor(@Inject(DOCUMENT) private _doc: any) {
-    this._dom = getDOM();
-  }
+  private readonly _doc = inject(DOCUMENT);
+  private readonly _dom = getDOM();
+  private _cachedHead: HTMLHeadElement | undefined;
+
   /**
    * Retrieves or creates a specific `<meta>` tag element in the current HTML document.
    * In searching for an existing tag, Angular attempts to match the `name` or `property` attribute
@@ -85,13 +85,9 @@ export class Meta {
    * @returns The matching elements if found, or the new elements.
    */
   addTags(tags: MetaDefinition[], forceCreation: boolean = false): HTMLMetaElement[] {
-    if (!tags) return [];
-    return tags.reduce((result: HTMLMetaElement[], tag: MetaDefinition) => {
-      if (tag) {
-        result.push(this._getOrCreateElement(tag, forceCreation));
-      }
-      return result;
-    }, []);
+    return tags
+      .filter((tag): tag is MetaDefinition => !!tag)
+      .map((tag) => this._getOrCreateElement(tag, forceCreation));
   }
 
   /**
@@ -102,8 +98,8 @@ export class Meta {
    */
   getTag(attrSelector: string): HTMLMetaElement | null {
     if (!attrSelector) return null;
-    const meta = this._doc.querySelector(`meta[${attrSelector}]`);
-    return meta?.nodeName.toLowerCase() === 'meta' ? meta : null;
+    const meta = this._doc.querySelector<HTMLMetaElement>(buildMetaSelector(attrSelector));
+    return isMetaTag(meta) ? meta : null;
   }
 
   /**
@@ -114,12 +110,8 @@ export class Meta {
    */
   getTags(attrSelector: string): HTMLMetaElement[] {
     if (!attrSelector) return [];
-    const list /*NodeList*/ = this._doc.querySelectorAll(`meta[${attrSelector}]`);
-    return list
-      ? (([].slice.call(list) as HTMLElement[]).filter(
-          (elem) => elem.nodeName.toLowerCase() === 'meta',
-        ) as HTMLMetaElement[])
-      : [];
+    const list = this._doc.querySelectorAll<HTMLMetaElement>(buildMetaSelector(attrSelector));
+    return list ? Array.from(list).filter((elem) => isMetaTag(elem)) : [];
   }
 
   /**
@@ -132,11 +124,11 @@ export class Meta {
    * @return The modified element.
    */
   updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null {
-    if (!tag) return null;
-    selector = selector || this._parseSelector(tag);
-    const meta: HTMLMetaElement = this.getTag(selector)!;
+    selector ??= parseSelector(tag);
+    const meta = this.getTag(selector);
     if (meta) {
-      return this._setMetaElementAttributes(tag, meta);
+      setMetaElementAttributes(tag, meta);
+      return meta;
     }
     return this._getOrCreateElement(tag, true);
   }
@@ -165,52 +157,53 @@ export class Meta {
     forceCreation: boolean = false,
   ): HTMLMetaElement {
     if (!forceCreation) {
-      const selector: string = this._parseSelector(meta);
+      const selector: string = parseSelector(meta);
       // It's allowed to have multiple elements with the same name so it's not enough to
       // just check that element with the same name already present on the page. We also need to
       // check if element has tag attributes
-      const elem = this.getTags(selector).filter((elem) => this._containsAttributes(meta, elem))[0];
+      const elem = this.getTags(selector).filter((elem) => containsAttributes(meta, elem))[0];
       if (elem !== undefined) return elem;
     }
     const element: HTMLMetaElement = this._dom.createElement('meta') as HTMLMetaElement;
-    this._setMetaElementAttributes(meta, element);
+    setMetaElementAttributes(meta, element);
     const head = this._doc.getElementsByTagName('head')[0];
     head.appendChild(element);
     return element;
   }
+}
 
-  private _setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement): HTMLMetaElement {
-    Object.keys(tag).forEach((prop: string) =>
-      el.setAttribute(this._getMetaKeyMap(prop), tag[prop]),
-    );
-    return el;
-  }
+function buildMetaSelector(attrSelector: string): string {
+  return `meta[${attrSelector}]`;
+}
 
-  private _parseSelector(tag: MetaDefinition): string {
-    const attr: string = tag.name ? 'name' : 'property';
-    return `${attr}=${this._escapeSelectorValue(String(tag[attr]))}`;
-  }
+function setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement) {
+  Object.keys(tag).forEach((prop: string) => el.setAttribute(getMetaKeyMap(prop), tag[prop]));
+}
 
-  private _escapeSelectorValue(value: string): string {
-    // Escape backslashes and double quotes to prevent CSS selector injection.
-    // This securely confines the value inside an attribute selector.
-    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
-  }
+function parseSelector(tag: MetaDefinition): string {
+  const attr: string = tag.name ? 'name' : 'property';
+  return `${attr}=${escapeSelectorValue(String(tag[attr]))}`;
+}
 
-  private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
-    return Object.keys(tag).every(
-      (key: string) => elem.getAttribute(this._getMetaKeyMap(key)) === tag[key],
-    );
-  }
+function escapeSelectorValue(value: string): string {
+  // Escape backslashes and double quotes to prevent CSS selector injection.
+  // This securely confines the value inside an attribute selector.
+  return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
 
-  private _getMetaKeyMap(prop: string): string {
-    return META_KEYS_MAP[prop] || prop;
-  }
+function containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
+  return Object.keys(tag).every((key) => elem.getAttribute(getMetaKeyMap(key)) === tag[key]);
+}
+
+function getMetaKeyMap(prop: string): string {
+  return META_KEYS_MAP[prop] || prop;
+}
+
+function isMetaTag(tag: HTMLElement | null): tag is HTMLMetaElement {
+  return tag?.nodeName.toLowerCase() === 'meta';
 }
 
 /**
  * Mapping for MetaDefinition properties with their correct meta attribute names
  */
-const META_KEYS_MAP: {[prop: string]: string} = {
-  httpEquiv: 'http-equiv',
-};
+const META_KEYS_MAP: {[prop: string]: string} = {httpEquiv: 'http-equiv'};

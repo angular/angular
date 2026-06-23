@@ -132,7 +132,6 @@ export enum HydrationFeatureKind {
 
 // @public
 export class Meta {
-    constructor(_doc: any);
     addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;
     addTags(tags: MetaDefinition[], forceCreation?: boolean): HTMLMetaElement[];
     getTag(attrSelector: string): HTMLMetaElement | null;
