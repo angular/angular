@@ -7,8 +7,8 @@
  */
 
 import fs from 'fs';
-import babel from '@babel/core';
 
+import {transformAsync, traverse} from '@babel/core';
 import {assertNoPartialDeclaration} from './ensure-no-linker-decl.mjs';
 
 /**
@@ -97,7 +97,7 @@ export async function createEsbuildAngularOptimizePlugin(opts, additionalBabelPl
 
         const ensureNoPartialDeclaration =
           opts.enableLinker && opts.enableLinker.ensureNoPartialDeclaration;
-        const {code, ast} = await babel.transformAsync(content, {
+        const {code, ast} = await transformAsync(content, {
           filename: filePath,
           filenameRelative: filePath,
           plugins: plugins,
@@ -109,7 +109,7 @@ export async function createEsbuildAngularOptimizePlugin(opts, additionalBabelPl
         });
 
         if (ensureNoPartialDeclaration) {
-          assertNoPartialDeclaration(filePath, ast, babel.traverse);
+          assertNoPartialDeclaration(filePath, ast, traverse);
         }
 
         return {contents: code};

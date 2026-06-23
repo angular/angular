@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import babel, {PluginObj} from '@babel/core';
+import {PluginItem, transformSync} from '@babel/core';
 
 import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
@@ -69,7 +69,7 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
         fileName,
         source,
         sourceMap,
-        linkerPlugin,
+        () => linkerPlugin,
       );
 
       if (linkedSourceMap !== undefined) {
@@ -97,17 +97,22 @@ function applyLinker(
   filename: string,
   source: string,
   sourceMap: RawSourceMap | undefined,
-  linkerPlugin: PluginObj,
+  linkerPlugin: PluginItem<object>,
 ): {linkedSource: string; linkedSourceMap: RawSourceMap | undefined} {
   if (!filename.endsWith('.js') || !needsLinking(filename, source)) {
     return {linkedSource: source, linkedSourceMap: sourceMap};
   }
-  const result = babel.transformSync(source, {
+  const result = transformSync(source, {
     cwd,
     filename,
     sourceMaps: !!sourceMap,
     plugins: [linkerPlugin],
     parserOpts: {sourceType: 'unambiguous'},
+    generatorOpts: {
+      // Keep escaped unicode sequences (e.g. `\uFFFD`) in golden-linked output.
+      // Babel 8 may emit raw non-ASCII characters with default jsesc settings.
+      jsescOption: {minimal: false},
+    },
   });
   if (result === null) {
     throw fail('Babel transform did not have output');
@@ -115,7 +120,13 @@ function applyLinker(
   if (result.code == null) {
     throw fail('Babel transform result does not have any code');
   }
-  return {linkedSource: result.code, linkedSourceMap: result.map || undefined};
+  const linkedSourceMap = result.map
+    ? ({...result.map, file: result.map.file ?? undefined} as RawSourceMap)
+    : undefined;
+  return {
+    linkedSource: result.code,
+    linkedSourceMap,
+  };
 }
 
 /**
