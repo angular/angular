@@ -80,6 +80,12 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       '&&=': ts.SyntaxKind.AmpersandAmpersandEqualsToken,
       '||=': ts.SyntaxKind.BarBarEqualsToken,
       '??=': ts.SyntaxKind.QuestionQuestionEqualsToken,
+      '&=': ts.SyntaxKind.AmpersandEqualsToken,
+      '|=': ts.SyntaxKind.BarEqualsToken,
+      '>>=': ts.SyntaxKind.GreaterThanGreaterThanEqualsToken,
+      '>>>=': ts.SyntaxKind.GreaterThanGreaterThanGreaterThanEqualsToken,
+      '<<=': ts.SyntaxKind.LessThanLessThanEqualsToken,
+      '^=': ts.SyntaxKind.CaretEqualsToken,
       'in': ts.SyntaxKind.InKeyword,
       'instanceof': ts.SyntaxKind.InstanceOfKeyword,
     }))();
