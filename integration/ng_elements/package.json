@@ -15,7 +15,7 @@
     "zone.js": "0.16.1"
   },
   "devDependencies": {
-    "@babel/core": "7.29.0",
+    "@babel/core": "7.29.7",
     "@rollup/plugin-babel": "^7.0.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/jasmine": "^6.0.0",
