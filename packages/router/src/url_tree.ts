@@ -761,7 +761,11 @@ class UrlParser {
 
   // parse `(a/b//outlet_name:c/d)`
   private parseParens(allowPrimary: boolean, depth: number): {[outlet: string]: UrlSegmentGroup} {
-    const segments: {[key: string]: UrlSegmentGroup} = {};
+    // The outlet name is taken verbatim from the URL, so it can be `__proto__`. Indexing a plain
+    // object with that key assigns through the inherited `__proto__` setter instead of creating an
+    // outlet, which drops the outlet and mutates the map's prototype (and throws under Node's
+    // `--disable-proto=throw`). A null-prototype map makes `__proto__` an ordinary key.
+    const segments: {[key: string]: UrlSegmentGroup} = Object.create(null);
     this.capture('(');
 
     while (!this.consumeOptional(')') && this.remaining.length > 0) {
@@ -838,7 +842,8 @@ export function createRoot(rootCandidate: UrlSegmentGroup): UrlSegmentGroup {
  * root but the `a` route lives under an empty path primary route.
  */
 export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
-  const newChildren: Record<string, UrlSegmentGroup> = {};
+  // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map (see `parseParens`).
+  const newChildren: Record<string, UrlSegmentGroup> = Object.create(null);
   for (const [childOutlet, child] of Object.entries(segmentGroup.children)) {
     const childCandidate = squashSegmentGroup(child);
     // moves named children in an empty path primary child into this group

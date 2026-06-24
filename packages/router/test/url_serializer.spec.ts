@@ -132,6 +132,17 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one(left:two/three)');
   });
 
+  it('should parse a secondary segment named "__proto__"', () => {
+    const tree = url.parse('/one(__proto__:two)');
+
+    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one');
+    expectSegment(tree.root.children['__proto__'], 'two');
+    expect(tree.root.numberOfChildren).toEqual(2);
+    expect(Object.getPrototypeOf(tree.root.children)).toBeNull();
+
+    expect(url.serialize(tree)).toEqual('/one(__proto__:two)');
+  });
+
   it('should parse an empty secondary segment group', () => {
     const tree = url.parse('/one()');
 
