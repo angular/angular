@@ -7,13 +7,13 @@
  */
 
 import {
-  ɵAcxViewEncapsulation as AcxViewEncapsulation,
-  ViewEncapsulation as AngularViewEncapsulation,
   ɵFramework as Framework,
+  ɵAcxViewEncapsulation as AcxViewEncapsulation,
   InjectionToken,
   InjectOptions,
   Injector,
   Type,
+  ViewEncapsulation as AngularViewEncapsulation,
 } from '@angular/core';
 
 export interface DebugSignalGraphNode {
@@ -25,7 +25,6 @@ export interface DebugSignalGraphNode {
     | 'template'
     | 'linkedSignal'
     | 'afterRenderEffectPhase'
-    | 'childSignalProp' // Represents a signal passed as a prop to a child component in a CoW app
     | 'unknown';
   epoch: number;
   label?: string;
@@ -79,41 +78,24 @@ export type HydrationStatus =
       actualNodeDetails: string | null;
     };
 
-export enum ControlFlowBlockType {
-  Defer,
-  For,
-}
+export type CurrentDeferBlock = 'placeholder' | 'loading' | 'error';
 
-export interface ControlFlowBlock {
+export interface DeferInfo {
   id: string;
-  type: ControlFlowBlockType;
-}
-
-export interface DeferBlock extends ControlFlowBlock {
-  type: ControlFlowBlockType.Defer;
   state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
-  renderedBlock: RenderedDeferBlock | null;
+  currentBlock: CurrentDeferBlock | null;
   triggers: {
     defer: string[];
     hydrate: string[];
     prefetch: string[];
   };
-  blocks: DeferBlockDetails;
+  blocks: BlockDetails;
 }
 
-export type RenderedDeferBlock = 'defer' | 'placeholder' | 'loading' | 'error';
-
-export interface DeferBlockDetails {
+export interface BlockDetails {
   hasErrorBlock: boolean;
-  placeholderBlock: {exists: boolean; minimumTime: number | null};
-  loadingBlock: {exists: boolean; minimumTime: number | null; afterTime: number | null};
-}
-
-export interface ForLoopBlock extends ControlFlowBlock {
-  type: ControlFlowBlockType.For;
-  hasEmptyBlock: boolean;
-  items: Descriptor[];
-  trackExpression: string;
+  placeholderBlock: null | {minimumTime: number | null};
+  loadingBlock: null | {minimumTime: number | null; afterTime: number | null};
 }
 
 // TODO: refactor to remove nativeElement as it is not serializable
@@ -126,7 +108,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
-  controlFlowBlock: ControlFlowBlock | null;
+  defer: DeferInfo | null;
   onPush?: boolean;
 }
 
@@ -140,7 +122,7 @@ export interface SerializedInjector {
 
 export interface SerializedProviderRecord {
   token: string;
-  type: 'type' | 'existing' | 'class' | 'value' | 'factory' | 'multi' | 'internal';
+  type: 'type' | 'existing' | 'class' | 'value' | 'factory' | 'multi';
   multi: boolean;
   isViewProvider: boolean;
   index?: number | number[];
@@ -312,7 +294,7 @@ export interface DirectiveProfile {
 export interface ElementProfile {
   directives: DirectiveProfile[];
   children: ElementProfile[];
-  type: 'element' | 'defer' | 'for';
+  type: 'defer' | 'element';
 }
 
 export interface ProfilerFrame {
@@ -340,8 +322,8 @@ export interface Route {
   providers?: string[];
   title?: string;
   children?: Array<Route>;
-  data?: {[key: string | symbol]: any};
-  resolvers?: {[key: string]: string};
+  data?: any;
+  resolvers?: any;
   path: string;
   component: string;
   redirectTo?: string;
@@ -403,7 +385,7 @@ export interface Events {
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;
-    supportedApis: SupportedApis | null;
+    supportedApis: SupportedApis;
   }) => void;
 
   inspectorStart: () => void;
@@ -465,7 +447,6 @@ export interface Events {
   enableFrameConnection: (frameId: number, tabId: number) => void;
   frameConnected: (frameId: number) => void;
   detectAngular: (detectionResult: AngularDetection) => void;
-  backendInstalled: (detectionResult: AngularDetection) => void;
   backendReady: () => void;
 
   log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;

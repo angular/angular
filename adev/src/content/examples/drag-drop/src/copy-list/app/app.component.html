@@ -1,0 +1,32 @@
+<div class="example-container">
+  <h2>Products</h2>
+
+  <div
+    cdkDropList
+    [cdkDropListData]="products"
+    [cdkDropListConnectedTo]="[cartList]"
+    cdkDropListSortingDisabled
+    cdkDropListHasAnchor
+    class="example-list"
+  >
+    @for (product of products; track $index) {
+      <div class="example-box" cdkDrag [cdkDragData]="product">{{product}}</div>
+    }
+  </div>
+</div>
+
+<div class="example-container">
+  <h2>Shopping cart</h2>
+
+  <div
+    cdkDropList
+    #cartList="cdkDropList"
+    [cdkDropListData]="cart"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)"
+  >
+    @for (product of cart; track $index) {
+      <div class="example-box" cdkDrag>{{product}}</div>
+    }
+  </div>
+</div>

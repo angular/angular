@@ -8,7 +8,7 @@
 
 import {absoluteFrom} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import type ts from 'typescript';
+import tss from 'typescript';
 
 import {TypeCheckInfo} from '../utils';
 
@@ -26,9 +26,9 @@ export interface CodeActionContext {
   start: number;
   end: number;
   errorCode: number;
-  formatOptions: ts.FormatCodeSettings;
-  preferences: ts.UserPreferences;
-  tsLs: ts.LanguageService;
+  formatOptions: tss.FormatCodeSettings;
+  preferences: tss.UserPreferences;
+  tsLs: tss.LanguageService;
 }
 
 /**
@@ -39,38 +39,38 @@ export interface CodeActionContext {
  * `scope`, this context will be provided to the `CodeActionMeta` which could handle the `fixId`.
  */
 export interface CodeFixAllContext {
-  scope: ts.CombinedCodeFixScope;
+  scope: tss.CombinedCodeFixScope;
   compiler: NgCompiler;
   // https://github.com/microsoft/TypeScript/blob/5c4caafc2a2d0fceb03fce80fb14d3ee4407d918/src/services/types.ts#L781-L785
   fixId: string;
-  formatOptions: ts.FormatCodeSettings;
-  preferences: ts.UserPreferences;
-  tsLs: ts.LanguageService;
-  diagnostics: ts.Diagnostic[];
+  formatOptions: tss.FormatCodeSettings;
+  preferences: tss.UserPreferences;
+  tsLs: tss.LanguageService;
+  diagnostics: tss.Diagnostic[];
 }
 
 export interface CodeActionMeta {
   errorCodes: Array<number>;
-  getCodeActions: (context: CodeActionContext) => readonly ts.CodeFixAction[];
+  getCodeActions: (context: CodeActionContext) => readonly tss.CodeFixAction[];
   fixIds: FixIdForCodeFixesAll[];
-  getAllCodeActions: (context: CodeFixAllContext) => ts.CombinedCodeActions;
+  getAllCodeActions: (context: CodeFixAllContext) => tss.CombinedCodeActions;
 }
 
 /**
  * Convert the span of `textChange` in the TCB to the span of the template.
  */
 export function convertFileTextChangeInTcb(
-  changes: readonly ts.FileTextChanges[],
+  changes: readonly tss.FileTextChanges[],
   compiler: NgCompiler,
-): ts.FileTextChanges[] {
+): tss.FileTextChanges[] {
   const ttc = compiler.getTemplateTypeChecker();
-  const fileTextChanges: ts.FileTextChanges[] = [];
+  const fileTextChanges: tss.FileTextChanges[] = [];
   for (const fileTextChange of changes) {
     if (!ttc.isTrackedTypeCheckFile(absoluteFrom(fileTextChange.fileName))) {
       fileTextChanges.push(fileTextChange);
       continue;
     }
-    const textChanges: ts.TextChange[] = [];
+    const textChanges: tss.TextChange[] = [];
     let fileName: string | undefined;
     const seenTextChangeInTemplate = new Set<string>();
     for (const textChange of fileTextChange.textChanges) {
@@ -121,7 +121,7 @@ export function convertFileTextChangeInTcb(
  * 'fix all' is only available when there are multiple diagnostics that the code action meta
  * indicates it can fix.
  */
-export function isFixAllAvailable(meta: CodeActionMeta, diagnostics: ts.Diagnostic[]) {
+export function isFixAllAvailable(meta: CodeActionMeta, diagnostics: tss.Diagnostic[]) {
   const errorCodes = meta.errorCodes;
   let maybeFixableDiagnostics = 0;
   for (const diag of diagnostics) {

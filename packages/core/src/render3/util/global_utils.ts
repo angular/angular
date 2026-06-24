@@ -15,7 +15,7 @@ import {setProfiler} from '../profiler';
 import {isSignal} from '../reactivity/api';
 
 import {applyChanges} from './change_detection_utils';
-import {getControlFlowBlocks} from './control_flow';
+import {getDeferBlocks} from './defer';
 import {
   DirectiveDebugMetadata,
   getComponent,
@@ -77,7 +77,7 @@ const globalUtilsFunctions = {
   'ɵgetInjectorMetadata': getInjectorMetadata,
   'ɵsetProfiler': setProfiler,
   'ɵgetSignalGraph': getSignalGraph,
-  'ɵgetControlFlowBlocks': getControlFlowBlocks,
+  'ɵgetDeferBlocks': getDeferBlocks,
   'ɵgetTransferState': getTransferState,
 
   'getDirectiveMetadata': getDirectiveMetadata,

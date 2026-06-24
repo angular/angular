@@ -213,10 +213,6 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
   return trustedScriptURLFromString(url[0]);
 }
 
-// Define sets outside the function for O(1) lookups and memory efficiency
-const SRC_RESOURCE_TAGS = new Set(['embed', 'frame', 'iframe', 'media', 'script']);
-const HREF_RESOURCE_TAGS = new Set(['base', 'link', 'script']);
-
 /**
  * Detects which sanitizer to use for URL property, based on tag name and prop name.
  *
@@ -225,12 +221,18 @@ const HREF_RESOURCE_TAGS = new Set(['base', 'link', 'script']);
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  const isResource =
-    (prop === 'src' && SRC_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'href' && HREF_RESOURCE_TAGS.has(tag)) ||
-    (prop === 'xlink:href' && tag === 'script');
-
-  return isResource ? ɵɵsanitizeResourceUrl : ɵɵsanitizeUrl;
+  if (
+    (prop === 'src' &&
+      (tag === 'embed' ||
+        tag === 'frame' ||
+        tag === 'iframe' ||
+        tag === 'media' ||
+        tag === 'script')) ||
+    (prop === 'href' && (tag === 'base' || tag === 'link'))
+  ) {
+    return ɵɵsanitizeResourceUrl;
+  }
+  return ɵɵsanitizeUrl;
 }
 
 /**
@@ -305,7 +307,11 @@ const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>>
  * @param tagName The name of the tag.
  * @param attributeName The name of the attribute.
  */
-export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
+export function ɵɵvalidateAttribute(
+  value: unknown,
+  tagName: string,
+  attributeName: string,
+): unknown {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
   if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.has(lowerCaseAttrName)) {

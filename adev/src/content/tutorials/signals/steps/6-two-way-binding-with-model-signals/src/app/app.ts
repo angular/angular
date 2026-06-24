@@ -24,13 +24,11 @@ import {CustomCheckbox} from './custom-checkbox';
         -->
 
         <div class="controls">
-          <p>
-            Terms agreed:
+          <p>Terms agreed:
             <!-- TODO: Replace with @if block using agreedToTerms() -->
             ???
           </p>
-          <p>
-            Notifications:
+          <p>Notifications:
             <!-- TODO: Replace with @if block using enableNotifications() -->
             ???
           </p>

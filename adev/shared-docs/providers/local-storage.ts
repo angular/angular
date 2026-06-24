@@ -10,6 +10,7 @@ import {isPlatformBrowser} from '@angular/common';
 import {InjectionToken, PLATFORM_ID, inject} from '@angular/core';
 
 export const LOCAL_STORAGE = new InjectionToken<Storage | null>('LOCAL_STORAGE', {
+  providedIn: 'root',
   factory: () => getStorage(inject(PLATFORM_ID)),
 });
 

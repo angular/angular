@@ -1,6 +1,4 @@
-export class TestDir {
-  …
-  static ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
+TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
     …
     outputs: {
         a: "a",
@@ -11,4 +9,3 @@ export class TestDir {
     }
     …
   });
-}

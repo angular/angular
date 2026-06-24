@@ -18,7 +18,6 @@ import {
   getDebugNode,
   ɵgetDeferBlocks as getDeferBlocks,
   inject,
-  ɵViewRef as InternalViewRef,
   NgZone,
   ɵNoopNgZone as NoopNgZone,
   RendererFactory2,
@@ -146,11 +145,10 @@ export class ComponentFixture<T> {
    * Trigger a change detection cycle for the component.
    */
   detectChanges(checkNoChanges = true): void {
-    const originalCheckNoChanges = (this.componentRef.changeDetectorRef as InternalViewRef<unknown>)
-      .checkNoChanges;
+    const originalCheckNoChanges = this.componentRef.changeDetectorRef.checkNoChanges;
     try {
       if (!checkNoChanges) {
-        (this.componentRef.changeDetectorRef as InternalViewRef<unknown>).checkNoChanges = () => {};
+        this.componentRef.changeDetectorRef.checkNoChanges = () => {};
       }
 
       if (this.zonelessEnabled) {
@@ -171,8 +169,7 @@ export class ComponentFixture<T> {
         });
       }
     } finally {
-      (this.componentRef.changeDetectorRef as InternalViewRef<unknown>).checkNoChanges =
-        originalCheckNoChanges;
+      this.componentRef.changeDetectorRef.checkNoChanges = originalCheckNoChanges;
     }
   }
 
@@ -180,7 +177,7 @@ export class ComponentFixture<T> {
    * Do a change detection run to make sure there were no changes.
    */
   checkNoChanges(): void {
-    (this.changeDetectorRef as InternalViewRef<unknown>).checkNoChanges();
+    this.changeDetectorRef.checkNoChanges();
   }
 
   /**

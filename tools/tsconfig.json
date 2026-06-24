@@ -6,10 +6,10 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "types": ["node"],
     "paths": {
-      "@angular/*": ["../packages/*/index"]
+      "@angular/*": ["../packages/*/index"],
     }
   }
 }

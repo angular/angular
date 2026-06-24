@@ -1,39 +1,45 @@
-# Pipe (Пайп)
+# Pipes
 
-## Обзор {#overview}
+## Обзор
 
-Пайпы — это специальный оператор в выражениях шаблонов Angular, позволяющий декларативно преобразовывать данные в шаблоне. Пайпы позволяют объявить функцию преобразования один раз, а затем использовать её в нескольких шаблонах. Пайпы Angular используют символ вертикальной черты (`|`), вдохновлённый [Unix-каналами](https://en.wikipedia.org/wiki/Pipeline_(Unix)).
+Pipes (пайпы) — это специальные операторы в выражениях шаблонов Angular, которые позволяют декларативно преобразовывать
+данные прямо в шаблоне. Pipe позволяют объявить функцию преобразования один раз, а затем использовать это преобразование
+в нескольких шаблонах. В Angular для Pipe используется символ вертикальной черты (`|`),
+вдохновленный [Unix pipe](<https://en.wikipedia.org/wiki/Pipeline_(Unix)>).
 
-NOTE: Синтаксис пайпов Angular отличается от стандартного JavaScript, который использует символ вертикальной черты для [побитового оператора OR](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_OR). Выражения шаблонов Angular не поддерживают побитовые операторы.
+ПРИМЕЧАНИЕ: Синтаксис Pipe в Angular отличается от стандартного JavaScript, где символ вертикальной черты используется
+для [побитового оператора ИЛИ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_OR).
+Выражения шаблонов Angular не поддерживают побитовые операторы.
 
-Пример использования некоторых встроенных пайпов Angular:
+Ниже приведен пример использования некоторых встроенных Pipe, предоставляемых Angular:
 
 ```angular-ts
-import {Component} from '@angular/core';
-import {CurrencyPipe, DatePipe, TitleCasePipe} from '@angular/common';
+import { Component } from '@angular/core';
+import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   imports: [CurrencyPipe, DatePipe, TitleCasePipe],
   template: `
     <main>
-      <!-- Transform the company name to title-case and
-       transform the purchasedOn date to a locale-formatted string -->
-      <h1>Purchases from {{ company | titlecase }} on {{ purchasedOn | date }}</h1>
+       <!-- Преобразовать название компании в title-case и
+       преобразовать дату purchasedOn в строку, отформатированную согласно локали -->
+<h1>Purchases from {{ company | titlecase }} on {{ purchasedOn | date }}</h1>
 
-      <!-- Transform the amount to a currency-formatted string -->
+	    <!-- Преобразовать сумму в строку валюты -->
       <p>Total: {{ amount | currency }}</p>
     </main>
   `,
 })
-export class ShoppingCart {
+export class ShoppingCartComponent {
   amount = 123.45;
   company = 'acme corporation';
   purchasedOn = '2024-07-08';
 }
 ```
 
-При рендеринге компонента Angular обеспечит соответствующий формат даты и валюты на основе локали пользователя. Для пользователей из США результат будет:
+Когда Angular рендерит компонент, он гарантирует, что формат даты и валюты будет соответствовать локали пользователя.
+Если пользователь находится в США, результат будет следующим:
 
 ```angular-html
 <main>
@@ -42,73 +48,80 @@ export class ShoppingCart {
 </main>
 ```
 
-Подробнее о локализации значений в Angular см. в [подробном руководстве по i18n](guide/i18n).
+Ознакомьтесь с [подробным руководством по i18n](/guide/i18n), чтобы узнать больше о том, как Angular локализует
+значения.
 
-### Встроенные пайпы {#built-in-pipes}
+### Встроенные Pipes
 
-Angular включает набор встроенных пайпов в пакете `@angular/common`:
+Angular включает набор встроенных Pipe в пакете `@angular/common`:
 
-| Название                                          | Описание                                                                                             |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| [`AsyncPipe`](api/common/AsyncPipe)               | Читает значение из `Promise` или RxJS `Observable`.                                                  |
-| [`CurrencyPipe`](api/common/CurrencyPipe)         | Преобразует число в строку валюты, отформатированную согласно правилам локали.                       |
-| [`DatePipe`](api/common/DatePipe)                 | Форматирует значение `Date` согласно правилам локали.                                                |
-| [`DecimalPipe`](api/common/DecimalPipe)           | Преобразует число в строку с десятичной точкой, отформатированную согласно правилам локали.          |
-| [`I18nPluralPipe`](api/common/I18nPluralPipe)     | Отображает значение на строку, склоняя значение согласно правилам локали.                            |
-| [`I18nSelectPipe`](api/common/I18nSelectPipe)     | Отображает ключ на пользовательский селектор, возвращающий нужное значение.                          |
-| [`JsonPipe`](api/common/JsonPipe)                 | Преобразует объект в строковое представление через `JSON.stringify`, предназначено для отладки.       |
-| [`KeyValuePipe`](api/common/KeyValuePipe)         | Преобразует Object или Map в массив пар ключ-значение.                                               |
-| [`LowerCasePipe`](api/common/LowerCasePipe)       | Преобразует текст в нижний регистр.                                                                  |
-| [`PercentPipe`](api/common/PercentPipe)           | Преобразует число в строку процентов, отформатированную согласно правилам локали.                    |
-| [`SlicePipe`](api/common/SlicePipe)               | Создаёт новый Array или String, содержащий подмножество (срез) элементов.                            |
-| [`TitleCasePipe`](api/common/TitleCasePipe)       | Преобразует текст в регистр заголовка.                                                               |
-| [`UpperCasePipe`](api/common/UpperCasePipe)       | Преобразует текст в верхний регистр.                                                                 |
+| Имя                                           | Описание                                                                                              |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [`AsyncPipe`](api/common/AsyncPipe)           | Считывает значение из `Promise` или RxJS `Observable`.                                                |
+| [`CurrencyPipe`](api/common/CurrencyPipe)     | Преобразует число в строку валюты, отформатированную в соответствии с правилами локали.               |
+| [`DatePipe`](api/common/DatePipe)             | Форматирует значение `Date` в соответствии с правилами локали.                                        |
+| [`DecimalPipe`](api/common/DecimalPipe)       | Преобразует число в строку с десятичной точкой, отформатированную в соответствии с правилами локали.  |
+| [`I18nPluralPipe`](api/common/I18nPluralPipe) | Сопоставляет значение со строкой, которая плюрализирует (склоняет) значение согласно правилам локали. |
+| [`I18nSelectPipe`](api/common/I18nSelectPipe) | Сопоставляет ключ с пользовательским селектором, который возвращает желаемое значение.                |
+| [`JsonPipe`](api/common/JsonPipe)             | Преобразует объект в строковое представление через `JSON.stringify`, предназначено для отладки.       |
+| [`KeyValuePipe`](api/common/KeyValuePipe)     | Преобразует Object или Map в массив пар ключ-значение.                                                |
+| [`LowerCasePipe`](api/common/LowerCasePipe)   | Преобразует текст в нижний регистр.                                                                   |
+| [`PercentPipe`](api/common/PercentPipe)       | Преобразует число в строку с процентами, отформатированную в соответствии с правилами локали.         |
+| [`SlicePipe`](api/common/SlicePipe)           | Создает новый массив (Array) или строку (String), содержащую подмножество (срез) элементов.           |
+| [`TitleCasePipe`](api/common/TitleCasePipe)   | Преобразует текст в формат Title Case (первая буква каждого слова заглавная).                         |
+| [`UpperCasePipe`](api/common/UpperCasePipe)   | Преобразует текст в верхний регистр.                                                                  |
 
-## Использование пайпов {#using-pipes}
+## Использование Pipe
 
-Оператор пайпа Angular использует символ вертикальной черты (`|`) в выражении шаблона. Оператор пайпа является бинарным — левый операнд — это значение, передаваемое в функцию преобразования, а правый операнд — имя пайпа и любые дополнительные аргументы (описаны ниже).
+Оператор Pipe в Angular использует символ вертикальной черты (`|`) внутри выражения шаблона. Оператор Pipe является
+бинарным оператором: левый операнд — это значение, передаваемое в функцию преобразования, а правый операнд — имя Pipe и
+любые дополнительные аргументы (описанные ниже).
 
 ```angular-html
 <p>Total: {{ amount | currency }}</p>
 ```
 
-В этом примере значение `amount` передаётся в `CurrencyPipe`, где имя пайпа — `currency`. Затем рендерится валюта по умолчанию для локали пользователя.
+В этом примере значение `amount` передается в `CurrencyPipe`, где имя Pipe — `currency`. Затем отображается валюта по
+умолчанию для локали пользователя.
 
-### Объединение нескольких пайпов в одном выражении {#combining-multiple-pipes-in-the-same-expression}
+### Объединение нескольких Pipe в одном выражении
 
-Можно применить несколько преобразований к значению, используя несколько операторов пайпов. Angular запускает пайпы слева направо.
+Вы можете применить несколько преобразований к значению, используя несколько операторов Pipe. Angular выполняет Pipe
+слева направо.
 
-Следующий пример демонстрирует комбинацию пайпов для отображения локализованной даты в верхнем регистре:
+Следующий пример демонстрирует комбинацию Pipe для отображения локализованной даты в верхнем регистре:
 
 ```angular-html
 <p>The event will occur on {{ scheduledOn | date | uppercase }}.</p>
 ```
 
-### Передача параметров в пайпы {#passing-parameters-to-pipes}
+### Передача параметров в Pipe
 
-Некоторые пайпы принимают параметры для настройки преобразования. Для указания параметра после имени пайпа ставится двоеточие (`:`) с последующим значением параметра.
+Некоторые Pipe принимают параметры для настройки преобразования. Чтобы указать параметр, добавьте после имени Pipe
+двоеточие (`:`), за которым следует значение параметра.
 
-Например, `DatePipe` может принимать параметры для форматирования даты определённым образом.
-
-```angular-html
-<p>The event will occur at {{ scheduledOn | date: 'hh:mm' }}.</p>
-```
-
-Некоторые пайпы могут принимать несколько параметров. Дополнительные значения параметров указываются через символ двоеточия (`:`).
-
-Например, можно передать второй необязательный параметр для управления часовым поясом.
+Например, `DatePipe` может принимать параметры для форматирования даты определенным образом.
 
 ```angular-html
-<p>The event will occur at {{ scheduledOn | date: 'hh:mm' : 'UTC' }}.</p>
+<p>The event will occur at {{ scheduledOn | date:'hh:mm' }}.</p>
 ```
 
-## Как работают пайпы {#how-pipes-work}
+Некоторые Pipe могут принимать несколько параметров. Вы можете указать дополнительные значения параметров, разделяя их
+символом двоеточия (`:`).
 
-Концептуально пайпы — это функции, принимающие входное значение и возвращающие преобразованное значение.
+Например, мы также можем передать второй необязательный параметр для управления часовым поясом.
+
+```angular-html
+<p>The event will occur at {{ scheduledOn | date:'hh:mm':'UTC' }}.</p>
+```
+
+## Как работают Pipe
+
+Концептуально Pipe — это функции, которые принимают входное значение и возвращают преобразованное значение.
 
 ```angular-ts
-import {Component} from '@angular/core';
-import {CurrencyPipe} from '@angular/common';
+import { Component } from '@angular/core';
+import { CurrencyPipe} from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -126,33 +139,33 @@ export class AppComponent {
 
 В этом примере:
 
-1. `CurrencyPipe` импортируется из `@angular/common`
-1. `CurrencyPipe` добавляется в массив `imports`
-1. Данные `amount` передаются в пайп `currency`
+1. `CurrencyPipe` импортируется из `@angular/common`.
+1. `CurrencyPipe` добавляется в массив `imports`.
+1. Данные `amount` передаются в Pipe `currency`.
 
-### Приоритет оператора пайпа {#pipe-operator-precedence}
+### Приоритет оператора Pipe
 
-Оператор пайпа имеет более низкий приоритет, чем другие бинарные операторы, включая `+`, `-`, `*`, `/`, `%`, `&&`, `||` и `??`.
+Оператор Pipe имеет более низкий приоритет, чем другие бинарные операторы, включая `+`, `-`, `*`, `/`, `%`, `&&`, `||` и
+`??`.
 
 ```angular-html
-<!-- firstName and lastName are concatenated before the result is passed to the uppercase pipe -->
+<!-- firstName и lastName конкатенируются до того, как результат будет передан в uppercase pipe -->
 {{ firstName + lastName | uppercase }}
 ```
 
-Оператор пайпа имеет более высокий приоритет, чем условный (тернарный) оператор.
+Оператор Pipe имеет более высокий приоритет, чем условный (тернарный) оператор.
 
 ```angular-html
 {{ (isAdmin ? 'Access granted' : 'Access denied') | uppercase }}
 ```
 
-Если то же выражение записать без скобок:
+Если бы то же самое выражение было написано без скобок:
 
-<!-- prettier-ignore -->
 ```angular-html
 {{ isAdmin ? 'Access granted' : 'Access denied' | uppercase }}
 ```
 
-Оно будет разобрано как:
+Оно было бы проанализировано как:
 
 ```angular-html
 {{ isAdmin ? 'Access granted' : ('Access denied' | uppercase) }}
@@ -160,26 +173,32 @@ export class AppComponent {
 
 Всегда используйте скобки в выражениях, когда приоритет операторов может быть неоднозначным.
 
-### Обнаружение изменений с пайпами {#change-detection-with-pipes}
+### Обнаружение изменений и Pipe
 
-По умолчанию все пайпы считаются `pure` (чистыми), то есть выполняются только при изменении примитивного входного значения (например, `String`, `Number`, `Boolean` или `Symbol`) или ссылки на объект (например, `Array`, `Object`, `Function` или `Date`). Чистые пайпы обеспечивают преимущество в производительности, поскольку Angular может не вызывать функцию преобразования, если переданное значение не изменилось.
+По умолчанию все Pipe считаются `pure` (чистыми). Это означает, что они выполняются только тогда, когда изменяется
+примитивное входное значение (например, `String`, `Number`, `Boolean` или `Symbol`) или ссылка на объект (например,
+`Array`, `Object`, `Function` или `Date`). Чистые Pipe обеспечивают преимущество в производительности, так как Angular
+может избежать вызова функции преобразования, если переданное значение не изменилось.
 
-Это означает, что мутации свойств объектов или элементов массивов не обнаруживаются, если не заменить весь объект или массив другим экземпляром. Если нужен такой уровень обнаружения изменений, обратитесь к разделу [Обнаружение изменений внутри массивов или объектов](#detecting-change-within-arrays-or-objects).
+В результате это означает, что мутации свойств объекта или элементов массива не обнаруживаются, пока ссылка на весь
+объект или массив не будет заменена другим экземпляром. Если вам нужен такой уровень обнаружения изменений, обратитесь к
+разделу [обнаружение изменений внутри массивов или объектов](#detecting-change-within-arrays-or-objects).
 
-## Создание пользовательских пайпов {#creating-custom-pipes}
+## Создание пользовательских Pipe
 
-Пользовательский пайп определяется реализацией TypeScript-класса с декоратором `@Pipe`. Пайп должен иметь две вещи:
+Вы можете определить собственный Pipe, реализовав класс TypeScript с декоратором `@Pipe`. Pipe должен иметь две вещи:
 
-- Имя, указанное в декораторе пайпа
-- Метод `transform`, выполняющий преобразование значения.
+- Имя, указанное в декораторе Pipe.
+- Метод с именем `transform`, который выполняет преобразование значения.
 
-TypeScript-класс должен дополнительно реализовывать интерфейс `PipeTransform`, чтобы обеспечить соответствие типовой сигнатуре пайпа.
+Класс TypeScript должен дополнительно реализовывать интерфейс `PipeTransform`, чтобы гарантировать соответствие
+сигнатуре типа для Pipe.
 
-Пример пользовательского пайпа, преобразующего строки в kebab-case:
+Вот пример пользовательского Pipe, который преобразует строки в kebab-case:
 
 ```angular-ts
 // kebab-case.pipe.ts
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'kebabCase',
@@ -191,12 +210,13 @@ export class KebabCasePipe implements PipeTransform {
 }
 ```
 
-### Использование декоратора `@Pipe` {#using-the-pipe-decorator}
+### Использование декоратора `@Pipe`
 
-При создании пользовательского пайпа импортируйте `Pipe` из пакета `@angular/core` и используйте его как декоратор для TypeScript-класса.
+При создании пользовательского Pipe импортируйте `Pipe` из пакета `@angular/core` и используйте его как декоратор для
+класса TypeScript.
 
 ```angular-ts
-import {Pipe} from '@angular/core';
+import { Pipe } from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
@@ -204,21 +224,22 @@ import {Pipe} from '@angular/core';
 export class MyCustomTransformationPipe {}
 ```
 
-Декоратор `@Pipe` требует `name`, управляющего тем, как пайп используется в шаблоне.
+Декоратор `@Pipe` требует указания свойства `name`, которое управляет тем, как Pipe используется в шаблоне.
 
-### Соглашение об именовании для пользовательских пайпов {#naming-convention-for-custom-pipes}
+### Соглашение об именовании пользовательских Pipe
 
-Соглашение об именовании для пользовательских пайпов состоит из двух частей:
+Соглашение об именовании пользовательских Pipe состоит из двух правил:
 
-- `name` — рекомендуется camelCase. Не используйте дефисы.
-- `class name` — PascalCase-версия `name` с добавлением `Pipe` в конце
+- `name` — рекомендуется использовать camelCase. Не используйте дефисы.
+- `class name` — версия `name` в PascalCase с добавлением `Pipe` в конце.
 
-### Реализация интерфейса `PipeTransform` {#implement-the-pipetransform-interface}
+### Реализация интерфейса `PipeTransform`
 
-Помимо декоратора `@Pipe`, пользовательские пайпы всегда должны реализовывать интерфейс `PipeTransform` из `@angular/core`.
+В дополнение к декоратору `@Pipe`, пользовательские Pipe всегда должны реализовывать интерфейс `PipeTransform` из
+`@angular/core`.
 
 ```angular-ts
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
@@ -226,43 +247,44 @@ import {Pipe, PipeTransform} from '@angular/core';
 export class MyCustomTransformationPipe implements PipeTransform {}
 ```
 
-Реализация этого интерфейса гарантирует, что класс пайпа имеет правильную структуру.
+Реализация этого интерфейса гарантирует, что ваш класс Pipe имеет правильную структуру.
 
-### Преобразование значения пайпа {#transforming-the-value-of-a-pipe}
+### Преобразование значения Pipe
 
-Каждое преобразование вызывается методом `transform`, где первый параметр — передаваемое значение, а возвращаемое значение — преобразованное значение.
+Каждое преобразование вызывается методом `transform`, где первый параметр — это передаваемое значение, а возвращаемое
+значение — результат преобразования.
 
 ```angular-ts
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
 })
 export class MyCustomTransformationPipe implements PipeTransform {
   transform(value: string): string {
-    return `My custom transformation of ${value}.`;
+    return `My custom transformation of ${value}.`
   }
 }
 ```
 
-### Добавление параметров в пользовательский пайп {#adding-parameters-to-a-custom-pipe}
+### Добавление параметров в пользовательский Pipe
 
-Можно добавлять параметры в преобразование, добавляя дополнительные параметры в метод `transform`:
+Вы можете добавить параметры в преобразование, добавив дополнительные аргументы в метод `transform`:
 
 ```angular-ts
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
 })
 export class MyCustomTransformationPipe implements PipeTransform {
   transform(value: string, format: string): string {
-    let msg = `My custom transformation of ${value}.`;
+    let msg = `My custom transformation of ${value}.`
 
     if (format === 'uppercase') {
-      return msg.toUpperCase();
+      return msg.toUpperCase()
     } else {
-      return msg;
+      return msg
     }
   }
 }
@@ -270,12 +292,14 @@ export class MyCustomTransformationPipe implements PipeTransform {
 
 ### Обнаружение изменений внутри массивов или объектов {#detecting-change-within-arrays-or-objects}
 
-Если нужно, чтобы пайп обнаруживал изменения внутри массивов или объектов, его необходимо пометить как нечистую функцию, передав флаг `pure` со значением `false`.
+Если вы хотите, чтобы Pipe обнаруживал изменения внутри массивов или объектов, он должен быть помечен как impure (
+нечистая) функция путем передачи флага `pure` со значением `false`.
 
-IMPORTANT: Избегайте создания нечистых пайпов без крайней необходимости, поскольку они могут значительно снизить производительность при неосторожном использовании.
+Избегайте создания impure Pipe без крайней необходимости, так как они могут привести к значительному снижению
+производительности при неосторожном использовании.
 
 ```angular-ts
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'joinNamesImpure',
@@ -288,4 +312,5 @@ export class JoinNamesImpurePipe implements PipeTransform {
 }
 ```
 
-Разработчики Angular часто включают слово `Impure` в `name` пайпа и имя класса, чтобы обозначить потенциальные проблемы с производительностью для других разработчиков.
+Разработчики Angular часто придерживаются соглашения включать слово `Impure` в `name` и имя класса Pipe, чтобы указать
+другим разработчикам на потенциальные проблемы с производительностью.

@@ -560,7 +560,6 @@ function convertDeclareDirectiveFacadeToMetadata(
       declaration.providers !== undefined ? new WrappedNodeExpr(declaration.providers) : null,
     exportAs: declaration.exportAs ?? null,
     usesInheritance: declaration.usesInheritance ?? false,
-    controlCreate: declaration.controlCreate ?? null,
     lifecycle: {usesOnChanges: declaration.usesOnChanges ?? false},
     deps: null,
     typeArgumentCount: 0,

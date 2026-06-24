@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_test_library", "zoneless_web_test_suite")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -28,12 +28,10 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-manager",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-pane",
-        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
-        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph:signal-graph-manager",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view:signals-tab",
         "//devtools/projects/ng-devtools/src/lib/shared/split",
         "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split",
         "//devtools/projects/protocol",
@@ -53,15 +51,14 @@ ts_test_library(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-manager",
-        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph:signal-graph-manager",
         "//devtools/projects/protocol",
     ],
 )
 
-zoneless_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
         ":directive_explorer_test",

@@ -1,9 +1,9 @@
-/*!
+/**
  * @license
- * Copyright Google LLC All Rights Reserved.
+ * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.dev/license
+ * found in the LICENSE file at https://angular.io/license
  */
 
 import {version as tsServerVersion} from 'typescript/lib/tsserverlibrary';
@@ -35,7 +35,7 @@ function main() {
   const isG3 = ts.resolvedPath.includes('/google3/');
 
   // ServerHost provides native OS functionality
-  const host = new ServerHost(isG3, options.useClientSideFileWatcher ?? false);
+  const host = new ServerHost(isG3);
 
   // Establish a new server session that encapsulates lsp connection.
   const session = new Session({

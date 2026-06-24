@@ -42,7 +42,7 @@ import {
   getLoadedRoutes,
   getProvidersInjector,
 } from '../src/utils/config';
-import {useAutoTick, timeout} from '@angular/private/testing';
+import {timeout, useAutoTick} from './helpers';
 
 describe('RouterPreloader', () => {
   useAutoTick();

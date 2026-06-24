@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, SimpleChange, ɵWritable as Writable} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {
   AbstractControl,
   CheckboxControlValueAccessor,
@@ -39,7 +39,7 @@ import {
 } from '../index';
 import {selectValueAccessor} from '../src/directives/shared';
 import {composeValidators} from '../src/validators';
-import {useAutoTick, timeout} from '@angular/private/testing';
+
 import {asyncValidator} from './util';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
@@ -61,7 +61,6 @@ class CustomValidatorDirective implements Validator {
 
 describe('Form Directives', () => {
   let defaultAccessor: DefaultValueAccessor;
-  useAutoTick();
 
   beforeEach(() => {
     defaultAccessor = new DefaultValueAccessor(null!, null!, null!);
@@ -230,7 +229,9 @@ describe('Form Directives', () => {
         dir.name = 'login';
 
         expect(() => form.addControl(dir)).toThrowError(
-          /NG01203: No value accessor for form control name: 'login'\. Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG01203/,
+          new RegExp(
+            `NG01203: No value accessor for form control name: 'login'. Find more at https://angular.dev/errors/NG01203`,
+          ),
         );
       });
 
@@ -241,11 +242,13 @@ describe('Form Directives', () => {
         dir.name = 'password';
 
         expect(() => form.addControl(dir)).toThrowError(
-          /NG01203: No value accessor for form control path: 'passwords -> password'\. Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG01203/,
+          new RegExp(
+            `NG01203: No value accessor for form control path: 'passwords -> password'. Find more at https://angular.dev/errors/NG01203`,
+          ),
         );
       });
 
-      it('should set up validators', async () => {
+      it('should set up validators', fakeAsync(() => {
         form.addControl(loginControlDir);
 
         // sync validators are set
@@ -257,11 +260,11 @@ describe('Form Directives', () => {
         // sync validator passes, running async validators
         expect(formModel.pending).toBe(true);
 
-        await timeout();
+        tick();
 
         expect(formModel.hasError('required', ['login'])).toBe(false);
         expect(formModel.hasError('async', ['login'])).toBe(true);
-      });
+      }));
 
       it('should write value to the DOM', () => {
         (<FormControl>formModel.get(['login'])).setValue('initValue');
@@ -287,7 +290,7 @@ describe('Form Directives', () => {
         }
       };
 
-      it('should set up validator', async () => {
+      it('should set up validator', fakeAsync(() => {
         const group = new FormGroupName(
           form,
           [matchingPasswordsValidator],
@@ -309,10 +312,10 @@ describe('Form Directives', () => {
         // sync validators pass, running async validators
         expect(formModel.pending).toBe(true);
 
-        await timeout();
+        tick();
 
         expect(formModel.hasError('async', ['passwords'])).toBe(true);
-      });
+      }));
     });
 
     describe('removeControl', () => {
@@ -343,15 +346,15 @@ describe('Form Directives', () => {
         expect(formModel.errors).toEqual({'custom': true});
       });
 
-      it('should set up an async validator', async () => {
+      it('should set up an async validator', fakeAsync(() => {
         const f = new FormGroupDirective([], [asyncValidator('expected')]);
         f.form = formModel;
         f.ngOnChanges({'form': new SimpleChange(null, null, false)});
 
-        await timeout();
+        tick();
 
         expect(formModel.errors).toEqual({'async': true});
-      });
+      }));
     });
   });
 
@@ -401,51 +404,51 @@ describe('Form Directives', () => {
     });
 
     describe('addControl & addFormGroup', () => {
-      it('should create a control with the given name', async () => {
+      it('should create a control with the given name', fakeAsync(() => {
         form.addFormGroup(personControlGroupDir);
         form.addControl(loginControlDir);
 
-        await timeout();
+        flushMicrotasks();
 
         expect(formModel.get(['person', 'login'])).not.toBeNull();
-      });
+      }));
 
       // should update the form's value and validity
     });
 
     describe('removeControl & removeFormGroup', () => {
-      it('should remove control', async () => {
+      it('should remove control', fakeAsync(() => {
         form.addFormGroup(personControlGroupDir);
         form.addControl(loginControlDir);
 
         form.removeFormGroup(personControlGroupDir);
         form.removeControl(loginControlDir);
 
-        await timeout();
+        flushMicrotasks();
 
         expect(formModel.get(['person'])).toBeNull();
         expect(formModel.get(['person', 'login'])).toBeNull();
-      });
+      }));
 
       // should update the form's value and validity
     });
 
-    it('should set up sync validator', async () => {
+    it('should set up sync validator', fakeAsync(() => {
       const formValidator = () => ({'custom': true});
       const f = new NgForm([formValidator], []);
 
-      await timeout();
+      tick();
 
       expect(f.form.errors).toEqual({'custom': true});
-    });
+    }));
 
-    it('should set up async validator', async () => {
+    it('should set up async validator', fakeAsync(() => {
       const f = new NgForm([], [asyncValidator('expected')]);
 
-      await timeout();
+      tick();
 
       expect(f.form.errors).toEqual({'async': true});
-    });
+    }));
 
     describe('events emissions', () => {
       it('formControl should emit an event when resetting a form', () => {
@@ -665,7 +668,9 @@ describe('Form Directives', () => {
       namedDir.name = 'one';
 
       expect(() => namedDir.ngOnChanges({})).toThrowError(
-        /NG01203: No value accessor for form control name: 'one'\. Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG01203/,
+        new RegExp(
+          `NG01203: No value accessor for form control name: 'one'. Find more at https://angular.dev/errors/NG01203`,
+        ),
       );
     });
 
@@ -673,60 +678,62 @@ describe('Form Directives', () => {
       const unnamedDir = new NgModel(null!, null!, null!, null!);
 
       expect(() => unnamedDir.ngOnChanges({})).toThrowError(
-        /NG01203: No value accessor for form control unspecified name attribute\. Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG01203/,
+        new RegExp(
+          `NG01203: No value accessor for form control unspecified name attribute. Find more at https://angular.dev/errors/NG01203`,
+        ),
       );
     });
 
-    it('should set up validator', async () => {
+    it('should set up validator', fakeAsync(() => {
       // this will add the required validator and recalculate the validity
       ngModel.ngOnChanges({});
-      await timeout();
+      tick();
 
       expect(ngModel.control.errors).toEqual({'required': true});
 
       ngModel.control.setValue('someValue');
-      await timeout();
+      tick();
 
       expect(ngModel.control.errors).toEqual({'async': true});
-    });
+    }));
 
-    it('should mark as disabled properly', async () => {
+    it('should mark as disabled properly', fakeAsync(() => {
       ngModel.ngOnChanges({isDisabled: new SimpleChange('', undefined, false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(false);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange('', null, false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(false);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange('' as any, false, false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(false);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange('', 'false', false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(false);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange('' as any, 0, false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(false);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange(null, '', false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(true);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'true', false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(true);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange(null, true, false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(true);
 
       ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'anything else', false)});
-      await timeout();
+      tick();
       expect(ngModel.control.disabled).toEqual(true);
-    });
+    }));
   });
 
   describe('FormControlName', () => {

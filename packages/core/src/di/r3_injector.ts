@@ -455,16 +455,12 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   }
 
   override toString() {
-    if (ngDevMode) {
-      const tokens: string[] = [];
-      const records = this.records;
-      for (const token of records.keys()) {
-        tokens.push(stringify(token));
-      }
-      return `R3Injector[${tokens.join(', ')}]`;
+    const tokens: string[] = [];
+    const records = this.records;
+    for (const token of records.keys()) {
+      tokens.push(stringify(token));
     }
-
-    return 'R3Injector[...]';
+    return `R3Injector[${tokens.join(', ')}]`;
   }
 
   /**
@@ -525,7 +521,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     const prevConsumer = setActiveConsumer(null);
     try {
       if (record.value === CIRCULAR) {
-        throw cyclicDependencyError(ngDevMode ? stringify(token) : '');
+        throw cyclicDependencyError(stringify(token));
       } else if (record.value === NOT_YET) {
         record.value = CIRCULAR;
 

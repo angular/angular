@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-
-import {TcbExpr} from './codegen';
+import ts from 'typescript';
 
 /**
  * A code generation operation that's involved in the construction of a Type Check Block.
@@ -33,7 +32,7 @@ export abstract class TcbOp {
    */
   abstract readonly optional: boolean;
 
-  abstract execute(): TcbExpr | null;
+  abstract execute(): ts.Expression | null;
 
   /**
    * Replacement value or operation used while this `TcbOp` is executing (i.e. to resolve circular
@@ -43,13 +42,13 @@ export abstract class TcbOp {
    * `TcbOp` can be returned in cases where additional code generation is necessary to deal with
    * circular references.
    */
-  circularFallback(): TcbOp | TcbExpr {
+  circularFallback(): TcbOp | ts.Expression {
     // Value used to break a circular reference between `TcbOp`s.
     //
     // This value is returned whenever `TcbOp`s have a circular dependency. The
     // expression is a non-null assertion of the null value (in TypeScript, the
     // expression `null!`). This construction will infer the least narrow type
     // for whatever it's assigned to.
-    return new TcbExpr('null!');
+    return ts.factory.createNonNullExpression(ts.factory.createNull());
   }
 }

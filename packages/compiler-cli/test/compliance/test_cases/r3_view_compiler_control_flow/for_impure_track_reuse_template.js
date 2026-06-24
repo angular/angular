@@ -1,5 +1,4 @@
 function $_forTrack0$($index, $item) {
-  /* @ts-ignore */
   return this.trackFn($item, this.message);
 }
 …

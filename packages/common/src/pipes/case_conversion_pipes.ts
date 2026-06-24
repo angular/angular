@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Pipe, PipeTransform, Type} from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
-import {invalidPipeArgumentError} from './utils';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * Transforms text to all lower case.
@@ -39,7 +39,9 @@ export class LowerCasePipe implements PipeTransform {
   transform(value: string | null | undefined): string | null;
   transform(value: string | null | undefined): string | null {
     if (value == null) return null;
-    assertPipeArgument(LowerCasePipe, value);
+    if (typeof value !== 'string') {
+      throw invalidPipeArgumentError(LowerCasePipe, value);
+    }
     return value.toLowerCase();
   }
 }
@@ -87,7 +89,9 @@ export class TitleCasePipe implements PipeTransform {
   transform(value: string | null | undefined): string | null;
   transform(value: string | null | undefined): string | null {
     if (value == null) return null;
-    assertPipeArgument(TitleCasePipe, value);
+    if (typeof value !== 'string') {
+      throw invalidPipeArgumentError(TitleCasePipe, value);
+    }
 
     return value.replace(
       unicodeWordMatch,
@@ -117,13 +121,9 @@ export class UpperCasePipe implements PipeTransform {
   transform(value: string | null | undefined): string | null;
   transform(value: string | null | undefined): string | null {
     if (value == null) return null;
-    assertPipeArgument(UpperCasePipe, value);
+    if (typeof value !== 'string') {
+      throw invalidPipeArgumentError(UpperCasePipe, value);
+    }
     return value.toUpperCase();
-  }
-}
-
-function assertPipeArgument(pipe: Type<any>, value: Object): void {
-  if (typeof value !== 'string') {
-    throw invalidPipeArgumentError(pipe, value);
   }
 }

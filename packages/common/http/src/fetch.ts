@@ -8,10 +8,11 @@
 
 import {
   DestroyRef,
-  ɵformatRuntimeError as formatRuntimeError,
   inject,
   Injectable,
+  InjectionToken,
   NgZone,
+  ɵformatRuntimeError as formatRuntimeError,
 } from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 import {RuntimeErrorCode} from './errors';
@@ -33,6 +34,14 @@ import {
 import type {} from 'zone.js';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
+
+/**
+ * An internal injection token to reference `FetchBackend` implementation
+ * in a tree-shakable way.
+ */
+export const FETCH_BACKEND = new InjectionToken<FetchBackend>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'FETCH_BACKEND' : '',
+);
 
 /**
  * Uses `fetch` to send requests to a backend server.

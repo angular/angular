@@ -115,8 +115,7 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
     const stmt = new o.ReturnStatement(
       new o.LiteralMapExpr(
         this._evalExportedVars.map(
-          (resultVar) =>
-            new o.LiteralMapPropertyAssignment(resultVar, o.variable(resultVar), false),
+          (resultVar) => new o.LiteralMapEntry(resultVar, o.variable(resultVar), false),
         ),
       ),
     );

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type ts from 'typescript';
+import tss from 'typescript';
 
 import {getTcbNodesOfTemplateAtPosition} from '../template_target';
 import {getTypeCheckInfoAtPosition} from '../utils';
@@ -41,7 +41,7 @@ export const missingMemberMeta: CodeActionMeta = {
       return [];
     }
 
-    const codeActions: ts.CodeFixAction[] = [];
+    const codeActions: tss.CodeFixAction[] = [];
     const tcb = tcbNodesInfo.componentTcbNode;
     for (const tcbNode of tcbNodesInfo.nodes) {
       const tsLsCodeActions = tsLs.getCodeFixesAtPosition(
@@ -75,8 +75,8 @@ export const missingMemberMeta: CodeActionMeta = {
     compiler,
     diagnostics,
   }) {
-    const changes: ts.FileTextChanges[] = [];
-    const seen: Set<ts.ClassDeclaration> = new Set();
+    const changes: tss.FileTextChanges[] = [];
+    const seen: Set<tss.ClassDeclaration> = new Set();
     for (const diag of diagnostics) {
       if (!errorCodes.includes(diag.code)) {
         continue;

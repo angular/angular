@@ -35,11 +35,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component} from '@angular/core';
-          import {FormField} from '@angular/forms/signals';
+          import {Field} from '@angular/forms/signals';
 
           @Component({
-            template: '<input [formField]="null"/>',
-            imports: [FormField]
+            template: '<input [field]="null"/>',
+            imports: [Field]
           })
           export class Comp {}
         `,
@@ -48,7 +48,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'null' is not assignable to type 'Field<any, string | number>'.`,
+        `Type 'null' is not assignable to type 'FieldTree<any, string | number>'.`,
       );
     });
 
@@ -57,11 +57,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component} from '@angular/core';
-          import {FormField} from '@angular/forms/signals';
+          import {Field} from '@angular/forms/signals';
 
           @Component({
-            template: '<input formField="staticString"/>',
-            imports: [FormField]
+            template: '<input field="staticString"/>',
+            imports: [Field]
           })
           export class Comp {}
         `,
@@ -70,19 +70,19 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'string' is not assignable to type 'Field<any, string | number>'.`,
+        `Type 'string' is not assignable to type 'FieldTree<any, string | number>'.`,
       );
     });
 
-    it('should treat FormField directives not coming from the forms module as regular directives', () => {
+    it('should treat Field directives not coming from the forms module as regular directives', () => {
       env.write(
         'field.ts',
         `
           import {Directive, input} from '@angular/core';
 
-          @Directive({selector: '[formField]'})
-          export class FormField {
-            readonly formField = input.required<string>();
+          @Directive({selector: '[field]'})
+          export class Field {
+            readonly field = input.required<string>();
           }
         `,
       );
@@ -91,11 +91,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component} from '@angular/core';
-          import {FormField} from './field';
+          import {Field} from './field';
 
           @Component({
-            template: '<input [formField]="null"/>',
-            imports: [FormField]
+            template: '<input [field]="null"/>',
+            imports: [Field]
           })
           export class Comp {}
         `,
@@ -111,11 +111,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({
-            template: '<input [formField]="f"/>',
-            imports: [FormField]
+            template: '<input [field]="f"/>',
+            imports: [Field]
           })
           export class Comp {
             f = form(signal(0));
@@ -133,11 +133,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({
-            template: '<input type="date" [formField]="f"/>',
-            imports: [FormField]
+            template: '<input type="date" [field]="f"/>',
+            imports: [Field]
           })
           export class Comp {
             f = form(signal({}));
@@ -157,7 +157,7 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal, model} from '@angular/core';
-          import {FormField, form, FormValueControl} from '@angular/forms/signals';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
 
           interface User {
             firstName: string;
@@ -170,8 +170,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<user-control [formField]="f"/>',
-            imports: [FormField, UserControl]
+            template: '<user-control [field]="f"/>',
+            imports: [Field, UserControl]
           })
           export class Comp {
             f = form(signal({name: 'Bilbo'}));
@@ -191,7 +191,7 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal, model} from '@angular/core';
-          import {FormField, form, FormCheckboxControl} from '@angular/forms/signals';
+          import {Field, form, FormCheckboxControl} from '@angular/forms/signals';
 
           @Component({selector: 'my-checkbox', template: ''})
           export class MyCheckbox implements FormCheckboxControl {
@@ -199,8 +199,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<my-checkbox [formField]="f"/>',
-            imports: [FormField, MyCheckbox]
+            template: '<my-checkbox [field]="f"/>',
+            imports: [Field, MyCheckbox]
           })
           export class Comp {
             f = form(signal(''));
@@ -218,7 +218,7 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal, model} from '@angular/core';
-          import {FormField, form, FormValueControl} from '@angular/forms/signals';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
 
           @Component({selector: 'custom-control', template: ''})
           export class CustomControl<T> implements FormValueControl<T> {
@@ -227,10 +227,10 @@ runInEachFileSystem(() => {
 
           @Component({
             template: \`
-              <custom-control [formField]="f" #comp/>
+              <custom-control [field]="f" #comp/>
               {{expectsString(comp.value())}}
             \`,
-            imports: [FormField, CustomControl]
+            imports: [Field, CustomControl]
           })
           export class Comp {
             f = form(signal(0));
@@ -251,7 +251,7 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal, model} from '@angular/core';
-          import {FormField, form, FormValueControl} from '@angular/forms/signals';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
 
           @Component({ selector: 'string-control', template: '' })
           class StringControl implements FormValueControl<string> {
@@ -260,8 +260,8 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'app-root',
-            imports: [FormField, StringControl],
-            template: '<string-control [formField]="field" />',
+            imports: [Field, StringControl],
+            template: '<string-control [field]="field" />',
           })
           class App {
             field = form(signal(''));
@@ -278,11 +278,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({
-            template: '<input type="number" [formField]="f" [max]="10"/>',
-            imports: [FormField]
+            template: '<input type="number" [field]="f" [max]="10"/>',
+            imports: [Field]
           })
           export class Comp {
             f = form(signal(0));
@@ -293,7 +293,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Binding to '[max]' is not allowed on nodes using the '[formField]' directive`,
+        `Binding to '[max]' is not allowed on nodes using the '[field]' directive`,
       );
     });
 
@@ -302,11 +302,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({
-            template: '<input [formField]="f" [attr.maxlength]="maxLength"/>',
-            imports: [FormField]
+            template: '<input [field]="f" [attr.maxlength]="maxLength"/>',
+            imports: [Field]
           })
           export class Comp {
             f = form(signal(''));
@@ -318,7 +318,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Binding to '[attr.maxlength]' is not allowed on nodes using the '[formField]' directive`,
+        `Binding to '[attr.maxlength]' is not allowed on nodes using the '[field]' directive`,
       );
     });
 
@@ -327,7 +327,7 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal, model, input} from '@angular/core';
-          import {FormField, form, FormValueControl} from '@angular/forms/signals';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
 
           @Component({selector: 'custom-control', template: ''})
           export class CustomControl implements FormValueControl<number> {
@@ -336,8 +336,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<custom-control [formField]="f" [max]="2"/>',
-            imports: [FormField, CustomControl]
+            template: '<custom-control [field]="f" [max]="2"/>',
+            imports: [Field, CustomControl]
           })
           export class Comp {
             f = form(signal(0));
@@ -348,7 +348,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Binding to '[max]' is not allowed on nodes using the '[formField]' directive`,
+        `Binding to '[max]' is not allowed on nodes using the '[field]' directive`,
       );
     });
 
@@ -357,17 +357,17 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({
             template: \`
               <form>
-                <input type="radio" value="a" [formField]="f">
-                <input type="radio" value="b" [formField]="f">
-                <input type="radio" value="c" [formField]="f">
+                <input type="radio" value="a" [field]="f">
+                <input type="radio" value="b" [field]="f">
+                <input type="radio" value="c" [field]="f">
               </form>
             \`,
-            imports: [FormField]
+            imports: [Field]
           })
           export class Comp {
             f = form(signal('a'), {name: 'test'});
@@ -384,15 +384,15 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({
             template: \`
               <form>
-                <input type="radio" [value]="num" [formField]="f">
+                <input type="radio" [value]="num" [field]="f">
               </form>
             \`,
-            imports: [FormField]
+            imports: [Field]
           })
           export class Comp {
             f = form(signal('a'), {name: 'test'});
@@ -411,11 +411,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({
-            template: '<input value="Hello" [formField]="f"/>',
-            imports: [FormField]
+            template: '<input value="Hello" [field]="f"/>',
+            imports: [Field]
           })
           export class Comp {
             f = form(signal(''));
@@ -426,7 +426,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Setting the 'value' attribute is not allowed on nodes using the '[formField]' directive`,
+        `Setting the 'value' attribute is not allowed on nodes using the '[field]' directive`,
       );
     });
 
@@ -435,7 +435,7 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal, model, input} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({selector: 'user-control', template: ''})
           export class UserControl {
@@ -444,8 +444,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<user-control [formField]="f"/>',
-            imports: [FormField, UserControl]
+            template: '<user-control [field]="f"/>',
+            imports: [Field, UserControl]
           })
           export class Comp {
             f = form(signal(1));
@@ -463,7 +463,7 @@ runInEachFileSystem(() => {
         'test.ts',
         `
           import {Component, signal, model, input} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Component({selector: 'user-control', template: ''})
           export class UserControl {
@@ -472,8 +472,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<user-control [formField]="f"/>',
-            imports: [FormField, UserControl]
+            template: '<user-control [field]="f"/>',
+            imports: [Field, UserControl]
           })
           export class Comp {
             f = form(signal(true));
@@ -486,12 +486,12 @@ runInEachFileSystem(() => {
       expect(extractMessage(diags[0])).toBe(`Type 'boolean' is not assignable to type 'number'.`);
     });
 
-    it('should not report `value` as a missing required input when the `FormField` directive is present', () => {
+    it('should not report `value` as a missing required input when the `Field` directive is present', () => {
       env.write(
         'test.ts',
         `
           import {Component, signal, model} from '@angular/core';
-          import {FormField, form, FormValueControl} from '@angular/forms/signals';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
 
           @Component({selector: 'custom-control', template: ''})
           export class CustomControl implements FormValueControl<string> {
@@ -499,8 +499,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<custom-control [formField]="f"/>',
-            imports: [FormField, CustomControl]
+            template: '<custom-control [field]="f"/>',
+            imports: [Field, CustomControl]
           })
           export class Comp {
             f = form(signal(''));
@@ -512,12 +512,12 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
-    it('should not report `checked` as a missing required input when the `FormField` directive is present', () => {
+    it('should not report `checked` as a missing required input when the `Field` directive is present', () => {
       env.write(
         'test.ts',
         `
           import {Component, signal, model} from '@angular/core';
-          import {FormField, form, FormCheckboxControl} from '@angular/forms/signals';
+          import {Field, form, FormCheckboxControl} from '@angular/forms/signals';
 
           @Component({selector: 'custom-control', template: ''})
           export class CustomControl implements FormCheckboxControl {
@@ -525,8 +525,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<custom-control [formField]="f"/>',
-            imports: [FormField, CustomControl]
+            template: '<custom-control [field]="f"/>',
+            imports: [Field, CustomControl]
           })
           export class Comp {
             f = form(signal(false));
@@ -544,7 +544,7 @@ runInEachFileSystem(() => {
         `
           import {Component, Directive, signal} from '@angular/core';
           import {ControlValueAccessor} from '@angular/forms';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Directive({selector: '[customCva]'})
           export class CustomCva implements ControlValueAccessor {
@@ -554,8 +554,8 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            template: '<input customCva [formField]="f"/>',
-            imports: [FormField, CustomCva]
+            template: '<input customCva [field]="f"/>',
+            imports: [Field, CustomCva]
           })
           export class Comp {
             f = form(signal(0));
@@ -573,7 +573,7 @@ runInEachFileSystem(() => {
         `
           import {Component, Directive, signal} from '@angular/core';
           import {ControlValueAccessor} from '@angular/forms';
-          import {FormField, form} from '@angular/forms/signals';
+          import {Field, form} from '@angular/forms/signals';
 
           @Directive()
           export class Grandparent implements ControlValueAccessor {
@@ -589,8 +589,8 @@ runInEachFileSystem(() => {
           export class CustomCva extends Parent {}
 
           @Component({
-            template: '<input customCva [formField]="f"/>',
-            imports: [FormField, CustomCva]
+            template: '<input customCva [field]="f"/>',
+            imports: [Field, CustomCva]
           })
           export class Comp {
             f = form(signal(0));
@@ -600,31 +600,6 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
-    });
-
-    it('should infer an input with a dynamic `type` as being any of the other types', () => {
-      env.write(
-        'test.ts',
-        `
-          import {Component, signal} from '@angular/core';
-          import {FormField, form} from '@angular/forms/signals';
-
-          @Component({
-            template: '<input [type]="type" [formField]="f"/>',
-            imports: [FormField]
-          })
-          export class Comp {
-            type = '';
-            f = form(signal({test: true}));
-          }
-        `,
-      );
-
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
-        `Type '{ test: boolean; }' is not assignable to type 'string | number | boolean | Date | null'.`,
-      );
     });
   });
 });

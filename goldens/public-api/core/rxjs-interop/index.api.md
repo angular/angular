@@ -4,7 +4,6 @@
 
 ```ts
 
-import * as _angular_core from '@angular/core';
 import { MonoTypeOperatorFunction } from 'rxjs';
 import { Observable } from 'rxjs';
 import { Subscribable } from 'rxjs';

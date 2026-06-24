@@ -8,7 +8,7 @@
 
 import {join} from 'path';
 
-import {bazelCmd, exec} from './package-builder.mts';
+import {bazelCmd, exec} from './package-builder.mjs';
 
 /**
  * Build the `zone.js` npm package into `dist/bin/packages/zone.js/npm_package/` and copy it to
@@ -31,9 +31,7 @@ export function buildZoneJsPackage(destDir: string): void {
   // Ensure the output directory is available.
   exec(`mkdir -p ${destDir}`);
 
-  // TODO: Remove --ignore_all_rc_files flag once a repository can be loaded in bazelrc during info
-  // commands again. See https://github.com/bazelbuild/bazel/issues/25145 for more context.
-  const bazelBinPath = exec(`${bazelCmd} --ignore_all_rc_files info bazel-bin`, true);
+  const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
 
   // Copy artifacts to `destDir`, so they can be easier persisted on CI and used by non-bazel
   // scripts/tests.

@@ -7,7 +7,7 @@
  */
 
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import type ts from 'typescript';
+import tss from 'typescript';
 
 import {TypeCheckInfo} from '../utils';
 
@@ -18,7 +18,7 @@ export class CodeFixes {
   private fixIdToRegistration = new Map<FixIdForCodeFixesAll, CodeActionMeta>();
 
   constructor(
-    private readonly tsLS: ts.LanguageService,
+    private readonly tsLS: tss.LanguageService,
     readonly codeActionMetas: CodeActionMeta[],
   ) {
     for (const meta of codeActionMetas) {
@@ -55,11 +55,11 @@ export class CodeFixes {
     start: number,
     end: number,
     errorCodes: readonly number[],
-    diagnostics: ts.Diagnostic[],
-    formatOptions: ts.FormatCodeSettings,
-    preferences: ts.UserPreferences,
-  ): readonly ts.CodeFixAction[] {
-    const codeActions: ts.CodeFixAction[] = [];
+    diagnostics: tss.Diagnostic[],
+    formatOptions: tss.FormatCodeSettings,
+    preferences: tss.UserPreferences,
+  ): readonly tss.CodeFixAction[] {
+    const codeActions: tss.CodeFixAction[] = [];
     for (const code of errorCodes) {
       const metas = this.errorCodeToFixes.get(code);
       if (metas === undefined) {
@@ -98,12 +98,12 @@ export class CodeFixes {
    */
   getAllCodeActions(
     compiler: NgCompiler,
-    diagnostics: ts.Diagnostic[],
-    scope: ts.CombinedCodeFixScope,
+    diagnostics: tss.Diagnostic[],
+    scope: tss.CombinedCodeFixScope,
     fixId: string,
-    formatOptions: ts.FormatCodeSettings,
-    preferences: ts.UserPreferences,
-  ): ts.CombinedCodeActions {
+    formatOptions: tss.FormatCodeSettings,
+    preferences: tss.UserPreferences,
+  ): tss.CombinedCodeActions {
     const meta = this.fixIdToRegistration.get(fixId as FixIdForCodeFixesAll);
     if (meta === undefined) {
       return {

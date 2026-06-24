@@ -43,7 +43,7 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  * @Component({
  *   imports: [ChildComponent],
  *   selector: 'app-parent',
- *   template: `<app-child [hideParent]="hideParent()"/>`,
+ *   template: `<app-child [hideParent]="hideParent()"></app-child>`,
  * })
  * export class ParentComponent {
  *    hideParent = input.required<boolean>();
@@ -54,7 +54,7 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  *   imports: [forwardRef(() => ParentComponent)],
  *   selector: 'app-child',
  *   template: `
- *    @if(!hideParent()) {
+ *    @if(!hideParent() {
  *       <app-parent/>
  *    }
  *  `,
@@ -68,12 +68,9 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
-  if (ngDevMode) {
-    (<any>forwardRefFn).toString = function () {
-      return stringify(this());
-    };
-  }
-
+  (<any>forwardRefFn).toString = function () {
+    return stringify(this());
+  };
   return <Type<any>>(<any>forwardRefFn);
 }
 

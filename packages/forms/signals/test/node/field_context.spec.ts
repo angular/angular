@@ -9,12 +9,12 @@
 import {Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
+  aggregateMetadata,
   applyEach,
-  createMetadataKey,
   FieldContext,
   form,
-  metadata,
   PathKind,
+  reducedMetadataKey,
   SchemaPath,
   SchemaPathTree,
   validate,
@@ -56,11 +56,11 @@ describe('Field Context', () => {
     });
   });
 
-  it('fieldTree', () => {
+  it('field', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 5});
     testContext(cat, (ctx) => {
-      expect(ctx.fieldTree.name().value()).toEqual('pirojok-the-cat');
-      expect(ctx.fieldTree.age().value()).toEqual(5);
+      expect(ctx.field.name().value()).toEqual('pirojok-the-cat');
+      expect(ctx.field.age().value()).toEqual(5);
     });
   });
 
@@ -87,7 +87,7 @@ describe('Field Context', () => {
     );
     f().valid();
     expect(keys).toEqual([
-      jasmine.stringContaining('NG01905'), // SIGNAL_FORMS_ROOT_FIELD_NO_PARENT
+      'RuntimeError: the top-level field in the form has no parent',
       'name',
       'age',
     ]);
@@ -125,32 +125,32 @@ describe('Field Context', () => {
     );
     f().valid();
     expect(indices).toEqual([
-      jasmine.stringContaining('NG01905'), // SIGNAL_FORMS_ROOT_FIELD_NO_PARENT
+      'RuntimeError: the top-level field in the form has no parent',
       0,
       1,
-      jasmine.stringContaining('NG01906'), // SIGNAL_FORMS_PARENT_NOT_ARRAY
+      'RuntimeError: cannot access index, parent field is not an array',
     ]);
   });
 
   it('pathKeys', () => {
-    const KEYS = createMetadataKey({
-      reduce: (_: readonly string[], n: readonly string[]) => n,
-      getInitial: () => [],
-    });
+    const KEYS = reducedMetadataKey(
+      (_: readonly string[], n: readonly string[]) => n,
+      () => [],
+    );
     const f = form(
       signal({x: [1]}),
       (p) => {
-        metadata(p, KEYS, ({pathKeys}) => pathKeys());
-        metadata(p.x, KEYS, ({pathKeys}) => pathKeys());
+        aggregateMetadata(p, KEYS, ({pathKeys}) => pathKeys());
+        aggregateMetadata(p.x, KEYS, ({pathKeys}) => pathKeys());
         applyEach(p.x, (it) => {
-          metadata(it, KEYS, ({pathKeys}) => pathKeys());
+          aggregateMetadata(it, KEYS, ({pathKeys}) => pathKeys());
         });
       },
       {injector: TestBed.inject(Injector)},
     );
-    expect(f().metadata(KEYS)?.()).toEqual([]);
-    expect(f.x().metadata(KEYS)?.()).toEqual(['x']);
-    expect(f.x[0]().metadata(KEYS)?.()).toEqual(['x', '0']);
+    expect(f().metadata(KEYS)()).toEqual([]);
+    expect(f.x().metadata(KEYS)()).toEqual(['x']);
+    expect(f.x[0]().metadata(KEYS)()).toEqual(['x', '0']);
   });
 
   it('valueOf', () => {

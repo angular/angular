@@ -8,11 +8,9 @@
 
 import {
   AbsoluteSourceSpan,
-  AST,
   BindingPipe,
-  BindingType,
-  ParseSourceSpan,
   PropertyRead,
+  AST,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -30,16 +28,17 @@ import {
   TmplAstTextAttribute,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
+  ParseSourceSpan,
+  BindingType,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
 import {ClassDeclaration} from '../../reflection';
-import {TcbDirectiveMetadata, TemplateDiagnostic, TypeCheckId} from '../api';
+import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';
-import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
 /**
  * Collects `ts.Diagnostic`s on problems which occur in the template which aren't directly sourced
@@ -125,8 +124,8 @@ export interface OutOfBandDiagnosticRecorder {
     id: TypeCheckId,
     input: TmplAstBoundAttribute,
     output: TmplAstBoundEvent,
-    inputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'>,
-    outputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'> | TmplAstElement,
+    inputConsumer: ClassDeclaration,
+    outputConsumer: ClassDeclaration | TmplAstElement,
   ): void;
 
   /** Reports required inputs that haven't been bound. */
@@ -241,7 +240,7 @@ export interface OutOfBandDiagnosticRecorder {
   ): void;
 
   /**
-   * Reports an unsupported binding on a form `FormField` node.
+   * Reports an unsupported binding on a form `Field` node.
    */
   formFieldUnsupportedBinding(
     id: TypeCheckId,
@@ -275,10 +274,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     ['keyvalue', 'KeyValuePipe'],
   ]);
 
-  constructor(
-    private resolver: TypeCheckSourceResolver,
-    private getSourceFile: (fileName: string) => ts.SourceFile | undefined = (name) => undefined,
-  ) {}
+  constructor(private resolver: TypeCheckSourceResolver) {}
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
@@ -513,27 +509,22 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     id: TypeCheckId,
     input: TmplAstBoundAttribute,
     output: TmplAstBoundEvent,
-    inputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'>,
-    outputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'> | TmplAstElement,
+    inputConsumer: ClassDeclaration,
+    outputConsumer: ClassDeclaration | TmplAstElement,
   ): void {
     const mapping = this.resolver.getTemplateSourceMapping(id);
     const errorMsg = `The property and event halves of the two-way binding '${input.name}' are not bound to the same target.
-            Find more at ${DOC_PAGE_BASE_URL}/guide/templates/two-way-binding`;
+            Find more at https://angular.dev/guide/templates/two-way-binding#how-two-way-binding-works`;
 
     const relatedMessages: {text: string; start: number; end: number; sourceFile: ts.SourceFile}[] =
       [];
 
-    if (inputConsumer.ref.nodeNameSpan && inputConsumer.ref.nodeFilePath) {
-      const sf = this.getSourceFile(inputConsumer.ref.nodeFilePath);
-      if (sf) {
-        relatedMessages.push({
-          text: `The property half of the binding is to the '${inputConsumer.name}' ${inputConsumer.isComponent ? 'component' : 'directive'}.`,
-          start: inputConsumer.ref.nodeNameSpan.start,
-          end: inputConsumer.ref.nodeNameSpan.end,
-          sourceFile: sf,
-        });
-      }
-    }
+    relatedMessages.push({
+      text: `The property half of the binding is to the '${inputConsumer.name.text}' component.`,
+      start: inputConsumer.name.getStart(),
+      end: inputConsumer.name.getEnd(),
+      sourceFile: inputConsumer.name.getSourceFile(),
+    });
 
     if (outputConsumer instanceof TmplAstElement) {
       let message = `The event half of the binding is to a native event called '${input.name}' on the <${outputConsumer.name}> DOM element.`;
@@ -547,17 +538,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         sourceFile: mapping.node.getSourceFile(),
       });
     } else {
-      if (outputConsumer.ref.nodeNameSpan && outputConsumer.ref.nodeFilePath) {
-        const sf = this.getSourceFile(outputConsumer.ref.nodeFilePath);
-        if (sf) {
-          relatedMessages.push({
-            text: `The event half of the binding is to the '${outputConsumer.name}' ${outputConsumer.isComponent ? 'component' : 'directive'}.`,
-            start: outputConsumer.ref.nodeNameSpan.start,
-            end: outputConsumer.ref.nodeNameSpan.end,
-            sourceFile: sf,
-          });
-        }
-      }
+      relatedMessages.push({
+        text: `The event half of the binding is to the '${outputConsumer.name.text}' component.`,
+        start: outputConsumer.name.getStart(),
+        end: outputConsumer.name.getEnd(),
+        sourceFile: outputConsumer.name.getSourceFile(),
+      });
     }
 
     this._diagnostics.push(
@@ -893,9 +879,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         name = node.name;
       }
 
-      message = `Binding to '${name}' is not allowed on nodes using the '[formField]' directive`;
+      message = `Binding to '${name}' is not allowed on nodes using the '[field]' directive`;
     } else {
-      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[formField]' directive`;
+      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[field]' directive`;
     }
 
     this._diagnostics.push(

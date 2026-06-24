@@ -1,0 +1,50 @@
+@use '../../../../../styles/typography';
+
+.defer-details {
+  padding: 12px;
+
+  h3 {
+    @extend %heading-400;
+    margin: 0;
+
+    &:not(:first-child) {
+      margin-top: 1rem;
+    }
+  }
+
+  .trigger {
+    font-family: monospace;
+    padding-inline-start: 1rem;
+  }
+
+  .pill {
+    font-family: monospace;
+    background: color-mix(in srgb, var(--quinary-contrast), var(--senary-contrast));
+    padding: 0.125rem 0.5rem;
+    margin: 0.125rem;
+    border-radius: 1rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    @extend %body-01;
+
+    &.flagged {
+      background: var(--quinary-contrast);
+    }
+  }
+}
+
+mat-toolbar {
+  @extend %body-medium-01;
+  padding: 0.25rem 0.625rem;
+  justify-content: space-between;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 25px;
+  height: auto;
+  border-bottom: 1px solid var(--color-separator);
+
+  &:not(:first-child) {
+    border-top: 1px solid var(--color-separator);
+  }
+}

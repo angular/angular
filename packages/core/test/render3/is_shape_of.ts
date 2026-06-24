@@ -154,7 +154,7 @@ const ShapeOfTNode: ShapeOf<TNode> = {
   directiveEnd: true,
   directiveStylingLast: true,
   componentOffset: true,
-  controlDirectiveIndex: true,
+  fieldIndex: true,
   customControlIndex: true,
   propertyBindings: true,
   flags: true,

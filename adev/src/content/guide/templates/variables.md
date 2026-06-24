@@ -1,14 +1,19 @@
 # Переменные в шаблонах
 
-В Angular существует два типа объявления переменных в шаблонах: локальные переменные шаблона и переменные ссылки на шаблон.
+В Angular существует два типа объявления переменных в шаблонах: локальные переменные шаблона и ссылочные переменные
+шаблона.
 
-## Локальные переменные шаблона с `@let` {#local-template-variables-with-let}
+## Локальные переменные шаблона с `@let`
 
-Синтаксис `@let` в Angular позволяет определить локальную переменную и повторно использовать её в шаблоне, аналогично [синтаксису JavaScript `let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
+Синтаксис `@let` в Angular позволяет определить локальную переменную и повторно использовать ее в шаблоне,
+аналогично [синтаксису
+`let` в JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
 
-### Использование `@let` {#using-let}
+### Использование `@let`
 
-Используйте `@let` для объявления переменной, значение которой основано на результате выражения шаблона. Angular автоматически поддерживает значение переменной в актуальном состоянии относительно данного выражения, аналогично [привязкам](guide/templates/binding).
+Используйте `@let` для объявления переменной, значение которой основано на результате выражения шаблона. Angular
+автоматически поддерживает актуальность значения переменной в соответствии с заданным выражением,
+подобно [привязкам](./templates/bindings).
 
 ```angular-html
 @let name = user.name;
@@ -16,28 +21,28 @@
 @let data = data$ | async;
 @let pi = 3.14159;
 @let coordinates = {x: 50, y: 100};
-@let longExpression =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit ' +
-  'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
-  'Ut enim ad minim veniam...';
+@let longExpression = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit ' +
+                      'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
+                      'Ut enim ad minim veniam...';
 ```
 
-Каждый блок `@let` может объявлять ровно одну переменную. Нельзя объявлять несколько переменных в одном блоке через запятую.
+Каждый блок `@let` может объявлять ровно одну переменную. Вы не можете объявить несколько переменных в одном блоке через
+запятую.
 
-### Ссылка на значение `@let` {#referencing-the-value-of-let}
+### Ссылка на значение `@let`
 
-После объявления переменной с помощью `@let` её можно повторно использовать в том же шаблоне:
+После объявления переменной с помощью `@let`, вы можете повторно использовать ее в том же шаблоне:
 
 ```angular-html
 @let user = user$ | async;
 
 @if (user) {
-  <h1>Hello, {{ user.name }}</h1>
-  <user-avatar [photo]="user.photo" />
+  <h1>Hello, {{user.name}}</h1>
+  <user-avatar [photo]="user.photo"/>
 
   <ul>
     @for (snack of user.favoriteSnacks; track snack.id) {
-      <li>{{ snack.name }}</li>
+      <li>{{snack.name}}</li>
     }
   </ul>
 
@@ -45,22 +50,26 @@
 }
 ```
 
-### Возможность присваивания {#assignability}
+### Присваивание
 
-Ключевое отличие `@let` от JavaScript `let` состоит в том, что `@let` нельзя переприсваивать после объявления. Однако Angular автоматически поддерживает значение переменной в актуальном состоянии относительно данного выражения.
+Ключевое различие между `@let` и `let` в JavaScript заключается в том, что `@let` нельзя переназначить после объявления.
+Однако Angular автоматически поддерживает актуальность значения переменной в соответствии с заданным выражением.
 
 ```angular-html
 @let value = 1;
 
-<!-- Invalid - This does not work! -->
+<!-- Недопустимо - Это не сработает! -->
 <button (click)="value = value + 1">Increment the value</button>
 ```
 
-### Область видимости переменной {#variable-scope}
+### Область видимости переменных
 
-Объявления `@let` ограничены текущим представлением и его потомками. Angular создаёт новое представление на границах компонентов и там, где шаблон может содержать динамический контент — в блоках управления потоком, блоках `@defer` или структурных директивах.
+Объявления `@let` ограничены текущим представлением (view) и его потомками. Angular создает новое представление на
+границах компонентов и везде, где шаблон может содержать динамический контент, например, в блоках потока управления,
+блоках `@defer` или структурных директивах.
 
-Поскольку объявления `@let` не поднимаются (не hoisted), они **не могут** быть доступны из родительских представлений или соседних элементов:
+Так как объявления `@let` не поднимаются (hoisted), к ним **нельзя** получить доступ из родительских представлений или
+соседних элементов:
 
 ```angular-html
 @let topLevel = value;
@@ -69,117 +78,121 @@
   @let insideDiv = value;
 </div>
 
-<!-- Valid -->
-{{ topLevel }}
-<!-- Valid -->
-{{ insideDiv }}
+{{topLevel}} <!-- Допустимо -->
+{{insideDiv}} <!-- Допустимо -->
 
 @if (condition) {
-  <!-- Valid -->
-  {{ topLevel + insideDiv }}
+  {{topLevel + insideDiv}} <!-- Допустимо -->
 
   @let nested = value;
 
   @if (condition) {
-    <!-- Valid -->
-    {{ topLevel + insideDiv + nested }}
+    {{topLevel + insideDiv + nested}} <!-- Допустимо -->
   }
 }
 
-<!-- Error, not hoisted from @if -->
-{{ nested }}
+{{nested}} <!-- Ошибка, не поднимается из @if -->
 ```
 
-### Полный синтаксис {#full-syntax}
+### Полный синтаксис
 
-Синтаксис `@let` формально определяется как:
+Синтаксис `@let` формально определяется следующим образом:
 
 - Ключевое слово `@let`.
-- За которым следуют один или несколько пробелов, исключая переводы строк.
-- За которыми следуют допустимое JavaScript-имя и ноль или более пробелов.
-- За которыми следуют символ `=` и ноль или более пробелов.
-- За которыми следует выражение Angular, которое может быть многострочным.
-- Заканчивается символом `;`.
+- За которым следует один или несколько пробелов, исключая переводы строк.
+- За которым следует допустимое имя JavaScript и ноль или более пробелов.
+- За которым следует символ = и ноль или более пробелов.
+- За которым следует выражение Angular, которое может быть многострочным.
+- Завершается символом `;`.
 
-## Переменные ссылки на шаблон {#template-reference-variables}
+## Ссылочные переменные шаблона
 
-Переменные ссылки на шаблон предоставляют способ объявить переменную, ссылающуюся на значение из элемента шаблона.
+Ссылочные переменные шаблона позволяют объявить переменную, которая ссылается на значение элемента в вашем шаблоне.
 
-Переменная ссылки на шаблон может ссылаться на:
+Ссылочная переменная шаблона может ссылаться на следующее:
 
-- DOM-элемент в шаблоне (включая [пользовательские элементы](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements))
-- Angular-компонент или директиву
-- [TemplateRef](api/core/TemplateRef) из [ng-template](api/core/ng-template)
+- DOM-элемент внутри шаблона (
+  включая [пользовательские элементы](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements))
+- компонент или директиву Angular
+- [TemplateRef](/api/core/TemplateRef) из [ng-template](/api/core/ng-template)
 
-Переменные ссылки на шаблон можно использовать для чтения информации из одной части шаблона в другой части того же шаблона.
+Вы можете использовать ссылочные переменные шаблона для чтения информации из одной части шаблона в другой части того же
+шаблона.
 
-### Объявление переменной ссылки на шаблон {#declaring-a-template-reference-variable}
+### Объявление ссылочной переменной шаблона
 
-Переменную на элементе шаблона можно объявить, добавив атрибут, начинающийся с символа решётки (`#`), за которым следует имя переменной.
+Вы можете объявить переменную на элементе в шаблоне, добавив атрибут, начинающийся с символа решетки (`#`), за которым
+следует имя переменной.
 
 ```angular-html
-<!-- Create a template reference variable named "taskInput", referring to the HTMLInputElement. -->
-<input #taskInput placeholder="Enter task name" />
+<!-- Создание ссылочной переменной шаблона с именем "taskInput", ссылающейся на HTMLInputElement. -->
+<input #taskInput placeholder="Enter task name">
 ```
 
-### Присваивание значений переменным ссылки на шаблон {#assigning-values-to-template-reference-variables}
+### Присваивание значений ссылочным переменным шаблона
 
-Angular присваивает значение переменным шаблона на основе элемента, на котором объявлена переменная.
+Angular присваивает значение переменным шаблона в зависимости от элемента, на котором объявлена переменная.
 
-Если переменная объявлена на Angular-компоненте, она ссылается на экземпляр компонента.
+Если вы объявляете переменную на компоненте Angular, переменная ссылается на экземпляр компонента.
 
 ```angular-html
-<!-- The `startDate` variable is assigned the instance of `MyDatepicker`. -->
+<!-- Переменной `startDate` присваивается экземпляр `MyDatepicker`. -->
 <my-datepicker #startDate />
 ```
 
-Если переменная объявлена на элементе `<ng-template>`, она ссылается на экземпляр TemplateRef, представляющий шаблон. Подробнее см. в разделе [Как Angular использует синтаксис звёздочки `*`](guide/directives/structural-directives#structural-directive-shorthand) в [Структурных директивах](guide/directives/structural-directives).
+Если вы объявляете переменную на элементе `<ng-template>`, переменная ссылается на экземпляр `TemplateRef`, который
+представляет шаблон. Для получения дополнительной информации
+см. [Как Angular использует синтаксис звездочки, \*](/guide/directives/structural-directives#structural-directive-shorthand)
+в разделе [Структурные директивы](/guide/directives/structural-directives).
 
 ```angular-html
-<!-- The `myFragment` variable is assigned the `TemplateRef` instance corresponding to this template fragment. -->
+<!-- Переменной `myFragment` присваивается экземпляр `TemplateRef`, соответствующий этому фрагменту шаблона. -->
 <ng-template #myFragment>
   <p>This is a template fragment</p>
 </ng-template>
 ```
 
-Если переменная объявлена на любом другом отображаемом элементе, она ссылается на экземпляр `HTMLElement`.
+Если вы объявляете переменную на любом другом отображаемом элементе, переменная ссылается на экземпляр `HTMLElement`.
 
 ```angular-html
-<!-- The "taskInput" variable refers to the HTMLInputElement instance. -->
-<input #taskInput placeholder="Enter task name" />
+<!-- Переменная "taskInput" ссылается на экземпляр HTMLInputElement. -->
+<input #taskInput placeholder="Enter task name">
 ```
 
-#### Присваивание ссылки на Angular-директиву {#assigning-a-reference-to-an-angular-directive}
+#### Присваивание ссылки на директиву Angular
 
-Angular-директивы могут иметь свойство `exportAs`, определяющее имя, по которому директива может быть указана в шаблоне:
+Директивы Angular могут иметь свойство `exportAs`, которое определяет имя, по которому на директиву можно ссылаться в
+шаблоне:
 
 ```angular-ts
 @Directive({
   selector: '[dropZone]',
   exportAs: 'dropZone',
 })
-export class DropZone {
-  /* ... */
-}
+export class DropZone { /* ... */ }
 ```
 
-При объявлении переменной шаблона на элементе можно присвоить этой переменной экземпляр директивы, указав имя `exportAs`:
+Когда вы объявляете переменную шаблона на элементе, вы можете присвоить этой переменной экземпляр директивы, указав это
+имя `exportAs`:
 
 ```angular-html
-<!-- The `firstZone` variable refers to the `DropZone` directive instance. -->
-<section dropZone #firstZone="dropZone">...</section>
+<!-- Переменная `firstZone` ссылается на экземпляр директивы `DropZone`. -->
+<section dropZone #firstZone="dropZone"> ... </section>
 ```
 
-Нельзя ссылаться на директиву, не указавшую имя `exportAs`.
+Вы не можете ссылаться на директиву, которая не указывает имя `exportAs`.
 
-### Использование переменных ссылки на шаблон с запросами {#using-template-reference-variables-with-queries}
+### Использование ссылочных переменных шаблона с запросами
 
-Помимо использования переменных шаблона для чтения значений из другой части того же шаблона, этот стиль объявления переменных также можно использовать для «пометки» элемента для [запросов компонентов и директив](guide/components/queries).
+Помимо использования переменных шаблона для чтения значений из другой части того же шаблона, вы также можете
+использовать этот стиль объявления переменных, чтобы «пометить» элемент
+для [запросов компонентов и директив](/guide/components/queries).
 
-Если нужно запросить конкретный элемент в шаблоне, можно объявить переменную шаблона на этом элементе, а затем запросить элемент по имени переменной.
+Если вы хотите запросить конкретный элемент в шаблоне, вы можете объявить переменную шаблона на этом элементе, а затем
+запросить элемент по имени переменной.
 
 ```angular-html
-<input #description value="Original description" />
+ <input #description value="Original description">
 ```
 
 ```angular-ts
@@ -188,9 +201,10 @@ export class DropZone {
   template: `<input #description value="Original description">`,
 })
 export class AppComponent {
-  // Query for the input element based on the template variable name.
+  // Запрос элемента input на основе имени переменной шаблона.
   @ViewChild('description') input: ElementRef | undefined;
 }
 ```
 
-Подробнее о запросах см. в разделе [Ссылки на дочерние элементы с помощью запросов](guide/components/queries).
+См. [Ссылка на дочерние элементы с помощью запросов](/guide/components/queries) для получения дополнительной информации
+о запросах.

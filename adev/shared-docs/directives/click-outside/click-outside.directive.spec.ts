@@ -16,14 +16,14 @@ describe('ClickOutside', () => {
   let component: ExampleComponent;
   let fixture: ComponentFixture<ExampleComponent>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ExampleComponent],
       providers: [provideRouter([])],
     });
     fixture = TestBed.createComponent(ExampleComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should docsClickOutside be emitted when user click outside `content` element', () => {
@@ -40,6 +40,15 @@ describe('ClickOutside', () => {
     const content = fixture.debugElement.query(By.css('div[id="content"]'));
 
     content.nativeElement.click();
+
+    expect(clickedOutsideSpy).not.toHaveBeenCalled();
+  });
+
+  it('should not docsClickOutside be emitted when user click inside `content` element', () => {
+    const clickedOutsideSpy = spyOn(component, 'clickedOutside');
+    const button = fixture.debugElement.query(By.css('button[id="ignoreThisButton"]'));
+
+    button.nativeElement.click();
 
     expect(clickedOutsideSpy).not.toHaveBeenCalled();
   });

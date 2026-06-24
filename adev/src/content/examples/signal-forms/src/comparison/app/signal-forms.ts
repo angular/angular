@@ -1,15 +1,15 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {email, form, FormField, minLength, required} from '@angular/forms/signals';
+import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {form, Field, required, email, minLength} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-login',
-  imports: [FormField],
+  imports: [Field],
   template: `
     <form (submit)="onSubmit()">
       <div>
         <label>
           Email
-          <input type="email" [formField]="loginForm.email" />
+          <input type="email" [field]="loginForm.email" />
         </label>
         @if (loginForm.email().touched() && loginForm.email().invalid()) {
           <span class="error">
@@ -21,7 +21,7 @@ import {email, form, FormField, minLength, required} from '@angular/forms/signal
       <div>
         <label>
           Password
-          <input type="password" [formField]="loginForm.password" />
+          <input type="password" [field]="loginForm.password" />
         </label>
         @if (loginForm.password().touched() && loginForm.password().invalid()) {
           <span class="error">
@@ -30,7 +30,9 @@ import {email, form, FormField, minLength, required} from '@angular/forms/signal
         }
       </div>
 
-      <button type="submit" [disabled]="loginForm().invalid()">Sign In</button>
+      <button type="submit" [disabled]="loginForm().invalid()">
+        Sign In
+      </button>
     </form>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

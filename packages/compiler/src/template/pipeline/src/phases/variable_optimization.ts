@@ -7,7 +7,6 @@
  */
 
 import * as o from '../../../../output/output_ast';
-import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
@@ -31,9 +30,6 @@ import {CompilationJob} from '../compilation';
  */
 export function optimizeVariables(job: CompilationJob): void {
   for (const unit of job.units) {
-    for (const expr of unit.functions) {
-      inlineAlwaysInlineVariables(expr.ops);
-    }
     inlineAlwaysInlineVariables(unit.create);
     inlineAlwaysInlineVariables(unit.update);
 
@@ -50,10 +46,8 @@ export function optimizeVariables(job: CompilationJob): void {
       }
     }
 
-    for (const expr of unit.functions) {
-      optimizeVariablesInOpList(expr.ops, null);
-      optimizeSaveRestoreView(expr.ops);
-    }
+    optimizeVariablesInOpList(unit.create, job.compatibility);
+    optimizeVariablesInOpList(unit.update, job.compatibility);
 
     for (const op of unit.create) {
       if (
@@ -62,20 +56,11 @@ export function optimizeVariables(job: CompilationJob): void {
         op.kind === ir.OpKind.AnimationListener ||
         op.kind === ir.OpKind.TwoWayListener
       ) {
-        optimizeVariablesInOpList(op.handlerOps, skipArrowFunctionOps);
-        optimizeSaveRestoreView(op.handlerOps);
+        optimizeVariablesInOpList(op.handlerOps, job.compatibility);
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
-        optimizeVariablesInOpList(op.trackByOps, skipArrowFunctionOps);
+        optimizeVariablesInOpList(op.trackByOps, job.compatibility);
       }
     }
-
-    // Note that we skip over arrow function operations, because they are considered
-    // separate boundaries that should not influence the surrounding create/update
-    // operations. This is a side-effect of not being able to control which nested
-    // ops `visitExpressionsInOp` will visit. Without this logic, variable references
-    // inside the arrow function can throw off usage counting for things like view references.
-    optimizeVariablesInOpList(unit.create, skipArrowFunctionOps);
-    optimizeVariablesInOpList(unit.update, skipArrowFunctionOps);
   }
 }
 
@@ -133,14 +118,6 @@ interface OpInfo {
   fences: Fence;
 }
 
-/** Predicate function that decides whether a certain expression should be processed. */
-type ExpressionPredicate = (flags: ir.VisitorContextFlag) => boolean;
-
-/** `ExpressionPredicate` that skips arrow function operations. */
-function skipArrowFunctionOps(flags: ir.VisitorContextFlag): boolean {
-  return !(flags & ir.VisitorContextFlag.InArrowFunctionOperation);
-}
-
 function inlineAlwaysInlineVariables(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>): void {
   const vars = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp | ir.UpdateOp>>();
   for (const op of ops) {
@@ -177,7 +154,7 @@ function inlineAlwaysInlineVariables(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>):
  */
 function optimizeVariablesInOpList(
   ops: ir.OpList<ir.CreateOp | ir.UpdateOp>,
-  predicate: ExpressionPredicate | null,
+  compatibility: ir.CompatibilityMode,
 ): void {
   const varDecls = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp | ir.UpdateOp>>();
   const varUsages = new Map<ir.XrefId, number>();
@@ -197,8 +174,8 @@ function optimizeVariablesInOpList(
       varUsages.set(op.xref, 0);
     }
 
-    opMap.set(op, collectOpInfo(op, predicate));
-    countVariableUsages(op, varUsages, varRemoteUsages, predicate);
+    opMap.set(op, collectOpInfo(op));
+    countVariableUsages(op, varUsages, varRemoteUsages);
   }
 
   // The next step is to remove any variable declarations for variables that aren't used. The
@@ -300,7 +277,10 @@ function optimizeVariablesInOpList(
 
       // Is the variable used in this operation?
       if (opInfo.variablesUsed.has(candidate)) {
-        if (!allowConservativeInlining(decl, targetOp)) {
+        if (
+          compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+          !allowConservativeInlining(decl, targetOp)
+        ) {
           // We're in conservative mode, and this variable is not eligible for inlining into the
           // target operation in this mode.
           break;
@@ -370,21 +350,20 @@ function fencesForIrExpression(expr: ir.Expression): Fence {
  *  * It tracks which variables are used in the operation's expressions.
  *  * It rolls up fence flags for expressions within the operation.
  */
-function collectOpInfo(
-  op: ir.CreateOp | ir.UpdateOp,
-  predicate: ExpressionPredicate | null,
-): OpInfo {
+function collectOpInfo(op: ir.CreateOp | ir.UpdateOp): OpInfo {
   let fences = Fence.None;
   const variablesUsed = new Set<ir.XrefId>();
-  ir.visitExpressionsInOp(op, (expr, flags) => {
-    if (!ir.isIrExpression(expr) || (predicate !== null && !predicate(flags))) {
+  ir.visitExpressionsInOp(op, (expr) => {
+    if (!ir.isIrExpression(expr)) {
       return;
     }
 
-    if (expr.kind === ir.ExpressionKind.ReadVariable) {
-      variablesUsed.add(expr.xref);
-    } else {
-      fences |= fencesForIrExpression(expr);
+    switch (expr.kind) {
+      case ir.ExpressionKind.ReadVariable:
+        variablesUsed.add(expr.xref);
+        break;
+      default:
+        fences |= fencesForIrExpression(expr);
     }
   });
   return {fences, variablesUsed};
@@ -398,10 +377,9 @@ function countVariableUsages(
   op: ir.CreateOp | ir.UpdateOp,
   varUsages: Map<ir.XrefId, number>,
   varRemoteUsage: Set<ir.XrefId>,
-  predicate: ExpressionPredicate | null,
 ): void {
   ir.visitExpressionsInOp(op, (expr, flags) => {
-    if (!ir.isIrExpression(expr) || (predicate !== null && !predicate(flags))) {
+    if (!ir.isIrExpression(expr)) {
       return;
     }
 
@@ -547,7 +525,7 @@ function allowConservativeInlining(
   // that behavior here.
   switch (decl.variable.kind) {
     case ir.SemanticVariableKind.Identifier:
-      if (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === CONTEXT_NAME) {
+      if (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === 'ctx') {
         // Although TemplateDefinitionBuilder is cautious about inlining, we still want to do so
         // when the variable is the context, to imitate its behavior with aliases in control flow
         // blocks. This quirky behavior will become dead code once compatibility mode is no longer
@@ -560,33 +538,5 @@ function allowConservativeInlining(
       return target.kind === ir.OpKind.Variable;
     default:
       return true;
-  }
-}
-
-/**
- * After variables have been optimized in nested ops (e.g. handlers or functions), we may end up
- * with `saveView`/`restoreView` calls that aren't necessary since all the references to the view
- * were optimized away. This function removes the ops related to the view restoration.
- */
-function optimizeSaveRestoreView(ops: ir.OpList<ir.UpdateOp>): void {
-  const head = ops.head.next;
-  const tail = ops.tail.prev;
-
-  // We can only optimize if we have two ops:
-  // 1. A call to `restoreView`.
-  // 2. A return statement with a `resetView` in it.
-  if (
-    head !== null &&
-    tail !== null &&
-    head.next === tail &&
-    head.kind === ir.OpKind.Statement &&
-    head.statement instanceof o.ExpressionStatement &&
-    head.statement.expr instanceof ir.RestoreViewExpr &&
-    tail.kind === ir.OpKind.Statement &&
-    tail.statement instanceof o.ReturnStatement &&
-    tail.statement.value instanceof ir.ResetViewExpr
-  ) {
-    ir.OpList.remove<ir.UpdateOp>(head);
-    tail.statement.value = tail.statement.value.expr;
   }
 }

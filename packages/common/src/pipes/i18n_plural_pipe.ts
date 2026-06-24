@@ -10,7 +10,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 import {getPluralCategory, NgLocalization} from '../i18n/localization';
 
-import {invalidPipeArgumentError} from './utils';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 const _INTERPOLATION_REGEXP: RegExp = /#/g;
 

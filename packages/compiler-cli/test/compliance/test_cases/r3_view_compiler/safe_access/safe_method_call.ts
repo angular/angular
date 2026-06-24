@@ -13,6 +13,10 @@ import {Component} from '@angular/core';
 export class MyApp {
   person?: {getName: (includeTitle: boolean|undefined) => string;};
   config: {
-    get: (name: string) => {enabled: boolean} | undefined;
-  } = {get: () => undefined}
+    get:
+        (name: string) => {
+          enabled: boolean
+        } |
+        undefined;
+  }
 }

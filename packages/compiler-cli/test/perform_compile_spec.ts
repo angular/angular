@@ -201,7 +201,7 @@ describe('perform_compile', () => {
     );
   });
 
-  it('should merge tsconfig "angularCompilerOptions" when extends is array', () => {
+  it('should merge tsconfig "angularCompilerOptions" when extends is aarray', () => {
     support.writeFiles({
       'tsconfig-level-1.json': `{
         "extends": [
@@ -218,7 +218,7 @@ describe('perform_compile', () => {
       }`,
       'tsconfig-level-2.json': `{
         "compilerOptions": {
-          "target": "es2015",
+          "target": "es5",
           "module": "es2015"
         },
         "angularCompilerOptions": {

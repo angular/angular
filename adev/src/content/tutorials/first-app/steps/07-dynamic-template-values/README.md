@@ -4,12 +4,12 @@
 
 <docs-video src="https://www.youtube.com/embed/eM3zi_n7lNs?si=IFAly3Ss8dwqFx8N&amp;start=338"/>
 
-## Чему вы научитесь {#what-youll-learn}
+## Чему вы научитесь
 
 - Ваше приложение будет отображать интерполированные значения в шаблоне `HousingLocation`.
 - Ваше приложение будет отображать данные о местоположении жилья в браузере.
 
-## Концептуальный обзор интерполяции {#conceptual-preview-of-interpolation}
+## Концептуальный обзор интерполяции
 
 На этом этапе вы отобразите значения, полученные из свойств `input`, в шаблоне с помощью интерполяции.
 
@@ -21,7 +21,7 @@
 
 <docs-workflow>
 
-<docs-step title="Update `HousingLocation` template to include interpolated values">
+<docs-step title="Обновление шаблона HousingLocation для включения интерполированных значений">
 Этот шаг добавляет новую HTML-структуру и интерполированные значения в шаблон `HousingLocation`.
 
 В редакторе кода:
@@ -38,7 +38,7 @@
 
 </docs-step>
 
-<docs-step title="Confirm the changes render in the browser">
+<docs-step title="Проверка отображения изменений в браузере">
 1.  Сохраните все изменения.
 1.  Откройте браузер и убедитесь, что приложение отображает фото, город и штат из примера данных.
     <img alt="окно браузера с приложением homes-app, отображающим логотип, текстовое поле фильтра, кнопку поиска и карточку интерфейса с местоположением жилья" src="assets/images/tutorials/first-app/homes-app-lesson-07-step-2.png">

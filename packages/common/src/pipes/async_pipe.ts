@@ -20,7 +20,7 @@ import {
 } from '@angular/core';
 import type {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
-import {invalidPipeArgumentError} from './utils';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
   createSubscription(

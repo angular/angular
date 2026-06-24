@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe} from './definition';
-import {ɵɵControlFeature} from './features/control_feature';
 import {ɵɵHostDirectivesFeature} from './features/host_directives_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ɵɵExternalStylesFeature} from './features/external_styles_feature';
-import {ControlDirectiveHost} from './interfaces/control';
 import {
   ComponentDef,
   ComponentTemplate,
@@ -97,6 +95,7 @@ export {
   ɵɵproperty,
   ɵɵcontrol,
   ɵɵcontrolCreate,
+  ɵcontrolUpdate,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵloadQuery,
@@ -166,7 +165,6 @@ export {
   ɵɵanimateEnterListener,
   ɵɵanimateLeave,
   ɵɵanimateLeaveListener,
-  ɵɵarrowFunction,
 } from './instructions/all';
 export {
   ɵɵdeferEnableTimerScheduling,
@@ -223,7 +221,6 @@ export {
   AcxDirectiveDebugMetadata,
   AcxComponentDebugMetadata,
   WizComponentDebugMetadata,
-  ControlDirectiveHost,
   DirectiveDebugMetadata,
   DirectiveDef,
   DirectiveType,
@@ -240,7 +237,6 @@ export {
   ɵɵdefinePipe,
   ɵɵDirectiveDeclaration,
   ɵɵFactoryDeclaration,
-  ɵɵControlFeature,
   ɵɵHostDirectivesFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵInjectorDeclaration,

@@ -54,7 +54,9 @@ import {FormsModule} from '@angular/forms';
         }
       </div>
 
-      <button type="submit" [disabled]="loginForm.invalid">Sign In</button>
+      <button type="submit" [disabled]="loginForm.invalid">
+        Sign In
+      </button>
     </form>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

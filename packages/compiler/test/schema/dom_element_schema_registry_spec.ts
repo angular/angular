@@ -156,6 +156,7 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext('p', 'innerHTML', false)).toBe(SecurityContext.HTML);
     expect(registry.securityContext('a', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('a', 'style', false)).toBe(SecurityContext.STYLE);
+    expect(registry.securityContext('ins', 'cite', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
   });
 
@@ -187,16 +188,17 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     });
   });
 
-  // Uncomment to see the generated schema which can then be pasted to the DomElementSchemaRegistry
-  // if (!isNode) {
-  //   it('generate a new schema', () => {
-  //     let schema = '\n';
-  //     extractSchema()!.forEach((props, name) => {
-  //       schema += `'${name}|${props.join(',')}',\n`;
-  //     });
-  //     console.log(schema);
-  //   });
-  // }
+  if (!isNode) {
+    it('generate a new schema', () => {
+      let schema = '\n';
+      extractSchema()!.forEach((props, name) => {
+        schema += `'${name}|${props.join(',')}',\n`;
+      });
+      // Uncomment this line to see:
+      // the generated schema which can then be pasted to the DomElementSchemaRegistry
+      // console.log(schema);
+    });
+  }
 
   describe('normalizeAnimationStyleProperty', () => {
     it('should normalize the given CSS property to camelCase', () => {

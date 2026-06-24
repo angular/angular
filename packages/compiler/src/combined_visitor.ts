@@ -89,19 +89,13 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
 
   visitSwitchBlock(block: t.SwitchBlock): void {
     this.visit(block.expression);
-    this.visitAllTemplateNodes(block.groups);
+    this.visitAllTemplateNodes(block.cases);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
     block.expression && this.visit(block.expression);
-  }
-
-  visitSwitchBlockCaseGroup(block: t.SwitchBlockCaseGroup): void {
-    this.visitAllTemplateNodes(block.cases);
     this.visitAllTemplateNodes(block.children);
   }
-
-  visitSwitchExhaustiveCheck(block: t.SwitchExhaustiveCheck): void {}
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
     block.item.visit(this);

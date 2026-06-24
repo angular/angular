@@ -78,10 +78,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
     ]);
 
   // (m) => m.default && ɵɵreplaceMetadata(...)
-  const replaceCallback = o.arrowFn(
-    [new o.FnParam(moduleName, o.DYNAMIC_TYPE)],
-    defaultRead.and(replaceCall),
-  );
+  const replaceCallback = o.arrowFn([new o.FnParam(moduleName)], defaultRead.and(replaceCall));
 
   // getReplaceMetadataURL(id, timestamp, import.meta.url)
   const url = o
@@ -97,7 +94,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
   // }
   const importCallback = new o.DeclareFunctionStmt(
     importCallbackName,
-    [new o.FnParam(timestampName, o.DYNAMIC_TYPE)],
+    [new o.FnParam(timestampName)],
     [
       // The vite-ignore special comment is required to prevent Vite from generating a superfluous
       // warning for each usage within the development code. If Vite provides a method to
@@ -113,7 +110,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
 
   // (d) => d.id === id && Cmp_HmrLoad(d.timestamp)
   const updateCallback = o.arrowFn(
-    [new o.FnParam(dataName, o.DYNAMIC_TYPE)],
+    [new o.FnParam(dataName)],
     o
       .variable(dataName)
       .prop('id')
@@ -176,7 +173,7 @@ export function compileHmrUpdateCallback(
   const body: o.Statement[] = [];
 
   for (const local of meta.localDependencies) {
-    params.push(new o.FnParam(local.name, o.DYNAMIC_TYPE));
+    params.push(new o.FnParam(local.name));
   }
 
   // Declare variables that read out the individual namespaces.

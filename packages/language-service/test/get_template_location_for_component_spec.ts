@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+
 import {
   assertFileNames,
   createModuleAndProjectWithDeclarations,
@@ -14,6 +16,10 @@ import {
 } from '../testing';
 
 describe('get template location for component', () => {
+  beforeEach(() => {
+    initMockFileSystem('Native');
+  });
+
   it('finds location of inline template', () => {
     const files = {
       'app.ts': `
@@ -97,7 +103,7 @@ describe('get template location for component', () => {
     assertFileNames([result2], ['template2.html']);
   });
 
-  it('returns nothing when cursor is not in a component (directive)', () => {
+  it('returns nothing when cursor is not in a component', () => {
     const files = {
       'app.ts': `
       import {Directive} from '@angular/core';
@@ -118,7 +124,7 @@ describe('get template location for component', () => {
     expect(appFile.getTemplateLocationForComponent()).toBeUndefined();
   });
 
-  it('returns nothing when cursor is not in a component (external const)', () => {
+  it('returns nothing when cursor is not in a component', () => {
     const files = {
       'app.ts': `
       import {Component} from '@angular/core';

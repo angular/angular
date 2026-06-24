@@ -162,7 +162,6 @@ export interface ContentChildrenDecorator {
    * {@example core/di/ts/contentChildren/content_children_example.ts region='Component'}
    *
    * @Annotation
-   * @see [Content queries](guide/components/queries#decorator-content-queries)
    */
   (
     selector: ProviderToken<unknown> | Function | string,
@@ -271,7 +270,6 @@ export interface ContentChildDecorator {
    * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
    *
    * @Annotation
-   * @see [Content queries](guide/components/queries#decorator-content-queries)
    */
   (
     selector: ProviderToken<unknown> | Function | string,
@@ -368,7 +366,6 @@ export interface ViewChildrenDecorator {
    * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
    *
    * @Annotation
-   * @see [View queries](guide/components/queries#decorator-view-queries)
    */
   (
     selector: ProviderToken<unknown> | Function | string,
@@ -466,7 +463,6 @@ export interface ViewChildDecorator {
    * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
    *
    * @Annotation
-   * @see [View queries](guide/components/queries#decorator-view-queries)
    */
   (
     selector: ProviderToken<unknown> | Function | string,

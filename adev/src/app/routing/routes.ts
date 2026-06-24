@@ -45,17 +45,16 @@ const referencePageRoutes = mapNavigationItemsToRoutes(
 const updateGuidePageRoute: Route = {
   path: referenceNavigationItems.find((r) => r.path === DEFAULT_PAGES.UPDATE)!.path,
   loadComponent: () => import('../features/update/update.component'),
-  data: {
-    ...commonReferenceRouteData,
-    label: 'Update guide',
-  },
+  data: commonReferenceRouteData,
 };
 
 const cliReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter((r) => r.path?.startsWith(`${PAGE_PREFIX.CLI}/`)),
   {
     loadComponent: () =>
-      import('../features/references/cli-reference-details-page/cli-reference-details-page.component'),
+      import(
+        '../features/references/cli-reference-details-page/cli-reference-details-page.component'
+      ),
     data: commonReferenceRouteData,
   },
 ).map((route) => ({
@@ -156,7 +155,7 @@ export const routes: Route[] = [
   // Error page
   {
     path: '**',
-    loadComponent: () => import('../features/not-found/not-found').then((m) => m.NotFound),
-    data: {label: 'Page not found'},
+    loadComponent: () => import('../features/docs/docs.component'),
+    resolve: {'docContent': contentResolver('error')},
   },
 ];

@@ -312,11 +312,9 @@ describe('animation renderer factory', () => {
   @Component({
     selector: 'some-component',
     template: `
-      <div
-        [@myAnimation]="exp"
-        (@myAnimation.start)="callback($event)"
-        (@myAnimation.done)="callback($event)"
-      >
+      <div [@myAnimation]="exp"
+           (@myAnimation.start)="callback($event)"
+           (@myAnimation.done)="callback($event)">
         foo
       </div>
     `,

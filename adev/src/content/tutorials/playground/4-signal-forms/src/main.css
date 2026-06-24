@@ -32,7 +32,7 @@ input {
   font-family: inherit;
 }
 
-input:focus-visible {
+input:focus {
   outline: none;
   border-color: #4285f4;
 }

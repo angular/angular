@@ -80,12 +80,9 @@ export class PipeSymbol extends SemanticSymbol {
   }
 }
 
-export class PipeDecoratorHandler implements DecoratorHandler<
-  Decorator,
-  PipeHandlerData,
-  PipeSymbol,
-  unknown
-> {
+export class PipeDecoratorHandler
+  implements DecoratorHandler<Decorator, PipeHandlerData, PipeSymbol, unknown>
+{
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -130,7 +127,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<
     this.perf.eventCount(PerfEvent.AnalyzePipe);
 
     const name = clazz.name.text;
-    const type = wrapTypeReference(clazz);
+    const type = wrapTypeReference(this.reflector, clazz);
 
     if (decorator.args === null) {
       throw new FatalDiagnosticError(

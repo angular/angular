@@ -131,10 +131,6 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    */
   usesOnChanges?: boolean;
 
-  controlCreate?: {
-    passThroughInput: string | null;
-  };
-
   /**
    * Whether the directive is standalone. Defaults to false.
    */

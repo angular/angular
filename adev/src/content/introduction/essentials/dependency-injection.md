@@ -6,7 +6,7 @@
 проектирования [внедрение зависимостей](guide/di), который позволяет вам создать "сервис". Сервис позволяет вам внедрять
 код в компоненты, управляя им из единого источника истины.
 
-## Что такое сервисы? {#what-are-services}
+## Что такое сервисы?
 
 Сервисы — это повторно используемые части кода, которые могут быть внедрены.
 
@@ -30,7 +30,7 @@ export class Calculator {
 }
 ```
 
-## Как использовать сервис {#how-to-use-a-service}
+## Как использовать сервис
 
 Когда вы хотите использовать сервис в компоненте, вам нужно:
 
@@ -40,13 +40,14 @@ export class Calculator {
 Вот как это может выглядеть в компоненте `Receipt`:
 
 ```angular-ts
-import {Component, inject} from '@angular/core';
-import {Calculator} from './calculator';
+import { Component, inject } from '@angular/core';
+import { Calculator } from './calculator';
 
 @Component({
   selector: 'app-receipt',
   template: `<h1>The total is {{ totalCost }}</h1>`,
 })
+
 export class Receipt {
   private calculator = inject(Calculator);
   totalCost = this.calculator.add(50, 25);
@@ -55,7 +56,7 @@ export class Receipt {
 
 В этом примере `Calculator` используется путем вызова функции Angular `inject` и передачи ей сервиса.
 
-## Следующий шаг {#next-step}
+## Следующий шаг
 
 <docs-pill-row>
   <docs-pill title="Следующие шаги после Основ" href="essentials/next-steps" />

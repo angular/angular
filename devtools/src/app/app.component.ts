@@ -31,10 +31,11 @@ export class EmptyComponent {
 @Component({
   selector: 'other-app',
   template: `
-    @defer {
-      <empty-component />
-    } @placeholder (minimum 2s) {
-      <b>Stuff will be loaded here</b>
+    @defer  {
+        <empty-component/>
+    }
+    @placeholder (minimum 2s) {
+        <b>Stuff will be loaded here</b>
     }
   `,
   imports: [EmptyComponent],

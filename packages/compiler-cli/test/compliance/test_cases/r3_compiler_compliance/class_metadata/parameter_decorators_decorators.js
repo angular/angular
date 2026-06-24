@@ -1,10 +1,5 @@
-let ParameterizedInjectable = class ParameterizedInjectable {
-  …
-  static ɵfac = …;
-  static ɵprov = …;
-  …
-}
-…
+ParameterizedInjectable.ɵfac = …;
+ParameterizedInjectable.ɵprov = …;
 ParameterizedInjectable = __decorate([
   __param(2, CustomParamDecorator()),
   __param(3, CustomParamDecorator()),

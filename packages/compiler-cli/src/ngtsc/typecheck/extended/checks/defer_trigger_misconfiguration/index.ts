@@ -16,49 +16,11 @@ import {
   TmplAstInteractionDeferredTrigger,
   TmplAstTimerDeferredTrigger,
   TmplAstViewportDeferredTrigger,
-  LiteralMap,
-  LiteralPrimitive,
 } from '@angular/compiler';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {
-  formatExtendedError,
-  TemplateCheckFactory,
-  TemplateCheckWithVisitor,
-  TemplateContext,
-} from '../../api';
-
-function areLiteralMapsEqual(a: LiteralMap | null, b: LiteralMap | null): boolean {
-  // Treat null and empty LiteralMaps as equivalent
-  const aIsEmpty = a === null || a.keys.length === 0;
-  const bIsEmpty = b === null || b.keys.length === 0;
-
-  if (aIsEmpty && bIsEmpty) return true;
-  if (aIsEmpty || bIsEmpty) return false;
-  if (a.keys.length !== b.keys.length) return false;
-
-  const bMap = new Map<string, unknown>();
-
-  for (let i = 0; i < b.keys.length; i++) {
-    const bKey = b.keys[i];
-    if (bKey.kind !== 'property') continue;
-    const bVal = b.values[i];
-    bMap.set(bKey.key, bVal instanceof LiteralPrimitive ? bVal.value : null);
-  }
-
-  for (let i = 0; i < a.keys.length; i++) {
-    const aKey = a.keys[i];
-    if (aKey.kind !== 'property') continue;
-    const aVal = a.values[i];
-    const aValue = aVal instanceof LiteralPrimitive ? aVal.value : null;
-
-    if (!bMap.has(aKey.key)) return false;
-    if (bMap.get(aKey.key) !== aValue) return false;
-  }
-
-  return true;
-}
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * This check implements warnings for unreachable or redundant @defer triggers.
@@ -96,21 +58,11 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
     if (hasImmediateMain) {
       if (mains.length > 1) {
         const msg = `The 'immediate' trigger makes additional triggers redundant.`;
-        diags.push(
-          ctx.makeTemplateDiagnostic(
-            node.sourceSpan,
-            formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
-          ),
-        );
+        diags.push(ctx.makeTemplateDiagnostic(node.sourceSpan, msg));
       }
       if (prefetches.length > 0) {
         const msg = `Prefetch triggers have no effect because 'immediate' executes earlier.`;
-        diags.push(
-          ctx.makeTemplateDiagnostic(
-            node.sourceSpan,
-            formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
-          ),
-        );
+        diags.push(ctx.makeTemplateDiagnostic(node.sourceSpan, msg));
       }
     }
 
@@ -127,18 +79,14 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
           const preDelay = pre.delay;
           if (preDelay >= mainDelay) {
             const msg = `The Prefetch 'timer(${preDelay}ms)' is not scheduled before the main 'timer(${mainDelay}ms)', so it won’t run prior to rendering. Lower the prefetch delay or remove it.`;
-            diags.push(
-              ctx.makeTemplateDiagnostic(
-                pre.sourceSpan ?? node.sourceSpan,
-                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
-              ),
-            );
+            diags.push(ctx.makeTemplateDiagnostic(pre.sourceSpan ?? node.sourceSpan, msg));
           }
         }
 
-        // Reference-based triggers (hover/interaction/viewport): warn if both
-        // have identical configurations - same reference (or both null) and
-        // same options (for viewport triggers).
+        // Reference-based triggers (hover/interaction/viewport): only warn if both
+        // have a reference and the references are identical. If references differ
+        // (or one is missing), the prefetch targets a different element and
+        // provides potential value.
 
         const isHoverTrigger =
           main instanceof TmplAstHoverDeferredTrigger && pre instanceof TmplAstHoverDeferredTrigger;
@@ -152,20 +100,12 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
           pre instanceof TmplAstViewportDeferredTrigger;
 
         if (isHoverTrigger || isInteractionTrigger || isViewportTrigger) {
-          const referencesMatch = main.reference === pre.reference;
-          const optionsMatch = isViewportTrigger
-            ? areLiteralMapsEqual(main.options, pre.options)
-            : true;
-
-          if (referencesMatch && optionsMatch) {
+          const mainRef = main.reference;
+          const preRef = pre.reference;
+          if (mainRef && preRef && mainRef === preRef) {
             const kindName = main.constructor.name.replace('DeferredTrigger', '').toLowerCase();
             const msg = `Prefetch '${kindName}' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
-            diags.push(
-              ctx.makeTemplateDiagnostic(
-                pre.sourceSpan ?? node.sourceSpan,
-                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
-              ),
-            );
+            diags.push(ctx.makeTemplateDiagnostic(pre.sourceSpan ?? node.sourceSpan, msg));
           }
           // otherwise, different references or missing reference => no warning
           continue;
@@ -181,12 +121,7 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
               ? 'immediate'
               : main.constructor.name.replace('DeferredTrigger', '').toLowerCase();
           const msg = `Prefetch '${kind}' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
-          diags.push(
-            ctx.makeTemplateDiagnostic(
-              pre.sourceSpan ?? node.sourceSpan,
-              formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
-            ),
-          );
+          diags.push(ctx.makeTemplateDiagnostic(pre.sourceSpan ?? node.sourceSpan, msg));
         }
       }
     }

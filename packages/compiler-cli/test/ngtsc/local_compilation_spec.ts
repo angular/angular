@@ -16,10 +16,6 @@ import {NgtscTestEnvironment, TsConfigOptions} from './env';
 
 const testFiles = loadStandardTestFiles();
 
-function cleanNewLines(contents: string) {
-  return contents.replace(/\s*\n\s*/g, ' ');
-}
-
 runInEachFileSystem(() => {
   describe('local compilation', () => {
     let env!: NgtscTestEnvironment;
@@ -27,6 +23,10 @@ runInEachFileSystem(() => {
     function tsconfig(extraOpts: TsConfigOptions = {}) {
       const tsconfig: {[key: string]: any} = {
         extends: '../tsconfig-base.json',
+        compilerOptions: {
+          baseUrl: '.',
+          rootDirs: ['/app'],
+        },
         angularCompilerOptions: {
           compilationMode: 'experimental-local',
           ...extraOpts,
@@ -58,6 +58,10 @@ runInEachFileSystem(() => {
       beforeEach(() => {
         const tsconfig: {[key: string]: any} = {
           extends: '../tsconfig-base.json',
+          compilerOptions: {
+            baseUrl: '.',
+            rootDirs: ['/app'],
+          },
           angularCompilerOptions: {
             compilationMode: 'experimental-local',
             generateExtraImportsInLocalMode: true,
@@ -82,7 +86,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from './comp1';
+        import {Comp1} from 'comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -96,7 +100,7 @@ runInEachFileSystem(() => {
         import {SomeExternalStuff} from '/some_external_file';
         import {SomeExternalStuff2} from '/some_external_file2';
 
-        import {BModule} from './b';
+        import {BModule} from 'b';
 
         @NgModule({imports: [SomeExternalStuff, BModule]})
         export class AModule {
@@ -127,7 +131,7 @@ runInEachFileSystem(() => {
           .not.toContain('import "/some_external_file2"');
         expect(Comp1Contents)
           .withContext('NgModule internal import should not be included in the global import')
-          .not.toContain('import "./b"');
+          .not.toContain('import "b"');
       });
 
       it('should include global imports only in the eligible files', () => {
@@ -170,7 +174,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from './comp1';
+        import {Comp1} from 'comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -184,7 +188,7 @@ runInEachFileSystem(() => {
         import {SomeExternalStuff} from '/some_external_file';
         import {SomeExternalStuff2} from '/some_external_file2';
 
-        import {BModule} from './b';
+        import {BModule} from 'b';
 
         @NgModule({imports: [SomeExternalStuff, BModule]})
         export class AModule {
@@ -247,7 +251,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from './comp1';
+        import {Comp1} from 'comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -260,7 +264,7 @@ runInEachFileSystem(() => {
         import {NgModule} from '@angular/core';
         import * as n from '/some_external_file';
 
-        import {BModule} from './b';
+        import {BModule} from 'b';
 
         @NgModule({imports: [n.SomeExternalStuff]})
         export class AModule {
@@ -295,7 +299,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from './comp1';
+        import {Comp1} from 'comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -308,7 +312,7 @@ runInEachFileSystem(() => {
         import {NgModule} from '@angular/core';
         import {SomeExternalStuff} from '/some_external_file';
 
-        import {BModule} from './b';
+        import {BModule} from 'b';
 
         @NgModule({imports: [[[SomeExternalStuff]]]})
         export class AModule {
@@ -337,7 +341,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from './comp1';
+        import {Comp1} from 'comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -350,7 +354,7 @@ runInEachFileSystem(() => {
         import {NgModule} from '@angular/core';
         import * as n from '/some_external_file';
 
-        import {BModule} from './b';
+        import {BModule} from 'b';
 
         @NgModule({imports: [[[n.SomeExternalStuff]]]})
         export class AModule {
@@ -379,7 +383,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from './comp1';
+        import {Comp1} from 'comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -393,7 +397,7 @@ runInEachFileSystem(() => {
         import {SomeExternalStuff} from '/some_external_file';
         import * as n from '/some_external_file2';
 
-        import {BModule} from './b';
+        import {BModule} from 'b';
 
         @NgModule({imports: [[SomeExternalStuff], [n.SomeExternalStuff]]})
         export class AModule {
@@ -456,9 +460,9 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {InternalComp} from './internal_comp';
-        import {InternalDir} from './internal_dir';
-        import {InternalPipe} from './internal_pipe';
+        import {InternalComp} from 'internal_comp';
+        import {InternalDir} from 'internal_dir';
+        import {InternalPipe} from 'internal_pipe';
 
         @NgModule({declarations: [InternalComp, InternalDir, InternalPipe], exports: [InternalComp, InternalDir, InternalPipe]})
         export class InternalModule {
@@ -480,8 +484,8 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {MainComp} from './main_comp';
-        import {InternalModule} from './internal_module';
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
 
         @NgModule({declarations: [MainComp], imports: [InternalModule]})
         export class MainModule {
@@ -491,9 +495,9 @@ runInEachFileSystem(() => {
 
         env.driveMain();
 
-        expect(env.getContents('main_comp.js')).toContain('import "./internal_comp"');
-        expect(env.getContents('main_comp.js')).toContain('import "./internal_dir"');
-        expect(env.getContents('main_comp.js')).toContain('import "./internal_pipe"');
+        expect(env.getContents('main_comp.js')).toContain('import "internal_comp"');
+        expect(env.getContents('main_comp.js')).toContain('import "internal_dir"');
+        expect(env.getContents('main_comp.js')).toContain('import "internal_pipe"');
       });
 
       it('should not include extra import and remote scope runtime for the local component dependencies when cycle is produced', () => {
@@ -2217,9 +2221,9 @@ runInEachFileSystem(() => {
         // Expect that all deferrableImports in local compilation mode
         // are located in a single function (since we can't detect in
         // the local mode which components belong to which block).
-        expect(cleanNewLines(jsContents)).toContain(
-          'const AppCmp_DeferFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+        expect(jsContents).toContain(
+          'const AppCmp_DeferFn = () => [' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)];',
         );
 
@@ -2232,9 +2236,9 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
-        expect(cleanNewLines(jsContents)).toContain(
-          'ɵsetClassMetadataAsync(AppCmp, () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+        expect(jsContents).toContain(
+          'ɵsetClassMetadataAsync(AppCmp, () => [' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
             '(DeferredCmpA, DeferredCmpB) => {',
         );
@@ -2364,9 +2368,9 @@ runInEachFileSystem(() => {
         // are located in a single function (since we can't detect in
         // the local mode which components belong to which block).
         // Eager dependencies are **not* included here.
-        expect(cleanNewLines(jsContents)).toContain(
-          'const AppCmp_DeferFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+        expect(jsContents).toContain(
+          'const AppCmp_DeferFn = () => [' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)];',
         );
 
@@ -2382,9 +2386,9 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
-        expect(cleanNewLines(jsContents)).toContain(
-          'ɵsetClassMetadataAsync(AppCmp, () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
+        expect(jsContents).toContain(
+          'ɵsetClassMetadataAsync(AppCmp, () => [' +
+            'import("./deferred-a").then(m => m.DeferredCmpA), ' +
             'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
             '(DeferredCmpA, DeferredCmpB) => {',
         );
@@ -2452,12 +2456,12 @@ runInEachFileSystem(() => {
 
           // Expect that we generate 2 different defer functions
           // (one for each component).
-          expect(cleanNewLines(jsContents)).toContain(
-            'const AppCmpA_DeferFn = () => [/* @ts-ignore */ ' +
+          expect(jsContents).toContain(
+            'const AppCmpA_DeferFn = () => [' +
               'import("./deferred-deps").then(m => m.DeferredCmpA)]',
           );
-          expect(cleanNewLines(jsContents)).toContain(
-            'const AppCmpB_DeferFn = () => [/* @ts-ignore */ ' +
+          expect(jsContents).toContain(
+            'const AppCmpB_DeferFn = () => [' +
               'import("./deferred-deps").then(m => m.DeferredCmpB)]',
           );
 
@@ -2469,12 +2473,12 @@ runInEachFileSystem(() => {
           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpB_DeferFn)');
 
           // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
-          expect(cleanNewLines(jsContents)).toContain(
-            'ɵsetClassMetadataAsync(AppCmpA, () => [/* @ts-ignore */ ' +
+          expect(jsContents).toContain(
+            'ɵsetClassMetadataAsync(AppCmpA, () => [' +
               'import("./deferred-deps").then(m => m.DeferredCmpA)]',
           );
-          expect(cleanNewLines(jsContents)).toContain(
-            'ɵsetClassMetadataAsync(AppCmpB, () => [/* @ts-ignore */ ' +
+          expect(jsContents).toContain(
+            'ɵsetClassMetadataAsync(AppCmpB, () => [' +
               'import("./deferred-deps").then(m => m.DeferredCmpB)]',
           );
         },

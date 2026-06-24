@@ -2,8 +2,8 @@ import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
 
 @Directive({})
 export class HostDir {
-  @Input() value = 0;
-  @Input() color = '';
+  @Input() value: number;
+  @Input() color: string;
   @Output() opened = new EventEmitter();
   @Output() closed = new EventEmitter();
 }

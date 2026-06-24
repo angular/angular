@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
-import {RuntimeErrorCode} from '../errors';
-
 import {SchemaPath, SchemaFn, SchemaOrSchemaFn} from '../api/types';
 import {FieldPathNode} from './path_node';
 
@@ -23,7 +20,7 @@ let currentCompilingNode: FieldPathNode | undefined = undefined;
  * A cache of all schemas compiled under the current root compilation. This is used to avoid doing
  * extra work when compiling a schema that reuses references to the same sub-schema. For example:
  *
- * ```ts
+ * ```
  * const sub = schema(p => ...);
  * const s = schema(p => {
  *   apply(p.a, sub);
@@ -108,10 +105,9 @@ export function isSchemaOrSchemaFn(value: unknown): value is SchemaOrSchemaFn<un
 /** Checks that a path node belongs to the schema function currently being compiled. */
 export function assertPathIsCurrent(path: SchemaPath<unknown>): void {
   if (currentCompilingNode !== FieldPathNode.unwrapFieldPath(path).root) {
-    throw new RuntimeError(
-      RuntimeErrorCode.PATH_OUTSIDE_SCHEMA,
-      ngDevMode &&
-        `A FieldPath can only be used directly within the Schema that owns it, **not** outside of it or within a sub-schema.`,
+    throw new Error(
+      `A FieldPath can only be used directly within the Schema that owns it,` +
+        ` **not** outside of it or within a sub-schema.`,
     );
   }
 }

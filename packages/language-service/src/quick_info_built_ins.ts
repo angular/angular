@@ -11,6 +11,7 @@ import {
   ImplicitReceiver,
   ParseSourceSpan,
   PropertyRead,
+  ThisReceiver,
   TmplAstBlockNode,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
@@ -21,7 +22,7 @@ import {
   TmplAstForLoopBlockEmpty,
   TmplAstNode,
 } from '@angular/compiler';
-import type ts from 'typescript';
+import ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_TEXT} from './utils/display_parts';
 import {createQuickInfo, getTextSpanOfNode, isWithin, toTextSpan} from './utils';
@@ -31,6 +32,7 @@ export function isDollarAny(node: TmplAstNode | AST): node is Call {
     node instanceof Call &&
     node.receiver instanceof PropertyRead &&
     node.receiver.receiver instanceof ImplicitReceiver &&
+    !(node.receiver.receiver instanceof ThisReceiver) &&
     node.receiver.name === '$any' &&
     node.args.length === 1
   );
@@ -170,8 +172,7 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'idle': {
-    docString:
-      triggerDescriptionPreamble + `the browser reports idle state. Accepts an optional timeout.`,
+    docString: triggerDescriptionPreamble + `the browser reports idle state (default).`,
     links: ['[Reference](https://angular.dev/guide/templates/defer#on-idle)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
@@ -209,7 +210,8 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
   'hydrate': {
     docString:
       "Keyword that indicates when the block's content will be hydrated. You can use `on` and `when` conditions as hydration triggers, or `hydrate never` to disable hydration for this block.",
-    links: ['[Reference](https://angular.dev/guide/incremental-hydration)'],
+    // TODO(crisbeto): add link to partial hydration guide
+    links: [],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'when': {

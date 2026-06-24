@@ -111,34 +111,25 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitSafeCall(ast, null);
   }
-  override visitTemplateLiteral(ast: e.TemplateLiteral): void {
+  override visitTemplateLiteral(ast: e.TemplateLiteral, context: any): void {
     this.recordAst(ast);
     super.visitTemplateLiteral(ast, null);
   }
-  override visitTemplateLiteralElement(ast: e.TemplateLiteralElement): void {
+  override visitTemplateLiteralElement(ast: e.TemplateLiteralElement, context: any): void {
     this.recordAst(ast);
     super.visitTemplateLiteralElement(ast, null);
   }
-  override visitTaggedTemplateLiteral(ast: e.TaggedTemplateLiteral): void {
+  override visitTaggedTemplateLiteral(ast: e.TaggedTemplateLiteral, context: any): void {
     this.recordAst(ast);
     super.visitTaggedTemplateLiteral(ast, null);
   }
-  override visitParenthesizedExpression(ast: e.ParenthesizedExpression): void {
+  override visitParenthesizedExpression(ast: e.ParenthesizedExpression, context: any): void {
     this.recordAst(ast);
     super.visitParenthesizedExpression(ast, null);
   }
-  override visitRegularExpressionLiteral(ast: e.RegularExpressionLiteral): void {
+  override visitRegularExpressionLiteral(ast: e.RegularExpressionLiteral, context: any): void {
     this.recordAst(ast);
     super.visitRegularExpressionLiteral(ast, null);
-  }
-  override visitSpreadElement(ast: e.SpreadElement): void {
-    this.recordAst(ast);
-    super.visitSpreadElement(ast, null);
-  }
-
-  override visitArrowFunction(ast: e.ArrowFunction) {
-    this.recordAst(ast);
-    super.visitArrowFunction(ast, null);
   }
 
   visitTemplate(ast: t.Template) {
@@ -207,19 +198,13 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
 
   visitSwitchBlock(block: t.SwitchBlock) {
     block.expression.visit(this);
-    t.visitAll(this, block.groups);
+    t.visitAll(this, block.cases);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase) {
     block.expression?.visit(this);
-  }
-
-  visitSwitchBlockCaseGroup(block: t.SwitchBlockCaseGroup) {
-    t.visitAll(this, block.cases);
     t.visitAll(this, block.children);
   }
-
-  visitSwitchExhaustiveCheck(block: t.SwitchExhaustiveCheck) {}
 
   visitForLoopBlock(block: t.ForLoopBlock) {
     block.item.visit(this);

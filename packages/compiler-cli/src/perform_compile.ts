@@ -224,7 +224,7 @@ function getExtendedConfigPathWorker(
     const {resolvedModule} = ts.nodeModuleNameResolver(
       extendsValue,
       configFile,
-      {moduleResolution: ts.ModuleResolutionKind.NodeNext, resolveJsonModule: true},
+      {moduleResolution: ts.ModuleResolutionKind.Node10, resolveJsonModule: true},
       parseConfigHost,
     );
     if (resolvedModule) {

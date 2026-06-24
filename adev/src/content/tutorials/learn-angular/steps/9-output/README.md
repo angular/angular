@@ -15,26 +15,26 @@ Angular использует функцию `output()` для реализаци
 Чтобы создать канал связи от дочернего компонента к родительскому, используйте функцию `output` для инициализации
 свойства класса.
 
-```ts {header:"child.ts"}
+<docs-code header="child.ts" language="ts">
 @Component({...})
 class Child {
   incrementCountEvent = output<number>();
 }
-```
+</docs-code>
 
 Теперь компонент может генерировать события, которые может прослушивать родительский компонент. События вызываются с
 помощью метода `emit`:
 
-```ts {header:"child.ts"}
+<docs-code header="child.ts" language="ts">
 class Child {
   ...
 
-  onClick() {
-    this.count++;
-    this.incrementCountEvent.emit(this.count);
-  }
+onClick() {
+this.count++;
+this.incrementCountEvent.emit(this.count);
 }
-```
+}
+</docs-code>
 
 Функция emit сгенерирует событие того же типа, который был определен в `output`.
 
@@ -42,22 +42,22 @@ class Child {
 
 <docs-workflow>
 
-<docs-step title="Add an `output()` property">
+<docs-step title="Добавьте свойство `output()`">
 Обновите `child.ts`, добавив output-свойство с именем `addItemEvent`. Убедитесь, что тип output установлен как `string`.
 </docs-step>
 
-<docs-step title="Complete `addItem` method">
+<docs-step title="Завершите метод `addItem`">
 В `child.ts` обновите метод `addItem`; используйте следующий код в качестве логики:
 
-```ts {header:"child.ts", highlight:[2]}
+<docs-code header="child.ts" highlight="[2]" language="ts">
 addItem() {
   this.addItemEvent.emit('🐢');
 }
-```
+</docs-code>
 
 </docs-step>
 
-<docs-step title="Update the `App` template">
+<docs-step title="Обновите шаблон `App`">
 В `app.ts` обновите шаблон, чтобы прослушивать генерируемое событие, добавив следующий код:
 
 ```angular-html

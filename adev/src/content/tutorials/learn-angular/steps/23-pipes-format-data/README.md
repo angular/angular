@@ -1,72 +1,79 @@
-# Форматирование данных с помощью pipes
+# Форматирование данных с помощью Pipe
 
-Возможности pipes можно расширить с помощью их настройки. Pipes принимают параметры, которые позволяют управлять их выводом.
+Вы можете расширить возможности использования Pipe, настроив их. Pipe можно конфигурировать, передавая им параметры.
 
-Примечание: Подробнее
-о [форматировании данных с помощью pipes читайте в углублённом руководстве](/guide/templates/pipes).
+Примечание: Узнайте больше о [форматировании данных с помощью Pipe в подробном руководстве](/guide/templates/pipes).
 
-В этом упражнении вы поработаете с несколькими pipes и их параметрами.
+В этом упражнении вы поработаете с некоторыми Pipe и их параметрами.
 
 <hr>
 
-Чтобы передать параметр в pipe, используйте синтаксис `:` за которым следует значение параметра. Вот пример:
+Чтобы передать параметры в Pipe, используйте синтаксис `:` с последующим значением параметра. Вот пример:
 
-```angular-html
-template: `{{ date | date: 'medium' }}`;
+```ts
+template: `{{ date | date:'medium' }}`;
 ```
 
-Результат: `Jun 15, 2015, 9:43:11 PM`.
+Результат вывода: `Jun 15, 2015, 9:43:11 PM`.
 
-Время настроить вывод некоторых pipes:
+Пришло время настроить вывод Pipe:
 
 <docs-workflow>
 
-<docs-step title="Format a number with `DecimalPipe`">
+<docs-step title="Форматирование числа с помощью `DecimalPipe`">
 
-В `app.ts` обновите шаблон, добавив параметр для pipe `decimal`.
+В `app.ts` обновите шаблон, чтобы включить параметр для `decimal` Pipe.
 
-```angular-html {highlight:[3]}
-template: ` ...
-<li>Number with "decimal" {{ num | number: '3.2-2' }}</li>
+<docs-code language="ts" highlight="[3]">
+template: `
+  ...
+  <li>Number with "decimal" {{ num | number:'3.2-2' }}</li>
 `
-```
+</docs-code>
 
-Примечание: что означает этот формат? Параметр `DecimalPipe` называется `digitsInfo` и использует формат: `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`
+ПРИМЕЧАНИЕ: Что это за формат? Параметр для `DecimalPipe` называется `digitsInfo`, этот параметр использует формат:
+`{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`
 
 </docs-step>
 
-<docs-step title="Format a date with `DatePipe`">
+<docs-step title="Форматирование даты с помощью `DatePipe`">
 
-Теперь обновите шаблон, чтобы использовать pipe `date`.
+Теперь обновите шаблон, чтобы использовать `date` Pipe.
 
-```angular-html {highlight:[3]}
-template: ` ...
-<li>Date with "date" {{ birthday | date: 'medium' }}</li>
+<docs-code language="ts" highlight="[3]">
+template: `
+  ...
+  <li>Date with "date" {{ birthday | date: 'medium' }}</li>
 `
-```
+</docs-code>
 
-Для интереса попробуйте разные параметры для `date`. Дополнительную информацию можно найти в [документации Angular](guide/templates/pipes).
+Ради интереса попробуйте разные параметры для `date`. Дополнительную информацию можно найти
+в [документации Angular](guide/templates/pipes).
 
 </docs-step>
 
-<docs-step title="Format a currency with `CurrencyPipe`">
+<docs-step title="Форматирование валюты с помощью `CurrencyPipe`">
 
-Для последнего задания обновите шаблон, чтобы использовать pipe `currency`.
+В качестве последнего задания обновите шаблон, чтобы использовать `currency` Pipe.
 
-```angular-html {highlight:[3]}
-template: ` ...
-<li>Currency with "currency" {{ cost | currency }}</li>
+<docs-code language="ts" highlight="[3]">
+template: `
+  ...
+  <li>Currency with "currency" {{ cost | currency }}</li>
 `
-```
+</docs-code>
 
-Также можно попробовать разные параметры для `currency`. Дополнительную информацию можно найти в [документации Angular](guide/templates/pipes).
+Вы также можете попробовать разные параметры для `currency`. Дополнительную информацию можно найти
+в [документации Angular](guide/templates/pipes).
 
 </docs-step>
 
 </docs-workflow>
 
-Отличная работа с pipes. Вы добились значительного прогресса.
+Отличная работа с Pipe. Вы добились большого прогресса.
 
-Есть ещё много встроенных pipes, которые можно использовать в своих приложениях. Полный список можно найти в [документации Angular](guide/templates/pipes).
+Существует еще больше встроенных Pipe, которые вы можете использовать в своих приложениях. Список можно найти
+в [документации Angular](guide/templates/pipes).
 
-Если встроенные pipes не покрывают ваши нужды, вы также можете создать собственный pipe. Ознакомьтесь со следующим уроком, чтобы узнать подробности.
+Если встроенные Pipe не покрывают ваши потребности, вы также можете создать пользовательский Pipe. Переходите к
+следующему уроку, чтобы узнать больше.

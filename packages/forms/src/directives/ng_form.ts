@@ -40,6 +40,7 @@ import type {NgModelGroup} from './ng_model_group';
 import {
   CALL_SET_DISABLED_STATE,
   SetDisabledStateOption,
+  setUpControl,
   setUpFormContainer,
   syncPendingControls,
 } from './shared';
@@ -230,7 +231,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       (dir as Writable<NgModel>).control = <FormControl>(
         container.registerControl(dir.name, dir.control)
       );
-      dir._setupWithForm(this.callSetDisabledState);
+      setUpControl(dir.control, dir, this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.add(dir);
     });
@@ -255,9 +256,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   removeControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-
-      container?.removeControl(dir.name);
-
+      if (container) {
+        container.removeControl(dir.name);
+      }
       this._directives.delete(dir);
     });
   }
@@ -287,7 +288,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   removeFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      container?.removeControl?.(dir.name);
+      if (container) {
+        container.removeControl(dir.name);
+      }
     });
   }
 

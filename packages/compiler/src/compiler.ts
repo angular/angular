@@ -116,9 +116,6 @@ export {
   UnaryOperatorExpr,
   VoidExpr,
   WrappedNodeExpr,
-  LiteralMapPropertyAssignment,
-  LiteralMapSpreadAssignment,
-  SpreadElementExpr,
 } from './output/output_ast';
 export {JitEvaluator} from './output/output_jit';
 export {SourceMap} from './output/source_map';
@@ -168,8 +165,6 @@ export {
   Reference as TmplAstReference,
   SwitchBlock as TmplAstSwitchBlock,
   SwitchBlockCase as TmplAstSwitchBlockCase,
-  SwitchBlockCaseGroup as TmplAstSwitchBlockCaseGroup,
-  SwitchExhaustiveCheck as TmplAstSwitchExhaustiveCheck,
   Template as TmplAstTemplate,
   Text as TmplAstText,
   TextAttribute as TmplAstTextAttribute,

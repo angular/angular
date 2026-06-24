@@ -1,37 +1,38 @@
-# Взаимодействие RxJS с outputs компонентов и директив
+# Взаимодействие RxJS с Output-ами компонентов и директив
 
-TIP: Это руководство предполагает знакомство с [outputs компонентов и директив](guide/components/outputs).
+TIP: Это руководство предполагает, что вы знакомы с [Output-ами компонентов и директив](guide/components/outputs).
 
-Пакет `@angular/rxjs-interop` предоставляет два API, связанных с outputs компонентов и директив.
+Пакет `@angular/rxjs-interop` предлагает два API, связанных с Output-ами компонентов и директив.
 
-## Создание output на основе RxJS Observable {#creating-an-output-based-on-an-rxjs-observable}
+## Создание Output-а на основе RxJS Observable
 
-`outputFromObservable` позволяет создать output компонента или директивы, генерирующий события на основе RxJS Observable:
+Функция `outputFromObservable` позволяет создать Output компонента или директивы, который эмитит значения на основе RxJS
+Observable:
 
-```ts {highlight:[11]}
+```ts {highlight:[9]}
 import {Directive} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 
-@Directive({
-  /*...*/
-})
+@Directive({/*...*/})
 class Draggable {
-  pointerMoves$: Observable<PointerMovements> = listenToPointerMoves();
+    pointerMoves$: Observable<PointerMovements> = listenToPointerMoves();
 
-  // Whenever `pointerMoves$` emits, the `pointerMove` event fires.
-  pointerMove = outputFromObservable(this.pointerMoves$);
+    // Каждый раз, когда `pointerMoves$` эмитит значение, срабатывает событие `pointerMove`.
+    pointerMove = outputFromObservable(this.pointerMoves$);
 }
 ```
 
-Функция `outputFromObservable` имеет особое значение для компилятора Angular. **Вызывать `outputFromObservable` можно только в инициализаторах свойств компонентов и директив.**
+Функция `outputFromObservable` имеет особое значение для компилятора Angular. **Вы можете
+вызывать `outputFromObservable` только в инициализаторах свойств компонентов и директив.**
 
-При `subscribe` на output Angular автоматически перенаправляет подписку на базовый Observable. Angular прекращает перенаправление значений при уничтожении компонента или директивы.
+Когда вы подписываетесь (`subscribe`) на Output, Angular автоматически передает подписку базовому Observable. Angular
+прекращает передачу значений, когда компонент или директива уничтожаются.
 
-HELPFUL: Рассмотрите использование `output()` напрямую, если вы можете генерировать значения императивно.
+HELPFUL: Рассмотрите возможность использования `output()` напрямую, если вы можете эмитить значения императивно.
 
-## Создание RxJS Observable из output компонента или директивы {#creating-an-rxjs-observable-from-a-component-or-directive-output}
+## Создание RxJS Observable из Output-а компонента или директивы
 
-Функция `outputToObservable` позволяет создать RxJS Observable из output компонента.
+Функция `outputToObservable` позволяет создать RxJS Observable из Output-а компонента.
 
 ```ts {highlight:[11]}
 import {outputToObservable} from '@angular/core/rxjs-interop';
@@ -41,7 +42,7 @@ import {outputToObservable} from '@angular/core/rxjs-interop';
     valueChange = output<number>();
 }
 
-// Instance reference to `CustomSlider`.
+// Ссылка на экземпляр `CustomSlider`.
 const slider: CustomSlider = createSlider();
 
 outputToObservable(slider.valueChange) // Observable<number>
@@ -49,4 +50,5 @@ outputToObservable(slider.valueChange) // Observable<number>
     .subscribe(...);
 ```
 
-HELPFUL: Рассмотрите использование метода `subscribe` на `OutputRef` напрямую, если это удовлетворяет вашим потребностям.
+HELPFUL: Рассмотрите возможность использования метода `subscribe` непосредственно в `OutputRef`, если это соответствует
+вашим потребностям.

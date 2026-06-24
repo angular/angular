@@ -8,7 +8,8 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, pattern, patternError} from '../../../../public_api';
+import {PATTERN, form, pattern} from '../../../../public_api';
+import {customError, patternError} from '../../../../src/api/validation_errors';
 
 describe('pattern validator', () => {
   it('validates whether a value matches the pattern', () => {
@@ -21,7 +22,7 @@ describe('pattern validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {fieldTree: f.name})]);
+    expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {field: f.name})]);
   });
 
   it('supports custom error', () => {
@@ -29,12 +30,12 @@ describe('pattern validator', () => {
     const f = form(
       cat,
       (p) => {
-        pattern(p.name, /pir.*jok/, {error: {kind: 'invalid-pattern'}});
+        pattern(p.name, /pir.*jok/, {error: customError()});
       },
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([{kind: 'invalid-pattern', fieldTree: f.name}]);
+    expect(f.name().errors()).toEqual([customError({field: f.name})]);
   });
 
   it('supports custom error message', () => {
@@ -48,7 +49,7 @@ describe('pattern validator', () => {
     );
 
     expect(f.name().errors()).toEqual([
-      patternError(/pir.*jok/, {message: 'pattern error', fieldTree: f.name}),
+      patternError(/pir.*jok/, {message: 'pattern error', field: f.name}),
     ]);
   });
 
@@ -78,7 +79,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().pattern()).toEqual([/pir.*jok/]);
+      expect(f.name().metadata(PATTERN)()).toEqual([/pir.*jok/]);
     });
 
     it('merges the PATTERN property in an array', () => {
@@ -92,58 +93,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().pattern()).toEqual([/pir.*jok/, /pelmeni/]);
-    });
-
-    it('validates multiple patterns independently (AND logic)', () => {
-      const model = signal('abc123');
-      const f = form(
-        model,
-        (p) => {
-          pattern(p, /abc/); // matches
-          pattern(p, /\d+/); // matches
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      // Both patterns match, so no errors
-      expect(f().pattern()).toEqual([/abc/, /\d+/]);
-      expect(f().errors()).toEqual([]);
-    });
-
-    it('validates multiple patterns independently - partial match produces errors', () => {
-      const model = signal('abc');
-      const f = form(
-        model,
-        (p) => {
-          pattern(p, /abc/); // matches
-          pattern(p, /\d+/); // does not match
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      // Only one pattern matches, so we get an error from the non-matching one
-      expect(f().pattern()).toEqual([/abc/, /\d+/]);
-      expect(f().errors()).toEqual([patternError(/\d+/, {fieldTree: f})]);
-    });
-
-    it('validates multiple patterns - no match produces multiple errors', () => {
-      const model = signal('xyz');
-      const f = form(
-        model,
-        (p) => {
-          pattern(p, /abc/); // does not match
-          pattern(p, /\d+/); // does not match
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      // No patterns match, so we get errors from both
-      expect(f().pattern()).toEqual([/abc/, /\d+/]);
-      expect(f().errors()).toEqual([
-        patternError(/abc/, {fieldTree: f}),
-        patternError(/\d+/, {fieldTree: f}),
-      ]);
+      expect(f.name().metadata(PATTERN)()).toEqual([/pir.*jok/, /pelmeni/]);
     });
 
     it('PATTERN property defaults to empty list', () => {
@@ -155,7 +105,7 @@ describe('pattern validator', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.name().pattern()).toEqual([]);
+      expect(f.name().metadata(PATTERN)()).toEqual([]);
     });
   });
 
@@ -171,12 +121,12 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {fieldTree: f.name})]);
+      expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {field: f.name})]);
 
       patternSignal.set(/p.*/);
       expect(f.name().errors()).toEqual([]);
       patternSignal.set(/meow/);
-      expect(f.name().errors()).toEqual([patternError(/meow/, {fieldTree: f.name})]);
+      expect(f.name().errors()).toEqual([patternError(/meow/, {field: f.name})]);
 
       patternSignal.set(undefined);
 

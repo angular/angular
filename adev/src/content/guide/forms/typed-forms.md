@@ -5,7 +5,7 @@
 В качестве подготовки к этому руководству вы уже должны быть знакомы
 с [Реактивными формами Angular](guide/forms/reactive-forms).
 
-## Обзор типизированных форм {#overview-of-typed-forms}
+## Обзор типизированных форм
 
 <docs-video src="https://www.youtube.com/embed/L-odCf4MfJc" alt="Typed Forms in Angular" />
 
@@ -38,7 +38,7 @@ const emailDomain = login.value.email.domain;
 Эти улучшения в настоящее время применимы только к _реактивным_ формам (не к [_формам на основе
 шаблонов_](guide/forms/template-driven-forms)).
 
-## Нетипизированные формы (Untyped Forms) {#untyped-forms}
+## Нетипизированные формы (Untyped Forms)
 
 Нетипизированные формы по-прежнему поддерживаются и будут работать так же, как и раньше. Чтобы использовать их,
 необходимо импортировать символы `Untyped` из `@angular/forms`:
@@ -53,7 +53,7 @@ const login = new UntypedFormGroup({
 Каждый символ `Untyped` имеет точно такую же семантику, как и в предыдущих версиях Angular. Убирая префиксы `Untyped`,
 вы можете постепенно включать типизацию.
 
-## `FormControl`: Начало работы {#formcontrol-getting-started}
+## `FormControl`: Начало работы
 
 Простейшая форма состоит из одного элемента управления (control):
 
@@ -65,7 +65,7 @@ const email = new FormControl('angularrox@gmail.com');
 обеспечивать соблюдение этого типа во всем [API `FormControl`](api/forms/FormControl), например `email.value`,
 `email.valueChanges`, `email.setValue(...)` и т.д.
 
-### Nullability (Допустимость значения null) {#nullability}
+### Nullability (Допустимость значения null)
 
 Вы можете задаться вопросом: почему тип этого элемента управления включает `null`? Это связано с тем, что элемент
 управления может стать `null` в любой момент при вызове сброса (reset):
@@ -89,7 +89,7 @@ console.log(email.value); // angularrox@gmail.com
 Повторим, эта опция влияет на поведение вашей формы во время выполнения при вызове `.reset()`, и ее следует переключать
 с осторожностью.
 
-### Явное указание типа {#specifying-an-explicit-type}
+### Явное указание типа
 
 Можно указать тип явно, вместо того чтобы полагаться на вывод типов. Рассмотрим элемент управления, инициализированный
 значением `null`. Поскольку начальное значение — `null`, TypeScript выведет тип `FormControl<null>`, что является более
@@ -103,11 +103,11 @@ email.setValue('angularrox@gmail.com'); // Ошибка!
 Чтобы предотвратить это, мы явно указываем тип как `string|null`:
 
 ```ts
-const email = new FormControl<string | null>(null);
+const email = new FormControl<string|null>(null);
 email.setValue('angularrox@gmail.com');
 ```
 
-## `FormArray`: Динамические однородные коллекции {#formarray-dynamic-homogenous-collections}
+## `FormArray`: Динамические однородные коллекции
 
 `FormArray` содержит открытый (неограниченный) список элементов управления. Параметр типа соответствует типу каждого
 внутреннего элемента управления:
@@ -137,19 +137,19 @@ aliases.clear();
 console.log(aliases.length); // 0
 ```
 
-## `FormGroup` и `FormRecord` {#formgroup-and-formrecord}
+## `FormGroup` и `FormRecord`
 
 Angular предоставляет тип `FormGroup` для форм с фиксированным набором ключей и тип под названием `FormRecord` для
 открытых или динамических групп.
 
-### Частичные значения (Partial Values) {#partial-values}
+### Частичные значения (Partial Values)
 
 Снова рассмотрим форму входа:
 
 ```ts
 const login = new FormGroup({
-  email: new FormControl('', {nonNullable: true}),
-  password: new FormControl('', {nonNullable: true}),
+    email: new FormControl('', {nonNullable: true}),
+    password: new FormControl('', {nonNullable: true}),
 });
 ```
 
@@ -165,7 +165,7 @@ const login = new FormGroup({
 Если вы хотите получить доступ к значению, _включая_ отключенные элементы управления, и тем самым обойти возможные поля
 `undefined`, вы можете использовать `login.getRawValue()`.
 
-### Необязательные элементы управления и динамические группы {#optional-controls-and-dynamic-groups}
+### Необязательные элементы управления и динамические группы
 
 В некоторых формах есть элементы управления, которые могут присутствовать или отсутствовать, и которые могут быть
 добавлены или удалены во время выполнения. Вы можете представить эти элементы управления, используя _необязательные
@@ -194,7 +194,7 @@ login.removeControl('password');
 Класс `FormRecord` предназначен именно для этого случая:
 
 ```ts
-const addresses = new FormRecord<FormControl<string | null>>({});
+const addresses = new FormRecord<FormControl<string|null>>({});
 addresses.addControl('Andrew', new FormControl('2340 Folsom St'));
 ```
 
@@ -209,7 +209,7 @@ addresses.addControl('Andrew', new FormControl('2340 Folsom St'));
 const addresses = fb.record({'Andrew': '2340 Folsom St'});
 ```
 
-## `FormBuilder` и `NonNullableFormBuilder` {#formbuilder-and-nonnullableformbuilder}
+## `FormBuilder` и `NonNullableFormBuilder`
 
 Класс `FormBuilder` также был обновлен для поддержки новых типов, аналогично приведенным выше примерам.
 

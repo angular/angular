@@ -17,6 +17,7 @@ import {
   ParseSpan,
   PropertyRead,
   SelectorMatcher,
+  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstElement,
@@ -127,7 +128,7 @@ function getInlineTypeCheckInfoAtPosition(
     return undefined;
   }
 
-  // Return `undefined` if the position is not within the template expression or the template resource
+  // Return `undefined` if the position is not on the template expression or the template resource
   // is not inline.
   const resources = compiler.getDirectiveResources(classDecl);
   if (resources === null) {
@@ -137,8 +138,7 @@ function getInlineTypeCheckInfoAtPosition(
   if (
     resources.template !== null &&
     !isExternalResource(resources.template) &&
-    position >= resources.template.node.getStart() &&
-    position <= resources.template.node.getEnd()
+    expression === resources.template.node
   ) {
     const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
     if (template === null) {
@@ -400,7 +400,12 @@ export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.Sym
 }
 
 export function isDollarEvent(n: TmplAstNode | AST): n is PropertyRead {
-  return n instanceof PropertyRead && n.name === '$event' && n.receiver instanceof ImplicitReceiver;
+  return (
+    n instanceof PropertyRead &&
+    n.name === '$event' &&
+    n.receiver instanceof ImplicitReceiver &&
+    !(n.receiver instanceof ThisReceiver)
+  );
 }
 
 export function isTypeScriptFile(fileName: string): boolean {

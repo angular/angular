@@ -1,9 +1,9 @@
 # Re-export of Bazel rules with devtools-wide defaults
 
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
-load("@bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
-load("@bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@bazel_skylib//rules:common_settings.bzl", _string_flag = "string_flag")
 load(
     "//tools:defaults.bzl",
@@ -15,7 +15,6 @@ load(
     _sass_library = "sass_library",
     _ts_config = "ts_config",
     _ts_project = "ts_project",
-    _zoneless_web_test_suite = "zoneless_web_test_suite",
 )
 
 sass_binary = _sass_binary
@@ -23,19 +22,7 @@ sass_library = _sass_library
 npm_sass_library = _npm_sass_library
 http_server = _http_server
 js_library = _js_library
-
-def esbuild(minify = None, **kwargs):
-    _esbuild(
-        minify = minify if minify != None else select({
-            "//devtools:debug_build": False,
-            "//conditions:default": True,
-        }),
-        # Do not change this as otherwise the sourcemaps will cause the build not to be reproducable and firefox will not publish the extension.
-        # NB: Do not use `select` here either as this option is not configurable and bazel doesn't resolve to a value.
-        sourcemap = False,
-        **kwargs
-    )
-
+esbuild = _esbuild
 copy_to_bin = _copy_to_bin
 copy_to_directory = _copy_to_directory
 string_flag = _string_flag
@@ -49,19 +36,6 @@ def ng_web_test_suite(deps = [], **kwargs):
         "//:node_modules/@angular/platform-browser",
     ]
     _ng_web_test_suite(
-        deps = deps,
-        tsconfig = "//devtools:tsconfig_test",
-        **kwargs
-    )
-
-def zoneless_web_test_suite(deps = [], **kwargs):
-    # Provide required modules for the imports in //tools/testing/browser_tests.init.mts
-    deps = deps + [
-        "//:node_modules/@angular/compiler",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
-    ]
-    _zoneless_web_test_suite(
         deps = deps,
         tsconfig = "//devtools:tsconfig_test",
         **kwargs

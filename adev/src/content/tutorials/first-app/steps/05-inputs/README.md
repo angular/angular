@@ -7,11 +7,11 @@
 
 ПРИМЕЧАНИЕ: В этом видео используется старый синтаксис, но основные концепции остаются актуальными.
 
-## Чему вы научитесь {#what-youll-learn}
+## Чему вы научитесь
 
 Шаблон `HousingLocation` вашего приложения получит свойство `HousingLocation` для приема входных данных.
 
-## Концептуальный обзор Inputs {#conceptual-preview-of-inputs}
+## Концептуальный обзор Inputs
 
 [Inputs](api/core/input) (входные свойства) позволяют компонентам определять данные, которые могут быть переданы им из
 родительского компонента.
@@ -24,14 +24,14 @@
 
 <docs-workflow>
 
-<docs-step title="Import the input() function">
+<docs-step title="Импорт функции input()">
 В редакторе кода импортируйте вспомогательный метод `input` из `@angular/core` в компонент `HousingLocation`.
 
 <docs-code header="Import input in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[1]"/>
 
 </docs-step>
 
-<docs-step title="Add the Input property">
+<docs-step title="Добавление свойства Input">
 Добавьте обязательное свойство с именем `housingLocation` и инициализируйте его с помощью `input.required()`, указав тип `HousingLocationInfo`.
 
   <docs-code header="Declare the input property in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[12]"/>
@@ -43,7 +43,7 @@
 
 </docs-step>
 
-<docs-step title="Pass data to the input">
+<docs-step title="Передача данных во входное свойство">
 Отправьте значение `housingLocation` из компонента `Home` в свойство `housingLocation` компонента HousingLocation.
 
 <docs-code language="angular-ts" header="Declare the input property for HousingLocation in home.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/home/home.ts" visibleLines="[16]"/>

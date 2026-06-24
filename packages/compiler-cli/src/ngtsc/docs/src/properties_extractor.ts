@@ -8,14 +8,34 @@
 
 import ts from 'typescript';
 
+import {Reference} from '../../imports';
+import {
+  DirectiveMeta,
+  InputMapping,
+  InputOrOutput,
+  MetadataReader,
+  NgModuleMeta,
+  PipeMeta,
+} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {MemberEntry, MemberTags, MemberType, MethodEntry, PropertyEntry} from './entities';
+import {
+  ClassEntry,
+  DirectiveEntry,
+  EntryType,
+  InterfaceEntry,
+  MemberEntry,
+  MemberTags,
+  MemberType,
+  MethodEntry,
+  PipeEntry,
+  PropertyEntry,
+} from './entities';
 import {isAngularPrivateName} from './filters';
 import {FunctionExtractor} from './function_extractor';
 import {extractGenerics} from './generics_extractor';
 import {isInternal} from './internal';
-import {extractJsDocDescription, extractJsDocTags} from './jsdoc_extractor';
+import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 
 // For the purpose of extraction, we can largely treat properties and accessors the same.

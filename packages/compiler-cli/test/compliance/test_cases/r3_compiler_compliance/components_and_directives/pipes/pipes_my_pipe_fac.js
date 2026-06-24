@@ -1,5 +1,1 @@
-export class MyPipe {
-  …
-  static ɵfac = function MyPipe_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || MyPipe)(); };
-  …
-}
+MyPipe.ɵfac = function MyPipe_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || MyPipe)(); };

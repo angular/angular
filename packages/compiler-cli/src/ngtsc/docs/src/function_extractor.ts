@@ -152,23 +152,12 @@ function extractReturnType(signature: ts.Signature, typeChecker: ts.TypeChecker)
     return signature.declaration.type.getText();
   }
 
-  const returnType = typeChecker.getReturnTypeOfSignature(signature);
-  const returnTypeString = typeChecker.typeToString(
-    returnType,
+  return typeChecker.typeToString(
+    typeChecker.getReturnTypeOfSignature(signature),
     undefined,
     // This ensures that e.g. `T | undefined` is not reduced to `T`.
     ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
   );
-
-  if (
-    returnTypeString === 'any' &&
-    signature.declaration?.type &&
-    signature.declaration.type.kind !== ts.SyntaxKind.AnyKeyword
-  ) {
-    return signature.declaration.type.getText();
-  }
-
-  return returnTypeString;
 }
 
 /** Finds the implementation of the given function declaration overload signature. */

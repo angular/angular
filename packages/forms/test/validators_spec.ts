@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Observable, of, timer} from 'rxjs';
-import {first, map} from 'rxjs/operators';
+import {fakeAsync, tick} from '@angular/core/testing';
 import {
   AbstractControl,
   AsyncValidator,
@@ -18,9 +17,10 @@ import {
   ValidatorFn,
   Validators,
 } from '../index';
+import {Observable, of, timer} from 'rxjs';
+import {first, map} from 'rxjs/operators';
 
 import {normalizeValidators} from '../src/validators';
-import {useAutoTick, timeout} from '@angular/private/testing';
 
 (function () {
   function validator(key: string, error: any): ValidatorFn {
@@ -47,8 +47,6 @@ import {useAutoTick, timeout} from '@angular/private/testing';
   }
 
   describe('Validators', () => {
-    useAutoTick();
-
     describe('min', () => {
       it('should not error on an empty string', () => {
         expect(Validators.min(2)(new FormControl(''))).toBeNull();
@@ -140,17 +138,17 @@ import {useAutoTick, timeout} from '@angular/private/testing';
         expect(Validators.max(1.25)(new FormControl(1.25))).toBeNull();
       });
 
-      it('should return a max validation error on decimal values', () => {
+      it('should return a validation error on big values', () => {
         expect(Validators.max(1.25)(new FormControl(1.3))).toEqual({
           'max': {'max': 1.25, 'actual': 1.3},
         });
       });
 
-      it('should return a max validation error on integer', () => {
+      it('should return a validation error on big values', () => {
         expect(Validators.max(2)(new FormControl(3))).toEqual({'max': {'max': 2, 'actual': 3}});
       });
 
-      it('should return a max validation error values converted from strings', () => {
+      it('should return a validation error on big values converted from strings', () => {
         expect(Validators.max(2)(new FormControl('3'))).toEqual({'max': {'max': 2, 'actual': '3'}});
       });
 
@@ -318,6 +316,11 @@ import {useAutoTick, timeout} from '@angular/private/testing';
         const value = new Set();
         expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
       });
+
+      it('should return null when passing a boolean', () => {
+        expect(Validators.minLength(1)(new FormControl(true))).toBeNull();
+        expect(Validators.minLength(1)(new FormControl(false))).toBeNull();
+      });
     });
 
     describe('maxLength', () => {
@@ -360,6 +363,14 @@ import {useAutoTick, timeout} from '@angular/private/testing';
         expect(Validators.maxLength(1)(new FormControl(1))).toBeNull();
         expect(Validators.maxLength(1)(new FormControl(-1))).toBeNull();
         expect(Validators.maxLength(1)(new FormControl(+1))).toBeNull();
+      });
+
+      it('should trigger validation for an object that contains numeric length property', () => {
+        const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
+        expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
+        expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
+          'maxlength': {'requiredLength': 1, 'actualLength': 5},
+        });
       });
 
       it('should trigger validation for an object that contains numeric length property', () => {
@@ -480,7 +491,7 @@ import {useAutoTick, timeout} from '@angular/private/testing';
           expect(Validators.composeAsync(null!)).toBeNull();
         });
 
-        it('should collect errors from all the validators', async () => {
+        it('should collect errors from all the validators', fakeAsync(() => {
           const v = Validators.composeAsync([
             promiseValidator({'one': true}),
             promiseValidator({'two': true}),
@@ -490,12 +501,12 @@ import {useAutoTick, timeout} from '@angular/private/testing';
           (v(new FormControl('invalid')) as Observable<ValidationErrors | null>)
             .pipe(first())
             .subscribe((errors: {[key: string]: any} | null) => (errorMap = errors));
-          await timeout();
+          tick();
 
           expect(errorMap!).toEqual({'one': true, 'two': true});
-        });
+        }));
 
-        it('should normalize and evaluate async validator-directives correctly', async () => {
+        it('should normalize and evaluate async validator-directives correctly', fakeAsync(() => {
           const normalizedValidators = normalizeValidators<AsyncValidatorFn>([
             new AsyncValidatorDirective('expected', {'one': true}),
           ]);
@@ -505,34 +516,34 @@ import {useAutoTick, timeout} from '@angular/private/testing';
           (validatorFn(new FormControl('invalid')) as Observable<ValidationErrors | null>)
             .pipe(first())
             .subscribe((errors: {[key: string]: any} | null) => (errorMap = errors));
-          await timeout();
+          tick();
 
           expect(errorMap!).toEqual({'one': true});
-        });
+        }));
 
-        it('should return null when no errors', async () => {
+        it('should return null when no errors', fakeAsync(() => {
           const v = Validators.composeAsync([promiseValidator({'one': true})])!;
 
           let errorMap: {[key: string]: any} | null = undefined!;
           (v(new FormControl('expected')) as Observable<ValidationErrors | null>)
             .pipe(first())
             .subscribe((errors: {[key: string]: any} | null) => (errorMap = errors));
-          await timeout();
+          tick();
 
           expect(errorMap).toBeNull();
-        });
+        }));
 
-        it('should ignore nulls', async () => {
+        it('should ignore nulls', fakeAsync(() => {
           const v = Validators.composeAsync([promiseValidator({'one': true}), null!])!;
 
           let errorMap: {[key: string]: any} | null = null;
           (v(new FormControl('invalid')) as Observable<ValidationErrors | null>)
             .pipe(first())
             .subscribe((errors: {[key: string]: any} | null) => (errorMap = errors));
-          await timeout();
+          tick();
 
           expect(errorMap!).toEqual({'one': true});
-        });
+        }));
       });
 
       describe('observables', () => {
@@ -597,7 +608,7 @@ import {useAutoTick, timeout} from '@angular/private/testing';
           expect(errorMap!).toEqual({'one': true});
         });
 
-        it('should wait for all validators before setting errors', async () => {
+        it('should wait for all validators before setting errors', fakeAsync(() => {
           function getTimerObs(time: number, errorMap: {[key: string]: any}): AsyncValidatorFn {
             return (c: AbstractControl) => {
               return timer(time).pipe(map(() => errorMap));
@@ -614,16 +625,16 @@ import {useAutoTick, timeout} from '@angular/private/testing';
             .pipe(first())
             .subscribe((errors: {[key: string]: any} | null) => (errorMap = errors));
 
-          await timeout(100);
+          tick(100);
           expect(errorMap).not.toBeDefined(
             `Expected errors not to be set until all validators came back.`,
           );
 
-          await timeout(100);
+          tick(100);
           expect(errorMap!)
             .withContext(`Expected errors to merge once all validators resolved.`)
             .toEqual({one: true, two: true});
-        });
+        }));
       });
     });
   });

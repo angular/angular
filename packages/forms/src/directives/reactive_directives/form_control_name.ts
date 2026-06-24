@@ -12,19 +12,16 @@ import {
   forwardRef,
   Host,
   Inject,
-  Injector,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
   Output,
   Provider,
-  Renderer2,
   Self,
   SimpleChanges,
   SkipSelf,
   ɵWritable as Writable,
-  type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
@@ -32,19 +29,13 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
-import {NG_CONTROL_PARSE_ERRORS_PROVIDER, NgControl} from '../ng_control';
+import {NgControl} from '../ng_control';
 import {
   controlParentException,
   disabledAttrWarning,
   ngModelGroupException,
 } from '../reactive_errors';
-import {
-  _ngModelWarning,
-  controlPath,
-  isPropertyUpdated,
-  SetDisabledStateOption,
-  setUpControlValueAccessor,
-} from '../shared';
+import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
@@ -90,7 +81,7 @@ const controlNameBinding: Provider = {
  */
 @Directive({
   selector: '[formControlName]',
-  providers: [controlNameBinding, NG_CONTROL_PARSE_ERRORS_PROVIDER],
+  providers: [controlNameBinding],
   standalone: false,
 })
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
@@ -166,28 +157,12 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     @Optional()
     @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING)
     private _ngModelWarningConfig: string | null,
-    @Optional() renderer?: Renderer2,
-    @Optional() injector?: Injector,
   ) {
-    super(injector, renderer, valueAccessors);
+    super();
     this._parent = parent;
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
-  }
-
-  /**
-   * Sets up the control with the form, handling FVC vs CVA branching.
-   * Called by AbstractFormDirective.addControl.
-   * @internal
-   */
-  _setupWithForm(control: FormControl, callSetDisabledState?: SetDisabledStateOption): void {
-    (this as Writable<FormControlName>).control = control;
-    if (!this.isCustomControlBased) {
-      this.valueAccessor ??= this.selectedValueAccessor;
-      setUpControlValueAccessor(control, this, callSetDisabledState);
-    } else {
-      this.setupCustomControl();
-    }
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
   /** @docs-private */
@@ -204,7 +179,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
-    this.formDirective?.removeControl(this);
+    if (this.formDirective) {
+      this.formDirective.removeControl(this);
+    }
   }
 
   /**
@@ -241,36 +218,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     }
     (this as Writable<this>).control = this.formDirective.addControl(this);
     this._added = true;
-  }
-
-  /**
-   * Internal control directive creation lifecycle hook.
-   *
-   * The presence of this method tells the compiler to install `ɵɵControlFeature`, which will
-   * cause this directive to be recognized as a control directive by the `ɵcontrolCreate` and
-   * `ɵcontrol` instructions.
-   *
-   * @internal
-   */
-  ɵngControlCreate(host: ControlDirectiveHost): void {
-    super.ngControlCreate(host);
-  }
-
-  /**
-   * Internal control directive update lifecycle hook.
-   *
-   * @internal
-   */
-  ɵngControlUpdate(host: ControlDirectiveHost): void {
-    // Ensure behavior is the same if we're not using the custom control codepath.
-    if (!this.isCustomControlBased) {
-      return;
-    }
-
-    // this.control is typically initialized by `ngOnChanges`, however `ɵngControlUpdate` fires
-    // first. So, we're responsible for initializing it here.
-    if (!this._added) this._setUpControl();
-    super.ngControlUpdate(host, true);
   }
 }
 

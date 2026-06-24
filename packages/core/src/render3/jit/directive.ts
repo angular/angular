@@ -384,10 +384,6 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
     lifecycle: {usesOnChanges: reflect.hasLifecycleHook(type, 'ngOnChanges')},
-    // Indicate that this directive requires the `ɵɵcontrolCreate` instruction to be generated.
-    controlCreate: reflect.hasLifecycleHook(type, 'ɵngControlCreate')
-      ? {passThroughInput: null}
-      : null,
     typeSourceSpan: null!,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),

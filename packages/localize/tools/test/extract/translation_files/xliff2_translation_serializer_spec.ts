@@ -19,7 +19,7 @@ runInEachFileSystem(() => {
   describe('Xliff2TranslationSerializer', () => {
     ([{}, {'xml:space': 'preserve'}] as FormatOptions[]).forEach((options) => {
       [false, true].forEach((useLegacyIds) => {
-        describe(`renderFile() [using ${useLegacyIds ? 'legacy' : 'canonical'} ids] with options:${JSON.stringify(options)}`, () => {
+        describe(`renderFile() [using ${useLegacyIds ? 'legacy' : 'canonical'} ids]`, () => {
           it('should convert a set of parsed messages into an XML string', () => {
             const phLocation: ɵSourceLocation = {
               start: {line: 0, column: 10},
@@ -174,7 +174,7 @@ runInEachFileSystem(() => {
             ]);
           });
 
-          it('should merge messages with the same id', () => {
+          it('should convert a set of parsed messages into an XML string', () => {
             const messageLocation1: ɵSourceLocation = {
               start: {line: 0, column: 5},
               end: {line: 0, column: 10},

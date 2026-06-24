@@ -33,7 +33,7 @@ export class App {
 
 <docs-workflow>
 
-<docs-step title="Add an event handler">
+<docs-step title="Добавление обработчика событий">
 Добавьте функцию-обработчик событий `showSecretMessage()` в класс `App`. Используйте следующий код для реализации:
 
 ```ts
@@ -44,10 +44,9 @@ showSecretMessage() {
 
 </docs-step>
 
-<docs-step title="Bind to the template event">
+<docs-step title="Привязка к событию в шаблоне">
 Обновите код шаблона в `app.ts`, чтобы выполнить привязку к событию `mouseover` элемента `section`.
 
-<!-- prettier-ignore -->
 ```angular-html
 <section (mouseover)="showSecretMessage()">
 ```

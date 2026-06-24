@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.dev/license
+ * found in the LICENSE file at https://angular.io/license
  */
 
 import {
@@ -34,6 +34,7 @@ import {
   cleanUpValidators,
   removeListItem,
   SetDisabledStateOption,
+  setUpControl,
   setUpFormContainer,
   setUpValidators,
   syncPendingControls,
@@ -187,7 +188,7 @@ export abstract class AbstractFormDirective
    */
   addControl(dir: FormControlName): FormControl {
     const ctrl = this.form.get(dir.path) as FormControl;
-    dir._setupWithForm(ctrl, this.callSetDisabledState);
+    setUpControl(ctrl, dir, this.callSetDisabledState);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
     return ctrl;
@@ -337,7 +338,8 @@ export abstract class AbstractFormDirective
         // taken care of in the `removeControl` method invoked when corresponding `formControlName`
         // directive instance is being removed (invoked from `FormControlName.ngOnDestroy`).
         if (isFormControl(newCtrl)) {
-          dir._setupWithForm(newCtrl, this.callSetDisabledState);
+          setUpControl(newCtrl, dir, this.callSetDisabledState);
+          (dir as {control: FormControl}).control = newCtrl;
         }
       }
     });
@@ -355,20 +357,24 @@ export abstract class AbstractFormDirective
   }
 
   private _cleanUpFormContainer(dir: FormArrayName | FormGroupName): void {
-    const ctrl: any = this.form?.get(dir.path);
-    if (ctrl) {
-      const isControlUpdated = cleanUpFormContainer(ctrl, dir);
-      if (isControlUpdated) {
-        // Run validity check only in case a control was updated (i.e. view validators were
-        // removed) as removing view validators might cause validity to change.
-        ctrl.updateValueAndValidity({emitEvent: false});
+    if (this.form) {
+      const ctrl: any = this.form.get(dir.path);
+      if (ctrl) {
+        const isControlUpdated = cleanUpFormContainer(ctrl, dir);
+        if (isControlUpdated) {
+          // Run validity check only in case a control was updated (i.e. view validators were
+          // removed) as removing view validators might cause validity to change.
+          ctrl.updateValueAndValidity({emitEvent: false});
+        }
       }
     }
   }
 
   private _updateRegistrations() {
     this.form._registerOnCollectionChange(this._onCollectionChange);
-    this._oldForm?._registerOnCollectionChange(() => {});
+    if (this._oldForm) {
+      this._oldForm._registerOnCollectionChange(() => {});
+    }
   }
 
   private _updateValidators() {

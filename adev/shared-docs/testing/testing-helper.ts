@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectorRef} from '@angular/core';
 import {
   DirEnt,
   FSWatchCallback,
@@ -64,6 +65,14 @@ export class MockLocalStorage implements Pick<Storage, 'getItem' | 'setItem'> {
   }
 }
 
+export class FakeChangeDetectorRef implements ChangeDetectorRef {
+  markForCheck(): void {}
+  detach(): void {}
+  checkNoChanges(): void {}
+  reattach(): void {}
+  detectChanges(): void {}
+}
+
 export class FakeWebContainer extends WebContainer {
   fakeSpawn: FakeWebContainerProcess | undefined = undefined;
 
@@ -102,8 +111,6 @@ export class FakeWebContainer extends WebContainer {
   override teardown() {}
 
   override fs: FakeFileSystemAPI = new FakeFileSystemAPI();
-
-  override async setPreviewScript(script: string): Promise<void> {}
 }
 
 class FakeFileSystemAPI implements FileSystemAPI {

@@ -77,10 +77,9 @@ export function getGlobalLocale(): string {
  * ```
  *
  * @publicApi
- * @see [Import global variants of the locale data](guide/i18n/import-global-variants)
  */
 export const LOCALE_ID: InjectionToken<string> = new InjectionToken(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'LocaleId' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'LocaleId' : '',
   {
     factory: () => inject(LOCALE_ID, {optional: true, skipSelf: true}) || getGlobalLocale(),
   },
@@ -130,7 +129,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(
  * @publicApi
  */
 export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'DefaultCurrencyCode' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'DefaultCurrencyCode' : '',
   {
     factory: () => USD_CURRENCY_CODE,
   },
@@ -170,7 +169,7 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
  * @publicApi
  */
 export const TRANSLATIONS = new InjectionToken<string>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Translations' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'Translations' : '',
 );
 
 /**
@@ -204,7 +203,7 @@ export const TRANSLATIONS = new InjectionToken<string>(
  * @publicApi
  */
 export const TRANSLATIONS_FORMAT = new InjectionToken<string>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'TranslationsFormat' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'TranslationsFormat' : '',
 );
 
 /**

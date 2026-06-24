@@ -8,8 +8,6 @@
 
 import {CommonModule} from '@angular/common';
 import {loadTranslations} from '@angular/localize';
-import {By} from '@angular/platform-browser';
-import {expect} from '@angular/private/testing/matchers';
 import {
   ChangeDetectorRef,
   Component,
@@ -25,6 +23,8 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
+import {By} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('projection', () => {
   beforeEach(() => {
@@ -90,7 +90,6 @@ describe('projection', () => {
     })
     class Child {}
 
-    // prettier-ignore
     @Component({
       selector: 'parent',
       template: `<child>before<div>content</div>after</child>`,
@@ -182,7 +181,6 @@ describe('projection', () => {
     })
     class ProjectedComp {}
 
-    // prettier-ignore
     @Component({
       selector: 'parent',
       template: `
@@ -219,16 +217,11 @@ describe('projection', () => {
 
     @Component({
       selector: 'parent',
-      template: ` <child>
-        <projected-comp
-          ><div>A</div>
-          <p>123</p></projected-comp
-        >
-        <projected-comp
-          ><div>B</div>
-          <p>456</p></projected-comp
-        >
-      </child>`,
+      template: `
+        <child>
+          <projected-comp><div>A</div><p>123</p></projected-comp>
+          <projected-comp><div>B</div><p>456</p></projected-comp>
+        </child>`,
       standalone: false,
     })
     class Parent {}
@@ -262,17 +255,11 @@ describe('projection', () => {
 
     @Component({
       selector: 'parent',
-      template: ` <child>
-        <projected-comp
-          ><div>A</div>
-          <ng-content></ng-content>
-          <p>123</p></projected-comp
-        >
-        <projected-comp
-          ><div>B</div>
-          <p>456</p></projected-comp
-        >
-      </child>`,
+      template: `
+        <child>
+          <projected-comp><div>A</div><ng-content></ng-content><p>123</p></projected-comp>
+          <projected-comp><div>B</div><p>456</p></projected-comp>
+        </child>`,
       standalone: false,
     })
     class Parent {}
@@ -282,7 +269,7 @@ describe('projection', () => {
       template: `
         <parent>**ABC**</parent>
         <parent>**DEF**</parent>
-      `,
+     `,
       standalone: false,
     })
     class App {}
@@ -306,8 +293,7 @@ describe('projection', () => {
   it('should project into dynamic views (with createEmbeddedView)', () => {
     @Component({
       selector: 'child',
-      template: `Before-<ng-template [ngIf]="showing"><ng-content></ng-content></ng-template
-        >-After`,
+      template: `Before-<ng-template [ngIf]="showing"><ng-content></ng-content></ng-template>-After`,
       standalone: false,
     })
     class Child {
@@ -316,10 +302,7 @@ describe('projection', () => {
 
     @Component({
       selector: 'parent',
-      template: `<child
-        ><div>A</div>
-        Some text</child
-      >`,
+      template: `<child><div>A</div>Some text</child>`,
       standalone: false,
     })
     class Parent {}
@@ -334,7 +317,7 @@ describe('projection', () => {
     childInstance.showing = true;
     fixture.detectChanges();
 
-    expect(getElementHtml(childElement)).toBe(`Before-<div>A</div> Some text-After`);
+    expect(getElementHtml(childElement)).toBe(`Before-<div>A</div>Some text-After`);
 
     childInstance.showing = false;
     fixture.detectChanges();
@@ -343,13 +326,14 @@ describe('projection', () => {
 
     childInstance.showing = true;
     fixture.detectChanges();
-    expect(getElementHtml(childElement)).toBe(`Before-<div>A</div> Some text-After`);
+    expect(getElementHtml(childElement)).toBe(`Before-<div>A</div>Some text-After`);
   });
 
   it('should project into dynamic views with specific selectors', () => {
     @Component({
       selector: 'child',
-      template: ` <ng-content></ng-content>
+      template: `
+        <ng-content></ng-content>
         Before-
         <ng-template [ngIf]="showing">
           <ng-content select="div"></ng-content>
@@ -451,7 +435,7 @@ describe('projection', () => {
     @Component({
       selector: 'child',
       template: `<div><ng-content></ng-content></div>
-        <span><ng-content></ng-content></span>`,
+          <span><ng-content></ng-content></span>`,
       standalone: false,
     })
     class Child {}
@@ -551,11 +535,12 @@ describe('projection', () => {
   it('should handle projection into element containers at the view root', () => {
     @Component({
       selector: 'root-comp',
-      template: ` <ng-template [ngIf]="show">
-        <ng-container>
-          <ng-content></ng-content>
-        </ng-container>
-      </ng-template>`,
+      template: `
+        <ng-template [ngIf]="show">
+          <ng-container>
+            <ng-content></ng-content>
+          </ng-container>
+        </ng-template>`,
       standalone: false,
     })
     class RootComp {
@@ -564,7 +549,8 @@ describe('projection', () => {
 
     @Component({
       selector: 'my-app',
-      template: `<root-comp [show]="show"><div></div></root-comp> `,
+      template: `<root-comp [show]="show"><div></div></root-comp>
+      `,
       standalone: false,
     })
     class MyApp {
@@ -594,9 +580,7 @@ describe('projection', () => {
 
     @Component({
       selector: 'my-app',
-      template: `<root-comp [show]="show"
-        ><ng-container><div></div></ng-container
-      ></root-comp>`,
+      template: `<root-comp [show]="show"><ng-container><div></div></ng-container></root-comp>`,
       standalone: false,
     })
     class MyApp {
@@ -625,10 +609,11 @@ describe('projection', () => {
     @Component({
       selector: 'parent',
       template: `<child>
-        <ng-container>
-          <ng-container>content</ng-container>
-        </ng-container>
-      </child> `,
+      <ng-container>
+        <ng-container>content</ng-container>
+      </ng-container>
+    </child>
+      `,
       standalone: false,
     })
     class Parent {}
@@ -651,8 +636,8 @@ describe('projection', () => {
     @Component({
       selector: 'child',
       template: `<grand-child>
-        <ng-content></ng-content>
-      </grand-child>`,
+      <ng-content></ng-content>
+    </grand-child>`,
       standalone: false,
     })
     class Child {}
@@ -660,10 +645,11 @@ describe('projection', () => {
     @Component({
       selector: 'parent',
       template: `<child>
-        <ng-container>
-          <ng-container>content</ng-container>
-        </ng-container>
-      </child> `,
+      <ng-container>
+        <ng-container>content</ng-container>
+      </ng-container>
+    </child>
+      `,
       standalone: false,
     })
     class Parent {}
@@ -777,9 +763,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'parent',
-        template: `<child
-          ><span class="other toFirst">1</span><span class="noise toSecond">2</span></child
-        >`,
+        template: `<child><span class="other toFirst">1</span><span class="noise toSecond">2</span></child>`,
         standalone: false,
       })
       class Parent {}
@@ -829,9 +813,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'parent',
-        template: `<child
-          ><span class="toFirst">1</span><span>remaining</span>more remaining</child
-        >`,
+        template: `<child><span class="toFirst">1</span><span>remaining</span>more remaining</child>`,
         standalone: false,
       })
       class Parent {}
@@ -874,12 +856,10 @@ describe('projection', () => {
      * Descending into projected content for selector-matching purposes is not supported
      * today: https://plnkr.co/edit/MYQcNfHSTKp9KvbzJWVQ?p=preview
      */
-    it('should not descend into re-projected content for selector matching', () => {
+    it('should not descend into re-projected content', () => {
       @Component({
         selector: 'grand-child',
-        template: `<ng-content select="span"></ng-content>
-          <hr />
-          <ng-content></ng-content>`,
+        template: `<ng-content select="span"></ng-content><hr><ng-content></ng-content>`,
         standalone: false,
       })
       class GrandChild {}
@@ -887,9 +867,9 @@ describe('projection', () => {
       @Component({
         selector: 'child',
         template: `<grand-child>
-          <ng-content></ng-content>
-          <span>in child template</span>
-        </grand-child>`,
+            <ng-content></ng-content>
+            <span>in child template</span>
+          </grand-child>`,
         standalone: false,
       })
       class Child {}
@@ -910,12 +890,10 @@ describe('projection', () => {
       );
     });
 
-    it('should match selectors against the ng-content element when re-projecting', () => {
+    it('should not descend into re-projected content', () => {
       @Component({
         selector: 'card',
-        template: `<ng-content select="[card-title]"></ng-content>
-          <hr />
-          <ng-content select="[card-content]"></ng-content>`,
+        template: `<ng-content select="[card-title]"></ng-content><hr><ng-content select="[card-content]"></ng-content>`,
         standalone: false,
       })
       class Card {}
@@ -923,9 +901,9 @@ describe('projection', () => {
       @Component({
         selector: 'card-with-title',
         template: `<card>
-          <h1 card-title>Title</h1>
-          <ng-content card-content></ng-content>
-        </card>`,
+         <h1 card-title>Title</h1>
+         <ng-content card-content></ng-content>
+       </card>`,
         standalone: false,
       })
       class CardWithTitle {}
@@ -956,10 +934,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'parent',
-        template: `<child
-          ><div ngProjectAs="span">should not project</div>
-          <div>should project</div></child
-        >`,
+        template: `<child><div ngProjectAs="span">should not project</div><div>should project</div></child>`,
         standalone: false,
       })
       class Parent {}
@@ -1025,7 +1000,7 @@ describe('projection', () => {
     });
   });
 
-  it('should handle projected containers inside other containers 2', () => {
+  it('should handle projected containers inside other containers', () => {
     @Component({
       selector: 'child-comp', //
       template: '<ng-content></ng-content>',
@@ -1130,10 +1105,10 @@ describe('projection', () => {
       selector: 'card-with-title',
       template: `
         <card>
-          <h1 [color]="'red'" [margin]="10" ngProjectAs="[card-title]">Title</h1>
-          <h2 xlink:href="google.com" ngProjectAs="[card-subtitle]">Subtitle</h2>
-          <div style="font-color: blue;" ngProjectAs="[card-content]">content</div>
-          <div [color]="'blue'" ngProjectAs="[card-footer]">footer</div>
+         <h1 [color]="'red'" [margin]="10" ngProjectAs="[card-title]">Title</h1>
+         <h2  xlink:href="google.com" ngProjectAs="[card-subtitle]">Subtitle</h2>
+         <div style="font-color: blue;" ngProjectAs="[card-content]">content</div>
+         <div [color]="'blue'" ngProjectAs="[card-footer]">footer</div>
         </card>
       `,
       standalone: false,
@@ -1163,8 +1138,8 @@ describe('projection', () => {
       selector: 'card-with-title',
       template: `
         <card>
-          <h1 ngProjectAs="[card-title]">Title</h1>
-          <ng-content ngProjectAs="[card-content]"></ng-content>
+         <h1 ngProjectAs="[card-title]">Title</h1>
+         <ng-content ngProjectAs="[card-content]"></ng-content>
         </card>
       `,
       standalone: false,
@@ -1173,7 +1148,9 @@ describe('projection', () => {
 
     @Component({
       selector: 'app',
-      template: ` <card-with-title>content</card-with-title> `,
+      template: `
+        <card-with-title>content</card-with-title>
+      `,
       standalone: false,
     })
     class App {}
@@ -1199,7 +1176,7 @@ describe('projection', () => {
     @Component({
       template: `
         <card>
-          <h1 ngProjectAs="[non-existing-title-slot],[card-title]">Title</h1>
+         <h1 ngProjectAs="[non-existing-title-slot],[card-title]">Title</h1>
         </card>
       `,
       standalone: false,
@@ -1518,7 +1495,7 @@ describe('projection', () => {
 
         @Component({
           selector: 'parent-comp',
-          template: `<child-comp><span *ngIf="true" class="{{ 'a' }}"></span></child-comp>`,
+          template: `<child-comp><span *ngIf="true" class="{{'a'}}"></span></child-comp>`,
           standalone: false,
         })
         class ParentComp {}
@@ -1541,9 +1518,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'parent-comp',
-        template: `<child-comp
-          ><span *ngIf="true" id="5" jjj="class" class="{{ 'a' }}" [title]="'abc'"></span
-        ></child-comp>`,
+        template: `<child-comp><span *ngIf="true" id="5" jjj="class" class="{{'a'}}" [title]="'abc'"></span></child-comp>`,
         standalone: false,
       })
       class ParentComp {}
@@ -1602,12 +1577,13 @@ describe('projection', () => {
       @Component({
         imports: [Projection],
         template: `
-          <projection>
-            <!-- One -->
+            <projection>
+              <!-- One -->
 
-            <!-- Two -->
-          </projection>
-        `,
+
+              <!-- Two -->
+            </projection>
+          `,
       })
       class App {}
 
@@ -1620,9 +1596,7 @@ describe('projection', () => {
     it('should account for ngProjectAs when rendering fallback content', () => {
       @Component({
         selector: 'projection',
-        template: `<ng-content select="div">I have no divs</ng-content>|<ng-content select="span"
-            >I have no spans</ng-content
-          >`,
+        template: `<ng-content select="div">I have no divs</ng-content>|<ng-content select="span">I have no spans</ng-content>`,
       })
       class Projection {}
 
@@ -1648,9 +1622,7 @@ describe('projection', () => {
     it('should not render the fallback content if there is a control flow expression', () => {
       @Component({
         selector: 'projection',
-        template: `<ng-content>Wildcard fallback</ng-content>|<ng-content select="span"
-            >Span fallback</ng-content
-          >`,
+        template: `<ng-content>Wildcard fallback</ng-content>|<ng-content select="span">Span fallback</ng-content>`,
       })
       class Projection {}
 
@@ -1696,7 +1668,9 @@ describe('projection', () => {
 
       @Component({
         imports: [Projection],
-        template: ` <projection><ng-container /></projection> `,
+        template: `
+          <projection><ng-container/></projection>
+        `,
       })
       class App {
         showSpan = false;
@@ -1709,13 +1683,13 @@ describe('projection', () => {
     it('should be able to use data bindings in the fallback content', () => {
       @Component({
         selector: 'projection',
-        template: `<ng-content>Value: {{ value }}</ng-content>`,
+        template: `<ng-content>Value: {{value}}</ng-content>`,
       })
       class Projection {
         value = 0;
       }
 
-      @Component({imports: [Projection], template: `<projection />`})
+      @Component({imports: [Projection], template: `<projection/>`})
       class App {
         @ViewChild(Projection) projection!: Projection;
       }
@@ -1737,7 +1711,7 @@ describe('projection', () => {
             <button (click)="callback()">Click me</button>
           </ng-content>
 
-          Value: {{ value }}
+          Value: {{value}}
         `,
       })
       class Projection {
@@ -1748,7 +1722,7 @@ describe('projection', () => {
         }
       }
 
-      @Component({imports: [Projection], template: `<projection />`})
+      @Component({imports: [Projection], template: `<projection/>`})
       class App {}
 
       const fixture = TestBed.createComponent(App);
@@ -1778,7 +1752,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'projection',
-        template: `<ng-content><fallback-dir /></ng-content>`,
+        template: `<ng-content><fallback-dir/></ng-content>`,
         imports: [FallbackDir],
       })
       class Projection {}
@@ -1787,7 +1761,7 @@ describe('projection', () => {
         imports: [Projection],
         template: `
           @if (hasProjection) {
-            <projection />
+            <projection/>
           }
         `,
       })
@@ -1818,7 +1792,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'projection',
-        template: `<ng-content><fallback-dir /></ng-content>`,
+        template: `<ng-content><fallback-dir/></ng-content>`,
         imports: [FallbackDir],
       })
       class Projection {
@@ -1827,7 +1801,7 @@ describe('projection', () => {
 
       @Component({
         imports: [Projection],
-        template: `<projection />`,
+        template: `<projection/>`,
       })
       class App {
         @ViewChild(Projection) projection!: Projection;
@@ -1850,7 +1824,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'projection',
-        template: `<ng-content><fallback-dir /></ng-content>`,
+        template: `<ng-content><fallback-dir/></ng-content>`,
         imports: [FallbackDir],
       })
       class Projection {
@@ -1859,7 +1833,7 @@ describe('projection', () => {
 
       @Component({
         imports: [Projection],
-        template: `<projection />`,
+        template: `<projection/>`,
       })
       class App {
         @ViewChild(Projection) projection!: Projection;
@@ -1923,9 +1897,7 @@ describe('projection', () => {
     it('should render fallback content when ng-content is inside an ng-template', () => {
       @Component({
         selector: 'projection',
-        template: `<ng-container #ref /><ng-template #template
-            ><ng-content>Fallback</ng-content></ng-template
-          >`,
+        template: `<ng-container #ref/><ng-template #template><ng-content>Fallback</ng-content></ng-template>`,
       })
       class Projection {
         @ViewChild('template') template!: TemplateRef<unknown>;
@@ -1938,7 +1910,7 @@ describe('projection', () => {
 
       @Component({
         imports: [Projection],
-        template: `<projection />`,
+        template: `<projection/>`,
       })
       class App {
         @ViewChild(Projection) projection!: Projection;
@@ -2007,7 +1979,7 @@ describe('projection', () => {
 
       @Component({
         selector: 'projection',
-        template: `<ng-content><fallback /></ng-content>`,
+        template: `<ng-content><fallback/></ng-content>`,
         imports: [Fallback],
       })
       class Projection {}
@@ -2037,7 +2009,7 @@ describe('projection', () => {
           imports: [Projection],
           template: `
             <projection>Content</projection>
-            <projection />
+            <projection/>
           `,
         })
         class App {}
@@ -2062,7 +2034,7 @@ describe('projection', () => {
         @Component({
           imports: [Projection],
           template: `
-            <projection />
+            <projection/>
             <projection>Content</projection>
           `,
         })
@@ -2088,7 +2060,7 @@ describe('projection', () => {
 
       @Component({
         imports: [Projection],
-        template: `<projection />`,
+        template: `<projection/>`,
       })
       class App {}
 

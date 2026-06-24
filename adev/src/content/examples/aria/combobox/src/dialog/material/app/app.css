@@ -3,9 +3,8 @@
 :host {
   display: flex;
   justify-content: center;
-  font-family: var(--inter-font, system-ui, sans-serif);
-  --border-color: color-mix(in srgb, var(--full-contrast, #000) 20%, var(--page-background, #fff));
-  --primary: var(--vivid-pink, #f542a4);
+  font-family: var(--inter-font);
+  --border-color: color-mix(in srgb, var(--full-contrast) 20%, var(--page-background));
 }
 
 [ngCombobox] {
@@ -38,8 +37,8 @@
 }
 
 [ngCombobox]:focus-within [ngComboboxInput] {
-  outline: none;
-  box-shadow: none;
+  outline: 1.5px solid var(--vivid-pink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
 }
 
 .icon {
@@ -75,8 +74,7 @@
   outline: none;
   font-size: 1rem;
   padding: 0.7rem 1rem 0.7rem 2.5rem;
-  background-color: var(--septenary-contrast, #f5f5f5);
-  color: var(--primary-contrast, #1a1a1a);
+  background-color: var(--mat-sys-surface);
 }
 
 [ngListbox] {
@@ -99,7 +97,7 @@
 
 [ngOption]:hover,
 [ngOption][data-active='true'] {
-  background-color: color-mix(in srgb, var(--primary-contrast, #1a1a1a) 5%, transparent);
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
 }
 
 [ngOption][data-active='true'] {
@@ -133,8 +131,6 @@
   bottom: auto;
   border: 1px solid var(--border-color);
   border-radius: 1rem;
-  background-color: var(--septenary-contrast, #f5f5f5);
-  color: inherit;
 }
 
 .dialog .combobox-input-container {
@@ -151,9 +147,9 @@
   border-bottom-right-radius: 0;
 }
 
-[ngCombobox]:focus-within [ngComboboxInput]:not(.combobox-input) {
-  outline: 1.5px solid var(--vivid-pink);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
+.dialog [ngCombobox]:focus-within [ngComboboxInput] {
+  outline: none;
+  box-shadow: none;
 }
 
 .dialog::backdrop {

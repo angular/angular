@@ -96,20 +96,24 @@ export const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/components/inputs',
   },
   {
+    path: 'guide/ngmodules',
+    redirectTo: '/guide/ngmodules/overview',
+  },
+  {
     path: 'guide/ngmodules/providers',
-    redirectTo: '/guide/ngmodules',
+    redirectTo: '/guide/ngmodules/overview',
   },
   {
     path: 'guide/ngmodules/singleton-services',
-    redirectTo: '/guide/ngmodules',
+    redirectTo: '/guide/ngmodules/overview',
   },
   {
     path: 'guide/ngmodules/lazy-loading',
-    redirectTo: '/guide/ngmodules',
+    redirectTo: '/guide/ngmodules/overview',
   },
   {
     path: 'guide/ngmodules/faq',
-    redirectTo: '/guide/ngmodules',
+    redirectTo: '/guide/ngmodules/overview',
   },
   {
     path: 'guide/components/anatomy-of-components',

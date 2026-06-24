@@ -78,9 +78,9 @@ function upgradeLinkedSignalGetter<S, D>(
   getter: LinkedSignalGetter<S, D>,
   debugName?: string,
 ): WritableSignal<D> {
-  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  if (ngDevMode) {
+    getter.toString = () => `[LinkedSignal: ${getter()}]`;
     getter[SIGNAL].debugName = debugName;
-    getter.toString = () => `[LinkedSignal${debugName ? ' (' + debugName + ')' : ''}: ${getter()}]`;
   }
 
   const node = getter[SIGNAL] as LinkedSignalNode<S, D>;

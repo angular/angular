@@ -39,7 +39,6 @@ import {
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
-import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
@@ -205,7 +204,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
   constructor(
     private config: TypeCheckingConfig,
-    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName' | 'getSourceFile'>,
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
     private refEmitter: ReferenceEmitter,
     private reflector: ReflectionHost,
     private host: TypeCheckingHost,
@@ -291,6 +290,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           fields: {
             inputs: dir.inputs,
             // TODO(alxhub): support queries
+            queries: dir.queries,
           },
           coercedInputFields: dir.coercedInputFields,
         });
@@ -461,7 +461,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       .map((op) => {
         return {
           pos: op.splitPoint,
-          text: op.execute(importManager, sf, this.refEmitter),
+          text: op.execute(importManager, sf, this.refEmitter, printer),
         };
       });
 
@@ -525,7 +525,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           path: pendingShimData.file.fileName,
           data: pendingShimData.data,
         });
-        const sfText = pendingShimData.file.render();
+        const sfText = pendingShimData.file.render(false /* removeComments */);
         updates.set(pendingShimData.file.fileName, {
           newText: sfText,
 
@@ -568,9 +568,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
         domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
-        oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
-          this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
-        ),
+        oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager),
         file: new TypeCheckFile(
           shimPath,
           this.config,
@@ -644,7 +642,12 @@ interface Op {
   /**
    * Execute the operation and return the generated code as text.
    */
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string;
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer,
+  ): string;
 }
 
 /**
@@ -667,29 +670,28 @@ class InlineTcbOp implements Op {
     return this.ref.node.end + 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer,
+  ): string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
-    const fnName = `_tcb_${this.ref.node.pos}`;
-
-    const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
-      this.ref,
-      this.meta,
-      env,
-      TcbGenericContextBehavior.CopyClassNodes,
-    );
+    const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
 
     // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is
     // inlined into the class in a context where that will always be legal.
     const fn = generateTypeCheckBlock(
       env,
-      component,
+      this.ref,
       fnName,
-      tcbMeta,
+      this.meta,
       this.domSchemaChecker,
       this.oobRecorder,
+      TcbGenericContextBehavior.CopyClassNodes,
     );
 
-    return fn;
+    return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
   }
 }
 
@@ -710,8 +712,36 @@ class TypeCtorOp implements Op {
     return this.ref.node.end - 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer,
+  ): string {
     const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
-    return generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
+    const tcb = generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
+    return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }
+}
+
+/**
+ * Compare two operations and return their split point ordering.
+ */
+function orderOps(op1: Op, op2: Op): number {
+  return op1.splitPoint - op2.splitPoint;
+}
+
+/**
+ * Split a string into chunks at any number of split points.
+ */
+function splitStringAtPoints(str: string, points: number[]): string[] {
+  const splits: string[] = [];
+  let start = 0;
+  for (let i = 0; i < points.length; i++) {
+    const point = points[i];
+    splits.push(str.substring(start, point));
+    start = point;
+  }
+  splits.push(str.substring(start));
+  return splits;
 }

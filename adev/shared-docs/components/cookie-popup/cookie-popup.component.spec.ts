@@ -11,6 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CookiePopup, STORAGE_KEY} from './cookie-popup.component';
 import {LOCAL_STORAGE} from '../../providers/index';
 import {MockLocalStorage} from '../../testing/index';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('CookiePopup', () => {
   let fixture: ComponentFixture<CookiePopup>;
@@ -20,6 +21,7 @@ describe('CookiePopup', () => {
     TestBed.configureTestingModule({
       imports: [CookiePopup],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: LOCAL_STORAGE,
           useValue: mockLocalStorage,
@@ -28,34 +30,34 @@ describe('CookiePopup', () => {
     });
   });
 
-  it('should make the popup visible by default', async () => {
-    await initComponent(false);
+  it('should make the popup visible by default', () => {
+    initComponent(false);
 
     expect(getCookiesPopup()).not.toBeNull();
   });
 
-  it('should hide the cookies popup if the user has already accepted cookies', async () => {
-    await initComponent(true);
+  it('should hide the cookies popup if the user has already accepted cookies', () => {
+    initComponent(true);
 
     expect(getCookiesPopup()).toBeNull();
   });
 
-  it('should hide the cookies popup', async () => {
-    await initComponent(false);
+  it('should hide the cookies popup', () => {
+    initComponent(false);
 
     accept();
-    await fixture.whenStable();
+
+    fixture.detectChanges();
 
     expect(getCookiesPopup()).toBeNull();
   });
 
-  it('should store the user confirmation', async () => {
-    await initComponent(false);
+  it('should store the user confirmation', () => {
+    initComponent(false);
 
     expect(mockLocalStorage.getItem(STORAGE_KEY)).toBeNull();
 
     accept();
-    await fixture.whenStable();
 
     expect(mockLocalStorage.getItem(STORAGE_KEY)).toBe('true');
   });
@@ -71,10 +73,10 @@ describe('CookiePopup', () => {
       ?.click();
   }
 
-  async function initComponent(cookiesAccepted: boolean) {
+  function initComponent(cookiesAccepted: boolean) {
     mockLocalStorage.setItem(STORAGE_KEY, cookiesAccepted ? 'true' : null);
     fixture = TestBed.createComponent(CookiePopup);
 
-    await fixture.whenStable();
+    fixture.detectChanges();
   }
 });

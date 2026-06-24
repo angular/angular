@@ -61,12 +61,9 @@ export interface InjectableDecorator {
    *
    */
   (): TypeDecorator;
-
-  /**
-   * @deprecated The `providedIn: NgModule` or `providedIn:'any'` options are deprecated. Please use the other signatures.
-   */
-  (options?: {providedIn: Type<any> | 'any'} & InjectableProvider): TypeDecorator;
-  (options?: {providedIn: 'root' | 'platform' | null} & InjectableProvider): TypeDecorator;
+  (
+    options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
+  ): TypeDecorator;
   new (): Injectable;
   new (
     options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,

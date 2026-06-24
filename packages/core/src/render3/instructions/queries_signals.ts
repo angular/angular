@@ -7,6 +7,7 @@
  */
 
 import {ProviderToken} from '../../di/provider_token';
+import {QueryFlags} from '../interfaces/query';
 import {createContentQuery, createViewQuery} from '../queries/query';
 import {bindQueryToSignal} from '../queries/query_reactive';
 import {Signal} from '../reactivity/api';
@@ -26,12 +27,11 @@ import {getCurrentQueryIndex, setCurrentQueryIndex} from '../state';
 export function ɵɵcontentQuerySignal<T>(
   directiveIndex: number,
   target: Signal<T>,
-  predicate: ProviderToken<unknown> | string[] | string,
-  flags: number,
+  predicate: ProviderToken<unknown> | string[],
+  flags: QueryFlags,
   read?: any,
-): typeof ɵɵcontentQuerySignal {
+): void {
   bindQueryToSignal(target, createContentQuery(directiveIndex, predicate, flags, read));
-  return ɵɵcontentQuerySignal;
 }
 
 /**
@@ -47,12 +47,11 @@ export function ɵɵcontentQuerySignal<T>(
  */
 export function ɵɵviewQuerySignal(
   target: Signal<unknown>,
-  predicate: ProviderToken<unknown> | string[] | string,
-  flags: number,
+  predicate: ProviderToken<unknown> | string[],
+  flags: QueryFlags,
   read?: ProviderToken<unknown>,
-): typeof ɵɵviewQuerySignal {
+): void {
   bindQueryToSignal(target, createViewQuery(predicate, flags, read));
-  return ɵɵviewQuerySignal;
 }
 
 /**

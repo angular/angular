@@ -99,7 +99,8 @@
       display: none;
     }
 
-    .trait {
+    .console-reference,
+    .on-push {
       color: var(--color-tree-node-console-ref);
       padding-left: 8px;
       font-style: italic;

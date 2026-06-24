@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
 // TODO: Import submit function
-import {email, form, FormField, required} from '@angular/forms/signals';
+import {form, Field, required, email} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
@@ -12,7 +12,7 @@ interface LoginData {
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
-  imports: [FormField],
+  imports: [Field],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {

@@ -6,13 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
-import {RuntimeErrorCode} from '../errors';
-
-import type {MetadataKey, ValidationError} from '../api/rules';
-import type {AsyncValidationResult, DisabledReason, LogicFn, ValidationResult} from '../api/types';
+import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import type {
+  AsyncValidationResult,
+  DisabledReason,
+  FieldContext,
+  LogicFn,
+  ValidationResult,
+} from '../api/types';
+import type {ValidationError} from '../api/validation_errors';
 import {setBoundPathDepthForResolution} from '../field/resolution';
-import {type BoundPredicate, DYNAMIC, LogicContainer, type Predicate} from './logic';
+import {BoundPredicate, DYNAMIC, LogicContainer, Predicate} from './logic';
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -44,9 +48,14 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
 
-  /** Adds a rule to compute metadata for a field. */
-  abstract addMetadataRule<M>(key: MetadataKey<unknown, M, unknown>, logic: LogicFn<any, M>): void;
+  /** Adds a rule to compute aggregate metadata for a field. */
+  abstract addAggregateMetadataRule<M>(
+    key: AggregateMetadataKey<unknown, M>,
+    logic: LogicFn<any, M>,
+  ): void;
 
+  /** Adds a factory function to produce a data value associated with a field. */
+  abstract addMetadataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.
@@ -105,25 +114,35 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   override addSyncErrorRule(
-    logic: LogicFn<any, ValidationResult<ValidationError.WithFieldTree>>,
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
   ): void {
     this.getCurrent().addSyncErrorRule(logic);
   }
 
   override addSyncTreeErrorRule(
-    logic: LogicFn<any, ValidationResult<ValidationError.WithFieldTree>>,
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
   ): void {
     this.getCurrent().addSyncTreeErrorRule(logic);
   }
 
   override addAsyncErrorRule(
-    logic: LogicFn<any, AsyncValidationResult<ValidationError.WithFieldTree>>,
+    logic: LogicFn<any, AsyncValidationResult<ValidationError.WithField>>,
   ): void {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
-  override addMetadataRule<T>(key: MetadataKey<unknown, T, any>, logic: LogicFn<any, T>): void {
-    this.getCurrent().addMetadataRule(key, logic);
+  override addAggregateMetadataRule<T>(
+    key: AggregateMetadataKey<any, T>,
+    logic: LogicFn<any, T>,
+  ): void {
+    this.getCurrent().addAggregateMetadataRule(key, logic);
+  }
+
+  override addMetadataFactory<D>(
+    key: MetadataKey<D>,
+    factory: (ctx: FieldContext<any>) => D,
+  ): void {
+    this.getCurrent().addMetadataFactory(key, factory);
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -235,25 +254,35 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   override addSyncErrorRule(
-    logic: LogicFn<any, ValidationResult<ValidationError.WithFieldTree>>,
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
   ): void {
     this.logic.syncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addSyncTreeErrorRule(
-    logic: LogicFn<any, ValidationResult<ValidationError.WithFieldTree>>,
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
   ): void {
     this.logic.syncTreeErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addAsyncErrorRule(
-    logic: LogicFn<any, AsyncValidationResult<ValidationError.WithFieldTree>>,
+    logic: LogicFn<any, AsyncValidationResult<ValidationError.WithField>>,
   ): void {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addMetadataRule<T>(key: MetadataKey<unknown, T, unknown>, logic: LogicFn<any, T>): void {
-    this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
+  override addAggregateMetadataRule<T>(
+    key: AggregateMetadataKey<unknown, T>,
+    logic: LogicFn<any, T>,
+  ): void {
+    this.logic.getAggregateMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
+  }
+
+  override addMetadataFactory<D>(
+    key: MetadataKey<D>,
+    factory: (ctx: FieldContext<any>) => D,
+  ): void {
+    this.logic.addMetadataFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -435,10 +464,7 @@ function getAllChildBuilders(
       ...(builder.children.has(key) ? [{builder: builder.getChild(key), predicates: []}] : []),
     ];
   } else {
-    throw new RuntimeError(
-      RuntimeErrorCode.UNKNOWN_BUILDER_TYPE,
-      ngDevMode && 'Unknown LogicNodeBuilder type',
-    );
+    throw new Error('Unknown LogicNodeBuilder type');
   }
 }
 
@@ -472,10 +498,7 @@ function createLogic(
   } else if (builder instanceof NonMergeableLogicNodeBuilder) {
     logic.mergeIn(builder.logic);
   } else {
-    throw new RuntimeError(
-      RuntimeErrorCode.UNKNOWN_BUILDER_TYPE,
-      ngDevMode && 'Unknown LogicNodeBuilder type',
-    );
+    throw new Error('Unknown LogicNodeBuilder type');
   }
   return logic;
 }

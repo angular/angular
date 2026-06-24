@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive, inject, input, inputBinding, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  Directive,
+  inject,
+  input,
+  inputBinding,
+  OnInit,
+  ViewContainerRef,
+} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
@@ -38,7 +46,7 @@ class Root {
   constructor() {
     // Create a component with an input binding.
     this.viewContainerRef.createComponent(FieldComponent, {
-      bindings: [inputBinding('formField', () => 'Input from dynamic component')],
+      bindings: [inputBinding('field', () => 'Input from dynamic component')],
     });
 
     // Create a component with a directive with an input binding.
@@ -46,7 +54,7 @@ class Root {
       directives: [
         {
           type: FieldDirective,
-          bindings: [inputBinding('formField', () => 'Input from dynamic directive')],
+          bindings: [inputBinding('field', () => 'Input from dynamic directive')],
         },
       ],
     });

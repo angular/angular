@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgTemplateOutlet} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject, input, output} from '@angular/core';
-import {MatTooltip} from '@angular/material/tooltip';
-import {RouterLink, RouterLinkActive} from '@angular/router';
 import {NavigationItem} from '../../interfaces/index';
-import {IsActiveNavigationItem} from '../../pipes';
 import {NavigationState} from '../../services/index';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 import {IconComponent} from '../icon/icon.component';
+import {IsActiveNavigationItem} from '../../pipes';
+import {NgTemplateOutlet, TitleCasePipe} from '@angular/common';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'docs-navigation-list',
@@ -23,7 +24,9 @@ import {IconComponent} from '../icon/icon.component';
     IconComponent,
     IsActiveNavigationItem,
     NgTemplateOutlet,
-    MatTooltip,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    TitleCasePipe,
   ],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],
@@ -31,7 +34,6 @@ import {IconComponent} from '../icon/icon.component';
 })
 export class NavigationList {
   readonly navigationItems = input.required<NavigationItem[]>();
-  readonly preserveOtherCategoryOrder = input.required<boolean>();
   readonly displayItemsToLevel = input(2);
   readonly collapsableLevel = input<number | undefined>();
   readonly expandableLevel = input(2);
@@ -62,17 +64,14 @@ export class NavigationList {
     return items.some((item) => !!item.category);
   }
 
-  protected groupItems(
-    items: NavigationItem[],
-    preserveOtherCategoryOrder: boolean,
-  ): Map<string, NavigationItem[]> {
+  protected groupItems(items: NavigationItem[]): Map<string, NavigationItem[]> {
     const hasCategories = this.hasCategories(items);
     if (hasCategories) {
       const others: NavigationItem[] = [];
       const categorizedItems = new Map<string, NavigationItem[]>();
       for (const item of items) {
         const category = item.category || 'Other';
-        if (!preserveOtherCategoryOrder && category === 'Other') {
+        if (category === 'Other') {
           others.push(item);
           continue;
         }

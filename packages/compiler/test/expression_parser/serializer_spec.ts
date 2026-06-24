@@ -132,9 +132,5 @@ describe('serializer', () => {
     it('serializes in expressions', () => {
       expect(serialize(parse(' foo   in   bar '))).toBe('foo in bar');
     });
-
-    it('serializes instanceof expressions', () => {
-      expect(serialize(parse(' foo   instanceof   Bar '))).toBe('foo instanceof Bar');
-    });
   });
 });

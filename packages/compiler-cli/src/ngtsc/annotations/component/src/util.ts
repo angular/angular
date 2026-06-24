@@ -99,18 +99,10 @@ export function validateAndFlattenComponentImports(
 
   for (let i = 0; i < imports.length; i++) {
     const ref = imports[i];
-    let refExpr = expr;
-    if (
-      ts.isArrayLiteralExpression(expr) &&
-      expr.elements.length === imports.length &&
-      !expr.elements.some(ts.isSpreadAssignment)
-    ) {
-      refExpr = expr.elements[i];
-    }
 
     if (Array.isArray(ref)) {
       const {imports: childImports, diagnostics: childDiagnostics} =
-        validateAndFlattenComponentImports(ref, refExpr, isDeferred);
+        validateAndFlattenComponentImports(ref, expr, isDeferred);
       flattened.push(...childImports);
       diagnostics.push(...childDiagnostics);
     } else if (ref instanceof Reference) {
@@ -146,16 +138,20 @@ export function validateAndFlattenComponentImports(
       let diagnosticNode: ts.Node;
       let diagnosticValue: ResolvedValue;
 
-      // Reporting a diagnostic on the entire array can be noisy, especially if the user has a
-      // large array. Attempt to determine the most accurate position within the `imports` expression to report the
-      // diagnostic on.
-      if (ref instanceof DynamicValue && isWithinExpression(ref.node, expr)) {
-        // Use the dynamic value position itself if it occurs within the `imports` expression.
+      if (ref instanceof DynamicValue) {
         diagnosticNode = ref.node;
         diagnosticValue = ref;
-      } else if (refExpr !== expr) {
-        // The reference comes from a specific element in `expr`, so use that element to report the diagnostic on.
-        diagnosticNode = refExpr;
+      } else if (
+        ts.isArrayLiteralExpression(expr) &&
+        expr.elements.length === imports.length &&
+        !expr.elements.some(ts.isSpreadAssignment) &&
+        !imports.some(Array.isArray)
+      ) {
+        // Reporting a diagnostic on the entire array can be noisy, especially if the user has a
+        // large array. The most common case is that the array will be static so we can reliably
+        // trace back a `ResolvedValue` back to its node using its index. This allows us to report
+        // the exact node that caused the issue.
+        diagnosticNode = expr.elements[i];
         diagnosticValue = ref;
       } else {
         diagnosticNode = expr;
@@ -169,17 +165,6 @@ export function validateAndFlattenComponentImports(
   }
 
   return {imports: flattened, diagnostics};
-}
-
-function isWithinExpression(node: ts.Node, expr: ts.Expression): boolean {
-  let current: ts.Node | undefined = node;
-  while (current !== undefined) {
-    if (current === expr) {
-      return true;
-    }
-    current = current.parent;
-  }
-  return false;
 }
 
 /**

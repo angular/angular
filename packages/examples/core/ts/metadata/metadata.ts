@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Attribute, Component, Directive} from '@angular/core';
+import {Attribute, Component, Directive, Pipe} from '@angular/core';
+
+class CustomDirective {}
+
+@Component({
+  selector: 'greet',
+  template: 'Hello {{name}}!',
+})
+class Greet {
+  name: string = 'World';
+}
 
 // #docregion attributeFactory
 @Component({
@@ -31,3 +41,21 @@ class InputAttrDirective {
   }
 }
 // #enddocregion
+
+@Directive({
+  selector: 'input',
+})
+class InputDirective {
+  constructor() {
+    // Add some logic.
+  }
+}
+
+@Pipe({
+  name: 'lowercase',
+})
+class Lowercase {
+  transform(v: string, args: any[]) {
+    return v.toLowerCase();
+  }
+}

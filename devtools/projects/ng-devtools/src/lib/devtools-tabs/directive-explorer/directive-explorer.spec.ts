@@ -19,11 +19,10 @@ import SpyObj = jasmine.SpyObj;
 import {By} from '@angular/platform-browser';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
-import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
+import {ElementPropertyResolver, FlatNode} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
-import {PropertyPaneComponent} from './property-pane/property-pane.component';
-import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
-import {FlatNode} from '../../shared/object-tree-explorer/object-tree-types';
+import {PropertyTabComponent} from './property-tab/property-tab.component';
+import {SignalGraphManager} from './signal-graph/signal-graph-manager';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -70,7 +69,7 @@ describe('DirectiveExplorerComponent', () => {
   let contentScriptConnected = (frameId: number, name: string, url: string) => {};
   let frameConnected = (frameId: number) => {};
 
-  beforeEach(async () => {
+  beforeEach(() => {
     applicationOperationsSpy = jasmine.createSpyObj<ApplicationOperations>('_appOperations', [
       'viewSource',
       'selectDomElement',
@@ -110,7 +109,7 @@ describe('DirectiveExplorerComponent', () => {
 
     fixture = TestBed.overrideComponent(DirectiveExplorerComponent, {
       remove: {
-        imports: [DirectiveForestComponent, BreadcrumbsComponent, PropertyPaneComponent],
+        imports: [DirectiveForestComponent, BreadcrumbsComponent, PropertyTabComponent],
         providers: [SignalGraphManager],
       },
       add: {
@@ -130,7 +129,7 @@ describe('DirectiveExplorerComponent', () => {
 
     TestBed.inject(FrameManager);
     comp = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create instance from class', () => {
@@ -208,14 +207,14 @@ describe('DirectiveExplorerComponent', () => {
       expect(messageBusMock.emit).toHaveBeenCalledWith('removeHydrationOverlay');
     });
 
-    it('should show hydration checkbox toggle', async () => {
+    it('should show hydration checkbox toggle', () => {
       fixture.componentRef.setInput('isHydrationEnabled', true);
-      await fixture.whenStable();
+      fixture.detectChanges();
       const toggle = fixture.debugElement.query(By.css('#show-hydration-overlays'));
       expect(toggle).toBeTruthy();
 
       fixture.componentRef.setInput('isHydrationEnabled', false);
-      await fixture.whenStable();
+      fixture.detectChanges();
       const toggle2 = fixture.debugElement.query(By.css('#show-hydration-overlays'));
       expect(toggle2).toBeFalsy();
     });
@@ -356,7 +355,7 @@ describe('DirectiveExplorerComponent', () => {
         expect(messageBusMock.emit).toHaveBeenCalledWith('log', [
           {
             level: 'warn',
-            message: `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`,
+            message: `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`,
           },
         ]);
       });

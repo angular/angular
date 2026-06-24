@@ -13,9 +13,9 @@ import {expect} from '@angular/private/testing/matchers';
 import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
 import {EMPTY, of} from 'rxjs';
 
-import {provideRouter, withExperimentalPlatformNavigation} from '../src/provide_router';
+import {provideRouter, withPlatformNavigation} from '../src/provide_router';
 import {isUrlTree} from '../src/url_tree';
-import {useAutoTick, timeout} from '@angular/private/testing';
+import {timeout, useAutoTick} from './helpers';
 import {afterNextNavigation} from '../src/utils/navigations';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
@@ -127,7 +127,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
               resolveNavigationPromiseOnError: true,
             }),
             browserAPI === 'navigation'
-              ? withExperimentalPlatformNavigation()
+              ? withPlatformNavigation()
               : (makeEnvironmentProviders([]) as any),
           ),
         ],
@@ -330,17 +330,14 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         location.back();
         await nextNavigation();
         expect(location.path()).toEqual('/unguarded');
-        // With 'navigation' API, we never commit the transition back to 'second'
-        // so the "redirect" from the canActivate guard that triggered a new browser
-        // navigation actually cancels the back traversal from second to first.
-        expectPageIndex(browserAPI === 'navigation' ? 3 : 2);
+        expectPageIndex(2);
 
         TestBed.inject(MyCanActivateGuard).redirectTo = null;
 
         location.back();
         await nextNavigation();
-        expect(location.path()).toEqual(browserAPI === 'navigation' ? '/second' : '/first');
-        expectPageIndex(browserAPI === 'navigation' ? 2 : 1);
+        expect(location.path()).toEqual('/first');
+        expectPageIndex(1);
       });
 
       it('restores history correctly when component throws error in constructor and replaceUrl=true', async () => {

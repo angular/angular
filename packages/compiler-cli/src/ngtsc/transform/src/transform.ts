@@ -13,7 +13,6 @@ import {
   DefaultImportTracker,
   ImportRewriter,
   LocalCompilationExtraImportsTracker,
-  ReferenceEmitter,
 } from '../../imports';
 import {getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
@@ -24,7 +23,6 @@ import {
   RecordWrappedNodeFn,
   translateExpression,
   translateStatement,
-  translateType,
   TranslatorOptions,
 } from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
@@ -55,8 +53,6 @@ export function ivyTransformFactory(
   isCore: boolean,
   isClosureCompilerEnabled: boolean,
   emitDeclarationOnly: boolean,
-  refEmitter: ReferenceEmitter | null,
-  enableTypeReification: boolean,
 ): ts.TransformerFactory<ts.SourceFile> {
   const recordWrappedNode = createRecorderFn(defaultImportTracker);
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
@@ -72,8 +68,6 @@ export function ivyTransformFactory(
           isCore,
           isClosureCompilerEnabled,
           emitDeclarationOnly,
-          refEmitter,
-          enableTypeReification,
           recordWrappedNode,
         ),
       );
@@ -135,8 +129,6 @@ class IvyTransformationVisitor extends Visitor {
     private isClosureCompilerEnabled: boolean,
     private isCore: boolean,
     private deferrableImports: Set<ts.ImportDeclaration>,
-    private refEmitter: ReferenceEmitter | null,
-    private enableTypeReification: boolean,
   ) {
     super();
   }
@@ -144,14 +136,9 @@ class IvyTransformationVisitor extends Visitor {
   override visitClassDeclaration(
     node: ts.ClassDeclaration,
   ): VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
-    // Node might be modified since results were collected in the compilation phase.
-    const original = ts.getOriginalNode(node, ts.isClassDeclaration);
-
     // If this class is not registered in the map, it means that it doesn't have Angular decorators,
     // thus no further processing is required.
-    const compileResults =
-      this.classCompilationMap.get(node) ?? this.classCompilationMap.get(original);
-    if (!compileResults) {
+    if (!this.classCompilationMap.has(node)) {
       return {node};
     }
 
@@ -166,9 +153,9 @@ class IvyTransformationVisitor extends Visitor {
 
     // Note: Class may be already transformed by e.g. Tsickle and
     // not have a direct reference to the source file.
-    const sourceFile = original.getSourceFile();
+    const sourceFile = ts.getOriginalNode(node).getSourceFile();
 
-    for (const field of compileResults) {
+    for (const field of this.classCompilationMap.get(node)!) {
       // Type-only member.
       if (field.initializer === null) {
         continue;
@@ -183,22 +170,11 @@ class IvyTransformationVisitor extends Visitor {
       );
 
       // Create a static property declaration for the new field.
-      let typeNode: ts.TypeNode | undefined = undefined;
-      if (this.enableTypeReification && this.refEmitter !== null) {
-        typeNode = translateType(
-          field.type,
-          sourceFile,
-          this.reflector,
-          this.refEmitter,
-          this.importManager,
-        );
-      }
-
       const property = ts.factory.createPropertyDeclaration(
         [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)],
         field.name,
         undefined,
-        typeNode,
+        undefined,
         exprNode,
       );
 
@@ -349,7 +325,7 @@ class IvyTransformationVisitor extends Visitor {
         node,
         combinedModifiers,
         node.name,
-        node.questionToken || node.exclamationToken,
+        node.questionToken,
         node.type,
         node.initializer,
       ) as T & ts.PropertyDeclaration;
@@ -395,8 +371,6 @@ function transformIvySourceFile(
   isCore: boolean,
   isClosureCompilerEnabled: boolean,
   emitDeclarationOnly: boolean,
-  refEmitter: ReferenceEmitter | null,
-  enableTypeReification: boolean,
   recordWrappedNode: RecordWrappedNodeFn<ts.Expression>,
 ): ts.SourceFile {
   const constantPool = new ConstantPool(isClosureCompilerEnabled);
@@ -435,8 +409,6 @@ function transformIvySourceFile(
     isClosureCompilerEnabled,
     isCore,
     compilationVisitor.deferrableImports,
-    refEmitter,
-    enableTypeReification,
   );
   let sf = visit(file, transformationVisitor, context);
 

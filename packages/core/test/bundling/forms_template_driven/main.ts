@@ -54,7 +54,9 @@ class TemplateFormsComponent {
 
 @Component({
   selector: 'app-root',
-  template: ` <app-template-forms></app-template-forms> `,
+  template: `
+    <app-template-forms></app-template-forms>
+  `,
   standalone: false,
 })
 class RootComponent {}

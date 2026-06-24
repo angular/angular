@@ -10,9 +10,9 @@ import {
   getFileSystem,
   PathManipulation,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
-import babel, {NodePath, types as t, template, TransformOptions} from '@babel/core';
-import _generate from '@babel/generator';
 import {ɵmakeTemplateObject} from '../../index';
+import babel, {NodePath, TransformOptions, template, types as t} from '@babel/core';
+import _generate from '@babel/generator';
 
 // Babel is a CJS package and misuses the `default` named binding:
 // https://github.com/babel/babel/issues/15269.
@@ -34,10 +34,10 @@ import {
 
 import {runInNativeFileSystem} from './helpers';
 
-runInNativeFileSystem('utils', () => {
+runInNativeFileSystem(() => {
   let fs: PathManipulation;
   beforeEach(() => (fs = getFileSystem()));
-  describe('', () => {
+  describe('utils', () => {
     describe('isNamedIdentifier()', () => {
       it('should return true if the expression is an identifier with name `$localize`', () => {
         const taggedTemplate = getTaggedTemplate('$localize ``;');

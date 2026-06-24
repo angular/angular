@@ -9,6 +9,7 @@
 import {
   afterNextRender,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   ElementRef,
@@ -19,13 +20,13 @@ import {
   Type,
 } from '@angular/core';
 import {DOCUMENT, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
-import {MatTab, MatTabGroup} from '@angular/material/tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {IconComponent} from '../../icon/icon.component';
 import {ExampleMetadata, Snippet} from '../../../interfaces/index';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
-import {MatTooltip} from '@angular/material/tooltip';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 export const CODE_LINE_NUMBER_CLASS_NAME = 'shiki-ln-number';
 export const CODE_LINE_CLASS_NAME = 'line';
@@ -36,9 +37,8 @@ export const HIDDEN_CLASS_NAME = 'hidden';
   selector: 'docs-example-viewer',
   imports: [
     CopySourceCodeButton,
-    MatTabGroup,
-    MatTab,
-    MatTooltip,
+    MatTabsModule,
+    MatTooltipModule,
     IconComponent,
     NgTemplateOutlet,
     NgComponentOutlet,

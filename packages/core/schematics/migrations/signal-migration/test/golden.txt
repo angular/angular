@@ -188,7 +188,9 @@ export class MyComp {
 import {Component, input} from '@angular/core';
 
 @Component({
-  template: ` {{ label() }} `,
+  template: `
+    {{label()}}
+  `,
 })
 class Group {
   readonly label = input.required<string>();
@@ -197,10 +199,10 @@ class Group {
 @Component({
   template: `
     @if (true) {
-      {{ group.label() }}
+      {{group.label()}}
     }
 
-    {{ group.label() }}
+    {{group.label()}}
   `,
 })
 class Option {
@@ -311,7 +313,7 @@ export class MatHint {
   template: ``,
 })
 export class MatFormFieldTest {
-  declare private _hintChildren: MatHint[];
+  private declare _hintChildren: MatHint[];
   private _control = true;
   private _somethingElse = false;
 
@@ -706,8 +708,8 @@ describe('bla', () => {
     @Component({
       template: `
         <app-component #ref />
-        {{ ref.input.ok }}
-      `,
+        {{ref.input.ok}}
+        `,
     })
     class TestCmp {}
     TestBed.configureTestingModule({
@@ -739,7 +741,10 @@ describe('bla', () => {
 import {Component, input} from '@angular/core';
 
 @Component({
-  template: ` <div *someTemplateDir [style.ok]="justify()"></div> `,
+  template: `
+    <div *someTemplateDir [style.ok]="justify()">
+    </div>
+  `,
 })
 export class InlineTmpl {
   readonly justify = input<'start' | 'end'>('end');
@@ -945,7 +950,11 @@ interface Config {
 }
 
 @Component({
-  template: ` <span [id]="config().bla"> Test </span> `,
+  template: `
+    <span [id]="config().bla">
+      Test
+    </span>
+  `,
 })
 export class NestedTemplatePropAccess {
   readonly config = input<Config>({});
@@ -1031,7 +1040,9 @@ class OptionalInput {
 import {Component, Directive, QueryList, Input} from '@angular/core';
 
 @Component({
-  template: ` {{ label }} `,
+  template: `
+    {{label}}
+  `,
 })
 class Group {
   // TODO: Skipped for migration because:
@@ -1100,7 +1111,9 @@ class Required {
 import {Component, input} from '@angular/core';
 
 @Component({
-  template: ` {{ bla?.myInput() }} `,
+  template: `
+    {{bla?.myInput()}}
+  `,
 })
 class WithSafePropertyReads {
   readonly myInput = input(0);
@@ -1221,23 +1234,23 @@ import {Component, Input, input} from '@angular/core';
 @Component({
   template: `
     @if (first) {
-      {{ first }}
+      {{first}}
     }
 
     <ng-template [ngIf]="second">
-      {{ second }}
+      {{second}}
     </ng-template>
 
     <div *ngIf="third">
-      {{ third }}
+      {{third}}
     </div>
 
     <div *ngIf="fourth()">
-      {{ notTheInput }}
+      {{notTheInput}}
     </div>
 
     @if (fifth()) {
-      {{ notTheInput }}
+      {{notTheInput}}
     }
   `,
 })
@@ -1264,7 +1277,10 @@ export class MyComp {
 import {Component, input} from '@angular/core';
 
 @Component({
-  template: `<div [bla]="{myInput: myInput()}"></div>`,
+  template: `
+    <div [bla]="{myInput: myInput()}">
+    </div>
+  `,
   host: {
     '[style]': '{myInput: myInput()}',
   },
@@ -1281,7 +1297,8 @@ import {Component, Input, input} from '@angular/core';
 @Component({
   template: `
     <input [(ngModel)]="inputA" />
-    <div (click)="inputB = false"></div>
+    <div (click)="inputB = false">
+    </div>
   `,
   host: {
     '(click)': 'inputC = true',

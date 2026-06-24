@@ -15,7 +15,7 @@
 
 <docs-workflow>
 
-<docs-step title="Define the LoginData interface">
+<docs-step title="Определение интерфейса LoginData">
 Создайте интерфейс TypeScript, определяющий структуру данных вашей формы входа. Форма будет содержать:
 
 - Поле `email` (строка)
@@ -33,17 +33,17 @@ interface LoginData {
 Добавьте этот интерфейс над декоратором `@Component`.
 </docs-step>
 
-<docs-step title="Import signal and form">
+<docs-step title="Импорт signal и form">
 Импортируйте функцию `signal` из `@angular/core` и функцию `form` из `@angular/forms/signals`:
 
 ```ts
-import {Component, signal} from '@angular/core';
-import {form} from '@angular/forms/signals';
+import { Component, signal } from '@angular/core';
+import { form } from '@angular/forms/signals';
 ```
 
 </docs-step>
 
-<docs-step title="Create the form model signal">
+<docs-step title="Создание сигнала модели формы">
 В классе компонента создайте сигнал `loginModel` с начальными значениями. Используйте интерфейс `LoginData` в качестве параметра типа:
 
 ```ts
@@ -57,7 +57,7 @@ loginModel = signal<LoginData>({
 Начальные значения задаются как пустые строки для текстовых полей и `false` для чекбокса.
 </docs-step>
 
-<docs-step title="Create the form">
+<docs-step title="Создание формы">
 Теперь создайте форму, передав сигнал модели в функцию `form()`:
 
 ```ts

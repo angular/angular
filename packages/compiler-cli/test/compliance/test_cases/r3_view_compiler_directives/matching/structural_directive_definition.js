@@ -1,6 +1,4 @@
-export class MyComponent {
-  …
-  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: [[__AttributeMarker.Template__, "someDirective"]],
   template: function MyComponent_Template(rf, ctx) {
@@ -12,4 +10,3 @@ export class MyComponent {
   dependencies: [SomeDirective],
   encapsulation: 2
 });
-}

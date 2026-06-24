@@ -1,56 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Zone.js Basic Demo</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <script src="../dist/zone.js"></script>
-    <script src="../dist/long-stack-trace-zone.js"></script>
-  </head>
-  <body>
-    <h1>Basic Example</h1>
+<head>
+  <meta charset="utf-8">
+  <title>Zone.js Basic Demo</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="../dist/zone.js"></script>
+  <script src="../dist/long-stack-trace-zone.js"></script>
+</head>
+<body>
 
-    <button id="b1">Bind Error</button>
-    <button id="b2">Cause Error</button>
+  <h1>Basic Example</h1>
 
-    <script>
-      /*
-       * This is a simple example of async stack traces with zones
-       */
+  <button id="b1">Bind Error</button>
+  <button id="b2">Cause Error</button>
 
-      function main() {
-        b1.addEventListener('click', bindSecondButton);
-      }
+  <script>
 
-      /*
-       * What if your stack trace could tell you what
-       * order the user pushed the buttons from the stack trace?
-       *
-       * What if you could log this back to the server?
-       *
-       * Think of how much more productive your debugging could be!
-       */
+  /*
+   * This is a simple example of async stack traces with zones
+   */
 
-      function bindSecondButton() {
-        b2.addEventListener('click', throwError);
-      }
+  function main () {
+    b1.addEventListener('click', bindSecondButton);
+  }
 
-      function throwError() {
-        throw new Error('aw shucks');
-      }
+  /*
+   * What if your stack trace could tell you what
+   * order the user pushed the buttons from the stack trace?
+   *
+   * What if you could log this back to the server?
+   *
+   * Think of how much more productive your debugging could be!
+   */
 
-      /*
-       * Bootstrap the app
-       */
-      //main();
-      Zone.current
-        .fork({
-          onHandleError: function (parentZoneDelegate, currentZone, targetZone, error) {
-            console.log(error.stack);
-          },
-        })
-        .fork(Zone.longStackTraceZoneSpec)
-        .run(main);
-    </script>
-  </body>
+  function bindSecondButton () {
+    b2.addEventListener('click', throwError);
+  }
+
+
+  function throwError () {
+    throw new Error('aw shucks');
+  }
+
+  /*
+   * Bootstrap the app
+   */
+  //main();
+  Zone.current.fork(
+          {
+              onHandleError: function (parentZoneDelegate, currentZone, targetZone, error) {
+                  console.log(error.stack);
+              }
+          }
+  ).fork(Zone.longStackTraceZoneSpec).run(main);
+
+  </script>
+</body>
 </html>

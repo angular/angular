@@ -135,7 +135,9 @@ describe('element discovery', () => {
   it('should cache the element context on a element was preemptively monkey-patched', () => {
     @Component({
       selector: 'structured-comp',
-      template: ` <section></section> `,
+      template: `
+        <section></section>
+      `,
     })
     class StructuredComp {}
 
@@ -158,10 +160,10 @@ describe('element discovery', () => {
     @Component({
       selector: 'structured-comp',
       template: `
-        <section>
-          <p></p>
-        </section>
-      `,
+            <section>
+              <p></p>
+            </section>
+          `,
     })
     class StructuredComp {}
 
@@ -182,7 +184,9 @@ describe('element discovery', () => {
   it('should be able to pull in element context data even if the element is decorated using styling', () => {
     @Component({
       selector: 'structured-comp',
-      template: ` <section></section> `,
+      template: `
+            <section></section>
+          `,
     })
     class StructuredComp {}
 
@@ -221,13 +225,13 @@ describe('element discovery', () => {
     @Component({
       selector: 'projector-comp',
       template: `
-        welcome
-        <header>
-          <h1>
-            <ng-content></ng-content>
-          </h1>
-        </header>
-      `,
+            welcome
+            <header>
+              <h1>
+                <ng-content></ng-content>
+              </h1>
+            </header>
+          `,
     })
     class ProjectorComp {}
 
@@ -235,13 +239,13 @@ describe('element discovery', () => {
       selector: 'parent-comp',
       imports: [ProjectorComp],
       template: `
-        <section>
-          <projector-comp>
-            <p>this content is projected</p>
-            this content is projected also
-          </projector-comp>
-        </section>
-      `,
+            <section>
+              <projector-comp>
+                <p>this content is projected</p>
+                this content is projected also
+              </projector-comp>
+            </section>
+          `,
     })
     class ParentComp {}
 
@@ -296,7 +300,9 @@ describe('element discovery', () => {
   it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular', () => {
     @Component({
       selector: 'structured-comp',
-      template: ` <section></section> `,
+      template: `
+             <section></section>
+           `,
     })
     class StructuredComp {}
 
@@ -376,9 +382,9 @@ describe('element discovery', () => {
       selector: 'structured-comp',
       imports: [MyDir1, MyDir2, MyDir3],
       template: `
-        <div my-dir-1 my-dir-2></div>
-        <div my-dir-3></div>
-      `,
+            <div my-dir-1 my-dir-2></div>
+            <div my-dir-3></div>
+          `,
     })
     class StructuredComp {}
 
@@ -449,7 +455,9 @@ describe('element discovery', () => {
 
     @Component({
       selector: 'child-comp',
-      template: ` <div></div> `,
+      template: `
+             <div></div>
+           `,
     })
     class ChildComp {
       constructor() {
@@ -460,7 +468,9 @@ describe('element discovery', () => {
     @Component({
       selector: 'parent-comp',
       imports: [ChildComp, MyDir1, MyDir2],
-      template: ` <child-comp my-dir-1 my-dir-2></child-comp> `,
+      template: `
+             <child-comp my-dir-1 my-dir-2></child-comp>
+           `,
     })
     class ParentComp {}
 
@@ -512,10 +522,10 @@ describe('element discovery', () => {
     @Component({
       selector: 'child-comp',
       template: `
-        <div></div>
-        <div></div>
-        <div></div>
-      `,
+            <div></div>
+            <div></div>
+            <div></div>
+          `,
     })
     class ChildComp {}
 
@@ -523,10 +533,10 @@ describe('element discovery', () => {
       selector: 'parent-comp',
       imports: [ChildComp],
       template: `
-        <section>
-          <child-comp></child-comp>
-        </section>
-      `,
+            <section>
+              <child-comp></child-comp>
+            </section>
+          `,
     })
     class ParentComp {}
 
@@ -557,7 +567,9 @@ describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     @Component({
       selector: 'sanitize-this',
-      template: ` <a [href]="href"></a> `,
+      template: `
+        <a [href]="href"></a>
+      `,
     })
     class SanitizationComp {
       href = '';
@@ -600,7 +612,7 @@ describe('sanitization', () => {
       selector: '[unsafeUrlHostBindingDir]',
     })
     class UnsafeUrlHostBindingDir {
-      @HostBinding() href: any = 'http://href-dir-value';
+      @HostBinding() cite: any = 'http://cite-dir-value';
 
       constructor() {
         hostBindingDir = this;
@@ -610,7 +622,9 @@ describe('sanitization', () => {
     @Component({
       selector: 'sanitize-this',
       imports: [UnsafeUrlHostBindingDir],
-      template: ` <a unsafeUrlHostBindingDir>text</a> `,
+      template: `
+        <blockquote unsafeUrlHostBindingDir></blockquote>
+      `,
     })
     class SimpleComp {}
 
@@ -626,16 +640,16 @@ describe('sanitization', () => {
       ],
     });
     const fixture = TestBed.createComponent(SimpleComp);
-    hostBindingDir!.href = 'http://foo';
+    hostBindingDir!.cite = 'http://foo';
     fixture.detectChanges();
 
-    const anchor = fixture.nativeElement.querySelector('a')!;
-    expect(anchor.getAttribute('href')).toEqual('http://bar');
+    const anchor = fixture.nativeElement.querySelector('blockquote')!;
+    expect(anchor.getAttribute('cite')).toEqual('http://bar');
 
-    hostBindingDir!.href = sanitizer.bypassSecurityTrustUrl('http://foo');
+    hostBindingDir!.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
     fixture.detectChanges();
 
-    expect(anchor.getAttribute('href')).toEqual('http://foo');
+    expect(anchor.getAttribute('cite')).toEqual('http://foo');
   });
 });
 

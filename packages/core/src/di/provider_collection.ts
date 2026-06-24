@@ -111,6 +111,8 @@ type WalkProviderTreeVisitor = (
  * another environment injector (such as a route injector). They should not be used in component
  * providers.
  *
+ * More information about standalone components can be found in [this
+ * guide](guide/components/importing).
  *
  * @usageNotes
  * The results of the `importProvidersFrom` call can be used in the `bootstrapApplication` call:

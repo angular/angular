@@ -83,7 +83,6 @@ async function getFileAndContent(workingDir: string, path: string): Promise<File
   return {content, path};
 }
 
-// Use once we restore the StackBlitz feature
 async function createPostData(
   exampleDir: string,
   config: ZipConfig,

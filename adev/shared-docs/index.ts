@@ -13,7 +13,6 @@
 export * from './directives/index';
 export * from './components/index';
 export * from './interfaces/index';
-export * from './pipes/index';
 export * from './providers/index';
 export * from './services/index';
 export * from './utils/index';

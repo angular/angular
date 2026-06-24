@@ -11,12 +11,12 @@ Angular.
 
 <docs-video src="https://www.youtube.com/embed/xAT0lHYhHMY?si=cKUW_MGn3MesFT7o"/>
 
-## Перед началом {#before-you-start}
+## Перед началом
 
 Для наилучшего результата ознакомьтесь с этими требованиями, чтобы убедиться, что у вас есть всё необходимое для
 успешного прохождения руководства.
 
-### Ваш опыт {#your-experience}
+### Ваш опыт
 
 Уроки в этом руководстве предполагают, что у вас есть опыт в следующем:
 
@@ -25,7 +25,7 @@ Angular.
 1. Чтение каскадных таблиц стилей (CSS) и понимание того, как используются селекторы.
 1. Использование инструкций командной строки для выполнения задач на компьютере.
 
-### Ваше оборудование {#your-equipment}
+### Ваше оборудование
 
 Эти уроки можно пройти, используя локальную установку инструментов Angular или в нашем встроенном редакторе. Локальная
 разработка на Angular возможна в системах Windows, MacOS или Linux.
@@ -33,7 +33,7 @@ Angular.
 ПРИМЕЧАНИЕ: Обращайте внимание на подобные предупреждения, в которых указываются шаги, предназначенные только для
 локального редактора.
 
-## Концептуальный обзор вашего первого приложения Angular {#conceptual-preview-of-your-first-angular-app}
+## Концептуальный обзор вашего первого приложения Angular
 
 В уроках этого руководства создается приложение Angular, которое отображает список домов для аренды и показывает
 подробную информацию об отдельных домах.
@@ -41,7 +41,7 @@ Angular.
 
 <img alt="Результат работы целевой страницы с домами" src="assets/images/tutorials/first-app/homes-app-landing-page.png">
 
-## Локальная среда разработки {#local-development-environment}
+## Локальная среда разработки
 
 ПРИМЕЧАНИЕ: Этот шаг предназначен только для вашей локальной среды!
 
@@ -49,7 +49,7 @@ Angular.
 
 <docs-workflow>
 
-<docs-step title="Identify the version of `node.js` that Angular requires">
+<docs-step title="Определите версию `node.js`, необходимую для Angular">
 Angular требует активную LTS или поддерживаемую LTS версию Node. Давайте проверим вашу версию `node.js`. Информацию о требованиях к конкретным версиям см. в свойстве engines в [файле package.json](https://unpkg.com/browse/@angular/core@15.1.5/package.json).
 
 В окне **Терминала**:
@@ -58,17 +58,17 @@ Angular требует активную LTS или поддерживаемую 
 1. Убедитесь, что отображаемый номер версии соответствует требованиям.
    </docs-step>
 
-<docs-step title="Install the correct version of `node.js` for Angular">
+<docs-step title="Установите правильную версию `node.js` для Angular">
 Если у вас не установлена версия `node.js`, следуйте [инструкциям по установке на nodejs.org](https://nodejs.org/en/download/)
 </docs-step>
 
-<docs-step title="Install the latest version of Angular">
+<docs-step title="Установите последнюю версию Angular">
 После установки `node.js` и `npm` следующим шагом будет установка [Angular CLI](tools/cli), который предоставляет инструменты для эффективной разработки на Angular.
 
 В окне **Терминала** выполните следующую команду: `npm install -g @angular/cli`.
 </docs-step>
 
-<docs-step title="Install integrated development environment (IDE)">
+<docs-step title="Установите интегрированную среду разработки (IDE)">
 Вы можете использовать любой инструмент для создания приложений на Angular. Мы рекомендуем следующее:
 
 1. [Visual Studio Code](https://code.visualstudio.com/)
@@ -77,7 +77,7 @@ Angular требует активную LTS или поддерживаемую 
 3. [WebStorm](https://www.jetbrains.com/webstorm/)
    </docs-step>
 
-<docs-step title="Optional: set-up your AI powered IDE">
+<docs-step title="Необязательно: настройте IDE с поддержкой ИИ">
 
 Если вы проходите это руководство в предпочитаемой IDE с поддержкой
 ИИ, [ознакомьтесь с правилами подсказок и лучшими практиками Angular](/ai/develop-with-ai).

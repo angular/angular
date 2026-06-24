@@ -10,13 +10,14 @@ import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
+import {CssSelector} from '../../directive_matching';
 import {ShadowCss} from '../../shadow_css';
 import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {Identifiers as R3} from '../r3_identifiers';
-import {R3CompiledExpression, tsIgnoreComment, typeWithParameters} from '../util';
+import {R3CompiledExpression, typeWithParameters} from '../util';
 
 import {
   DeclarationListEmitMode,
@@ -147,11 +148,6 @@ function addFeatures(
   if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature));
   }
-  if (meta.controlCreate !== null) {
-    features.push(
-      o.importExpr(R3.ControlFeature).callFn([o.literal(meta.controlCreate.passThroughInput)]),
-    );
-  }
   if ('externalStyles' in meta && meta.externalStyles?.length) {
     const externalStyleNodes = meta.externalStyles.map((externalStyle) => o.literal(externalStyle));
     features.push(
@@ -192,6 +188,28 @@ export function compileComponentFromMetadata(
 ): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
+
+  const selector = meta.selector && CssSelector.parse(meta.selector);
+  const firstSelector = selector && selector[0];
+
+  // e.g. `attr: ["class", ".my.app"]`
+  // This is optional an only included if the first selector of a component specifies attributes.
+  if (firstSelector) {
+    const selectorAttributes = firstSelector.getAttrs();
+    if (selectorAttributes.length) {
+      definitionMap.set(
+        'attrs',
+        constantPool.getConstLiteral(
+          o.literalArr(
+            selectorAttributes.map((value) =>
+              value != null ? o.literal(value) : o.literal(undefined),
+            ),
+          ),
+          /* forceShared */ true,
+        ),
+      );
+    }
+  }
 
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = meta.name;
@@ -746,13 +764,7 @@ export function compileDeferResolverFunction(
         );
 
         // Dynamic import, e.g. `import('./a').then(...)`.
-        const importExpr = new o.DynamicImportExpr(dep.importPath!)
-          .prop('then')
-          .callFn([innerFn], undefined, undefined, [
-            // Necessary, because we might not generate extensions for the path
-            // and TS may try to enforce it based on the compiler options.
-            tsIgnoreComment(),
-          ]);
+        const importExpr = new o.DynamicImportExpr(dep.importPath!).prop('then').callFn([innerFn]);
         depExpressions.push(importExpr);
       } else {
         // Non-deferrable symbol, just use a reference to the type. Note that it's important to
@@ -770,13 +782,7 @@ export function compileDeferResolverFunction(
       );
 
       // Dynamic import, e.g. `import('./a').then(...)`.
-      const importExpr = new o.DynamicImportExpr(importPath)
-        .prop('then')
-        .callFn([innerFn], undefined, undefined, [
-          // Necessary, because we might not generate extensions for the path
-          // and TS may try to enforce it based on the compiler options.
-          tsIgnoreComment(),
-        ]);
+      const importExpr = new o.DynamicImportExpr(importPath).prop('then').callFn([innerFn]);
       depExpressions.push(importExpr);
     }
   }

@@ -10,7 +10,7 @@
 
 <docs-workflow>
 
-<docs-step title="Import `ReactiveForms` module">
+<docs-step title="Импорт модуля `ReactiveForms`">
 
 В `app.ts` импортируйте `ReactiveFormsModule` из `@angular/forms` и добавьте его в массив `imports` компонента.
 
@@ -36,7 +36,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 </docs-step>
 
-<docs-step title="Create the `FormGroup` object with FormControls">
+<docs-step title="Создание объекта `FormGroup` с FormControls">
 
 Реактивные формы используют класс `FormControl` для представления элементов управления формы (например, полей ввода).
 Angular предоставляет класс `FormGroup`, который объединяет элементы управления формы в удобный объект, упрощая работу с
@@ -58,7 +58,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Link the FormGroup and FormControls to the form">
+<docs-step title="Связывание FormGroup и FormControls с формой">
 
 Каждый `FormGroup` должен быть прикреплен к форме с помощью директивы `[formGroup]`.
 
@@ -81,7 +81,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Handle update to the form">
+<docs-step title="Обработка обновлений формы">
 
 Когда вам нужно получить данные из `FormGroup`, это можно сделать, обратившись к значению (value) `FormGroup`. Обновите
 `template`, чтобы отобразить значения формы:
@@ -95,29 +95,30 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Access FormGroup values">
+<docs-step title="Доступ к значениям FormGroup">
 Добавьте в класс компонента новый метод `handleSubmit`, который вы позже будете использовать для обработки отправки формы.
 Этот метод будет отображать значения из формы; вы можете получить доступ к значениям через FormGroup.
 
 В классе компонента добавьте метод `handleSubmit()` для обработки отправки формы.
 
-```ts
+<docs-code language="ts">
 handleSubmit() {
   alert(
     this.profileForm.value.name + ' | ' + this.profileForm.value.email
   );
 }
-```
-
+</docs-code>
 </docs-step>
 
-<docs-step title="Add `ngSubmit` to the form">
+<docs-step title="Добавление `ngSubmit` к форме">
 У вас есть доступ к значениям формы, теперь пришло время обработать событие отправки и использовать метод `handleSubmit`.
 В Angular для этой цели есть специальный обработчик событий под названием `ngSubmit`. Обновите элемент формы, чтобы вызывать метод `handleSubmit` при отправке формы.
 
-```angular-html {highlight:[3]}
-<form [formGroup]="profileForm" (ngSubmit)="handleSubmit()"></form>
-```
+<docs-code language="angular-html" highlight="[3]">
+<form
+  [formGroup]="profileForm"
+  (ngSubmit)="handleSubmit()">
+</docs-code>
 
 </docs-step>
 

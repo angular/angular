@@ -11,12 +11,7 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {
-  TemplateCheckFactory,
-  TemplateCheckWithVisitor,
-  TemplateContext,
-  formatExtendedError,
-} from '../../api';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * Ensures a user doesn't forget to omit `let` when using ngfor.
@@ -46,12 +41,7 @@ class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_
     if (node.variables.length > 0) {
       return [];
     }
-
-    const errorString = formatExtendedError(
-      ErrorCode.MISSING_NGFOROF_LET,
-      `Your ngFor is missing a value. Did you forget to add the \`let\` keyword?`,
-    );
-
+    const errorString = 'Your ngFor is missing a value. Did you forget to add the `let` keyword?';
     const diagnostic = ctx.makeTemplateDiagnostic(attr.sourceSpan, errorString);
     return [diagnostic];
   }

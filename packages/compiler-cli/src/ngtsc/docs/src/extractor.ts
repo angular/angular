@@ -23,7 +23,6 @@ import {
   DocEntryWithSourceInfo,
   EntryType,
   MemberType,
-  type DirectiveEntry,
   type InterfaceEntry,
   type MemberEntry,
   type NamespaceEntry,
@@ -83,7 +82,7 @@ export class DocsExtractor {
         continue;
       }
 
-      const entry = this.extractDeclarations(declarations);
+      const entry = this.extractDeclarations(exportName, declarations);
       if (entry && !isIgnoredDocEntry(entry)) {
         // The source file parameter is the package entry: the index.ts
         // We want the real source file of the declaration.
@@ -140,7 +139,7 @@ export class DocsExtractor {
    * the same name. This is used to combine entries, e.g. for a type and a namespace that are
    * exported under the same name.
    */
-  private extractDeclarations(nodes: ts.Declaration[]): DocEntry | null {
+  private extractDeclarations(exportName: string, nodes: ts.Declaration[]): DocEntry | null {
     const entries = nodes.map((node) => this.extractDeclaration(node));
     const decorator = entries.find((e) => e?.entryType === EntryType.Decorator);
     if (decorator) {

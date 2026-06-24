@@ -8,7 +8,6 @@
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 import {ParseLocation, ParseSourceSpan} from '../../../parse_util';
-import {tsIgnoreComment} from '../../util';
 
 import {serializeIcuNode} from './icu_serializer';
 import {formatI18nPlaceholderName} from './util';
@@ -29,11 +28,7 @@ export function createLocalizeStatements(
     sourceSpan,
   );
   const variableInitialization = variable.set(localizedString);
-  return [
-    new o.ExpressionStatement(variableInitialization, null, [
-      tsIgnoreComment(), // `$localize` might not be available internally.
-    ]),
-  ];
+  return [new o.ExpressionStatement(variableInitialization)];
 }
 
 /**

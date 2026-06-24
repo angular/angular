@@ -33,7 +33,6 @@ describe('RouterTreeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTreeComponent],
       providers: [
-        // TODO: This test should be migrated to zoneless but its not straightforward.
         provideZoneChangeDetection(),
         {provide: ApplicationOperations, useValue: applicationOperationsSpy},
         {provide: MessageBus, useValue: messageBus},

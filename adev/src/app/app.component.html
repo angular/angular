@@ -11,18 +11,15 @@
 </a>
 
 @defer (when isBrowser) {
-  <adev-progress-bar />
-  <docs-top-level-banner
-    expiry="2025-10-20"
-    id="state-of-js-2025"
-    link="https://survey.devographics.com/en-US/survey/state-of-js/2025?source=angular_homepage"
-    text="Share your experience with Angular in The State of JavaScript 2025 survey"
-  />
+<adev-progress-bar />
+<docs-top-level-banner expiry="2025-10-20" id="state-of-js-2025"
+  link="https://survey.devographics.com/en-US/survey/state-of-js/2025?source=angular_homepage"
+  text="Поделитесь своим опытом работы с Angular в опросе The State of JavaScript 2025" />
 }
 
 <div class="adev-nav"></div>
 @if (displaySecondaryNav()) {
-  <adev-secondary-navigation />
+<adev-secondary-navigation />
 }
 <div class="docs-app-main-content">
   <!--
@@ -31,17 +28,17 @@
     it requires additional state management.
   -->
   @defer (when isBrowser) {
-    <docs-cookie-popup />
+  <docs-cookie-popup />
 
-    @defer (when displaySearchDialog(); prefetch on idle) {
-      @if (displaySearchDialog()) {
-        <docs-search-dialog (onClose)="displaySearchDialog.set(false)" />
-      }
-    }
+  @defer (when displaySearchDialog(); prefetch on idle) {
+  @if (displaySearchDialog()) {
+  <docs-search-dialog (onClose)="displaySearchDialog.set(false)" />
+  }
+  }
   }
   <router-outlet />
 
   @if (displayFooter()) {
-    <footer adev-footer></footer>
+  <footer adev-footer></footer>
   }
 </div>

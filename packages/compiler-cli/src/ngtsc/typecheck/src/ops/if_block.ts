@@ -7,11 +7,12 @@
  */
 
 import {TmplAstIfBlock, TmplAstIfBlockBranch} from '@angular/compiler';
+import ts from 'typescript';
 import {TcbOp} from './base';
-import {getStatementsBlock, TcbExpr} from './codegen';
 import type {Scope} from './scope';
 import type {Context} from './context';
 import {tcbExpression} from './expression';
+import {markIgnoreDiagnostics} from '../comments';
 
 /**
  * A `TcbOp` which renders an `if` template block as a TypeScript `if` statement.
@@ -39,7 +40,7 @@ export class TcbIfOp extends TcbOp {
     return null;
   }
 
-  private generateBranch(index: number): TcbExpr | undefined {
+  private generateBranch(index: number): ts.Statement | undefined {
     const branch = this.block.branches[index];
 
     if (!branch) {
@@ -49,7 +50,7 @@ export class TcbIfOp extends TcbOp {
     // If the expression is null, it means that it's an `else` statement.
     if (branch.expression === null) {
       const branchScope = this.getBranchScope(this.scope, branch, index);
-      return new TcbExpr(`{\n${getStatementsBlock(branchScope.render())}}`);
+      return ts.factory.createBlock(branchScope.render());
     }
 
     // We process the expression first in the parent scope, but create a scope around the block
@@ -62,15 +63,19 @@ export class TcbIfOp extends TcbOp {
 
     let expression = tcbExpression(branch.expression, this.tcb, this.scope);
     if (branch.expressionAlias !== null) {
-      expression = new TcbExpr(
-        `(${expression.print()}) && ${outerScope.resolve(branch.expressionAlias).print()}`,
+      expression = ts.factory.createBinaryExpression(
+        ts.factory.createParenthesizedExpression(expression),
+        ts.SyntaxKind.AmpersandAmpersandToken,
+        outerScope.resolve(branch.expressionAlias),
       );
     }
     const bodyScope = this.getBranchScope(outerScope, branch, index);
-    const ifStatement = `if (${expression.print()}) {\n${getStatementsBlock(bodyScope.render())}}`;
-    const elseBranch = this.generateBranch(index + 1);
 
-    return new TcbExpr(ifStatement + (elseBranch ? ' else ' + elseBranch.print() : ''));
+    return ts.factory.createIfStatement(
+      expression,
+      ts.factory.createBlock(bodyScope.render()),
+      this.generateBranch(index + 1),
+    );
   }
 
   private getBranchScope(parentScope: Scope, branch: TmplAstIfBlockBranch, index: number): Scope {
@@ -83,8 +88,8 @@ export class TcbIfOp extends TcbOp {
     );
   }
 
-  private generateBranchGuard(index: number): TcbExpr | null {
-    let guard: TcbExpr | null = null;
+  private generateBranchGuard(index: number): ts.Expression | null {
+    let guard: ts.Expression | null = null;
 
     // Since event listeners are inside callbacks, type narrowing doesn't apply to them anymore.
     // To recreate the behavior, we generate an expression that negates all the values of the
@@ -106,30 +111,41 @@ export class TcbIfOp extends TcbOp {
       }
 
       const expressionScope = this.expressionScopes.get(branch)!;
-      let expression: TcbExpr;
+      let expression: ts.Expression;
 
       // We need to recreate the expression and mark it to be ignored for diagnostics,
       // because it was already checked as a part of the block's condition and we don't
       // want it to produce a duplicate diagnostic.
       expression = tcbExpression(branch.expression, this.tcb, expressionScope);
       if (branch.expressionAlias !== null) {
-        expression = new TcbExpr(
-          `(${expression.print()}) && ${expressionScope.resolve(branch.expressionAlias).print()}`,
+        expression = ts.factory.createBinaryExpression(
+          ts.factory.createParenthesizedExpression(expression),
+          ts.SyntaxKind.AmpersandAmpersandToken,
+          expressionScope.resolve(branch.expressionAlias),
         );
       }
-      expression.markIgnoreDiagnostics();
+      markIgnoreDiagnostics(expression);
 
       // The expressions of the preceding branches have to be negated
       // (e.g. `expr` becomes `!(expr)`) when comparing in the guard, except
       // for the branch's own expression which is preserved as is.
       const comparisonExpression =
-        i === index ? expression : new TcbExpr(`!(${expression.print()})`);
+        i === index
+          ? expression
+          : ts.factory.createPrefixUnaryExpression(
+              ts.SyntaxKind.ExclamationToken,
+              ts.factory.createParenthesizedExpression(expression),
+            );
 
       // Finally add the expression to the guard with an && operator.
       guard =
         guard === null
           ? comparisonExpression
-          : new TcbExpr(`(${guard.print()}) && (${comparisonExpression.print()})`);
+          : ts.factory.createBinaryExpression(
+              guard,
+              ts.SyntaxKind.AmpersandAmpersandToken,
+              comparisonExpression,
+            );
     }
 
     return guard;

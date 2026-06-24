@@ -17,7 +17,7 @@
 выполняет этот обход. Этот обход посещает каждый компонент ровно один раз, поэтому вам всегда следует избегать внесения
 дальнейших изменений состояния в середине этого процесса.
 
-## Краткое описание {#summary}
+## Краткое описание
 
 <div class="docs-table docs-scroll-track-transparent">
   <table>
@@ -99,7 +99,7 @@
 
 При инициализации первый `ngOnChanges` запускается перед `ngOnInit`.
 
-#### Проверка изменений {#inspecting-changes}
+#### Проверка изменений
 
 Метод `ngOnChanges` принимает один аргумент `SimpleChanges`. Этот объект представляет собой [
 `Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type), сопоставляющий имя каждого
@@ -158,7 +158,7 @@ export class UserProfile {
 Вы также можете использовать `DestroyRef`, чтобы держать код настройки рядом с кодом очистки, вместо того чтобы помещать
 весь код очистки в метод `ngOnDestroy`.
 
-##### Обнаружение уничтожения экземпляра {#detecting-instance-destruction}
+##### Обнаружение уничтожения экземпляра
 
 `DestroyRef` предоставляет свойство `destroyed`, которое позволяет проверить, был ли данный экземпляр уже уничтожен. Это
 полезно для предотвращения операций над уничтоженными компонентами, особенно при работе с отложенной или асинхронной
@@ -223,7 +223,7 @@ _представления_).
 состоянию [запросов представления](guide/components/queries#view-queries), попытка изменить какое-либо состояние в этом
 методе приведет к ошибке [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
-### afterEveryRender и afterNextRender {#aftereveryrender-and-afternextrender}
+### afterEveryRender и afterNextRender
 
 Функции `afterEveryRender` и `afterNextRender` позволяют зарегистрировать **колбэк рендеринга**, который будет вызван
 после того, как Angular закончит рендеринг _всех компонентов_ на странице в DOM.
@@ -241,7 +241,7 @@ _представления_).
 Колбэки рендеринга не запускаются во время рендеринга на стороне сервера (SSR) или во время предварительного
 рендеринга (pre-rendering) при сборке.
 
-#### Фазы after\*Render {#afterrender-phases}
+#### Фазы after\*Render
 
 При использовании `afterEveryRender` или `afterNextRender` вы можете опционально разделить работу на фазы. Фаза дает вам
 контроль над последовательностью операций DOM, позволяя упорядочить операции _записи_ перед операциями _чтения_, чтобы
@@ -251,15 +251,13 @@ _представления_).
 ```ts
 import {Component, ElementRef, afterNextRender} from '@angular/core';
 
-@Component({
-  /*...*/
-})
+@Component({...})
 export class UserProfile {
   private prevPadding = 0;
   private elementHeight = 0;
 
   constructor() {
-    const elementRef = inject(ElementRef);
+    private elementRef = inject(ElementRef);
     const nativeElement = elementRef.nativeElement;
 
     afterNextRender({
@@ -278,7 +276,7 @@ export class UserProfile {
         if (didWrite) {
           this.elementHeight = nativeElement.getBoundingClientRect().height;
         }
-      },
+      }
     });
   }
 }
@@ -293,7 +291,7 @@ export class UserProfile {
 | `mixedReadWrite` | Фаза по умолчанию. Используйте для любых операций, требующих как чтения, так и записи свойств и стилей, влияющих на макет. Избегайте этой фазы, если это возможно, отдавая предпочтение явным фазам `write` и `read`.              |
 | `read`           | Используйте эту фазу для чтения любых свойств DOM, влияющих на макет.                                                                                                                                                              |
 
-## Интерфейсы жизненного цикла {#lifecycle-interfaces}
+## Интерфейсы жизненного цикла
 
 Angular предоставляет интерфейс TypeScript для каждого метода жизненного цикла. Вы можете опционально импортировать и
 реализовать (`implement`) эти интерфейсы, чтобы убедиться, что в вашей реализации нет опечаток или ошибок в написании.
@@ -312,11 +310,11 @@ export class UserProfile implements OnInit {
 }
 ```
 
-## Порядок выполнения {#execution-order}
+## Порядок выполнения
 
 Следующие диаграммы показывают порядок выполнения хуков жизненного цикла Angular.
 
-### При инициализации {#during-initialization}
+### При инициализации
 
 ```mermaid
 graph TD;
@@ -333,7 +331,7 @@ end
 CHANGE--Rendering-->afterNextRender-->afterEveryRender
 ```
 
-### Последующие обновления {#subsequent-updates}
+### Последующие обновления
 
 ```mermaid
 graph TD;
@@ -346,7 +344,7 @@ end
 CHANGE--Rendering-->afterEveryRender
 ```
 
-### Порядок выполнения с директивами {#ordering-with-directives}
+### Порядок выполнения с директивами
 
 Когда вы помещаете одну или несколько директив на тот же элемент, что и компонент (либо в шаблоне, либо с помощью
 свойства `hostDirectives`), фреймворк не гарантирует какой-либо порядок выполнения данного хука жизненного цикла между

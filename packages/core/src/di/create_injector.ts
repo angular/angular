@@ -47,10 +47,7 @@ export function createInjectorWithoutInjectorInstances(
   scopes = new Set<InjectorScope>(),
 ): R3Injector {
   const providers = [additionalProviders || EMPTY_ARRAY, importProvidersFrom(defType)];
-  let source: string | undefined = undefined;
-  if (ngDevMode) {
-    source = name || (typeof defType === 'object' ? undefined : stringify(defType));
-  }
+  name = name || (typeof defType === 'object' ? undefined : stringify(defType));
 
-  return new R3Injector(providers, parent || getNullInjector(), source || null, scopes);
+  return new R3Injector(providers, parent || getNullInjector(), name || null, scopes);
 }

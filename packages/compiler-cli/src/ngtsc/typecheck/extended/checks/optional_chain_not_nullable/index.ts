@@ -19,12 +19,7 @@ import ts from 'typescript';
 import {NgCompilerOptions} from '../../../../core/api';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {
-  TemplateCheckFactory,
-  TemplateCheckWithVisitor,
-  TemplateContext,
-  formatExtendedError,
-} from '../../api';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * Ensures the left side of an optional chain operation is nullable.
@@ -90,10 +85,7 @@ class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.O
         : `the '?.' operator can be safely removed`;
     const diagnostic = ctx.makeTemplateDiagnostic(
       templateMapping.span,
-      formatExtendedError(
-        ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE,
-        `The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore ${advice}`,
-      ),
+      `The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore ${advice}.`,
     );
     return [diagnostic];
   }

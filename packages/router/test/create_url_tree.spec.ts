@@ -18,7 +18,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSerializer, UrlTree} from '../src/url_tree';
 import {provideRouter, withRouterConfig} from '../src';
-import {timeout} from '@angular/private/testing';
+import {timeout} from './helpers';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();

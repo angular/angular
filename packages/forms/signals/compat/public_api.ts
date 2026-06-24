@@ -12,7 +12,5 @@
  * Entry point for all public APIs of this package.
  */
 export * from './src/api/compat_form';
-export {extractValue} from './src/api/extract';
-export {CompatValidationError} from '../src/compat/validation_errors';
+export * from './src/api/compat_validation_error';
 export * from './src/api/di';
-export {SignalFormControl} from './src/signal_form_control/signal_form_control';

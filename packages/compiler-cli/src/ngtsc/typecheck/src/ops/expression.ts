@@ -20,17 +20,21 @@ import {
   ThisReceiver,
   TmplAstLetDeclaration,
 } from '@angular/compiler';
+import ts from 'typescript';
 import {TcbOp} from './base';
-import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {astToTcbExpr} from '../expression';
+import {astToTypescript, getAnyExpression} from '../expression';
+import {addParseSpanInfo, wrapForDiagnostics} from '../diagnostics';
+import {markIgnoreDiagnostics} from '../comments';
+import {Reference} from '../../../imports';
+import {ClassDeclaration} from '../../../reflection';
 
 /**
  * Process an `AST` expression and convert it into a `ts.Expression`, generating references to the
  * correct identifiers in the current scope.
  */
-export function tcbExpression(ast: AST, tcb: Context, scope: Scope): TcbExpr {
+export function tcbExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
   const translator = new TcbExpressionTranslator(tcb, scope);
   return translator.translate(ast);
 }
@@ -38,12 +42,12 @@ export function tcbExpression(ast: AST, tcb: Context, scope: Scope): TcbExpr {
 /**
  * Wraps an expression in an `unwrapSignal` call which extracts the signal's value.
  */
-export function unwrapWritableSignal(expression: TcbExpr, tcb: Context): TcbExpr {
+export function unwrapWritableSignal(expression: ts.Expression, tcb: Context): ts.CallExpression {
   const unwrapRef = tcb.env.referenceExternalSymbol(
     R3Identifiers.unwrapWritableSignal.moduleName,
     R3Identifiers.unwrapWritableSignal.name,
   );
-  return new TcbExpr(`${unwrapRef.print()}(${expression.print()})`);
+  return ts.factory.createCallExpression(unwrapRef, undefined, [expression]);
 }
 
 /**
@@ -66,35 +70,7 @@ export class TcbExpressionOp extends TcbOp {
 
   override execute(): null {
     const expr = tcbExpression(this.expression, this.tcb, this.scope);
-    this.scope.addStatement(expr);
-    return null;
-  }
-}
-
-/**
- * A `TcbOp` which renders an Angular expression inside a conditional context.
- * This is used for `@defer` triggers (`when`, `prefetch when`, `hydrate when`)
- * to enable TypeScript's TS2774 diagnostic for uninvoked functions/signals.
- *
- * Executing this operation returns nothing.
- */
-export class TcbConditionOp extends TcbOp {
-  constructor(
-    private tcb: Context,
-    private scope: Scope,
-    private expression: AST,
-  ) {
-    super();
-  }
-
-  override get optional() {
-    return false;
-  }
-
-  override execute(): null {
-    const expr = tcbExpression(this.expression, this.tcb, this.scope);
-    // Wrap in an if-statement to enable TS2774 for uninvoked signals/functions.
-    this.scope.addStatement(new TcbExpr(`if (${expr.print()}) {}`));
+    this.scope.addStatement(ts.factory.createExpressionStatement(expr));
     return null;
   }
 }
@@ -105,11 +81,11 @@ export class TcbExpressionTranslator {
     protected scope: Scope,
   ) {}
 
-  translate(ast: AST): TcbExpr {
-    // `astToTcbExpr` actually does the conversion. A special resolver `tcbResolve` is passed
+  translate(ast: AST): ts.Expression {
+    // `astToTypescript` actually does the conversion. A special resolver `tcbResolve` is passed
     // which interprets specific expression nodes that interact with the `ImplicitReceiver`. These
     // nodes actually refer to identifiers within the current scope.
-    return astToTcbExpr(ast, (ast) => this.resolve(ast), this.tcb.env.config);
+    return astToTypescript(ast, (ast) => this.resolve(ast), this.tcb.env.config);
   }
 
   /**
@@ -118,8 +94,12 @@ export class TcbExpressionTranslator {
    * Some `AST` expressions refer to top-level concepts (references, variables, the component
    * context). This method assists in resolving those.
    */
-  protected resolve(ast: AST): TcbExpr | null {
-    if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver) {
+  protected resolve(ast: AST): ts.Expression | null {
+    if (
+      ast instanceof PropertyRead &&
+      ast.receiver instanceof ImplicitReceiver &&
+      !(ast.receiver instanceof ThisReceiver)
+    ) {
       // Try to resolve a bound target for this expression. If no such target is available, then
       // the expression is referencing the top-level component context. In that case, `null` is
       // returned here to let it fall through resolution so it will be caught when the
@@ -135,7 +115,10 @@ export class TcbExpressionTranslator {
         // We don't use `markIgnoreForDiagnostics` here, because it won't prevent duplicate
         // diagnostics for nested accesses in cases like `@let value = value.foo.bar.baz`.
         if (targetExpression !== null) {
-          return new TcbExpr(`${targetExpression.print()} as any`);
+          return ts.factory.createAsExpression(
+            targetExpression,
+            ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+          );
         }
       }
       return targetExpression;
@@ -143,7 +126,7 @@ export class TcbExpressionTranslator {
       ast instanceof Binary &&
       Binary.isAssignmentOperation(ast.operation) &&
       ast.left instanceof PropertyRead &&
-      (ast.left.receiver instanceof ImplicitReceiver || ast.left.receiver instanceof ThisReceiver)
+      ast.left.receiver instanceof ImplicitReceiver
     ) {
       const read = ast.left;
       const target = this.tcb.boundTarget.getExpressionTarget(read);
@@ -153,19 +136,21 @@ export class TcbExpressionTranslator {
 
       const targetExpression = this.getTargetNodeExpression(target, read);
       const expr = this.translate(ast.right);
-      const result = new TcbExpr(`(${targetExpression.print()} = ${expr.print()})`);
-      result.addParseSpanInfo(read.sourceSpan);
+      const result = ts.factory.createParenthesizedExpression(
+        ts.factory.createBinaryExpression(targetExpression, ts.SyntaxKind.EqualsToken, expr),
+      );
+      addParseSpanInfo(result, read.sourceSpan);
 
       // Ignore diagnostics from TS produced for writes to `@let` and re-report them using
       // our own infrastructure. We can't rely on the TS reporting, because it includes
       // the name of the auto-generated TCB variable name.
       if (target instanceof TmplAstLetDeclaration) {
-        result.markIgnoreDiagnostics();
+        markIgnoreDiagnostics(result);
         this.tcb.oobRecorder.illegalWriteToLetDeclaration(this.tcb.id, read, target);
       }
 
       return result;
-    } else if (ast instanceof ImplicitReceiver || ast instanceof ThisReceiver) {
+    } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
       // or method calls from the component context: both have the shape
       // PropertyRead(ImplicitReceiver, 'propName') or Call(ImplicitReceiver, 'methodName').
@@ -178,17 +163,17 @@ export class TcbExpressionTranslator {
       // Therefore if `resolve` is called on an `ImplicitReceiver`, it's because no outer
       // PropertyRead/Call resolved to a variable or reference, and therefore this is a
       // property read or method call on the component context itself.
-      return new TcbExpr('this');
+      return ts.factory.createThis();
     } else if (ast instanceof BindingPipe) {
       const expr = this.translate(ast.exp);
       const pipeMeta = this.tcb.getPipeByName(ast.name);
-      let pipe: TcbExpr | null;
+      let pipe: ts.Expression | null;
       if (pipeMeta === null) {
         // No pipe by that name exists in scope. Record this as an error.
         this.tcb.oobRecorder.missingPipe(this.tcb.id, ast, this.tcb.hostIsStandalone);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
-        pipe = new TcbExpr('(0 as any)');
+        pipe = getAnyExpression();
       } else if (
         pipeMeta.isExplicitlyDeferred &&
         this.tcb.boundTarget.getEagerlyUsedPipes().includes(ast.name)
@@ -198,20 +183,33 @@ export class TcbExpressionTranslator {
         this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
-        pipe = new TcbExpr('(0 as any)');
+        pipe = getAnyExpression();
       } else {
         // Use a variable declared as the pipe's type.
-        pipe = this.tcb.env.pipeInst(pipeMeta);
+        pipe = this.tcb.env.pipeInst(
+          pipeMeta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>,
+        );
       }
-      const args = ast.args.map((arg) => this.translate(arg).print());
-      let methodAccess = new TcbExpr(`${pipe.print()}.transform`).addParseSpanInfo(ast.nameSpan);
-
+      const args = ast.args.map((arg) => this.translate(arg));
+      let methodAccess: ts.Expression = ts.factory.createPropertyAccessExpression(
+        pipe,
+        'transform',
+      );
+      addParseSpanInfo(methodAccess, ast.nameSpan);
       if (!this.tcb.env.config.checkTypeOfPipes) {
-        methodAccess = new TcbExpr(`(${methodAccess.print()} as any)`);
+        methodAccess = ts.factory.createAsExpression(
+          methodAccess,
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+        );
       }
 
-      const result = new TcbExpr(`${methodAccess.print()}(${[expr.print(), ...args].join(', ')})`);
-      return result.addParseSpanInfo(ast.sourceSpan);
+      const result = ts.factory.createCallExpression(
+        /* expression */ methodAccess,
+        /* typeArguments */ undefined,
+        /* argumentsArray */ [expr, ...args],
+      );
+      addParseSpanInfo(result, ast.sourceSpan);
+      return result;
     } else if (
       (ast instanceof Call || ast instanceof SafeCall) &&
       (ast.receiver instanceof PropertyRead || ast.receiver instanceof SafePropertyRead)
@@ -220,12 +218,17 @@ export class TcbExpressionTranslator {
       // `$any(expr)` -> `expr as any`
       if (
         ast.receiver.receiver instanceof ImplicitReceiver &&
+        !(ast.receiver.receiver instanceof ThisReceiver) &&
         ast.receiver.name === '$any' &&
         ast.args.length === 1
       ) {
         const expr = this.translate(ast.args[0]);
-        const result = new TcbExpr(`(${expr.print()} as any)`);
-        result.addParseSpanInfo(ast.sourceSpan);
+        const exprAsAny = ts.factory.createAsExpression(
+          expr,
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+        );
+        const result = ts.factory.createParenthesizedExpression(exprAsAny);
+        addParseSpanInfo(result, ast.sourceSpan);
         return result;
       }
 
@@ -238,11 +241,12 @@ export class TcbExpressionTranslator {
         return null;
       }
 
-      const method = this.getTargetNodeExpression(target, ast);
-      method.addParseSpanInfo(ast.receiver.nameSpan).wrapForTypeChecker();
-      const args = ast.args.map((arg) => this.translate(arg).print());
-      const node = new TcbExpr(`${method.print()}(${args.join(', ')})`);
-      node.addParseSpanInfo(ast.sourceSpan);
+      const receiver = this.getTargetNodeExpression(target, ast);
+      const method = wrapForDiagnostics(receiver);
+      addParseSpanInfo(method, ast.receiver.nameSpan);
+      const args = ast.args.map((arg) => this.translate(arg));
+      const node = ts.factory.createCallExpression(method, undefined, args);
+      addParseSpanInfo(node, ast.sourceSpan);
       return node;
     } else {
       // This AST isn't special after all.
@@ -250,9 +254,9 @@ export class TcbExpressionTranslator {
     }
   }
 
-  private getTargetNodeExpression(targetNode: TemplateEntity, expressionNode: AST): TcbExpr {
+  private getTargetNodeExpression(targetNode: TemplateEntity, expressionNode: AST): ts.Expression {
     const expr = this.scope.resolve(targetNode);
-    expr.addParseSpanInfo(expressionNode.sourceSpan);
+    addParseSpanInfo(expr, expressionNode.sourceSpan);
     return expr;
   }
 

@@ -7,7 +7,7 @@
  */
 
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-
+import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
@@ -15,6 +15,7 @@ import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '..
 describe('getSemanticDiagnostics', () => {
   let env: LanguageServiceTestEnv;
   beforeEach(() => {
+    initMockFileSystem('Native');
     env = LanguageServiceTestEnv.setup();
   });
 
@@ -54,7 +55,7 @@ describe('getSemanticDiagnostics', () => {
     expect(diags.length).toBe(1);
     const {category, file, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Error);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.ts'));
+    expect(file?.fileName).toBe('/test/app.ts');
     expect(messageText).toBe(`Property 'nope' does not exist on type 'AppComponent'.`);
   });
 
@@ -77,11 +78,13 @@ describe('getSemanticDiagnostics', () => {
     const diags = project.getDiagnosticsForFile('app.ts');
     expect(diags.length).toBe(2);
     expect(diags[0].category).toBe(ts.DiagnosticCategory.Error);
-    expect(diags[0].file?.fileName).toBe(project.getAbsFileName('app.ts'));
+    expect(diags[0].file?.fileName).toBe('/test/app.ts');
     expect(diags[0].messageText).toBe(`Duplicate identifier 'test1'.`);
     expect(diags[1].category).toBe(ts.DiagnosticCategory.Error);
-    expect(diags[1].file?.fileName).toBe(project.getAbsFileName('app.ts'));
-    expect(diags[1].messageText).toBe(`Input 'test1' is bound to both 'test1' and 'test1'.`);
+    expect(diags[1].file?.fileName).toBe('/test/app.ts');
+    expect(diags[1].messageText).toBe(
+      `Duplicate decorated properties found on class 'AppComponent': test1`,
+    );
   });
 
   it('should process external template', () => {
@@ -139,7 +142,7 @@ describe('getSemanticDiagnostics', () => {
     expect(diags.length).toBe(1);
     const {category, file, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Error);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.ts'));
+    expect(file?.fileName).toBe('/test/app.ts');
     expect(messageText).toBe(`Property 'nope' does not exist on type 'AppComponent'.`);
   });
 
@@ -162,7 +165,7 @@ describe('getSemanticDiagnostics', () => {
     expect(diags.length).toBe(1);
     const {category, file, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Error);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.html'));
+    expect(file?.fileName).toBe('/test/app.html');
     expect(messageText).toBe(`Property 'nope' does not exist on type 'AppComponent'.`);
   });
 
@@ -188,7 +191,7 @@ describe('getSemanticDiagnostics', () => {
 
     const {category, file, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Error);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.html'));
+    expect(file?.fileName).toBe('/test/app.html');
     expect(messageText).toContain(
       `Parser Error: Bindings cannot contain assignments at column 8 in [nope = true]`,
     );
@@ -215,11 +218,11 @@ describe('getSemanticDiagnostics', () => {
     expect(diags.length).toBe(2);
 
     expect(diags[0].category).toBe(ts.DiagnosticCategory.Error);
-    expect(diags[0].file?.fileName).toBe(project.getAbsFileName('app.html'));
+    expect(diags[0].file?.fileName).toBe('/test/app.html');
     expect(diags[0].messageText).toContain(`'dne' is not a known element`);
 
     expect(diags[1].category).toBe(ts.DiagnosticCategory.Error);
-    expect(diags[1].file?.fileName).toBe(project.getAbsFileName('app.html'));
+    expect(diags[1].file?.fileName).toBe('/test/app.html');
     expect(diags[1].messageText).toContain(`Opening tag "dne" not terminated.`);
   });
 
@@ -259,17 +262,13 @@ describe('getSemanticDiagnostics', () => {
     const diags1 = project.getDiagnosticsForFile('app1.html');
     expect(diags1.length).toBe(1);
     expect(diags1[0].messageText).toBe(
-      `Parser Error: Bindings cannot contain assignments at column 8 in [nope = false] in ${project.getAbsFileName(
-        'app1.html',
-      )}@0:0`,
+      'Parser Error: Bindings cannot contain assignments at column 8 in [nope = false] in /test/app1.html@0:0',
     );
 
     const diags2 = project.getDiagnosticsForFile('app2.html');
     expect(diags2.length).toBe(1);
     expect(diags2[0].messageText).toBe(
-      `Parser Error: Bindings cannot contain assignments at column 8 in [nope = true] in ${project.getAbsFileName(
-        'app2.html',
-      )}@0:0`,
+      'Parser Error: Bindings cannot contain assignments at column 8 in [nope = true] in /test/app2.html@0:0',
     );
   });
 
@@ -286,9 +285,7 @@ describe('getSemanticDiagnostics', () => {
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const diags = project.getDiagnosticsForFile('app.ts');
-    expect(diags.map((x) => x.messageText)).toEqual([
-      '@Component is missing a template. Add either a `template` or `templateUrl`',
-    ]);
+    expect(diags.map((x) => x.messageText)).toEqual(['component is missing a template']);
   });
 
   it('reports a warning when the project configuration prevents good type inference', () => {
@@ -417,7 +414,7 @@ describe('getSemanticDiagnostics', () => {
 
         @Component({
           template: '',
-          styleUrls: ['./one.css', './two/two.css', './three.css', './four.css'],
+          styleUrls: ['./one.css', './two/two.css', './three.css', '../test/four.css'],
           standalone: false,
         })
         export class MyComponent {}
@@ -597,6 +594,7 @@ describe('getSemanticDiagnostics', () => {
 describe('getSuggestedDiagnostics', () => {
   let env: LanguageServiceTestEnv;
   beforeEach(() => {
+    initMockFileSystem('Native');
     env = LanguageServiceTestEnv.setup();
   });
 
@@ -626,7 +624,7 @@ describe('getSuggestedDiagnostics', () => {
     expect(diags.length).toBe(1);
     const {category, file, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.ts'));
+    expect(file?.fileName).toBe('/test/app.ts');
     expect(messageText).toBe(`'name' is deprecated.`);
   });
 
@@ -662,7 +660,7 @@ describe('getSuggestedDiagnostics', () => {
     expect(diags.length).toBe(1);
     const {category, file, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.ts'));
+    expect(file?.fileName).toBe('/test/app.ts');
     expect(messageText).toBe(`'name' is deprecated.`);
   });
 
@@ -698,7 +696,7 @@ describe('getSuggestedDiagnostics', () => {
     expect(diags.length).toBe(1);
     const {category, file, messageText, start} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.ts'));
+    expect(file?.fileName).toBe('/test/app.ts');
     expect(start).toBe(87);
     expect(messageText).toBe(`'BarComponent' is deprecated.`);
   });
@@ -735,7 +733,7 @@ describe('getSuggestedDiagnostics', () => {
     expect(diags.length).toBe(1);
     const {category, file, messageText, start} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(file?.fileName).toBe(project.getAbsFileName('app.ts'));
+    expect(file?.fileName).toBe('/test/app.ts');
     expect(start).toBe(87);
     expect(messageText).toBe(`'BarComponent' is deprecated.`);
   });

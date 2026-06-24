@@ -136,8 +136,7 @@ class R3AstSourceSpans implements t.Visitor<void> {
       humanizeSpan(block.startSourceSpan),
       humanizeSpan(block.endSourceSpan),
     ]);
-    this.visitAll([block.groups]);
-    block.exhaustiveCheck?.visit(this);
+    this.visitAll([block.cases]);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
@@ -146,23 +145,7 @@ class R3AstSourceSpans implements t.Visitor<void> {
       humanizeSpan(block.sourceSpan),
       humanizeSpan(block.startSourceSpan),
     ]);
-  }
-
-  visitSwitchBlockCaseGroup(block: t.SwitchBlockCaseGroup): void {
-    this.result.push([
-      'SwitchBlockCaseGroup',
-      humanizeSpan(block.sourceSpan),
-      humanizeSpan(block.startSourceSpan),
-    ]);
-    this.visitAll([block.cases, block.children]);
-  }
-
-  visitSwitchExhaustiveCheck(block: t.SwitchExhaustiveCheck): void {
-    this.result.push([
-      'SwitchExhaustiveCheck',
-      humanizeSpan(block.sourceSpan),
-      humanizeSpan(block.startSourceSpan),
-    ]);
+    this.visitAll([block.children]);
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
@@ -398,7 +381,7 @@ describe('R3 AST source spans', () => {
     it('is correct for bound properties via data-', () => {
       expectFromHtml('<div data-prop="{{v}}"></div>').toEqual([
         ['Element', '<div data-prop="{{v}}"></div>', '<div data-prop="{{v}}">', '</div>'],
-        ['BoundAttribute', 'data-prop="{{v}}"', 'data-prop', '{{v}}'],
+        ['BoundAttribute', 'data-prop="{{v}}"', 'prop', '{{v}}'],
       ]);
     });
 
@@ -506,7 +489,7 @@ describe('R3 AST source spans', () => {
       ]);
     });
 
-    it('is correct for data-ref-... attribute', () => {
+    it('is correct for reference via data-ref-...', () => {
       expectFromHtml('<ng-template data-ref-a></ng-template>').toEqual([
         [
           'Template',
@@ -514,7 +497,7 @@ describe('R3 AST source spans', () => {
           '<ng-template data-ref-a>',
           '</ng-template>',
         ],
-        ['TextAttribute', 'data-ref-a', 'data-ref-a', '<empty>'],
+        ['Reference', 'data-ref-a', 'a', '<empty>'],
       ]);
     });
 
@@ -530,7 +513,7 @@ describe('R3 AST source spans', () => {
       ]);
     });
 
-    it('is correct for data-let-... attribute', () => {
+    it('is correct for variables via data-let-...', () => {
       expectFromHtml('<ng-template data-let-a="b"></ng-template>').toEqual([
         [
           'Template',
@@ -538,7 +521,7 @@ describe('R3 AST source spans', () => {
           '<ng-template data-let-a="b">',
           '</ng-template>',
         ],
-        ['TextAttribute', 'data-let-a="b"', 'data-let-a', 'b'],
+        ['Variable', 'data-let-a="b"', 'a', 'b'],
       ]);
     });
 
@@ -664,10 +647,10 @@ describe('R3 AST source spans', () => {
       ]);
     });
 
-    it('is correct for text attribute via data-on-', () => {
+    it('is correct for bound events via data-on-', () => {
       expectFromHtml('<div data-on-event="v"></div>').toEqual([
         ['Element', '<div data-on-event="v"></div>', '<div data-on-event="v">', '</div>'],
-        ['TextAttribute', 'data-on-event="v"', 'data-on-event', 'v'],
+        ['BoundEvent', 'data-on-event="v"', 'event', 'v'],
       ]);
     });
 
@@ -687,10 +670,11 @@ describe('R3 AST source spans', () => {
       ]);
     });
 
-    it('is correct for TextAttribute and properties via data-bindon-', () => {
+    it('is correct for bound events and properties via data-bindon-', () => {
       expectFromHtml('<div data-bindon-prop="v"></div>').toEqual([
         ['Element', '<div data-bindon-prop="v"></div>', '<div data-bindon-prop="v">', '</div>'],
-        ['TextAttribute', 'data-bindon-prop="v"', 'data-bindon-prop', 'v'],
+        ['BoundAttribute', 'data-bindon-prop="v"', 'prop', 'v'],
+        ['BoundEvent', 'data-bindon-prop="v"', 'prop', 'v'],
       ]);
     });
 
@@ -718,6 +702,13 @@ describe('R3 AST source spans', () => {
     });
 
     it('is correct for references via ref-', () => {
+      expectFromHtml('<div ref-a></div>').toEqual([
+        ['Element', '<div ref-a></div>', '<div ref-a>', '</div>'],
+        ['Reference', 'ref-a', 'a', '<empty>'],
+      ]);
+    });
+
+    it('is correct for references via data-ref-', () => {
       expectFromHtml('<div ref-a></div>').toEqual([
         ['Element', '<div ref-a></div>', '<div ref-a>', '</div>'],
         ['Reference', 'ref-a', 'a', '<empty>'],
@@ -837,63 +828,14 @@ describe('R3 AST source spans', () => {
           '@switch (cond.kind) {',
           '}',
         ],
-        ['SwitchBlockCaseGroup', '@case (x()) {X case}', '@case (x()) {'],
         ['SwitchBlockCase', '@case (x()) {X case}', '@case (x()) {'],
         ['Text', 'X case'],
-        ['SwitchBlockCaseGroup', "@case ('hello') {Y case}", "@case ('hello') {"],
         ['SwitchBlockCase', "@case ('hello') {Y case}", "@case ('hello') {"],
         ['Text', 'Y case'],
-        ['SwitchBlockCaseGroup', '@case (42) {Z case}', '@case (42) {'],
         ['SwitchBlockCase', '@case (42) {Z case}', '@case (42) {'],
         ['Text', 'Z case'],
-        ['SwitchBlockCaseGroup', '@default {No case matched}', '@default {'],
         ['SwitchBlockCase', '@default {No case matched}', '@default {'],
         ['Text', 'No case matched'],
-      ]);
-    });
-
-    it('is correct for switch blocks with consecutive cases', () => {
-      const html =
-        `@switch (cond.kind) {` +
-        `@case (x()) @case ('hello') {X case}` +
-        `@default {No case matched}` +
-        `}`;
-
-      expectFromHtml(html).toEqual([
-        [
-          'SwitchBlock',
-          "@switch (cond.kind) {@case (x()) @case ('hello') {X case}@default {No case matched}}",
-          '@switch (cond.kind) {',
-          '}',
-        ],
-        [
-          'SwitchBlockCaseGroup',
-          "@case (x()) @case ('hello') {X case}",
-          "@case (x()) @case ('hello') {",
-        ],
-        ['SwitchBlockCase', '@case (x()) ', '@case (x()) '],
-        ['SwitchBlockCase', "@case ('hello') {X case}", "@case ('hello') {"],
-        ['Text', 'X case'],
-        ['SwitchBlockCaseGroup', '@default {No case matched}', '@default {'],
-        ['SwitchBlockCase', '@default {No case matched}', '@default {'],
-        ['Text', 'No case matched'],
-      ]);
-    });
-
-    it('is correct for switch blocks with exhaustive checking', () => {
-      const html = `@switch (cond.kind) {` + `@case (x()) {X case}` + `@default never;` + `}`;
-
-      expectFromHtml(html).toEqual([
-        [
-          'SwitchBlock',
-          '@switch (cond.kind) {@case (x()) {X case}@default never;}',
-          '@switch (cond.kind) {',
-          '}',
-        ],
-        ['SwitchBlockCaseGroup', '@case (x()) {X case}', '@case (x()) {'],
-        ['SwitchBlockCase', '@case (x()) {X case}', '@case (x()) {'],
-        ['Text', 'X case'],
-        ['SwitchExhaustiveCheck', '@default never;', '@default never;'],
       ]);
     });
   });

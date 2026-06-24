@@ -117,12 +117,12 @@ export interface AfterRenderOptions {
  *   template: `<span #content>{{ ... }}</span>`,
  * })
  * export class MyComponent {
- *   contentRef = viewChild.required<ElementRef>('content');
+ *   @ViewChild('content') contentRef: ElementRef;
  *
  *   constructor() {
  *     afterEveryRender({
  *       read: () => {
- *         console.log('content height: ' + this.contentRef().nativeElement.scrollHeight);
+ *         console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
  *       }
  *     });
  *   }
@@ -181,12 +181,12 @@ export function afterEveryRender<E = never, W = never, M = never>(
  *   template: `<span #content>{{ ... }}</span>`,
  * })
  * export class MyComponent {
- *   contentRef = viewChild.required<ElementRef>('content');
+ *   @ViewChild('content') contentRef: ElementRef;
  *
  *   constructor() {
  *     afterEveryRender({
  *       read: () => {
- *         console.log('content height: ' + this.contentRef().nativeElement.scrollHeight);
+ *         console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
  *       }
  *     });
  *   }
@@ -297,13 +297,13 @@ export function afterEveryRender(
  *   template: `<div #chart>{{ ... }}</div>`,
  * })
  * export class MyChartCmp {
- *   chartRef = viewChild.required<ElementRef>('chart');
+ *   @ViewChild('chart') chartRef: ElementRef;
  *   chart: MyChart|null;
  *
  *   constructor() {
  *     afterNextRender({
  *       write: () => {
- *         this.chart = new MyChart(this.chartRef().nativeElement);
+ *         this.chart = new MyChart(this.chartRef.nativeElement);
  *       }
  *     });
  *   }
@@ -361,13 +361,13 @@ export function afterNextRender<E = never, W = never, M = never>(
  *   template: `<div #chart>{{ ... }}</div>`,
  * })
  * export class MyChartCmp {
- *   chartRef = viewChild.required<ElementRef>('chart');
+ *   @ViewChild('chart') chartRef: ElementRef;
  *   chart: MyChart|null;
  *
  *   constructor() {
  *     afterNextRender({
  *       write: () => {
- *         this.chart = new MyChart(this.chartRef().nativeElement);
+ *         this.chart = new MyChart(this.chartRef.nativeElement);
  *       }
  *     });
  *   }

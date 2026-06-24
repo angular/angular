@@ -30,6 +30,8 @@ import {
 } from './compilation';
 import {BINARY_OPERATORS, namespaceForKey, prefixWithNamespace} from './conversion';
 
+const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
+
 // Schema containing DOM elements and their properties.
 const domSchema = new DomElementSchemaRegistry();
 
@@ -67,6 +69,7 @@ export function ingestComponent(
   const job = new ComponentCompilationJob(
     componentName,
     constantPool,
+    compatibilityMode,
     compilationMode,
     relativeContextFilePath,
     i18nUseExternalIds,
@@ -99,6 +102,7 @@ export function ingestHostBinding(
   const job = new HostBindingCompilationJob(
     input.componentName,
     constantPool,
+    compatibilityMode,
     TemplateCompilationMode.DomOnly,
   );
   for (const property of input.properties ?? []) {
@@ -312,6 +316,16 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   const endOp = ir.createElementEndOp(id, element.endSourceSpan ?? element.startSourceSpan);
   unit.create.push(endOp);
 
+  // We want to ensure that the controlCreateOp is after the ops that create the element
+  const fieldInput = element.inputs.find(
+    (input) => input.name === 'field' && input.type === e.BindingType.Property,
+  );
+  if (fieldInput) {
+    // If the input name is 'field', this could be a form control binding which requires a
+    // `ControlCreateOp` to properly initialize.
+    unit.create.push(ir.createControlCreateOp(fieldInput.sourceSpan));
+  }
+
   // If there is an i18n message associated with this element, insert i18n start and end ops.
   if (i18nBlockId !== null) {
     ir.OpList.insertBefore<ir.CreateOp>(
@@ -482,12 +496,16 @@ function ingestBoundText(
 
   const textXref = unit.job.allocateXrefId();
   unit.create.push(ir.createTextOp(textXref, '', icuPlaceholder, text.sourceSpan));
+  // TemplateDefinitionBuilder does not generate source maps for sub-expressions inside an
+  // interpolation. We copy that behavior in compatibility mode.
+  // TODO: is it actually correct to generate these extra maps in modern mode?
+  const baseSourceSpan = unit.job.compatibility ? null : text.sourceSpan;
   unit.update.push(
     ir.createInterpolateTextOp(
       textXref,
       new ir.Interpolation(
         value.strings,
-        value.expressions.map((expr) => convertAst(expr, unit.job, null)),
+        value.expressions.map((expr) => convertAst(expr, unit.job, baseSourceSpan)),
         i18nPlaceholders,
       ),
       text.sourceSpan,
@@ -554,24 +572,24 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
  */
 function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock): void {
   // Don't ingest empty switches since they won't render anything.
-  if (switchBlock.groups.length === 0) {
+  if (switchBlock.cases.length === 0) {
     return;
   }
 
   let firstXref: ir.XrefId | null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
-  for (let i = 0; i < switchBlock.groups.length; i++) {
-    const switchCaseGroup = switchBlock.groups[i];
+  for (let i = 0; i < switchBlock.cases.length; i++) {
+    const switchCase = switchBlock.cases[i];
     const cView = unit.job.allocateView(unit.xref);
-    const tagName = ingestControlFlowInsertionPoint(unit, cView.xref, switchCaseGroup);
+    const tagName = ingestControlFlowInsertionPoint(unit, cView.xref, switchCase);
     let switchCaseI18nMeta: i18n.BlockPlaceholder | undefined = undefined;
-    if (switchCaseGroup.i18n !== undefined) {
-      if (!(switchCaseGroup.i18n instanceof i18n.BlockPlaceholder)) {
+    if (switchCase.i18n !== undefined) {
+      if (!(switchCase.i18n instanceof i18n.BlockPlaceholder)) {
         throw Error(
-          `Unhandled i18n metadata type for switch block: ${switchCaseGroup.i18n?.constructor.name}`,
+          `Unhandled i18n metadata type for switch block: ${switchCase.i18n?.constructor.name}`,
         );
       }
-      switchCaseI18nMeta = switchCaseGroup.i18n;
+      switchCaseI18nMeta = switchCase.i18n;
     }
 
     const createOp = i === 0 ? ir.createConditionalCreateOp : ir.createConditionalBranchCreateOp;
@@ -583,27 +601,24 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       'Case',
       ir.Namespace.HTML,
       switchCaseI18nMeta,
-      switchCaseGroup.startSourceSpan,
-      switchCaseGroup.sourceSpan,
+      switchCase.startSourceSpan,
+      switchCase.sourceSpan,
     );
     unit.create.push(conditionalCreateOp);
 
     if (firstXref === null) {
       firstXref = cView.xref;
     }
-
-    for (const switchCase of switchCaseGroup.cases) {
-      const caseExpr = switchCase.expression
-        ? convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan)
-        : null;
-      const conditionalCaseExpr = new ir.ConditionalCaseExpr(
-        caseExpr,
-        conditionalCreateOp.xref,
-        conditionalCreateOp.handle,
-      );
-      conditions.push(conditionalCaseExpr);
-    }
-    ingestNodes(cView, switchCaseGroup.children);
+    const caseExpr = switchCase.expression
+      ? convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan)
+      : null;
+    const conditionalCaseExpr = new ir.ConditionalCaseExpr(
+      caseExpr,
+      conditionalCreateOp.xref,
+      conditionalCreateOp.handle,
+    );
+    conditions.push(conditionalCaseExpr);
+    ingestNodes(cView, switchCase.children);
   }
   unit.update.push(
     ir.createConditionalOp(
@@ -749,7 +764,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     deferOnOps.push(
       ir.createDeferOnOp(
         deferXref,
-        {kind: ir.DeferTriggerKind.Idle, timeout: null},
+        {kind: ir.DeferTriggerKind.Idle},
         ir.DeferOpModifierKind.NONE,
         null!,
       ),
@@ -778,7 +793,7 @@ function ingestDeferTriggers(
   if (triggers.idle !== undefined) {
     const deferOnOp = ir.createDeferOnOp(
       deferXref,
-      {kind: ir.DeferTriggerKind.Idle, timeout: triggers.idle.timeout ?? null},
+      {kind: ir.DeferTriggerKind.Idle},
       modifier,
       triggers.idle.sourceSpan,
     );
@@ -1052,7 +1067,10 @@ function convertAst(
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, job, baseSourceSpan);
   } else if (ast instanceof e.PropertyRead) {
-    if (ast.receiver instanceof e.ImplicitReceiver) {
+    // Whether this is an implicit receiver, *excluding* explicit reads of `this`.
+    const isImplicitReceiver =
+      ast.receiver instanceof e.ImplicitReceiver && !(ast.receiver instanceof e.ThisReceiver);
+    if (isImplicitReceiver) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
       return new o.ReadPropExpr(
@@ -1120,13 +1138,10 @@ function convertAst(
     throw new Error(`AssertionError: Chain in unknown context`);
   } else if (ast instanceof e.LiteralMap) {
     const entries = ast.keys.map((key, idx) => {
-      const value = convertAst(ast.values[idx], job, baseSourceSpan);
-
+      const value = ast.values[idx];
       // TODO: should literals have source maps, or do we just map the whole surrounding
       // expression?
-      return key.kind === 'spread'
-        ? new o.LiteralMapSpreadAssignment(value)
-        : new o.LiteralMapPropertyAssignment(key.key, value, key.quoted);
+      return new o.LiteralMapEntry(key.key, convertAst(value, job, baseSourceSpan), key.quoted);
     });
     return new o.LiteralMapExpr(entries, undefined, convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.LiteralArray) {
@@ -1198,15 +1213,6 @@ function convertAst(
     );
   } else if (ast instanceof e.RegularExpressionLiteral) {
     return new o.RegularExpressionLiteralExpr(ast.body, ast.flags, baseSourceSpan);
-  } else if (ast instanceof e.SpreadElement) {
-    return new o.SpreadElementExpr(convertAst(ast.expression, job, baseSourceSpan));
-  } else if (ast instanceof e.ArrowFunction) {
-    return updateParameterReferences(
-      o.arrowFn(
-        ast.parameters.map((arg) => new o.FnParam(arg.name, o.DYNAMIC_TYPE)),
-        convertAst(ast.body, job, baseSourceSpan),
-      ),
-    );
   } else {
     throw new Error(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,
@@ -1828,7 +1834,7 @@ function convertSourceSpan(
 function ingestControlFlowInsertionPoint(
   unit: ViewCompilationUnit,
   xref: ir.XrefId,
-  node: t.IfBlockBranch | t.SwitchBlockCaseGroup | t.ForLoopBlock | t.ForLoopBlockEmpty,
+  node: t.IfBlockBranch | t.SwitchBlockCase | t.ForLoopBlock | t.ForLoopBlockEmpty,
 ): string | null {
   let root: t.Element | t.Template | null = null;
 
@@ -1909,30 +1915,4 @@ function ingestControlFlowInsertionPoint(
   }
 
   return null;
-}
-
-/**
- * When an arrow function in the expression AST is converted into the output AST, all of its
- * top-level reads become `LexicalReadExpr` because the output AST doesn't have a concept of a
- * variable read. This function corrects the ones that point to parameters.
- *
- * @param root Root arrow function.
- */
-function updateParameterReferences(root: o.ArrowFunctionExpr): o.ArrowFunctionExpr {
-  const parameterNames = new Set(root.params.map((param) => param.name));
-
-  return ir.transformExpressionsInExpression(
-    root,
-    (expr) => {
-      if (expr instanceof o.ArrowFunctionExpr) {
-        for (const param of expr.params) {
-          parameterNames.add(param.name);
-        }
-      } else if (expr instanceof ir.LexicalReadExpr && parameterNames.has(expr.name)) {
-        return o.variable(expr.name);
-      }
-      return expr;
-    },
-    ir.VisitorContextFlag.None,
-  ) as o.ArrowFunctionExpr;
 }

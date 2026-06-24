@@ -129,12 +129,17 @@ export function createHostElement(
  * Creates an AST node that can be used as a guard in `if` statements to distinguish TypeScript
  * nodes used for checking host bindings from ones used for checking templates.
  */
-export function createHostBindingsBlockGuard(): string {
+export function createHostBindingsBlockGuard(): ts.Expression {
   // Note that the comment text is quite generic. This doesn't really matter, because it is
   // used only inside a TCB and there's no way for users to produce a comment there.
-  // `true /*hostBindingsBlockGuard*/`.
+  // `true /*hostBindings*/`.
+  const trueExpr = ts.addSyntheticTrailingComment(
+    ts.factory.createTrue(),
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    GUARD_COMMENT_TEXT,
+  );
   // Wrap the expression in parentheses to ensure that the comment is attached to the correct node.
-  return `(true /*${GUARD_COMMENT_TEXT}*/)`;
+  return ts.factory.createParenthesizedExpression(trueExpr);
 }
 
 /**

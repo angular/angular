@@ -8,7 +8,15 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {apply, applyEach, applyWhen, form, requiredError, validate} from '../../public_api';
+import {
+  apply,
+  applyEach,
+  applyWhen,
+  customError,
+  form,
+  requiredError,
+  validate,
+} from '../../public_api';
 
 describe('path', () => {
   describe('Active path', () => {
@@ -43,7 +51,7 @@ describe('path', () => {
           apply(path, () => {
             expect(() => {
               validate(path.last, () => {
-                return {kind: 'custom'};
+                return customError();
               });
             }).toThrowError();
           });
@@ -61,7 +69,7 @@ describe('path', () => {
           apply(path, () => {
             expect(() => {
               validate(path, () => {
-                return {kind: 'custom'};
+                return customError();
               });
             }).toThrowError();
           });
@@ -70,7 +78,7 @@ describe('path', () => {
       );
     });
 
-    it('Disallows using parent paths for apply with array', () => {
+    it('Disallows using parent paths for apply', () => {
       const data = signal({
         needLastName: false,
         items: [{first: '', last: ''}],
@@ -82,7 +90,7 @@ describe('path', () => {
           applyEach(path.items, () => {
             expect(() => {
               validate(path.needLastName, () => {
-                return {kind: 'custom'};
+                return customError();
               });
             }).toThrowError();
           });

@@ -154,6 +154,9 @@ export interface BindingOp extends Op<UpdateOp> {
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
+   *
+   * This needs to be tracked for compatibility with `TemplateDefinitionBuilder` which treats
+   * `style` and `class` TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
   isTextAttribute: boolean;
 
@@ -292,7 +295,9 @@ export function createPropertyOp(
  * A logical operation representing the property binding side of a two-way binding in the update IR.
  */
 export interface TwoWayPropertyOp
-  extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  extends Op<UpdateOp>,
+    ConsumesVarsTrait,
+    DependsOnSlotContextOpTrait {
   kind: OpKind.TwoWayProperty;
 
   /**
@@ -573,6 +578,9 @@ export interface AttributeOp extends Op<UpdateOp> {
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
+   *
+   * This needs to be tracked for compatibility with `TemplateDefinitionBuilder` which treats
+   * `style` and `class` TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
   isTextAttribute: boolean;
 
@@ -660,7 +668,9 @@ export function createAdvanceOp(delta: number, sourceSpan: ParseSourceSpan): Adv
  * Logical operation representing a conditional expression in the update IR.
  */
 export interface ConditionalOp
-  extends Op<ConditionalOp>, DependsOnSlotContextOpTrait, ConsumesVarsTrait {
+  extends Op<ConditionalOp>,
+    DependsOnSlotContextOpTrait,
+    ConsumesVarsTrait {
   kind: OpKind.Conditional;
 
   /**
@@ -870,7 +880,9 @@ export function createDeferWhenOp(
  * may want to split these into two different op types, deriving from the same base class.
  */
 export interface I18nExpressionOp
-  extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
+  extends Op<UpdateOp>,
+    ConsumesVarsTrait,
+    DependsOnSlotContextOpTrait {
   kind: OpKind.I18nExpression;
 
   /**
@@ -1055,18 +1067,26 @@ export function createStoreLetOp(
 /**
  * A specialized {@link PropertyOp} that may bind a form field to a control.
  */
-export interface ControlOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait {
+export interface ControlOp extends Omit<PropertyOp, 'kind' | 'name'> {
   kind: OpKind.Control;
-  sourceSpan: ParseSourceSpan;
 }
 
 /** Creates a {@link ControlOp}. */
-export function createControlOp(target: XrefId, sourceSpan: ParseSourceSpan): ControlOp {
+export function createControlOp(op: BindingOp): ControlOp {
   return {
     kind: OpKind.Control,
-    sourceSpan,
-    target,
+    target: op.target,
+    expression: op.expression,
+    bindingKind: op.bindingKind,
+    securityContext: op.securityContext,
+    sanitizer: null,
+    isStructuralTemplateAttribute: op.isStructuralTemplateAttribute,
+    templateKind: op.templateKind,
+    i18nContext: op.i18nContext,
+    i18nMessage: op.i18nMessage,
+    sourceSpan: op.sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
 }

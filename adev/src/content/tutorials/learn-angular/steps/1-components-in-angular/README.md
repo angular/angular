@@ -16,7 +16,7 @@
 
 <docs-workflow>
 
-<docs-step title="Update the component template">
+<docs-step title="Обновите шаблон компонента">
 Обновите свойство `template` так, чтобы оно содержало текст `Hello Universe`
 
 ```ts
@@ -29,7 +29,7 @@ template: `
 изменим цвет текста.
 </docs-step>
 
-<docs-step title="Update the component styles">
+<docs-step title="Обновите стили компонента">
 Обновите значение стилей и измените свойство `color` с `blue` на `#a144eb`.
 
 ```ts

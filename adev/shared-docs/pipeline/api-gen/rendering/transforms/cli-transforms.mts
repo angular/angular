@@ -27,7 +27,7 @@ export function getCliRenderable(command: CliCommand): CliCommandRenderable {
     }),
     cards: getCliCardsRenderable(command),
     argumentsLabel: getArgumentsLabel(command),
-    optionsLabel: getOptionsLabel(command),
+    hasOptions: getOptions(command).length > 0,
   };
 }
 
@@ -66,12 +66,7 @@ function getArgumentsLabel(command: CliCommand): string {
   if (args.length === 0) {
     return '';
   }
-  const label = command.command.replace(/^ng\s+/, '').replace(`${command.name} `, '');
-  return ` ${label}`;
-}
-
-function getOptionsLabel(command: CliCommand): string {
-  return getOptions(command).length > 0 ? ' [options]' : '';
+  return command.command.replace(`${command.name} `, '');
 }
 
 function getArgs(command: CliCommand): CliOption[] {

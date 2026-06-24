@@ -107,7 +107,7 @@ export function cleanupLContainer(lContainer: LContainer) {
  * Walks over `LContainer`s and components registered within
  * this LView and invokes dehydrated views cleanup function for each one.
  */
-export function cleanupLView(lView: LView) {
+function cleanupLView(lView: LView) {
   cleanupI18nHydrationData(lView);
 
   const tView = lView[TVIEW];

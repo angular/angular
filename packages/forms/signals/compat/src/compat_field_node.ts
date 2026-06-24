@@ -37,9 +37,10 @@ export class CompatFieldNode extends FieldNode {
 function makeCreateDestroySubject() {
   let destroy$ = new ReplaySubject<void>(1);
   return () => {
-    destroy$.next();
-    destroy$.complete();
-
+    if (destroy$) {
+      destroy$.next();
+      destroy$.complete();
+    }
     return (destroy$ = new ReplaySubject<void>(1));
   };
 }

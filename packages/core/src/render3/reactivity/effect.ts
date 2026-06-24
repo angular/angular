@@ -36,8 +36,6 @@ import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injec
  * A global reactive effect, which can be manually destroyed.
  *
  * @publicApi 20.0
- *
- * @see [Destroying effects](guide/signals/effect#destroying-effects)
  */
 export interface EffectRef {
   /**

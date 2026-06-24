@@ -13,8 +13,10 @@ import {NavigationState} from '../../services';
 import {NavigationItem} from '../../interfaces';
 import {By} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('Breadcrumb', () => {
+  let fixture: ComponentFixture<Breadcrumb>;
   let navigationStateSpy: jasmine.SpyObj<NavigationState>;
 
   beforeEach(() => {
@@ -24,19 +26,20 @@ describe('Breadcrumb', () => {
       imports: [Breadcrumb],
       providers: [
         provideRouter([]),
+        provideZonelessChangeDetection(),
         {
           provide: NavigationState,
           useValue: navigationStateSpy,
         },
       ],
     });
+    fixture = TestBed.createComponent(Breadcrumb);
   });
 
-  it('should display proper breadcrumb structure based on navigation state', async () => {
+  it('should display proper breadcrumb structure based on navigation state', () => {
     navigationStateSpy.activeNavigationItem.and.returnValue(item);
-    const fixture = TestBed.createComponent(Breadcrumb);
-    await fixture.whenStable();
 
+    fixture.detectChanges();
     const breadcrumbs = fixture.debugElement.queryAll(By.css('.docs-breadcrumb span'));
 
     expect(breadcrumbs.length).toBe(2);
@@ -44,11 +47,10 @@ describe('Breadcrumb', () => {
     expect(breadcrumbs[1].nativeElement.innerText).toEqual('Parent');
   });
 
-  it('should display breadcrumb links when navigation item has got path', async () => {
+  it('should display breadcrumb links when navigation item has got path', () => {
     navigationStateSpy.activeNavigationItem.and.returnValue(exampleItemWithPath);
 
-    const fixture = TestBed.createComponent(Breadcrumb);
-    await fixture.whenStable();
+    fixture.detectChanges();
     const breadcrumbs = fixture.debugElement.queryAll(By.css('.docs-breadcrumb a'));
 
     expect(breadcrumbs.length).toBe(1);

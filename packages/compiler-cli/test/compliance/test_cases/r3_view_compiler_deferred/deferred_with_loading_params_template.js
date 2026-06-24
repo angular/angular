@@ -9,9 +9,8 @@ function MyApp_DeferLoading_1_Template(rf, ctx) {
     $r3$.ɵɵelement(0, "img", 1);
   }
 }
-…export class MyApp {
-  …
-  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+…
+MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: [[2000, 500], ["src", "loading.gif"]],
   template: function MyApp_Template(rf, ctx) {
@@ -26,4 +25,3 @@ function MyApp_DeferLoading_1_Template(rf, ctx) {
 
 …
 $r3$.ɵsetClassMetadata(MyApp, …);
-}

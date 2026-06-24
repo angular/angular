@@ -1,7 +1,0 @@
-{
-  "spec_dir": "e2e",
-  "spec_files": ["src/**/*spec.ts"],
-  "helpers": ["setup.js"],
-  "stopSpecOnExpectationFailure": false,
-  "random": false
-}

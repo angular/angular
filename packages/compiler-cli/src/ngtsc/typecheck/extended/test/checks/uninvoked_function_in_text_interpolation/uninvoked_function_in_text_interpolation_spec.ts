@@ -14,7 +14,6 @@ import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {getClass, setup} from '../../../../testing';
 import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
 import {getSourceCodeForDiagnostic} from '../../../../../testing';
-import {formatExtendedError} from '../../../api/format-extended-error';
 
 runInEachFileSystem(() => {
   describe('UninvokedFunctionInTextInterpolationFactoryCheck', () => {
@@ -87,7 +86,7 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION));
-      expect(diags[0].messageText).toBe(generateDiagnosticText('firstName()'));
+      expect(diags[0].messageText).toContain('firstName()');
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('firstName');
     });
 
@@ -148,15 +147,8 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION));
-      expect(diags[0].messageText).toBe(generateDiagnosticText('firstName()'));
+      expect(diags[0].messageText).toContain('firstName()');
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('firstName');
     });
   });
 });
-
-function generateDiagnosticText(text: string): string {
-  return formatExtendedError(
-    ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION,
-    `Function in text interpolation should be invoked: ${text}`,
-  );
-}

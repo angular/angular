@@ -38,8 +38,6 @@ export type SvgD3Link<T extends TreeNode> = d3.Selection<
   TreeD3Node<T>
 >;
 
-export type TreeNodeEqualityFn<T extends TreeNode> = (a: T, b: T) => boolean;
-
 export interface TreeVisualizerConfig<T extends TreeNode> {
   /** WARNING: For vertically-oriented trees, use separation greater than `1` */
   orientation: 'horizontal' | 'vertical';
@@ -79,8 +77,6 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
   constructor(
     private readonly containerElement: HTMLElement,
     private readonly graphElement: HTMLElement,
-    // Used for improved focus/snapped node retention on tree update.
-    private readonly nodeEqualityFn: TreeNodeEqualityFn<T> | null,
     config: Partial<TreeVisualizerConfig<T>> = {},
   ) {
     super();
@@ -102,14 +98,12 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     }
   }
 
-  /** Snaps to root node. NOTE: Relies on container size. */
   override snapToRoot(scale = 1): void {
     if (this.root) {
       this.snapToD3Node(this.root, scale);
     }
   }
 
-  /** Snaps to a provided node. NOTE: Relies on container size. */
   override snapToNode(node: T, scale = 1): void {
     const d3Node = this.findD3NodeByDataNode(node);
     if (d3Node) {
@@ -130,7 +124,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
   override cleanup(): void {
     super.cleanup();
     d3.select(this.graphElement).selectAll('*').remove();
-    this.smartSnappedNodeReset();
+    this.snappedNode = null;
   }
 
   override dispose(): void {
@@ -410,40 +404,5 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     }
 
     return null;
-  }
-
-  /**
-   * Resets `snappedNode` only if the current tree doesn't contain it.
-   * Will perform deep equality check, if `nodeEqualityFn` is provided;
-   * or fallback to a shallow comparison, if not.
-   */
-  private smartSnappedNodeReset() {
-    const snappedNode = this.snappedNode?.node.data;
-    if (!this.root?.data || !snappedNode) {
-      // Null input data; reset.
-      this.snappedNode = null;
-      return;
-    }
-
-    const stack = [this.root];
-
-    while (stack.length) {
-      const node = stack.pop()!;
-
-      if (
-        this.nodeEqualityFn
-          ? this.nodeEqualityFn(node.data, snappedNode)
-          : node.data === snappedNode
-      ) {
-        // Node found; do not reset.
-        return;
-      }
-      for (const child of node?.children || []) {
-        stack.push(child);
-      }
-    }
-
-    // Node not found; reset.
-    this.snappedNode = null;
   }
 }

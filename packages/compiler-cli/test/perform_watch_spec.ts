@@ -108,13 +108,13 @@ describe('perform watch', () => {
     expect(getSourceFileSpy!).toHaveBeenCalledWith(
       mainTsPath,
       jasmine.objectContaining({
-        languageVersion: ts.ScriptTarget.ES2015,
+        languageVersion: ts.ScriptTarget.ES5,
       }),
     );
     expect(getSourceFileSpy!).toHaveBeenCalledWith(
       utilTsPath,
       jasmine.objectContaining({
-        languageVersion: ts.ScriptTarget.ES2015,
+        languageVersion: ts.ScriptTarget.ES5,
       }),
     );
 

@@ -7,6 +7,7 @@
  */
 
 import {Xmb} from '../../src/i18n/serializers/xmb';
+import {waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 import {
@@ -20,7 +21,7 @@ import {
 // TODO(alxhub): figure out if this test is still relevant.
 xdescribe('i18n XMB/XTB integration spec', () => {
   describe('(with LF line endings)', () => {
-    beforeEach(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb'));
+    beforeEach(waitForAsync(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates', () => {
       const serializer = new Xmb();
@@ -39,7 +40,7 @@ xdescribe('i18n XMB/XTB integration spec', () => {
   });
 
   describe('(with CRLF line endings', () => {
-    beforeEach(() => configureCompiler(XTB + CRLF_LINE_ENDING_XTB, 'xtb'));
+    beforeEach(waitForAsync(() => configureCompiler(XTB + CRLF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates (with CRLF line endings)', () => {
       const serializer = new Xmb();

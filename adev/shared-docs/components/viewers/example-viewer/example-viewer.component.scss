@@ -2,11 +2,11 @@
   .docs-example-viewer-preview {
     .docs-dark-mode & {
       color: var(--primary-contrast);
-      background: var(--primary-constrast);
+      background: var(--gray-900);
     }
     @media screen and (prefers-color-scheme: dark) {
       color: var(--primary-contrast);
-      background: var(--primary-constrast);
+      background: var(--gray-900);
     }
     .docs-light-mode & {
       background: var(--page-background);
@@ -70,7 +70,7 @@
       cursor: pointer;
       height: 24px;
       width: 24px;
-      color: var(--quaternary-contrast);
+      color: var(--gray-400);
 
       path {
         transition: fill 0.3s ease;

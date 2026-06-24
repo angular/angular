@@ -31,7 +31,7 @@
 Базовая версия может развиваться для поддержки большего разнообразия вопросов, более изящного рендеринга и лучшего
 пользовательского опыта.
 
-## Включение реактивных форм в проекте {#enable-reactive-forms-for-your-project}
+## Включение реактивных форм в проекте
 
 Динамические формы основаны на реактивных формах.
 
@@ -43,7 +43,7 @@
     <docs-code header="dynamic-form-question.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.ts"/>
 </docs-code-multifile>
 
-## Создание объектной модели формы {#create-a-form-object-model}
+## Создание объектной модели формы
 
 Динамическая форма требует объектной модели, которая может описать все сценарии, необходимые для функциональности формы.
 Пример формы заявки героя представляет собой набор вопросов — то есть каждый элемент управления в форме должен задавать
@@ -57,7 +57,7 @@
 
 <docs-code header="question-base.ts" path="adev/src/content/examples/dynamic-form/src/app/question-base.ts"/>
 
-### Определение классов элементов управления {#define-control-classes}
+### Определение классов элементов управления
 
 На основе этого базового класса в примере создаются два новых класса, `TextboxQuestion` и `DropdownQuestion`, которые
 представляют различные типы элементов управления.
@@ -74,7 +74,7 @@
 
  <docs-code header="question-dropdown.ts" path="adev/src/content/examples/dynamic-form/src/app/question-dropdown.ts"/>
 
-### Компоновка групп форм {#compose-form-groups}
+### Компоновка групп форм
 
 Динамическая форма использует сервис для создания сгруппированных наборов элементов ввода на основе модели формы.
 Следующий `QuestionControlService` собирает набор экземпляров `FormGroup`, которые используют метаданные из модели
@@ -83,7 +83,7 @@
 
 <docs-code header="question-control.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question-control.service.ts"/>
 
-## Компоновка содержимого динамической формы {#compose-dynamic-form-contents}
+## Компоновка содержимого динамической формы
 
 Сама динамическая форма представлена компонентом-контейнером, который вы добавите на более позднем этапе.
 Каждый вопрос представлен в шаблоне компонента формы тегом `<app-question>`, который соответствует экземпляру
@@ -109,7 +109,7 @@ Switch использует директивы с селекторами [
 `formGroup`](api/forms/FormGroupDirective 'FormGroupDirective API reference').
 Обе директивы определены в `ReactiveFormsModule`.
 
-### Предоставление данных {#supply-data}
+### Предоставление данных
 
 Необходим еще один сервис для предоставления конкретного набора вопросов, из которых будет строиться индивидуальная
 форма.
@@ -125,7 +125,7 @@ Switch использует директивы с селекторами [
 
 <docs-code header="question.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question.service.ts"/>
 
-## Создание шаблона динамической формы {#create-a-dynamic-form-template}
+## Создание шаблона динамической формы
 
 Компонент `DynamicFormComponent` является точкой входа и основным контейнером для формы, которая представлена в шаблоне
 с использованием `<app-dynamic-form>`.
@@ -138,7 +138,7 @@ Switch использует директивы с селекторами [
     <docs-code header="dynamic-form.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.ts"/>
 </docs-code-multifile>
 
-### Отображение формы {#display-the-form}
+### Отображение формы
 
 Чтобы отобразить экземпляр динамической формы, шаблон оболочки `AppComponent` передает массив `questions`, возвращаемый
 `QuestionService`, компоненту-контейнеру формы `<app-dynamic-form>`.
@@ -148,7 +148,7 @@ Switch использует директивы с селекторами [
 Такое разделение модели и данных позволяет повторно использовать компоненты для любого типа опроса, при условии, что он
 совместим с объектной моделью _вопроса_.
 
-### Обеспечение валидности данных {#ensuring-valid-data}
+### Обеспечение валидности данных
 
 Шаблон формы использует динамическую привязку метаданных для рендеринга формы без каких-либо жестко закодированных
 предположений о конкретных вопросах.
@@ -161,7 +161,7 @@ Switch использует директивы с селекторами [
 
 <img alt="Dynamic-Form" src="assets/images/guide/dynamic-form/dynamic-form.png">
 
-## Следующие шаги {#next-steps}
+## Следующие шаги
 
 <docs-pill-row>
   <docs-pill title="Валидация ввода формы" href="guide/forms/reactive-forms#validating-form-input" />

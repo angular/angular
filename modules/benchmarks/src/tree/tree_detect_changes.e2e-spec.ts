@@ -8,7 +8,7 @@
 
 import {$} from 'protractor';
 
-import {openTreeBenchmark} from './test_utils.js';
+import {openTreeBenchmark} from './test_utils';
 
 describe('tree benchmark detect changes', () => {
   it('should work for detectChanges', async () => {

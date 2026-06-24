@@ -118,7 +118,7 @@ interface DirectiveDefinition<T> {
   type: Type<T>;
 
   /** The selectors that will be used to match nodes to this directive. */
-  selectors?: (string | number)[][];
+  selectors?: CssSelectorList;
 
   /**
    * A map of input names.
@@ -270,7 +270,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    * Constants for the nodes in the component's view.
    * Includes attribute arrays, local definition arrays etc.
    */
-  consts?: any[] | (() => any[]);
+  consts?: TConstantsOrFactory;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.
@@ -419,7 +419,7 @@ export function ɵɵdefineNgModule<T>(def: {
 
   /** Unique ID for the module that is used with `getModuleFactory`. */
   id?: string | null;
-}): NgModuleDef<T> {
+}): unknown {
   return noSideEffects(() => {
     const res: NgModuleDef<T> = {
       type: def.type,
@@ -608,8 +608,8 @@ export function ɵɵdefinePipe<T>(pipeDef: {
    * Whether the pipe is standalone.
    */
   standalone?: boolean;
-}): PipeDef<T> {
-  return {
+}): unknown {
+  return <PipeDef<T>>{
     type: pipeDef.type,
     name: pipeDef.name,
     factory: null,
@@ -642,7 +642,6 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     setInput: null,
     resolveHostDirectives: null,
     hostDirectives: null,
-    controlDef: null,
     inputs: parseAndConvertInputsForDefinition(directiveDefinition.inputs, declaredInputs),
     outputs: parseAndConvertOutputsForDefinition(directiveDefinition.outputs),
     debugInfo: null,

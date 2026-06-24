@@ -31,9 +31,8 @@ function MyApp_DeferError_5_Template(rf, ctx) {
 }
 
 …
-export class MyApp {
-  …
-  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+
+MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
@@ -55,4 +54,3 @@ export class MyApp {
 …
 
 $r3$.ɵsetClassMetadata(MyApp, …);
-}

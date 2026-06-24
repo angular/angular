@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
-type ButtonType = 'primary' | 'secondary' | 'icon';
+type ButtonType = 'primary' | 'icon';
 type ButtonSize = 'standard' | 'mid' | 'compact';
 
 @Component({
@@ -19,7 +19,6 @@ type ButtonSize = 'standard' | 'mid' | 'compact';
   host: {
     class: 'ng-button',
     '[class.type-primary]': `btnType() === 'primary'`,
-    '[class.type-secondary]': `btnType() === 'secondary'`,
     '[class.type-icon]': `btnType() === 'icon'`,
     '[class.size-compact]': `size() === 'compact'`,
     '[class.size-mid]': `size() === 'mid'`,

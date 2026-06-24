@@ -9,8 +9,7 @@ import {SimpleChanges} from './simple_change';
 
 /**
  * @description
- * A lifecycle hook that is called when the value of one or more component or directive inputs
- * change. This includes both signal-based and decorator-based inputs.
+ * A lifecycle hook that is called when any data-bound property of a directive changes.
  * Define an `ngOnChanges()` method to handle the changes.
  *
  * @see {@link DoCheck}
@@ -19,19 +18,9 @@ import {SimpleChanges} from './simple_change';
  *
  * @usageNotes
  * The following snippet shows how a component can implement this interface to
- * define an on-changes handler for an input property. While you should prefer
- * `computed` and `effect` when working with signal-based inputs, the `ngOnChanges`
- * method does include value changes for signal-based inputs.
+ * define an on-changes handler for an input property.
  *
- * ```ts
- * @Component({ ... })
- * export class UserProfile implements OnChanges {
- *   userId = input<number>(0);
- *   ngOnChanges(changes: SimpleChanges<UserProfile>) {
- *     // changes.userId contains the old and new value.
- *   }
- * }
- * ```
+ * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnChanges'}
  *
  * @publicApi
  */

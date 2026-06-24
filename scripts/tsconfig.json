@@ -8,7 +8,7 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "rewriteRelativeImportExtensions": true
+    "downlevelIteration": true,
+    "esModuleInterop": true
   }
 }

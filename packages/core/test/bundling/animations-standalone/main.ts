@@ -12,7 +12,9 @@ import {provideAnimations} from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'app-animations',
-  template: ` <div [@myAnimation]="exp"></div> `,
+  template: `
+    <div [@myAnimation]="exp"></div>
+    `,
   animations: [
     trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])]),
   ],
@@ -23,7 +25,9 @@ class AnimationsComponent {
 
 @Component({
   selector: 'app-root',
-  template: ` <app-animations></app-animations> `,
+  template: `
+     <app-animations></app-animations>
+   `,
   imports: [AnimationsComponent],
 })
 class RootComponent {}

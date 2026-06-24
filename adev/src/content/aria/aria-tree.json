@@ -5,7 +5,7 @@
   "normalizedModuleName": "angular_aria_tree",
   "entries": [
     {
-      "name": "TreeItemGroup",
+      "name": "Tree",
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
@@ -20,69 +20,172 @@
           "jsdocTags": []
         },
         {
-          "name": "ownedBy",
-          "type": "InputSignal<TreeItem<V>>",
+          "name": "id",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "Tree item that owns the group.",
+          "description": "A unique identifier for the tree.",
           "jsdocTags": []
         },
         {
-          "name": "ngOnInit",
-          "signatures": [
-            {
-              "name": "ngOnInit",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
+          "name": "orientation",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
           ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnInit",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
+          "description": "Orientation of the tree.",
+          "jsdocTags": []
         },
         {
-          "name": "ngOnDestroy",
+          "name": "multi",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether multi-selection is allowed.",
+          "jsdocTags": []
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the tree is disabled.",
+          "jsdocTags": []
+        },
+        {
+          "name": "selectionMode",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The selection strategy used by the tree.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).\n- `follow`: The focused item is automatically selected.",
+          "jsdocTags": []
+        },
+        {
+          "name": "focusMode",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The focus strategy used by the tree.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the tree container, and `aria-activedescendant` is used to indicate the active item.",
+          "jsdocTags": []
+        },
+        {
+          "name": "wrap",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether navigation wraps.",
+          "jsdocTags": []
+        },
+        {
+          "name": "softDisabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
+          "jsdocTags": []
+        },
+        {
+          "name": "typeaheadDelay",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The delay in seconds before the typeahead search is reset.",
+          "jsdocTags": []
+        },
+        {
+          "name": "values",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The values of the currently selected items.",
+          "jsdocTags": []
+        },
+        {
+          "name": "textDirection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Text direction.",
+          "jsdocTags": []
+        },
+        {
+          "name": "nav",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the tree is in navigation mode.",
+          "jsdocTags": []
+        },
+        {
+          "name": "currentType",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The `aria-current` type. It can be used in navigation trees to indicate the currently active item.\nSee https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current for more details.",
+          "jsdocTags": []
+        },
+        {
+          "name": "scrollActiveItemIntoView",
           "signatures": [
             {
-              "name": "ngOnDestroy",
+              "name": "scrollActiveItemIntoView",
               "entryType": "function",
               "description": "",
               "generics": [],
               "isNewType": false,
               "jsdocTags": [],
-              "params": [],
+              "params": [
+                {
+                  "name": "options",
+                  "description": "",
+                  "type": "ScrollIntoViewOptions",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
               "rawComment": "",
               "returnType": "void"
             }
           ],
           "implementation": {
-            "params": [],
+            "params": [
+              {
+                "name": "options",
+                "description": "",
+                "type": "ScrollIntoViewOptions",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
             "isNewType": false,
             "returnType": "void",
             "generics": [],
-            "name": "ngOnDestroy",
+            "name": "scrollActiveItemIntoView",
             "description": "",
             "entryType": "function",
             "jsdocTags": [],
@@ -101,26 +204,19 @@
           "name": "V"
         }
       ],
-      "description": "Group that contains children tree items.\n\nThe `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\nwraps the child `ngTreeItem` elements. It is used to define a group of children for an\nexpandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n\n```html\n<li ngTreeItem [value]=\"'parent-id'\">\n  Parent Item\n  <ul role=\"group\">\n    <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n      <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n    </ng-template>\n  </ul>\n</li>\n```",
+      "description": "A container that transforms nested lists into an accessible, ARIA-compliant tree structure.\nIt manages the overall state of the tree, including selection, expansion, and keyboard\nnavigation.\n\n```html\n<ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n  <ng-template\n    [ngTemplateOutlet]=\"treeNodes\"\n    [ngTemplateOutletContext]=\"{nodes: treeData, parent: tree}\"\n  />\n</ul>\n\n<ng-template #treeNodes let-nodes=\"nodes\" let-parent=\"parent\">\n  @for (node of nodes; track node.name) {\n    <li ngTreeItem [parent]=\"parent\" [value]=\"node.name\" [label]=\"node.name\">\n      {{ node.name }}\n      @if (node.children) {\n        <ul role=\"group\">\n          <ng-template ngTreeItemGroup [ownedBy]=\"treeItem\" #group=\"ngTreeItemGroup\">\n            <ng-template\n              [ngTemplateOutlet]=\"treeNodes\"\n              [ngTemplateOutletContext]=\"{nodes: node.children, parent: group}\"\n            />\n          </ng-template>\n        </ul>\n      }\n    </li>\n  }\n</ng-template>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Tree](guide/aria/tree)"
         }
       ],
-      "rawComment": "/**\n * Group that contains children tree items.\n *\n * The `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\n * wraps the child `ngTreeItem` elements. It is used to define a group of children for an\n * expandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n *\n * ```html\n * <li ngTreeItem [value]=\"'parent-id'\">\n *   Parent Item\n *   <ul role=\"group\">\n *     <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n *       <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n *     </ng-template>\n *   </ul>\n * </li>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tree](guide/aria/tree)\n */",
-      "implements": [
-        "OnInit",
-        "OnDestroy"
-      ],
+      "rawComment": "/**\n * A container that transforms nested lists into an accessible, ARIA-compliant tree structure.\n * It manages the overall state of the tree, including selection, expansion, and keyboard\n * navigation.\n *\n * ```html\n * <ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n *   <ng-template\n *     [ngTemplateOutlet]=\"treeNodes\"\n *     [ngTemplateOutletContext]=\"{nodes: treeData, parent: tree}\"\n *   />\n * </ul>\n *\n * <ng-template #treeNodes let-nodes=\"nodes\" let-parent=\"parent\">\n *   @for (node of nodes; track node.name) {\n *     <li ngTreeItem [parent]=\"parent\" [value]=\"node.name\" [label]=\"node.name\">\n *       {{ node.name }}\n *       @if (node.children) {\n *         <ul role=\"group\">\n *           <ng-template ngTreeItemGroup [ownedBy]=\"treeItem\" #group=\"ngTreeItemGroup\">\n *             <ng-template\n *               [ngTemplateOutlet]=\"treeNodes\"\n *               [ngTemplateOutletContext]=\"{nodes: node.children, parent: group}\"\n *             />\n *           </ng-template>\n *         </ul>\n *       }\n *     </li>\n *   }\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "implements": [],
       "source": {
-        "filePath": "/src/aria/tree/tree-item-group.ts",
-        "startLine": 45,
-        "endLine": 89
+        "filePath": "/src/aria/tree/tree.ts",
+        "startLine": 83,
+        "endLine": 240
       }
     },
     {
@@ -140,7 +236,7 @@
         },
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -153,7 +249,7 @@
         },
         {
           "name": "value",
-          "type": "InputSignal<V>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -166,7 +262,7 @@
         },
         {
           "name": "parent",
-          "type": "InputSignal<Tree<V> | TreeItemGroup<V>>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -179,7 +275,7 @@
         },
         {
           "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -192,7 +288,7 @@
         },
         {
           "name": "selectable",
-          "type": "InputSignal<boolean>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -205,7 +301,7 @@
         },
         {
           "name": "expanded",
-          "type": "ModelSignal<boolean>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -220,7 +316,7 @@
         },
         {
           "name": "label",
-          "type": "InputSignal<string | undefined>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -233,7 +329,7 @@
         },
         {
           "name": "searchTerm",
-          "type": "Signal<string>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -253,7 +349,7 @@
         },
         {
           "name": "active",
-          "type": "Signal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -263,7 +359,7 @@
         },
         {
           "name": "level",
-          "type": "Signal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -273,7 +369,7 @@
         },
         {
           "name": "selected",
-          "type": "Signal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -283,7 +379,7 @@
         },
         {
           "name": "visible",
-          "type": "Signal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -382,17 +478,14 @@
       "exportAs": [
         "ngTreeItem"
       ],
-      "aliases": [
-        "ngTreeItem"
-      ],
       "source": {
-        "filePath": "/src/aria/tree/tree-item.ts",
-        "startLine": 45,
-        "endLine": 173
+        "filePath": "/src/aria/tree/tree.ts",
+        "startLine": 257,
+        "endLine": 385
       }
     },
     {
-      "name": "Tree",
+      "name": "TreeItemGroup",
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
@@ -407,172 +500,69 @@
           "jsdocTags": []
         },
         {
-          "name": "id",
-          "type": "InputSignal<any>",
+          "name": "ownedBy",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "A unique identifier for the tree.",
+          "description": "Tree item that owns the group.",
           "jsdocTags": []
         },
         {
-          "name": "orientation",
-          "type": "InputSignal<\"vertical\" | \"horizontal\">",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Orientation of the tree.",
-          "jsdocTags": []
-        },
-        {
-          "name": "multi",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether multi-selection is allowed.",
-          "jsdocTags": []
-        },
-        {
-          "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the tree is disabled.",
-          "jsdocTags": []
-        },
-        {
-          "name": "selectionMode",
-          "type": "InputSignal<\"explicit\" | \"follow\">",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The selection strategy used by the tree.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).\n- `follow`: The focused item is automatically selected.",
-          "jsdocTags": []
-        },
-        {
-          "name": "focusMode",
-          "type": "InputSignal<\"roving\" | \"activedescendant\">",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The focus strategy used by the tree.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the tree container, and `aria-activedescendant` is used to indicate the active item.",
-          "jsdocTags": []
-        },
-        {
-          "name": "wrap",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether navigation wraps.",
-          "jsdocTags": []
-        },
-        {
-          "name": "softDisabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
-          "jsdocTags": []
-        },
-        {
-          "name": "typeaheadDelay",
-          "type": "InputSignal<number>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The delay in seconds before the typeahead search is reset.",
-          "jsdocTags": []
-        },
-        {
-          "name": "values",
-          "type": "ModelSignal<V[]>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The values of the currently selected items.",
-          "jsdocTags": []
-        },
-        {
-          "name": "textDirection",
-          "type": "WritableSignal<Direction>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Text direction.",
-          "jsdocTags": []
-        },
-        {
-          "name": "nav",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the tree is in navigation mode.",
-          "jsdocTags": []
-        },
-        {
-          "name": "currentType",
-          "type": "InputSignal<\"page\" | \"step\" | \"location\" | \"date\" | \"time\" | \"true\" | \"false\">",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The `aria-current` type. It can be used in navigation trees to indicate the currently active item.\nSee https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current for more details.",
-          "jsdocTags": []
-        },
-        {
-          "name": "scrollActiveItemIntoView",
+          "name": "ngOnInit",
           "signatures": [
             {
-              "name": "scrollActiveItemIntoView",
+              "name": "ngOnInit",
               "entryType": "function",
               "description": "",
               "generics": [],
               "isNewType": false,
               "jsdocTags": [],
-              "params": [
-                {
-                  "name": "options",
-                  "description": "",
-                  "type": "ScrollIntoViewOptions",
-                  "isOptional": true,
-                  "isRestParam": false
-                }
-              ],
+              "params": [],
               "rawComment": "",
               "returnType": "void"
             }
           ],
           "implementation": {
-            "params": [
-              {
-                "name": "options",
-                "description": "",
-                "type": "ScrollIntoViewOptions",
-                "isOptional": true,
-                "isRestParam": false
-              }
-            ],
+            "params": [],
             "isNewType": false,
             "returnType": "void",
             "generics": [],
-            "name": "scrollActiveItemIntoView",
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
             "description": "",
             "entryType": "function",
             "jsdocTags": [],
@@ -591,23 +581,22 @@
           "name": "V"
         }
       ],
-      "description": "A container that transforms nested lists into an accessible, ARIA-compliant tree structure.\nIt manages the overall state of the tree, including selection, expansion, and keyboard\nnavigation.\n\n```html\n<ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n  <ng-template\n    [ngTemplateOutlet]=\"treeNodes\"\n    [ngTemplateOutletContext]=\"{nodes: treeData, parent: tree}\"\n  />\n</ul>\n\n<ng-template #treeNodes let-nodes=\"nodes\" let-parent=\"parent\">\n  @for (node of nodes; track node.name) {\n    <li ngTreeItem [parent]=\"parent\" [value]=\"node.name\" [label]=\"node.name\">\n      {{ node.name }}\n      @if (node.children) {\n        <ul role=\"group\">\n          <ng-template ngTreeItemGroup [ownedBy]=\"treeItem\" #group=\"ngTreeItemGroup\">\n            <ng-template\n              [ngTemplateOutlet]=\"treeNodes\"\n              [ngTemplateOutletContext]=\"{nodes: node.children, parent: group}\"\n            />\n          </ng-template>\n        </ul>\n      }\n    </li>\n  }\n</ng-template>\n```",
+      "description": "Group that contains children tree items.\n\nThe `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\nwraps the child `ngTreeItem` elements. It is used to define a group of children for an\nexpandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n\n```html\n<li ngTreeItem [value]=\"'parent-id'\">\n  Parent Item\n  <ul role=\"group\">\n    <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n      <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n    </ng-template>\n  </ul>\n</li>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Tree](guide/aria/tree)"
         }
       ],
-      "rawComment": "/**\n * A container that transforms nested lists into an accessible, ARIA-compliant tree structure.\n * It manages the overall state of the tree, including selection, expansion, and keyboard\n * navigation.\n *\n * ```html\n * <ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n *   <ng-template\n *     [ngTemplateOutlet]=\"treeNodes\"\n *     [ngTemplateOutletContext]=\"{nodes: treeData, parent: tree}\"\n *   />\n * </ul>\n *\n * <ng-template #treeNodes let-nodes=\"nodes\" let-parent=\"parent\">\n *   @for (node of nodes; track node.name) {\n *     <li ngTreeItem [parent]=\"parent\" [value]=\"node.name\" [label]=\"node.name\">\n *       {{ node.name }}\n *       @if (node.children) {\n *         <ul role=\"group\">\n *           <ng-template ngTreeItemGroup [ownedBy]=\"treeItem\" #group=\"ngTreeItemGroup\">\n *             <ng-template\n *               [ngTemplateOutlet]=\"treeNodes\"\n *               [ngTemplateOutletContext]=\"{nodes: node.children, parent: group}\"\n *             />\n *           </ng-template>\n *         </ul>\n *       }\n *     </li>\n *   }\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tree](guide/aria/tree)\n */",
-      "implements": [],
+      "rawComment": "/**\n * Group that contains children tree items.\n *\n * The `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\n * wraps the child `ngTreeItem` elements. It is used to define a group of children for an\n * expandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n *\n * ```html\n * <li ngTreeItem [value]=\"'parent-id'\">\n *   Parent Item\n *   <ul role=\"group\">\n *     <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n *       <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n *     </ng-template>\n *   </ul>\n * </li>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 64,
-        "endLine": 230
+        "startLine": 407,
+        "endLine": 451
       }
     }
   ],
@@ -618,6 +607,14 @@
     ],
     [
       "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "booleanAttribute",
       "@angular/core"
     ],
     [
@@ -633,7 +630,15 @@
       "@angular/core"
     ],
     [
+      "model",
+      "@angular/core"
+    ],
+    [
       "signal",
+      "@angular/core"
+    ],
+    [
+      "Signal",
       "@angular/core"
     ],
     [
@@ -645,19 +650,7 @@
       "@angular/core"
     ],
     [
-      "afterRenderEffect",
-      "@angular/core"
-    ],
-    [
-      "booleanAttribute",
-      "@angular/core"
-    ],
-    [
-      "model",
-      "@angular/core"
-    ],
-    [
-      "Signal",
+      "untracked",
       "@angular/core"
     ],
     [
@@ -669,15 +662,31 @@
       "@angular/cdk/a11y"
     ],
     [
-      "untracked",
-      "@angular/core"
-    ],
-    [
       "Directionality",
       "@angular/cdk/bidi"
     ],
     [
-      "TreeItemGroup",
+      "ComboboxTreePattern",
+      "@angular/aria/private"
+    ],
+    [
+      "TreeItemPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "TreePattern",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContent",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContentAware",
+      "@angular/aria/private"
+    ],
+    [
+      "Tree",
       "@angular/aria/tree"
     ],
     [
@@ -685,27 +694,71 @@
       "@angular/aria/tree"
     ],
     [
-      "Tree",
-      "@angular/aria/tree"
-    ],
-    [
       "TreeItemGroup",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.element",
+      "Tree",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.ownedBy",
+      "Tree.element",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.ngOnInit",
+      "Tree.id",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.ngOnDestroy",
+      "Tree.orientation",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.multi",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.disabled",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.selectionMode",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.focusMode",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.wrap",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.softDisabled",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.typeaheadDelay",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.values",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.textDirection",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.nav",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.currentType",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.scrollActiveItemIntoView",
       "@angular/aria/tree"
     ],
     [
@@ -777,67 +830,23 @@
       "@angular/aria/tree"
     ],
     [
-      "Tree",
+      "TreeItemGroup",
       "@angular/aria/tree"
     ],
     [
-      "Tree.element",
+      "TreeItemGroup.element",
       "@angular/aria/tree"
     ],
     [
-      "Tree.id",
+      "TreeItemGroup.ownedBy",
       "@angular/aria/tree"
     ],
     [
-      "Tree.orientation",
+      "TreeItemGroup.ngOnInit",
       "@angular/aria/tree"
     ],
     [
-      "Tree.multi",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.disabled",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.selectionMode",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.focusMode",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.wrap",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.softDisabled",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.typeaheadDelay",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.values",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.textDirection",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.nav",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.currentType",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.scrollActiveItemIntoView",
+      "TreeItemGroup.ngOnDestroy",
       "@angular/aria/tree"
     ]
   ]

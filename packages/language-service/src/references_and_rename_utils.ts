@@ -387,12 +387,13 @@ export function getRenameTextAndSpanAtPosition(
     return getRenameTextAndSpanAtPosition(node.left, position);
   } else if (node instanceof LiteralPrimitive) {
     const span = toTextSpan(node.sourceSpan);
-    if (typeof node.value === 'string') {
+    const text = node.value;
+    if (typeof text === 'string') {
       // The span of a string literal includes the quotes but they should be removed for renaming.
       span.start += 1;
       span.length -= 2;
     }
-    return {text: `${node.value}`, span};
+    return {text, span};
   } else if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
     return {text: node.name, span: toTextSpan(node.startSourceSpan)};
   } else if (node instanceof TmplAstComponent) {

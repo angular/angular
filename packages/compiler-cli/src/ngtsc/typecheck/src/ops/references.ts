@@ -7,6 +7,7 @@
  */
 
 import {
+  DYNAMIC_TYPE,
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
@@ -16,11 +17,14 @@ import {
   TmplAstTemplate,
   TmplAstVariable,
 } from '@angular/compiler';
+import ts from 'typescript';
 import {TcbOp} from './base';
-import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TcbDirectiveMetadata} from '../../api';
+import {TypeCheckableDirectiveMeta} from '../../api';
+import {addParseSpanInfo} from '../diagnostics';
+import {tsCreateVariable} from '../ts_util';
+import {getAnyExpression} from '../expression';
 
 /** Types that can referenced locally in a template. */
 export type LocalSymbol =
@@ -59,7 +63,7 @@ export class TcbReferenceOp extends TcbOp {
     private readonly scope: Scope,
     private readonly node: TmplAstReference,
     private readonly host: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-    private readonly target: TcbDirectiveMetadata | TmplAstTemplate | TmplAstElement,
+    private readonly target: TypeCheckableDirectiveMeta | TmplAstTemplate | TmplAstElement,
   ) {
     super();
   }
@@ -68,9 +72,9 @@ export class TcbReferenceOp extends TcbOp {
   // so it can map a reference variable in the template directly to a node in the TCB.
   override readonly optional = true;
 
-  override execute(): TcbExpr {
-    const id = new TcbExpr(this.tcb.allocateId());
-    let initializer: TcbExpr =
+  override execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    let initializer: ts.Expression =
       this.target instanceof TmplAstTemplate || this.target instanceof TmplAstElement
         ? this.scope.resolve(this.target)
         : this.scope.resolve(this.host, this.target);
@@ -84,18 +88,28 @@ export class TcbReferenceOp extends TcbOp {
       // References to DOM nodes are pinned to 'any' when `checkTypeOfDomReferences` is `false`.
       // References to `TemplateRef`s and directives are pinned to 'any' when
       // `checkTypeOfNonDomReferences` is `false`.
-      initializer = new TcbExpr(`${initializer.print()} as any`);
+      initializer = ts.factory.createAsExpression(
+        initializer,
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+      );
     } else if (this.target instanceof TmplAstTemplate) {
       // Direct references to an <ng-template> node simply require a value of type
       // `TemplateRef<any>`. To get this, an expression of the form
       // `(_t1 as any as TemplateRef<any>)` is constructed.
-      const templateRef = this.tcb.env.referenceExternalSymbol('@angular/core', 'TemplateRef');
-      initializer = new TcbExpr(`(${initializer.print()} as any as ${templateRef.print()}<any>)`);
+      initializer = ts.factory.createAsExpression(
+        initializer,
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+      );
+      initializer = ts.factory.createAsExpression(
+        initializer,
+        this.tcb.env.referenceExternalType('@angular/core', 'TemplateRef', [DYNAMIC_TYPE]),
+      );
+      initializer = ts.factory.createParenthesizedExpression(initializer);
     }
-    initializer.addParseSpanInfo(this.node.sourceSpan);
-    id.addParseSpanInfo(this.node.keySpan);
+    addParseSpanInfo(initializer, this.node.sourceSpan);
+    addParseSpanInfo(id, this.node.keySpan);
 
-    this.scope.addStatement(new TcbExpr(`var ${id.print()} = ${initializer.print()}`));
+    this.scope.addStatement(tsCreateVariable(id, initializer));
     return id;
   }
 }
@@ -116,9 +130,9 @@ export class TcbInvalidReferenceOp extends TcbOp {
   // The declaration of a missing reference is only needed when the reference is resolved.
   override readonly optional = true;
 
-  override execute(): TcbExpr {
-    const id = new TcbExpr(this.tcb.allocateId());
-    this.scope.addStatement(new TcbExpr(`var ${id.print()} = any`));
+  override execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    this.scope.addStatement(tsCreateVariable(id, getAnyExpression()));
     return id;
   }
 }

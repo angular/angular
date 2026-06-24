@@ -13,16 +13,16 @@
 
 Часто бывает полезно инициализировать свойства класса значениями, предоставляемыми системой DI. Вот пример:
 
-```ts {highlight:[3]}
+<docs-code language="ts" highlight="[3]">
 @Component({...})
 class PetCareDashboard {
   petRosterService = inject(PetRosterService);
 }
-```
+</docs-code>
 
 <docs-workflow>
 
-<docs-step title="Inject the `CarService`">
+<docs-step title="Внедрите `CarService`">
 
 В файле `app.ts`, используя функцию `inject()`, внедрите `CarService` и присвойте его свойству с именем `carService`.
 
@@ -30,7 +30,7 @@ class PetCareDashboard {
 
 </docs-step>
 
-<docs-step title="Use the `carService` instance">
+<docs-step title="Используйте экземпляр `carService`">
 
 Вызов `inject(CarService)` предоставил вам экземпляр `CarService`, который вы можете использовать в своем приложении,
 сохраненный в свойстве `carService`.
@@ -43,7 +43,7 @@ display = this.carService.getCars().join(' ⭐️ ');
 
 </docs-step>
 
-<docs-step title="Update the `App` template">
+<docs-step title="Обновите шаблон `App`">
 
 Обновите шаблон компонента в `app.ts` следующим кодом:
 

@@ -60,7 +60,7 @@ export class DeferredSymbolTracker {
     }
 
     // If the entire import is a type-only import, none of the symbols can be eager.
-    if (importDecl.importClause.phaseModifier === ts.SyntaxKind.TypeKeyword) {
+    if (importDecl.importClause.isTypeOnly) {
       return symbolMap;
     }
 

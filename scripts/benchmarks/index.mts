@@ -10,14 +10,9 @@ import {setOutput} from '@actions/core';
 import {GitClient, Log, bold, green, yellow} from '@angular/ng-dev';
 import {select} from '@inquirer/prompts';
 import yargs from 'yargs';
-import {collectBenchmarkResults} from './results.mts';
-import {
-  type ResolvedTarget,
-  findBenchmarkTargets,
-  getTestlogPath,
-  resolveTarget,
-} from './targets.mts';
-import {exec} from './utils.mts';
+import {collectBenchmarkResults} from './results.mjs';
+import {ResolvedTarget, findBenchmarkTargets, getTestlogPath, resolveTarget} from './targets.mjs';
+import {exec} from './utils.mjs';
 
 const benchmarkTestFlags = [
   '--cache_test_results=no',

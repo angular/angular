@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_test_library", "zoneless_web_test_suite")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_test_library")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -31,7 +31,7 @@ ts_test_library(
     ],
 )
 
-zoneless_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
         ":button_test",

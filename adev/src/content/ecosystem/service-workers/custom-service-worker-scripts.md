@@ -4,7 +4,7 @@
 функциональность, такую как обработка Push-уведомлений, фоновая синхронизация или другие события Service Worker. Вы
 можете создать пользовательский скрипт Service Worker, который импортирует и расширяет Service Worker из Angular.
 
-## Создание пользовательского Service Worker {#creating-a-custom-service-worker}
+## Создание пользовательского Service Worker
 
 Чтобы создать пользовательский Service Worker, расширяющий функциональность Angular:
 
@@ -75,8 +75,8 @@ importScripts('./ngsw-worker.js');
 3. Настройте регистрацию Service Worker для использования вашего пользовательского скрипта:
 
 ```ts
-import {ApplicationConfig, isDevMode} from '@angular/core';
-import {provideServiceWorker} from '@angular/service-worker';
+import { ApplicationConfig, isDevMode } from '@angular/core';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -88,7 +88,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-### Лучшие практики для пользовательских Service Worker {#best-practices-for-custom-service-workers}
+### Лучшие практики для пользовательских Service Worker
 
 При расширении Service Worker из Angular:
 
@@ -101,7 +101,7 @@ export const appConfig: ApplicationConfig = {
 - **Тщательно тестируйте** как в среде разработки, так и в продакшене.
 - **Корректно обрабатывайте ошибки**, чтобы ваш код не нарушал работу функциональности Service Worker из Angular.
 
-### Распространенные сценарии использования {#common-use-cases}
+### Распространенные сценарии использования
 
 Пользовательские Service Worker обычно используются для:
 

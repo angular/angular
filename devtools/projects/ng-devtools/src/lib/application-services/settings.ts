@@ -21,6 +21,12 @@ export class Settings {
     initialValue: false,
   });
 
+  readonly routerGraphEnabled = this.settingsStore.create({
+    key: 'router_graph_enabled',
+    category: 'general',
+    initialValue: false,
+  });
+
   readonly timingAPIEnabled = this.settingsStore.create({
     key: 'timing_api_enabled',
     category: 'general',

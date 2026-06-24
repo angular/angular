@@ -156,7 +156,6 @@ describe('WebAnimationsPlayer tests', () => {
 
 class MockDomAnimation implements Animation {
   log: string[] = [];
-  overallProgress = null;
   cancel(): void {
     this.log.push('cancel');
   }
