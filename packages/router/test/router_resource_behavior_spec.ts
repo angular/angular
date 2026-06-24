@@ -15,10 +15,7 @@ import {timeout, useAutoTick} from '../../private/testing/src/utils';
 import {rxResource} from '@angular/core/rxjs-interop';
 import {Subject} from 'rxjs';
 
-@Component({
-  standalone: true,
-  template: '',
-})
+@Component({template: ''})
 class DummyComponent {}
 
 describe('routerResource behavior tests', () => {
@@ -63,6 +60,17 @@ describe('routerResource behavior tests', () => {
     await harness.fixture.whenStable();
   });
 
+  afterEach(() => {
+    router = undefined!;
+    harness = undefined!;
+    guardPromise2 = undefined!;
+    resolveGuard2 = undefined!;
+    guardPromise3 = undefined!;
+    resolveGuard3 = undefined!;
+    paramSignal = undefined!;
+    resolveLoader = undefined!;
+  });
+
   // Helper to create a real resource controlled in tests
   // Resolves the very first load immediately to 'initial', and returns a pending promise for subsequent loads.
   function createRealResource() {
@@ -88,7 +96,7 @@ describe('routerResource behavior tests', () => {
     return TestBed.runInInjectionContext(() => routerResource(createRealResource()));
   }
 
-  describe('Basic Snapshot Propagation and Symbols', () => {
+  describe('Basic Snapshot Propagation', () => {
     it("should propagate the source resource's snapshot", async () => {
       const wrapped = createWrappedResource();
       await timeout();
