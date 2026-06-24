@@ -11,7 +11,7 @@ Angular присваивает каждой единице перевода ун
 
 В следующем примере показаны единицы перевода с уникальными ID.
 
-<docs-code header="messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="generated-id"/>
+<docs-code header="messages.fr.xlf.html" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="generated-id"/>
 
 При изменении переводимого текста экстрактор генерирует новый ID для этой единицы перевода.
 В большинстве случаев изменения в исходном тексте также требуют изменения перевода.
@@ -38,14 +38,14 @@ variableText1 = $localize`:@@introductionHeader:Hello i18n!`;
 
 Когда вы указываете пользовательский ID, экстрактор генерирует единицу перевода с этим ID.
 
-<docs-code header="messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="custom-id"/>
+<docs-code header="messages.fr.xlf.html" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="custom-id"/>
 
 Если вы измените текст, экстрактор не изменит ID.
 В результате вам не нужно предпринимать дополнительных шагов для обновления перевода.
 Недостатком использования пользовательских ID является то, что при изменении текста ваш перевод может
 рассинхронизироваться с новым исходным текстом.
 
-## Использование пользовательского ID с описанием {#use-a-custom-id-with-a-description}
+## Использование пользовательского ID с описанием
 
 Используйте пользовательский ID в сочетании с описанием и смысловым значением (meaning), чтобы дополнительно помочь
 переводчику.
@@ -70,7 +70,7 @@ variableText2 = $localize`:An introduction header for this sample@@introductionH
 variableText3 = $localize`:site header|An introduction header for this sample@@introductionHeader:Hello i18n!`;
 ```
 
-### Определение уникальных пользовательских ID {#define-unique-custom-ids}
+### Определение уникальных пользовательских ID
 
 Убедитесь, что определяемые вами пользовательские ID уникальны.
 Если вы используете один и тот же ID для двух разных текстовых элементов, инструмент извлечения извлечет только первый
@@ -83,7 +83,7 @@ variableText3 = $localize`:site header|An introduction header for this sample@@i
 
 Ниже показан перевод на французский язык.
 
-<docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="i18n-duplicate-custom-id"/>
+<docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="i18n-duplicate-custom-id"/>
 
 Оба элемента теперь используют один и тот же перевод \(`Bonjour`\), так как оба были определены с одним и тем же
 пользовательским ID.

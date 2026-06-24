@@ -1,9 +1,5 @@
-class CustomInjectable {
-  …
-  static ɵfac = …;
-  static ɵprov = …;
-}
-…
+CustomInjectable.ɵfac = …;
+CustomInjectable.ɵprov = …;
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(CustomInjectable, [{
     type: Injectable

@@ -11,8 +11,8 @@ import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {MessageExtractor} from '../../src/extract/extraction';
 import {runInNativeFileSystem} from '../helpers';
 
-runInNativeFileSystem('extractMessages', () => {
-  describe('', () => {
+runInNativeFileSystem(() => {
+  describe('extractMessages', () => {
     it('should extract a message for each $localize template tag', () => {
       const fs = getFileSystem();
       const logger = new MockLogger();

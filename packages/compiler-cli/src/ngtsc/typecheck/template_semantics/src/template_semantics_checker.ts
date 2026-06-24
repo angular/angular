@@ -19,7 +19,6 @@ import {
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstVariable,
-  ThisReceiver,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -91,7 +90,7 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
   }
 
   private checkForIllegalWriteInEventBinding(ast: PropertyRead, context: TmplAstNode) {
-    if (!this.shouldCheckForIllegalWrites(ast, context)) {
+    if (!(context instanceof TmplAstBoundEvent) || !(ast.receiver instanceof ImplicitReceiver)) {
       return;
     }
 
@@ -105,8 +104,9 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
   private checkForIllegalWriteInTwoWayBinding(ast: PropertyRead, context: TmplAstNode) {
     // Only check top-level property reads inside two-way bindings for illegal assignments.
     if (
-      !this.shouldCheckForIllegalWrites(ast, context) ||
+      !(context instanceof TmplAstBoundEvent) ||
       context.type !== ParsedEventType.TwoWay ||
+      !(ast.receiver instanceof ImplicitReceiver) ||
       ast !== unwrapAstWithSource(context.handler)
     ) {
       return;
@@ -156,16 +156,6 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
           sourceFile: this.component.getSourceFile(),
         },
       ],
-    );
-  }
-
-  private shouldCheckForIllegalWrites(
-    ast: PropertyRead,
-    context: TmplAstNode,
-  ): context is TmplAstBoundEvent {
-    return (
-      context instanceof TmplAstBoundEvent &&
-      (ast.receiver instanceof ImplicitReceiver || ast.receiver instanceof ThisReceiver)
     );
   }
 }

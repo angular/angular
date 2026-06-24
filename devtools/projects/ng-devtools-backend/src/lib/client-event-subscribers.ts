@@ -339,15 +339,13 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
     initializeOrGetDirectiveForestHooks();
   }
 
-  const devMode = appIsAngularInDevMode();
-
   messageBus.emit('ngAvailability', [
     {
       version: ngVersion.toString(),
-      devMode,
+      devMode: appIsAngularInDevMode(),
       ivy: appIsIvy,
       hydration: isHydrationEnabled(),
-      supportedApis: devMode ? getSupportedApis() : null,
+      supportedApis: getSupportedApis(),
     },
   ]);
 };
@@ -387,10 +385,8 @@ export interface SerializableComponentInstanceType extends ComponentType {
   id: number;
 }
 
-export interface SerializableComponentTreeNode extends DevToolsNode<
-  SerializableDirectiveInstanceType,
-  SerializableComponentInstanceType
-> {
+export interface SerializableComponentTreeNode
+  extends DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
   children: SerializableComponentTreeNode[];
   nativeElement?: never;
   // Since the nativeElement is not serializable, we will use this boolean as backup
@@ -438,7 +434,7 @@ const prepareForestForSerialization = (
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
-      controlFlowBlock: node.controlFlowBlock,
+      defer: node.defer,
       onPush: node.component ? isOnPushDirective(node.component) : false,
 
       // native elements are not serializable

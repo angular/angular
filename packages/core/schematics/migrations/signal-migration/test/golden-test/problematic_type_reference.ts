@@ -3,7 +3,9 @@
 import {Component, Directive, QueryList, Input} from '@angular/core';
 
 @Component({
-  template: ` {{ label }} `,
+  template: `
+    {{label}}
+  `,
 })
 class Group {
   @Input() label!: string;

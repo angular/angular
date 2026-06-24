@@ -297,23 +297,24 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export interface TestDirective extends Partial<
-  Pick<
-    TypeCheckableDirectiveMeta,
-    Exclude<
-      keyof TypeCheckableDirectiveMeta,
-      | 'ref'
-      | 'coercedInputFields'
-      | 'restrictedInputFields'
-      | 'stringLiteralInputFields'
-      | 'undeclaredInputFields'
-      | 'publicMethods'
-      | 'inputs'
-      | 'outputs'
-      | 'hostDirectives'
+export interface TestDirective
+  extends Partial<
+    Pick<
+      TypeCheckableDirectiveMeta,
+      Exclude<
+        keyof TypeCheckableDirectiveMeta,
+        | 'ref'
+        | 'coercedInputFields'
+        | 'restrictedInputFields'
+        | 'stringLiteralInputFields'
+        | 'undeclaredInputFields'
+        | 'publicMethods'
+        | 'inputs'
+        | 'outputs'
+        | 'hostDirectives'
+      >
     >
-  >
-> {
+  > {
   selector: string | null;
   name: string;
   file?: AbsoluteFsPath;
@@ -345,7 +346,6 @@ export interface TestDirective extends Partial<
     outputs?: string[];
   }[];
   bestGuessOwningModule?: OwningModule | AmbientImport;
-  hasNgFieldDirective?: boolean;
 }
 
 export interface TestPipe {
@@ -356,7 +356,6 @@ export interface TestPipe {
   type: 'pipe';
   code?: string;
   bestGuessOwningModule?: OwningModule | AmbientImport;
-  isGeneric?: boolean;
 }
 
 export type TestDeclaration = TestDirective | TestPipe;
@@ -368,10 +367,7 @@ export function tcb(
   options?: {emitSpans?: boolean},
   templateParserOptions?: ParseTemplateOptions,
 ): string {
-  const codeLines = [
-    'declare const ɵNgFieldDirective: unique symbol;',
-    `export class Test<T extends string> {}`,
-  ];
+  const codeLines = [`export class Test<T extends string> {}`];
 
   (function addCodeLines(currentDeclarations) {
     for (const decl of currentDeclarations) {
@@ -379,12 +375,7 @@ export function tcb(
         addCodeLines(decl.hostDirectives.map((hostDir) => hostDir.directive));
       }
 
-      codeLines.push(
-        decl.code ??
-          `export class ${decl.name}${decl.type === 'directive' || decl.isGeneric ? '<T extends string>' : ''} { ${
-            (decl as TestDirective).hasNgFieldDirective === true ? '[ɵNgFieldDirective]: any;' : ''
-          } }`,
-      );
+      codeLines.push(decl.code ?? `export class ${decl.name}<T extends string> {}`);
     }
   })(declarations);
 
@@ -473,12 +464,7 @@ export function tcb(
     TcbGenericContextBehavior.UseEmitter,
   );
 
-  let rendered = env.render();
-
-  if (!options.emitSpans) {
-    rendered = rendered.replace(/\s+\/\*[\s\S]*?\*\//g, '');
-  }
-
+  const rendered = env.render(!options.emitSpans /* removeComments */);
   return rendered.replace(/\s+/g, ' ');
 }
 
@@ -527,7 +513,6 @@ export function setup(
     options?: ts.CompilerOptions;
     inlining?: boolean;
     parseOptions?: ParseTemplateOptions;
-    referenceEmitter?: ReferenceEmitter;
   } = {},
 ): {
   templateTypeChecker: TemplateTypeChecker;
@@ -578,18 +563,16 @@ export function setup(
     host,
     /* moduleResolutionCache */ null,
   );
-  const emitter =
-    overrides.referenceEmitter ??
-    new ReferenceEmitter([
-      new LocalIdentifierStrategy(),
-      new AbsoluteModuleStrategy(
-        program,
-        checker,
-        moduleResolver,
-        new TypeScriptReflectionHost(checker),
-      ),
-      new LogicalProjectStrategy(reflectionHost, logicalFs),
-    ]);
+  const emitter = new ReferenceEmitter([
+    new LocalIdentifierStrategy(),
+    new AbsoluteModuleStrategy(
+      program,
+      checker,
+      moduleResolver,
+      new TypeScriptReflectionHost(checker),
+    ),
+    new LogicalProjectStrategy(reflectionHost, logicalFs),
+  ]);
 
   const fullConfig = {
     ...ALL_ENABLED_CONFIG,

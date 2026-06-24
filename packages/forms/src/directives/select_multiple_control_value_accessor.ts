@@ -81,7 +81,7 @@ function _extractId(valueString: string): string {
  */
 @Directive({
   selector:
-    'select[multiple]:not([ngNoCva])[formControlName],select[multiple]:not([ngNoCva])[formControl],select[multiple]:not([ngNoCva])[ngModel]',
+    'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR],
   standalone: false,

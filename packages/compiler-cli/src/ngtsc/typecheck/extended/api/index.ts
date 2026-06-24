@@ -7,5 +7,4 @@
  */
 
 export * from './api';
-export * from './format-extended-error';
 export * from './extended_template_checker';

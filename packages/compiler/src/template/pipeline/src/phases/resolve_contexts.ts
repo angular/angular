@@ -7,7 +7,6 @@
  */
 
 import * as o from '../../../../output/output_ast';
-import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 import {CompilationJob, CompilationUnit} from '../compilation';
 
@@ -18,9 +17,6 @@ import {CompilationJob, CompilationUnit} from '../compilation';
  */
 export function resolveContexts(job: CompilationJob): void {
   for (const unit of job.units) {
-    for (const expr of unit.functions) {
-      processLexicalScope(unit, expr.ops);
-    }
     processLexicalScope(unit, unit.create);
     processLexicalScope(unit, unit.update);
   }
@@ -35,7 +31,7 @@ function processLexicalScope(
   const scope = new Map<ir.XrefId, o.Expression>();
 
   // The current view's context is accessible via the `ctx` parameter.
-  scope.set(view.xref, o.variable(CONTEXT_NAME));
+  scope.set(view.xref, o.variable('ctx'));
 
   for (const op of ops) {
     switch (op.kind) {
@@ -62,7 +58,7 @@ function processLexicalScope(
 
   if (view === view.job.root) {
     // Prefer `ctx` of the root view to any variables which happen to contain the root context.
-    scope.set(view.xref, o.variable(CONTEXT_NAME));
+    scope.set(view.xref, o.variable('ctx'));
   }
 
   for (const op of ops) {

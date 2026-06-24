@@ -18,7 +18,7 @@ import {
   TmplAstIfBlockBranch,
   TmplAstNode,
   TmplAstSwitchBlock,
-  TmplAstSwitchBlockCaseGroup,
+  TmplAstSwitchBlockCase,
   TmplAstTemplate,
   TmplAstText,
 } from '@angular/compiler';
@@ -96,10 +96,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
   private findPotentialControlFlowNodes() {
     const result: Array<
-      | TmplAstIfBlockBranch
-      | TmplAstSwitchBlockCaseGroup
-      | TmplAstForLoopBlock
-      | TmplAstForLoopBlockEmpty
+      TmplAstIfBlockBranch | TmplAstSwitchBlockCase | TmplAstForLoopBlock | TmplAstForLoopBlockEmpty
     > = [];
 
     for (const child of this.element.children) {
@@ -117,7 +114,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
           }
         }
       } else if (child instanceof TmplAstSwitchBlock) {
-        for (const current of child.groups) {
+        for (const current of child.cases) {
           if (this.shouldCheck(current)) {
             result.push(current);
           }

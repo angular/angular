@@ -26,8 +26,6 @@ import {
   Router,
   NavigationStart,
   RoutesRecognized,
-  Route,
-  UrlSegment,
   GuardsCheckStart,
   ChildActivationStart,
   ActivationStart,
@@ -52,7 +50,6 @@ import {
   CanActivateFn,
   CanActivateChildFn,
   CanDeactivateFn,
-  PartialMatchRouteSnapshot,
 } from '../../src';
 import {wrapIntoObservable} from '../../src/utils/collection';
 import {RouterTestingHarness} from '../../testing';
@@ -73,7 +70,7 @@ import {
   createRoot,
   advance,
 } from './integration_helpers';
-import {timeout} from '@angular/private/testing';
+import {timeout} from '../helpers';
 
 export function guardsIntegrationSuite() {
   describe('guards', () => {
@@ -2228,61 +2225,6 @@ export function guardsIntegrationSuite() {
         // The delayed guard should still have executed once because guards are executed at the
         // same time
         expect(delayedGuardSpy.calls.count()).toEqual(1);
-      });
-
-      it('receives PreMatchRouteSnapshot as third argument', async () => {
-        const router = TestBed.inject(Router);
-        const fixture = await createRoot(router, RootCmp);
-        let capturedSnapshot: PartialMatchRouteSnapshot | undefined;
-
-        router.resetConfig([
-          {
-            path: 'a/:id',
-            canMatch: [
-              (route: Route, segments: UrlSegment[], snapshot: PartialMatchRouteSnapshot) => {
-                capturedSnapshot = snapshot;
-                return true;
-              },
-            ],
-            component: SimpleCmp,
-          },
-        ]);
-
-        await router.navigateByUrl('/a/1?q=2#f');
-        expect(capturedSnapshot).toBeDefined();
-        expect(capturedSnapshot!.params['id']).toBe('1');
-        expect(capturedSnapshot!.queryParams['q']).toBe('2');
-        expect(capturedSnapshot!.fragment).toBe('f');
-      });
-
-      it('can redirect based on snapshot params', async () => {
-        const router = TestBed.inject(Router);
-        const fixture = await createRoot(router, RootCmp);
-
-        router.resetConfig([
-          {
-            path: 'a/:id',
-            canMatch: [
-              (route: Route, segments: UrlSegment[], snapshot: PartialMatchRouteSnapshot) => {
-                const router = inject(Router);
-                if (snapshot.params['id'] === '1') {
-                  return router.parseUrl('/b');
-                }
-                return true;
-              },
-            ],
-            component: SimpleCmp,
-          },
-          {path: 'b', component: BlankCmp},
-        ]);
-
-        await router.navigateByUrl('/a/1');
-        await advance(fixture);
-        expect(router.url).toEqual('/b');
-
-        await router.navigateByUrl('/a/2');
-        await advance(fixture);
-        expect(router.url).toEqual('/a/2');
       });
     });
 

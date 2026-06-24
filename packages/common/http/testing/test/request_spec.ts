@@ -7,42 +7,31 @@
  */
 
 import {HttpClient, HttpRequest, HttpErrorResponse} from '../../index';
-import {HttpTestingController, provideHttpClientTesting} from '../index';
+import {HttpClientTestingBackend} from '../../testing/src/backend';
 import {TestRequest} from '../src/request';
-import {provideHttpClient, withNoXsrfProtection} from '../../src/provider';
-import {TestBed} from '@angular/core/testing';
 import {isBrowser} from '@angular/private/testing';
 import {Observer} from 'rxjs';
 
 describe('HttpClient TestRequest', () => {
-  let client: HttpClient;
-  let backend: HttpTestingController;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideHttpClient(withNoXsrfProtection()), provideHttpClientTesting()],
-    });
-    client = TestBed.inject(HttpClient);
-    backend = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    backend.verify();
-  });
-
   it('accepts a null body', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
     let resp: any;
     client.post('/some-url', {test: 'test'}).subscribe((body) => {
       resp = body;
     });
 
-    const req = backend.expectOne('/some-url');
+    const req = mock.expectOne('/some-url');
     req.flush(null);
 
     expect(resp).toBeNull();
   });
 
   it('throws if no request matches', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
     let resp: any;
     client.get('/some-other-url').subscribe((body) => {
       resp = body;
@@ -50,7 +39,7 @@ describe('HttpClient TestRequest', () => {
 
     try {
       // expect different URL
-      backend.expectOne('/some-url').flush(null);
+      mock.expectOne('/some-url').flush(null);
       fail();
     } catch (error) {
       expect((error as Error).message).toBe(
@@ -58,11 +47,12 @@ describe('HttpClient TestRequest', () => {
           ' Requests received are: GET /some-other-url.',
       );
     }
-
-    backend.expectOne('/some-other-url').flush(null);
   });
 
   it('throws if no request matches the exact parameters', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
     let resp: any;
     const params = {query: 'hello'};
     client.get('/some-url', {params}).subscribe((body) => {
@@ -71,7 +61,7 @@ describe('HttpClient TestRequest', () => {
 
     try {
       // expect different query parameters
-      backend.expectOne('/some-url?query=world').flush(null);
+      mock.expectOne('/some-url?query=world').flush(null);
       fail();
     } catch (error) {
       expect((error as Error).message).toBe(
@@ -79,11 +69,12 @@ describe('HttpClient TestRequest', () => {
           ' Requests received are: GET /some-url?query=hello.',
       );
     }
-
-    backend.expectOne('/some-url?query=hello').flush(null);
   });
 
   it('throws if no request matches with several requests received', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
     let resp: any;
     client.get('/some-other-url?query=world').subscribe((body) => {
       resp = body;
@@ -94,7 +85,7 @@ describe('HttpClient TestRequest', () => {
 
     try {
       // expect different URL
-      backend.expectOne('/some-url').flush(null);
+      mock.expectOne('/some-url').flush(null);
       fail();
     } catch (error) {
       expect((error as Error).message).toBe(
@@ -102,16 +93,17 @@ describe('HttpClient TestRequest', () => {
           ' Requests received are: GET /some-other-url?query=world, POST /and-another-url.',
       );
     }
-    backend.expectOne('/some-other-url?query=world').flush(null);
-    backend.expectOne('/and-another-url').flush(null);
   });
 
   it('throws if there are open requests when verify is called', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
     client.get('/some-other-url?query=world').subscribe();
     client.post('/and-another-url', {}).subscribe();
 
     try {
-      backend.verify();
+      mock.verify();
       fail();
     } catch (error) {
       expect((error as any).message).toBe(
@@ -119,8 +111,6 @@ describe('HttpClient TestRequest', () => {
           ' GET /some-other-url?query=world, POST /and-another-url',
       );
     }
-    backend.expectOne('/some-other-url?query=world').flush(null);
-    backend.expectOne('/and-another-url').flush(null);
   });
 
   describe('successful errors', () => {

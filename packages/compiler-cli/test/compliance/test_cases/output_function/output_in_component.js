@@ -1,6 +1,4 @@
-export class TestComp {
-  …
-  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+TestComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     …
     outputs: {
         a: "a",
@@ -11,4 +9,3 @@ export class TestComp {
     },
     …
   });
-}

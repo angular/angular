@@ -11,14 +11,18 @@
 ng generate @angular/core:self-closing-tag
 ```
 
-#### До {#before}
+#### До
 
 ```angular-html
+
 <hello-world></hello-world>
+
 ```
 
-#### После {#after}
+#### После
 
 ```angular-html
+
 <hello-world />
+
 ```

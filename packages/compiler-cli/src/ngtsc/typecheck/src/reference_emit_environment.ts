@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ExpressionType, TransplantedType} from '@angular/compiler';
+import {
+  ExpressionType,
+  ExternalExpr,
+  TransplantedType,
+  Type,
+  TypeModifier,
+} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain} from '../../diagnostics';
 import {
   assertSuccessfulReferenceEmit,
   ImportFlags,
@@ -18,9 +23,7 @@ import {
   ReferenceEmitter,
 } from '../../imports';
 import {ReflectionHost} from '../../reflection';
-import {ImportManager, translateType} from '../../translator';
-import {TcbReferenceMetadata} from '../api';
-import {TcbExpr} from './ops/codegen';
+import {ImportManager, translateExpression, translateType} from '../../translator';
 
 /**
  * An environment for a given source file that can be used to emit references.
@@ -31,7 +34,7 @@ import {TcbExpr} from './ops/codegen';
 export class ReferenceEmitEnvironment {
   constructor(
     readonly importManager: ImportManager,
-    public refEmitter: ReferenceEmitter,
+    protected refEmitter: ReferenceEmitter,
     readonly reflector: ReflectionHost,
     public contextFile: ts.SourceFile,
   ) {}
@@ -72,38 +75,29 @@ export class ReferenceEmitEnvironment {
   }
 
   /**
-   * Generates a `TcbExpr` from a `TcbReferenceMetadata` object.
+   * Generate a `ts.Expression` that refers to the external symbol. This
+   * may result in new imports being generated.
    */
-  referenceTcbValue(ref: TcbReferenceMetadata): TcbExpr {
-    if (ref.unexportedDiagnostic !== null || ref.isLocal || ref.moduleName === null) {
-      if (ref.unexportedDiagnostic !== null) {
-        throw new FatalDiagnosticError(
-          ErrorCode.IMPORT_GENERATION_FAILURE,
-          this.contextFile,
-          makeDiagnosticChain(`Unable to import symbol ${ref.name}.`, [
-            makeDiagnosticChain(ref.unexportedDiagnostic),
-          ]),
-        );
-      }
-      return new TcbExpr(ref.name);
-    }
-    return this.referenceExternalSymbol(ref.moduleName, ref.name);
+  referenceExternalSymbol(moduleName: string, name: string): ts.Expression {
+    const external = new ExternalExpr({moduleName, name});
+    return translateExpression(this.contextFile, external, this.importManager);
   }
 
-  referenceExternalSymbol(moduleName: string, name: string): TcbExpr {
-    const importResult = this.importManager.addImport({
-      exportModuleSpecifier: moduleName,
-      exportSymbolName: name,
-      requestedFile: this.contextFile,
-    });
-
-    if (ts.isIdentifier(importResult)) {
-      return new TcbExpr(importResult.text);
-    } else if (ts.isIdentifier(importResult.expression)) {
-      return new TcbExpr(`${importResult.expression.text}.${importResult.name.text}`);
-    }
-
-    throw new Error('Unexpected value returned by import manager');
+  /**
+   * Generate a `ts.TypeNode` that references a given type from the provided module.
+   *
+   * This will involve importing the type into the file, and will also add type parameters if
+   * provided.
+   */
+  referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
+    const external = new ExternalExpr({moduleName, name});
+    return translateType(
+      new ExpressionType(external, TypeModifier.None, typeParams),
+      this.contextFile,
+      this.reflector,
+      this.refEmitter,
+      this.importManager,
+    );
   }
 
   /**

@@ -60,8 +60,7 @@ class App {}
 
 @Component({
   selector: 'door',
-  template: `{{ frame.name }}(<span *ngFor="let lock of locks">{{ lock.name }}</span
-    >)`,
+  template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
   standalone: false,
 })
 class Door {

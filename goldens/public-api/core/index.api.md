@@ -4,7 +4,6 @@
 
 ```ts
 
-import * as _angular_core from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
@@ -85,7 +84,7 @@ export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAn
 // @public
 export type AnimationCallbackEvent = {
     target: Element;
-    animationComplete: VoidFunction;
+    animationComplete: Function;
 };
 
 // @public
@@ -186,7 +185,7 @@ export interface BaseResourceOptions<T, R> {
     defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
-    params?: (ctx: ResourceParamsContext) => R;
+    params?: () => R;
 }
 
 // @public
@@ -210,14 +209,14 @@ export interface BootstrapOptions {
 
 // @public
 export enum ChangeDetectionStrategy {
-    // @deprecated
     Default = 1,
-    Eager = 1,
     OnPush = 0
 }
 
 // @public
 export abstract class ChangeDetectorRef {
+    // @deprecated
+    abstract checkNoChanges(): void;
     abstract detach(): void;
     abstract detectChanges(): void;
     abstract markForCheck(): void;
@@ -480,6 +479,9 @@ export function createEnvironmentInjector(providers: Array<Provider | Environmen
 // @public
 export function createNgModule<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
 
+// @public @deprecated
+export const createNgModuleRef: typeof createNgModule;
+
 // @public
 export function createPlatform(injector: Injector): PlatformRef;
 
@@ -497,15 +499,6 @@ export const CSP_NONCE: InjectionToken<string | null>;
 
 // @public
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
-
-// @public
-export function debounced<T>(source: () => T, wait: NoInfer<number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void)>, options?: NoInfer<DebouncedOptions<T>>): Resource<T>;
-
-// @public
-export interface DebouncedOptions<T> {
-    equal?: ValueEqualityFn<T>;
-    injector?: Injector;
-}
 
 // @public (undocumented)
 export class DebugElement extends DebugNode {
@@ -642,12 +635,6 @@ export const Directive: DirectiveDecorator;
 export interface DirectiveDecorator {
     (obj?: Directive): TypeDecorator;
     new (obj?: Directive): Directive;
-}
-
-// @public
-export interface DirectiveWithBindings<T> {
-    bindings: Binding[];
-    type: Type<T>;
 }
 
 // @public
@@ -849,12 +836,6 @@ export interface HostListenerDecorator {
 }
 
 // @public
-export interface IdleService {
-    cancelOnIdle(id: number): void;
-    requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions): number;
-}
-
-// @public
 export function importProvidersFrom(...sources: ImportProvidersSource[]): EnvironmentProviders;
 
 // @public
@@ -903,13 +884,9 @@ export const Injectable: InjectableDecorator;
 // @public
 export interface InjectableDecorator {
     (): TypeDecorator;
-    // @deprecated (undocumented)
-    (options?: {
-        providedIn: Type<any> | 'any';
-    } & InjectableProvider): TypeDecorator;
     // (undocumented)
     (options?: {
-        providedIn: 'root' | 'platform' | null;
+        providedIn: Type<any> | 'root' | 'platform' | 'any' | null;
     } & InjectableProvider): TypeDecorator;
     // (undocumented)
     new (): Injectable;
@@ -939,11 +916,6 @@ export interface InjectDecorator {
 
 // @public
 export class InjectionToken<T> {
-    // @deprecated
-    constructor(_desc: string, options: {
-        providedIn: Type<any> | 'any';
-        factory: () => T;
-    });
     constructor(_desc: string, options?: {
         providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
         factory: () => T;
@@ -988,7 +960,7 @@ export abstract class Injector {
     // (undocumented)
     static THROW_IF_NOT_FOUND: {};
     // (undocumented)
-    static ɵprov: _angular_core.ɵɵInjectableDeclaration<Injector>;
+    static ɵprov: unknown;
 }
 
 // @public
@@ -1117,7 +1089,7 @@ export class IterableDiffers {
     // (undocumented)
     find(iterable: any): IterableDifferFactory;
     // (undocumented)
-    static ɵprov: _angular_core.ɵɵInjectableDeclaration<IterableDiffers>;
+    static ɵprov: unknown;
 }
 
 // @public
@@ -1154,12 +1126,12 @@ export interface KeyValueDifferFactory {
 export class KeyValueDiffers {
     constructor(factories: KeyValueDifferFactory[]);
     // (undocumented)
-    static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend(factories: KeyValueDifferFactory[]): StaticProvider;
+    static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
+    static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
     // (undocumented)
     find(kv: any): KeyValueDifferFactory;
     // (undocumented)
-    static ɵprov: _angular_core.ɵɵInjectableDeclaration<KeyValueDiffers>;
+    static ɵprov: unknown;
 }
 
 // @public
@@ -1416,7 +1388,7 @@ export class PendingTasks {
     add(): () => void;
     run(fn: () => Promise<unknown>): void;
     // (undocumented)
-    static ɵprov: _angular_core.ɵɵInjectableDeclaration<PendingTasks>;
+    static ɵprov: unknown;
 }
 
 // @public
@@ -1501,22 +1473,16 @@ export function provideCheckNoChangesConfig(options: {
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
-export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;
-
-// @public
 export function provideNgReflectAttributes(): EnvironmentProviders;
 
 // @public
-export function providePlatformInitializer(initializerFn: () => void): StaticProvider;
+export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
 
 // @public
 export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
-
-// @public
-export function provideStabilityDebugging(): EnvironmentProviders;
 
 // @public
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
@@ -1649,7 +1615,6 @@ export interface Resource<T> {
     // (undocumented)
     hasValue(): boolean;
     readonly isLoading: Signal<boolean>;
-    readonly snapshot: Signal<ResourceSnapshot<T>>;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
 }
@@ -1661,15 +1626,6 @@ export function resource<T, R>(options: ResourceOptions<T, R> & {
 
 // @public
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
-
-// @public
-export class ResourceDependencyError extends Error {
-    constructor(dependency: Resource<unknown>);
-    readonly dependency: Resource<unknown>;
-}
-
-// @public
-export function resourceFromSnapshots<T>(source: () => ResourceSnapshot<T>): Resource<T>;
 
 // @public
 export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<T>;
@@ -1692,17 +1648,6 @@ export type ResourceOptions<T, R> = (PromiseResourceOptions<T, R> | StreamingRes
 };
 
 // @public
-export interface ResourceParamsContext {
-    readonly chain: <T>(resource: Resource<T>) => T;
-}
-
-// @public
-export class ResourceParamsStatus extends Error {
-    static readonly IDLE: ResourceParamsStatus;
-    static readonly LOADING: ResourceParamsStatus;
-}
-
-// @public
 export interface ResourceRef<T> extends WritableResource<T> {
     destroy(): void;
     // (undocumented)
@@ -1710,21 +1655,6 @@ export interface ResourceRef<T> extends WritableResource<T> {
     // (undocumented)
     hasValue(): boolean;
 }
-
-// @public
-export type ResourceSnapshot<T> = {
-    readonly status: 'idle';
-    readonly value: T;
-} | {
-    readonly status: 'loading' | 'reloading';
-    readonly value: T;
-} | {
-    readonly status: 'resolved' | 'local';
-    readonly value: T;
-} | {
-    readonly status: 'error';
-    readonly error: Error;
-};
 
 // @public
 export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resolved' | 'local';
@@ -1740,13 +1670,7 @@ export type ResourceStreamItem<T> = {
 };
 
 // @public
-export const RESPONSE_INIT: InjectionToken<ResponseInit_2 | null>;
-
-// @public
-type ResponseInit_2 = {
-    -readonly [P in keyof globalThis.ResponseInit]: globalThis.ResponseInit[P];
-};
-export { ResponseInit_2 as ResponseInit }
+export const RESPONSE_INIT: InjectionToken<ResponseInit | null>;
 
 // @public
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;
@@ -1756,7 +1680,7 @@ export abstract class Sanitizer {
     // (undocumented)
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
     // (undocumented)
-    static ɵprov: _angular_core.ɵɵInjectableDeclaration<null>;
+    static ɵprov: unknown;
 }
 
 // @public
@@ -1917,7 +1841,7 @@ export class TransferState {
     set<T>(key: StateKey<T>, value: T): void;
     toJson(): string;
     // (undocumented)
-    static ɵprov: _angular_core.ɵɵInjectableDeclaration<TransferState>;
+    static ɵprov: unknown;
 }
 
 // @public

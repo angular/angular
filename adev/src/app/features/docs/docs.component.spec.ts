@@ -23,7 +23,7 @@ describe('DocsComponent', () => {
     getContent: (id: string) => undefined,
   };
 
-  beforeEach(async () => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [DocsComponent],
       providers: [
@@ -40,7 +40,7 @@ describe('DocsComponent', () => {
     });
     fixture = TestBed.createComponent(DocsComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

@@ -17,6 +17,7 @@ import {
 import {getLDeferBlockDetails, getTDeferBlockDetails, isDeferBlock} from '../defer/utils';
 import {isDetachedByI18n} from '../i18n/utils';
 import {ViewEncapsulation} from '../metadata';
+import {Renderer2} from '../render';
 import {assertTNode} from '../render3/assert';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/def_getters';
@@ -34,6 +35,7 @@ import {
   CONTEXT,
   HEADER_OFFSET,
   HOST,
+  INJECTOR,
   LView,
   PARENT,
   RENDERER,
@@ -89,6 +91,7 @@ import {
   processTextNodeBeforeSerialization,
   TextNodeMarker,
 } from './utils';
+import {Injector} from '../di';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -180,6 +183,7 @@ function calcNumRootNodesInLContainer(lContainer: LContainer): number {
 function annotateComponentLViewForHydration(
   lView: LView,
   context: HydrationContext,
+  injector: Injector,
 ): number | null {
   const hostElement = lView[HOST];
   // Root elements might also be annotated with the `ngSkipHydration` attribute,
@@ -196,11 +200,19 @@ function annotateComponentLViewForHydration(
  * This function serializes the component itself as well as all views from the view
  * container.
  */
-function annotateLContainerForHydration(lContainer: LContainer, context: HydrationContext) {
+function annotateLContainerForHydration(
+  lContainer: LContainer,
+  context: HydrationContext,
+  injector: Injector,
+) {
   const componentLView = unwrapLView(lContainer[HOST]) as LView<unknown>;
 
   // Serialize the root component itself.
-  const componentLViewNghIndex = annotateComponentLViewForHydration(componentLView, context);
+  const componentLViewNghIndex = annotateComponentLViewForHydration(
+    componentLView,
+    context,
+    injector,
+  );
 
   if (componentLViewNghIndex === null) {
     // Component was not serialized (for example, if hydration was skipped by adding
@@ -216,7 +228,7 @@ function annotateLContainerForHydration(lContainer: LContainer, context: Hydrati
   const rootLView = lContainer[PARENT];
   const rootLViewNghIndex = annotateHostElementForHydration(hostElement, rootLView, null, context);
 
-  const renderer = componentLView[RENDERER];
+  const renderer = componentLView[RENDERER] as Renderer2;
 
   // For cases when a root component also acts as an anchor node for a ViewContainerRef
   // (for example, when ViewContainerRef is injected in a root component), there is a need
@@ -272,9 +284,9 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
         deferBlocks,
       };
       if (isLContainer(lNode)) {
-        annotateLContainerForHydration(lNode, context);
+        annotateLContainerForHydration(lNode, context, injector);
       } else {
-        annotateComponentLViewForHydration(lNode, context);
+        annotateComponentLViewForHydration(lNode, context, injector);
       }
       insertCorruptedTextNodeMarkers(corruptedTextNodes, doc);
     }
@@ -344,7 +356,7 @@ function serializeLContainer(
         // The `+1` is to capture the `<app-root />` element.
         numRootNodes = calcNumRootNodesInLContainer(childLView) + 1;
 
-        annotateLContainerForHydration(childLView, context);
+        annotateLContainerForHydration(childLView, context, lView[INJECTOR]);
 
         const componentLView = unwrapLView(childLView[HOST]) as LView<unknown>;
 

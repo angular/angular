@@ -1,6 +1,4 @@
-export class TestComp {
-  …
-  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+TestComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     …
     inputs: {
         counter: [1, "counter"],
@@ -8,4 +6,4 @@ export class TestComp {
     },
     …
   });
-}
+  

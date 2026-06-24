@@ -32,8 +32,6 @@ const visibleLinesRule = /visibleLines="([^"]*)"/;
 const regionRule = /region="([^"]*)"/;
 const previewRule = /preview/;
 const hideCodeRule = /hideCode/;
-const hideDollarRule = /hideDollar/;
-const preferRule = /\b(prefer|avoid)\b/;
 
 export const docsCodeExtension = {
   name: 'docs-code',
@@ -53,11 +51,9 @@ export const docsCodeExtension = {
       const language = languageRule.exec(attr);
       const visibleLines = visibleLinesRule.exec(attr);
       const region = regionRule.exec(attr);
-      const preview = previewRule.test(attr);
-      const hideCode = hideCodeRule.test(attr);
-      const hideDollar = hideDollarRule.test(attr);
+      const preview = previewRule.exec(attr) ? true : false;
+      const hideCode = hideCodeRule.exec(attr) ? true : false;
       const classes = classRule.exec(attr);
-      const style = preferRule.exec(attr);
 
       let code = match[2]?.trim() ?? '';
       if (path && path[1]) {
@@ -80,8 +76,6 @@ export const docsCodeExtension = {
         region: region?.[1],
         preview: preview,
         hideCode,
-        hideDollar,
-        style: style?.[1] as 'prefer' | 'avoid' | undefined,
         classes: classes?.[1]?.split(' '),
       };
       return token;

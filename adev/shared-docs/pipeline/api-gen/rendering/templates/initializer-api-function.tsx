@@ -40,10 +40,14 @@ export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) 
 
       <div class={REFERENCE_MEMBERS}>
         {entry.callFunction.signatures.map((s, i) =>
-          signatureCard(s.name, getFunctionMetadataRenderable(s, entry.moduleName, entry.repo), {
-            id: `${s.name}_${i}`,
+          signatureCard(
+            s.name,
+            getFunctionMetadataRenderable(s, entry.moduleName, entry.repo),
+            {
+              id: `${s.name}_${i}`,
+            },
             printSignaturesAsHeader,
-          }),
+          ),
         )}
 
         {entry.subFunctions.reduce(
@@ -55,8 +59,8 @@ export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) 
                 getFunctionMetadataRenderable(s, entry.moduleName, entry.repo),
                 {
                   id: `${entry.name}_${s.name}_${i}`,
-                  printSignaturesAsHeader,
                 },
+                printSignaturesAsHeader,
               ),
             ),
           ],

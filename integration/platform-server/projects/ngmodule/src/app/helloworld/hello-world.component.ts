@@ -10,13 +10,15 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'hello-world-app',
-  template: ` <div>Hello {{ name }}!</div> `,
+  template: `
+    <div>Hello {{ name }}!</div>
+  `,
   styles: [
     `
-      div {
-        font-weight: bold;
-      }
-    `,
+    div {
+      font-weight: bold;
+    }
+  `,
   ],
   standalone: false,
 })

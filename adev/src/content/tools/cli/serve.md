@@ -12,28 +12,26 @@
 Вы можете определить, какой билдер используется для конкретного проекта, посмотрев цель `serve` этого проекта.
 
 ```json
+
 {
   "projects": {
     "my-app": {
       "architect": {
         // `ng serve` invokes the Architect target named `serve`.
         "serve": {
-          "builder": "@angular/build:dev-server"
+          "builder": "@angular/build:dev-server",
           // ...
         },
-        "build": {
-          /* ... */
-        },
-        "test": {
-          /* ... */
-        }
+        "build": { /* ... */ },
+        "test": { /* ... */ }
       }
     }
   }
 }
+
 ```
 
-## Проксирование на бэкенд-сервер {#proxying-to-a-backend-server}
+## Проксирование на бэкенд-сервер
 
 Используйте [поддержку проксирования](https://vite.dev/config/server-options#server-proxy), чтобы перенаправлять
 определенные URL на бэкенд-сервер, передав файл в опцию сборки `--proxy-config`.
@@ -69,6 +67,7 @@
     }
   }
 }
+
 ```
 
 1. Чтобы запустить сервер разработки с этой конфигурацией прокси, выполните `ng serve`.
@@ -76,7 +75,7 @@
 ПРИМЕЧАНИЕ: Чтобы применить изменения, внесенные в файл конфигурации прокси, необходимо перезапустить процесс
 `ng serve`.
 
-### Поведение сопоставления путей зависит от билдера {#path-matching-behavior-depends-on-the-builder}
+### Поведение сопоставления путей зависит от билдера
 
 **`@angular/build:dev-server`** (основан на [Vite](https://vite.dev/config/server-options#server-proxy))
 

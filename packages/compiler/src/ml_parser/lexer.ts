@@ -153,9 +153,12 @@ const SUPPORTED_BLOCKS = [
   '@placeholder',
   '@loading',
   '@error',
-] as const;
+];
 
-const INTERPOLATION = {start: '{{', end: '}}'} as const;
+const INTERPOLATION = {
+  start: '{{',
+  end: '}}',
+};
 
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
@@ -299,14 +302,6 @@ class _Tokenizer {
     this._beginToken(TokenType.BLOCK_OPEN_START, start);
     const startToken = this._endToken([this._getBlockName()]);
 
-    if (startToken.parts[0] === 'default never' && this._attemptCharCode(chars.$SEMICOLON)) {
-      this._beginToken(TokenType.BLOCK_OPEN_END);
-      this._endToken([]);
-      this._beginToken(TokenType.BLOCK_CLOSE);
-      this._endToken([]);
-      return;
-    }
-
     if (this._cursor.peek() === chars.$LPAREN) {
       // Advance past the opening paren.
       this._cursor.advance();
@@ -326,15 +321,6 @@ class _Tokenizer {
 
     if (this._attemptCharCode(chars.$LBRACE)) {
       this._beginToken(TokenType.BLOCK_OPEN_END);
-      this._endToken([]);
-    } else if (
-      this._isBlockStart() &&
-      (startToken.parts[0] === 'case' || startToken.parts[0] === 'default')
-    ) {
-      // We only allow @case statements to be consecutive without a block in between.
-      this._beginToken(TokenType.BLOCK_OPEN_END);
-      this._endToken([]);
-      this._beginToken(TokenType.BLOCK_CLOSE);
       this._endToken([]);
     } else {
       startToken.type = TokenType.INCOMPLETE_BLOCK_OPEN;
@@ -1431,12 +1417,7 @@ function isDigitEntityEnd(code: number): boolean {
 }
 
 function isNamedEntityEnd(code: number): boolean {
-  // Named entities may contain digits (e.g. &sup1;, &frac12;, &blk34;).
-  return (
-    code === chars.$SEMICOLON ||
-    code === chars.$EOF ||
-    !(chars.isAsciiLetter(code) || chars.isDigit(code))
-  );
+  return code === chars.$SEMICOLON || code === chars.$EOF || !chars.isAsciiLetter(code);
 }
 
 function isExpansionCaseStart(peek: number): boolean {

@@ -26,7 +26,7 @@ describe('TutorialPlayground', () => {
     },
   };
 
-  beforeEach(async () => {
+  beforeEach(() => {
     class FakeEmbeddedTutorialManager {
       fetchAndSetTutorialFiles() {}
     }
@@ -50,7 +50,7 @@ describe('TutorialPlayground', () => {
 
     fixture = TestBed.createComponent(TutorialPlayground);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

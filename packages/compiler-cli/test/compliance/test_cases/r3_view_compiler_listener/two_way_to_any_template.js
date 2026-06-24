@@ -6,10 +6,8 @@ function TestCmp_Template(rf, ctx) {
       return $event;
     });
     $r3$.ɵɵelementEnd();
-    $r3$.ɵɵcontrolCreate();
   }
   if (rf & 2) {
     $r3$.ɵɵtwoWayProperty("ngModel", ctx.value);
-    $r3$.ɵɵcontrol();
   }
 }

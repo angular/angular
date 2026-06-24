@@ -9,10 +9,8 @@ function TestCmp_ng_template_1_Template(rf, ctx) {
       return $r3$.ɵɵresetView($event);
     });
     $r3$.ɵɵelementEnd();
-    $r3$.ɵɵcontrolCreate();
   } if (rf & 2) {
     const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵtwoWayProperty("ngModel", $ctx_r0$.name);
-    $r3$.ɵɵcontrol();
   }
 }

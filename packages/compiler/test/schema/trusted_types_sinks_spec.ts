@@ -13,7 +13,6 @@ describe('isTrustedTypesSink', () => {
     expect(isTrustedTypesSink('iframe', 'srcdoc')).toBeTrue();
     expect(isTrustedTypesSink('p', 'innerHTML')).toBeTrue();
     expect(isTrustedTypesSink('embed', 'src')).toBeTrue();
-    expect(isTrustedTypesSink('iframe', 'src')).toBeTrue();
     expect(isTrustedTypesSink('a', 'href')).toBeFalse();
     expect(isTrustedTypesSink('base', 'href')).toBeFalse();
     expect(isTrustedTypesSink('div', 'style')).toBeFalse();

@@ -11,12 +11,12 @@
 
 <docs-workflow>
 
-<docs-step title="Show the value of the input field in the template">
+<docs-step title="Отображение значения поля ввода в шаблоне">
 
 Чтобы отобразить значение поля ввода в шаблоне, вы можете использовать синтаксис интерполяции `{{}}`, как и для любого
 другого свойства класса компонента:
 
-```angular-ts {highlight:[5]}
+<docs-code language="angular-ts" highlight="[5]">
 @Component({
   selector: 'app-user',
   template: `
@@ -31,16 +31,16 @@
 export class User {
   favoriteFramework = '';
 }
-```
+</docs-code>
 
 </docs-step>
 
-<docs-step title="Retrieve the value of an input field">
+<docs-step title="Получение значения поля ввода">
 
 Когда вам нужно обратиться к значению поля ввода в классе компонента, вы можете сделать это, обратившись к свойству
 класса с помощью синтаксиса `this`.
 
-```angular-ts {highlight:[15]}
+<docs-code language="angular-ts" highlight="[15]">
 ...
 @Component({
   selector: 'app-user',
@@ -54,11 +54,11 @@ export class User {
   favoriteFramework = '';
   ...
 
-  showFramework() {
-    alert(this.favoriteFramework);
-  }
+showFramework() {
+alert(this.favoriteFramework);
 }
-```
+}
+</docs-code>
 
 </docs-step>
 

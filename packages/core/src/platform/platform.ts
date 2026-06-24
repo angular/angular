@@ -187,23 +187,20 @@ export function createOrReusePlatformInjector(providers: StaticProvider[] = []):
  *
  * Note that the provided initializer is run in the injection context.
  *
- * @usageNotes
- * The platform initializer should be provided during platform creation:
+ * Previously, this was achieved using the `PLATFORM_INITIALIZER` token which is now deprecated.
  *
- * ```ts
- * const platformRef = platformBrowser([ providePlatformInitializer(() =>  ...) ]);
- *
- * bootstrapApplication(App, appConfig, { platformRef })
- * ```
+ * @see {@link PLATFORM_INITIALIZER}
  *
  * @publicApi
  */
-export function providePlatformInitializer(initializerFn: () => void): StaticProvider {
-  return {
-    provide: PLATFORM_INITIALIZER,
-    useValue: initializerFn,
-    multi: true,
-  };
+export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: PLATFORM_INITIALIZER,
+      useValue: initializerFn,
+      multi: true,
+    },
+  ]);
 }
 
 function runPlatformInitializers(injector: Injector): void {

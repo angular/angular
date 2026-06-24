@@ -433,7 +433,7 @@ export function parseTemplateDeclaration(
     throw new FatalDiagnosticError(
       ErrorCode.COMPONENT_MISSING_TEMPLATE,
       decorator.node,
-      '@Component is missing a template. Add either a `template` or `templateUrl`',
+      'component is missing a template',
     );
   }
 }

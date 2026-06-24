@@ -39,33 +39,31 @@
 
 <docs-workflow>
 
-<docs-step title="Add `@placeholder` block">
+<docs-step title="Добавление блока `@placeholder`">
 В вашем `app.ts` добавьте блок `@placeholder` к блоку `@defer`.
 
-```angular-html {highlight:[3,4,5]}
+<docs-code language="angular-html" highlight="[3,4,5]">
 @defer {
   <article-comments />
 } @placeholder {
   <p>Placeholder for comments</p>
 }
-```
-
+</docs-code>
 </docs-step>
 
-<docs-step title="Configure the `@placeholder` block">
+<docs-step title="Настройка блока `@placeholder`">
 Блок `@placeholder` принимает необязательный параметр для указания минимального (`minimum`) времени отображения этого заполнителя. Параметр `minimum` указывается в миллисекундах (ms) или секундах (s). Этот параметр существует для предотвращения быстрого мерцания контента заполнителя в случае, если отложенные зависимости загружаются быстро.
 
-```angular-html {highlight:[3,4,5]}
+<docs-code language="angular-html" highlight="[3,4,5]">
 @defer {
   <article-comments />
 } @placeholder (minimum 1s) {
   <p>Placeholder for comments</p>
 }
-```
-
+</docs-code>
 </docs-step>
 
-<docs-step title="Add `@loading` block">
+<docs-step title="Добавление блока `@loading`">
 Далее добавьте блок `@loading` в шаблон компонента.
 
 Блок `@loading` принимает два необязательных параметра:
@@ -78,7 +76,7 @@
 Обновите `app.ts`, добавив блок `@loading` с параметром `minimum`, равным `1s`, а также параметром `after` со значением
 `500ms`.
 
-```angular-html {highlight:[5,6,7]}
+<docs-code language="angular-html" highlight="[5,6,7]">
 @defer {
   <article-comments />
 } @placeholder (minimum 1s) {
@@ -86,16 +84,16 @@
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>
 }
-```
+</docs-code>
 
 ПРИМЕЧАНИЕ: в этом примере используются два параметра, разделенные символом `;`.
 
 </docs-step>
 
-<docs-step title="Add `@error` block">
+<docs-step title="Добавление блока `@error`">
 И наконец, добавьте блок `@error` к блоку `@defer`.
 
-```angular-html {highlight:[7,8,9]}
+<docs-code language="angular-html" highlight="[7,8,9]">
 @defer {
   <article-comments />
 } @placeholder (minimum 1s) {
@@ -105,8 +103,7 @@
 } @error {
   <p>Failed to load comments</p>
 }
-```
-
+</docs-code>
 </docs-step>
 </docs-workflow>
 

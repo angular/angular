@@ -31,7 +31,7 @@ import {getOrCreateTNode} from '../tnode_manipulation';
  *
  * @codeGenApi
  */
-export function ɵɵtext(index: number, value = ''): void {
+export function ɵɵtext(index: number, value: string = ''): void {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
@@ -42,7 +42,7 @@ export function ɵɵtext(index: number, value = ''): void {
     ? getOrCreateTNode(tView, adjustedIndex, TNodeType.Text, value, null)
     : (tView.data[adjustedIndex] as TElementNode);
 
-  const textNative = _locateOrCreateTextNode(tView, lView, tNode, value);
+  const textNative = _locateOrCreateTextNode(tView, lView, tNode, value, index);
   lView[adjustedIndex] = textNative;
 
   if (wasLastNodeCreated()) {
@@ -58,6 +58,7 @@ let _locateOrCreateTextNode: typeof locateOrCreateTextNodeImpl = (
   lView: LView,
   tNode: TNode,
   value: string,
+  index: number,
 ) => {
   lastNodeWasCreated(true);
   return createTextNode(lView[RENDERER], value);
@@ -72,6 +73,7 @@ function locateOrCreateTextNodeImpl(
   lView: LView,
   tNode: TNode,
   value: string,
+  index: number,
 ): RText {
   const isNodeCreationMode = !canHydrateNode(lView, tNode);
   lastNodeWasCreated(isNodeCreationMode);

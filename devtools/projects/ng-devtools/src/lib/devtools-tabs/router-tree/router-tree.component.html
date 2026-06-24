@@ -97,7 +97,7 @@
               @if (data.pathMatch) {
                 <tr ng-route-details-row label="Path Match" dataKey="pathMatch" [data]="data"></tr>
               }
-              @if (data.data) {
+              @if (route?.data?.data?.length > 0) {
                 <tr
                   ng-route-details-row
                   label="Data"
@@ -106,7 +106,7 @@
                   [data]="data"
                 ></tr>
               }
-              @if (data.resolvers) {
+              @if (data.resolvers && data.resolvers.length > 0) {
                 <tr
                   ng-route-details-row
                   label="Resolvers"
@@ -197,9 +197,7 @@
                   [data]="data"
                   actionBtnTooltip="View source"
                   [actionBtnType]="hasStaticOptionRunGuardsAndResolvers() ? 'none' : 'view-source'"
-                  (actionBtnClick)="
-                    viewFunctionSource(data.runGuardsAndResolvers, 'runGuardsAndResolvers')
-                  "
+                  (actionBtnClick)="viewFunctionSource(data.runGuardsAndResolvers, 'runGuardsAndResolvers')"
                 ></tr>
               }
 

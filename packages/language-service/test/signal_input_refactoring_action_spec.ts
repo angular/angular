@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
 describe('Signal input refactoring action', () => {
   let env: LanguageServiceTestEnv;
   beforeEach(() => {
+    initMockFileSystem('Native');
     env = LanguageServiceTestEnv.setup();
   });
 
@@ -111,7 +114,7 @@ describe('Signal input refactoring action', () => {
       expect(edits?.errorMessage).toBeUndefined();
       expect(edits?.edits).toEqual([
         {
-          fileName: project.getAbsFileName('app.ts'),
+          fileName: '/test/app.ts',
           textChanges: [
             // Input declaration.
             {
@@ -306,7 +309,7 @@ describe('Signal input refactoring action', () => {
       expect(result?.warningMessage).toBe(undefined);
       expect(result?.edits).toEqual([
         {
-          fileName: project.getAbsFileName('app.ts'),
+          fileName: '/test/app.ts',
           textChanges: [
             // Input declarations.
             {
@@ -366,7 +369,7 @@ describe('Signal input refactoring action', () => {
       expect(result?.errorMessage).toBe(undefined);
       expect(result?.edits).toEqual([
         {
-          fileName: project.getAbsFileName('app.ts'),
+          fileName: '/test/app.ts',
           textChanges: [
             // Input declarations.
             {

@@ -21,7 +21,7 @@ describe('ExternalLink', () => {
     },
   };
 
-  beforeEach(async () => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ExampleComponentWithLinks],
       providers: [
@@ -33,7 +33,7 @@ describe('ExternalLink', () => {
       ],
     });
     fixture = TestBed.createComponent(ExampleComponentWithLinks);
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should external link have target=_blank attribute', () => {

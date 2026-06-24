@@ -11,7 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {ActivatedRouteSnapshot, provideRouter, Router} from '../../index';
 import {RouterTestingHarness} from '../../testing';
 import {EMPTY, interval, NEVER, of} from 'rxjs';
-import {useAutoTick} from '@angular/private/testing';
+import {useAutoTick} from '../helpers';
 
 describe('resolveData operator', () => {
   useAutoTick();

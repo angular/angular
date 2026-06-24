@@ -1,17 +1,19 @@
+---
+
 <docs-decorative-header title="Listbox">
 </docs-decorative-header>
 
 <docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="Паттерн Listbox"/>
-  <docs-pill href="/api?query=listbox#angular_aria_listbox" title="Справочник API Listbox"/>
+<docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="Паттерн Listbox"/>
+<docs-pill href="/api?query=listbox#angular_aria_listbox" title="Справочник API Listbox"/>
 </docs-pill-row>
 
-## Обзор {#overview}
+## Обзор
 
-Директива, которая отображает список вариантов для выбора пользователем, поддерживая навигацию с клавиатуры, одиночный или множественный выбор и поддержку программ чтения с экрана.
+Директива, которая отображает список опций для выбора пользователем, поддерживающая клавиатурную навигацию, одиночный или множественный выбор, а также поддержку скринридеров.
 
 <docs-tab-group>
-  <docs-tab label="Basic">
+<docs-tab label="Базовый">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts"/>
       <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/app/app.html"/>
@@ -27,7 +29,7 @@
     </docs-code-multifile>
   </docs-tab>
 
-  <docs-tab label="Retro">
+<docs-tab label="Ретро">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/basic/retro/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/basic/retro/app/app.ts"/>
       <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/retro/app/app.html"/>
@@ -36,50 +38,50 @@
   </docs-tab>
 </docs-tab-group>
 
-## Применение {#usage}
+## Использование
 
-Listbox — это базовая директива, используемая паттернами [Select](guide/aria/select), [Multiselect](guide/aria/multiselect) и [Autocomplete](guide/aria/autocomplete). Для большинства задач с выпадающими списками рекомендуется использовать именно эти задокументированные паттерны.
+Listbox — это базовая директива, используемая паттернами [Select](guide/aria/select), [Multiselect](guide/aria/multiselect) и [Autocomplete](guide/aria/autocomplete). Для большинства задач с выпадающими списками используйте эти документированные паттерны.
 
-Используйте listbox напрямую, когда:
+Рассмотрите возможность использования listbox напрямую, если:
 
-- **Создание нестандартных компонентов выбора** — разработка специализированных интерфейсов с особым поведением
-- **Видимые списки выбора** — отображение выбираемых элементов непосредственно на странице (не в выпадающих списках)
-- **Нестандартные паттерны интеграции** — интеграция с уникальными всплывающими окнами или требованиями к макету
+- **Создаете кастомные компоненты выбора** — Создание специализированных интерфейсов со специфическим поведением.
+- **Списки выбора всегда видны** — Отображение выбираемых элементов непосредственно на странице (не в выпадающих списках).
+- **Кастомные паттерны интеграции** — Интеграция с уникальными требованиями к всплывающим окнам или макету.
 
 Избегайте использования listbox, когда:
 
-- **Требуются меню навигации** — используйте директиву [Menu](guide/aria/menu) для действий и команд
+- **Требуются навигационные меню** — Используйте директиву [Menu](guide/aria/menu) для действий и команд.
 
-## Возможности {#features}
+## Возможности
 
-Angular listbox предоставляет полностью доступную реализацию списка с:
+Listbox в Angular предоставляет полностью доступную реализацию списка с:
 
-- **Навигацией с клавиатуры** — навигация по вариантам стрелками, выбор клавишами Enter или Space
-- **Поддержкой программ чтения с экрана** — встроенные атрибуты ARIA, включая `role="listbox"`
-- **Одиночным или множественным выбором** — атрибут `multi` управляет режимом выбора
-- **Горизонтальной или вертикальной ориентацией** — атрибут `orientation` задаёт направление расположения
-- **Поиском по введённым символам** — ввод символов для перехода к совпадающим вариантам
-- **Реактивностью на основе сигналов** — управление реактивным состоянием с использованием Angular-сигналов
+- **Клавиатурная навигация** — Перемещение по опциям с помощью стрелок, выбор с помощью Enter или Пробела.
+- **Поддержка скринридеров** — Встроенные ARIA-атрибуты, включая role="listbox".
+- **Одиночный или множественный выбор** — Атрибут `multi` управляет режимом выбора.
+- **Горизонтальный или вертикальный** — Атрибут `orientation` для направления макета.
+- **Поиск с опережающим вводом (Type-ahead)** — Ввод символов для перехода к соответствующим опциям.
+- **Реактивность на основе сигналов** — Управление реактивным состоянием с использованием Сигналов Angular.
 
-## Примеры {#examples}
+## Примеры
 
-### Базовый listbox {#basic-listbox}
+### Базовый listbox
 
-Иногда приложениям нужны списки выбора, видимые непосредственно на странице, а не скрытые в выпадающем меню. Отдельный listbox обеспечивает навигацию с клавиатуры и выбор для таких видимых списковых интерфейсов.
+Приложениям иногда требуются списки выбора, видимые непосредственно на странице, а не скрытые в выпадающем меню. Автономный (standalone) listbox обеспечивает клавиатурную навигацию и выбор для таких интерфейсов.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts" />
   <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/app/app.html" />
 </docs-code-multifile>
 
-Модельный сигнал `values` обеспечивает двустороннее связывание с выбранными элементами. При `selectionMode="explicit"` пользователи нажимают Space или Enter для выбора вариантов. Для паттернов с выпадающими списками, сочетающих listbox с combobox и позиционированием оверлея, см. паттерн [Select](guide/aria/select).
+Сигнал модели `values` обеспечивает двустороннюю привязку к выбранным элементам. При `selectionMode="explicit"` пользователи нажимают Пробел или Enter для выбора опций. Для паттернов выпадающих списков, сочетающих listbox с combobox и позиционированием оверлея, см. паттерн [Select](guide/aria/select).
 
-### Горизонтальный listbox {#horizontal-listbox}
+### Горизонтальный listbox
 
-Иногда списки лучше работают горизонтально — например, интерфейсы в стиле панели инструментов или вкладочного выбора. Атрибут `orientation` меняет как расположение, так и направление навигации с клавиатуры.
+Списки иногда лучше работают в горизонтальном виде, например, в интерфейсах типа панелей инструментов или при выборе в стиле вкладок. Атрибут `orientation` изменяет как макет, так и направление навигации с клавиатуры.
 
 <docs-tab-group>
-  <docs-tab label="Basic">
+<docs-tab label="Базовый">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.ts"/>
       <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.html"/>
@@ -95,7 +97,7 @@ Angular listbox предоставляет полностью доступную
     </docs-code-multifile>
   </docs-tab>
 
-  <docs-tab label="Retro">
+<docs-tab label="Ретро">
     <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/horizontal/retro/app/app.ts">
       <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/horizontal/retro/app/app.ts"/>
       <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/horizontal/retro/app/app.html"/>
@@ -104,106 +106,90 @@ Angular listbox предоставляет полностью доступную
   </docs-tab>
 </docs-tab-group>
 
-При `orientation="horizontal"` для навигации между вариантами используются клавиши стрелок влево и вправо, а не вверх и вниз. Listbox автоматически обрабатывает языки с написанием справа налево (RTL), меняя направление навигации на противоположное.
+При `orientation="horizontal"` клавиши со стрелками влево и вправо перемещают фокус между опциями вместо вверх и вниз. Listbox автоматически обрабатывает языки с письмом справа налево (RTL), инвертируя направление навигации.
 
-### Режимы выбора {#selection-modes}
+### Режимы выбора
 
-Listbox поддерживает два режима выбора, управляющих тем, когда элементы становятся выбранными.
+Listbox поддерживает два режима выбора, которые определяют, когда элементы становятся выбранными. Выберите режим, соответствующий паттерну взаимодействия вашего интерфейса.
 
-Режим `'follow'` автоматически выбирает сфокусированный элемент, обеспечивая более быстрое взаимодействие при частом изменении выбора. Режим `'explicit'` требует нажатия Space или Enter для подтверждения выбора, предотвращая случайные изменения при навигации. Паттерны с выпадающими списками обычно используют режим `'follow'` для одиночного выбора.
-
-#### Explicit {#explicit}
-
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/modes/app/explicit/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/modes/app/explicit/app.ts" />
-  <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/modes/app/explicit/app.html" />
+<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/modes/app/app.ts">
+  <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/modes/app/app.ts" />
+  <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/modes/app/app.html" />
 </docs-code-multifile>
 
-#### Follow {#follow}
+Режим `'follow'` автоматически выбирает элемент, на котором находится фокус, обеспечивая более быстрое взаимодействие при частой смене выбора. Режим `'explicit'` требует нажатия Пробела или Enter для подтверждения выбора, предотвращая случайные изменения при навигации. Паттерны выпадающих списков обычно используют режим `'follow'` для одиночного выбора.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/modes/app/follow/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/modes/app/follow/app.ts" />
-  <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/modes/app/follow/app.html" />
-</docs-code-multifile>
+## API
 
-| Режим        | Описание                                                                                                           |
-| ------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `'follow'`   | Автоматически выбирает сфокусированный элемент, обеспечивая более быстрое взаимодействие при частом изменении выбора |
-| `'explicit'` | Требует нажатия Space или Enter для подтверждения выбора, предотвращая случайные изменения при навигации             |
+### Директива Listbox
 
-TIP: Паттерны с выпадающими списками обычно используют режим `'follow'` для одиночного выбора.
+Директива `ngListbox` создает доступный список выбираемых опций.
 
-## API {#apis}
+#### Входные свойства (Inputs)
 
-### Директива Listbox {#listbox-directive}
+| Свойство         | Тип                                | По умолчанию | Описание                                           |
+| ---------------- | ---------------------------------- | ------------ | -------------------------------------------------- |
+| `id`             | `string`                           | auto         | Уникальный идентификатор для listbox               |
+| `multi`          | `boolean`                          | `false`      | Включает множественный выбор                       |
+| `orientation`    | `'vertical'` \| `'horizontal'`     | `'vertical'` | Направление макета списка                          |
+| `wrap`           | `boolean`                          | `true`       | Переносится ли фокус на краях списка               |
+| `selectionMode`  | `'follow'` \| `'explicit'`         | `'follow'`   | Как инициируется выбор                             |
+| `focusMode`      | `'roving'` \| `'activedescendant'` | `'roving'`   | Стратегия управления фокусом                       |
+| `softDisabled`   | `boolean`                          | `true`       | Являются ли отключенные элементы фокусируемыми     |
+| `disabled`       | `boolean`                          | `false`      | Отключает весь listbox                             |
+| `readonly`       | `boolean`                          | `false`      | Делает listbox доступным только для чтения         |
+| `typeaheadDelay` | `number`                           | `500`        | Миллисекунды до сброса поиска с опережающим вводом |
 
-Директива `ngListbox` создаёт доступный список выбираемых вариантов.
+#### Модель
 
-#### Входные параметры {#inputs}
+| Свойство | Тип   | Описание                                           |
+| -------- | ----- | -------------------------------------------------- |
+| `values` | `V[]` | Массив выбранных значений с двусторонней привязкой |
 
-| Свойство         | Тип                                | По умолчанию | Описание                                              |
-| ---------------- | ---------------------------------- | ------------ | ----------------------------------------------------- |
-| `id`             | `string`                           | авто         | Уникальный идентификатор listbox                      |
-| `multi`          | `boolean`                          | `false`      | Включает множественный выбор                          |
-| `orientation`    | `'vertical'` \| `'horizontal'`     | `'vertical'` | Направление расположения списка                       |
-| `wrap`           | `boolean`                          | `true`       | Зацикливается ли фокус на краях списка                |
-| `selectionMode`  | `'follow'` \| `'explicit'`         | `'follow'`   | Способ активации выбора                               |
-| `focusMode`      | `'roving'` \| `'activedescendant'` | `'roving'`   | Стратегия управления фокусом                          |
-| `softDisabled`   | `boolean`                          | `true`       | Может ли фокус попадать на отключённые элементы       |
-| `disabled`       | `boolean`                          | `false`      | Отключает весь listbox                                |
-| `readonly`       | `boolean`                          | `false`      | Делает listbox только для чтения                      |
-| `typeaheadDelay` | `number`                           | `500`        | Миллисекунды до сброса поиска по введённым символам   |
+#### Сигналы
 
-#### Модель {#model}
+| Свойство | Тип           | Описание                              |
+| -------- | ------------- | ------------------------------------- |
+| `values` | `Signal<V[]>` | Текущие выбранные значения как сигнал |
 
-| Свойство | Тип   | Описание                                          |
-| -------- | ----- | ------------------------------------------------- |
-| `values` | `V[]` | Массив выбранных значений с двусторонним связыванием |
+#### Методы
 
-#### Сигналы {#signals}
-
-| Свойство | Тип           | Описание                               |
-| -------- | ------------- | -------------------------------------- |
-| `values` | `Signal<V[]>` | Текущие выбранные значения как сигнал  |
-
-#### Методы {#methods}
-
-| Метод                      | Параметры                         | Описание                                       |
-| -------------------------- | --------------------------------- | ---------------------------------------------- |
+| Метод                      | Параметры                         | Описание                                          |
+| -------------------------- | --------------------------------- | ------------------------------------------------- |
 | `scrollActiveItemIntoView` | `options?: ScrollIntoViewOptions` | Прокручивает активный элемент в область видимости |
-| `gotoFirst`                | нет                               | Переходит к первому элементу в listbox         |
+| `gotoFirst`                | нет                               | Переходит к первому элементу в listbox            |
 
-### Директива Option {#option-directive}
+### Директива Option
 
 Директива `ngOption` помечает элемент внутри listbox.
 
-#### Входные параметры {#option-inputs}
+#### Входные свойства (Inputs)
 
-| Свойство   | Тип       | По умолчанию | Описание                                               |
-| ---------- | --------- | ------------ | ------------------------------------------------------ |
-| `id`       | `string`  | авто         | Уникальный идентификатор варианта                      |
-| `value`    | `V`       | —            | Значение, связанное с этим вариантом (обязательно)     |
-| `label`    | `string`  | —            | Необязательная метка для программ чтения с экрана      |
-| `disabled` | `boolean` | `false`      | Отключён ли данный вариант                             |
+| Свойство   | Тип       | По умолчанию | Описание                                        |
+| ---------- | --------- | ------------ | ----------------------------------------------- |
+| `id`       | `string`  | auto         | Уникальный идентификатор опции                  |
+| `value`    | `V`       | -            | Значение, связанное с этой опцией (обязательно) |
+| `label`    | `string`  | -            | Необязательная метка для скринридеров           |
+| `disabled` | `boolean` | `false`      | Отключена ли эта опция                          |
 
-#### Сигналы {#option-signals}
+#### Сигналы
 
-| Свойство   | Тип               | Описание                             |
-| ---------- | ----------------- | ------------------------------------ |
-| `selected` | `Signal<boolean>` | Выбран ли данный вариант             |
-| `active`   | `Signal<boolean>` | Находится ли данный вариант в фокусе |
+| Свойство   | Тип               | Описание                 |
+| ---------- | ----------------- | ------------------------ |
+| `selected` | `Signal<boolean>` | Выбрана ли эта опция     |
+| `active`   | `Signal<boolean>` | Имеет ли эта опция фокус |
 
-### Связанные паттерны {#related-patterns}
+### Связанные паттерны
 
-Listbox используется следующими задокументированными паттернами с выпадающими списками:
+Listbox используется следующими документированными паттернами выпадающих списков:
 
-- **[Select](guide/aria/select)** — паттерн выпадающего списка с одиночным выбором, использующий readonly combobox + listbox
-- **[Multiselect](guide/aria/multiselect)** — паттерн выпадающего списка с множественным выбором, использующий readonly combobox + listbox с `multi`
-- **[Autocomplete](guide/aria/autocomplete)** — паттерн фильтруемого выпадающего списка, использующий combobox + listbox
+- **[Select](guide/aria/select)** — Паттерн выпадающего списка с одиночным выбором, использующий combobox только для чтения + listbox
+- **[Multiselect](guide/aria/multiselect)** — Паттерн выпадающего списка с множественным выбором, использующий combobox только для чтения + listbox с `multi`
+- **[Autocomplete](guide/aria/autocomplete)** — Паттерн фильтруемого выпадающего списка, использующий combobox + listbox
 
-Для полноценных паттернов выпадающих списков с триггером, всплывающим окном и позиционированием оверлея обратитесь к этим руководствам по паттернам, а не используйте listbox отдельно.
+Для полноценных паттернов выпадающих списков с триггером, всплывающим окном и позиционированием оверлея смотрите соответствующие руководства вместо использования listbox отдельно.
 
 <docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="Паттерн ARIA Listbox"/>
-  <docs-pill href="/api/aria/listbox/Listbox" title="Справочник API Listbox"/>
+<docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="ARIA-паттерн Listbox"/>
+<docs-pill href="/api/aria/listbox/Listbox" title="Справочник API Listbox"/>
 </docs-pill-row>

@@ -101,7 +101,10 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
   /**
    * Begin a fresh `IncrementalCompilation`.
    */
-  static fresh(versions: Map<AbsoluteFsPath, string> | null): IncrementalCompilation {
+  static fresh(
+    program: ts.Program,
+    versions: Map<AbsoluteFsPath, string> | null,
+  ): IncrementalCompilation {
     const state: IncrementalState = {
       kind: IncrementalStateKind.Fresh,
     };
@@ -125,7 +128,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
         case IncrementalStateKind.Fresh:
           // Since this line of program has never been successfully analyzed to begin with, treat
           // this as a fresh compilation.
-          return IncrementalCompilation.fresh(newVersions);
+          return IncrementalCompilation.fresh(program, newVersions);
         case IncrementalStateKind.Analyzed:
           // The most recent program was analyzed successfully, so we can use that as our prior
           // state and don't need to consider any other deltas except changes in the most recent
@@ -186,7 +189,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
         // Bail out if a .d.ts file changes - the semantic dep graph is not able to process such
         // changes correctly yet.
         if (sf.isDeclarationFile) {
-          return IncrementalCompilation.fresh(newVersions);
+          return IncrementalCompilation.fresh(program, newVersions);
         }
 
         // The file has changed physically, so record it.

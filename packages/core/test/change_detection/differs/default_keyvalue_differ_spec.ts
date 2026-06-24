@@ -213,7 +213,7 @@ describe('keyvalue differ', function () {
         );
       });
 
-      it('should work regardless key order for object literals', () => {
+      it('should work regardless key order', () => {
         differ.check({a: 0, b: 0});
         differ.check({b: 1, a: 1});
 
@@ -227,7 +227,7 @@ describe('keyvalue differ', function () {
       });
 
       // https://github.com/angular/angular/issues/14997
-      it('should work with re-insertion of keys in object literals', () => {
+      it('should work regardless key order', () => {
         differ.check({a: 1, b: 2});
         differ.check({b: 3, a: 2});
         differ.check({a: 1, b: 2});

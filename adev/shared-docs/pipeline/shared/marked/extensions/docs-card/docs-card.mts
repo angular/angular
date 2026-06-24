@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RendererThis, Token, TokenizerThis, Tokens} from 'marked';
-import {anchorTarget, loadWorkspaceRelativeFile} from '../../helpers.mjs';
-import {AdevDocsRenderer} from '../../renderer.mjs';
+import {Tokens, Token, RendererThis, TokenizerThis} from 'marked';
+import {loadWorkspaceRelativeFile, anchorTarget} from '../../helpers.mjs';
+import {setInsideLink} from '../../transformations/link.mjs';
 
 interface DocsCardToken extends Tokens.Generic {
   type: 'docs-card';
@@ -23,7 +23,7 @@ interface DocsCardToken extends Tokens.Generic {
 
 // Capture group 1: all attributes on the opening tag
 // Capture group 2: all content between the open and close tags
-const cardRule = /^\s*<docs-card(?:\s([^>]*))?>((?:.(?!\/docs-card))*)<\/docs-card>/s;
+const cardRule = /^[^<]*<docs-card(?:\s([^>]*))?>((?:.(?!\/docs-card))*)<\/docs-card>/s;
 
 const titleRule = /title="([^"]*)"/;
 const linkRule = /link="([^"]*)"/;
@@ -67,13 +67,11 @@ export const docsCardExtension = {
     return undefined;
   },
   renderer(this: RendererThis, token: DocsCardToken) {
-    return token.imgSrc
-      ? getCardWithSvgIllustration(this, token)
-      : getStandardCard(this.parser.renderer as AdevDocsRenderer, token);
+    return token.imgSrc ? getCardWithSvgIllustration(this, token) : getStandardCard(this, token);
   },
 };
 
-function getStandardCard(renderer: AdevDocsRenderer, token: DocsCardToken) {
+function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
   if (token.iconImgSrc && token.href) {
     // We can assume that all icons are svg files since they are custom.
     // We need to read svg content, instead of renering svg with `img`,
@@ -112,11 +110,13 @@ function getStandardCard(renderer: AdevDocsRenderer, token: DocsCardToken) {
   `;
 }
 
-function parseWithoutCreatingLinks(renderer: AdevDocsRenderer, token: DocsCardToken) {
-  renderer.context.disableAutoLinking = true;
-  const parsed = renderer.parser.parse(token.tokens);
-  renderer.context.disableAutoLinking = false;
-  return parsed;
+function parseWithoutCreatingLinks(renderer: RendererThis, token: DocsCardToken) {
+  setInsideLink(true);
+  try {
+    return renderer.parser.parse(token.tokens);
+  } finally {
+    setInsideLink(false);
+  }
 }
 
 function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken) {

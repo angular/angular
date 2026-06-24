@@ -3,7 +3,7 @@
 Angular Router предоставляет полный набор хуков жизненного цикла и событий, которые позволяют реагировать на изменения
 навигации и выполнять пользовательскую логику в процессе маршрутизации.
 
-## Общие события роутера {#common-router-events}
+## Общие события роутера
 
 Angular Router генерирует события навигации, на которые можно подписаться для отслеживания жизненного цикла навигации.
 Эти события доступны через Observable `Router.events`. В этом разделе рассматриваются общие события жизненного цикла
@@ -29,20 +29,18 @@ Angular Router генерирует события навигации, на ко
 
 Список всех событий жизненного цикла можно найти в [полной таблице этого руководства](#all-router-events).
 
-## Как подписаться на события роутера {#how-to-subscribe-to-router-events}
+## Как подписаться на события роутера
 
 Если вы хотите выполнить код во время определенных событий жизненного цикла навигации, вы можете сделать это,
 подписавшись на `router.events` и проверив экземпляр события:
 
 ```ts
 // Example of subscribing to router events
-import {Component, inject, signal, effect} from '@angular/core';
-import {Event, Router, NavigationStart, NavigationEnd} from '@angular/router';
+import { Component, inject, signal, effect } from '@angular/core';
+import { Event, Router, NavigationStart, NavigationEnd } from '@angular/router';
 
-@Component({
-  /*...*/
-})
-export class RouterEvents {
+@Component({ ... })
+export class RouterEventsComponent {
   private readonly router = inject(Router);
 
   constructor() {
@@ -65,7 +63,7 @@ export class RouterEvents {
 `Event`](https://developer.mozilla.org/en-US/docs/Web/API/Event), но отличается от типа [
 `RouterEvent`](api/router/RouterEvent).
 
-## Как отлаживать события маршрутизации {#how-to-debug-routing-events}
+## Как отлаживать события маршрутизации
 
 Отладка проблем навигации роутера может быть сложной без видимости последовательности событий. Angular предоставляет
 встроенную функцию отладки, которая выводит все события роутера в консоль, помогая понять поток навигации и определить,
@@ -76,91 +74,97 @@ export class RouterEvents {
 событий маршрутизации в консоль.
 
 ```ts
-import {provideRouter, withDebugTracing} from '@angular/router';
+import { provideRouter, withDebugTracing } from '@angular/router';
 
 const appRoutes: Routes = [];
-bootstrapApplication(App, {
-  providers: [provideRouter(appRoutes, withDebugTracing())],
-});
+bootstrapApplication(AppComponent,
+  {
+    providers: [
+      provideRouter(appRoutes, withDebugTracing())
+    ]
+  }
+);
 ```
 
 Для получения дополнительной информации ознакомьтесь с официальной документацией по [
 `withDebugTracing`](api/router/withDebugTracing).
 
-## Распространенные сценарии использования {#common-use-cases}
+## Распространенные сценарии использования
 
 События роутера позволяют реализовать множество практических функций в реальных приложениях. Вот некоторые
 распространенные паттерны, используемые с событиями роутера.
 
-### Индикаторы загрузки {#loading-indicators}
+### Индикаторы загрузки
 
 Отображение индикаторов загрузки во время навигации:
 
 ```angular-ts
-import {Component, inject} from '@angular/core';
-import {Router} from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-loading',
   template: `
-    @if (isNavigating()) {
-      <div class="loading-bar">Loading...</div>
+    @if (loading()) {
+      <div class="loading-spinner">Loading...</div>
     }
-    <router-outlet />
-  `,
+  `
 })
-export class App {
+export class AppComponent {
   private router = inject(Router);
-  isNavigating = computed(() => !!this.router.currentNavigation());
+
+  readonly loading = toSignal(
+    this.router.events.pipe(
+      map(() => !!this.router.getCurrentNavigation())
+    ),
+    { initialValue: false }
+  );
 }
 ```
 
-### Отслеживание аналитики {#analytics-tracking}
+### Отслеживание аналитики
 
 Отслеживание просмотров страниц для аналитики:
 
 ```ts
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {inject, Injectable, DestroyRef} from '@angular/core';
-import {Router, NavigationEnd} from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { inject, Injectable, DestroyRef } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AnalyticsService {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
   startTracking() {
-    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
-      // Track page views when URL changes
-      if (event instanceof NavigationEnd) {
-        // Send page view to analytics
-        this.analytics.trackPageView(event.url);
-      }
-    });
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(event => {
+        // Track page views when URL changes
+        if (event instanceof NavigationEnd) {
+           // Send page view to analytics
+          this.analytics.trackPageView(event.url);
+        }
+      });
   }
 
   private analytics = {
     trackPageView: (url: string) => {
       console.log('Page view tracked:', url);
-    },
+    }
   };
 }
 ```
 
-### Обработка ошибок {#error-handling}
+### Обработка ошибок
 
 Корректная обработка ошибок навигации и предоставление обратной связи пользователю:
 
 ```angular-ts
-import {Component, inject, signal} from '@angular/core';
-import {
-  Router,
-  NavigationStart,
-  NavigationError,
-  NavigationCancel,
-  NavigationCancellationCode,
-} from '@angular/router';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { Component, inject, signal } from '@angular/core';
+import { Router, NavigationStart, NavigationError, NavigationCancel, NavigationCancellationCode } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-error-handler',
@@ -171,14 +175,14 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
         <button (click)="dismissError()">Dismiss</button>
       </div>
     }
-  `,
+  `
 })
-export class ErrorHandler {
+export class ErrorHandlerComponent {
   private router = inject(Router);
   readonly errorMessage = signal('');
 
   constructor() {
-    this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {
+    this.router.events.pipe(takeUntilDestroyed()).subscribe(event => {
       if (event instanceof NavigationStart) {
         this.errorMessage.set('');
       } else if (event instanceof NavigationError) {
@@ -204,7 +208,7 @@ export class ErrorHandler {
 Для справки, вот полный список всех событий роутера, доступных в Angular. Эти события организованы по категориям и
 перечислены в том порядке, в котором они обычно происходят во время навигации.
 
-### События навигации {#navigation-events}
+### События навигации
 
 Эти события отслеживают основной процесс навигации от начала до распознавания маршрута, проверки Guard-ов и разрешения
 данных. Они обеспечивают видимость каждой фазы жизненного цикла навигации.
@@ -220,7 +224,7 @@ export class ErrorHandler {
 | [`ResolveStart`](api/router/ResolveStart)                 | Происходит в начале фазы разрешения данных (resolve)         |
 | [`ResolveEnd`](api/router/ResolveEnd)                     | Происходит в конце фазы разрешения данных (resolve)          |
 
-### События активации {#activation-events}
+### События активации
 
 Эти события происходят во время фазы активации, когда создаются и инициализируются компоненты маршрута. События
 активации срабатывают для каждого маршрута в дереве маршрутов, включая родительские и дочерние маршруты.
@@ -232,7 +236,7 @@ export class ErrorHandler {
 | [`ActivationEnd`](api/router/ActivationEnd)               | Происходит в конце активации маршрута            |
 | [`ChildActivationEnd`](api/router/ChildActivationEnd)     | Происходит в конце активации дочернего маршрута  |
 
-### События завершения навигации {#navigation-completion-events}
+### События завершения навигации
 
 Эти события представляют собой окончательный результат попытки навигации. Каждая навигация заканчивается ровно одним из
 этих событий, указывающим, была ли она успешной, отмененной, неудачной или пропущенной.
@@ -244,7 +248,7 @@ export class ErrorHandler {
 | [`NavigationError`](api/router/NavigationError)     | Происходит, когда навигация завершается сбоем из-за непредвиденной ошибки         |
 | [`NavigationSkipped`](api/router/NavigationSkipped) | Происходит, когда роутер пропускает навигацию (например, навигация на тот же URL) |
 
-### Другие события {#other-events}
+### Другие события
 
 Существует одно дополнительное событие, которое происходит вне основного жизненного цикла навигации, но все же является
 частью системы событий роутера.
@@ -253,7 +257,7 @@ export class ErrorHandler {
 | ----------------------------- | ----------------------------- |
 | [`Scroll`](api/router/Scroll) | Происходит во время прокрутки |
 
-## Следующие шаги {#next-steps}
+## Следующие шаги
 
 Узнайте больше о [Guard-ах маршрутов](/guide/routing/route-guards)
 и [общих задачах роутера](/guide/routing/common-router-tasks).

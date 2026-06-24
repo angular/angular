@@ -15,14 +15,14 @@
 
 Чтобы сервис мог быть внедрен системой DI, используйте декоратор `@Injectable`. Например:
 
-```ts {highlight:[1,2,3]}
+<docs-code language="ts" highlight="[1, 2, 3]">
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 class UserService {
   // methods to retrieve and return data
 }
-```
+</docs-code>
 
 Декоратор `@Injectable` уведомляет систему DI о том, что `UserService` доступен для запроса в классе. Свойство
 `providedIn` задает область видимости, в которой доступен этот ресурс. На данный момент достаточно понимать, что
@@ -32,11 +32,11 @@ class UserService {
 
 <docs-workflow>
 
-<docs-step title="Add the `@Injectable` decorator">
+<docs-step title="Добавьте декоратор @Injectable">
 Обновите код в `car.service.ts`, добавив декоратор `@Injectable`.
 </docs-step>
 
-<docs-step title="Configure the decorator">
+<docs-step title="Настройте декоратор">
 Значения в объекте, переданном декоратору, считаются его конфигурацией.
 <br>
 Обновите декоратор `@Injectable` в `car.service.ts`, добавив конфигурацию `providedIn: 'root'`.

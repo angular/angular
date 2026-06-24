@@ -6,20 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive, effect, forwardRef, signal} from '@angular/core';
-import {
-  AsyncValidatorFn,
-  ControlValueAccessor,
-  FormArray,
-  FormControl,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-  Validators,
-} from '../index';
+import {fakeAsync, tick} from '@angular/core/testing';
+import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '../index';
 
-import {TestBed} from '@angular/core/testing';
-import {timeout, useAutoTick} from '@angular/private/testing';
 import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
 (function () {
@@ -32,8 +21,6 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
   }
 
   describe('FormControl', () => {
-    useAutoTick();
-
     it('should default the value to null', () => {
       const c = new FormControl();
       expect(c.value).toBe(null);
@@ -431,54 +418,54 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
     });
 
     describe('asyncValidator', () => {
-      it('should run validator with the initial value', async () => {
+      it('should run validator with the initial value', fakeAsync(() => {
         const c = new FormControl('value', null!, asyncValidator('expected'));
-        await timeout();
+        tick();
 
         expect(c.valid).toEqual(false);
         expect(c.errors).toEqual({'async': true});
-      });
+      }));
 
-      it('should support validators returning observables', async () => {
+      it('should support validators returning observables', fakeAsync(() => {
         const c = new FormControl('value', null!, asyncValidatorReturningObservable);
-        await timeout();
+        tick();
 
         expect(c.valid).toEqual(false);
         expect(c.errors).toEqual({'async': true});
-      });
+      }));
 
-      it('should rerun the validator when the value changes', async () => {
+      it('should rerun the validator when the value changes', fakeAsync(() => {
         const c = new FormControl('value', null!, asyncValidator('expected'));
 
         c.setValue('expected');
-        await timeout();
+        tick();
 
         expect(c.valid).toEqual(true);
-      });
+      }));
 
-      it('should run the async validator only when the sync validator passes', async () => {
+      it('should run the async validator only when the sync validator passes', fakeAsync(() => {
         const c = new FormControl('', Validators.required, asyncValidator('expected'));
-        await timeout();
+        tick();
 
         expect(c.errors).toEqual({'required': true});
 
         c.setValue('some value');
-        await timeout();
+        tick();
 
         expect(c.errors).toEqual({'async': true});
-      });
+      }));
 
-      it('should mark the control as pending while running the async validation', async () => {
+      it('should mark the control as pending while running the async validation', fakeAsync(() => {
         const c = new FormControl('', null!, asyncValidator('expected'));
 
         expect(c.pending).toEqual(true);
 
-        await timeout();
+        tick();
 
         expect(c.pending).toEqual(false);
-      });
+      }));
 
-      it('should only use the latest async validation run', async () => {
+      it('should only use the latest async validation run', fakeAsync(() => {
         const c = new FormControl(
           '',
           null!,
@@ -488,106 +475,106 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         c.setValue('long');
         c.setValue('expected');
 
-        await timeout(300);
+        tick(300);
 
         expect(c.valid).toEqual(true);
-      });
+      }));
 
-      it('should support arrays of async validator functions if passed', async () => {
+      it('should support arrays of async validator functions if passed', fakeAsync(() => {
         const c = new FormControl('value', null!, [
           asyncValidator('expected'),
           otherAsyncValidator,
         ]);
-        await timeout();
+        tick();
 
         expect(c.errors).toEqual({'async': true, 'other': true});
-      });
+      }));
 
-      it('should support a single async validator from options obj', async () => {
+      it('should support a single async validator from options obj', fakeAsync(() => {
         const c = new FormControl('value', {asyncValidators: asyncValidator('expected')});
         expect(c.pending).toEqual(true);
-        await timeout();
+        tick();
 
         expect(c.valid).toEqual(false);
         expect(c.errors).toEqual({'async': true});
-      });
+      }));
 
-      it('should support multiple async validators from options obj', async () => {
+      it('should support multiple async validators from options obj', fakeAsync(() => {
         const c = new FormControl('value', {
           asyncValidators: [asyncValidator('expected'), otherAsyncValidator],
         });
         expect(c.pending).toEqual(true);
-        await timeout();
+        tick();
 
         expect(c.valid).toEqual(false);
         expect(c.errors).toEqual({'async': true, 'other': true});
-      });
+      }));
 
-      it('should support a mix of validators from options obj', async () => {
+      it('should support a mix of validators from options obj', fakeAsync(() => {
         const c = new FormControl('', {
           validators: Validators.required,
           asyncValidators: asyncValidator('expected'),
         });
-        await timeout();
+        tick();
         expect(c.errors).toEqual({required: true});
 
         c.setValue('value');
         expect(c.pending).toBe(true);
 
-        await timeout();
+        tick();
         expect(c.valid).toEqual(false);
         expect(c.errors).toEqual({'async': true});
-      });
+      }));
 
-      it('should add single async validator', async () => {
+      it('should add single async validator', fakeAsync(() => {
         const c = new FormControl('value', null!);
 
         c.setAsyncValidators(asyncValidator('expected'));
         expect(c.asyncValidator).not.toEqual(null);
 
         c.setValue('expected');
-        await timeout();
+        tick();
 
         expect(c.valid).toEqual(true);
-      });
+      }));
 
-      it('should add async validator from array', async () => {
+      it('should add async validator from array', fakeAsync(() => {
         const c = new FormControl('value', null!);
 
         c.setAsyncValidators([asyncValidator('expected')]);
         expect(c.asyncValidator).not.toEqual(null);
 
         c.setValue('expected');
-        await timeout();
+        tick();
 
         expect(c.valid).toEqual(true);
-      });
+      }));
 
-      it('should override validators using `setAsyncValidators` function', async () => {
+      it('should override validators using `setAsyncValidators` function', fakeAsync(() => {
         const c = new FormControl('');
         expect(c.valid).toEqual(true);
 
         c.setAsyncValidators([asyncValidator('expected')]);
 
         c.setValue('');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(false);
 
         c.setValue('expected');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(true);
 
         // Define new set of validators, overriding previously applied ones.
         c.setAsyncValidators([asyncValidator('new expected')]);
 
         c.setValue('expected');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(false);
 
         c.setValue('new expected');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(true);
-      });
+      }));
 
       it('should not mutate the validators array when overriding using setValidators', () => {
         const control = new FormControl('');
@@ -599,46 +586,46 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         expect(originalValidators.length).toBe(1);
       });
 
-      it('should override validators by setting `control.asyncValidator` field value', async () => {
+      it('should override validators by setting `control.asyncValidator` field value', fakeAsync(() => {
         const c = new FormControl('');
         expect(c.valid).toEqual(true);
 
         c.asyncValidator = Validators.composeAsync([asyncValidator('expected')]);
 
         c.setValue('');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(false);
 
         c.setValue('expected');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(true);
 
         // Define new set of validators, overriding previously applied ones.
         c.asyncValidator = Validators.composeAsync([asyncValidator('new expected')]);
 
         c.setValue('expected');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(false);
 
         c.setValue('new expected');
-        await timeout();
+        tick();
         expect(c.valid).toEqual(true);
-      });
+      }));
 
-      it('should clear async validators', async () => {
+      it('should clear async validators', fakeAsync(() => {
         const c = new FormControl('value', [asyncValidator('expected'), otherAsyncValidator]);
 
         c.clearValidators();
 
         expect(c.asyncValidator).toEqual(null);
-      });
+      }));
 
-      it('should not change validity state if control is disabled while async validating', async () => {
+      it('should not change validity state if control is disabled while async validating', fakeAsync(() => {
         const c = new FormControl('value', [asyncValidator('expected')]);
         c.disable();
-        await timeout();
+        tick();
         expect(c.status).toEqual('DISABLED');
-      });
+      }));
 
       it('should check presence of and remove a validator set in the control constructor', () => {
         const asyncVal = asyncValidator('expected');
@@ -761,23 +748,23 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         expect(g.value).toEqual({'one': 'oldValue'});
       });
 
-      it('should fire an event', async () => {
+      it('should fire an event', fakeAsync(() => {
         c.valueChanges.subscribe((value) => {
           expect(value).toEqual('newValue');
         });
 
         c.setValue('newValue');
-        await timeout();
-      });
+        tick();
+      }));
 
-      it('should not fire an event when explicitly specified', async () => {
+      it('should not fire an event when explicitly specified', fakeAsync(() => {
         c.valueChanges.subscribe((value) => {
           throw 'Should not happen';
         });
 
         c.setValue('newValue', {emitEvent: false});
-        await timeout();
-      });
+        tick();
+      }));
 
       it('should work on a disabled control', () => {
         g.addControl('two', new FormControl('two'));
@@ -828,24 +815,24 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         expect(g.value).toEqual({'one': 'oldValue'});
       });
 
-      it('should fire an event', async () => {
+      it('should fire an event', fakeAsync(() => {
         c.valueChanges.subscribe((value) => {
           expect(value).toEqual('newValue');
         });
 
         c.patchValue('newValue');
-        await timeout();
-      });
+        tick();
+      }));
 
-      it('should not fire an event when explicitly specified', async () => {
+      it('should not fire an event when explicitly specified', fakeAsync(() => {
         c.valueChanges.subscribe((value) => {
           throw 'Should not happen';
         });
 
         c.patchValue('newValue', {emitEvent: false});
 
-        await timeout();
-      });
+        tick();
+      }));
 
       it('should patch value on a disabled control', () => {
         g.addControl('two', new FormControl('two'));
@@ -1061,7 +1048,7 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
           expect(logger).toEqual(['control1', 'group']);
         });
 
-        it('should not fire an event when explicitly specified', async () => {
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
           g.valueChanges.subscribe((value) => {
             throw 'Should not happen';
           });
@@ -1074,8 +1061,8 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
           c.reset(null, {emitEvent: false});
 
-          await timeout();
-        });
+          tick();
+        }));
 
         it('should emit one statusChange event per reset control', () => {
           g.statusChanges.subscribe(() => logger.push('group'));
@@ -1115,7 +1102,7 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         c.setValue('new');
       });
 
-      it('should fire an event after the status has been updated to invalid', async () => {
+      it('should fire an event after the status has been updated to invalid', fakeAsync(() => {
         c.statusChanges.subscribe({
           next: (status: any) => {
             expect(c.status).toEqual('INVALID');
@@ -1124,10 +1111,10 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         });
 
         c.setValue('');
-        await timeout();
-      });
+        tick();
+      }));
 
-      it('should fire statusChanges events for async validators added via options object', async () => {
+      it('should fire statusChanges events for async validators added via options object', fakeAsync(() => {
         // The behavior can be tested for each of the model types.
         let statuses: string[] = [];
 
@@ -1138,11 +1125,11 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         asc.statusChanges.subscribe((status: any) => statuses.push(status));
 
         // After a tick, the async validator should change status PENDING -> VALID.
-        await timeout();
+        tick();
         expect(statuses).toEqual(['VALID']);
-      });
+      }));
 
-      it('should fire an event after the status has been updated to pending', async () => {
+      it('should fire an event after the status has been updated to pending', fakeAsync(() => {
         const c = new FormControl('old', Validators.required, asyncValidator('expected'));
 
         const log: string[] = [];
@@ -1151,13 +1138,13 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         c.statusChanges.subscribe({next: (status: any) => log.push(`status: '${status}'`)});
 
         c.setValue('');
-        await timeout();
+        tick();
 
         c.setValue('nonEmpty');
-        await timeout();
+        tick();
 
         c.setValue('expected');
-        await timeout();
+        tick();
 
         expect(log).toEqual([
           "value: ''",
@@ -1169,26 +1156,26 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
           "status: 'PENDING'",
           "status: 'VALID'",
         ]);
-      });
+      }));
 
-      it('should update set errors and status before emitting an event', async () => {
+      it('should update set errors and status before emitting an event', fakeAsync(() => {
         c.setValue('');
 
-        await timeout();
+        tick();
         expect(c.valid).toEqual(false);
         expect(c.errors).toEqual({'required': true});
-      });
+      }));
 
-      it('should return a cold observable', async () => {
+      it('should return a cold observable', fakeAsync(() => {
         let value: string | null = null;
         c.setValue('will be ignored');
         c.valueChanges.subscribe((v) => (value = v));
         c.setValue('new');
-        await timeout();
+        tick();
 
         // @ts-expect-error see microsoft/TypeScript#9998
         expect(value).toEqual('new');
-      });
+      }));
     });
 
     describe('setErrors', () => {
@@ -1501,18 +1488,18 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
           expect(c.errors).toEqual({required: true});
         });
 
-        it('should clear out async errors when disabled', async () => {
+        it('should clear out async errors when disabled', fakeAsync(() => {
           const c = new FormControl('', null!, asyncValidator('expected'));
-          await timeout();
+          tick();
           expect(c.errors).toEqual({'async': true});
 
           c.disable();
           expect(c.errors).toEqual(null);
 
           c.enable();
-          await timeout();
+          tick();
           expect(c.errors).toEqual({'async': true});
-        });
+        }));
       });
 
       describe('disabled events', () => {
@@ -1551,7 +1538,9 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
           // but
           // not a meaningful one
           expect(fn).toThrowError(
-            /NG01101: Expected async validator to return Promise or Observable\. Are you using a synchronous validator where an async validator is expected\? Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG01101/,
+            'NG01101: Expected async validator to return Promise or Observable. ' +
+              'Are you using a synchronous validator where an async validator is expected? ' +
+              'Find more at https://angular.dev/errors/NG01101',
           );
         });
 
@@ -1665,139 +1654,6 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         // This is always true in the trivial case, but can be broken by various methods of overriding
         // FormControl's exported constructor.
         expect(FormControl.name).toBe('FormControl');
-      });
-    });
-
-    describe('FormControl.setValue is untracked', () => {
-      @Directive({
-        selector: '[testCva]',
-        providers: [
-          {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => TestCvaDirective),
-            multi: true,
-          },
-        ],
-      })
-      class TestCvaDirective implements ControlValueAccessor {
-        // This is the “dangerous” signal read that must NOT get tracked by the caller of setValue().
-        static cvaSignal = signal(0);
-
-        // Optional: helps debugging / sanity checks
-        lastReadInWriteValue: number | null = null;
-        lastWrittenValue: unknown = null;
-
-        writeValue(value: unknown): void {
-          // If setValue() is not untracked, the *caller* effect/computed may accidentally track this read.
-          this.lastReadInWriteValue = TestCvaDirective.cvaSignal();
-          this.lastWrittenValue = value;
-        }
-
-        registerOnChange(_: (value: unknown) => void): void {}
-        registerOnTouched(_: () => void): void {}
-        setDisabledState(_: boolean): void {}
-      }
-
-      @Component({
-        imports: [ReactiveFormsModule, TestCvaDirective],
-        template: `<input testCva [formControl]="control" />`,
-      })
-      class HostComponent {
-        control = new FormControl('');
-      }
-
-      it('should NOT track signals read inside CVA.writeValue when setValue is called inside an effect', async () => {
-        const fixture = TestBed.createComponent(HostComponent);
-        fixture.detectChanges(); // wires up FormControlDirective + CVA
-
-        const driver = signal('A');
-        let runs = 0;
-
-        // Create the effect inside the Angular injection context.
-        TestBed.runInInjectionContext(() => {
-          effect(() => {
-            runs++;
-
-            // Only dependency we *want* is `driver()`.
-            // setValue will invoke CVA.writeValue which reads TestCvaDirective.cvaSignal().
-            fixture.componentInstance.control.setValue(driver());
-          });
-        });
-
-        await fixture.whenStable();
-        expect(runs).toBe(1);
-
-        // Changing the CVA signal should NOT re-run the effect.
-        TestCvaDirective.cvaSignal.set(1);
-        await fixture.whenStable();
-        expect(runs).toBe(1);
-
-        // Changing the driver signal SHOULD re-run the effect.
-        driver.set('B');
-        await fixture.whenStable();
-        expect(runs).toBe(2);
-      });
-
-      it('should NOT track signals read inside CVA.writeValue when patchValue is called inside an effect', async () => {
-        const fixture = TestBed.createComponent(HostComponent);
-        fixture.detectChanges(); // wires up FormControlDirective + CVA
-
-        const driver = signal('A');
-        let runs = 0;
-
-        // Create the effect inside the Angular injection context.
-        TestBed.runInInjectionContext(() => {
-          effect(() => {
-            runs++;
-
-            // Only dependency we *want* is `driver()`.
-            fixture.componentInstance.control.patchValue(driver());
-          });
-        });
-
-        await fixture.whenStable();
-        expect(runs).toBe(1);
-
-        // Changing the CVA signal should NOT re-run the effect.
-        TestCvaDirective.cvaSignal.set(1);
-        await fixture.whenStable();
-        expect(runs).toBe(1);
-
-        // Changing the driver signal SHOULD re-run the effect.
-        driver.set('B');
-        await fixture.whenStable();
-        expect(runs).toBe(2);
-      });
-
-      it('should NOT track signals read inside CVA.writeValue when reset is called inside an effect', async () => {
-        const fixture = TestBed.createComponent(HostComponent);
-        fixture.detectChanges(); // wires up FormControlDirective + CVA
-
-        const driver = signal('A');
-        let runs = 0;
-
-        // Create the effect inside the Angular injection context.
-        TestBed.runInInjectionContext(() => {
-          effect(() => {
-            runs++;
-
-            // Only dependency we *want* is `driver()`.
-            fixture.componentInstance.control.reset(driver());
-          });
-        });
-
-        await fixture.whenStable();
-        expect(runs).toBe(1);
-
-        // Changing the CVA signal should NOT re-run the effect.
-        TestCvaDirective.cvaSignal.set(1);
-        await fixture.whenStable();
-        expect(runs).toBe(1);
-
-        // Changing the driver signal SHOULD re-run the effect.
-        driver.set('B');
-        await fixture.whenStable();
-        expect(runs).toBe(2);
       });
     });
   });

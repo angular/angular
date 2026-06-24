@@ -5,80 +5,6 @@
   "normalizedModuleName": "angular_aria_toolbar",
   "entries": [
     {
-      "name": "ToolbarWidgetGroup",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the host element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Whether the widget group is disabled.",
-          "jsdocTags": [],
-          "inputAlias": "disabled",
-          "isRequiredInput": false
-        },
-        {
-          "name": "multi",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Whether the group allows multiple widgets to be selected.",
-          "jsdocTags": [],
-          "inputAlias": "multi",
-          "isRequiredInput": false
-        }
-      ],
-      "generics": [
-        {
-          "name": "V"
-        }
-      ],
-      "description": "A directive that groups toolbar widgets, used for more complex widgets like radio groups\nthat have their own internal navigation.",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Toolbar](guide/aria/toolbar)"
-        }
-      ],
-      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups\n * that have their own internal navigation.\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
-      "implements": [],
-      "isStandalone": true,
-      "selector": "[ngToolbarWidgetGroup]",
-      "exportAs": [
-        "ngToolbarWidgetGroup"
-      ],
-      "aliases": [
-        "ngToolbarWidgetGroup"
-      ],
-      "source": {
-        "filePath": "/src/aria/toolbar/toolbar-widget-group.ts",
-        "startLine": 31,
-        "endLine": 67
-      }
-    },
-    {
       "name": "Toolbar",
       "isAbstract": false,
       "entryType": "directive",
@@ -95,7 +21,7 @@
         },
         {
           "name": "textDirection",
-          "type": "WritableSignal<Direction>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -105,7 +31,7 @@
         },
         {
           "name": "orientation",
-          "type": "InputSignal<\"vertical\" | \"horizontal\">",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -118,7 +44,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "input"
@@ -130,7 +56,7 @@
         },
         {
           "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -143,7 +69,7 @@
         },
         {
           "name": "wrap",
-          "type": "InputSignalWithTransform<boolean, unknown>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -156,7 +82,7 @@
         },
         {
           "name": "values",
-          "type": "ModelSignal<V[]>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -180,26 +106,19 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Toolbar](guide/aria/toolbar)"
         }
       ],
-      "rawComment": "/**\n * A toolbar widget container for a group of interactive widgets, such as\n * buttons or radio groups. It provides a single point of reference for keyboard navigation\n * and focus management. It supports various orientations and disabled states.\n *\n * ```html\n * <div ngToolbar orientation=\"horizontal\" [wrap]=\"true\">\n *   <button ngToolbarWidget value=\"save\">Save</button>\n *   <button ngToolbarWidget value=\"print\">Print</button>\n *\n *   <div ngToolbarWidgetGroup [(value)]=\"selectedAlignment\">\n *     <button ngToolbarWidget value=\"left\">Left</button>\n *     <button ngToolbarWidget value=\"center\">Center</button>\n *     <button ngToolbarWidget value=\"right\">Right</button>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
+      "rawComment": "/**\n * A toolbar widget container for a group of interactive widgets, such as\n * buttons or radio groups. It provides a single point of reference for keyboard navigation\n * and focus management. It supports various orientations and disabled states.\n *\n * ```html\n * <div ngToolbar orientation=\"horizontal\" [wrap]=\"true\">\n *   <button ngToolbarWidget value=\"save\">Save</button>\n *   <button ngToolbarWidget value=\"print\">Print</button>\n *\n *   <div ngToolbarWidgetGroup [(value)]=\"selectedAlignment\">\n *     <button ngToolbarWidget value=\"left\">Left</button>\n *     <button ngToolbarWidget value=\"center\">Center</button>\n *     <button ngToolbarWidget value=\"right\">Right</button>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngToolbar]",
       "exportAs": [
         "ngToolbar"
       ],
-      "aliases": [
-        "ngToolbar"
-      ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 47,
-        "endLine": 142
+        "startLine": 65,
+        "endLine": 169
       }
     },
     {
@@ -219,7 +138,7 @@
         },
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -232,7 +151,7 @@
         },
         {
           "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -245,7 +164,7 @@
         },
         {
           "name": "hardDisabled",
-          "type": "Signal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -255,7 +174,7 @@
         },
         {
           "name": "value",
-          "type": "InputSignal<V>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -268,7 +187,7 @@
         },
         {
           "name": "active",
-          "type": "Signal<any>",
+          "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -363,13 +282,9 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Toolbar](guide/aria/toolbar)"
         }
       ],
-      "rawComment": "/**\n * A widget within a toolbar.\n *\n * The `ngToolbarWidget` directive should be applied to any native HTML element that acts\n * as an interactive widget within an `ngToolbar` or `ngToolbarWidgetGroup`. It enables\n * keyboard navigation and selection within the toolbar.\n *\n * ```html\n * <button ngToolbarWidget value=\"action-id\" [disabled]=\"isDisabled\">\n *   Perform Action\n * </button>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
+      "rawComment": "/**\n * A widget within a toolbar.\n *\n * The `ngToolbarWidget` directive should be applied to any native HTML element that acts\n * as an interactive widget within an `ngToolbar` or `ngToolbarWidgetGroup`. It enables\n * keyboard navigation and selection within the toolbar.\n *\n * ```html\n * <button ngToolbarWidget value=\"action-id\" [disabled]=\"isDisabled\">\n *   Perform Action\n * </button>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
@@ -379,17 +294,85 @@
       "exportAs": [
         "ngToolbarWidget"
       ],
-      "aliases": [
-        "ngToolbarWidget"
+      "source": {
+        "filePath": "/src/aria/toolbar/toolbar.ts",
+        "startLine": 186,
+        "endLine": 253
+      }
+    },
+    {
+      "name": "ToolbarWidgetGroup",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the widget group is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "multi",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the group allows multiple widgets to be selected.",
+          "jsdocTags": [],
+          "inputAlias": "multi",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "A directive that groups toolbar widgets, used for more complex widgets like radio groups\nthat have their own internal navigation.",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups\n * that have their own internal navigation.\n *\n * @developerPreview 21.0\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngToolbarWidgetGroup]",
+      "exportAs": [
+        "ngToolbarWidgetGroup"
       ],
       "source": {
-        "filePath": "/src/aria/toolbar/toolbar-widget.ts",
-        "startLine": 47,
-        "endLine": 114
+        "filePath": "/src/aria/toolbar/toolbar.ts",
+        "startLine": 261,
+        "endLine": 296
       }
     }
   ],
   "symbols": [
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
     [
       "Directive",
       "@angular/core"
@@ -415,24 +398,8 @@
       "@angular/core"
     ],
     [
-      "contentChildren",
-      "@angular/core"
-    ],
-    [
-      "afterRenderEffect",
-      "@angular/core"
-    ],
-    [
       "signal",
       "@angular/core"
-    ],
-    [
-      "model",
-      "@angular/core"
-    ],
-    [
-      "Directionality",
-      "@angular/cdk/bidi"
     ],
     [
       "OnInit",
@@ -443,12 +410,36 @@
       "@angular/core"
     ],
     [
-      "_IdGenerator",
-      "@angular/cdk/a11y"
+      "contentChildren",
+      "@angular/core"
     ],
     [
-      "ToolbarWidgetGroup",
-      "@angular/aria/toolbar"
+      "model",
+      "@angular/core"
+    ],
+    [
+      "ToolbarPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "ToolbarWidgetPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "ToolbarWidgetGroupPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "SignalLike",
+      "@angular/aria/private"
+    ],
+    [
+      "Directionality",
+      "@angular/cdk/bidi"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
     ],
     [
       "Toolbar",
@@ -460,18 +451,6 @@
     ],
     [
       "ToolbarWidgetGroup",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.element",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.disabled",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.multi",
       "@angular/aria/toolbar"
     ],
     [
@@ -544,6 +523,22 @@
     ],
     [
       "ToolbarWidget.ngOnDestroy",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup.element",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup.disabled",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup.multi",
       "@angular/aria/toolbar"
     ]
   ]

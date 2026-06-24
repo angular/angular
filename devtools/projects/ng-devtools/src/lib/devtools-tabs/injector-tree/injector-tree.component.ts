@@ -30,8 +30,6 @@ import {TreeD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tre
 import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
-  areInjectorTreeNodesEqual,
-  areInjectorTreesEqual,
   d3InjectorTreeLinkModifier,
   d3InjectorTreeNodeModifier,
   filterOutAngularInjectors,
@@ -42,8 +40,6 @@ import {
   InjectorTreeD3Node,
   InjectorTreeNode,
   InjectorTreeVisualizer,
-  isElementTreeInjector,
-  isEnvironmentTreeInjector,
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
 } from './injector-tree-fns';
@@ -96,8 +92,6 @@ export class InjectorTreeComponent {
   protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
   protected readonly hidden = input(false);
 
-  protected readonly treeNodesEqualityFn = areInjectorTreeNodesEqual;
-
   protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
     const view = this.componentExplorerView();
     return !!(view && view.forest.length && view.forest[0].resolutionPath);
@@ -109,12 +103,8 @@ export class InjectorTreeComponent {
   private hideInjectorsWithNoProviders = false;
   private hideFrameworkInjectors = false;
 
-  protected readonly elementInjectorTree = signal<InjectorTreeNode | null>(null, {
-    equal: areInjectorTreesEqual,
-  });
-  protected readonly environmentInjectorTree = signal<InjectorTreeNode | null>(null, {
-    equal: areInjectorTreesEqual,
-  });
+  protected readonly elementInjectorTree = signal<InjectorTreeNode | null>(null);
+  protected readonly environmentInjectorTree = signal<InjectorTreeNode | null>(null);
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -165,12 +155,7 @@ export class InjectorTreeComponent {
 
   onTreeRender(tree: InjectorTreeVisualizer, {initial}: {initial: boolean}) {
     if (initial) {
-      // Slightly defer the node snapping since the production app
-      // needs a bit more time for registering the tree container size.
-      // INFO: Container size is not bound/related to tree rendering.
-      setTimeout(() => {
-        this.snapToRoot(tree);
-      }, 100);
+      this.snapToRoot(tree);
     }
   }
 
@@ -214,7 +199,7 @@ export class InjectorTreeComponent {
   private refreshVisualizer(): void {
     this.updateInjectorTreeVisualization(this.rawDirectiveForest);
 
-    if (isEnvironmentTreeInjector(this.selectedNode()?.data.injector)) {
+    if (this.selectedNode()?.data.injector.type === 'environment') {
       this.snapToRoot(this.environmentTree());
     }
 
@@ -284,11 +269,11 @@ export class InjectorTreeComponent {
 
     // wait for CD to run before snapping to root so that svg container can change size.
     setTimeout(() => {
-      const {injector} = node.data;
+      const {type} = node.data.injector;
 
-      if (isElementTreeInjector(injector)) {
+      if (type === 'element') {
         this.elementTree()?.snapToNode(node.data, SNAP_ZOOM_SCALE);
-      } else if (isEnvironmentTreeInjector(injector)) {
+      } else if (type === 'environment') {
         this.environmentTree()?.snapToNode(node.data, SNAP_ZOOM_SCALE);
       }
     });
@@ -303,9 +288,9 @@ export class InjectorTreeComponent {
     const injector = selectedNode.data.injector;
     let newNode: TreeD3Node<InjectorTreeNode> | null = null;
 
-    if (isElementTreeInjector(injector)) {
+    if (injector.type === 'element') {
       newNode = this.elementTree()?.getNodeById(injector.id) ?? null;
-    } else if (isEnvironmentTreeInjector(injector)) {
+    } else if (injector.type === 'environment') {
       newNode = this.environmentTree()?.getNodeById(injector.id) ?? null;
     }
 
@@ -353,7 +338,7 @@ export class InjectorTreeComponent {
       return;
     }
 
-    if (isElementTreeInjector(this.selectedNode()!.data.injector)) {
+    if (this.selectedNode()!.data.injector.type === 'element') {
       const idsToRoot = getInjectorIdsToRootFromNode(this.selectedNode()!);
       idsToRoot.forEach((id) => this.highlightNodeById(elementTree, id));
       const edgeIds = generateEdgeIdsFromNodeIds(idsToRoot);

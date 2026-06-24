@@ -17,12 +17,10 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable, of, Subscribable, Unsubscribable} from 'rxjs';
-import {useAutoTick} from './util';
 
 describe('AsyncPipe', () => {
   let pipe: AsyncPipe;
   let ref: ChangeDetectorRef & jasmine.SpyObj<ChangeDetectorRef>;
-  useAutoTick();
 
   function getChangeDetectorRefSpy() {
     return jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck', 'detectChanges']);
@@ -208,17 +206,13 @@ describe('AsyncPipe', () => {
       });
 
       it('should report rejections to error handler', async () => {
-        // TestBed rethrows errors that are handled by ErrorHandler so they aren't swallowed/unnoticed
-        await jasmine.spyOnGlobalErrorsAsync(async function () {
-          const spy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
-          pipe.transform(promise);
-          reject(message);
-          try {
-            // clear microtask queue (process all promise rejections)
-            await new Promise((r) => setTimeout(r));
-          } catch {}
-          expect(spy).toHaveBeenCalledWith(message);
-        });
+        const spy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
+        pipe.transform(promise);
+        reject(message);
+        try {
+          await promise;
+        } catch {}
+        expect(spy).toHaveBeenCalledWith(message);
       });
 
       it('should dispose of the existing subscription when subscribing to a new promise', async () => {

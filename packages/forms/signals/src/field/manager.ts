@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, effect, Injector, untracked} from '@angular/core';
-import type {FormSubmitOptions} from '../api/types';
+import {APP_ID, effect, inject, Injector, untracked} from '@angular/core';
 import type {FieldNodeStructure} from './structure';
 
 /**
@@ -18,18 +17,12 @@ import type {FieldNodeStructure} from './structure';
  * destroyed, which is the job of the `FormFieldManager`.
  */
 export class FormFieldManager {
-  readonly injector: Injector;
   readonly rootName: string;
-  readonly submitOptions: FormSubmitOptions<unknown, unknown> | undefined;
-
   constructor(
-    injector: Injector,
+    readonly injector: Injector,
     rootName: string | undefined,
-    submitOptions: FormSubmitOptions<unknown, unknown> | undefined,
   ) {
-    this.injector = injector;
     this.rootName = rootName ?? `${this.injector.get(APP_ID)}.form${nextFormId++}`;
-    this.submitOptions = submitOptions;
   }
 
   /**

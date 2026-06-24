@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   Component,
   createComponent,
@@ -37,6 +36,7 @@ import {
 } from '../../src/core';
 import {stringifyForError} from '../../src/render3/util/stringify_utils';
 import {TestBed} from '../../testing';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 
 describe('createComponent', () => {
   it('should create an instance of a standalone component', () => {
@@ -94,7 +94,8 @@ describe('createComponent', () => {
   it('should render projected content', () => {
     @Component({
       template: `
-        <ng-content></ng-content>| <ng-content></ng-content>|
+        <ng-content></ng-content>|
+        <ng-content></ng-content>|
         <ng-content></ng-content>
       `,
     })
@@ -1139,14 +1140,14 @@ describe('createComponent', () => {
       expect(hostElement.textContent).toBe('Value: 20');
     });
 
-    it(`should support input bindings named 'formField'`, () => {
-      // Angular has specialized support for binding to form controls (e.g. `[formField]="field"`).
+    it(`should support input bindings named 'field'`, () => {
+      // Angular has specialized support for binding to form controls (e.g. `[field]="field"`).
       // This test ensures that dynamic input bindings can still target arbitrary inputs with the
       // same name.
 
       @Component({template: ''})
       class RootComp {
-        @Input() formField = '';
+        @Input() field = '';
       }
 
       const hostElement = document.createElement('div');
@@ -1156,15 +1157,15 @@ describe('createComponent', () => {
       const ref = createComponent(RootComp, {
         hostElement,
         environmentInjector,
-        bindings: [inputBinding('formField', valueSignal)],
+        bindings: [inputBinding('field', valueSignal)],
       });
 
       ref.changeDetectorRef.detectChanges();
-      expect(ref.instance.formField).toBe('hello');
+      expect(ref.instance.field).toBe('hello');
 
       valueSignal.set('goodbye');
       ref.changeDetectorRef.detectChanges();
-      expect(ref.instance.formField).toBe('goodbye');
+      expect(ref.instance.field).toBe('goodbye');
     });
   });
 

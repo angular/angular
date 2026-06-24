@@ -1,11 +1,10 @@
-# Зависимое состояние с `linkedSignal`
+# Зависимое состояние с помощью `linkedSignal`
 
-Для хранения состояния в коде Angular можно использовать функцию `signal`. Иногда это состояние зависит от _другого_ состояния. Например, представьте компонент, позволяющий пользователю выбрать способ доставки для заказа:
+Вы можете использовать функцию `signal` для хранения состояния в вашем Angular-коде. Иногда это состояние зависит от
+_другого_ состояния. Например, представьте компонент, который позволяет пользователю выбрать способ доставки для заказа:
 
 ```typescript
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
 
@@ -18,14 +17,15 @@ export class ShippingMethodPicker {
 }
 ```
 
-В этом примере `selectedOption` по умолчанию равен первому варианту, но меняется, если пользователь выбирает другой. Однако `shippingOptions` — это сигнал, его значение может измениться! Если `shippingOptions` изменится, `selectedOption` может содержать значение, которое больше не является допустимым вариантом.
+В этом примере `selectedOption` по умолчанию выбирает первую опцию, но меняется, если пользователь выбирает другую. Но
+`shippingOptions` — это сигнал, его значение может измениться! Если `shippingOptions` изменится, `selectedOption` может
+содержать значение, которое больше не является допустимой опцией.
 
-**Функция `linkedSignal` позволяет создать сигнал для хранения состояния, которое неразрывно _связано_ с другим состоянием.** Возвращаясь к примеру выше, `linkedSignal` может заменить `signal`:
+**Функция `linkedSignal` позволяет создать сигнал для хранения состояния, которое неразрывно _связано_ с другим
+состоянием.** Возвращаясь к примеру выше, `linkedSignal` может заменить `signal`:
 
-```ts
-@Component({
-  /* ... */
-})
+```typescript
+@Component({/* ... */})
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
 
@@ -38,11 +38,14 @@ export class ShippingMethodPicker {
 }
 ```
 
-`linkedSignal` работает аналогично `signal` с одним ключевым отличием — вместо начального значения передаётся _функция вычисления_, как в `computed`. Когда результат вычисления изменяется, значение `linkedSignal` меняется на результат вычисления. Это гарантирует, что `linkedSignal` всегда содержит допустимое значение.
+`linkedSignal` работает аналогично `signal` с одним ключевым отличием: вместо передачи значения по умолчанию вы
+передаете _функцию вычисления_ (computation function), точно так же, как в `computed`. Когда значение вычисления
+меняется, значение `linkedSignal` меняется на результат вычисления. Это помогает гарантировать, что `linkedSignal`
+всегда имеет допустимое значение.
 
-Следующий пример показывает, как значение `linkedSignal` может меняться в зависимости от связанного состояния:
+Следующий пример показывает, как значение `linkedSignal` может изменяться в зависимости от связанного с ним состояния:
 
-```ts
+```typescript
 const shippingOptions = signal(['Ground', 'Air', 'Sea']);
 const selectedOption = linkedSignal(() => shippingOptions()[0]);
 console.log(selectedOption()); // 'Ground'
@@ -54,21 +57,21 @@ shippingOptions.set(['Email', 'Will Call', 'Postal service']);
 console.log(selectedOption()); // 'Email'
 ```
 
-## Учёт предыдущего состояния {#accounting-for-previous-state}
+## Учет предыдущего состояния
 
 В некоторых случаях вычисление для `linkedSignal` должно учитывать предыдущее значение самого `linkedSignal`.
 
-В примере выше `selectedOption` всегда сбрасывается к первому варианту при изменении `shippingOptions`. Однако может потребоваться сохранить выбор пользователя, если выбранный им вариант всё ещё присутствует в списке. Для этого можно создать `linkedSignal` с отдельными свойствами _source_ и _computation_:
+В примере выше `selectedOption` всегда сбрасывается на первую опцию при изменении `shippingOptions`. Однако вы можете
+захотеть сохранить выбор пользователя, если выбранная им опция все еще присутствует в списке. Чтобы добиться этого,
+можно создать `linkedSignal` с отдельными свойствами _source_ (источник) и _computation_ (вычисление):
 
-```ts
+```typescript
 interface ShippingMethod {
   id: number;
   name: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class ShippingMethodPicker {
   constructor() {
     this.changeShipping(2);
@@ -77,9 +80,9 @@ export class ShippingMethodPicker {
   }
 
   shippingOptions = signal<ShippingMethod[]>([
-    {id: 0, name: 'Ground'},
-    {id: 1, name: 'Air'},
-    {id: 2, name: 'Sea'},
+    { id: 0, name: 'Ground' },
+    { id: 1, name: 'Air' },
+    { id: 2, name: 'Sea' },
   ]);
 
   selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
@@ -88,7 +91,9 @@ export class ShippingMethodPicker {
     computation: (newOptions, previous) => {
       // If the newOptions contain the previously selected option, preserve that selection.
       // Otherwise, default to the first option.
-      return newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0];
+      return (
+        newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0]
+      );
     },
   });
 
@@ -98,25 +103,33 @@ export class ShippingMethodPicker {
 
   changeShippingOptions() {
     this.shippingOptions.set([
-      {id: 0, name: 'Email'},
-      {id: 1, name: 'Sea'},
-      {id: 2, name: 'Postal Service'},
+      { id: 0, name: 'Email' },
+      { id: 1, name: 'Sea' },
+      { id: 2, name: 'Postal Service' },
     ]);
   }
 }
 ```
 
-При создании `linkedSignal` вместо одной функции вычисления можно передать объект с отдельными свойствами `source` и `computation`.
+При создании `linkedSignal` вы можете передать объект с отдельными свойствами `source` и `computation` вместо
+предоставления только функции вычисления.
 
-`source` может быть любым сигналом, например `computed` или входным параметром компонента (`input`). `linkedSignal` обновляет своё значение при изменении `source` или любого сигнала, упомянутого в `computation`, устанавливая результат переданной функции `computation`.
+Свойством `source` может быть любой сигнал, например `computed` или `input` компонента. Когда значение `source`
+меняется, `linkedSignal` обновляет свое значение результатом предоставленного `computation`.
 
-`computation` — это функция, получающая новое значение `source` и объект `previous`. Объект `previous` имеет два свойства: `previous.source` — предыдущее значение `source`, и `previous.value` — предыдущее значение самого `linkedSignal`. Эти предыдущие значения можно использовать для определения нового результата вычисления.
+`computation` — это функция, которая получает новое значение `source` и объект `previous`. Объект `previous` имеет два
+свойства: `previous.source` — это предыдущее значение источника, и `previous.value` — это предыдущее значение
+`linkedSignal`. Вы можете использовать эти предыдущие значения для определения нового результата вычисления.
 
-HELPFUL: При использовании параметра `previous` необходимо явно указывать аргументы обобщённого типа для `linkedSignal`. Первый обобщённый тип соответствует типу `source`, второй определяет тип вывода `computation`.
+ПОЛЕЗНО: При использовании параметра `previous` необходимо явно указывать аргументы обобщенного типа (generic type
+arguments) для `linkedSignal`. Первый обобщенный тип соответствует типу `source`, а второй определяет тип возвращаемого
+значения `computation`.
 
-## Пользовательское сравнение на равенство {#custom-equality-comparison}
+## Пользовательское сравнение на равенство
 
-`linkedSignal`, как и любой другой сигнал, можно настроить с помощью пользовательской функции равенства. Эта функция используется зависимостями ниже по потоку для определения того, изменилось ли значение `linkedSignal` (результат вычисления):
+`linkedSignal`, как и любой другой сигнал, может быть настроен с пользовательской функцией равенства. Эта функция
+используется зависимостями ниже по потоку для определения того, изменилось ли значение `linkedSignal` (результат
+вычисления):
 
 ```typescript
 const activeUser = signal({id: 123, name: 'Morgan', isAdmin: true});
@@ -129,7 +142,7 @@ const activeUserEditCopy = linkedSignal(() => activeUser(), {
 // Or, if separating `source` and `computation`
 const activeUserEditCopy = linkedSignal({
   source: activeUser,
-  computation: (user) => user,
+  computation: user => user,
   equal: (a, b) => a.id === b.id,
 });
 ```

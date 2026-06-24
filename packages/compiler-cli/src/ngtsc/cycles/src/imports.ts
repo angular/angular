@@ -128,7 +128,7 @@ function isLocalFile(sf: ts.SourceFile): boolean {
 
 function isTypeOnlyImportClause(node: ts.ImportClause): boolean {
   // The clause itself is type-only (e.g. `import type {foo} from '...'`).
-  if (node.phaseModifier === ts.SyntaxKind.TypeKeyword) {
+  if (node.isTypeOnly) {
     return true;
   }
 

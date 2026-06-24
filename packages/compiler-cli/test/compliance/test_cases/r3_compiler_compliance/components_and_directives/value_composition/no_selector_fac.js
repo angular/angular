@@ -1,5 +1,1 @@
-export class EmptyOutletComponent {
-  …
-  static ɵfac = function EmptyOutletComponent_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || EmptyOutletComponent)(); };
-  …
-}
+EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || EmptyOutletComponent)(); };

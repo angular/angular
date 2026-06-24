@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MissingTranslationStrategy} from '@angular/core';
 import {HtmlParser} from '../../index';
+import {MissingTranslationStrategy} from '@angular/core';
 
 import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
 import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
@@ -337,7 +337,7 @@ describe('Extractor', () => {
       ]);
     });
 
-    it('should ignore implicit elements in non translatable ICU messages 2', () => {
+    it('should ignore implicit elements in non translatable ICU messages', () => {
       expect(extract('{count, plural, =0 { {sex, select, male {<p>ignore</p>}} }}', ['p'])).toEqual(
         [],
       );

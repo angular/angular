@@ -28,7 +28,6 @@ import {
   CanLoadFn,
   CanMatchFn,
   Route,
-  PartialMatchRouteSnapshot,
 } from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import type {NavigationTransition} from '../navigation_transition';
@@ -267,8 +266,7 @@ export function runCanMatchGuards(
   route: Route,
   segments: UrlSegment[],
   urlSerializer: UrlSerializer,
-  currentSnapshot: PartialMatchRouteSnapshot,
-  abortSignal: AbortSignal,
+  abortSignal?: AbortSignal,
 ): Observable<GuardResult> {
   const canMatch = route.canMatch;
   if (!canMatch || canMatch.length === 0) return of(true);
@@ -276,11 +274,10 @@ export function runCanMatchGuards(
   const canMatchObservables = canMatch.map((injectionToken) => {
     const guard = getTokenOrFunctionIdentity(injectionToken as ProviderToken<any>, injector);
     const guardVal = isCanMatch(guard)
-      ? guard.canMatch(route, segments, currentSnapshot)
-      : runInInjectionContext(injector, () =>
-          (guard as CanMatchFn)(route, segments, currentSnapshot),
-        );
-    return wrapIntoObservable(guardVal).pipe(takeUntilAbort(abortSignal));
+      ? guard.canMatch(route, segments)
+      : runInInjectionContext(injector, () => (guard as CanMatchFn)(route, segments));
+    let obs$ = wrapIntoObservable(guardVal);
+    return abortSignal ? obs$.pipe(takeUntilAbort(abortSignal)) : obs$;
   });
 
   return of(canMatchObservables).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));

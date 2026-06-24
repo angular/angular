@@ -92,16 +92,12 @@ class DirectiveExtractor extends ClassExtractor {
 
   /** Extract docs info for directives and components (including underlying class info). */
   override extract(): DirectiveEntry {
-    const selector = this.metadata.selector ?? '';
-    const aliases = extractAliasesFromSelector(selector);
-
     return {
       ...super.extract(),
       isStandalone: this.metadata.isStandalone,
-      selector,
+      selector: this.metadata.selector ?? '',
       exportAs: this.metadata.exportAs ?? [],
       entryType: this.metadata.isComponent ? EntryType.Component : EntryType.Directive,
-      ...(aliases.length > 0 && {aliases}),
     };
   }
 
@@ -166,6 +162,7 @@ class NgModuleExtractor extends ClassExtractor {
   constructor(
     declaration: {name: ts.Identifier} & ts.ClassDeclaration,
     protected reference: Reference,
+    private metadata: NgModuleMeta,
     typeChecker: ts.TypeChecker,
   ) {
     super(declaration, typeChecker);
@@ -198,7 +195,7 @@ export function extractClass(
   } else if (pipeMetadata) {
     extractor = new PipeExtractor(classDeclaration, ref, pipeMetadata, typeChecker);
   } else if (ngModuleMetadata) {
-    extractor = new NgModuleExtractor(classDeclaration, ref, typeChecker);
+    extractor = new NgModuleExtractor(classDeclaration, ref, ngModuleMetadata, typeChecker);
   } else {
     extractor = new ClassExtractor(classDeclaration, typeChecker);
   }
@@ -224,39 +221,4 @@ function extractPipeSyntax(metadata: PipeMeta, classDeclaration: ts.ClassDeclara
     });
 
   return `{{ value_expression | ${metadata.name}${paramNames.length ? ':' + paramNames.join(':') : ''} }}`;
-}
-
-/**
- * Extracts aliases from a selector string.
- *
- * Parses selectors like:
- * - `[ngTabs]` => `['ngTabs']`
- * - `input[ngComboboxInput]` => `['ngComboboxInput']`
- * - `ng-template[ngComboboxPopupContainer]` => `['ngComboboxPopupContainer']`
- * - `[attr1][attr2]` => `['attr1', 'attr2']`
- * - `.class-name` => `[]` (classes are not extracted)
- *
- * @param selector The CSS selector string from directive/component metadata
- * @returns Array of attribute names that can be used as aliases
- */
-function extractAliasesFromSelector(selector: string): string[] {
-  if (!selector) {
-    return [];
-  }
-
-  const aliases: string[] = [];
-  // Match attribute selectors: [attributeName] or element[attributeName]
-  // This regex captures the attribute name inside square brackets
-  const attributeRegex = /\[([^\]=]+)(?:=[^\]]+)?\]/g;
-
-  let match: RegExpExecArray | null;
-  while ((match = attributeRegex.exec(selector)) !== null) {
-    const attributeName = match[1].trim();
-    // Skip empty attributes
-    if (attributeName) {
-      aliases.push(attributeName);
-    }
-  }
-
-  return aliases;
 }

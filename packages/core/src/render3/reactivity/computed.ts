@@ -32,10 +32,9 @@ export interface CreateComputedOptions<T> {
 export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
   const getter = createComputed(computation, options?.equal);
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const debugName = options?.debugName;
-    getter[SIGNAL].debugName = debugName;
-    getter.toString = () => `[Computed${debugName ? ' (' + debugName + ')' : ''}: ${getter()}]`;
+  if (ngDevMode) {
+    getter.toString = () => `[Computed: ${getter()}]`;
+    getter[SIGNAL].debugName = options?.debugName;
   }
 
   return getter;

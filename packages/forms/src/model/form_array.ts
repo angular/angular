@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {untracked, ɵWritable as Writable} from '@angular/core';
+import {ɵWritable as Writable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
@@ -113,7 +113,7 @@ export type ɵFormArrayRawValue<T extends AbstractControl<any>> = ɵTypedOrUntyp
  * the `FormArray` directly, as that result in strange and unexpected behavior such
  * as broken change detection.
  *
- * @see [FormArray: Dynamic, Homogenous Collections](guide/forms/typed-forms#formarray-dynamic-homogenous-collections)
+ * @see [FormArray: Dynamic, Homogenous Collections](guide/forms/typed-forms#formcontrol-getting-started)
  * @see [Creating dynamic forms](guide/forms/reactive-forms#creating-dynamic-forms)
  *
  * @publicApi
@@ -321,14 +321,12 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
       emitEvent?: boolean;
     } = {},
   ): void {
-    untracked(() => {
-      assertAllValuesPresent(this, false, value);
-      value.forEach((newValue: any, index: number) => {
-        assertControlPresent(this, false, index);
-        this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
-      });
-      this.updateValueAndValidity(options);
+    assertAllValuesPresent(this, false, value);
+    value.forEach((newValue: any, index: number) => {
+      assertControlPresent(this, false, index);
+      this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
     });
+    this.updateValueAndValidity(options);
   }
 
   /**

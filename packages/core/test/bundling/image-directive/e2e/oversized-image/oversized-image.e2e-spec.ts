@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser} from 'protractor';
+import {browser, by, element, ExpectedConditions} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
 import {collectBrowserLogs} from '../browser-logs-util';

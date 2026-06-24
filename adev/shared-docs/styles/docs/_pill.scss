@@ -1,5 +1,4 @@
 // Pill
-@use './../links' as links;
 
 @mixin docs-pill() {
   .docs-pill {
@@ -28,11 +27,8 @@
       background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
     }
 
-    // External link icon
-    &[href^='http:'],
-    &[href^='https:'] {
-      margin-left: 0rem;
-      @include links.external-link-with-icon();
+    .docs-icon-small {
+      margin-inline-start: 0.25rem;
     }
 
     .docs-dark-mode & {

@@ -12,7 +12,8 @@ import {HydratedComponent} from './hydrated.component';
   selector: 'app-defer',
 
   imports: [HydratedComponent],
-  template: ` @defer (hydrate never) {
+  template: `
+  @defer (hydrate never) {
     <app-hydrated [title]="hydrateNeverTitle" />
   }`,
 })

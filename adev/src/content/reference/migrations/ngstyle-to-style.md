@@ -9,19 +9,19 @@
 ng generate @angular/core:ngstyle-to-style
 ```
 
-#### До {#before}
+#### До
 
 ```html
-<div [ngStyle]="{'background-color': 'red'}"></div>
+<div [ngStyle]="{'background-color': 'red'}">
 ```
 
-#### После {#after}
+#### После
 
 ```html
-<div [style]="{'background-color': 'red'}"></div>
+<div [style]="{'background-color': 'red'}">
 ```
 
-## Параметры конфигурации {#configuration-options}
+## Параметры конфигурации
 
 Процесс миграции поддерживает несколько параметров для точной настройки под ваши конкретные нужды.
 

@@ -11,7 +11,7 @@
  * tags use '*'.
  *
  * Extracted from, and should be kept in sync with
- * https://www.w3.org/TR/trusted-types/#integrations
+ * https://w3c.github.io/webappsec-trusted-types/dist/spec/#integrations
  */
 const TRUSTED_TYPES_SINKS = new Set<string>([
   // NOTE: All strings in this set *must* be lowercase!
@@ -25,7 +25,6 @@ const TRUSTED_TYPES_SINKS = new Set<string>([
 
   // TrustedScriptURL
   'embed|src',
-  'iframe|src',
   'object|codebase',
   'object|data',
 ]);

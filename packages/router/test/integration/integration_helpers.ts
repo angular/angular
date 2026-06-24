@@ -24,7 +24,7 @@ import {
 } from '../../index';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {timeout} from '@angular/private/testing';
+import {timeout} from '../helpers';
 
 export const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
@@ -76,22 +76,9 @@ export class AbsoluteLinkCmp {}
 
 @Component({
   selector: 'link-cmp',
-  template: `<router-outlet></router-outlet
-    ><a
-      routerLinkActive="active"
-      (isActiveChange)="this.onRouterLinkActivated($event)"
-      [routerLinkActiveOptions]="{exact: exact}"
-      ariaCurrentWhenActive="page"
-      [routerLink]="['./']"
-      >link</a
-    >
-    <button
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: exact}"
-      [routerLink]="['./']"
-    >
-      button
-    </button> `,
+  template: `<router-outlet></router-outlet><a routerLinkActive="active" (isActiveChange)="this.onRouterLinkActivated($event)" [routerLinkActiveOptions]="{exact: exact}" ariaCurrentWhenActive="page" [routerLink]="['./']">link</a>
+ <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
+ `,
   standalone: false,
 })
 export class DummyLinkCmp {
@@ -141,20 +128,6 @@ export class LinkWithState {}
   standalone: false,
 })
 export class DivLinkWithState {}
-
-@Component({
-  selector: 'link-cmp',
-  template: `<a id="link" [routerLink]="['../simple']" [browserUrl]="'/custom'">link</a>`,
-  standalone: false,
-})
-export class LinkWithBrowserUrl {}
-
-@Component({
-  selector: 'div-link-cmp',
-  template: `<div id="link" [routerLink]="['../simple']" [browserUrl]="'/custom'">link</div>`,
-  standalone: false,
-})
-export class DivLinkWithBrowserUrl {}
 
 @Component({
   selector: 'simple-cmp',
@@ -225,7 +198,7 @@ export class TwoOutletsCmp {}
 
 @Component({
   selector: 'user-cmp',
-  template: `user {{ name | async }}`,
+  template: `user {{name | async}}`,
   standalone: false,
 })
 export class UserCmp {
@@ -251,7 +224,7 @@ export class WrapperCmp {}
 
 @Component({
   selector: 'query-cmp',
-  template: `query: {{ name | async }} fragment: {{ fragment | async }}`,
+  template: `query: {{name | async}} fragment: {{fragment | async}}`,
   standalone: false,
 })
 export class QueryParamsAndFragmentCmp {
@@ -298,8 +271,7 @@ export class RouteCmp {
 
 @Component({
   selector: 'link-cmp',
-  template: `<div *ngIf="show()"><a [routerLink]="['./simple']">link</a></div>
-    <router-outlet></router-outlet>`,
+  template: `<div *ngIf="show()"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
   standalone: false,
 })
 export class RelativeLinkInIfCmp {
@@ -318,9 +290,9 @@ export class OutletInNgIf {
 @Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet>
-    <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
-      <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
-    </div>`,
+              <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
+                <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
+              </div>`,
   standalone: false,
 })
 export class DummyLinkWithParentCmp {
@@ -367,10 +339,7 @@ export class RootCmpWithOnInit {
 
 @Component({
   selector: 'root-cmp',
-  template: `primary [<router-outlet></router-outlet>] right [<router-outlet
-      name="right"
-    ></router-outlet
-    >]`,
+  template: `primary [<router-outlet></router-outlet>] right [<router-outlet name="right"></router-outlet>]`,
   standalone: false,
 })
 export class RootCmpWithTwoOutlets {}
@@ -447,8 +416,6 @@ export class LazyComponent {}
     LinkWithQueryParamsAndFragment,
     DivLinkWithState,
     LinkWithState,
-    DivLinkWithBrowserUrl,
-    LinkWithBrowserUrl,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -481,8 +448,6 @@ export class LazyComponent {}
     LinkWithQueryParamsAndFragment,
     DivLinkWithState,
     LinkWithState,
-    DivLinkWithBrowserUrl,
-    LinkWithBrowserUrl,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,

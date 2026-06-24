@@ -19,9 +19,11 @@ import {NavigationState} from '../../../services';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {CopyLinkButton} from '../../copy-link-anchor/copy-link-anchor.component';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
+import {provideZonelessChangeDetection} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 
 describe('DocViewer', () => {
+  let fixture: ComponentFixture<DocViewer>;
   let exampleContentSpy: jasmine.SpyObj<ExampleViewerContentLoader>;
   let navigationStateSpy: jasmine.SpyObj<NavigationState>;
 
@@ -81,15 +83,18 @@ describe('DocViewer', () => {
     navigationStateSpy = jasmine.createSpyObj(NavigationState, ['activeNavigationItem']);
   });
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [DocViewer],
       providers: [
         provideRouter([]),
+        provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: NavigationState, useValue: navigationStateSpy},
       ],
     });
+
+    fixture = TestBed.createComponent(DocViewer);
   });
 
   it('should load doc into innerHTML', async () => {
@@ -233,8 +238,5 @@ describe('DocViewer', () => {
     copyButton.click();
 
     expect(clipboardSpy).toHaveBeenCalled();
-    // Because the copyButton click bubbles up to an anchor tag, causing a navigation, it is
-    // necessary to undo this location change by going back in the history.
-    window.history.back();
   });
 });

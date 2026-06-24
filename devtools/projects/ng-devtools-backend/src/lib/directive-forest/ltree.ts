@@ -91,7 +91,7 @@ export class LTreeStrategy {
         directives: [],
         component: null,
         hydration: null, // We know there is no hydration if we use the LTreeStrategy
-        controlFlowBlock: null, // neither there will be any control flow block
+        defer: null, // neither there will be any defer
       };
     }
     for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
@@ -117,7 +117,7 @@ export class LTreeStrategy {
       directives,
       component,
       hydration: null, // We know there is no hydration if we use the LTreeStrategy
-      controlFlowBlock: null, // neither there will be any control flow block
+      defer: null, // neither there will be any defer
     };
   }
 

@@ -1,13 +1,5 @@
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.dev/license
- */
-
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {email, form, FormField, required, submit} from '@angular/forms/signals';
+import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {form, Field, required, email, submit} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
@@ -18,7 +10,7 @@ interface LoginData {
   selector: 'app-root',
   templateUrl: 'app.html',
   styleUrl: 'app.css',
-  imports: [FormField],
+  imports: [Field],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
@@ -36,13 +28,11 @@ export class App {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    submit(this.loginForm, {
-      action: async () => {
-        const credentials = this.loginModel();
-        // In a real app, this would be async:
-        // await this.authService.login(credentials);
-        console.log('Logging in with:', credentials);
-      },
+    submit(this.loginForm, async () => {
+      const credentials = this.loginModel();
+      // In a real app, this would be async:
+      // await this.authService.login(credentials);
+      console.log('Logging in with:', credentials);
     });
   }
 }

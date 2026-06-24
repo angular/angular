@@ -7,11 +7,10 @@
  */
 
 import {untracked} from '@angular/core';
-import type {MetadataKey} from '../api/rules/metadata';
-import type {ValidationError} from '../api/rules/validation/validation_errors';
-import {DisabledReason, type FieldContext, type LogicFn, type SchemaPath} from '../api/types';
+import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import {DisabledReason, type FieldContext, type SchemaPath, type LogicFn} from '../api/types';
+import type {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
-import {cast} from '../field/util';
 import {isArray} from '../util/type_guards';
 
 /**
@@ -48,7 +47,7 @@ export interface Predicate {
  *
  * Consider the following example:
  *
- * ```ts
+ * ```
  * const s = schema(p => {
  *   disabled(p.data);
  *   applyWhen(p.next, ({valueOf}) => valueOf(p.data) === 1, s);
@@ -177,28 +176,28 @@ export class ArrayMergeLogic<TElement> extends ArrayMergeIgnoreLogic<TElement, n
   }
 }
 
-/** Logic that combines metadata according to the keys's reduce function. */
-export class MetadataMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
+/** Logic that combines aggregate metadata according to the keys's own reduce function. */
+export class AggregateMetadataMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
   override get defaultValue() {
-    return this.key.reducer.getInitial();
+    return this.key.getInitial();
   }
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: MetadataKey<any, TItem, TAcc>,
+    private key: AggregateMetadataKey<TAcc, TItem>,
   ) {
     super(predicates);
   }
 
   override compute(ctx: FieldContext<any>): TAcc {
     if (this.fns.length === 0) {
-      return this.key.reducer.getInitial();
+      return this.key.getInitial();
     }
-    let acc: TAcc = this.key.reducer.getInitial();
+    let acc: TAcc = this.key.getInitial();
     for (let i = 0; i < this.fns.length; i++) {
       const item = this.fns[i](ctx);
       if (item !== IGNORED) {
-        acc = this.key.reducer.reduce(acc, item);
+        acc = this.key.reduce(acc, item);
       }
     }
     return acc;
@@ -254,15 +253,20 @@ export class LogicContainer {
   /** Logic that determines if the field is read-only. */
   readonly readonly: BooleanOrLogic;
   /** Logic that produces synchronous validation errors for the field. */
-  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError.WithFieldTree, null>;
+  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError.WithField, null>;
   /** Logic that produces synchronous validation errors for the field's subtree. */
-  readonly syncTreeErrors: ArrayMergeIgnoreLogic<ValidationError.WithFieldTree, null>;
+  readonly syncTreeErrors: ArrayMergeIgnoreLogic<ValidationError.WithField, null>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
-  readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationError.WithFieldTree | 'pending', null>;
-  /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
-  private readonly metadata = new Map<
-    MetadataKey<unknown, unknown, unknown>,
+  readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationError.WithField | 'pending', null>;
+  /** A map of aggregate metadata keys to the `AbstractLogic` instances that compute their values. */
+  private readonly aggregateMetadataKeys = new Map<
+    AggregateMetadataKey<unknown, unknown>,
     AbstractLogic<unknown>
+  >();
+  /** A map of metadata keys to the factory functions that create their values. */
+  private readonly metadataFactories = new Map<
+    MetadataKey<unknown>,
+    (ctx: FieldContext<unknown>) => unknown
   >();
 
   /**
@@ -274,38 +278,63 @@ export class LogicContainer {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
-    this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithFieldTree>(predicates);
-    this.syncTreeErrors =
-      ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithFieldTree>(predicates);
-    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithFieldTree | 'pending'>(
+    this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithField>(predicates);
+    this.syncTreeErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithField>(predicates);
+    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithField | 'pending'>(
       predicates,
     );
   }
 
-  /** Checks whether there is logic for the given metadata key. */
-  hasMetadata(key: MetadataKey<any, any, any>) {
-    return this.metadata.has(key);
+  /** Checks whether there is logic for the given aggregate metadata key. */
+  hasAggregateMetadata(key: AggregateMetadataKey<any, any>) {
+    return this.aggregateMetadataKeys.has(key);
   }
 
   /**
-   * Gets an iterable of [metadata key, logic function] pairs.
-   * @returns An iterable of metadata keys.
+   * Gets an iterable of [aggregate metadata, logic function] pairs.
+   * @returns An iterable of aggregate metadata entries.
    */
-  getMetadataKeys() {
-    return this.metadata.keys();
+  getAggregateMetadataEntries() {
+    return this.aggregateMetadataKeys.entries();
   }
 
   /**
-   * Retrieves or creates the `AbstractLogic` for a given metadata key.
-   * @param key The `MetadataKey` for which to get the logic.
+   * Gets an iterable of [metadata, value factory function] pairs.
+   * @returns An iterable of metadata factory entries.
+   */
+  getMetadataFactoryEntries() {
+    return this.metadataFactories.entries();
+  }
+
+  /**
+   * Retrieves or creates the `AbstractLogic` for a given aggregate metadata key.
+   * @param key The `AggregateMetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getMetadata<T>(key: MetadataKey<any, T, any>): AbstractLogic<T> {
-    cast<MetadataKey<unknown, unknown, unknown>>(key);
-    if (!this.metadata.has(key)) {
-      this.metadata.set(key, new MetadataMergeLogic(this.predicates, key));
+  getAggregateMetadata<T>(key: AggregateMetadataKey<any, T>): AbstractLogic<T> {
+    if (!this.aggregateMetadataKeys.has(key as AggregateMetadataKey<unknown, unknown>)) {
+      this.aggregateMetadataKeys.set(
+        key as AggregateMetadataKey<unknown, unknown>,
+        new AggregateMetadataMergeLogic(this.predicates, key),
+      );
     }
-    return this.metadata.get(key)! as AbstractLogic<T>;
+    return this.aggregateMetadataKeys.get(
+      key as AggregateMetadataKey<unknown, unknown>,
+    )! as AbstractLogic<T>;
+  }
+
+  /**
+   * Adds a factory function for a given metadata key.
+   * @param key The `MetadataKey` to associate the factory with.
+   * @param factory The factory function.
+   * @throws If a factory is already defined for the given key.
+   */
+  addMetadataFactory(key: MetadataKey<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
+    if (this.metadataFactories.has(key)) {
+      // TODO: name of the metadata key?
+      throw new Error(`Can't define value twice for the same MetadataKey`);
+    }
+    this.metadataFactories.set(key, factory);
   }
 
   /**
@@ -319,9 +348,11 @@ export class LogicContainer {
     this.syncErrors.mergeIn(other.syncErrors);
     this.syncTreeErrors.mergeIn(other.syncTreeErrors);
     this.asyncErrors.mergeIn(other.asyncErrors);
-    for (const key of other.getMetadataKeys()) {
-      const metadataLogic = other.metadata.get(key)!;
-      this.getMetadata(key).mergeIn(metadataLogic);
+    for (const [key, metadataLogic] of other.getAggregateMetadataEntries()) {
+      this.getAggregateMetadata(key).mergeIn(metadataLogic);
+    }
+    for (const [key, metadataFactory] of other.getMetadataFactoryEntries()) {
+      this.addMetadataFactory(key, metadataFactory);
     }
   }
 }

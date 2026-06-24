@@ -619,6 +619,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     for (const attribute of attrs) {
       let hasBinding = false;
+      const normalizedName = normalizeAttributeName(attribute.name);
 
       // `*attr` defines template bindings
       let isTemplateBinding = false;
@@ -627,7 +628,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         i18nAttrsMeta[attribute.name] = attribute.i18n;
       }
 
-      if (attribute.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         // *-attributes
         if (elementHasInlineTemplate) {
           this.reportError(
@@ -638,7 +639,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         isTemplateBinding = true;
         elementHasInlineTemplate = true;
         const templateValue = attribute.value;
-        const templateKey = attribute.name.substring(TEMPLATE_ATTR_PREFIX.length);
+        const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
         const parsedVariables: ParsedVariable[] = [];
         const absoluteValueOffset = attribute.valueSpan
@@ -704,7 +705,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     variables: t.Variable[],
     references: t.Reference[],
   ) {
-    const name = attribute.name;
+    const name = normalizeAttributeName(attribute.name);
     const value = attribute.value;
     const srcSpan = attribute.sourceSpan;
     const absoluteOffset = attribute.valueSpan
@@ -714,7 +715,8 @@ class HtmlAstToIvyAst implements html.Visitor {
     function createKeySpan(srcSpan: ParseSourceSpan, prefix: string, identifier: string) {
       // We need to adjust the start location for the keySpan to account for the removed 'data-'
       // prefix from `normalizeAttributeName`.
-      const keySpanStart = srcSpan.start.moveBy(prefix.length);
+      const normalizationAdjustment = attribute.name.length - name.length;
+      const keySpanStart = srcSpan.start.moveBy(prefix.length + normalizationAdjustment);
       const keySpanEnd = keySpanStart.moveBy(identifier.length);
       return new ParseSourceSpan(keySpanStart, keySpanEnd, keySpanStart, identifier);
     }
@@ -1251,6 +1253,10 @@ class NonBindableVisitor implements html.Visitor {
 }
 
 const NON_BINDABLE_VISITOR = new NonBindableVisitor();
+
+function normalizeAttributeName(attrName: string): string {
+  return /^data-/i.test(attrName) ? attrName.substring(5) : attrName;
+}
 
 function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
   boundEvents.push(...events.map((e) => t.BoundEvent.fromParsedEvent(e)));

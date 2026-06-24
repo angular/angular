@@ -4,9 +4,14 @@
     "experimentalDecorators": true,
     "target": "es2015",
     "strict": true,
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "baseUrl": ".",
     "paths": {
-      "post": ["./dist/post"]
+      "post": [
+        "dist/post"
+      ]
     }
   },
   "angularCompilerOptions": {

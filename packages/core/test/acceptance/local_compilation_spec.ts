@@ -221,7 +221,7 @@ describe('component dependencies in local compilation', () => {
     expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
   });
 
-  it('should compute correct set of dependencies when importing ng-modules with providers using forward ref (nested in arrays)', () => {
+  it('should compute correct set of dependencies when importing ng-modules with providers using forward ref', () => {
     @Component({
       selector: 'sub',
       standalone: false,

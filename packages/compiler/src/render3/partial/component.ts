@@ -281,8 +281,4 @@ class BlockPresenceVisitor extends RecursiveVisitor {
   override visitSwitchBlockCase(): void {
     this.hasBlocks = true;
   }
-
-  override visitSwitchBlockCaseGroup(): void {
-    this.hasBlocks = true;
-  }
 }

@@ -3,7 +3,7 @@ import {context} from '@actions/github';
 import {deployToFirebase, setupRedirect} from './deploy.mjs';
 import {getDeployments} from './deployments.mjs';
 import {generateSitemap} from './sitemap.mjs';
-import {assertValidGithubConfig, AuthenticatedGitClient, getConfig} from '@angular/ng-dev';
+import {AuthenticatedGitClient, GithubConfig, setConfig} from '@angular/ng-dev';
 import {githubReleaseTrainReadToken} from './credential.mjs';
 import {spawnSync} from 'child_process';
 import {cp, mkdtemp} from 'fs/promises';
@@ -13,7 +13,13 @@ import {join} from 'path';
 const refMatcher = /refs\/heads\/(.*)/;
 
 async function deployDocs() {
-  getConfig([assertValidGithubConfig]);
+  setConfig({
+    github: {
+      mainBranchName: 'main',
+      name: 'angular',
+      owner: 'angular',
+    } as GithubConfig,
+  });
 
   AuthenticatedGitClient.configure(githubReleaseTrainReadToken);
 

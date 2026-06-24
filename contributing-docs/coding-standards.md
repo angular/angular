@@ -144,8 +144,8 @@ and the return value:
 Boolean properties and return values should use "Whether..." as opposed to "True if...":
 
 ```ts
-/** Whether the button is disabled. */
-disabled: boolean = false;
+  /** Whether the button is disabled. */
+  disabled: boolean = false;
 ```
 
 #### Try-Catch
@@ -178,10 +178,10 @@ Use `readonly` members wherever possible.
 
   ```typescript
   /** NO: */
-  class DefaultRouteReuseStrategy {}
+  class DefaultRouteReuseStrategy { }
 
   /** YES: */
-  class NonStoringRouteReuseStrategy {}
+  class NonStoringRouteReuseStrategy { }
   ```
 
 ##### Observables
@@ -227,20 +227,13 @@ Give test classes and examples meaningful, descriptive names.
 
 ```ts
 /** PREFER: describes the scenario under test. */
-class FormGroupWithCheckboxAndRadios {
-  /* ... */
-}
-class InputWithNgModel {
-  /* ... */
-}
+class FormGroupWithCheckboxAndRadios { /* ... */ }
+class InputWithNgModel { /* ... */ }
+
 
 /** AVOID: does not fully describe the scenario under test. */
-class Comp {
-  /* ... */
-}
-class InputComp {
-  /* ... */
-}
+class Comp { /* ... */ }
+class InputComp { /* ... */ }
 ```
 
 #### RxJS
@@ -266,7 +259,7 @@ describe('Router', () => {
     it('should not reuse routes upon location change', () => {
       // ...
     });
-  });
+  })
 });
 
 /** AVOID: does not fully describe the scenario under test. */
@@ -275,6 +268,6 @@ describe('Router', () => {
     it('should work', () => {
       // ...
     });
-  });
+  })
 });
 ```

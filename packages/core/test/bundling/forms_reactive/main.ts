@@ -84,7 +84,9 @@ class ReactiveFormsComponent {
 
 @Component({
   selector: 'app-root',
-  template: ` <app-reactive-forms></app-reactive-forms> `,
+  template: `
+    <app-reactive-forms></app-reactive-forms>
+  `,
   standalone: false,
 })
 class RootComponent {}

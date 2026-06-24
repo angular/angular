@@ -17,14 +17,14 @@ describe('ProgressBarComponent', () => {
   let fixture: ComponentFixture<ProgressBarComponent>;
 
   beforeEach(async () => {
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [ProgressBarComponent],
       providers: [provideRouter([])],
     });
 
     fixture = TestBed.createComponent(ProgressBarComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   // This test often timeouts

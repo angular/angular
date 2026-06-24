@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Observable, Subscription} from 'rxjs';
 import {
   assertInInjectionContext,
-  BaseResourceOptions,
   resource,
   ResourceLoaderParams,
   ResourceRef,
-  ResourceStreamItem,
   Signal,
   signal,
+  BaseResourceOptions,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
+  ResourceStreamItem,
 } from '../../src/core';
+import {Observable, Subscription} from 'rxjs';
 import {encapsulateResourceError} from '../../src/resource/resource';
 
 /**
@@ -75,7 +75,8 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
         resolve = undefined;
       }
 
-      const streamFn = opts.stream;
+      // TODO(alxhub): remove after g3 updated to rename loader -> stream
+      const streamFn = opts.stream ?? (opts as {loader?: RxResourceOptions<T, R>['stream']}).loader;
       if (streamFn === undefined) {
         throw new ɵRuntimeError(
           ɵRuntimeErrorCode.MUST_PROVIDE_STREAM_OPTION,

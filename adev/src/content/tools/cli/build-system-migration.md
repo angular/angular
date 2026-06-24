@@ -19,11 +19,11 @@
 ВАЖНО: Существующая система сборки на основе webpack по-прежнему считается стабильной и полностью поддерживается.
 Приложения могут продолжать использовать билдер `browser`, и проекты могут отказаться от миграции во время обновления.
 
-## Для новых приложений {#for-new-applications}
+## Для новых приложений
 
 Новые приложения будут использовать эту новую систему сборки по умолчанию через билдер `application`.
 
-## Для существующих приложений {#for-existing-applications}
+## Для существующих приложений
 
 Доступны как автоматические, так и ручные процедуры в зависимости от требований проекта.
 Начиная с v18, процесс обновления спросит, хотите ли вы перенести существующие приложения на новую систему сборки с
@@ -36,7 +36,7 @@
 из [области видимости модуля CommonJS](https://nodejs.org/api/modules.html#the-module-scope). Весь код приложения должен
 быть совместим с ESM. Это не относится к сторонним зависимостям.
 
-### Автоматическая миграция (Рекомендуется) {#automated-migration-recommended}
+### Автоматическая миграция (Рекомендуется)
 
 Автоматическая миграция скорректирует как конфигурацию приложения в `angular.json`, так и код и таблицы стилей, чтобы
 удалить использование функций, специфичных для webpack.
@@ -68,7 +68,7 @@ ng update @angular/cli --name use-application-builder
 - Переводит на использование нового пакета Node.js `@angular/build` с меньшим количеством зависимостей, если не найдено
   другое использование `@angular-devkit/build-angular`.
 
-### Ручная миграция {#manual-migration}
+### Ручная миграция
 
 Кроме того, для существующих проектов вы можете вручную включить использование нового билдера для каждого приложения с
 двумя различными вариантами.
@@ -90,7 +90,7 @@ ng update @angular/cli --name use-application-builder
 Если внедрение билдера `application` затруднительно для вашего проекта, `browser-esbuild` может стать более простым
 решением, которое дает большинство преимуществ производительности сборки с меньшим количеством критических изменений.
 
-#### Ручная миграция на билдер совместимости {#manual-migration-to-the-compatibility-builder}
+#### Ручная миграция на билдер совместимости
 
 Билдер с именем `browser-esbuild` доступен в пакете `@angular-devkit/build-angular`, который присутствует в приложении,
 созданном Angular CLI.
@@ -123,7 +123,7 @@ ng update @angular/cli --name use-application-builder
 ...
 ```
 
-#### Ручная миграция на новый билдер `application` {#manual-migration-to-the-new-application-builder}
+#### Ручная миграция на новый билдер `application`
 
 Билдер с именем `application` также доступен в пакете `@angular-devkit/build-angular`, который присутствует в
 приложении, созданном Angular CLI.
@@ -191,7 +191,7 @@ ng update @angular/cli --name use-application-builder
 время обновления.
 Пакет `@angular/ssr` поддерживает как билдер `browser`, так и билдер `application`.
 
-## Выполнение сборки {#executing-a-build}
+## Выполнение сборки
 
 После обновления конфигурации приложения сборки можно выполнять с помощью `ng build`, как это делалось ранее.
 В зависимости от выбора миграции билдера некоторые параметры командной строки могут отличаться.
@@ -206,7 +206,7 @@ ng build
 
 ```
 
-## Запуск сервера разработки {#starting-the-development-server}
+## Запуск сервера разработки
 
 Сервер разработки автоматически обнаружит новую систему сборки и будет использовать ее для сборки приложения.
 Для запуска сервера разработки не требуется никаких изменений в конфигурации билдера `dev-server` или командной строке.
@@ -225,7 +225,7 @@ ng serve
 Сервер разработки пытается отложить обработку таблиц стилей до первого использования, чтобы улучшить время пересборки.
 Это не будет происходить в сборках вне сервера разработки.
 
-### Hot module replacement (Горячая замена модулей) {#hot-module-replacement}
+### Hot module replacement (Горячая замена модулей)
 
 Hot Module Replacement (HMR) — это техника, используемая серверами разработки, чтобы избежать перезагрузки всей страницы
 при изменении только части приложения.
@@ -253,7 +253,7 @@ ng serve --no-hmr
 
 ```
 
-### Vite в качестве сервера разработки {#vite-as-a-development-server}
+### Vite в качестве сервера разработки
 
 Использование Vite в Angular CLI в настоящее время осуществляется _только в качестве сервера разработки_. Даже без
 использования базовой системы сборки Vite, Vite предоставляет полнофункциональный сервер разработки с поддержкой
@@ -263,7 +263,7 @@ ng serve --no-hmr
 приложения. Использование Vite, как и сервера разработки на основе Webpack, инкапсулировано внутри билдера Angular CLI
 `dev-server` и в настоящее время не может быть настроено напрямую.
 
-### Предварительная сборка (Prebundling) {#prebundling}
+### Предварительная сборка (Prebundling)
 
 Предварительная сборка обеспечивает улучшенное время сборки и пересборки при использовании сервера разработки.
 Vite предоставляет [возможности предварительной сборки](https://vite.dev/guide/dep-pre-bundling), которые включены по
@@ -310,7 +310,7 @@ Vite предоставляет [возможности предваритель
       },
 ```
 
-## Новые функции {#new-features}
+## Новые функции
 
 Одним из главных преимуществ системы сборки `application` является улучшенная скорость сборки и пересборки.
 Однако новая система сборки приложений также предоставляет дополнительные функции, отсутствующие в билдере `browser`.
@@ -322,7 +322,7 @@ Vite предоставляет [возможности предваритель
 Эта опция в настоящее время находится в стадии предварительного просмотра для разработчиков.
 Если вы заметите какие-либо проблемы, пожалуйста, сообщите о них [здесь](https://github.com/angular/angular-cli/issues).
 
-### Замена значений во время сборки с помощью `define` {#build-time-value-replacement-with-define}
+### Замена значений во время сборки с помощью `define`
 
 Опция `define` позволяет заменять идентификаторы, присутствующие в коде, на другое значение во время сборки.
 Это похоже на поведение `DefinePlugin` из Webpack, который ранее использовался в некоторых пользовательских
@@ -455,7 +455,7 @@ console.log(contents); // <svg>...</svg>
 `src/types.d.ts`) со следующим или похожим содержимым:
 
 ```ts
-declare module '*.svg' {
+declare module "*.svg" {
   const content: string;
   export default content;
 }
@@ -465,7 +465,7 @@ declare module '*.svg' {
 присутствующих в исходных каталогах проекта. Если конфигурация TypeScript для проекта была изменена, tsconfig может
 потребоваться скорректировать, чтобы ссылаться на этот недавно добавленный файл определения типов.
 
-### Настройка загрузчика атрибутов импорта {#import-attribute-loader-customization}
+### Настройка загрузчика атрибутов импорта
 
 Для случаев, когда только определенные файлы должны загружаться определенным образом, доступен контроль поведения
 загрузки для каждого файла.
@@ -498,7 +498,7 @@ declare module '*.svg' {
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import contents from './some-file.svg' with {loader: 'text'};
+import contents from './some-file.svg' with { loader: 'text' };
 ```
 
 То же самое можно сделать с помощью выражения импорта внутри асинхронной функции.
@@ -506,7 +506,7 @@ import contents from './some-file.svg' with {loader: 'text'};
 ```ts
 async function loadSvg(): Promise<string> {
   // @ts-expect-error TypeScript cannot provide types based on attributes yet
-  return import('./some-file.svg', {with: {loader: 'text'}}).then((m) => m.default);
+  return import('./some-file.svg', { with: { loader: 'text' } }).then((m) => m.default);
 }
 ```
 
@@ -518,7 +518,7 @@ async function loadSvg(): Promise<string> {
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import imagePath from './image.webp' with {loader: 'file'};
+import imagePath from './image.webp' with { loader: 'file' };
 
 console.log(imagePath); // media/image-ULK2SIIB.webp
 ```
@@ -528,18 +528,18 @@ console.log(imagePath); // media/image-ULK2SIIB.webp
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import logo from './logo.png' with {loader: 'base64'};
+import logo from './logo.png' with { loader: 'base64' };
 
-console.log(logo); // "iVBORw0KGgoAAAANSUhEUgAA..."
+console.log(logo) // "iVBORw0KGgoAAAANSUhEUgAA..."
 ```
 
 Загрузчик `dataurl` для встраивания ресурсов как полных Data URL.
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import icon from './icon.svg' with {loader: 'dataurl'};
+import icon from './icon.svg' with { loader: 'dataurl' };
 
-console.log(icon); // "data:image/svg+xml;..."
+console.log(icon);// "data:image/svg+xml;..."
 ```
 
 Для производственных сборок, как показано в комментарии к коду выше, к пути будет автоматически добавлено хеширование
@@ -548,7 +548,7 @@ console.log(icon); // "data:image/svg+xml;..."
 ПОЛЕЗНО: При использовании сервера разработки и использовании атрибута `loader` для импорта файла из пакета Node.js,
 этот пакет должен быть исключен из предварительной сборки с помощью опции `prebundle` сервера разработки.
 
-### Условия импорта/экспорта {#import-export-conditions}
+### Условия импорта/экспорта
 
 Проектам может потребоваться сопоставить определенные пути импорта с разными файлами в зависимости от типа сборки.
 Это может быть особенно полезно для таких случаев, как `ng serve`, которому нужно использовать код, специфичный для
@@ -614,7 +614,7 @@ import {verboseLogging} from '#logger';
 новую систему сборки. Этот список будет обновляться, чтобы оставаться актуальным. Если какая-либо из этих проблем в
 настоящее время мешает вам попробовать новую систему сборки, пожалуйста, проверьте позже, так как она может быть решена.
 
-### Проверка типов кода Web Worker и обработка вложенных Web Workers {#type-checking-of-web-worker-code-and-processing-of-nested-web-workers}
+### Проверка типов кода Web Worker и обработка вложенных Web Workers
 
 Web Workers могут использоваться в коде приложения с использованием того же синтаксиса (
 `new Worker(new URL('<workerfile>', import.meta.url))`), который поддерживается билдером `browser`.
@@ -673,7 +673,7 @@ import moment from 'moment';
 console.log(moment().format());
 ```
 
-### Зависящие от порядка импорты с побочными эффектами в ленивых модулях {#order-dependent-side-effectful-imports-in-lazy-modules}
+### Зависящие от порядка импорты с побочными эффектами в ленивых модулях
 
 Операторы импорта, зависящие от определенного порядка и также используемые в нескольких ленивых модулях, могут привести
 к выполнению операторов верхнего уровня не по порядку.
@@ -687,7 +687,7 @@ console.log(moment().format());
 нелокальными побочными эффектами также могут негативно влиять как на размер приложения, так и на производительность во
 время выполнения.
 
-### Изменения расположения выходных файлов {#output-location-changes}
+### Изменения расположения выходных файлов
 
 По умолчанию после успешной сборки билдером `application` бандл располагается в каталоге `dist/<project-name>/browser` (
 вместо `dist/<project-name>` для билдера `browser`).
@@ -695,7 +695,7 @@ console.log(moment().format());
 можете [настроить путь вывода](reference/configs/workspace-config#output-path-configuration) в соответствии с вашими
 потребностями.
 
-## Сообщения об ошибках {#bug-reports}
+## Сообщения об ошибках
 
 Сообщайте о проблемах и запросах на новые функции на [GitHub](https://github.com/angular/angular-cli/issues).
 

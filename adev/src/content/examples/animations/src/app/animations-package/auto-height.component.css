@@ -1,0 +1,13 @@
+.container {
+  display: block;
+  overflow: hidden;
+}
+
+.container .content {
+  padding: 20px;
+  margin-top: 1em;
+  font-weight: bold;
+  font-size: 20px;
+  background-color: blue;
+  color: #ebebeb;
+}

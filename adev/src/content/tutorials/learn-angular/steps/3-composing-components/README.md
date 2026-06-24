@@ -16,24 +16,23 @@
 
 <docs-workflow>
 
-<docs-step title="Add a reference to `User`">
+<docs-step title="Добавьте ссылку на `User`">
 Обновите шаблон `App`, чтобы включить ссылку на `User`, который использует селектор `app-user`. Обязательно добавьте `User` в массив `imports` компонента `App`, это сделает его доступным для использования в шаблоне `App`.
 
-```angular-html
-template: `<app-user />`, imports: [User]
+```ts
+template: `<app-user />`,
+imports: [User]
 ```
 
 Теперь компонент отображает сообщение `Username: youngTech`. Вы можете обновить код шаблона, чтобы включить больше
 разметки.
 </docs-step>
 
-<docs-step title="Add more markup">
+<docs-step title="Добавьте больше разметки">
 Поскольку в шаблоне можно использовать любую HTML-разметку, попробуйте обновить шаблон для `App`, добавив больше HTML-элементов. В этом примере мы добавим элемент `<section>` в качестве родителя для элемента `<app-user>`.
 
-```angular-html
-template: `
-<section><app-user /></section>
-`,
+```ts
+template: `<section><app-user /></section>`,
 ```
 
 </docs-step>

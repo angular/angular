@@ -1,0 +1,39 @@
+<div class="example-container">
+  <h2>Available numbers</h2>
+
+  <div
+    id="all"
+    cdkDropList
+    [cdkDropListData]="all"
+    cdkDropListConnectedTo="even"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)"
+    [cdkDropListEnterPredicate]="noReturnPredicate">
+    @for (number of all; track number) {
+      <div
+          class="example-box"
+          [cdkDragData]="number"
+          cdkDrag>{{number}}</div>
+    }
+  </div>
+</div>
+
+<div class="example-container">
+  <h2>Even numbers</h2>
+
+  <div
+    id="even"
+    cdkDropList
+    [cdkDropListData]="even"
+    cdkDropListConnectedTo="all"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)"
+    [cdkDropListEnterPredicate]="evenPredicate">
+    @for (number of even; track number) {
+      <div
+          class="example-box"
+          cdkDrag
+          [cdkDragData]="number">{{number}}</div>
+    }
+  </div>
+</div>

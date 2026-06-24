@@ -90,6 +90,3 @@ export function initNgDevMode(): boolean {
   }
   return false;
 }
-
-// This fixes the RollupError: Exported variable "global" is not defined.
-export {};

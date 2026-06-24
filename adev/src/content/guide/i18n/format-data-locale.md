@@ -10,7 +10,7 @@ Angular предоставляет следующие встроенные [Pipe
 | [`DecimalPipe`][ApiCommonDecimalpipe]   | Преобразует число в строку десятичного числа. |
 | [`PercentPipe`][ApiCommonPercentpipe]   | Преобразует число в строку процентов.         |
 
-## Использование DatePipe для отображения текущей даты {#use-datepipe-to-display-the-current-date}
+## Использование DatePipe для отображения текущей даты
 
 Чтобы отобразить текущую дату в формате для текущей локали, используйте следующий формат для `DatePipe`.
 
@@ -18,7 +18,7 @@ Angular предоставляет следующие встроенные [Pipe
 {{ today | date }}
 ```
 
-## Переопределение текущей локали для CurrencyPipe {#override-current-locale-for-currencypipe}
+## Переопределение текущей локали для CurrencyPipe
 
 Добавьте параметр `locale` в Pipe, чтобы переопределить текущее значение токена `LOCALE_ID`.
 
@@ -26,12 +26,12 @@ Angular предоставляет следующие встроенные [Pipe
 `CurrencyPipe`
 
 ```angular-html
-{{ amount | currency: 'en-US' }}
+{{ amount | currency : 'en-US' }}
 ```
 
 HELPFUL: Локаль, указанная для `CurrencyPipe`, переопределяет глобальный токен `LOCALE_ID` вашего приложения.
 
-## Что дальше {#whats-next}
+## Что дальше
 
 <docs-pill-row>
   <docs-pill href="guide/i18n/prepare" title="Подготовка компонента к переводу"/>

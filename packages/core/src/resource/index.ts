@@ -7,6 +7,4 @@
  */
 
 export * from './api';
-export {debounced} from './debounce';
-export {resourceFromSnapshots} from './from_snapshots';
 export {resource} from './resource';

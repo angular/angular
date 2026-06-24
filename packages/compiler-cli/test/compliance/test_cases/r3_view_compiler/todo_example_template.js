@@ -1,11 +1,4 @@
 import { Component, Input, NgModule } from '@angular/core';
 …
-export class MyApp {
-  …
-  static ɵcmp = …;
-}
-…
-export class TodoComponent {
-  …
-  static ɵcmp = …;
-}
+MyApp.ɵcmp = …;
+TodoComponent.ɵcmp = …;

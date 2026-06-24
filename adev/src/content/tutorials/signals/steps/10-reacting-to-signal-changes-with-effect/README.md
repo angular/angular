@@ -22,7 +22,7 @@
 
 <docs-workflow>
 
-<docs-step title="Import effect function">
+<docs-step title="Импорт функции effect">
 Добавьте `effect` в существующие импорты.
 
 ```ts
@@ -34,7 +34,7 @@ import {Component, signal, computed, effect, ChangeDetectionStrategy} from '@ang
 которые он читает.
 </docs-step>
 
-<docs-step title="Create an effect for local storage">
+<docs-step title="Создание эффекта для local storage">
 Добавьте эффект, который автоматически сохраняет тему в локальное хранилище (local storage) при её изменении.
 
 ```ts
@@ -50,7 +50,7 @@ constructor() {
 Этот эффект запускается всякий раз, когда меняется сигнал темы, автоматически сохраняя предпочтения пользователя.
 </docs-step>
 
-<docs-step title="Create an effect for logging user activity">
+<docs-step title="Создание эффекта для логирования активности пользователя">
 Добавьте эффект, который логирует вход или выход пользователя из системы.
 
 ```ts
@@ -69,7 +69,7 @@ constructor() {
 Этот пример демонстрирует, как эффекты могут читать несколько сигналов и реагировать на изменения в любом из них.
 </docs-step>
 
-<docs-step title="Create an effect with cleanup">
+<docs-step title="Создание эффекта с очисткой">
 Добавьте эффект, который устанавливает таймер и выполняет очистку при уничтожении компонента.
 
 ```ts
@@ -94,7 +94,7 @@ constructor() {
 Этот эффект демонстрирует, как очищать ресурсы при уничтожении или повторном запуске эффектов.
 </docs-step>
 
-<docs-step title="Test the effects">
+<docs-step title="Проверка эффектов">
 Откройте консоль браузера и повзаимодействуйте с приложением:
 
 - **Toggle Theme** — Убедитесь, что данные сохраняются в localStorage и появляются логи таймера.

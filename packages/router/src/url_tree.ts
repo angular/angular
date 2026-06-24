@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Injectable, ɵRuntimeError as RuntimeError, Signal} from '@angular/core';
+import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
-import type {Router} from './router';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalArraysOrString, shallowEqual} from './utils/collection';
 
@@ -18,7 +17,7 @@ import {equalArraysOrString, shallowEqual} from './utils/collection';
  * for the current router state.
  *
  * @publicApi
- * @see {@link isActive}
+ * @see {@link Router#isActive}
  */
 export interface IsActiveMatchOptions {
   /**
@@ -79,56 +78,6 @@ const paramCompareMap: Record<ParamMatchOptions, ParamCompareFn> = {
   'subset': containsParams,
   'ignored': () => true,
 };
-
-/**
- * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `true`
- * (exact = true).
- */
-export const exactMatchOptions: IsActiveMatchOptions = {
-  paths: 'exact',
-  fragment: 'ignored',
-  matrixParams: 'ignored',
-  queryParams: 'exact',
-};
-
-/**
- * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `false`
- * (exact = false).
- */
-export const subsetMatchOptions: IsActiveMatchOptions = {
-  paths: 'subset',
-  fragment: 'ignored',
-  matrixParams: 'ignored',
-  queryParams: 'subset',
-};
-
-/**
- * Returns a computed signal of whether the given url is activated in the Router.
- *
- * As the router state changes, the signal will update to reflect whether the url is active.
- *
- * When using the `matchOptions` argument, any missing properties fall back to the following defaults:
- * - `paths`: 'subset'
- * - `queryParams`: 'subset'
- * - `matrixParams`: 'ignored'
- * - `fragment`: 'ignored'
- *
- * @see [Check if a URL is active](guide/routing/read-route-state#check-if-a-url-is-active)
- * @publicApi 21.1
- */
-export function isActive(
-  url: string | UrlTree,
-  router: Router,
-  matchOptions?: Partial<IsActiveMatchOptions>,
-): Signal<boolean> {
-  const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
-  return computed(() =>
-    containsTree(router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(), urlTree, {
-      ...subsetMatchOptions,
-      ...matchOptions,
-    }),
-  );
-}
 
 export function containsTree(
   container: UrlTree,
@@ -285,7 +234,7 @@ export class UrlTree {
     return this._queryParamMap;
   }
 
-  /** @docs-private */
+  /** @docsNotRequired */
   toString(): string {
     return DEFAULT_SERIALIZER.serialize(this);
   }
@@ -323,7 +272,7 @@ export class UrlSegmentGroup {
     return Object.keys(this.children).length;
   }
 
-  /** @docs-private */
+  /** @docsNotRequired */
   toString(): string {
     return serializePaths(this);
   }
@@ -372,7 +321,7 @@ export class UrlSegment {
     return this._parameterMap;
   }
 
-  /** @docs-private */
+  /** @docsNotRequired */
   toString(): string {
     return serializePath(this);
   }
@@ -639,13 +588,7 @@ class UrlParser {
     return this.consumeOptional('#') ? decodeURIComponent(this.remaining) : null;
   }
 
-  private parseChildren(depth = 0): {[outlet: string]: UrlSegmentGroup} {
-    if (depth > 50) {
-      throw new RuntimeError(
-        RuntimeErrorCode.UNPARSABLE_URL,
-        (typeof ngDevMode === 'undefined' || ngDevMode) && 'URL is too deep',
-      );
-    }
+  private parseChildren(): {[outlet: string]: UrlSegmentGroup} {
     if (this.remaining === '') {
       return {};
     }
@@ -665,12 +608,12 @@ class UrlParser {
     let children: {[outlet: string]: UrlSegmentGroup} = {};
     if (this.peekStartsWith('/(')) {
       this.capture('/');
-      children = this.parseParens(true, depth);
+      children = this.parseParens(true);
     }
 
     let res: {[outlet: string]: UrlSegmentGroup} = {};
     if (this.peekStartsWith('(')) {
-      res = this.parseParens(false, depth);
+      res = this.parseParens(false);
     }
 
     if (segments.length > 0 || Object.keys(children).length > 0) {
@@ -756,7 +699,7 @@ class UrlParser {
   }
 
   // parse `(a/b//outlet_name:c/d)`
-  private parseParens(allowPrimary: boolean, depth: number): {[outlet: string]: UrlSegmentGroup} {
+  private parseParens(allowPrimary: boolean): {[outlet: string]: UrlSegmentGroup} {
     const segments: {[key: string]: UrlSegmentGroup} = {};
     this.capture('(');
 
@@ -783,7 +726,7 @@ class UrlParser {
         outletName = PRIMARY_OUTLET;
       }
 
-      const children = this.parseChildren(depth + 1);
+      const children = this.parseChildren();
       segments[outletName ?? PRIMARY_OUTLET] =
         Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]

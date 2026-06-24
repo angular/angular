@@ -34,6 +34,8 @@ export interface KeyValueDiffer<K, V> {
    * `diff()` invocation.
    */
   diff(object: {[key: string]: V}): KeyValueChanges<string, V> | null;
+  // TODO(TS2.1): diff<KP extends string>(this: KeyValueDiffer<KP, V>, object: Record<KP, V>):
+  // KeyValueDiffer<KP, V>;
 }
 
 /**
@@ -133,7 +135,7 @@ export class KeyValueDiffers {
     this.factories = factories;
   }
 
-  static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
+  static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (parent) {
       const copied = parent.factories.slice();
       factories = factories.concat(copied);
@@ -161,7 +163,7 @@ export class KeyValueDiffers {
    * })
    * ```
    */
-  static extend(factories: KeyValueDifferFactory[]): StaticProvider {
+  static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider {
     return {
       provide: KeyValueDiffers,
       useFactory: () => {

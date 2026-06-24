@@ -4,7 +4,7 @@
 данных и доступа к другим бэкенд-сервисам. Angular предоставляет клиентский HTTP API для приложений Angular — класс
 сервиса `HttpClient` в пакете `@angular/common/http`.
 
-## Возможности HTTP-клиента {#http-client-service-features}
+## Возможности HTTP-клиента
 
 Сервис HTTP-клиента предлагает следующие основные возможности:
 
@@ -13,7 +13,7 @@
 - [Перехват](guide/http/interceptors) запросов и ответов
 - Надежные [утилиты для тестирования](guide/http/testing)
 
-## Что дальше {#whats-next}
+## Что дальше
 
 <docs-pill-row>
   <docs-pill href="guide/http/setup" title="Настройка HttpClient"/>

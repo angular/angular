@@ -1,5 +1,3 @@
-@use './links' as links;
-
 /* Common styles for the API & CLI references */
 @mixin reference-common() {
   .docs-code {
@@ -51,7 +49,7 @@
     }
 
     .docs-reference-category {
-      color: var(--quaternary-contrast);
+      color: var(--gray-400);
       font-size: 0.875rem;
       font-weight: 500;
       line-height: 1.4rem;
@@ -64,40 +62,14 @@
   }
 
   .docs-reference-section-heading {
-    margin-block-start: 3rem;
+    padding-block-start: 3rem;
 
     &--sub {
-      margin-block-start: 1rem;
+      padding-block-start: 1rem;
     }
 
     & > a {
       color: inherit;
-    }
-  }
-
-  .docs-api,
-  .docs-cli {
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      .docs-anchor {
-        color: inherit;
-      }
-
-      // Show copy link button when hovering the heading
-      &:hover docs-copy-link-button {
-        opacity: 1;
-      }
-    }
-
-    a:not(.docs-github-links):not(.docs-pill):not(.docs-example-github-link) {
-      &[href^='http:'],
-      &[href^='https:'] {
-        @include links.external-link-with-icon();
-      }
     }
   }
 
@@ -260,7 +232,7 @@
           background-color: var(--septenary-contrast);
         }
 
-        &:focus-visible {
+        &:focus {
           background-color: var(--senary-contrast);
 
           span {
@@ -425,14 +397,6 @@
 
       .docs-ref-content {
         padding: 1rem 0;
-
-        .docs-ref-option-and-description {
-          .docs-reference-option {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-          }
-        }
 
         &:not(:first-child) {
           border-block-start: 1px solid var(--senary-contrast);

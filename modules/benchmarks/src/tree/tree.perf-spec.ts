@@ -7,7 +7,7 @@
  */
 
 import {$} from 'protractor';
-import {runTreeBenchmark} from './test_utils.js';
+import {runTreeBenchmark} from './test_utils';
 
 describe('tree benchmark perf', () => {
   it('should work for createOnly', async () => {

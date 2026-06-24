@@ -1,0 +1,8 @@
+<!-- #docplaster -->
+<h2>Open / Close Example</h2>
+
+<button type="button" (click)="toggle()">Toggle Open/Close</button>
+
+<div class="open-close-container" [class.open]="isOpen()">
+  <p>The box is now {{ isOpen() ? 'Open' : 'Closed' }}!</p>
+</div>

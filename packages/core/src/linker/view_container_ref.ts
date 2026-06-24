@@ -22,7 +22,6 @@ import {assertNodeInjector} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {getComponentDef} from '../render3/def_getters';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
-import {nativeInsertBefore} from '../render3/dom_node_manipulation';
 import {
   CONTAINER_HEADER_OFFSET,
   DEHYDRATED_VIEWS,
@@ -52,6 +51,7 @@ import {
 } from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
 import {destroyLView} from '../render3/node_manipulation';
+import {nativeInsertBefore} from '../render3/dom_node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {
   getParentInjectorIndex,
@@ -70,15 +70,14 @@ import {
   throwError,
 } from '../util/assert';
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
-import {addToEndOfViewTree} from '../render3/view/construction';
-import {addLViewToLContainer, createLContainer, detachView} from '../render3/view/container';
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
+import {addLViewToLContainer, createLContainer, detachView} from '../render3/view/container';
+import {addToEndOfViewTree} from '../render3/view/construction';
+import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -124,7 +123,6 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  *
  * @see {@link ComponentRef}
  * @see {@link EmbeddedViewRef}
- * @see [Using ViewContainerRef](guide/components/programmatic-rendering#using-viewcontainerref)
  *
  * @publicApi
  */
@@ -333,7 +331,11 @@ export function injectViewContainerRef(): ViewContainerRef {
   return createContainerRef(previousTNode, getLView());
 }
 
-class R3ViewContainerRef extends ViewContainerRef {
+const VE_ViewContainerRef = ViewContainerRef;
+
+// TODO(alxhub): cleaning up this indirection triggers a subtle bug in Closure in g3. Once the fix
+// for that lands, this can be cleaned up.
+const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   constructor(
     private _lContainer: LContainer,
     private _hostTNode: TElementNode | TContainerNode | TElementContainerNode,
@@ -589,10 +591,7 @@ class R3ViewContainerRef extends ViewContainerRef {
     const lView = (viewRef as R3ViewRef<any>)._lView!;
 
     if (ngDevMode && viewRef.destroyed) {
-      throw new RuntimeError(
-        RuntimeErrorCode.VIEW_DESTROYED_INSERT_ERROR,
-        ngDevMode && 'Cannot insert a destroyed View in a ViewContainer!',
-      );
+      throw new Error('Cannot insert a destroyed View in a ViewContainer!');
     }
 
     if (viewAttachedToContainer(lView)) {
@@ -641,10 +640,7 @@ class R3ViewContainerRef extends ViewContainerRef {
 
   override move(viewRef: ViewRef, newIndex: number): ViewRef {
     if (ngDevMode && viewRef.destroyed) {
-      throw new RuntimeError(
-        RuntimeErrorCode.VIEW_DESTROYED_MOVE_ERROR,
-        ngDevMode && 'Cannot move a destroyed View in a ViewContainer!',
-      );
+      throw new Error('Cannot move a destroyed View in a ViewContainer!');
     }
     return this.insert(viewRef, newIndex);
   }
@@ -690,7 +686,7 @@ class R3ViewContainerRef extends ViewContainerRef {
     }
     return index;
   }
-}
+};
 
 function getViewRefs(lContainer: LContainer): ViewRef[] | null {
   return lContainer[VIEW_REFS] as ViewRef[];

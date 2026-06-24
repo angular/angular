@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Restriction} from './restriction';
 import {
   addEvents,
   createEarlyJsactionData,
@@ -32,7 +33,10 @@ export function getGlobalQueuedEventInfos() {
 }
 
 /** Registers a dispatcher function on the `EarlyJsactionData` present on the window. */
-export function registerGlobalDispatcher(dispatcher: (eventInfo: EventInfo) => void) {
+export function registerGlobalDispatcher(
+  restriction: Restriction,
+  dispatcher: (eventInfo: EventInfo) => void,
+) {
   registerDispatcher(window._ejsa, dispatcher);
 }
 

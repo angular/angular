@@ -19,6 +19,7 @@ import {
   HttpParams,
   HttpStatusCode,
   provideHttpClient,
+  withFetch,
 } from '../public_api';
 import {FetchBackend, FetchFactory} from '../src/fetch';
 
@@ -51,7 +52,7 @@ const TEST_POST_WITH_JSON_BODY = new HttpRequest(
 
 const XSSI_PREFIX = ")]}'\n";
 
-describe('FetchBackend', () => {
+describe('FetchBackend', async () => {
   let fetchMock: MockFetchFactory = null!;
   let backend: FetchBackend = null!;
   let fetchSpy: jasmine.Spy<typeof fetch>;
@@ -507,7 +508,7 @@ describe('FetchBackend', () => {
       fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
     });
   });
-  describe('gets response URL', () => {
+  describe('gets response URL', async () => {
     it('from the response URL', (done) => {
       backend
         .handle(TEST_POST)
@@ -537,7 +538,7 @@ describe('FetchBackend', () => {
       fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
     });
   });
-  describe('corrects for quirks', () => {
+  describe('corrects for quirks', async () => {
     it('by normalizing 0 status to 200 if a body is present', (done) => {
       backend
         .handle(TEST_POST)
@@ -569,7 +570,7 @@ describe('FetchBackend', () => {
     beforeEach(() => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient()],
+        providers: [provideHttpClient(withFetch())],
       });
     });
 

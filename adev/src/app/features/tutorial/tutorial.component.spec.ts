@@ -111,13 +111,15 @@ describe('Tutorial', () => {
       },
     });
 
+    await TestBed;
+
     fixture = TestBed.createComponent(Tutorial);
     component = fixture.componentInstance;
 
     // Replace EmbeddedEditor with FakeEmbeddedEditor
     spyOn(component as any, 'loadEmbeddedEditorComponent').and.resolveTo(FakeEmbeddedEditor);
 
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -131,7 +133,7 @@ describe('Tutorial', () => {
 
   it('should reset the reveal answer', async () => {
     setupResetRevealAnswerValues();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const revealAnswerButton = component.revealAnswerButton();
     if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
@@ -147,7 +149,7 @@ describe('Tutorial', () => {
 
   it('should reveal the answer on button click', async () => {
     setupRevealAnswerValues();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const revealAnswerButton = component.revealAnswerButton();
     if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
@@ -163,13 +165,14 @@ describe('Tutorial', () => {
     expect(embeddedTutorialManagerRevealAnswerSpy).toHaveBeenCalled();
 
     await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(revealAnswerButton.nativeElement.textContent?.trim()).toBe('Reset');
   });
 
   it('should not reveal the answer when button is disabled', async () => {
     setupDisabledRevealAnswerValues();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const revealAnswerButton = component.revealAnswerButton();
     if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
@@ -184,9 +187,9 @@ describe('Tutorial', () => {
     expect(handleRevealAnswerSpy).not.toHaveBeenCalled();
   });
 
-  it('should not render the reveal answer button when there are no answers', async () => {
+  it('should not render the reveal answer button when there are no answers', () => {
     setupNoRevealAnswerValues();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(component.revealAnswerButton()).toBe(undefined);
   });

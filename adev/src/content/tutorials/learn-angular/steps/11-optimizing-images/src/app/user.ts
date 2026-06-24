@@ -8,7 +8,7 @@ import {Component} from '@angular/core';
     <ul>
       <li>
         Static Image:
-        <img src="/logo.svg" alt="Angular logo" />
+        <img src="/assets/logo.svg" alt="Angular logo" />
       </li>
       <li>
         Dynamic Image:
@@ -19,7 +19,7 @@ import {Component} from '@angular/core';
   imports: [],
 })
 export class User {
-  logoUrl = '/logo.svg';
+  logoUrl = '/assets/logo.svg';
   logoAlt = 'Angular logo';
   username = 'youngTech';
 }

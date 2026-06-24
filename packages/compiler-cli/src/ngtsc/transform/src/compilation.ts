@@ -119,7 +119,6 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     private semanticDepGraphUpdater: SemanticDepGraphUpdater | null,
     private sourceFileTypeIdentifier: SourceFileTypeIdentifier,
     private emitDeclarationOnly: boolean,
-    private emitIntermediateTs: boolean,
   ) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);

@@ -13,7 +13,7 @@ UI-компонентов, таких как чекбоксы, слайдеры 
 
 <docs-workflow>
 
-<docs-step title="Set up the custom checkbox with model signal">
+<docs-step title="Настройка пользовательского чекбокса с сигналом model()">
 Создайте сигнал `model()` в компоненте `custom-checkbox`, который может как получать, так и обновлять значение родителя.
 
 ```ts
@@ -31,12 +31,15 @@ label = input<string>('');
 записывать.
 </docs-step>
 
-<docs-step title="Create the checkbox template">
+<docs-step title="Создание шаблона чекбокса">
 Создайте шаблон чекбокса, который реагирует на клики и обновляет свою модель.
 
 ```html
 <label class="custom-checkbox">
-  <input type="checkbox" [checked]="checked()" (change)="toggle()" />
+  <input
+    type="checkbox"
+    [checked]="checked()"
+    (change)="toggle()">
   <span class="checkmark"></span>
   {{ label() }}
 </label>
@@ -45,7 +48,7 @@ label = input<string>('');
 Компонент считывает данные из своего сигнала `model()` и имеет метод для его обновления.
 </docs-step>
 
-<docs-step title="Add the toggle method">
+<docs-step title="Добавление метода переключения">
 Реализуйте метод `toggle`, который обновляет сигнал `model()` при клике на чекбокс.
 
 ```ts
@@ -59,7 +62,7 @@ toggle() {
 ключевое отличие от сигналов `input()`.
 </docs-step>
 
-<docs-step title="Set up two-way binding in the parent">
+<docs-step title="Настройка двусторонней привязки в родительском компоненте">
 Сначала раскомментируйте свойства model-сигналов и методы в `app.ts`:
 
 ```ts
@@ -112,7 +115,7 @@ resetAll() {
 обратно родителю путем генерации события, которое ссылается на сам сигнал и _не_ вызывает геттер сигнала напрямую.
 </docs-step>
 
-<docs-step title="Test the two-way binding">
+<docs-step title="Проверка двусторонней привязки">
 Взаимодействуйте с приложением, чтобы увидеть двустороннюю привязку в действии:
 
 1. **Нажмите на чекбоксы** — Компонент обновляет свое состояние и уведомляет родителя

@@ -6,9 +6,7 @@
 Компоненты Angular могут определять пользовательские события, присваивая свойству результат вызова функции `output`:
 
 ```ts {highlight:[3]}
-@Component({
-  /*...*/
-})
+@Component({/*...*/})
 export class ExpandablePanel {
   panelClosed = output<void>();
 }
@@ -22,7 +20,7 @@ export class ExpandablePanel {
 `OutputEmitterRef`:
 
 ```ts
-this.panelClosed.emit();
+  this.panelClosed.emit();
 ```
 
 Angular называет свойства, инициализированные функцией `output`, **outputs** (выходными свойствами). Вы можете
@@ -37,7 +35,7 @@ Angular называет свойства, инициализированные 
 Функция `output` имеет особое значение для компилятора Angular. **Вызывать `output` можно исключительно в
 инициализаторах свойств компонентов и директив.**
 
-## Передача данных события {#emitting-event-data}
+## Передача данных события
 
 Вы можете передавать данные события при вызове `emit`:
 
@@ -49,7 +47,7 @@ this.valueChanged.emit(7);
 this.thumbDropped.emit({
   pointerX: 123,
   pointerY: 456,
-});
+})
 ```
 
 При определении слушателя событий в шаблоне вы можете получить доступ к данным события через переменную `$event`:
@@ -72,14 +70,12 @@ export class App {
 
 ```
 
-## Настройка имен output-свойств {#customizing-output-names}
+## Настройка имен output-свойств
 
 Функция `output` принимает параметр, который позволяет указать другое имя для события в шаблоне:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component({/*...*/})
 export class CustomSlider {
   changed = output({alias: 'valueChanged'});
 }
@@ -95,7 +91,7 @@ export class CustomSlider {
 полезна для переименования свойств с сохранением псевдонима для исходного имени или для предотвращения конфликтов с
 именами нативных событий DOM.
 
-## Программная подписка на outputs {#subscribing-to-outputs-programmatically}
+## Программная подписка на outputs
 
 При динамическом создании компонента вы можете программно подписаться на output-события экземпляра компонента. Тип
 `OutputRef` включает метод `subscribe`:
@@ -103,7 +99,7 @@ export class CustomSlider {
 ```ts
 const someComponentRef: ComponentRef<SomeComponent> = viewContainerRef.createComponent(/*...*/);
 
-someComponentRef.instance.someEventProperty.subscribe((eventData) => {
+someComponentRef.instance.someEventProperty.subscribe(eventData => {
   console.log(eventData);
 });
 ```
@@ -112,7 +108,7 @@ Angular автоматически очищает подписки на собы
 можете отписаться от события вручную. Функция `subscribe` возвращает `OutputRefSubscription` с методом `unsubscribe`:
 
 ```ts
-const eventSubscription = someComponent.someEventProperty.subscribe((eventData) => {
+const eventSubscription = someComponent.someEventProperty.subscribe(eventData => {
   console.log(eventData);
 });
 
@@ -121,7 +117,7 @@ const eventSubscription = someComponent.someEventProperty.subscribe((eventData) 
 eventSubscription.unsubscribe();
 ```
 
-## Выбор имен событий {#choosing-event-names}
+## Выбор имен событий
 
 Избегайте выбора имен output-свойств, которые конфликтуют с событиями элементов DOM, таких как HTMLElement. Конфликты
 имен создают путаницу относительно того, принадлежит ли привязанное свойство компоненту или элементу DOM.
@@ -133,12 +129,12 @@ eventSubscription.unsubscribe();
 Всегда используйте имена в [camelCase](https://en.wikipedia.org/wiki/Camel_case). Избегайте префикса "on" в именах
 output-свойств.
 
-## Использование outputs с RxJS {#using-outputs-with-rxjs}
+## Использование outputs с RxJS
 
 Подробнее о взаимодействии между outputs и RxJS см. в
 разделе [Взаимодействие RxJS с outputs компонентов и директив](ecosystem/rxjs-interop/output-interop).
 
-## Объявление outputs с помощью декоратора `@Output` {#declaring-outputs-with-the-output-decorator}
+## Объявление outputs с помощью декоратора `@Output`
 
 СОВЕТ: Хотя команда Angular рекомендует использовать функцию `output` для новых проектов, оригинальный API на основе
 декоратора `@Output` по-прежнему полностью поддерживается.
@@ -147,9 +143,7 @@ output-свойств.
 добавляя декоратор `@Output`:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component({/*...*/})
 export class ExpandablePanel {
   @Output() panelClosed = new EventEmitter<void>();
 }
@@ -157,14 +151,12 @@ export class ExpandablePanel {
 
 Сгенерировать событие можно, вызвав метод `emit` у `EventEmitter`.
 
-### Псевдонимы с декоратором `@Output` {#aliases-with-the-output-decorator}
+### Псевдонимы с декоратором `@Output`
 
 Декоратор `@Output` принимает параметр, позволяющий указать другое имя для события в шаблоне:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component({/*...*/})
 export class CustomSlider {
   @Output('valueChanged') changed = new EventEmitter<number>();
 }
@@ -176,7 +168,7 @@ export class CustomSlider {
 
 Этот псевдоним не влияет на использование свойства в TypeScript-коде.
 
-## Указание outputs в декораторе `@Component` {#specify-outputs-in-the-component-decorator}
+## Указание outputs в декораторе `@Component`
 
 Помимо декоратора `@Output`, вы также можете указать outputs компонента с помощью свойства `outputs` в декораторе
 `@Component`. Это может быть полезно, когда компонент наследует свойство от базового класса:

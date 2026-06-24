@@ -16,16 +16,16 @@
 
 <docs-workflow>
 
-<docs-step title="Import the submit function">
+<docs-step title="Импорт функции submit">
 Импортируйте функцию `submit` из `@angular/forms/signals`:
 
 ```ts
-import {form, FormField, required, email, submit} from '@angular/forms/signals';
+import { form, Field, required, email, submit } from '@angular/forms/signals';
 ```
 
 </docs-step>
 
-<docs-step title="Add the onSubmit method">
+<docs-step title="Добавление метода onSubmit">
 В класс вашего компонента добавьте метод `onSubmit()`, который обрабатывает отправку формы:
 
 ```ts
@@ -43,20 +43,22 @@ onSubmit(event: Event) {
 управляет состоянием отправки формы.
 </docs-step>
 
-<docs-step title="Bind the submit handler to the form">
+<docs-step title="Привязка обработчика отправки к форме">
 В вашем шаблоне привяжите метод `onSubmit()` к событию отправки формы:
 
 ```html
-<form (submit)="onSubmit($event)"></form>
+<form (submit)="onSubmit($event)">
 ```
 
 </docs-step>
 
-<docs-step title="Disable the button when form is invalid">
+<docs-step title="Отключение кнопки, когда форма невалидна">
 Обновите кнопку отправки, чтобы она была отключена, когда форма невалидна:
 
 ```html
-<button type="submit" [disabled]="loginForm().invalid()">Log in</button>
+<button type="submit" [disabled]="loginForm().invalid()">
+  Log in
+</button>
 ```
 
 Это предотвращает отправку, если в форме есть ошибки валидации.

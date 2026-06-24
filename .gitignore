@@ -54,6 +54,3 @@ baseline.json
 
 # Ignore cache created with the Angular CLI.
 .angular/
-
-# pnpm store
-.pnpm-store

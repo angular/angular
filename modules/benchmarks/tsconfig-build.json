@@ -3,7 +3,7 @@
     "lib": ["dom", "es2022"],
     "types": [],
     "module": "esnext",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node10",
     "declaration": true,
     "sourceMap": true,
     "paths": {

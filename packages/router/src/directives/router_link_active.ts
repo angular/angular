@@ -21,14 +21,13 @@ import {
   QueryList,
   Renderer2,
   SimpleChanges,
-  untracked,
 } from '@angular/core';
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
-import {isActive, IsActiveMatchOptions, exactMatchOptions, subsetMatchOptions} from '../url_tree';
+import {IsActiveMatchOptions} from '../url_tree';
 
 import {RouterLink} from './router_link';
 
@@ -125,13 +124,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   /**
    * Options to configure how to determine if the router link is active.
    *
-   * These options are passed to the `isActive()` function.
+   * These options are passed to the `Router.isActive()` function.
    *
-   * @see {@link isActive}
+   * @see {@link Router#isActive}
    */
-  @Input() routerLinkActiveOptions: {exact: boolean} | Partial<IsActiveMatchOptions> = {
-    exact: false,
-  };
+  @Input() routerLinkActiveOptions: {exact: boolean} | IsActiveMatchOptions = {exact: false};
 
   /**
    * Aria-current attribute to apply when the router link is active.
@@ -249,18 +246,15 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private isLinkActive(router: Router): (link: RouterLink) => boolean {
-    const options: Partial<IsActiveMatchOptions> = isActiveMatchOptions(
+    const options: boolean | IsActiveMatchOptions = isActiveMatchOptions(
       this.routerLinkActiveOptions,
     )
       ? this.routerLinkActiveOptions
       : // While the types should disallow `undefined` here, it's possible without strict inputs
-        (this.routerLinkActiveOptions.exact ?? false)
-        ? {...exactMatchOptions}
-        : {...subsetMatchOptions};
-
+        this.routerLinkActiveOptions.exact || false;
     return (link: RouterLink) => {
       const urlTree = link.urlTree;
-      return urlTree ? untracked(isActive(urlTree, router, options)) : false;
+      return urlTree ? router.isActive(urlTree, options) : false;
     };
   }
 
@@ -274,8 +268,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
  * Use instead of `'paths' in options` to be compatible with property renaming
  */
 function isActiveMatchOptions(
-  options: {exact: boolean} | Partial<IsActiveMatchOptions>,
-): options is Partial<IsActiveMatchOptions> {
-  const o = options as Partial<IsActiveMatchOptions>;
-  return !!(o.paths || o.matrixParams || o.queryParams || o.fragment);
+  options: {exact: boolean} | IsActiveMatchOptions,
+): options is IsActiveMatchOptions {
+  return !!(options as IsActiveMatchOptions).paths;
 }

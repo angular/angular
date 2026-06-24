@@ -21,13 +21,13 @@ import {Translator} from '../translator';
  *
  * This implementation will emit the definition and the constant statements separately.
  */
-export class EmitScope<TStatement, TExpression, TType> {
+export class EmitScope<TStatement, TExpression> {
   readonly constantPool = new ConstantPool();
 
   constructor(
     protected readonly ngImport: TExpression,
-    protected readonly translator: Translator<TStatement, TExpression, TType>,
-    private readonly factory: AstFactory<TStatement, TExpression, TType>,
+    protected readonly translator: Translator<TStatement, TExpression>,
+    private readonly factory: AstFactory<TStatement, TExpression>,
   ) {}
 
   /**
@@ -38,7 +38,7 @@ export class EmitScope<TStatement, TExpression, TType> {
   translateDefinition(definition: LinkedDefinition): TExpression {
     const expression = this.translator.translateExpression(
       definition.expression,
-      new LinkerImportGenerator<TStatement, TExpression, TType>(this.factory, this.ngImport),
+      new LinkerImportGenerator(this.factory, this.ngImport),
     );
 
     if (definition.statements.length > 0) {
@@ -47,10 +47,7 @@ export class EmitScope<TStatement, TExpression, TType> {
       // insert statements after definitions. To work around this, the linker transforms the
       // definition into an IIFE which executes the definition statements before returning the
       // definition expression.
-      const importGenerator = new LinkerImportGenerator<TStatement, TExpression, TType>(
-        this.factory,
-        this.ngImport,
-      );
+      const importGenerator = new LinkerImportGenerator(this.factory, this.ngImport);
       return this.wrapInIifeWithStatements(
         expression,
         definition.statements.map((statement) =>
@@ -67,10 +64,7 @@ export class EmitScope<TStatement, TExpression, TType> {
    * Return any constant statements that are shared between all uses of this `EmitScope`.
    */
   getConstantStatements(): TStatement[] {
-    const importGenerator = new LinkerImportGenerator<TStatement, TExpression, TType>(
-      this.factory,
-      this.ngImport,
-    );
+    const importGenerator = new LinkerImportGenerator(this.factory, this.ngImport);
     return this.constantPool.statements.map((statement) =>
       this.translator.translateStatement(statement, importGenerator),
     );

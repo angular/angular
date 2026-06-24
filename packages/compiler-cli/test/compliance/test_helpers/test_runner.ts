@@ -52,11 +52,9 @@ export function runTests(
     isLocalCompilation?: boolean;
     emitDeclarationOnly?: boolean;
     skipMappingChecks?: boolean;
-    checkErrorsOnly?: boolean;
   } = {},
 ) {
   describe(`compliance tests (${type})`, () => {
-    let counter = 0;
     for (const test of getAllComplianceTests()) {
       if (!test.compilationModeFilter.includes(type)) {
         continue;
@@ -65,7 +63,7 @@ export function runTests(
         continue;
       }
 
-      describe(`[${test.relativePath}]/${counter++}`, () => {
+      describe(`[${test.relativePath}]`, () => {
         const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
         itFn(test.description, () => {
           if (type === 'linked compile' && test.compilerOptions?.['target'] === 'ES5') {
@@ -86,8 +84,6 @@ export function runTests(
                 expectation.expectedErrors,
                 errors,
               );
-            } else if (options.checkErrorsOnly) {
-              checkNoUnexpectedErrors(test.relativePath, errors);
             } else if (!!options.emitDeclarationOnly) {
               checkNoUnexpectedErrors(test.relativePath, errors);
               checkTypeDeclarations(fs, emittedFiles);

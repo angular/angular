@@ -6,6 +6,7 @@ filegroup(
     name = "context",
     srcs = glob([
         "**/*.md",
+        "**/*.txt",
         "**/*.mdc",
     ]),
     visibility = ["//visibility:public"],

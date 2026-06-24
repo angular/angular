@@ -1,16 +1,15 @@
-/*!
+/**
  * @license
- * Copyright Google LLC All Rights Reserved.
+ * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.dev/license
+ * found in the LICENSE file at https://angular.io/license
  */
 
 import * as vscode from 'vscode';
 
 import {AngularLanguageClient} from './client';
 import {registerCommands} from './commands';
-import {shouldRestartOnConfigurationChange} from './config_change';
 
 export function activate(context: vscode.ExtensionContext) {
   const client = new AngularLanguageClient(context);
@@ -19,10 +18,10 @@ export function activate(context: vscode.ExtensionContext) {
   // client can be deactivated on extension deactivation
   registerCommands(client, context);
 
-  // Restart the server on configuration changes that affect startup/session state.
+  // Restart the server on configuration change.
   const disposable = vscode.workspace.onDidChangeConfiguration(
     async (e: vscode.ConfigurationChangeEvent) => {
-      if (!shouldRestartOnConfigurationChange(e)) {
+      if (!e.affectsConfiguration('angular')) {
         return;
       }
       await client.stop();

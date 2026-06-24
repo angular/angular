@@ -25,7 +25,6 @@ export const rendererContext: RendererContext = {
     Router: {moduleName: 'angular/router'},
   },
   headerIds: new Map<string, number>(),
-  disableAutoLinking: false,
 };
 
 export async function setHighlighter() {

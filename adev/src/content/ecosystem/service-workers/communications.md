@@ -3,7 +3,7 @@
 Включение поддержки Service Worker не просто регистрирует его; это также предоставляет сервисы, которые вы можете
 использовать для взаимодействия с Service Worker и управления кэшированием вашего приложения.
 
-## Сервис `SwUpdate` {#swupdate-service}
+## Сервис `SwUpdate`
 
 Сервис `SwUpdate` предоставляет доступ к событиям, сообщающим о том, что Service Worker обнаружил и устанавливает
 доступное обновление для вашего приложения.
@@ -15,7 +15,7 @@
 - Запрос к Service Worker на проверку наличия новых обновлений на сервере.
 - Запрос к Service Worker на активацию последней версии приложения для текущей вкладки.
 
-### Обновления версий {#version-updates}
+### Обновления версий
 
 `versionUpdates` — это свойство `Observable` сервиса `SwUpdate`, которое генерирует события пяти типов:
 
@@ -29,7 +29,7 @@
 
 <docs-code header="log-update.service.ts" path="adev/src/content/examples/service-worker-getting-started/src/app/log-update.service.ts" region="sw-update"/>
 
-### Проверка обновлений {#checking-for-updates}
+### Проверка обновлений
 
 Можно попросить Service Worker проверить, были ли развернуты какие-либо обновления на сервере.
 Service Worker проверяет наличие обновлений во время инициализации и при каждом навигационном запросе — то есть, когда
@@ -61,7 +61,7 @@ ServiceWorker не регистрируется в браузере до тех 
 другую [стратегию регистрации](api/service-worker/SwRegistrationOptions#registrationStrategy) для ServiceWorker.
 </docs-callout>
 
-### Обновление до последней версии {#updating-to-the-latest-version}
+### Обновление до последней версии
 
 Вы можете обновить существующую вкладку до последней версии, перезагрузив страницу, как только новая версия будет
 готова.
@@ -81,7 +81,7 @@ ServiceWorker не регистрируется в браузере до тех 
 конкретного случая использования.
 </docs-callout>
 
-### Обработка невосстановимого состояния {#handling-an-unrecoverable-state}
+### Обработка невосстановимого состояния
 
 В некоторых случаях версия приложения, используемая Service Worker для обслуживания клиента, может находиться в
 сломанном состоянии, которое невозможно восстановить без полной перезагрузки страницы.
@@ -117,7 +117,7 @@ ServiceWorker не регистрируется в браузере до тех 
 
 <docs-code header="handle-unrecoverable-state.service.ts" path="adev/src/content/examples/service-worker-getting-started/src/app/handle-unrecoverable-state.service.ts" region="sw-unrecoverable-state"/>
 
-## Подробнее об Angular Service Worker {#more-on-angular-service-workers}
+## Подробнее об Angular Service Worker
 
 Вас также может заинтересовать следующее:
 

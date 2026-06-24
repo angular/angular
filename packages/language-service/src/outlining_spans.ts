@@ -15,7 +15,6 @@ import {
   TmplAstIfBlock,
   TmplAstNode,
   TmplAstRecursiveVisitor,
-  TmplAstSwitchBlockCase,
   tmplAstVisitAll,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
@@ -90,9 +89,7 @@ class BlockVisitor extends TmplAstRecursiveVisitor {
     if (
       node instanceof TmplAstBlockNode &&
       // Omit `IfBlock` because we include the branches individually
-      !(node instanceof TmplAstIfBlock) &&
-      // Omit `SwitchBlockCase` because we include the groups
-      !(node instanceof TmplAstSwitchBlockCase)
+      !(node instanceof TmplAstIfBlock)
     ) {
       this.blocks.push(node);
     }

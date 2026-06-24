@@ -1,6 +1,6 @@
 // TODO: Add the resource import from @angular/core
 import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/core';
-import {getUserData} from './user-api';
+import {loadUser} from './user-api';
 
 @Component({
   selector: 'app-root',

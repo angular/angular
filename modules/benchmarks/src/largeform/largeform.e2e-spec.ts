@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {openBrowser, verifyNoBrowserErrors} from '../../../utilities/index.js';
+import {openBrowser, verifyNoBrowserErrors} from '../../../utilities/index';
 import {$, By, element} from 'protractor';
 
 describe('largeform benchmark', () => {

@@ -7,8 +7,6 @@
  */
 
 import {NgForOf, PercentPipe} from '@angular/common';
-import {BrowserModule} from '@angular/platform-browser';
-import {Router, RouterModule, RouterOutlet} from '@angular/router';
 import {
   afterEveryRender,
   ClassProvider,
@@ -39,14 +37,14 @@ import {setupFrameworkInjectorProfiler} from '../../src/render3/debug/framework_
 import {
   getInjectorProfilerContext,
   InjectedServiceEvent,
+  InjectorToCreateInstanceEvent,
   InjectorCreatedInstanceEvent,
-  injectorProfiler,
-  InjectorProfilerContext,
   InjectorProfilerEvent,
   InjectorProfilerEventType,
-  InjectorToCreateInstanceEvent,
   ProviderConfiguredEvent,
   setInjectorProfiler,
+  injectorProfiler,
+  InjectorProfilerContext,
 } from '../../src/render3/debug/injector_profiler';
 import {getNodeInjectorLView, NodeInjector} from '../../src/render3/di';
 import {
@@ -55,8 +53,10 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from '../../src/render3/util/injector_discovery_utils';
-import {fakeAsync} from '../../testing';
+import {fakeAsync, tick} from '../../testing';
 import {TestBed} from '../../testing/src/test_bed';
+import {BrowserModule} from '@angular/platform-browser';
+import {Router, RouterModule, RouterOutlet} from '@angular/router';
 
 describe('setProfiler', () => {
   let injectEvents: InjectedServiceEvent[] = [];
@@ -385,7 +385,7 @@ describe('setProfiler', () => {
   });
 });
 
-describe('Injector profiler activation and removal', () => {
+describe('profiler activation and removal', () => {
   class SomeClass {}
 
   const fakeContext: InjectorProfilerContext = {
@@ -481,7 +481,7 @@ describe('getInjectorMetadata', () => {
 
     @Component({
       imports: [RouterOutlet, ModuleA],
-      template: `<router-outlet />`,
+      template: `<router-outlet/>`,
     })
     class MyStandaloneComponent {
       @ViewChild(RouterOutlet, {read: ElementRef}) routerOutlet: ElementRef | undefined;
@@ -568,7 +568,9 @@ describe('getInjectorProviders', () => {
     class MyService {}
     @Component({
       selector: 'my-comp',
-      template: ` {{ b | percent: '4.3-5' }} `,
+      template: `
+      {{b | percent:'4.3-5' }}
+    `,
       providers: [MyService],
       standalone: false,
     })
@@ -589,7 +591,9 @@ describe('getInjectorProviders', () => {
     class MyService {}
     @Component({
       selector: 'my-comp',
-      template: ` {{ b | percent: '4.3-5' }} `,
+      template: `
+      {{b | percent:'4.3-5' }}
+    `,
       viewProviders: [MyService],
       standalone: false,
     })
@@ -759,9 +763,9 @@ describe('getInjectorProviders', () => {
     @Component({
       selector: 'my-comp',
       template: `
-        <my-comp-b />
-        <my-comp-c />
-      `,
+         <my-comp-b/>
+         <my-comp-c/>
+        `,
       imports: [ModuleD, MyStandaloneComponentB, MyStandaloneComponentC],
     })
     class MyStandaloneComponent {}
@@ -826,7 +830,7 @@ describe('getInjectorProviders', () => {
 
     @Component({
       selector: 'my-comp',
-      template: `<router-outlet />`,
+      template: `<router-outlet/>`,
       imports: [MyStandaloneComponentB, RouterOutlet],
     })
     class MyStandaloneComponent {
@@ -889,7 +893,7 @@ describe('getInjectorProviders', () => {
 
     @Component({
       selector: 'my-comp',
-      template: `<router-outlet />`,
+      template: `<router-outlet/>`,
       imports: [MyStandaloneComponentB, RouterOutlet],
     })
     class MyStandaloneComponent {
@@ -949,7 +953,9 @@ describe('getInjectorProviders', () => {
 
     @Component({
       selector: 'my-comp',
-      template: ` <item-cmp *ngFor="let item of items"></item-cmp> `,
+      template: `
+        <item-cmp *ngFor="let item of items"></item-cmp>
+       `,
       imports: [ItemComponent, NgForOf],
     })
     class MyStandaloneComponent {
@@ -990,7 +996,7 @@ describe('getInjectorProviders', () => {
         @for (item of items; track item) {
           <item-cmp></item-cmp>
         }
-      `,
+       `,
       imports: [ItemComponent],
     })
     class MyStandaloneComponent {
@@ -1083,7 +1089,7 @@ describe('getDependenciesFromInjectable', () => {
 
     @Component({
       selector: 'my-comp',
-      template: `<router-outlet />`,
+      template: `<router-outlet/>`,
       imports: [RouterOutlet, ModuleA],
       providers: [MyServiceG, {provide: MyServiceH, useValue: 'MyStandaloneComponent'}],
     })
@@ -1340,7 +1346,7 @@ describe('getInjectorResolutionPath', () => {
 
     @Component({
       imports: [RouterOutlet, ModuleA],
-      template: `<router-outlet />`,
+      template: `<router-outlet/>`,
     })
     class MyStandaloneComponent {
       nodeInjector = inject(Injector);

@@ -2,7 +2,9 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  template: ` Hello `,
+  template: `
+    Hello
+  `,
   styles: `
     :host {
       color: blue;

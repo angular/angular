@@ -1,25 +1,16 @@
-<ng-template
-  #navigationList
-  let-navigationItems
-  let-preserveOtherCategoryOrder="preserveOtherCategoryOrder"
->
+<ng-template #navigationList let-navigationItems>
   <ul
     class="docs-navigation-list docs-faceted-list"
     [class.docs-navigation-list-dropdown]="isDropdownView()"
   >
-    @for (itemGroup of groupItems(navigationItems, preserveOtherCategoryOrder); track $index) {
+    @for (itemGroup of groupItems(navigationItems); track $index) {
       @let groupLabel = itemGroup[0];
       @let items = itemGroup[1];
-      @let firstItem = items[0];
-
-      @if (groupLabel && collapsableLevel() !== firstItem.level && items.length > 1) {
-        <li class="docs-navigation-group">{{ groupLabel }}</li>
+      @if (groupLabel) {
+        <li class="docs-navigation-group">{{groupLabel | titlecase}}</li>
       }
       @for (item of items; track $index) {
-        <li
-          class="docs-faceted-list-item"
-          [class.single-entry]="items.length === 1 && item.level !== 1"
-        >
+        <li class="docs-faceted-list-item">
           @let itemLabel = item.label!;
           @if (item.path) {
             @if (item.isExternal) {
@@ -37,6 +28,7 @@
                   class="docs-faceted-list-item-text"
                 >
                   {{ item.label }}
+                  <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
 
                 @if (item.children && item.level! > 1 && !item.isExpanded) {
@@ -47,12 +39,7 @@
               <a
                 [routerLink]="'/' + item.path"
                 routerLinkActive="docs-faceted-list-item-active"
-                [routerLinkActiveOptions]="{
-                  paths: 'exact',
-                  queryParams: 'ignored',
-                  matrixParams: 'ignored',
-                  fragment: 'ignored',
-                }"
+                [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
                 (click)="emitClickOnLink()"
                 [matTooltip]="item.label"
                 [matTooltipDisabled]="itemLabel.length < 27"
@@ -61,7 +48,7 @@
                 [matTooltipClass]="'API-tooltip'"
               >
                 <span class="docs-faceted-list-item-text">
-                  {{ item.label }}
+                  {{item.label}}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
 
@@ -82,7 +69,7 @@
                 [matTooltipClass]="'API-tooltip'"
               >
                 <span class="docs-faceted-list-item-text">
-                  {{ item.label }}
+                  {{item.label}}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
               </div>
@@ -90,8 +77,7 @@
 
             <!-- Nav Button Expand/Collapse -->
             @if (
-              (item.children && item.level === expandableLevel()) ||
-              item.level === collapsableLevel()
+              (item.children && item.level === expandableLevel()) || item.level === collapsableLevel()
             ) {
               <button
                 type="button"
@@ -103,8 +89,7 @@
                 [class.docs-expanded-button]="item.children && item.level == collapsableLevel()"
                 [class.docs-not-expanded-button]="item.children && item.level === expandableLevel()"
                 [class.docs-nav-item-has-icon]="
-                  item.children && item.level === expandableLevel() && !item.isExpanded
-                "
+              item.children && item.level === expandableLevel() && !item.isExpanded"
                 [matTooltip]="item.label"
                 [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
@@ -122,20 +107,10 @@
             }
           }
           @if (
-            item.level &&
-            displayItemsToLevel() > item.level &&
-            item.children &&
-            item.children.length > 0
+            item.level && displayItemsToLevel() > item.level && item.children && item.children.length > 0
           ) {
             <ng-container
-              *ngTemplateOutlet="
-                navigationList;
-                context: {
-                  $implicit: item.children,
-                  level: item.level,
-                  preserveOtherCategoryOrder: item.preserveOtherCategoryOrder,
-                }
-              "
+              *ngTemplateOutlet="navigationList; context: {$implicit: item.children, level: item.level}"
             />
           }
         </li>
@@ -144,20 +119,12 @@
   </ul>
 </ng-template>
 
-<ng-container
-  *ngTemplateOutlet="
-    navigationList;
-    context: {
-      $implicit: navigationItems(),
-      preserveOtherCategoryOrder: preserveOtherCategoryOrder(),
-    }
-  "
-/>
+<ng-container *ngTemplateOutlet="navigationList; context: {$implicit: navigationItems()}" />
 
 <ng-template let-item #itemStatus>
   @if (item.status === 'new') {
-    <span class="tag docs-new-item">Новое</span>
+    <span class="tag docs-new-item">New</span>
   } @else if (item.status === 'updated') {
-    <span class="tag docs-updated-item">Обновлено</span>
+    <span class="tag docs-updated-item">Updated</span>
   }
 </ng-template>

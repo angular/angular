@@ -63,4 +63,3 @@ export * from './two_way';
 export * from './let_declaration';
 export * from './attach_source_locations';
 export * from './value_interpolation';
-export * from './arrow_function';

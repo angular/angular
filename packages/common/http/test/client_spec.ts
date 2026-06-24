@@ -8,20 +8,15 @@
 
 import {HttpClient} from '../src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
-import {HttpTestingController, provideHttpClientTesting} from '../testing';
-import {provideHttpClient} from '../src/provider';
-import {TestBed} from '@angular/core/testing';
+import {HttpClientTestingBackend} from '../testing/src/backend';
 import {toArray} from 'rxjs/operators';
 
 describe('HttpClient', () => {
-  let client: HttpClient;
-  let backend: HttpTestingController;
+  let client: HttpClient = null!;
+  let backend: HttpClientTestingBackend = null!;
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    });
-    client = TestBed.inject(HttpClient);
-    backend = TestBed.inject(HttpTestingController);
+    backend = new HttpClientTestingBackend();
+    client = new HttpClient(backend);
   });
   afterEach(() => {
     backend.verify();

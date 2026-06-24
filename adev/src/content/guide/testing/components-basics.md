@@ -1,271 +1,210 @@
 # Основы тестирования компонентов
 
-Компонент, в отличие от всех других частей Angular-приложения, объединяет HTML-шаблон и класс TypeScript.
-Компонент — это именно шаблон и класс, _работающие вместе_.
-Для полноценного тестирования компонента следует проверять их совместную работу.
+Компонент, в отличие от всех остальных частей приложения Angular, объединяет HTML-шаблон и TypeScript-класс.
+Компонент — это действительно шаблон и класс, _работающие вместе_.
+Чтобы адекватно протестировать компонент, вы должны проверить, что они работают вместе так, как задумано.
 
-Такие тесты требуют создания хост-элемента компонента в DOM браузера, как это делает Angular, и изучения взаимодействия класса компонента с DOM в соответствии с описанием шаблона.
+Такие тесты требуют создания хост-элемента компонента в DOM браузера (как это делает Angular) и исследования
+взаимодействия класса компонента с DOM, описанного в его шаблоне.
 
-Angular `TestBed` упрощает такой вид тестирования, как показано в следующих разделах.
-Однако во многих случаях _тестирование только класса компонента_, без участия DOM, может достаточно полно проверить поведение компонента — более прямолинейным и очевидным способом.
+Angular `TestBed` облегчает этот вид тестирования, как вы увидите в следующих разделах.
+Но во многих случаях _тестирование только класса компонента_, без участия DOM, может подтвердить большую часть поведения
+компонента более простым и очевидным способом.
 
-## DOM-тестирование компонентов {#component-dom-testing}
+## Тестирование DOM компонента
 
-Компонент — это нечто большее, чем просто его класс.
-Компонент взаимодействует с DOM и с другими компонентами.
-Одни только классы не могут сказать вам, будет ли компонент корректно отображаться, реагировать на действия пользователя и жесты или взаимодействовать с родительскими и дочерними компонентами.
+Компонент — это больше, чем просто его класс.
+Компонент взаимодействует с DOM и другими компонентами.
+Одни лишь классы не могут сказать вам, будет ли компонент правильно рендериться, реагировать на ввод пользователя и
+жесты, или интегрироваться с родительскими и дочерними компонентами.
 
-- Связан ли `Lightswitch.clicked()` с чем-либо, чтобы пользователь мог его вызвать?
+- Привязан ли метод `Lightswitch.clicked()` к чему-либо так, чтобы пользователь мог его вызвать?
 - Отображается ли `Lightswitch.message`?
-- Может ли пользователь фактически выбрать героя, отображаемого компонентом `DashboardHero`?
-- Отображается ли имя героя ожидаемым образом (например, в верхнем регистре)?
-- Отображается ли приветственное сообщение шаблоном компонента `Welcome`?
+- Может ли пользователь действительно выбрать героя, отображаемого в `DashboardHeroComponent`?
+- Отображается ли имя героя так, как ожидается (например, в верхнем регистре)?
+- Отображается ли приветственное сообщение в шаблоне `WelcomeComponent`?
 
-Для простых компонентов, описанных выше, это, возможно, не является проблемными вопросами.
-Однако многие компоненты имеют сложные взаимодействия с элементами DOM, описанными в их шаблонах, из-за чего HTML появляется и исчезает по мере изменения состояния компонента.
+Эти вопросы могут не вызывать затруднений для простых компонентов, проиллюстрированных выше.
+Но многие компоненты имеют сложные взаимодействия с элементами DOM, описанными в их шаблонах, заставляя HTML появляться
+и исчезать при изменении состояния компонента.
 
-Чтобы ответить на подобные вопросы, нужно создать элементы DOM, связанные с компонентами, исследовать DOM для подтверждения, что состояние компонента отображается корректно в нужные моменты, и имитировать взаимодействие пользователя с экраном для определения того, приводят ли эти взаимодействия к ожидаемому поведению компонента.
+Чтобы ответить на подобные вопросы, вам необходимо создать элементы DOM, связанные с компонентами, изучить DOM, чтобы
+подтвердить, что состояние компонента отображается правильно в нужное время, и имитировать взаимодействие пользователя с
+экраном, чтобы определить, вызывают ли эти взаимодействия ожидаемое поведение компонента.
 
-Для написания таких тестов используются дополнительные возможности `TestBed`, а также другие вспомогательные инструменты для тестирования.
+Для написания таких тестов вы будете использовать дополнительные возможности `TestBed`, а также другие вспомогательные
+средства тестирования.
 
-### Тесты, сгенерированные CLI {#cli-generated-tests}
+### Тесты, созданные через CLI
 
-CLI по умолчанию создаёт начальный тестовый файл при генерации нового компонента.
+CLI создает начальный файл теста по умолчанию, когда вы просите его сгенерировать новый компонент.
 
-Например, следующая команда CLI генерирует компонент `Banner` в папке `app/banner` (со встроенным шаблоном и стилями):
+Например, следующая команда CLI генерирует `BannerComponent` в папке `app/banner` (со встроенным шаблоном и стилями):
 
 ```shell
-ng generate component banner --inline-template --inline-style
+ng generate component banner --inline-template --inline-style --module app
 ```
 
-Также генерируется начальный тестовый файл для компонента `banner.spec.ts`, который выглядит следующим образом:
+Она также генерирует начальный файл теста для компонента, `banner-external.component.spec.ts`, который выглядит
+следующим образом:
 
-```ts
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Banner} from './banner';
+<docs-code header="banner-external.component.spec.ts (initial)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v1"/>
 
-describe('Banner', () => {
-  let component: Banner;
-  let fixture: ComponentFixture<Banner>;
+HELPFUL: Поскольку `compileComponents` является асинхронным, он использует утилиту [
+`waitForAsync`](api/core/testing/waitForAsync), импортируемую из `@angular/core/testing`.
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [Banner],
-    }).compileComponents();
+Обратитесь к разделу [waitForAsync](guide/testing/components-scenarios#waitForAsync) для получения более подробной
+информации.
 
-    fixture = TestBed.createComponent(Banner);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
+### Упрощение настройки
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
-```
+Только последние три строки этого файла фактически тестируют компонент, и все, что они делают, — это утверждают, что
+Angular может создать компонент.
 
-### Упрощение настройки {#reduce-the-setup}
+Остальная часть файла — это шаблонный код настройки, предусматривающий более сложные тесты, которые _могут_
+понадобиться, если компонент превратится во что-то существенное.
 
-Только последние три строки этого файла фактически тестируют компонент, и всё, что они делают — это проверка того, что Angular может создать компонент.
+Вы узнаете об этих продвинутых возможностях тестирования в следующих разделах.
+А пока вы можете радикально сократить этот файл теста до более управляемого размера:
 
-Остальная часть файла — это шаблонный код настройки, рассчитанный на более продвинутые тесты, которые _могут_ потребоваться по мере развития компонента.
+<docs-code header="banner-initial.component.spec.ts (minimal)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v2"/>
 
-Об этих продвинутых возможностях тестирования вы узнаете в следующих разделах.
-Пока что вы можете значительно сократить этот тестовый файл до более управляемого размера:
+В этом примере объект метаданных, передаваемый в `TestBed.configureTestingModule`, просто объявляет `BannerComponent` —
+компонент для тестирования.
 
-```ts
-describe('Banner (minimal)', () => {
-  it('should create', () => {
-    const fixture = TestBed.createComponent(Banner);
-    const component = fixture.componentInstance;
-    expect(component).toBeDefined();
-  });
-});
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="configureTestingModule"/>
 
-Позже вы будете вызывать `TestBed.configureTestingModule()` с импортами, провайдерами и другими объявлениями для ваших нужд тестирования.
-Дополнительные методы `override` позволяют тонко настроить аспекты конфигурации.
+HELPFUL: Нет необходимости объявлять или импортировать что-либо еще.
+Модуль тестирования по умолчанию предварительно настроен с чем-то вроде `BrowserModule` из `@angular/platform-browser`.
 
-ПРИМЕЧАНИЕ: `TestBed.compileComponents` требуется только при использовании блоков `@defer` в тестируемых компонентах.
+Позже вы будете вызывать `TestBed.configureTestingModule()` с импортами, провайдерами и другими объявлениями,
+соответствующими вашим потребностям в тестировании.
+Необязательные методы `override` могут дополнительно точно настроить аспекты конфигурации.
 
-### `createComponent()` {#createcomponent}
+### `createComponent()`
 
-После настройки `TestBed` вызываете его метод `createComponent()`.
+После настройки `TestBed` вы вызываете его метод `createComponent()`.
 
-```ts
-const fixture = TestBed.createComponent(Banner);
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="createComponent"/>
 
-`TestBed.createComponent()` создаёт экземпляр компонента `Banner`, добавляет соответствующий элемент в DOM средства запуска тестов и возвращает [`ComponentFixture`](#componentfixture).
+`TestBed.createComponent()` создает экземпляр `BannerComponent`, добавляет соответствующий элемент в DOM тест-раннера и
+возвращает [`ComponentFixture`](#componentfixture).
 
-ВАЖНО: Не изменяйте конфигурацию `TestBed` после вызова `createComponent`.
+IMPORTANT: Не перенастраивайте `TestBed` после вызова `createComponent`.
 
-Метод `createComponent` фиксирует текущее определение `TestBed`, закрывая его для дальнейшей настройки.
+Метод `createComponent` замораживает текущее определение `TestBed`, закрывая его для дальнейшей настройки.
 
-Нельзя вызывать какие-либо методы конфигурации `TestBed`: ни `configureTestingModule()`, ни `get()`, ни какой-либо из методов `override...`.
-При попытке это сделать `TestBed` выдаст ошибку.
+Вы не можете вызывать никакие методы конфигурации `TestBed`: ни `configureTestingModule()`, ни `get()`, ни какие-либо
+методы `override...`.
+Если вы попытаетесь, `TestBed` выдаст ошибку.
 
-### `ComponentFixture` {#componentfixture}
+### `ComponentFixture`
 
-[`ComponentFixture`](api/core/testing/ComponentFixture) — это тестовый harness для взаимодействия с созданным компонентом и соответствующим ему элементом.
+[ComponentFixture](api/core/testing/ComponentFixture) — это тестовая обвязка для взаимодействия с созданным компонентом
+и его соответствующим элементом.
 
-Получите доступ к экземпляру компонента через fixture и проверьте его существование:
+Получите доступ к экземпляру компонента через фикстуру и подтвердите его существование с помощью ожидания Jasmine:
 
-```ts
-const component = fixture.componentInstance;
-expect(component).toBeDefined();
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="componentInstance"/>
 
-### `beforeEach()` {#beforeeach}
+### `beforeEach()`
 
-По мере развития компонента вы будете добавлять больше тестов.
-Вместо дублирования конфигурации `TestBed` для каждого теста выполните рефакторинг, вынося настройку в `beforeEach()` и вспомогательные переменные:
+Вы будете добавлять больше тестов по мере развития этого компонента.
+Вместо того чтобы дублировать конфигурацию `TestBed` для каждого теста, выполните рефакторинг, чтобы вынести настройку в
+`beforeEach()` Jasmine и некоторые вспомогательные переменные:
 
-```ts
-describe('Banner (with beforeEach)', () => {
-  let component: Banner;
-  let fixture: ComponentFixture<Banner>;
-
-  beforeEach(async () => {
-    fixture = TestBed.createComponent(Banner);
-    component = fixture.componentInstance;
-
-    await fixture.whenStable(); // necessary to wait for the initial rendering
-  });
-
-  it('should create', () => {
-    expect(component).toBeDefined();
-  });
-});
-```
-
-ПОЛЕЗНО: Ожидая начального рендеринга в `beforeEach` с помощью `await fixture.whenStable`, отдельные тесты становятся синхронными.
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v3"/>
 
 Теперь добавьте тест, который получает элемент компонента из `fixture.nativeElement` и ищет ожидаемый текст.
 
-```ts
-it('should contain "banner works!"', () => {
-  const bannerElement: HTMLElement = fixture.nativeElement;
-  expect(bannerElement.textContent).toContain('banner works!');
-});
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-2"/>
 
-### Создание функции `setup` {#create-a-setup-function}
-
-В качестве альтернативы `beforeEach` вы также можете создать функцию setup, которую будете вызывать в каждом тесте.
-Преимущество функции setup в том, что её можно настраивать через параметры.
-
-Вот пример того, как может выглядеть функция setup:
-
-```ts
-function setup(providers?: StaticProviders[]): ComponentFixture<Banner> {
-  TestBed.configureTestingModule({providers});
-  return TestBed.createComponent(Banner);
-}
-```
-
-### `nativeElement` {#nativeelement}
+### `nativeElement`
 
 Значение `ComponentFixture.nativeElement` имеет тип `any`.
-Позже вы встретите `DebugElement.nativeElement`, который также имеет тип `any`.
+Позже вы столкнетесь с `DebugElement.nativeElement`, и он тоже имеет тип `any`.
 
-Angular не может знать во время компиляции, каким HTML-элементом является `nativeElement`, или вообще является ли он HTML-элементом.
-Приложение может работать на _платформе, отличной от браузера_, например на сервере или в среде Node, где элемент может иметь ограниченный API или вовсе отсутствовать.
+Angular не может знать во время компиляции, каким HTML-элементом является `nativeElement`, и является ли он вообще
+HTML-элементом.
+Приложение может работать на _небраузерной платформе_, такой как сервер
+или [Web Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API), где элемент может иметь урезанный API или
+не существовать вовсе.
 
-Тесты в этом руководстве рассчитаны на работу в браузере, поэтому значение `nativeElement` всегда будет `HTMLElement` или одним из его производных классов.
+Тесты в этом руководстве предназначены для запуска в браузере, поэтому значение `nativeElement` всегда будет
+`HTMLElement` или одним из его производных классов.
 
-Зная, что это `HTMLElement` какого-то типа, используйте стандартный HTML-метод `querySelector` для более глубокого проникновения в дерево элементов.
+Зная, что это какой-то `HTMLElement`, используйте стандартный HTML `querySelector`, чтобы углубиться в дерево элементов.
 
-Вот ещё один тест, который вызывает `HTMLElement.querySelector` для получения параграфа и поиска текста баннера:
+Вот еще один тест, который вызывает `HTMLElement.querySelector`, чтобы получить элемент абзаца и найти текст баннера:
 
-```ts
-it('should have <p> with "banner works!"', () => {
-  const bannerElement: HTMLElement = fixture.nativeElement;
-  const p = bannerElement.querySelector('p')!;
-  expect(p.textContent).toEqual('banner works!');
-});
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-3"/>
 
-### `DebugElement` {#debugelement}
+### `DebugElement`
 
-Angular _fixture_ предоставляет элемент компонента напрямую через `fixture.nativeElement`.
+_Фикстура_ Angular предоставляет элемент компонента напрямую через `fixture.nativeElement`.
 
-```ts
-const bannerElement: HTMLElement = fixture.nativeElement;
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="nativeElement"/>
 
-На самом деле это удобный метод, реализованный как `fixture.debugElement.nativeElement`.
+На самом деле это вспомогательный метод, реализованный как `fixture.debugElement.nativeElement`.
 
-```ts
-const bannerDe: DebugElement = fixture.debugElement;
-const bannerEl: HTMLElement = bannerDe.nativeElement;
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="debugElement-nativeElement"/>
 
-Для такого обходного пути к элементу есть веская причина.
+Для такого окольного пути к элементу есть веская причина.
 
 Свойства `nativeElement` зависят от среды выполнения.
-Тесты могут запускаться на _платформе без браузера_, у которой нет DOM или чья эмуляция DOM не поддерживает полный API `HTMLElement`.
+Вы можете запускать эти тесты на _небраузерной_ платформе, которая не имеет DOM или чья эмуляция DOM не поддерживает
+полный API `HTMLElement`.
 
-Angular использует абстракцию `DebugElement` для безопасной работы на _всех поддерживаемых платформах_.
-Вместо создания дерева HTML-элементов Angular создаёт дерево `DebugElement`, которое оборачивает _нативные элементы_ для платформы выполнения.
-Свойство `nativeElement` разворачивает `DebugElement` и возвращает объект элемента, специфичный для платформы.
+Angular полагается на абстракцию `DebugElement` для безопасной работы на _всех поддерживаемых платформах_.
+Вместо создания дерева HTML-элементов, Angular создает дерево `DebugElement`, которое оборачивает _нативные элементы_
+для платформы выполнения.
+Свойство `nativeElement` разворачивает `DebugElement` и возвращает специфичный для платформы объект элемента.
 
-Поскольку примеры тестов в этом руководстве рассчитаны только на браузер, `nativeElement` в этих тестах всегда является `HTMLElement`, знакомые методы и свойства которого можно исследовать в тесте.
+Поскольку примеры тестов для этого руководства предназначены для запуска только в браузере, `nativeElement` в этих
+тестах всегда является `HTMLElement`, знакомые методы и свойства которого вы можете исследовать в рамках теста.
 
-Вот предыдущий тест, переписанный с использованием `fixture.debugElement.nativeElement`:
+Вот предыдущий тест, реализованный заново с использованием `fixture.debugElement.nativeElement`:
 
-```ts
-it('should find the <p> with fixture.debugElement.nativeElement', () => {
-  const bannerDe: DebugElement = fixture.debugElement;
-  const bannerEl: HTMLElement = bannerDe.nativeElement;
-  const p = bannerEl.querySelector('p')!;
-  expect(p.textContent).toEqual('banner works!');
-});
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-4"/>
 
-`DebugElement` имеет и другие методы и свойства, полезные в тестах, как вы увидите в других частях этого руководства.
+У `DebugElement` есть и другие методы и свойства, полезные в тестах, как вы увидите в других частях этого руководства.
 
-`DebugElement` импортируется из основной библиотеки Angular.
+Вы импортируете символ `DebugElement` из основной библиотеки Angular.
 
-```ts
-import {DebugElement} from '@angular/core';
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="import-debug-element"/>
 
-### `By.css()` {#bycss}
+### `By.css()`
 
-Хотя тесты в этом руководстве запускаются в браузере, некоторые приложения могут работать на другой платформе хотя бы часть времени.
+Хотя все тесты в этом руководстве выполняются в браузере, некоторые приложения могут работать на другой платформе, по
+крайней мере, часть времени.
 
-Например, компонент может сначала отрисовываться на сервере как часть стратегии ускорения загрузки на устройствах с плохим соединением.
-Серверный рендерер может не поддерживать полный API HTML-элементов.
-Если он не поддерживает `querySelector`, предыдущий тест может завершиться ошибкой.
+Например, компонент может сначала рендериться на сервере как часть стратегии по ускорению запуска приложения на
+устройствах с плохим соединением.
+Рендеринг на стороне сервера может не поддерживать полный API HTML-элементов.
+Если он не поддерживает `querySelector`, предыдущий тест может упасть.
 
-`DebugElement` предлагает методы запроса, работающие на всех поддерживаемых платформах.
-Эти методы принимают _предикат_ — функцию, которая возвращает `true`, когда узел в дереве `DebugElement` соответствует критериям выборки.
+`DebugElement` предлагает методы запросов, которые работают для всех поддерживаемых платформ.
+Эти методы запросов принимают функцию-_предикат_, которая возвращает `true`, когда узел в дереве `DebugElement`
+соответствует критериям выборки.
 
-Предикат создаётся с помощью класса `By`, импортированного из библиотеки для платформы выполнения.
+Вы создаете _предикат_ с помощью класса `By`, импортируемого из библиотеки для платформы выполнения.
 Вот импорт `By` для браузерной платформы:
 
-```ts
-import {By} from '@angular/platform-browser';
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="import-by"/>
 
-В следующем примере предыдущий тест переписан с использованием `DebugElement.query()` и метода `By.css` браузера.
+Следующий пример заново реализует предыдущий тест с использованием `DebugElement.query()` и браузерного метода `By.css`.
 
-```ts
-it('should find the <p> with fixture.debugElement.query(By.css)', () => {
-  const bannerDe: DebugElement = fixture.debugElement;
-  const paragraphDe = bannerDe.query(By.css('p'));
-  const p: HTMLElement = paragraphDe.nativeElement;
-  expect(p.textContent).toEqual('banner works!');
-});
-```
+<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-5"/>
 
-Несколько важных замечаний:
+Некоторые примечательные наблюдения:
 
-- Статический метод `By.css()` выбирает узлы `DebugElement` с помощью [стандартных CSS-селекторов](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors 'CSS selectors').
-- Запрос возвращает `DebugElement` для параграфа.
-- Нужно развернуть этот результат для получения элемента параграфа.
+- Статический метод `By.css()` выбирает узлы `DebugElement` с
+  помощью [стандартного CSS-селектора](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors 'CSS selectors').
+- Запрос возвращает `DebugElement` для абзаца.
+- Вы должны развернуть этот результат, чтобы получить элемент абзаца.
 
-Если фильтрация выполняется по CSS-селектору и проверяются только свойства нативного элемента браузера, подход `By.css` может быть избыточным.
+Когда вы фильтруете по CSS-селектору и тестируете только свойства _нативного элемента_ браузера, подход с `By.css` может
+быть излишним.
 
-Зачастую более прямолинейно и понятно использовать стандартный метод `HTMLElement`, такой как `querySelector()` или `querySelectorAll()`.
+Часто проще и понятнее фильтровать с помощью стандартного метода `HTMLElement`, такого как `querySelector()` или
+`querySelectorAll()`.

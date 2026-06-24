@@ -1,9 +1,5 @@
-export class NoDecorators {
-  …
-  static ɵfac = …;
-  static ɵprov = …;
-}
-
+NoDecorators.ɵfac = …;
+NoDecorators.ɵprov = …;
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(NoDecorators, [{
     type: Injectable

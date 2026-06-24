@@ -20,7 +20,11 @@ zoneless_jasmine_test(
     data = [
         ":unit_test_lib",
         "@rules_browsers//browsers/chromium",
-    ],
+    ] + glob([
+        "**/*.md",
+        "**/*.svg",
+        "**/*.mts",
+    ]),
     env = {
         "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
     },

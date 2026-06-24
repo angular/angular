@@ -431,14 +431,13 @@ async function styleCount(
 
 @Component({
   selector: 'cmp-emulated',
-  template: ` <div class="emulated"></div>`,
+  template: `
+    <div class="emulated"></div>`,
   styles: [
-    `
-      .emulated {
-        background-color: blue;
-        color: blue;
-      }
-    `,
+    `.emulated {
+      background-color: blue;
+      color: blue;
+    }`,
   ],
   encapsulation: ViewEncapsulation.Emulated,
   standalone: false,
@@ -447,14 +446,13 @@ class CmpEncapsulationEmulated {}
 
 @Component({
   selector: 'cmp-none',
-  template: ` <div class="none"></div>`,
+  template: `
+    <div class="none"></div>`,
   styles: [
-    `
-      .none {
-        background-color: lime;
-        color: lime;
-      }
-    `,
+    `.none {
+      background-color: lime;
+      color: lime;
+    }`,
   ],
   encapsulation: ViewEncapsulation.None,
   standalone: false,
@@ -463,16 +461,15 @@ class CmpEncapsulationNone {}
 
 @Component({
   selector: 'cmp-none',
-  template: ` <div class="none"></div>`,
+  template: `
+    <div class="none"></div>`,
   styles: [
-    `
-      .none {
-        background-color: lime;
-        color: lime;
-      }
+    `.none {
+      background-color: lime;
+      color: lime;
+    }
 
-      /*# sourceMappingURL=cmp-none.css.map */
-    `,
+    /*# sourceMappingURL=cmp-none.css.map */`,
   ],
   encapsulation: ViewEncapsulation.None,
   standalone: false,
@@ -481,13 +478,12 @@ class CmpEncapsulationNoneWithSourceMap {}
 
 @Component({
   selector: 'cmp-shadow',
-  template: ` <div class="shadow"></div>`,
+  template: `
+    <div class="shadow"></div>`,
   styles: [
-    `
-      .shadow {
-        color: red;
-      }
-    `,
+    `.shadow {
+      color: red;
+    }`,
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
   standalone: false,
@@ -496,16 +492,15 @@ class CmpEncapsulationShadow {}
 
 @Component({
   selector: 'cmp-shadow-children',
-  template: ` <div class="shadow">
-    <cmp-emulated></cmp-emulated>
-    <cmp-none></cmp-none>
-  </div>`,
+  template: `
+    <div class="shadow">
+      <cmp-emulated></cmp-emulated>
+      <cmp-none></cmp-none>
+    </div>`,
   styles: [
-    `
-      .shadow {
-        color: red;
-      }
-    `,
+    `.shadow {
+      color: red;
+    }`,
   ],
   encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
   standalone: false,
@@ -525,7 +520,9 @@ export class SomeApp {}
 
 @Component({
   selector: 'shadow-parent-app-with-children',
-  template: ` <cmp-shadow-children></cmp-shadow-children> `,
+  template: `
+    <cmp-shadow-children></cmp-shadow-children>
+  `,
   standalone: false,
 })
 export class IsolatedShadowComponentParentApp {}

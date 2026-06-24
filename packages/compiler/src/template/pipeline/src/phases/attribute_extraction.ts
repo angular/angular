@@ -55,6 +55,22 @@ export function extractAttributes(job: CompilationJob): void {
             );
           }
           break;
+        case ir.OpKind.Control:
+          ir.OpList.insertBefore<ir.CreateOp>(
+            // Deliberately null i18nMessage value
+            ir.createExtractedAttributeOp(
+              op.target,
+              ir.BindingKind.Property,
+              null,
+              'field',
+              /* expression */ null,
+              /* i18nContext */ null,
+              /* i18nMessage */ null,
+              op.securityContext,
+            ),
+            lookupElement(elements, op.target),
+          );
+          break;
         case ir.OpKind.TwoWayProperty:
           ir.OpList.insertBefore<ir.CreateOp>(
             ir.createExtractedAttributeOp(
@@ -77,7 +93,10 @@ export function extractAttributes(job: CompilationJob): void {
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
-          if (op.expression instanceof ir.EmptyExpr) {
+          if (
+            unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+            op.expression instanceof ir.EmptyExpr
+          ) {
             ir.OpList.insertBefore<ir.CreateOp>(
               ir.createExtractedAttributeOp(
                 op.target,
@@ -106,9 +125,14 @@ export function extractAttributes(job: CompilationJob): void {
               SecurityContext.NONE,
             );
             if (job.kind === CompilationJobKind.Host) {
-              // TemplateDefinitionBuilder does not extract listener bindings to the const array
-              // (which is honestly pretty inconsistent).
-              break;
+              if (job.compatibility) {
+                // TemplateDefinitionBuilder does not extract listener bindings to the const array
+                // (which is honestly pretty inconsistent).
+                break;
+              }
+              // This attribute will apply to the enclosing host binding compilation unit, so order
+              // doesn't matter.
+              unit.create.push(extractedAttributeOp);
             } else {
               ir.OpList.insertBefore<ir.CreateOp>(
                 extractedAttributeOp,
@@ -167,9 +191,14 @@ function extractAttributeOp(
     return;
   }
 
-  // TemplateDefinitionBuilder only extracts text attributes. It does not extract attriibute
-  // bindings, even if they are constants.
-  if (op.isTextAttribute) {
+  let extractable = op.isTextAttribute || op.expression.isConstant();
+  if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+    // TemplateDefinitionBuilder only extracts text attributes. It does not extract attriibute
+    // bindings, even if they are constants.
+    extractable &&= op.isTextAttribute;
+  }
+
+  if (extractable) {
     const extractedAttributeOp = ir.createExtractedAttributeOp(
       op.target,
       op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,

@@ -8,4 +8,3 @@ minimumReleaseAgeExclude:
   - '@ngtools/webpack'
   - '@schematics/*'
   - 'ng-packagr'
-  - 'zone.js'

@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {
-  MockFileSystem,
-  initMockFileSystem,
-  lockMockFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 import ts from 'typescript';
 
@@ -23,47 +19,34 @@ import {Project, ProjectFiles, TestableOptions} from './project';
  * instance that backs a Language Service to emulate an IDE that uses the LS.
  */
 export class LanguageServiceTestEnv {
-  private static fsInitialized = false;
   static setup(): LanguageServiceTestEnv {
-    let fs = getFileSystem();
+    const fs = getFileSystem();
     if (!(fs instanceof MockFileSystem)) {
-      initMockFileSystem('Native');
-      fs = getFileSystem();
+      throw new Error(`LanguageServiceTestEnvironment only works with a mock filesystem`);
     }
+    fs.init(
+      loadStandardTestFiles({
+        fakeCommon: true,
+        rxjs: true,
+      }),
+    );
 
-    if (!LanguageServiceTestEnv.fsInitialized) {
-      (fs as MockFileSystem).init(
-        loadStandardTestFiles({
-          fakeCommon: true,
-          rxjs: true,
-        }),
-      );
-
-      lockMockFileSystem();
-      LanguageServiceTestEnv.fsInitialized = true;
-    }
-
-    const host = new MockServerHost();
+    const host = new MockServerHost(fs);
 
     const projectService = new ts.server.ProjectService({
       logger,
       cancellationToken: ts.server.nullCancellationToken,
       host,
-      documentRegistry: ts.createDocumentRegistry(
-        host.useCaseSensitiveFileNames,
-        host.getCurrentDirectory(),
-      ),
       typingsInstaller: ts.server.nullTypingsInstaller,
       session: undefined,
       useInferredProjectPerProjectRoot: true,
       useSingleInferredProject: true,
-    } as unknown as ts.server.ProjectServiceOptions);
+    });
 
     return new LanguageServiceTestEnv(host, projectService);
   }
 
   private projects = new Map<string, Project>();
-  private projectFiles = new Map<string, Set<string>>();
 
   constructor(
     private host: MockServerHost,
@@ -76,6 +59,10 @@ export class LanguageServiceTestEnv {
     angularCompilerOptions: TestableOptions = {},
     tsCompilerOptions = {},
   ): Project {
+    if (this.projects.has(name)) {
+      throw new Error(`Project ${name} is already defined`);
+    }
+
     const project = Project.initialize(
       name,
       this.projectService,
@@ -84,12 +71,7 @@ export class LanguageServiceTestEnv {
       tsCompilerOptions,
     );
     this.projects.set(name, project);
-
     return project;
-  }
-
-  getProject(name: string): Project | undefined {
-    return this.projects.get(name);
   }
 
   getTextFromTsSpan(fileName: string, span: ts.TextSpan): string | null {

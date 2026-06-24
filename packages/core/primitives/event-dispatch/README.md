@@ -47,13 +47,18 @@ This can introduce a couple problems:
     rendered on the page
 
     ```html
-    // This button is rarely clicked, but the code to show the dialog must be // loaded for every
-    user
-    <button type="button" (click)="showAdvancedOptionsDialog()">Advanced options</button>
+    // This button is rarely clicked, but the code to show the dialog must be
+    // loaded for every user
+    <button type="button" (click)="showAdvancedOptionsDialog()">
+      Advanced options
+    </button>
 
-    // Non-admins will never see this button, and yet they still have to load // this handler. @if
-    (isAdmin) {
-    <button type="button" (click)="showAdminOptionsDialog()">Admin options</button>
+    // Non-admins will never see this button, and yet they still have to load
+    // this handler.
+    @if (isAdmin) {
+      <button type="button" (click)="showAdminOptionsDialog()">
+        Admin options
+      </button>
     }
     ```
 
@@ -65,7 +70,9 @@ to handler name (which can map to whatever handler function or behavior the
 application needs) on a custom HTML `jsaction` attribute.
 
 ```html
-<button id="buy_btn" type="button" jsaction="click:confirmPurchase">Buy now!</button>
+<button id="buy_btn" type="button" jsaction="click:confirmPurchase">
+  Buy now!
+</button>
 ```
 
 A small inline script is added before any application content which registers
@@ -181,7 +188,7 @@ installed.
   <script type="text/javascript">
     <!-- inline bundled code from above here -->
   </script>
-  <!-- ...page content here... -->
+    <!-- ...page content here... -->
 </body>
 ```
 

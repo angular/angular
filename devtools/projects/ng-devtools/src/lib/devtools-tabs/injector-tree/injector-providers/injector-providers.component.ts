@@ -60,7 +60,6 @@ export class InjectorProvidersComponent {
     factory: 'useFactory',
     class: 'useClass',
     value: 'useValue',
-    internal: 'Internal',
   };
 
   providerTypes = Object.keys(this.providerTypeToLabel);

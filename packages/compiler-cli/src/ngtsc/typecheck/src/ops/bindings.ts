@@ -9,8 +9,6 @@
 import {
   AST,
   BindingType,
-  LiteralArray,
-  LiteralMap,
   ParseSourceSpan,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -21,11 +19,11 @@ import {
   TmplAstTextAttribute,
 } from '@angular/compiler';
 import ts from 'typescript';
-import {TcbDirectiveMetadata} from '../../api';
+import {TypeCheckableDirectiveMeta} from '../../api';
 import {ClassPropertyName} from '../../../metadata';
 import {Reference} from '../../../imports';
 import {Context} from './context';
-import {TcbExpr} from './codegen';
+import {tsCastToAny} from '../ts_util';
 
 export interface TcbBoundAttribute {
   value: AST | string;
@@ -35,7 +33,7 @@ export interface TcbBoundAttribute {
     fieldName: ClassPropertyName;
     required: boolean;
     isSignal: boolean;
-    transformType?: string;
+    transformType: Reference<ts.TypeNode> | null;
     isTwoWayBinding: boolean;
   }[];
 }
@@ -52,14 +50,9 @@ export interface TcbDirectiveBoundInput {
   field: string;
 
   /**
-   * The `TcbExpr` corresponding with the input binding expression.
+   * The `ts.Expression` corresponding with the input binding expression.
    */
-  expression: TcbExpr;
-
-  /**
-   * The input's original value expression.
-   */
-  originalExpression: AST | string;
+  expression: ts.Expression;
 
   /**
    * The source span of the full attribute binding.
@@ -87,7 +80,7 @@ export interface TcbDirectiveUnsetInput {
 export type TcbDirectiveInput = TcbDirectiveBoundInput | TcbDirectiveUnsetInput;
 
 export function getBoundAttributes(
-  directive: TcbDirectiveMetadata,
+  directive: TypeCheckableDirectiveMeta,
   node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
 ): TcbBoundAttribute[] {
   const boundInputs: TcbBoundAttribute[] = [];
@@ -114,7 +107,7 @@ export function getBoundAttributes(
           return {
             fieldName: input.classPropertyName,
             required: input.required,
-            transformType: input.transformType,
+            transformType: input.transform?.type || null,
             isSignal: input.isSignal,
             isTwoWayBinding:
               attr instanceof TmplAstBoundAttribute && attr.type === BindingType.TwoWay,
@@ -150,7 +143,7 @@ export function checkSplitTwoWayBinding(
     return false;
   }
   // Input consumer should be a directive because it's claimed
-  const inputConsumer = tcb.boundTarget.getConsumerOfBinding(input) as TcbDirectiveMetadata;
+  const inputConsumer = tcb.boundTarget.getConsumerOfBinding(input) as TypeCheckableDirectiveMeta;
   const outputConsumer = tcb.boundTarget.getConsumerOfBinding(output);
   if (
     outputConsumer === null ||
@@ -160,10 +153,22 @@ export function checkSplitTwoWayBinding(
     return false;
   }
   if (outputConsumer instanceof TmplAstElement) {
-    tcb.oobRecorder.splitTwoWayBinding(tcb.id, input, output, inputConsumer, outputConsumer);
+    tcb.oobRecorder.splitTwoWayBinding(
+      tcb.id,
+      input,
+      output,
+      inputConsumer.ref.node,
+      outputConsumer,
+    );
     return true;
   } else if (outputConsumer.ref !== inputConsumer.ref) {
-    tcb.oobRecorder.splitTwoWayBinding(tcb.id, input, output, inputConsumer, outputConsumer);
+    tcb.oobRecorder.splitTwoWayBinding(
+      tcb.id,
+      input,
+      output,
+      inputConsumer.ref.node,
+      outputConsumer.ref.node,
+    );
     return true;
   }
   return false;
@@ -172,13 +177,13 @@ export function checkSplitTwoWayBinding(
 /**
  * Potentially widens the type of `expr` according to the type-checking configuration.
  */
-export function widenBinding(expr: TcbExpr, tcb: Context, originalValue: string | AST): TcbExpr {
+export function widenBinding(expr: ts.Expression, tcb: Context): ts.Expression {
   if (!tcb.env.config.checkTypeOfInputBindings) {
     // If checking the type of bindings is disabled, cast the resulting expression to 'any'
     // before the assignment.
-    return new TcbExpr(`((${expr.print()}) as any)`);
+    return tsCastToAny(expr);
   } else if (!tcb.env.config.strictNullInputBindings) {
-    if (originalValue instanceof LiteralMap || originalValue instanceof LiteralArray) {
+    if (ts.isObjectLiteralExpression(expr) || ts.isArrayLiteralExpression(expr)) {
       // Object literals and array literals should not be wrapped in non-null assertions as that
       // would cause literals to be prematurely widened, resulting in type errors when assigning
       // into a literal type.
@@ -186,7 +191,7 @@ export function widenBinding(expr: TcbExpr, tcb: Context, originalValue: string 
     } else {
       // If strict null checks are disabled, erase `null` and `undefined` from the type by
       // wrapping the expression in a non-null assertion.
-      return new TcbExpr(`(${expr.print()})!`);
+      return ts.factory.createNonNullExpression(expr);
     }
   } else {
     // No widening is requested, use the expression as is.

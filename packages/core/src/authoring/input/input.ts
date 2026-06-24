@@ -149,8 +149,6 @@ export interface InputFunction {
  *
  * @publicAPI
  * @initializerApiFunction
- *
- * @see [Accepting data with input properties](guide/components/inputs)
  */
 export const input: InputFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on

@@ -35,7 +35,6 @@ export {
   HttpFeatureKind,
   provideHttpClient,
   withFetch,
-  withXhr,
   withInterceptors,
   withInterceptorsFromDi,
   withJsonpSupport,

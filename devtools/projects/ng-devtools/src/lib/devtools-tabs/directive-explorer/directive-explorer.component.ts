@@ -17,11 +17,13 @@ import {
   viewChild,
   ChangeDetectionStrategy,
   computed,
+  linkedSignal,
   DestroyRef,
 } from '@angular/core';
 import {
   ComponentExplorerView,
   ComponentExplorerViewQuery,
+  DebugSignalGraphNode,
   DevToolsNode,
   DirectivePosition,
   ElementPosition,
@@ -37,15 +39,17 @@ import {FrameManager} from '../../application-services/frame_manager';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
-import {findNodeByPosition, IndexedNode, indexForest} from './directive-forest/index-forest';
+import {IndexedNode} from './directive-forest/index-forest';
 import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
-import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
-import {FlatNode as PropertyFlatNode} from '../../shared/object-tree-explorer/object-tree-types';
-import {PropertyPaneComponent} from './property-pane/property-pane.component';
+import {
+  ElementPropertyResolver,
+  FlatNode as PropertyFlatNode,
+} from './property-resolver/element-property-resolver';
+import {PropertyTabComponent} from './property-tab/property-tab.component';
 import {FormsModule} from '@angular/forms';
 import {Platform} from '@angular/cdk/platform';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
-import {SignalGraphPaneComponent} from './signal-graph-pane/signal-graph-pane.component';
+import {SignalsTabComponent} from './signals-view/signals-tab.component';
 import {
   ResponsiveSplitConfig,
   ResponsiveSplitDirective,
@@ -53,8 +57,7 @@ import {
 import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
-import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
-import {DevtoolsSignalGraphNode} from '../../shared/signal-graph';
+import {SignalGraphManager} from './signal-graph/signal-graph-manager';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -93,10 +96,10 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     SplitAreaDirective,
     DirectiveForestComponent,
     BreadcrumbsComponent,
-    PropertyPaneComponent,
+    PropertyTabComponent,
     FormsModule,
     MatSnackBarModule,
-    SignalGraphPaneComponent,
+    SignalsTabComponent,
     ResponsiveSplitDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -132,7 +135,10 @@ export class DirectiveExplorerComponent {
   private readonly snackBar = inject(MatSnackBar);
   protected readonly signalGraph = inject(SignalGraphManager);
 
-  protected readonly externallySelectedSignalNodeId = signal<{id: string} | null>(null);
+  protected readonly preselectedSignalNodeId = linkedSignal<IndexedNode | null, string | null>({
+    source: this.currentSelectedElement,
+    computation: () => null,
+  });
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -201,7 +207,6 @@ export class DirectiveExplorerComponent {
   subscribeToBackendEvents(): void {
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest.set(view.forest);
-
       this.currentSelectedElement.set(this._clickedElement);
       if (view.properties && this._clickedElement) {
         this._propResolver.setProperties(this._clickedElement, view.properties);
@@ -346,7 +351,7 @@ export class DirectiveExplorerComponent {
     const selectedFrame = this._frameManager.selectedFrame();
 
     if (!this._frameManager.activeFrameHasUniqueUrl()) {
-      const error = `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`;
+      const error = `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
@@ -385,10 +390,9 @@ export class DirectiveExplorerComponent {
     }
   }
 
-  showSignalGraph(node: DevtoolsSignalGraphNode | null) {
+  showSignalGraph(node: DebugSignalGraphNode | null) {
     if (node) {
-      // We want to trigger an update each time we intercept an update.
-      this.externallySelectedSignalNodeId.set({id: node.id});
+      this.preselectedSignalNodeId.set(node.id);
     }
     this.signalsOpen.set(true);
   }

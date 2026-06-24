@@ -57,7 +57,7 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           }
         </div>
-      `,
+        `,
     })
     class DeferComp {}
 
@@ -267,8 +267,7 @@ describe('DeferFixture', () => {
             <second-deferred-comp />
           } @loading {
             <span class="loading">Loading...</span>
-          }
-          w
+          }w
         </div>
       `,
     })

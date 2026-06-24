@@ -9,19 +9,19 @@
 ng generate @angular/core:ngclass-to-class
 ```
 
-#### До {#before}
+#### До
 
 ```html
-<div [ngClass]="{admin: isAdmin, dense: density === 'high'}"></div>
+<div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
 ```
 
-#### После {#after}
+#### После
 
 ```html
-<div [class]="{admin: isAdmin, dense: density === 'high'}"></div>
+<div [class]="{admin: isAdmin, dense: density === 'high'}">
 ```
 
-## Параметры конфигурации {#configuration-options}
+## Параметры конфигурации
 
 Миграция поддерживает несколько опций для точной настройки процесса под ваши конкретные нужды.
 

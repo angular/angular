@@ -8,12 +8,10 @@ function TestCmp_For_1_Template(rf, ctx) {
       return $r3$.ɵɵresetView($event);
     });
     $r3$.ɵɵelementEnd();
-    $r3$.ɵɵcontrolCreate();
   }
   if (rf & 2) {
     const $name_r2$ = ctx.$implicit;
     $r3$.ɵɵtwoWayProperty("ngModel", $name_r2$);
-    $r3$.ɵɵcontrol();
   }
 }
 

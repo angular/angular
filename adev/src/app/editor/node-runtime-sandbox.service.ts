@@ -8,7 +8,6 @@
 
 import {DestroyRef, effect, inject, Injectable, signal} from '@angular/core';
 import {FileSystemTree, WebContainer, WebContainerProcess} from '@webcontainer/api';
-import {setupErrorFilenameHandler} from './error-filename-handler';
 import {BehaviorSubject, filter, map, Subject} from 'rxjs';
 
 import {type FileAndContent, TutorialType, checkFilesInDirectory} from '@angular/docs';
@@ -399,8 +398,6 @@ export class NodeRuntimeSandbox {
 
       this.setErrorState(message, ErrorType.UNKNOWN);
     });
-
-    await setupErrorFilenameHandler(webContainer);
   }
 
   private checkForOutOfMemoryError(message: string): boolean {

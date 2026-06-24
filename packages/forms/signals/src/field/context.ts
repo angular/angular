@@ -6,19 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  computed,
-  Signal,
-  untracked,
-  WritableSignal,
-  ɵRuntimeError as RuntimeError,
-} from '@angular/core';
-import {RuntimeErrorCode} from '../errors';
+import {computed, Signal, untracked, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {
   FieldContext,
-  ReadonlyFieldState,
-  ReadonlyFieldTree,
+  FieldState,
+  FieldTree,
   SchemaPath,
   SchemaPathRules,
   SchemaPathTree,
@@ -42,7 +35,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
    */
   private readonly cache = new WeakMap<
     SchemaPath<unknown, SchemaPathRules>,
-    Signal<ReadonlyFieldTree<unknown>>
+    Signal<FieldTree<unknown>>
   >();
 
   constructor(
@@ -55,9 +48,9 @@ export class FieldNodeContext implements FieldContext<unknown> {
    * @param target The path to resolve
    * @returns The field corresponding to the target path.
    */
-  private resolve<U>(target: SchemaPath<U, SchemaPathRules>): ReadonlyFieldTree<U> {
+  private resolve<U>(target: SchemaPath<U, SchemaPathRules>): FieldTree<U> {
     if (!this.cache.has(target)) {
-      const resolver = computed<ReadonlyFieldTree<unknown>>(() => {
+      const resolver = computed<FieldTree<unknown>>(() => {
         const targetPathNode = FieldPathNode.unwrapFieldPath(target);
 
         // First, find the field where the root our target path was merged in.
@@ -72,10 +65,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
           stepsRemaining--;
           field = field.structure.parent;
           if (field === undefined) {
-            throw new RuntimeError(
-              RuntimeErrorCode.PATH_NOT_IN_FIELD_TREE,
-              ngDevMode && 'Path is not part of this field tree.',
-            );
+            throw new Error('Path is not part of this field tree.');
           }
         }
 
@@ -84,30 +74,28 @@ export class FieldNodeContext implements FieldContext<unknown> {
         for (let key of targetPathNode.keys) {
           field = field.structure.getChild(key);
           if (field === undefined) {
-            throw new RuntimeError(
-              RuntimeErrorCode.PATH_RESOLUTION_FAILED,
-              ngDevMode &&
-                `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
-                  '<root>',
-                  ...this.node.structure.pathKeys(),
-                ].join('.')}.`,
+            throw new Error(
+              `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
+                '<root>',
+                ...this.node.structure.pathKeys(),
+              ].join('.')}.`,
             );
           }
         }
 
-        return field.fieldTree;
+        return field.fieldProxy;
       });
 
       this.cache.set(target, resolver);
     }
-    return this.cache.get(target)!() as ReadonlyFieldTree<U>;
+    return this.cache.get(target)!() as FieldTree<U>;
   }
 
-  get fieldTree(): ReadonlyFieldTree<unknown> {
+  get field(): FieldTree<unknown> {
     return this.node.fieldProxy;
   }
 
-  get state(): ReadonlyFieldState<unknown> {
+  get state(): FieldState<unknown> {
     return this.node;
   }
 
@@ -128,10 +116,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
     const key = this.key();
     // Assert that the parent is actually an array.
     if (!isArray(untracked(this.node.structure.parent!.value))) {
-      throw new RuntimeError(
-        RuntimeErrorCode.PARENT_NOT_ARRAY,
-        ngDevMode && 'Cannot access index, parent field is not an array.',
-      );
+      throw new Error(`RuntimeError: cannot access index, parent field is not an array`);
     }
     // Return the key as a number if we are indeed inside an array field.
     return Number(key);
@@ -143,10 +128,8 @@ export class FieldNodeContext implements FieldContext<unknown> {
     const result = this.resolve(p)().value();
 
     if (result instanceof AbstractControl) {
-      throw new RuntimeError(
-        RuntimeErrorCode.ABSTRACT_CONTROL_IN_FORM,
-        ngDevMode &&
-          `Tried to read an 'AbstractControl' value from a 'form()'. Did you mean to use 'compatForm()' instead?`,
+      throw new Error(
+        `Tried to read an 'AbstractControl' value form a 'form()'. Did you mean to use 'compatForm()' instead?`,
       );
     }
     return result;

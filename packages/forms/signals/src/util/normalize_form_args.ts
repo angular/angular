@@ -7,9 +7,8 @@
  */
 
 import type {WritableSignal} from '@angular/core';
-import type {FormOptions} from '../api/structure';
 import type {SchemaOrSchemaFn} from '../api/types';
-import {FieldAdapter} from '../field/field_adapter';
+import type {FormOptions} from '../api/structure';
 import {isSchemaOrSchemaFn} from '../schema/schema';
 
 /**
@@ -17,14 +16,10 @@ import {isSchemaOrSchemaFn} from '../schema/schema';
  */
 export function normalizeFormArgs<TModel>(
   args: any[],
-): [
-  WritableSignal<TModel>,
-  SchemaOrSchemaFn<TModel> | undefined,
-  (FormOptions<TModel> & {adapter?: FieldAdapter}) | undefined,
-] {
+): [WritableSignal<TModel>, SchemaOrSchemaFn<TModel> | undefined, FormOptions | undefined] {
   let model: WritableSignal<TModel>;
   let schema: SchemaOrSchemaFn<TModel> | undefined;
-  let options: (FormOptions<TModel> & {adapter?: FieldAdapter}) | undefined;
+  let options: FormOptions | undefined;
 
   if (args.length === 3) {
     [model, schema, options] = args;

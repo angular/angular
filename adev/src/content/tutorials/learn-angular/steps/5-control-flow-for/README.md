@@ -37,22 +37,16 @@ export class App {
 
 <docs-workflow>
 
-<docs-step title="Add the `users` property">
+<docs-step title="Добавьте свойство `users`">
 В классе `App` добавьте свойство `users`, содержащее пользователей и их имена.
 
 ```ts
-[
-  {id: 0, name: 'Sarah'},
-  {id: 1, name: 'Amy'},
-  {id: 2, name: 'Rachel'},
-  {id: 3, name: 'Jessica'},
-  {id: 4, name: 'Poornima'},
-];
+[{id: 0, name: 'Sarah'}, {id: 1, name: 'Amy'}, {id: 2, name: 'Rachel'}, {id: 3, name: 'Jessica'}, {id: 4, name: 'Poornima'}]
 ```
 
 </docs-step>
 
-<docs-step title="Update the template">
+<docs-step title="Обновите шаблон">
 Обновите шаблон, чтобы отобразить имя каждого пользователя в элементе `p`, используя синтаксис шаблона `@for`.
 
 ```angular-html

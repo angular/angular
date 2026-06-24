@@ -42,6 +42,4 @@ export interface ExampleMetadata {
   preview: boolean;
   /** Whether to hide code example by default. */
   hideCode: boolean;
-  /** Visual style for the code example */
-  style?: 'prefer' | 'avoid';
 }

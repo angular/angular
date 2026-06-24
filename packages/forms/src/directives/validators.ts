@@ -162,7 +162,9 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
       const input = this.normalizeInput(changes[this.inputName].currentValue);
       this._enabled = this.enabled(input);
       this._validator = this._enabled ? this.createValidator(input) : nullValidator;
-      this._onChange?.();
+      if (this._onChange) {
+        this._onChange();
+      }
     }
   }
 

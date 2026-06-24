@@ -12,7 +12,7 @@
 
 <docs-workflow>
 
-<docs-step title="Add viewChild import">
+<docs-step title="Добавьте импорт viewChild">
 Сначала добавьте импорт `viewChild` для доступа к дочерним компонентам в `app.ts`.
 
 ```ts
@@ -21,7 +21,7 @@ import {Component, signal, computed, viewChild, ChangeDetectionStrategy} from '@
 
 </docs-step>
 
-<docs-step title="Create viewChild queries">
+<docs-step title="Создайте запросы viewChild">
 Добавьте запросы viewChild в компонент App для доступа к дочерним компонентам.
 
 ```ts
@@ -33,7 +33,7 @@ cartSummary = viewChild(CartSummary);
 Эти запросы создают сигналы, которые ссылаются на экземпляры дочерних компонентов.
 </docs-step>
 
-<docs-step title="Implement parent methods">
+<docs-step title="Реализуйте методы родителя">
 Используйте запросы viewChild для вызова методов дочерних компонентов в `app.ts`:
 
 ```ts
@@ -54,7 +54,7 @@ initiateCheckout() {
 
 </docs-step>
 
-<docs-step title="Test the interactions">
+<docs-step title="Протестируйте взаимодействия">
 Кнопки управления теперь должны работать:
 
 - **"Show First Product Details"** — вызывает `highlight()` в ProductCard

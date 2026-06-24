@@ -7,16 +7,7 @@
  */
 
 import {signal, WritableSignal} from '@angular/core';
-import {
-  FieldTree,
-  form,
-  provideSignalFormsConfig,
-  ReadonlyFieldState,
-  required,
-  schema,
-  SchemaFn,
-  validate,
-} from '../../public_api';
+import {form, required, schema, SchemaFn} from '../../public_api';
 
 interface Order {
   id: string;
@@ -95,64 +86,6 @@ function typeVerificationOnlyDoNotRunMe() {
     it('should allow FieldTree of recursive type', () => {
       type RecursiveType = (number | RecursiveType)[];
       form(signal<RecursiveType>([5]));
-    });
-
-    it('should allow ReadonlyArray in model and be iterable', () => {
-      interface Order {
-        readonly products: readonly string[];
-      }
-      const order: WritableSignal<Order> = null!;
-      const f = form(order);
-      // Iterating over products should yield FieldTree<string> items, not [string, FieldTree] entries
-      for (const product of f.products) {
-        const p: FieldTree<string> = product;
-        p().value();
-      }
-    });
-
-    it('should allow Array in model and be iterable', () => {
-      interface Order {
-        products: string[];
-      }
-      const order: WritableSignal<Order> = null!;
-      const f = form(order);
-      for (const product of f.products) {
-        const p: FieldTree<string> = product;
-        p().value();
-      }
-    });
-
-    it('should allow assigning FieldState to ReadonlyFieldState', () => {
-      const pizzaOrder: WritableSignal<PizzaOrder> = null!;
-      const f = form(pizzaOrder);
-      const readonlyState: ReadonlyFieldState<PizzaOrder> = f();
-      readonlyState.value();
-    });
-
-    it('should prevent writing to field value through context in a validation rule', () => {
-      schema<PizzaOrder>((p) => {
-        validate(p.id, (ctx) => {
-          // @ts-expect-error
-          ctx.value.set('new value');
-          // @ts-expect-error
-          ctx.state.value.set('new value');
-          // @ts-expect-error
-          ctx.stateOf(p.details).value.set({total: 0});
-          return null;
-        });
-      });
-    });
-
-    it('should prevent writing to field value through context in a signal provider', () => {
-      provideSignalFormsConfig({
-        classes: {
-          'my-class': (binding) => {
-            // @ts-expect-error
-            binding.state().value.set('new value');
-            return true;
-          },
-        },
-      });
     });
   });
 }

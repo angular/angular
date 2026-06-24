@@ -579,7 +579,7 @@ export function generateImport(
   }
   return ts.factory.createImportDeclaration(
     undefined,
-    ts.factory.createImportClause(undefined, importClauseName, importBindings),
+    ts.factory.createImportClause(false, importClauseName, importBindings),
     moduleSpec,
     undefined,
   );
@@ -810,7 +810,9 @@ function getStringLiteralText(moduleSpecifier: ts.Expression): string | undefine
  * The developer should export the `FooComponent` in the `AppModule`.
  *
  */
-class PotentialDirectiveModuleSpecifierResolverImpl implements PotentialDirectiveModuleSpecifierResolver {
+class PotentialDirectiveModuleSpecifierResolverImpl
+  implements PotentialDirectiveModuleSpecifierResolver
+{
   constructor(
     private readonly compiler: NgCompiler,
     private readonly directive: PotentialDirective | PotentialPipe,

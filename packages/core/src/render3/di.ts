@@ -11,7 +11,7 @@ import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {Injector} from '../di/injector';
 import {BackwardsCompatibleInjector, convertToBitFlags} from '../di/injector_compatibility';
 import {InjectorMarkers} from '../di/injector_marker';
-import {InjectOptions, InternalInjectFlags} from '../di/interface/injector';
+import {InternalInjectFlags, InjectOptions} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
@@ -745,9 +745,8 @@ export function getNodeInjectable(
     const factory: NodeInjectorFactory = value;
     ngDevMode && injectionPath.push(factory.name ?? 'unknown');
     if (factory.resolving) {
-      let token = '';
+      const token = stringifyForError(tData[index]);
       if (ngDevMode) {
-        token = stringifyForError(tData[index]);
         throw cyclicDependencyErrorWithDetails(token, injectionPath);
       } else {
         throw cyclicDependencyError(token);
@@ -1016,11 +1015,7 @@ function lookupTokenUsingEmbeddedInjector<T>(
         const embeddedViewInjectorValue = (embeddedViewInjector as BackwardsCompatibleInjector).get(
           token,
           NOT_FOUND as T | {},
-          // The `SkipSelf` flag is intended for the current injection context (the child component).
-          // When we delegate to the embedded view injector, we are effectively traversing to a
-          // parent/fallback scope, so the "Self" has already been skipped. We must strip the
-          // flag to ensure the embedded view injector can resolve tokens from itself.
-          flags & ~InternalInjectFlags.SkipSelf,
+          flags,
         );
         if (embeddedViewInjectorValue !== NOT_FOUND) {
           return embeddedViewInjectorValue;

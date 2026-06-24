@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getIntParameter} from '../util.js';
+import {getIntParameter} from '../util';
 
 export class TreeNode {
   transitiveChildCount: number;

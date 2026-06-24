@@ -11,12 +11,7 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {
-  TemplateCheckFactory,
-  TemplateCheckWithVisitor,
-  TemplateContext,
-  formatExtendedError,
-} from '../../api';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
 /**
  * Ensures the two-way binding syntax is correct.
@@ -40,10 +35,8 @@ class InvalidBananaInBoxCheck extends TemplateCheckWithVisitor<ErrorCode.INVALID
     const expectedBoundSyntax = boundSyntax.replace(`(${name})`, `[(${name.slice(1, -1)})]`);
     const diagnostic = ctx.makeTemplateDiagnostic(
       node.sourceSpan,
-      formatExtendedError(
-        ErrorCode.INVALID_BANANA_IN_BOX,
-        `In the two-way binding syntax the parentheses should be inside the brackets, ex. '${expectedBoundSyntax}'`,
-      ),
+      `In the two-way binding syntax the parentheses should be inside the brackets, ex. '${expectedBoundSyntax}'.
+        Find more at https://angular.dev/guide/templates/two-way-binding`,
     );
     return [diagnostic];
   }

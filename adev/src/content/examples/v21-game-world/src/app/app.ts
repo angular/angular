@@ -126,10 +126,7 @@ const DESTINATION_TOLERANCE = 0.005;
 @Component({
   selector: 'app-root',
   template: `
-    <div
-      class="game-container"
-      [style.background-image]="'url(assets/images/v21-event/world-map.png)'"
-    >
+    <div class="game-container" [style.background-image]="'url(assets/images/v21-event/world-map.png)'">
       <!-- Keys -->
       <div class="keys-container">
         @for (key of keysToShow(); track key) {
@@ -238,7 +235,9 @@ const DESTINATION_TOLERANCE = 0.005;
       }
       <!-- Explore Button -->
       @if (activeDestination() && (activeDestination()?.id !== 'd4' || allKeysCollected())) {
-        <button class="explore-button" (click)="isDialogOpen.set(true)">Enter</button>
+        <button class="explore-button" (click)="isDialogOpen.set(true)">
+          Enter
+        </button>
       }
     </div>
   `,
@@ -466,10 +465,7 @@ const DESTINATION_TOLERANCE = 0.005;
         font-size: 2cqw;
         font-weight: bold;
         cursor: pointer;
-        transition:
-          background-color 0.2s,
-          opacity 0.3s ease-in-out,
-          visibility 0.3s ease-in-out;
+        transition: background-color 0.2s, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         z-index: 20;
         opacity: 0;
         visibility: hidden;

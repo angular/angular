@@ -12,7 +12,7 @@ Note: Узнайте больше
 
 <docs-workflow>
 
-<docs-step title="Add a property called `city`">
+<docs-step title="Добавьте свойство city">
 Обновите класс компонента, добавив свойство `city` в класс `App`.
 
 ```ts
@@ -30,7 +30,7 @@ export class App {
 Чтобы использовать свойство класса в шаблоне, необходимо использовать синтаксис `{{ }}`.
 </docs-step>
 
-<docs-step title="Update the component template">
+<docs-step title="Обновите шаблон компонента">
 Обновите свойство `template`, чтобы оно соответствовало следующему HTML:
 
 ```ts
@@ -42,7 +42,7 @@ template: `Hello {{ city }}`,
 выражений и многого другого.
 </docs-step>
 
-<docs-step title="More practice with interpolation">
+<docs-step title="Больше практики с интерполяцией">
 Попробуйте следующее — добавьте еще одну конструкцию `{{ }}` с содержимым `1 + 1`:
 
 ```ts

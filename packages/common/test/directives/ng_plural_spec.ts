@@ -8,7 +8,7 @@
 
 import {CommonModule, NgLocalization, NgPlural, NgPluralCase} from '../../index';
 import {Component, Injectable} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('ngPlural', () => {
@@ -18,7 +18,7 @@ describe('ngPlural', () => {
     return fixture.componentInstance;
   }
 
-  function detectChangesAndExpectText(text: string): void {
+  function detectChangesAndExpectText<T>(text: string): void {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText(text);
@@ -36,7 +36,7 @@ describe('ngPlural', () => {
     });
   });
 
-  it('should display the template according to the exact value', () => {
+  it('should display the template according to the exact value', waitForAsync(() => {
     const template =
       '<ul [ngPlural]="switchValue">' +
       '<ng-template ngPluralCase="=0"><li>you have no messages.</li></ng-template>' +
@@ -50,9 +50,9 @@ describe('ngPlural', () => {
 
     getComponent().switchValue = 1;
     detectChangesAndExpectText('you have one message.');
-  });
+  }));
 
-  it('should display the template according to the exact numeric value', () => {
+  it('should display the template according to the exact numeric value', waitForAsync(() => {
     const template =
       '<div>' +
       '<ul [ngPlural]="switchValue">' +
@@ -67,11 +67,11 @@ describe('ngPlural', () => {
 
     getComponent().switchValue = 1;
     detectChangesAndExpectText('you have one message.');
-  });
+  }));
 
   // https://github.com/angular/angular/issues/9868
   // https://github.com/angular/angular/issues/9882
-  it('should not throw when ngPluralCase contains expressions', () => {
+  it('should not throw when ngPluralCase contains expressions', waitForAsync(() => {
     const template =
       '<ul [ngPlural]="switchValue">' +
       '<ng-template ngPluralCase="=0"><li>{{ switchValue }}</li></ng-template>' +
@@ -81,9 +81,9 @@ describe('ngPlural', () => {
 
     getComponent().switchValue = 0;
     expect(() => fixture.detectChanges()).not.toThrow();
-  });
+  }));
 
-  it('should be applicable to <ng-container> elements', () => {
+  it('should be applicable to <ng-container> elements', waitForAsync(() => {
     const template =
       '<ng-container [ngPlural]="switchValue">' +
       '<ng-template ngPluralCase="=0">you have no messages.</ng-template>' +
@@ -97,9 +97,9 @@ describe('ngPlural', () => {
 
     getComponent().switchValue = 1;
     detectChangesAndExpectText('you have one message.');
-  });
+  }));
 
-  it('should display the template according to the category', () => {
+  it('should display the template according to the category', waitForAsync(() => {
     const template =
       '<ul [ngPlural]="switchValue">' +
       '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
@@ -113,9 +113,9 @@ describe('ngPlural', () => {
 
     getComponent().switchValue = 8;
     detectChangesAndExpectText('you have many messages.');
-  });
+  }));
 
-  it('should default to other when no matches are found', () => {
+  it('should default to other when no matches are found', waitForAsync(() => {
     const template =
       '<ul [ngPlural]="switchValue">' +
       '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
@@ -126,9 +126,9 @@ describe('ngPlural', () => {
 
     getComponent().switchValue = 100;
     detectChangesAndExpectText('default message.');
-  });
+  }));
 
-  it('should prioritize value matches over category matches', () => {
+  it('should prioritize value matches over category matches', waitForAsync(() => {
     const template =
       '<ul [ngPlural]="switchValue">' +
       '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
@@ -142,7 +142,7 @@ describe('ngPlural', () => {
 
     getComponent().switchValue = 3;
     detectChangesAndExpectText('you have a few messages.');
-  });
+  }));
 
   it('should be available as a standalone directive', () => {
     @Component({

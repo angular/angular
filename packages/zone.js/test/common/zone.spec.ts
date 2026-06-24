@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-describe('Zone Common', function () {
+import {zoneSymbol} from '../../lib/common/utils';
+
+describe('Zone', function () {
+  const rootZone = Zone.current;
+
   it('should have a name', function () {
     expect(Zone.current.name).toBeDefined();
   });

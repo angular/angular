@@ -45,7 +45,7 @@ const CHECKBOX_VALUE_ACCESSOR: Provider = {
  */
 @Directive({
   selector:
-    'input[type=checkbox]:not([ngNoCva])[formControlName],input[type=checkbox]:not([ngNoCva])[formControl],input[type=checkbox]:not([ngNoCva])[ngModel]',
+    'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
   host: {'(change)': 'onChange($any($event.target).checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR],
   standalone: false,

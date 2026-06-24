@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {untracked, ɵWritable as Writable} from '@angular/core';
+import {ɵWritable as Writable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
@@ -430,17 +430,15 @@ export class FormGroup<
       emitEvent?: boolean;
     } = {},
   ): void {
-    untracked(() => {
-      assertAllValuesPresent(this, true, value);
-      (Object.keys(value) as Array<keyof TControl>).forEach((name) => {
-        assertControlPresent(this, true, name as any);
-        (this.controls as any)[name].setValue((value as any)[name], {
-          onlySelf: true,
-          emitEvent: options.emitEvent,
-        });
+    assertAllValuesPresent(this, true, value);
+    (Object.keys(value) as Array<keyof TControl>).forEach((name) => {
+      assertControlPresent(this, true, name as any);
+      (this.controls as any)[name].setValue((value as any)[name], {
+        onlySelf: true,
+        emitEvent: options.emitEvent,
       });
-      this.updateValueAndValidity(options);
     });
+    this.updateValueAndValidity(options);
   }
 
   /**

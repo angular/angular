@@ -70,7 +70,6 @@ export function enterViewWithOneDiv() {
       sanitizer: null,
       changeDetectionScheduler: null,
       ngReflect: false,
-      tracingService: null,
     },
     renderer,
     null,

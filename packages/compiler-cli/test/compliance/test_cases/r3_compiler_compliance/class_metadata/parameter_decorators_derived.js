@@ -1,9 +1,5 @@
-export class DerivedInjectable extends ParameterizedInjectable {
-  …
-  static ɵfac = …;
-  static ɵprov = …;
-}
-
+DerivedInjectable.ɵfac = …;
+DerivedInjectable.ɵprov = …;
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(DerivedInjectable, [{
     type: Injectable
@@ -12,12 +8,8 @@ export class DerivedInjectable extends ParameterizedInjectable {
 
 …
 
-export class DerivedInjectableWithCtor extends ParameterizedInjectable {
-  …
-  static ɵfac = …;
-  static ɵprov = …;
-}
-
+DerivedInjectableWithCtor.ɵfac = …;
+DerivedInjectableWithCtor.ɵprov = …;
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(DerivedInjectableWithCtor, [{
     type: Injectable

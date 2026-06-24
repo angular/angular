@@ -14,19 +14,15 @@ import {
   forwardRef,
   Host,
   Inject,
-  Injector,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
   Output,
   Provider,
-  Renderer2,
   Self,
   SimpleChanges,
-  type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
-import {Subscription} from 'rxjs';
 
 import {FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -35,15 +31,16 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {NG_CONTROL_PARSE_ERRORS_PROVIDER, NgControl} from './ng_control';
+import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
 import {
   CALL_SET_DISABLED_STATE,
   controlPath,
   isPropertyUpdated,
+  selectValueAccessor,
   SetDisabledStateOption,
-  setUpControlValueAccessor,
+  setUpControl,
 } from './shared';
 import {
   formGroupNameException,
@@ -163,7 +160,7 @@ const resolvedPromise = (() => Promise.resolve())();
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
-  providers: [formControlBinding, NG_CONTROL_PARSE_ERRORS_PROVIDER],
+  providers: [formControlBinding],
   exportAs: 'ngModel',
   standalone: false,
 })
@@ -244,13 +241,12 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     @Optional()
     @Inject(CALL_SET_DISABLED_STATE)
     private callSetDisabledState?: SetDisabledStateOption,
-    @Optional() injector?: Injector,
-    @Optional() renderer?: Renderer2,
   ) {
-    super(injector, renderer, valueAccessors);
+    super();
     this._parent = parent;
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
   /** @docs-private */
@@ -282,33 +278,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
-    this.formDirective?.removeControl(this);
-  }
-
-  /**
-   * Internal control directive creation lifecycle hook.
-   * @internal
-   */
-  ɵngControlCreate(host: ControlDirectiveHost): void {
-    super.ngControlCreate(host);
-  }
-
-  /**
-   * Internal control directive update lifecycle hook.
-   * @internal
-   */
-  ɵngControlUpdate(host: ControlDirectiveHost): void {
-    super.ngControlUpdate(host, false);
-  }
-
-  /**
-   * Template-driven forms handle `required` via the `RequiredValidator` directive.
-   *
-   * This directive has a `required` input and a host binding to `[attr.required]`. It defines the
-   * source of truth for required-ness, so disable the normal control binding for it.
-   */
-  protected override get shouldBindRequired() {
-    return false;
+    this.formDirective && this.formDirective.removeControl(this);
   }
 
   /**
@@ -356,28 +326,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _setUpStandalone(): void {
-    if (!this.isCustomControlBased) {
-      this.valueAccessor ??= this.selectedValueAccessor;
-      setUpControlValueAccessor(this.control, this, this.callSetDisabledState);
-    } else {
-      // FVC path - set up subscriptions for value/status sync
-      this.setupCustomControl();
-    }
+    setUpControl(this.control, this, this.callSetDisabledState);
     this.control.updateValueAndValidity({emitEvent: false});
-  }
-
-  /**
-   * Sets up the control with the form, handling FVC vs CVA branching.
-   * Called by NgForm.addControl.
-   * @internal
-   */
-  _setupWithForm(callSetDisabledState?: SetDisabledStateOption): void {
-    if (!this.isCustomControlBased) {
-      this.valueAccessor ??= this.selectedValueAccessor;
-      setUpControlValueAccessor(this.control, this, callSetDisabledState);
-    } else {
-      this.setupCustomControl();
-    }
   }
 
   private _checkForErrors(): void {

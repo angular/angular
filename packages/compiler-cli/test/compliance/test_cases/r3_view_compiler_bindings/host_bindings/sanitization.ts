@@ -17,12 +17,11 @@ export class HostBindingLinkDir {
   host: {
     '[innerHtml]': 'evil',
     '[attr.style]': 'evil',
-    '[src]': 'nonEvil',
+    '[src]': 'evil',
   },
 })
 export class HostBindingImageDir {
   evil = 'evil';
-  nonEvil = 'nonEvil';
 }
 
 @Directive({

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type ts from 'typescript';
+import ts from 'typescript';
 
 import {
   ApplyRefactoringProgressFn,
@@ -15,10 +15,7 @@ import {
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
   isNgLanguageService,
-  LinkedEditingRanges,
   NgLanguageService,
-  AngularInlayHint,
-  InlayHintsConfig,
 } from '../api';
 
 import {LanguageService} from './language_service';
@@ -32,16 +29,6 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const angularOnly = config?.angularOnly === true;
 
   const ngLS = new LanguageService(project, tsLS, config);
-
-  function withFallback<Result>(
-    fileName: string,
-    cb: (ls: ts.LanguageService | LanguageService) => Result | undefined,
-  ): Result | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return cb(ngLS);
-    }
-    return cb(tsLS) ?? cb(ngLS);
-  }
 
   function getSyntacticDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
     if (!angularOnly && isTypeScriptFile(fileName)) {
@@ -72,21 +59,45 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   }
 
   function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo | undefined {
-    return withFallback(fileName, (ls) => ls.getQuickInfoAtPosition(fileName, position));
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getQuickInfoAtPosition(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return (
+        tsLS.getQuickInfoAtPosition(fileName, position) ??
+        ngLS.getQuickInfoAtPosition(fileName, position)
+      );
+    }
   }
 
   function getTypeDefinitionAtPosition(
     fileName: string,
     position: number,
   ): readonly ts.DefinitionInfo[] | undefined {
-    return withFallback(fileName, (ls) => ls.getTypeDefinitionAtPosition(fileName, position));
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getTypeDefinitionAtPosition(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return (
+        tsLS.getTypeDefinitionAtPosition(fileName, position) ??
+        ngLS.getTypeDefinitionAtPosition(fileName, position)
+      );
+    }
   }
 
   function getDefinitionAndBoundSpan(
     fileName: string,
     position: number,
   ): ts.DefinitionInfoAndBoundSpan | undefined {
-    return withFallback(fileName, (ls) => ls.getDefinitionAndBoundSpan(fileName, position));
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getDefinitionAndBoundSpan(fileName, position);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return (
+        tsLS.getDefinitionAndBoundSpan(fileName, position) ??
+        ngLS.getDefinitionAndBoundSpan(fileName, position)
+      );
+    }
   }
 
   function getDefinitionAtPosition(
@@ -150,7 +161,15 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     position: number,
     options: ts.GetCompletionsAtPositionOptions,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
-    return withFallback(fileName, (ls) => ls.getCompletionsAtPosition(fileName, position, options));
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getCompletionsAtPosition(fileName, position, options);
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return (
+        tsLS.getCompletionsAtPosition(fileName, position, options) ??
+        ngLS.getCompletionsAtPosition(fileName, position, options)
+      );
+    }
   }
 
   function getCompletionEntryDetails(
@@ -162,18 +181,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     preferences: ts.UserPreferences | undefined,
     data: ts.CompletionEntryData | undefined,
   ): ts.CompletionEntryDetails | undefined {
-    return withFallback(fileName, (ls) => {
-      if (ls === tsLS) {
-        return tsLS.getCompletionEntryDetails(
-          fileName,
-          position,
-          entryName,
-          formatOptions,
-          source,
-          preferences,
-          data,
-        );
-      }
+    if (angularOnly || !isTypeScriptFile(fileName)) {
       return ngLS.getCompletionEntryDetails(
         fileName,
         position,
@@ -182,7 +190,28 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
         preferences,
         data,
       );
-    });
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return (
+        tsLS.getCompletionEntryDetails(
+          fileName,
+          position,
+          entryName,
+          formatOptions,
+          source,
+          preferences,
+          data,
+        ) ??
+        ngLS.getCompletionEntryDetails(
+          fileName,
+          position,
+          entryName,
+          formatOptions,
+          preferences,
+          data,
+        )
+      );
+    }
   }
 
   function getCompletionEntrySymbol(
@@ -191,12 +220,15 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     name: string,
     source: string | undefined,
   ): ts.Symbol | undefined {
-    return withFallback(fileName, (ls) => {
-      if (ls === tsLS) {
-        return tsLS.getCompletionEntrySymbol(fileName, position, name, source);
-      }
+    if (angularOnly || !isTypeScriptFile(fileName)) {
       return ngLS.getCompletionEntrySymbol(fileName, position, name);
-    });
+    } else {
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return (
+        tsLS.getCompletionEntrySymbol(fileName, position, name, source) ??
+        ngLS.getCompletionEntrySymbol(fileName, position, name)
+      );
+    }
   }
   /**
    * Gets global diagnostics related to the program configuration and compiler options.
@@ -215,11 +247,22 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     position: number,
     options: ts.SignatureHelpItemsOptions,
   ): ts.SignatureHelpItems | undefined {
-    return withFallback(fileName, (ls) => ls.getSignatureHelpItems(fileName, position, options));
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getSignatureHelpItems(fileName, position, options);
+    } else {
+      return (
+        tsLS.getSignatureHelpItems(fileName, position, options) ??
+        ngLS.getSignatureHelpItems(fileName, position, options)
+      );
+    }
   }
 
   function getOutliningSpans(fileName: string): ts.OutliningSpan[] {
-    return withFallback(fileName, (ls) => ls.getOutliningSpans(fileName)) ?? [];
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getOutliningSpans(fileName);
+    } else {
+      return tsLS.getOutliningSpans(fileName) ?? ngLS.getOutliningSpans(fileName);
+    }
   }
 
   function getTcb(fileName: string, position: number): GetTcbResponse | undefined {
@@ -322,47 +365,8 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return tsLS;
   }
 
-  function getLinkedEditingRangeAtPosition(
-    fileName: string,
-    position: number,
-  ): LinkedEditingRanges | undefined {
-    // Only handle inline templates in TypeScript files.
-    // For external HTML template files, VS Code's built-in HTML language support
-    // provides linked editing, so we don't need to handle them here.
-    if (!isTypeScriptFile(fileName)) {
-      return undefined;
-    }
-
-    // Try Angular's implementation first for inline templates
-    const ngResult = ngLS.getLinkedEditingRangeAtPosition(fileName, position);
-    if (ngResult) {
-      return ngResult;
-    }
-
-    // Fall back to TypeScript for JSX/TSX files
-    if (!angularOnly) {
-      const tsResult = tsLS.getLinkedEditingRangeAtPosition(fileName, position);
-      return tsResult ?? undefined;
-    }
-
-    return undefined;
-  }
-
-  function ensureProjectAnalyzed(): void {
-    ngLS.ensureProjectAnalyzed();
-  }
-
-  function getAngularInlayHints(
-    fileName: string,
-    span: ts.TextSpan,
-    config?: InlayHintsConfig,
-  ): AngularInlayHint[] {
-    return ngLS.provideInlayHints(fileName, span, config);
-  }
-
   return {
     ...tsLS,
-    ensureProjectAnalyzed,
     getSyntacticDiagnostics,
     getSemanticDiagnostics,
     getSuggestionDiagnostics,
@@ -391,25 +395,23 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getTypescriptLanguageService,
     getApplicableRefactors,
     applyRefactoring,
-    getLinkedEditingRangeAtPosition,
-    getAngularInlayHints,
   };
 }
 
-function getExternalFiles(tsModule: typeof ts, project: ts.server.Project): string[] {
+export function getExternalFiles(project: ts.server.Project): string[] {
   if (!project.hasRoots()) {
     return []; // project has not been initialized
   }
   const typecheckFiles: string[] = [];
   const resourceFiles: string[] = [];
   for (const scriptInfo of project.getScriptInfos()) {
-    if (scriptInfo.scriptKind === tsModule.ScriptKind.External) {
+    if (scriptInfo.scriptKind === ts.ScriptKind.External) {
       // script info for typecheck file is marked as external, see
       // getOrCreateTypeCheckScriptInfo() in
       // packages/language-service/src/language_service.ts
       typecheckFiles.push(scriptInfo.fileName);
     }
-    if (scriptInfo.scriptKind === tsModule.ScriptKind.Unknown) {
+    if (scriptInfo.scriptKind === ts.ScriptKind.Unknown) {
       // script info for resource file is marked as unknown.
       // Including these as external files is necessary because otherwise they will get removed from
       // the project when `updateNonInferredProjectFiles` is called as part of the
@@ -425,6 +427,6 @@ function getExternalFiles(tsModule: typeof ts, project: ts.server.Project): stri
 export function initialize(mod: {typescript: typeof ts}): ts.server.PluginModule {
   return {
     create,
-    getExternalFiles: getExternalFiles.bind(undefined, mod.typescript),
+    getExternalFiles,
   };
 }

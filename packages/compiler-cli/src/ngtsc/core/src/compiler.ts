@@ -127,7 +127,6 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 import {coreVersionSupportsFeature} from './feature_detection';
 import {angularJitApplicationTransform} from '../../transform/jit';
 import {untagAllTsFiles} from '../../shims';
-import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -423,6 +422,7 @@ export class NgCompiler {
           ticket.programDriver,
           ticket.incrementalBuildStrategy,
           IncrementalCompilation.fresh(
+            ticket.tsProgram,
             versionMapFromProgram(ticket.tsProgram, ticket.programDriver),
           ),
           ticket.enableTemplateTypeChecker,
@@ -671,7 +671,7 @@ export class NgCompiler {
   }
 
   /**
-   * Add https://angular.dev/errors error guide links to diagnostics for this compilation.
+   * Add Angular.io error guide links to diagnostics for this compilation.
    */
   private addMessageTextDetails(diagnostics: ts.Diagnostic[]): ts.Diagnostic[] {
     return diagnostics.map((diag) => {
@@ -835,8 +835,6 @@ export class NgCompiler {
         compilation.isCore,
         this.closureCompilerEnabled,
         this.emitDeclarationOnly,
-        compilation.refEmitter,
-        !!this.options['_experimentalEmitIntermediateTs'],
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
@@ -1633,7 +1631,6 @@ export class NgCompiler {
       semanticDepGraphUpdater,
       this.adapter,
       this.emitDeclarationOnly,
-      !!this.options['_experimentalEmitIntermediateTs'],
     );
 
     // Template type-checking may use the `ProgramDriver` to produce new `ts.Program`(s). If this
@@ -1780,7 +1777,7 @@ One of the following actions is required:
 2. Remove "strictTemplates" or set it to 'false'.
 
 More information about the template type checking compiler options can be found in the documentation:
-${DOC_PAGE_BASE_URL}/tools/cli/template-typecheck
+https://angular.dev/tools/cli/template-typecheck
       `.trim(),
     });
   }

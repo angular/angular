@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TmplAstSwitchBlock, TmplAstSwitchBlockCaseGroup} from '@angular/compiler';
+import {TmplAstSwitchBlock, TmplAstSwitchBlockCase} from '@angular/compiler';
+import ts from 'typescript';
 import {TcbOp} from './base';
-import {getStatementsBlock, TcbExpr} from './codegen';
+import type {Scope} from './scope';
 import type {Context} from './context';
 import {tcbExpression} from './expression';
-import type {Scope} from './scope';
+import {markIgnoreDiagnostics} from '../comments';
 
 /**
  * A `TcbOp` which renders a `switch` block as a TypeScript `switch` statement.
@@ -33,7 +34,7 @@ export class TcbSwitchOp extends TcbOp {
 
   override execute(): null {
     const switchExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
-    const clauses = this.block.groups.flatMap<TcbExpr>((current) => {
+    const clauses = this.block.cases.map((current) => {
       const checkBody = this.tcb.env.config.checkControlFlowBodies;
       const clauseScope = this.scope.createChildScope(
         this.scope,
@@ -41,66 +42,38 @@ export class TcbSwitchOp extends TcbOp {
         checkBody ? current.children : [],
         checkBody ? this.generateGuard(current, switchExpression) : null,
       );
+      const statements = [...clauseScope.render(), ts.factory.createBreakStatement()];
 
-      const statements = [...clauseScope.render(), new TcbExpr('break')];
-
-      return current.cases.map((switchCase, index) => {
-        const statementsStr = getStatementsBlock(
-          index === current.cases.length - 1 ? statements : [],
-          true /* singleLine */,
-        );
-
-        const source =
-          switchCase.expression === null
-            ? `default: ${statementsStr}`
-            : `case ${tcbExpression(switchCase.expression, this.tcb, this.scope).print()}: ${statementsStr}`;
-
-        return new TcbExpr(source);
-      });
+      return current.expression === null
+        ? ts.factory.createDefaultClause(statements)
+        : ts.factory.createCaseClause(
+            tcbExpression(current.expression, this.tcb, clauseScope),
+            statements,
+          );
     });
 
-    if (this.block.exhaustiveCheck) {
-      const switchValue = tcbExpression(this.block.expression, this.tcb, this.scope);
-      const exhaustiveId = this.tcb.allocateId();
-
-      clauses.push(
-        new TcbExpr(`default: const tcbExhaustive${exhaustiveId}: never = ${switchValue.print()};`),
-      );
-    }
-
     this.scope.addStatement(
-      new TcbExpr(
-        `switch (${switchExpression.print()}) { ${clauses.map((c) => c.print()).join('\n')} }`,
-      ),
+      ts.factory.createSwitchStatement(switchExpression, ts.factory.createCaseBlock(clauses)),
     );
 
     return null;
   }
 
-  private generateGuard(group: TmplAstSwitchBlockCaseGroup, switchValue: TcbExpr): TcbExpr | null {
+  private generateGuard(
+    node: TmplAstSwitchBlockCase,
+    switchValue: ts.Expression,
+  ): ts.Expression | null {
     // For non-default cases, the guard needs to compare against the case value, e.g.
     // `switchExpression === caseExpression`.
-    const hasDefault = group.cases.some((c) => c.expression === null);
-
-    if (!hasDefault) {
-      let guard: TcbExpr | null = null;
-
-      for (const switchCase of group.cases) {
-        if (switchCase.expression !== null) {
-          // The expression needs to be ignored for diagnostics since it has been checked already.
-          const expression = tcbExpression(switchCase.expression, this.tcb, this.scope);
-          expression.markIgnoreDiagnostics();
-          const comparison = new TcbExpr(`${switchValue.print()} === ${expression.print()}`);
-
-          if (guard === null) {
-            guard = comparison;
-          } else {
-            guard = new TcbExpr(`(${guard.print()}) || (${comparison.print()})`);
-          }
-        }
-      }
-
-      return guard;
+    if (node.expression !== null) {
+      // The expression needs to be ignored for diagnostics since it has been checked already.
+      const expression = tcbExpression(node.expression, this.tcb, this.scope);
+      markIgnoreDiagnostics(expression);
+      return ts.factory.createBinaryExpression(
+        switchValue,
+        ts.SyntaxKind.EqualsEqualsEqualsToken,
+        expression,
+      );
     }
 
     // To fully narrow the type in the default case, we need to generate an expression that negates
@@ -111,29 +84,30 @@ export class TcbSwitchOp extends TcbOp {
     //   @default {}
     // }
     // Will produce the guard `expr !== 1 && expr !== 2`.
-    let guard: TcbExpr | null = null;
+    let guard: ts.Expression | null = null;
 
-    for (const currentGroup of this.block.groups) {
-      if (currentGroup === group) {
+    for (const current of this.block.cases) {
+      if (current.expression === null) {
         continue;
       }
 
-      for (const switchCase of currentGroup.cases) {
-        if (switchCase.expression === null) {
-          // Skip the default case.
-          continue;
-        }
+      // The expression needs to be ignored for diagnostics since it has been checked already.
+      const expression = tcbExpression(current.expression, this.tcb, this.scope);
+      markIgnoreDiagnostics(expression);
+      const comparison = ts.factory.createBinaryExpression(
+        switchValue,
+        ts.SyntaxKind.ExclamationEqualsEqualsToken,
+        expression,
+      );
 
-        // The expression needs to be ignored for diagnostics since it has been checked already.
-        const expression = tcbExpression(switchCase.expression, this.tcb, this.scope);
-        expression.markIgnoreDiagnostics();
-        const comparison = new TcbExpr(`${switchValue.print()} !== ${expression.print()}`);
-
-        if (guard === null) {
-          guard = comparison;
-        } else {
-          guard = new TcbExpr(`(${guard.print()}) && (${comparison.print()})`);
-        }
+      if (guard === null) {
+        guard = comparison;
+      } else {
+        guard = ts.factory.createBinaryExpression(
+          guard,
+          ts.SyntaxKind.AmpersandAmpersandToken,
+          comparison,
+        );
       }
     }
 

@@ -7,11 +7,14 @@
  */
 
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {Step, RECOMMENDATIONS, ApplicationComplexity} from './recommendations';
+import {Step, RECOMMENDATIONS} from './recommendations';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {CdkMenuModule} from '@angular/cdk/menu';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatInputModule} from '@angular/material/input';
+import {MatCardModule} from '@angular/material/card';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {IconComponent} from '@angular/docs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {marked} from 'marked';
@@ -30,12 +33,12 @@ const isWindows = typeof window !== 'undefined' && window.navigator.userAgent.in
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
   imports: [
-    MatCheckbox,
-    MatButtonToggleGroup,
-    MatButtonToggle,
-    CdkMenuTrigger,
-    CdkMenu,
-    CdkMenuItem,
+    MatCheckboxModule,
+    MatInputModule,
+    MatCardModule,
+    MatGridListModule,
+    MatButtonToggleModule,
+    CdkMenuModule,
     IconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -289,16 +292,6 @@ export default class UpdateComponent {
 
       this.duringRecommendations.push(upgradeStep);
     }
-  }
-
-  protected getComplexityLevelName(level: ApplicationComplexity): string {
-    const names: Record<ApplicationComplexity, string> = {
-      [ApplicationComplexity.Basic]: 'Basic',
-      [ApplicationComplexity.Medium]: 'Medium',
-      [ApplicationComplexity.Advanced]: 'Advanced',
-    };
-
-    return names[level] ?? 'Unknown';
   }
 
   private replaceVariables(action: string): string {

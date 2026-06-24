@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {type SynonymHit} from 'algoliasearch';
+import {SynonymHit} from 'algoliasearch';
 
 /**
  * List of synonyms to upload to algolia.

@@ -4,9 +4,7 @@ function MyComponent_ng_template_0_Template(rf, ctx) {
   }
 }
 …
-export class MyComponent {
-  …
-  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: [["directiveA", ""]],
   template: function MyComponent_Template(rf, ctx) {
@@ -18,4 +16,3 @@ export class MyComponent {
   dependencies: [DirectiveA],
   …
 });
-}

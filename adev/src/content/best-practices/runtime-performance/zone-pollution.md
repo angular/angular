@@ -1,123 +1,146 @@
-# Устранение загрязнения зон
+# Устранение загрязнения зоны (Zone pollution)
 
-**Zone.js** — это механизм сигнализации, который Angular использует для обнаружения возможных изменений состояния приложения. Он перехватывает асинхронные операции, такие как `setTimeout`, сетевые запросы и слушатели событий. Angular планирует обнаружение изменений на основе сигналов от Zone.js.
+**Zone.js** — это механизм сигнализации, который Angular использует для определения того, когда состояние приложения
+могло измениться. Он перехватывает асинхронные операции, такие как `setTimeout`, сетевые запросы и слушатели событий.
+Angular планирует обнаружение изменений на основе сигналов от Zone.js.
 
-В некоторых случаях запланированные [задачи](https://developer.mozilla.org/docs/Web/API/HTML_DOM_API/Microtask_guide#tasks) или [микрозадачи](https://developer.mozilla.org/docs/Web/API/HTML_DOM_API/Microtask_guide#microtasks) не вносят никаких изменений в модель данных, что делает запуск обнаружения изменений ненужным. Распространённые примеры:
+В некоторых случаях
+запланированные [задачи](https://developer.mozilla.org/docs/Web/API/HTML_DOM_API/Microtask_guide#tasks)
+или [микрозадачи](https://developer.mozilla.org/docs/Web/API/HTML_DOM_API/Microtask_guide#microtasks) не вносят никаких
+изменений в модель данных, что делает запуск обнаружения изменений ненужным. Распространенные примеры:
 
 - `requestAnimationFrame`, `setTimeout` или `setInterval`
 - Планирование задач или микрозадач сторонними библиотеками
 
-В этом разделе рассматривается, как выявлять такие ситуации и как запускать код вне зоны Angular, чтобы избежать лишних вызовов обнаружения изменений.
+В этом разделе рассматривается, как выявить такие условия и как выполнять код за пределами зоны Angular, чтобы избежать
+ненужных вызовов обнаружения изменений.
 
-## Выявление лишних вызовов обнаружения изменений {#identifying-unnecessary-change-detection-calls}
+## Выявление ненужных вызовов обнаружения изменений
 
-Лишние вызовы обнаружения изменений можно обнаружить с помощью Angular DevTools. Часто они появляются в виде последовательных столбцов на временной шкале профайлера с источником `setTimeout`, `setInterval`, `requestAnimationFrame` или обработчиком события. Если в приложении мало вызовов этих API, вызов обнаружения изменений, как правило, вызван сторонней библиотекой.
+Вы можете обнаружить ненужные вызовы обнаружения изменений с помощью Angular DevTools. Часто они отображаются в виде
+последовательных полос на временной шкале профилировщика с источником `setTimeout`, `setInterval`,
+`requestAnimationFrame` или обработчиком событий. Если в вашем приложении использование этих API ограничено, вызов
+обнаружения изменений обычно вызван сторонней библиотекой.
 
-<img alt="Angular DevTools profiler preview showing Zone pollution" src="assets/images/best-practices/runtime-performance/zone-pollution.png">
+<img alt="Предварительный просмотр профилировщика Angular DevTools, показывающий загрязнение зоны" src="assets/images/best-practices/runtime-performance/zone-pollution.png">
 
-На изображении выше видна серия вызовов обнаружения изменений, инициированных обработчиками событий, связанными с элементом. Это распространённая проблема при использовании сторонних нативных компонентов, не являющихся Angular-компонентами, которые не изменяют поведение `NgZone` по умолчанию.
+На изображении выше показана серия вызовов обнаружения изменений, инициированных обработчиками событий, связанными с
+элементом. Это распространенная проблема при использовании сторонних компонентов, не являющихся нативными для Angular,
+которые не изменяют поведение `NgZone` по умолчанию.
 
-## Запуск задач вне `NgZone` {#run-tasks-outside-ngzone}
+## Запуск задач за пределами `NgZone`
 
-В таких случаях можно указать Angular не вызывать обнаружение изменений для задач, запланированных конкретным фрагментом кода, с помощью [NgZone](/api/core/NgZone).
+В таких случаях вы можете указать Angular не вызывать обнаружение изменений для задач, запланированных определенным
+фрагментом кода, используя [NgZone](/api/core/NgZone).
 
-```ts {header:"Run outside of the Zone" , linenums}
-import { Component, NgZone, OnInit, inject } from '@angular/core';
+<docs-code header="Запуск за пределами Zone" language='ts' linenums>
+import { Component, NgZone, OnInit } from '@angular/core';
 
 @Component(...)
 class AppComponent implements OnInit {
-  private ngZone = inject(NgZone);
+private ngZone = inject(NgZone);
 
-  ngOnInit() {
-    this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates, 500));
-  }
+ngOnInit() {
+this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates), 500);
 }
-```
+}
+</docs-code>
 
-Приведённый фрагмент инструктирует Angular вызвать `setInterval` вне зоны Angular и пропустить запуск обнаружения изменений после выполнения `pollForUpdates`.
+Приведенный выше фрагмент указывает Angular вызывать `setInterval` за пределами зоны Angular и пропускать запуск
+обнаружения изменений после выполнения `pollForUpdates`.
 
-Сторонние библиотеки нередко вызывают лишние циклы обнаружения изменений, когда их API вызываются внутри зоны Angular. Особенно это касается библиотек, устанавливающих слушатели событий или инициирующих другие задачи (например, таймеры, XHR-запросы и т. д.). Избегайте этих лишних циклов, вызывая API библиотек вне зоны Angular:
+Сторонние библиотеки часто вызывают ненужные циклы обнаружения изменений, когда их API вызываются внутри зоны Angular.
+Это явление особенно затрагивает библиотеки, которые устанавливают слушатели событий или инициируют другие задачи (такие
+как таймеры, XHR-запросы и т. д.). Избегайте этих лишних циклов, вызывая API библиотек за пределами зоны Angular:
 
-```ts {header:"Move the plot initialization outside of the Zone" , linenums}
-import { Component, NgZone, OnInit, inject } from '@angular/core';
+<docs-code header="Вынос инициализации графика за пределы Zone" language='ts' linenums>
+import { Component, NgZone, OnInit } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-  private ngZone = inject(NgZone);
+private ngZone = inject(NgZone);
 
-  ngOnInit() {
-    this.ngZone.runOutsideAngular(() => {
-      Plotly.newPlot('chart', data);
-    });
-  }
+ngOnInit() {
+this.ngZone.runOutsideAngular(() => {
+Plotly.newPlot('chart', data);
+});
 }
-```
+}
+</docs-code>
 
-Запуск `Plotly.newPlot('chart', data);` внутри `runOutsideAngular` указывает фреймворку, что не следует запускать обнаружение изменений после выполнения задач, запланированных логикой инициализации.
+Запуск `Plotly.newPlot('chart', data);` внутри `runOutsideAngular` сообщает фреймворку, что не следует запускать
+обнаружение изменений после выполнения задач, запланированных логикой инициализации.
 
-Например, если `Plotly.newPlot('chart', data)` добавляет слушатели событий к DOM-элементу, Angular не запускает обнаружение изменений после выполнения их обработчиков.
+Например, если `Plotly.newPlot('chart', data)` добавляет слушатели событий к DOM-элементу, Angular не будет запускать
+обнаружение изменений после выполнения их обработчиков.
 
-Однако иногда может потребоваться слушать события, генерируемые сторонними API. В таких случаях важно помнить, что эти слушатели событий также будут выполняться вне зоны Angular, если логика инициализации была выполнена там:
+Но иногда вам может потребоваться слушать события, отправляемые сторонними API. В таких случаях важно помнить, что эти
+слушатели событий также будут выполняться за пределами зоны Angular, если логика инициализации была выполнена там:
 
-```ts {header:"Check whether the handler is called outside of the Zone" , linenums}
-import { Component, NgZone, OnInit, output, inject } from '@angular/core';
+<docs-code header="Проверка того, вызывается ли обработчик за пределами Zone" language='ts' linenums>
+import { Component, NgZone, OnInit, output } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-  private ngZone = inject(NgZone);
+private ngZone = inject(NgZone);
 
-  plotlyClick = output<Plotly.PlotMouseEvent>();
+plotlyClick = output<Plotly.PlotMouseEvent>();
 
-  ngOnInit() {
-    this.ngZone.runOutsideAngular(() => {
-      this.createPlotly();
-    });
-  }
+ngOnInit() {
+this.ngZone.runOutsideAngular(() => {
+this.createPlotly();
+});
+}
 
-  private async createPlotly() {
-    const plotly = await Plotly.newPlot('chart', data);
+private async createPlotly() {
+const plotly = await Plotly.newPlot('chart', data);
 
     plotly.on('plotly_click', (event: Plotly.PlotMouseEvent) => {
-      // This handler will be called outside of the Angular zone because
-      // the initialization logic is also called outside of the zone. To check
-      // whether we're in the Angular zone, we can call the following:
+      // Этот обработчик будет вызван за пределами зоны Angular, так как
+      // логика инициализации также вызывается за пределами зоны. Чтобы проверить,
+      // находимся ли мы в зоне Angular, можно вызвать следующее:
       console.log(NgZone.isInAngularZone());
       this.plotlyClick.emit(event);
     });
-  }
+
 }
-```
+}
+</docs-code>
 
-Если нужно отправлять события родительским компонентам и выполнять конкретную логику обновления представления, следует рассмотреть повторный вход в зону Angular, чтобы указать фреймворку запустить обнаружение изменений, или запустить обнаружение изменений вручную:
+Если вам нужно отправлять события родительским компонентам и выполнять определенную логику обновления представления, вам
+следует рассмотреть возможность повторного входа в зону Angular, чтобы указать фреймворку запустить обнаружение
+изменений, или запустить обнаружение изменений вручную:
 
-```ts {header:"Re-enter the Angular zone when dispatching event" , linenums}
-import { Component, NgZone, OnInit, output, inject } from '@angular/core';
+<docs-code header="Повторный вход в зону Angular при отправке события" language='ts' linenums>
+import { Component, NgZone, OnInit, output } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-  private ngZone = inject(NgZone);
+private ngZone = inject(NgZone);
 
-  plotlyClick = output<Plotly.PlotMouseEvent>();
+plotlyClick = output<Plotly.PlotMouseEvent>();
 
-  ngOnInit() {
-    this.ngZone.runOutsideAngular(() => {
-      this.createPlotly();
-    });
-  }
+ngOnInit() {
+this.ngZone.runOutsideAngular(() => {
+this.createPlotly();
+});
+}
 
-  private async createPlotly() {
-    const plotly = await Plotly.newPlot('chart', data);
+private async createPlotly() {
+const plotly = await Plotly.newPlot('chart', data);
 
     plotly.on('plotly_click', (event: Plotly.PlotMouseEvent) => {
       this.ngZone.run(() => {
         this.plotlyClick.emit(event);
       });
     });
-  }
-}
-```
 
-Сценарий отправки событий вне зоны Angular также может возникать. Важно помнить, что ручной запуск обнаружения изменений (например, вручную) может привести к созданию/обновлению представлений вне зоны Angular.
+}
+}
+</docs-code>
+
+Также может возникнуть сценарий отправки событий за пределами зоны Angular. Важно помнить, что запуск обнаружения
+изменений (например, вручную) может привести к созданию/обновлению представлений за пределами зоны Angular.

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 
@@ -39,8 +38,5 @@ export function getNgModuleById<T>(id: string): Type<T> {
 }
 
 function noModuleError(id: string): Error {
-  return new RuntimeError(
-    RuntimeErrorCode.NG_MODULE_ID_NOT_FOUND,
-    ngDevMode && `No module with ID ${id} loaded`,
-  );
+  return new Error(`No module with ID ${id} loaded`);
 }

@@ -9,12 +9,17 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {Select} from './select.component';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('Select', () => {
   let component: Select;
   let fixture: ComponentFixture<Select>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [Select],
+      providers: [provideZonelessChangeDetection()],
+    });
     fixture = TestBed.createComponent(Select);
     component = fixture.componentInstance;
 
@@ -23,7 +28,7 @@ describe('Select', () => {
     fixture.componentRef.setInput('name', 'name');
     fixture.componentRef.setInput('options', []);
 
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

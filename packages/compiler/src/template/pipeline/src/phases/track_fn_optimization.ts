@@ -8,7 +8,6 @@
 
 import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
-import {tsIgnoreComment} from '../../../../render3/util';
 import * as ir from '../../ir';
 
 import type {CompilationJob} from '../compilation';
@@ -74,13 +73,7 @@ export function optimizeTrackFns(job: CompilationJob): void {
         // additional ops when generating the final code (e.g. temporary variables).
         const trackOpList = new ir.OpList<ir.UpdateOp>();
         trackOpList.push(
-          ir.createStatementOp(
-            new o.ReturnStatement(op.track, op.track.sourceSpan, [
-              // The return statement might have `this` expressions
-              // that are implicitly typed as `any`.
-              tsIgnoreComment(),
-            ]),
-          ),
+          ir.createStatementOp(new o.ReturnStatement(op.track, op.track.sourceSpan)),
         );
         op.trackByOps = trackOpList;
       }

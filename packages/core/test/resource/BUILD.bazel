@@ -12,7 +12,6 @@ ng_project(
         "//packages/core",
         "//packages/core/src/util",
         "//packages/core/testing",
-        "//packages/private/testing",
     ],
 )
 

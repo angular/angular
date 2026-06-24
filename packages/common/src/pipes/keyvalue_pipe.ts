@@ -14,7 +14,6 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
-import {warnIfSignal} from './utils';
 
 function makeKeyValuePair<K, V>(key: K, value: V): KeyValue<K, V> {
   return {key: key, value: value};
@@ -110,8 +109,6 @@ export class KeyValuePipe implements PipeTransform {
     input: undefined | null | {[key: string]: V; [key: number]: V} | ReadonlyMap<K, V>,
     compareFn: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null = defaultComparator,
   ): Array<KeyValue<K, V>> | null {
-    ngDevMode && warnIfSignal('KeyValuePipe', input);
-
     if (!input || (!(input instanceof Map) && typeof input !== 'object')) {
       return null;
     }

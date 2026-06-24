@@ -60,10 +60,7 @@ export function injectRootLimpMode<T>(
   }
   if (flags & InternalInjectFlags.Optional) return null;
   if (notFoundValue !== undefined) return notFoundValue;
-  throwProviderNotFoundError(
-    token,
-    typeof ngDevMode !== 'undefined' && ngDevMode ? 'Injector' : '',
-  );
+  throwProviderNotFoundError(token, 'Injector');
 }
 
 /**

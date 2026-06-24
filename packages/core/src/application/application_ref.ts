@@ -293,8 +293,7 @@ export class ApplicationRef {
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private allTestViews: Set<InternalViewRef<unknown>> = new Set();
   private autoDetectTestViews: Set<InternalViewRef<unknown>> = new Set();
-  /** @internal */
-  includeAllTestViews = false;
+  private includeAllTestViews = false;
   /** @internal */
   afterTick = new Subject<void>();
   /** @internal */

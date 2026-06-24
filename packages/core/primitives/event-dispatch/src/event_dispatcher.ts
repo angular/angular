@@ -190,6 +190,3 @@ export function registerDispatcher(
     dispatcher.dispatch(eventInfo);
   }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 }
-
-// This fixes the RollupError: Exported variable "global" is not defined.
-export {};

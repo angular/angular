@@ -30,15 +30,7 @@ export interface ErrorSnackBarData {
     </button>
   `,
   imports: [MatSnackBarAction],
-  styles: `
-    :host {
-      display: flex;
-      align-items: center;
-      button {
-        margin-left: 16px;
-      }
-    }
-  `,
+  styles: `:host { display: flex; align-items: center; button { margin-left: 16px }}`,
 })
 export class ErrorSnackBar {
   protected snackBarRef = inject<MatSnackBarRef<ErrorSnackBar>>(MatSnackBarRef);

@@ -19,7 +19,7 @@ import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 
 import {CodeEditor, REQUIRED_FILES} from './code-editor.component';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
-import {TutorialType} from '@angular/docs';
+import {FakeChangeDetectorRef, TutorialType} from '@angular/docs';
 import {MatTooltipHarness} from '@angular/material/tooltip/testing';
 
 const files = [
@@ -45,6 +45,7 @@ class FakeCodeMirrorEditor implements Partial<CodeMirrorEditor> {
   openFiles = this.files;
 }
 const codeMirrorEditorService = new FakeCodeMirrorEditor();
+const fakeChangeDetectorRef = new FakeChangeDetectorRef();
 
 describe('CodeEditor', () => {
   let component: CodeEditor;
@@ -61,6 +62,10 @@ describe('CodeEditor', () => {
         {
           provide: CodeMirrorEditor,
           useValue: codeMirrorEditorService,
+        },
+        {
+          provide: ChangeDetectorRef,
+          useValue: fakeChangeDetectorRef,
         },
         {
           provide: EmbeddedTutorialManager,
@@ -88,7 +93,7 @@ describe('CodeEditor', () => {
     loader = TestbedHarnessEnvironment.loader(fixture);
 
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -100,7 +105,7 @@ describe('CodeEditor', () => {
     const codeMirrorEditorInitSpy = spyOn(codeMirrorEditorService, 'init');
 
     fixture = TestBed.createComponent(CodeEditor);
-    await fixture.whenStable();
+    fixture.detectChanges();
     component = fixture.componentInstance;
 
     expect(component.codeEditorWrapperRef()).toBeDefined();

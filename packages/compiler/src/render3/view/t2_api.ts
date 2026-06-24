@@ -26,7 +26,7 @@ import {
   LetDeclaration,
   Node,
   Reference,
-  SwitchBlockCaseGroup,
+  SwitchBlockCase,
   Template,
   TextAttribute,
   Variable,
@@ -35,7 +35,7 @@ import {
 /** Node that has a `Scope` associated with it. */
 export type ScopedNode =
   | Template
-  | SwitchBlockCaseGroup
+  | SwitchBlockCase
   | IfBlockBranch
   | ForLoopBlock
   | ForLoopBlockEmpty

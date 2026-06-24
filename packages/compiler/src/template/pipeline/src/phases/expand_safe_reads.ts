@@ -106,7 +106,9 @@ function eliminateTemporaryAssignments(
         // temporary variables to themselves. This happens because some subexpression that the
         // temporary refers to, possibly through nested temporaries, has a function call. We copy that
         // behavior here.
-        return new ir.AssignTemporaryExpr(read, read.xref);
+        return ctx.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder
+          ? new ir.AssignTemporaryExpr(read, read.xref)
+          : read;
       }
       return e;
     },

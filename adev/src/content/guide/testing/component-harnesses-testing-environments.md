@@ -1,12 +1,12 @@
 # Добавление поддержки harness для дополнительных сред тестирования
 
-## Перед началом работы {#before-you-start}
+## Перед началом работы
 
 СОВЕТ: Это руководство предполагает, что вы уже ознакомились
 с [обзором component harnesses](guide/testing/component-harnesses-overview). Прочитайте его в первую очередь, если вы
 новичок в использовании harness для компонентов.
 
-### Когда имеет смысл добавлять поддержку среды тестирования? {#when-does-adding-support-for-a-test-environment-make-sense}
+### Когда имеет смысл добавлять поддержку среды тестирования?
 
 Чтобы использовать component harnesses в следующих средах, вы можете воспользоваться двумя встроенными средами Angular
 CDK:
@@ -20,7 +20,7 @@ CDK:
 В противном случае, чтобы добавить поддержку других сред, необходимо определить способы взаимодействия с DOM-элементом и
 то, как эти взаимодействия работают в вашей среде. Продолжайте чтение, чтобы узнать больше.
 
-### Установка CDK {#cdk-installation}
+### Установка CDK
 
 [Component Dev Kit (CDK)](https://material.angular.dev/cdk/categories) — это набор поведенческих примитивов для создания
 компонентов. Чтобы использовать component harnesses, сначала установите `@angular/cdk` из npm. Вы можете сделать это
@@ -30,7 +30,7 @@ CDK:
 ng add @angular/cdk
 ```
 
-## Создание реализации `TestElement` {#creating-a-testelement-implementation}
+## Создание реализации `TestElement`
 
 Каждая среда тестирования должна определять реализацию `TestElement`. Интерфейс `TestElement` служит независимым от
 среды представлением DOM-элемента. Это позволяет harness взаимодействовать с DOM-элементами независимо от используемой
@@ -50,7 +50,7 @@ ng add @angular/cdk
 и [SeleniumWebDriverElement](/api/cdk/testing/selenium-webdriver/SeleniumWebDriverElement) в Angular CDK служат хорошими
 примерами реализации этого интерфейса.
 
-## Создание реализации `HarnessEnvironment` {#creating-a-harnessenvironment-implementation}
+## Создание реализации `HarnessEnvironment`
 
 Авторы тестов используют `HarnessEnvironment` для создания экземпляров component harness для использования в тестах.
 `HarnessEnvironment` — это абстрактный класс, который необходимо расширить для создания конкретного подкласса для новой
@@ -84,7 +84,7 @@ Element.
 и [SeleniumWebDriverHarnessEnvironment](/api/cdk/testing/selenium-webdriver/SeleniumWebDriverHarnessEnvironment) в
 Angular CDK служат хорошими примерами реализации этого интерфейса.
 
-## Обработка автоматического обнаружения изменений {#handling-auto-change-detection}
+## Обработка автоматического обнаружения изменений
 
 Для поддержки `manualChangeDetection` и параллельных API ваша среда должна установить обработчик статуса автоматического
 обнаружения изменений.

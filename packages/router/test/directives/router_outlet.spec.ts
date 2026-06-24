@@ -7,7 +7,15 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {Component, inject, Input, Type, NgModule, signal} from '@angular/core';
+import {
+  Component,
+  inject,
+  provideZonelessChangeDetection,
+  Input,
+  Type,
+  NgModule,
+  signal,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   provideRouter,
@@ -19,7 +27,7 @@ import {
 } from '../../index';
 import {RouterTestingHarness} from '../../testing';
 import {InjectionToken} from '../../../core/src/di';
-import {useAutoTick, timeout} from '@angular/private/testing';
+import {timeout, useAutoTick} from '../helpers';
 
 describe('router outlet name', () => {
   useAutoTick();
@@ -92,10 +100,10 @@ describe('router outlet name', () => {
   it('should support outlets in ngFor', async () => {
     @Component({
       template: `
-        <div *ngFor="let outlet of outlets()">
-          <router-outlet [name]="outlet"></router-outlet>
-        </div>
-      `,
+            <div *ngFor="let outlet of outlets()">
+                <router-outlet [name]="outlet"></router-outlet>
+            </div>
+            `,
       imports: [RouterOutlet, NgForOf],
     })
     class RootCmp {
@@ -218,29 +226,6 @@ describe('component input binding', () => {
     expect(instance.language).toEqual(undefined);
   });
 
-  it('does not set component inputs from matching query params when queryParam inputs are disabled', async () => {
-    @Component({
-      template: '',
-      standalone: false,
-    })
-    class MyComponent {
-      @Input() language?: string;
-    }
-
-    TestBed.configureTestingModule({
-      providers: [
-        provideRouter(
-          [{path: '**', component: MyComponent}],
-          withComponentInputBinding({queryParams: false}),
-        ),
-      ],
-    });
-    const harness = await RouterTestingHarness.create();
-
-    const instance = await harness.navigateByUrl('/?language=french', MyComponent);
-    expect(instance.language).toEqual(undefined);
-  });
-
   it('sets component inputs from resolved and static data', async () => {
     @Component({
       template: '',
@@ -336,51 +321,6 @@ describe('component input binding', () => {
     expect(instance.result).toEqual('from path param');
     instance = await harness.navigateByUrl('/withoutData?result=from query params', MyComponent);
     expect(instance.result).toEqual('from query params');
-  });
-
-  it('when keys conflict, sets inputs based on priority: data > path params > query params, with queryParams disabled', async () => {
-    @Component({
-      template: '',
-      standalone: false,
-    })
-    class MyComponent {
-      @Input() result?: string;
-    }
-
-    TestBed.configureTestingModule({
-      providers: [
-        provideRouter(
-          [
-            {
-              path: 'withData',
-              component: MyComponent,
-              data: {'result': 'from data'},
-            },
-            {
-              path: 'withoutData',
-              component: MyComponent,
-            },
-          ],
-          withComponentInputBinding({queryParams: false}),
-        ),
-      ],
-    });
-    const harness = await RouterTestingHarness.create();
-
-    let instance = await harness.navigateByUrl(
-      '/withData;result=from path param?result=from query params',
-      MyComponent,
-    );
-    expect(instance.result).toEqual('from data');
-
-    // Same component, different instance because it's a different route
-    instance = await harness.navigateByUrl(
-      '/withoutData;result=from path param?result=from query params',
-      MyComponent,
-    );
-    expect(instance.result).toEqual('from path param');
-    instance = await harness.navigateByUrl('/withoutData?result=from query params', MyComponent);
-    expect(instance.result).toEqual(undefined);
   });
 
   it('does not write multiple times if two sources of conflicting keys both update', async () => {
@@ -547,7 +487,10 @@ describe('router outlet data', () => {
     }
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([{path: '**', component: MyComponent}])],
+      providers: [
+        provideRouter([{path: '**', component: MyComponent}]),
+        provideZonelessChangeDetection(),
+      ],
     });
 
     const harness = await RouterTestingHarness.create();
@@ -563,7 +506,7 @@ describe('router outlet data', () => {
   it('overrides parent provided data with nested', async () => {
     @Component({
       imports: [RouterOutlet],
-      template: `{{ outletData() }}|<router-outlet [routerOutletData]="'child'" />`,
+      template: `{{outletData()}}|<router-outlet [routerOutletData]="'child'" />`,
     })
     class Child {
       readonly outletData = inject(ROUTER_OUTLET_DATA);
@@ -598,7 +541,7 @@ describe('router outlet data', () => {
   it('does not inherit ancestor data when not provided in nested', async () => {
     @Component({
       imports: [RouterOutlet],
-      template: `{{ outletData() }}|<router-outlet />`,
+      template: `{{outletData()}}|<router-outlet />`,
     })
     class Child {
       readonly outletData = inject(ROUTER_OUTLET_DATA);

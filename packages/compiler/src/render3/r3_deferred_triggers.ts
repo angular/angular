@@ -16,6 +16,7 @@ import {
   LiteralPrimitive,
   PropertyRead,
   RecursiveAstVisitor,
+  ThisReceiver,
 } from '../expression_parser/ast';
 import {Lexer, Token, TokenType} from '../expression_parser/lexer';
 import * as html from '../ml_parser/ast';
@@ -488,26 +489,11 @@ function createIdleTrigger(
   onSourceSpan: ParseSourceSpan | null,
   hydrateSpan: ParseSourceSpan | null,
 ): t.IdleDeferredTrigger {
-  if (parameters.length > 1) {
-    throw new Error(`"${OnTriggerType.IDLE}" trigger can only have zero or one parameters`);
+  if (parameters.length > 0) {
+    throw new Error(`"${OnTriggerType.IDLE}" trigger cannot have parameters`);
   }
 
-  let timeout: number | null = null;
-  if (parameters[0]) {
-    timeout = parseDeferredTime(parameters[0].expression);
-    if (timeout === null) {
-      throw new Error(`Could not parse time value of trigger "${OnTriggerType.IDLE}"`);
-    }
-  }
-
-  return new t.IdleDeferredTrigger(
-    nameSpan,
-    sourceSpan,
-    prefetchSpan,
-    onSourceSpan,
-    hydrateSpan,
-    timeout,
-  );
+  return new t.IdleDeferredTrigger(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
 }
 
 function createTimerTrigger(
@@ -631,17 +617,13 @@ function createViewportTrigger(
 
     if (!(parsed.ast instanceof LiteralMap)) {
       throw new Error('Options parameter of the "viewport" trigger must be an object literal');
-    } else if (parsed.ast.keys.some((key) => key.kind === 'spread')) {
-      throw new Error('Spread operator are not allowed in this context');
-    } else if (parsed.ast.keys.some((key) => key.kind === 'property' && key.key === 'root')) {
+    } else if (parsed.ast.keys.some((key) => key.key === 'root')) {
       throw new Error(
         'The "root" option is not supported in the options parameter of the "viewport" trigger',
       );
     }
 
-    const triggerIndex = parsed.ast.keys.findIndex(
-      (key) => key.kind === 'property' && key.key === 'trigger',
-    );
+    const triggerIndex = parsed.ast.keys.findIndex((key) => key.key === 'trigger');
 
     if (triggerIndex === -1) {
       reference = null;
@@ -650,7 +632,11 @@ function createViewportTrigger(
       const value = parsed.ast.values[triggerIndex];
       const triggerFilter = (_: unknown, index: number) => index !== triggerIndex;
 
-      if (!(value instanceof PropertyRead) || !(value.receiver instanceof ImplicitReceiver)) {
+      if (
+        !(value instanceof PropertyRead) ||
+        !(value.receiver instanceof ImplicitReceiver) ||
+        value.receiver instanceof ThisReceiver
+      ) {
         throw new Error(`"trigger" option of the "viewport" trigger must be an identifier`);
       }
 

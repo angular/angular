@@ -24,7 +24,7 @@ function withFakeAsyncTestModule(fn: (fakeAsyncTestModule: any) => any): any {
 }
 
 /**
- * IMPORTANT: This API requires Zone.js and cannot be used with the Vitest test runner
+ * IMPORTANT: This API requires Zone.js
  *
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
@@ -42,7 +42,7 @@ export function resetFakeAsyncZoneIfExists(): void {
 }
 
 /**
- * IMPORTANT: This API requires Zone.js and cannot be used with the Vitest test runner
+ * IMPORTANT: This API requires Zone.js
  *
  * Wraps a function to be executed in the `fakeAsync` zone:
  * - Microtasks are manually executed by calling `flushMicrotasks()`.
@@ -72,7 +72,7 @@ export function fakeAsync(fn: Function, options?: {flush?: boolean}): (...args: 
 }
 
 /**
- * IMPORTANT: This API requires Zone.js and cannot be used with the Vitest test runner
+ * IMPORTANT: This API requires Zone.js
  *
  * Simulates the asynchronous passage of time for the timers in the `fakeAsync` zone.
  *
@@ -147,7 +147,7 @@ export function tick(
 }
 
 /**
- * IMPORTANT: This API requires Zone.js and cannot be used with the Vitest test runner
+ * IMPORTANT: This API requires Zone.js
  *
  * Flushes any pending microtasks and simulates the asynchronous passage of time for the timers in
  * the `fakeAsync` zone by
@@ -164,7 +164,7 @@ export function flush(maxTurns?: number): number {
 }
 
 /**
- * IMPORTANT: This API requires Zone.js and cannot be used with the Vitest test runner
+ * IMPORTANT: This API requires Zone.js
  *
  * Discard all remaining periodic tasks.
  *
@@ -175,7 +175,7 @@ export function discardPeriodicTasks(): void {
 }
 
 /**
- * IMPORTANT: This API requires Zone.js and cannot be used with the Vitest test runner
+ * IMPORTANT: This API requires Zone.js
  *
  * Flush any pending microtasks.
  *

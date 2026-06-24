@@ -84,6 +84,7 @@ export class DevToolsTabsComponent {
   readonly inspectorRunning = signal(false);
 
   protected readonly showCommentNodes = this.settings.showCommentNodes;
+  protected readonly routerGraphEnabled = this.settings.routerGraphEnabled;
   protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
   protected readonly signalGraphEnabled = () => this.supportedApis().signals;
   protected readonly transferStateEnabled = this.settings.transferStateEnabled;
@@ -103,7 +104,7 @@ export class DevToolsTabsComponent {
     if (supportedApis.dependencyInjection) {
       tabs.push('Injector Tree');
     }
-    if (supportedApis.routes && this.routes().length > 0) {
+    if (this.routerGraphEnabled() && this.routes().length > 0) {
       tabs.push('Router Tree');
     }
     if (supportedApis.transferState && this.transferStateEnabled()) {
@@ -194,6 +195,13 @@ export class DevToolsTabsComponent {
     this.timingAPIEnabled()
       ? this.messageBus.emit('enableTimingAPI')
       : this.messageBus.emit('disableTimingAPI');
+  }
+
+  protected setRouterGraph(enabled: boolean): void {
+    this.routerGraphEnabled.set(enabled);
+    if (!enabled) {
+      this.activeTab.set('Components');
+    }
   }
 
   protected setTransferStateTab(enabled: boolean): void {

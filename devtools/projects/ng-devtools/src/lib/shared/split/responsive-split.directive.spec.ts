@@ -76,15 +76,15 @@ class TestComponent {
   };
 }
 
-async function initTestComponent(
+function initTestComponent(
   width: number,
   height: number,
-): Promise<{host: DebugElement; split: SplitComponent}> {
+): {host: DebugElement; split: SplitComponent} {
   TestBed.configureTestingModule({
     providers: [{provide: WINDOW, useValue: {...window, ResizeObserver: ResizeObserverMockImpl}}],
   });
   const fixture = TestBed.createComponent(TestComponent);
-  await fixture.whenStable();
+  fixture.detectChanges();
 
   const host = fixture.debugElement.query(By.css('as-split'));
   const split = host.componentInstance;
@@ -110,26 +110,26 @@ describe('responsive-split', () => {
     jasmine.clock().install();
   });
 
-  it('should use horizontal direction (ratio == 1)', async () => {
-    const {split} = await initTestComponent(200, 200);
+  it('should use horizontal direction (ratio == 1)', () => {
+    const {split} = initTestComponent(200, 200);
 
     expect(split.direction()).toEqual('horizontal');
   });
 
-  it('should use horizontal direction (ratio == 1.49)', async () => {
-    const {split} = await initTestComponent(299, 200);
+  it('should use horizontal direction (ratio == 1.49)', () => {
+    const {split} = initTestComponent(299, 200);
 
     expect(split.direction()).toEqual('horizontal');
   });
 
-  it('should use vertical direction (ratio == 1.5)', async () => {
-    const {split} = await initTestComponent(350, 200);
+  it('should use vertical direction (ratio == 1.5)', () => {
+    const {split} = initTestComponent(350, 200);
 
     expect(split.direction()).toEqual('vertical');
   });
 
-  it('should use vertical direction (ratio == 2)', async () => {
-    const {split} = await initTestComponent(400, 200);
+  it('should use vertical direction (ratio == 2)', () => {
+    const {split} = initTestComponent(400, 200);
 
     expect(split.direction()).toEqual('vertical');
   });

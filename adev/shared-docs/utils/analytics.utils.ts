@@ -41,6 +41,3 @@ export const setCookieConsent = (state: 'denied' | 'granted'): void => {
     }
   }
 };
-
-// This fixes the RollupError: Exported variable "global" is not defined.
-export {};

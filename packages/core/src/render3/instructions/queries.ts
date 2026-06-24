@@ -35,11 +35,10 @@ import {isCreationMode} from '../util/view_utils';
 export function ɵɵcontentQuery<T>(
   directiveIndex: number,
   predicate: ProviderToken<unknown> | string | string[],
-  flags: number,
+  flags: QueryFlags,
   read?: any,
-): typeof ɵɵcontentQuery {
+): void {
   createContentQuery<T>(directiveIndex, predicate, flags, read);
-  return ɵɵcontentQuery;
 }
 
 /**
@@ -53,11 +52,10 @@ export function ɵɵcontentQuery<T>(
  */
 export function ɵɵviewQuery<T>(
   predicate: ProviderToken<unknown> | string | string[],
-  flags: number,
+  flags: QueryFlags,
   read?: any,
-): typeof ɵɵviewQuery {
+): void {
   createViewQuery(predicate, flags, read);
-  return ɵɵviewQuery;
 }
 
 /**

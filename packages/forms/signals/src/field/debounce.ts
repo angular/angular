@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {Signal} from '@angular/core';
-import {createMetadataKey, MetadataKey} from '../api/rules/metadata';
+import {AggregateMetadataKey, reducedMetadataKey} from '../api/metadata';
 import {Debouncer} from '../api/types';
 
 /**
- * A private {@link MetadataKey} used to aggregate `debounce()` rules.
+ * A private {@link AggregateMetadataKey} used to aggregate `debounce()` rules.
  *
  * This will pick the last `debounce()` rule on a field that is currently applied, if conditional.
  */
-export const DEBOUNCER: MetadataKey<
-  Signal<Debouncer<any> | undefined> | undefined,
+export const DEBOUNCER: AggregateMetadataKey<
   Debouncer<any> | undefined,
-  Debouncer<any> | undefined
-> = createMetadataKey();
+  Debouncer<any>
+> = reducedMetadataKey(
+  (_, item) => item,
+  () => undefined,
+);

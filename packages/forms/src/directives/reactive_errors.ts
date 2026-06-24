@@ -7,6 +7,7 @@
  */
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
 import {RuntimeErrorCode} from '../errors';
 
 import {
@@ -15,7 +16,6 @@ import {
   formGroupNameExample,
   ngModelGroupExample,
 } from './error_examples';
-import {VERSION} from '../version';
 
 export function controlParentException(nameOrIndex: string | number | null): Error {
   return new RuntimeError(
@@ -126,8 +126,6 @@ export const asyncValidatorsDroppedWithOptsWarning = `
 `;
 
 export function ngModelWarning(directiveName: string): string {
-  const versionSubDomain = VERSION.major !== '0' ? `v${VERSION.major}.` : '';
-
   return `
   It looks like you're using ngModel on the same form field as ${directiveName}.
   Support for using the ngModel input property and ngModelChange event with
@@ -135,9 +133,9 @@ export function ngModelWarning(directiveName: string): string {
   in a future version of Angular.
 
   For more information on this, see our API docs here:
-  https://${versionSubDomain}angular.dev/api/forms/${
+  https://angular.io/api/forms/${
     directiveName === 'formControl' ? 'FormControlDirective' : 'FormControlName'
-  }
+  }#use-with-ngmodel
   `;
 }
 

@@ -285,14 +285,10 @@ export class SwTestHarnessImpl
     if (!this.eventHandlers.has('unhandledrejection')) {
       throw new Error('No unhandledrejection handler registered');
     }
-    const promise = Promise.reject(reason);
-    // We want to simulate an unhandled rejection, but we don't want the test runner (Node)
-    // to actually see an unhandled rejection and fail the test. So we attach a dummy handler.
-    promise.catch(() => {});
     const event = {
       reason,
-      promise,
-    } as unknown as PromiseRejectionEvent;
+      promise: Promise.reject(reason),
+    } as PromiseRejectionEvent;
     this.eventHandlers.get('unhandledrejection')!.call(this, event);
   }
 

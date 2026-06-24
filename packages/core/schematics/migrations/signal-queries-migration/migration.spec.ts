@@ -92,6 +92,11 @@ const declarationTestCases: TestCase[] = [
     after: `readonly buttonEl = contentChild.required('myBtn', { read: ElementRef });`,
   },
   {
+    id: 'contentChild with string locator and read option, required',
+    before: `@ContentChild('myBtn', {read: ElementRef}) buttonEl!: ElementRef;`,
+    after: `readonly buttonEl = contentChild.required('myBtn', { read: ElementRef });`,
+  },
+  {
     id: 'contentChild with descendants option',
     before: `@ContentChild('myBtn', {descendants: false}) buttonEl!: ElementRef;`,
     after: `readonly buttonEl = contentChild.required<ElementRef>('myBtn', { descendants: false });`,
@@ -113,7 +118,7 @@ const declarationTestCases: TestCase[] = [
     after: `readonly button = viewChildren(MyButton);`,
   },
   {
-    id: 'viewChildren with string locator and read option, nullable shorthand',
+    id: 'viewChild with string locator and read option, nullable shorthand',
     before: `@ViewChildren('myBtn', {read: ElementRef}) buttonEl?: QueryList<ElementRef>;`,
     after: `readonly buttonEl = viewChildren('myBtn', { read: ElementRef });`,
   },
@@ -195,7 +200,7 @@ const declarationTestCases: TestCase[] = [
     after: `readonly buttonEl = contentChild('myBtn', { read: ButtonEl });`,
   },
   {
-    id: 'query with explicit read ElementRef',
+    id: 'query with explicit ReadT',
     before: `@ContentChild(SomeDir, {read: ElementRef}) buttonEl!: ElementRef`,
     after: `readonly buttonEl = contentChild.required(SomeDir, { read: ElementRef });`,
   },

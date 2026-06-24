@@ -12,12 +12,10 @@ import {
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
   Directive,
-  effect,
   ElementRef,
   inject,
   input,
   output,
-  resource,
   signal,
   TemplateRef,
   viewChild,
@@ -81,11 +79,6 @@ export class DemoAppComponent {
     return {...original, age: original.age + 1};
   });
 
-  demoRsrc = resource({
-    defaultValue: 'default_value',
-    loader: () => new Promise((res) => setTimeout(() => res('loaded_value'), 5000)),
-  });
-
   getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy() || !this.zippy()?.visible) {
       return '► Click to expand';
@@ -96,10 +89,6 @@ export class DemoAppComponent {
   constructor() {
     afterRenderEffect(() => {
       this.zippy();
-    });
-
-    effect(() => {
-      this.demoRsrc.isLoading();
     });
   }
 }

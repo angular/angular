@@ -40,12 +40,12 @@ import {
   HttpFeature,
   HttpFeatureKind,
   provideHttpClient,
+  withFetch,
   withInterceptors,
   withInterceptorsFromDi,
   withJsonpSupport,
   withNoXsrfProtection,
   withRequestsMadeViaParent,
-  withXhr,
   withXsrfConfiguration,
 } from '../src/provider';
 import {resetFetchBackendWarningFlag} from '../src/backend';
@@ -206,7 +206,7 @@ describe('provideHttpClient', () => {
 
     it('should allow injection from an interceptor context', () => {
       const ALPHA = new InjectionToken<string>('alpha', {
-        // Providing a factory implies that the token is provided in root by default
+        providedIn: 'root',
         factory: () => 'alpha',
       });
       const BETA = new InjectionToken<string>('beta', {providedIn: 'root', factory: () => 'beta'});
@@ -362,8 +362,8 @@ describe('provideHttpClient', () => {
     for (const backend of ['fetch', 'xhr']) {
       describe(`given '${backend}' backend`, () => {
         const commonHttpFeatures: HttpFeature<HttpFeatureKind>[] = [];
-        if (backend === 'xhr') {
-          commonHttpFeatures.push(withXhr());
+        if (backend === 'fetch') {
+          commonHttpFeatures.push(withFetch());
         }
 
         it('should have independent HTTP setups if not explicitly specified', async () => {
@@ -490,13 +490,7 @@ describe('provideHttpClient', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [
-          // Setting this flag to verify that there are no
-          // `console.warn` produced for cases when `fetch`
-          // is enabled and we are running in a browser.
-          {provide: PLATFORM_ID, useValue: 'browser'},
-          provideHttpClient(),
-        ],
+        providers: [provideHttpClient(withFetch())],
       });
       const fetchBackend = TestBed.inject(HttpBackend);
       expect(fetchBackend).toBeInstanceOf(FetchBackend);
@@ -510,7 +504,10 @@ describe('provideHttpClient', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), {provide: HttpBackend, useClass: CustomBackendExtends}],
+        providers: [
+          provideHttpClient(withFetch()),
+          {provide: HttpBackend, useClass: CustomBackendExtends},
+        ],
       });
 
       const backend = TestBed.inject(HttpBackend);
@@ -519,7 +516,7 @@ describe('provideHttpClient', () => {
 
     it(`fetch API should be used in child when 'withFetch' was used in parent injector`, () => {
       TestBed.configureTestingModule({
-        providers: [provideHttpClient(), provideHttpClientTesting()],
+        providers: [provideHttpClient(withFetch()), provideHttpClientTesting()],
       });
 
       const child = createEnvironmentInjector(
@@ -556,13 +553,7 @@ describe('provideHttpClient', () => {
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [
-          // Setting this flag to verify that there is a
-          // `console.warn` produced in case `fetch` is not
-          // enabled while running code on the server.
-          {provide: PLATFORM_ID, useValue: 'server'},
-          provideHttpClient(withXhr()),
-        ],
+        providers: [provideHttpClient()],
       });
 
       TestBed.inject(HttpHandler);

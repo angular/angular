@@ -1,72 +1,72 @@
 import {Routes} from '@angular/router';
-import {OpenClosePage} from './open-close-page';
-import {StatusSliderPage} from './status-slider-page';
-import {ToggleAnimationsPage} from './toggle-animations-page';
-import {HeroListPage} from './hero-list-page';
-import {HeroListGroupPage} from './hero-list-group-page';
-import {HeroListEnterLeavePage} from './hero-list-enter-leave-page';
-import {HeroListAutoCalcPage} from './hero-list-auto-page';
-import {InsertRemove} from './insert-remove';
-import {Querying} from './querying';
-import {Home} from './home';
-import {About} from './about';
+import {OpenClosePageComponent} from './open-close-page.component';
+import {StatusSliderPageComponent} from './status-slider-page.component';
+import {ToggleAnimationsPageComponent} from './toggle-animations-page.component';
+import {HeroListPageComponent} from './hero-list-page.component';
+import {HeroListGroupPageComponent} from './hero-list-group-page.component';
+import {HeroListEnterLeavePageComponent} from './hero-list-enter-leave-page.component';
+import {HeroListAutoCalcPageComponent} from './hero-list-auto-page.component';
+import {InsertRemoveComponent} from './insert-remove.component';
+import {QueryingComponent} from './querying.component';
+import {HomeComponent} from './home.component';
+import {AboutComponent} from './about.component';
 
 // #docregion route-animation-data
 export const routes: Routes = [
   {path: '', pathMatch: 'full', redirectTo: '/enter-leave'},
   {
     path: 'open-close',
-    component: OpenClosePage,
+    component: OpenClosePageComponent,
     data: {animation: 'openClosePage'},
   },
   {
     path: 'status',
-    component: StatusSliderPage,
+    component: StatusSliderPageComponent,
     data: {animation: 'statusPage'},
   },
   {
     path: 'toggle',
-    component: ToggleAnimationsPage,
+    component: ToggleAnimationsPageComponent,
     data: {animation: 'togglePage'},
   },
   {
     path: 'heroes',
-    component: HeroListPage,
+    component: HeroListPageComponent,
     data: {animation: 'filterPage'},
   },
   {
     path: 'hero-groups',
-    component: HeroListGroupPage,
+    component: HeroListGroupPageComponent,
     data: {animation: 'heroGroupPage'},
   },
   {
     path: 'enter-leave',
-    component: HeroListEnterLeavePage,
+    component: HeroListEnterLeavePageComponent,
     data: {animation: 'enterLeavePage'},
   },
   {
     path: 'auto',
-    component: HeroListAutoCalcPage,
+    component: HeroListAutoCalcPageComponent,
     data: {animation: 'autoPage'},
   },
   {
     path: 'insert-remove',
-    component: InsertRemove,
+    component: InsertRemoveComponent,
     data: {animation: 'insertRemovePage'},
   },
   {
     path: 'querying',
-    component: Querying,
+    component: QueryingComponent,
     data: {animation: 'queryingPage'},
   },
   {
     path: 'home',
-    component: Home,
+    component: HomeComponent,
     data: {animation: 'HomePage'},
   },
   {
     path: 'about',
-    component: About,
+    component: AboutComponent,
     data: {animation: 'AboutPage'},
   },
 ];
