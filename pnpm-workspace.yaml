@@ -90,3 +90,6 @@ autoInstallPeers: false
 
 # Avoid prompting for confirmation when pnpm determines node_modules needs to be purged.
 confirmModulesPurge: false
+
+# Workaround as the default 'install' causes problems during `pnpm ng-dev pr merge` as the lockfile is updated.
+verifyDepsBeforeRun: warn
