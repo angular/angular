@@ -9,8 +9,10 @@
 import {
   Component,
   ElementRef,
+  Injector,
   computed,
   effect,
+  inject,
   signal,
   untracked,
   viewChildren,
@@ -753,22 +755,25 @@ describe('foreign components', () => {
     }
 
     it('should integrate lifecycle of static content', async () => {
-      function StaticIf(props: {cond: () => boolean; children: () => Node[]}) {
+      function StaticIf(props: {injector: Injector; cond: () => boolean; children: () => Node[]}) {
         const container = document.createElement('div');
         const context = new Context();
 
-        effect((onCleanup) => {
-          onCleanup(() => context.destroy());
+        effect(
+          (onCleanup) => {
+            onCleanup(() => context.destroy());
 
-          if (props.cond()) {
-            context.run(() => {
-              const nodes = untracked(() => props.children());
-              for (const node of nodes) {
-                container.appendChild(node);
-              }
-            });
-          }
-        });
+            if (props.cond()) {
+              context.run(() => {
+                const nodes = untracked(() => props.children());
+                for (const node of nodes) {
+                  container.appendChild(node);
+                }
+              });
+            }
+          },
+          {injector: props.injector},
+        );
 
         return [container];
       }
@@ -789,7 +794,7 @@ describe('foreign components', () => {
 
       @Component({
         template: `
-          <StaticIf [cond]="visible">
+          <StaticIf [injector]="injector" [cond]="visible">
             <child />
           </StaticIf>
         `,
@@ -798,6 +803,7 @@ describe('foreign components', () => {
         foreignImports: [frameworkImport(StaticIf)],
       })
       class App {
+        readonly injector = inject(Injector);
         readonly visible = signal(false);
       }
 
@@ -835,24 +841,31 @@ describe('foreign components', () => {
     });
 
     it('should integrate lifecycle of dynamic content', async () => {
-      function DynamicIf(props: {cond: () => boolean; children: (value: boolean) => () => Node[]}) {
+      function DynamicIf(props: {
+        injector: Injector;
+        cond: () => boolean;
+        children: (value: boolean) => () => Node[];
+      }) {
         const container = document.createElement('div');
         const context = new Context();
 
-        effect((onCleanup) => {
-          onCleanup(() => context.destroy());
+        effect(
+          (onCleanup) => {
+            onCleanup(() => context.destroy());
 
-          const result = props.cond();
-          if (result) {
-            context.run(() => {
-              const children = untracked(() => props.children(result));
-              const nodes = children();
-              for (const node of nodes) {
-                container.appendChild(node);
-              }
-            });
-          }
-        });
+            const result = props.cond();
+            if (result) {
+              context.run(() => {
+                const children = untracked(() => props.children(result));
+                const nodes = children();
+                for (const node of nodes) {
+                  container.appendChild(node);
+                }
+              });
+            }
+          },
+          {injector: props.injector},
+        );
 
         return [container];
       }
@@ -873,7 +886,7 @@ describe('foreign components', () => {
 
       @Component({
         template: `
-          <DynamicIf [cond]="visible">
+          <DynamicIf [injector]="injector" [cond]="visible">
             @content(children; let result) {
               <child>{{ result }}</child>
             }
@@ -884,6 +897,7 @@ describe('foreign components', () => {
         foreignImports: [frameworkImport(DynamicIf)],
       })
       class App {
+        readonly injector = inject(Injector);
         readonly visible = signal(false);
       }
 

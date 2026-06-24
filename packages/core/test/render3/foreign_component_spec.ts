@@ -19,9 +19,6 @@ import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/i
 import {ɵɵtext} from '../../src/render3/instructions/text';
 import {ɵɵadvance} from '../../src/render3/instructions/advance';
 import {ɵɵtextInterpolate2} from '../../src/render3/instructions/text_interpolation';
-import {inject, InjectionToken} from '../../src/di';
-import {ɵɵdefineDirective} from '../../src/render3/definition';
-import {ɵɵProvidersFeature} from '../../src/render3/features/providers_feature';
 import {createLView} from '../../src/render3/view/construction';
 import {renderView} from '../../src/render3/instructions/render';
 import {LView, LViewFlags, PARENT, RENDERER, T_HOST} from '../../src/render3/interfaces/view';
@@ -66,7 +63,7 @@ describe('ɵɵforeignComponent', () => {
       },
     });
 
-    expect(render).toHaveBeenCalledOnceWith({name: 'Angular'});
+    expect(render).toHaveBeenCalledOnceWith({name: 'Angular'}, /* context= */ undefined);
   });
 
   it('should call the dispose function when the containing view is destroyed', () => {
@@ -159,45 +156,6 @@ describe('ɵɵforeignComponent', () => {
         '<!--foreign-component-->' +
         '</div>',
     );
-  });
-
-  it('should execute the RENDER function inside the template injection context', () => {
-    const TEST_TOKEN = new InjectionToken<string>('test-token');
-
-    const foreignComp = foreignImport(
-      () => {
-        const value = inject(TEST_TOKEN, {optional: true}) ?? 'null';
-        const el = document.createElement('div');
-        el.id = 'foreign-el';
-        el.textContent = value;
-        return [[el]];
-      },
-      noopOnDestroy,
-      eagerContentAdapter,
-    );
-
-    class ProviderDirective {
-      static ɵfac = () => new ProviderDirective();
-      static ɵdir = ɵɵdefineDirective({
-        type: ProviderDirective,
-        selectors: [['', 'provider-dir', '']],
-        features: [ɵɵProvidersFeature([{provide: TEST_TOKEN, useValue: 'templated-value'}])],
-      });
-    }
-
-    const fixture = new ViewFixture({
-      decls: 2,
-      vars: 0,
-      consts: [['provider-dir', ''], foreignComp],
-      directives: [ProviderDirective],
-      create: () => {
-        ɵɵelementStart(0, 'div', 0);
-        ɵɵforeignComponent(1, 1);
-        ɵɵelementEnd();
-      },
-    });
-
-    expect(fixture.host.innerHTML).toContain('<div id="foreign-el">templated-value</div>');
   });
 
   it('should support reusing the same template between multiple view instances', () => {

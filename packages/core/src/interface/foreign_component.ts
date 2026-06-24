@@ -15,16 +15,30 @@ export const ON_DESTROY: unique symbol = Symbol('ON_DESTROY');
 /** Symbol used to store and retrieve the content adapter function for a foreign component. */
 export const CONTENT_ADAPTER: unique symbol = Symbol('CONTENT_ADAPTER');
 
+/** Symbol used to store and retrieve the context retrieval function for a foreign component. */
+export const GET_CONTEXT: unique symbol = Symbol('GET_CONTEXT');
+
 /**
  * A function used to render a foreign component in an Angular template.
  *
- * The function accepts the component's properties as its only argument. It should return an array
+ * The function accepts the component's properties and optional context. It should return an array
  * of nodes rendered and owned by the foreign component. It may also return a callback to perform
  * any necessary cleanup when the component is destroyed.
  *
  * @template TProps The properties of the foreign component.
+ * @template TContext The context passed to the foreign component.
  */
-export type ForeignRenderFn<TProps> = (props: TProps) => [Node[], VoidFunction?];
+export type ForeignRenderFn<TProps, TContext> = (
+  props: TProps,
+  context?: TContext,
+) => [Node[], VoidFunction?];
+
+/**
+ * A function that captures the runtime context of a foreign component.
+ *
+ * @template TContext The captured context type.
+ */
+export type ForeignGetContextFn<TContext> = () => TContext;
 
 /**
  * A function that allows a foreign component to register a destroy callback.
@@ -46,9 +60,11 @@ export type ForeignContentAdapterFn = (producer: () => Node[]) => any;
  * Represents a component from another framework that Angular can import and render.
  *
  * @template TProps The properties of the foreign component.
+ * @template TContext The context passed to the foreign component.
  */
-export interface ForeignComponent<TProps> {
-  readonly [RENDER]: ForeignRenderFn<TProps>;
+export interface ForeignComponent<TProps = {}, TContext = unknown> {
+  readonly [RENDER]: ForeignRenderFn<TProps, TContext>;
   readonly [ON_DESTROY]: ForeignOnDestroyFn;
   readonly [CONTENT_ADAPTER]: ForeignContentAdapterFn;
+  readonly [GET_CONTEXT]?: ForeignGetContextFn<TContext>;
 }
