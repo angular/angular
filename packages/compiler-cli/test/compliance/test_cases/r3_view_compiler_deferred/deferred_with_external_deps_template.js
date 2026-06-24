@@ -3,7 +3,7 @@ import {LoadingDep} from './deferred_with_external_deps_loading';
 import * as $r3$ from "@angular/core";
 
 const $MyApp_Defer_4_DepsFn$ = () => [
-  /* @ts-ignore */
+  () => /* @ts-ignore */
   import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)
 ];
 
@@ -42,7 +42,7 @@ export class MyApp {
 
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(MyApp, () => [
-    /* @ts-ignore */
+    () => /* @ts-ignore */
     import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)
   ], LazyDep => {
     $r3$.ɵsetClassMetadata(MyApp, [{

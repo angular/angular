@@ -1,5 +1,5 @@
 const $TestCmp_Defer_1_DepsFn$ = () => [
-  /* @ts-ignore */
+  () => /* @ts-ignore */
   import("./defer_deps_ext").then(m => m.CmpA),
   LocalDep
 ];
@@ -26,7 +26,7 @@ function TestCmp_Template(rf, ctx) { if (rf & 1) {
 
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(TestCmp, () => [
-    /* @ts-ignore */
+    () => /* @ts-ignore */
     import("./defer_deps_ext").then(m => m.CmpA)
   ], CmpA => {
     $r3$.ɵsetClassMetadata(TestCmp, [{
