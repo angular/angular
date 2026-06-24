@@ -7,9 +7,40 @@
  */
 
 import {FlatNode} from './component-data-source';
-import {getDirectivesArrayString, getFullNodeNameString} from './directive-forest-utils';
+import {
+  getDirectivesArrayString,
+  getFullNodeNameString,
+  matchesDirectiveOrComponentId,
+} from './directive-forest-utils';
 
 describe('directive-forest-utils', () => {
+  function createFlatNode({
+    component,
+    directives = [],
+  }: {
+    component: FlatNode['original']['component'];
+    directives?: NonNullable<FlatNode['original']['directives']>;
+  }): FlatNode {
+    return {
+      id: 'node',
+      expandable: false,
+      name: 'node',
+      directives: directives.map((directive) => directive.name),
+      position: [],
+      level: 0,
+      original: {
+        position: [],
+        children: [],
+        component,
+        directives,
+        controlFlowBlock: null,
+        hasNativeElement: true,
+      },
+      controlFlowBlock: null,
+      hasNativeElement: true,
+    };
+  }
+
   describe('getDirectivesArrayString', () => {
     it('should return an empty string, if no directives', () => {
       const output = getDirectivesArrayString({} as FlatNode);
@@ -65,6 +96,50 @@ describe('directive-forest-utils', () => {
       } as FlatNode);
 
       expect(output).toEqual('app-test[Foo][Bar]');
+    });
+  });
+
+  describe('matchesDirectiveOrComponentId', () => {
+    it('should match component id zero', () => {
+      const matches = matchesDirectiveOrComponentId(
+        createFlatNode({
+          component: {
+            id: 0,
+            name: 'AppComponent',
+            isElement: false,
+          },
+        }),
+        0,
+      );
+
+      expect(matches).toBeTrue();
+    });
+
+    it('should match a directive id on a directive-only node', () => {
+      const matches = matchesDirectiveOrComponentId(
+        createFlatNode({
+          component: null,
+          directives: [{id: 9, name: 'RouterLink'}],
+        }),
+        9,
+      );
+
+      expect(matches).toBeTrue();
+    });
+
+    it('should not match null highlighted ids', () => {
+      const matches = matchesDirectiveOrComponentId(
+        createFlatNode({
+          component: {
+            id: 0,
+            name: 'AppComponent',
+            isElement: false,
+          },
+        }),
+        null,
+      );
+
+      expect(matches).toBeFalse();
     });
   });
 });

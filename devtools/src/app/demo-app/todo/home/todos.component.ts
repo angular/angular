@@ -59,6 +59,12 @@ export class RecursiveComponent {
 }
 
 @Component({
+  selector: '[appSvgDemo]',
+  template: '<ng-content />',
+})
+export class SvgDemoComponent {}
+
+@Component({
   templateUrl: 'todos.component.html',
   selector: 'app-todos',
   imports: [
@@ -68,6 +74,7 @@ export class RecursiveComponent {
     SamplePipe,
     TodosFilter,
     RecursiveComponent,
+    SvgDemoComponent,
   ],
 })
 export class TodosComponent implements OnInit, OnDestroy {

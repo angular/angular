@@ -24,7 +24,11 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {FlatTreeControl} from '@angular/cdk/tree';
 
 import {FlatNode} from '../component-data-source';
-import {getDirectivesArrayString, getFullNodeNameString} from '../directive-forest-utils';
+import {
+  getDirectivesArrayString,
+  getFullNodeNameString,
+  matchesDirectiveOrComponentId,
+} from '../directive-forest-utils';
 import {BlockType} from '../../../../shared/utils/control-flow';
 import {APP_DATA} from '../../../../application-providers/app_data';
 
@@ -113,7 +117,7 @@ export class TreeNodeComponent {
   }
 
   protected get isHighlighted(): boolean {
-    return !!this.highlightedId() && this.highlightedId() === this.node().original.component?.id;
+    return matchesDirectiveOrComponentId(this.node(), this.highlightedId());
   }
 
   private handleMatchedText() {

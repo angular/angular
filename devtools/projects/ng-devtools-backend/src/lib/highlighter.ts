@@ -59,16 +59,22 @@ function createOverlay(color: RgbColor): {overlay: HTMLElement; overlayContent: 
 
 export function findComponentAndHost(el: Node | undefined): {
   component: any;
-  host: HTMLElement | null;
+  host: Element | null;
 } {
   const ng = ngDebugClient();
   if (!el) {
     return {component: null, host: null};
   }
   while (el) {
-    const component = el instanceof HTMLElement && ng.getComponent!(el);
-    if (component) {
-      return {component, host: el as HTMLElement};
+    if (el instanceof Element) {
+      const component = ng.getComponent?.(el);
+      if (component) {
+        return {component, host: el};
+      }
+      const directive = ng.getDirectives?.(el)?.[0];
+      if (directive) {
+        return {component: directive, host: el};
+      }
     }
     if (!el.parentElement) {
       break;
@@ -84,12 +90,12 @@ export function getDirectiveName(dir: Type<unknown> | undefined | null): string 
 }
 
 export function highlightSelectedElement(el: Node): void {
-  if (el === selectedElement) {
+  if (el === selectedElement && selectedElementOverlay?.isConnected) {
     return;
   }
   unHighlight();
   selectedElementOverlay = addHighlightForElement(el);
-  selectedElement = el;
+  selectedElement = selectedElementOverlay ? el : null;
 }
 
 export function highlightHydrationElement(el: Node, status: HydrationStatus) {
@@ -109,23 +115,18 @@ export function highlightHydrationElement(el: Node, status: HydrationStatus) {
 
 export function unHighlight(): void {
   if (!selectedElementOverlay) {
+    selectedElement = null;
     return;
   }
 
-  for (const node of document.body.childNodes) {
-    if (node === selectedElementOverlay) {
-      document.body.removeChild(selectedElementOverlay);
-
-      break;
-    }
-  }
-
+  selectedElementOverlay.remove();
   selectedElementOverlay = null;
+  selectedElement = null;
 }
 
 export function removeHydrationHighlights(): void {
   hydrationOverlayItems.forEach((overlay) => {
-    document.body.removeChild(overlay);
+    overlay.remove();
   });
   hydrationOverlayItems = [];
 }
@@ -182,7 +183,7 @@ function addHighlightForElement(
 }
 
 function getComponentRect(el: Node): DOMRect | undefined {
-  if (!(el instanceof HTMLElement)) {
+  if (!(el instanceof Element)) {
     return;
   }
   if (!inDoc(el)) {
@@ -199,10 +200,10 @@ function showOverlay(
   labelPosition: 'inside' | 'outside',
 ): void {
   const {width, height, top, left} = dimensions;
-  overlay.style.width = ~~width + 'px';
-  overlay.style.height = ~~height + 'px';
-  overlay.style.top = ~~top + window.scrollY + 'px';
-  overlay.style.left = ~~left + window.scrollX + 'px';
+  overlay.style.width = `${width}px`;
+  overlay.style.height = `${height}px`;
+  overlay.style.top = `${top + window.scrollY}px`;
+  overlay.style.left = `${left + window.scrollX}px`;
 
   positionOverlayContent(overlayContent, dimensions, labelPosition);
   overlayContent.replaceChildren();
