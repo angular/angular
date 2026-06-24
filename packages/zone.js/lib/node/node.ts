@@ -142,6 +142,13 @@ export function patchNode(Zone: ZoneType): void {
   });
 
   Zone.__load_patch('console', (global: any, Zone: ZoneType) => {
+    // Skip entirely under Node --frozen-intrinsics or any host that froze console.
+    // Without instrumentation, console calls run in whatever zone they were called
+    // from rather than being hoisted to Zone.root — acceptable degradation; the
+    // alternative is crashing at load.
+    if (!Object.isExtensible(console)) {
+      return;
+    }
     const consoleMethods = [
       'dir',
       'log',
@@ -154,17 +161,21 @@ export function patchNode(Zone: ZoneType): void {
       'trace',
     ];
     consoleMethods.forEach((m: string) => {
-      const originalMethod = ((console as any)[Zone.__symbol__(m)] = (console as any)[m]);
-      if (originalMethod) {
-        (console as any)[m] = function () {
-          const args = ArraySlice.call(arguments);
-          if (Zone.current === Zone.root) {
-            return originalMethod.apply(this, args);
-          } else {
-            return Zone.root.run(originalMethod, this, args);
-          }
-        };
+      const descriptor = Object.getOwnPropertyDescriptor(console, m);
+      // Only patch if we can both stash the original and overwrite the method.
+      if (!descriptor || descriptor.writable === false || descriptor.configurable === false) {
+        return;
       }
+      const originalMethod = ((console as any)[Zone.__symbol__(m)] = (console as any)[m]);
+      if (!originalMethod) return;
+      (console as any)[m] = function () {
+        const args = ArraySlice.call(arguments);
+        if (Zone.current === Zone.root) {
+          return originalMethod.apply(this, args);
+        } else {
+          return Zone.root.run(originalMethod, this, args);
+        }
+      };
     });
   });
 
