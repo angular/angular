@@ -73,6 +73,7 @@ export const subscribeToClientEvents = (
   },
 ): void => {
   const inspector: InspectorRef = {ref: null};
+  const profilerState = {isProfiling: false};
 
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
@@ -83,10 +84,12 @@ export const subscribeToClientEvents = (
 
   messageBus.on('queryNgAvailability', checkForAngularCallback(messageBus));
 
-  messageBus.on('startProfiling', startProfilingCallback(messageBus));
-  messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
+  messageBus.on('startProfiling', startProfilingCallback(messageBus, profilerState));
+  messageBus.on('stopProfiling', stopProfilingCallback(messageBus, profilerState));
 
-  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector));
+  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector, profilerState));
+  messageBus.on('createRenderScanOverlay', renderScanOverlayCallback(inspector));
+  messageBus.on('removeRenderScanOverlay', removeRenderScanOverlayCallback());
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
@@ -202,22 +205,40 @@ export const viewSourceFromRouter = (constructName: string, type: RoutePropertyT
   return getRouterCallableConstructRef(router.config, type, constructName);
 };
 
-const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
-  startProfiling((frame: ProfilerFrame) => {
-    messageBus.emit('sendProfilerChunk', [frame]);
-  });
+const startProfilingCallback =
+  (messageBus: MessageBus<Events>, profilerState: {isProfiling: boolean}) => () => {
+    profilerState.isProfiling = true;
+    startProfiling((frame: ProfilerFrame) => {
+      messageBus.emit('sendProfilerChunk', [frame]);
+    });
+  };
 
-const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
-  messageBus.emit('profilerResults', [stopProfiling()]);
+const stopProfilingCallback =
+  (messageBus: MessageBus<Events>, profilerState: {isProfiling: boolean}) => () => {
+    profilerState.isProfiling = false;
+    messageBus.emit('profilerResults', [stopProfiling()]);
+  };
+
+const selectedComponentCallback =
+  (inspector: InspectorRef, profilerState: {isProfiling: boolean}) =>
+  (position: ElementPosition) => {
+    if (profilerState.isProfiling) {
+      return;
+    }
+    const node = queryDirectiveForest(
+      position,
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    );
+    setConsoleReference({node, position});
+    inspector.ref?.highlightByPosition(position);
+  };
+
+const renderScanOverlayCallback = (inspector: InspectorRef) => (positions: ElementPosition[]) => {
+  inspector.ref?.highlightByPositions(positions);
 };
 
-const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
-  const node = queryDirectiveForest(
-    position,
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
-  );
-  setConsoleReference({node, position});
-  inspector.ref?.highlightByPosition(position);
+const removeRenderScanOverlayCallback = () => () => {
+  unHighlight();
 };
 
 const getNestedPropertiesCallback =

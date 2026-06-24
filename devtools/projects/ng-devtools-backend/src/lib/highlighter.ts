@@ -11,10 +11,14 @@ import {HydrationStatus} from '../../../protocol';
 import {ngDebugClient} from './ng-debug-api/ng-debug-api';
 
 let hydrationOverlayItems: HTMLElement[] = [];
-let selectedElementOverlay: HTMLElement | null = null;
+let profilerOverlays: HTMLElement[] = [];
+let selectedElementOverlays: HTMLElement[] = [];
 let selectedElement: Node | null = null;
 
 const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
+const PROFILER_OVERLAY_COLOR: RgbColor = [115, 97, 230];
+const DEFAULT_OVERLAY_FILL_ALPHA = 0.35;
+const PROFILER_OVERLAY_FILL_ALPHA = 0.1;
 
 const OVERLAY_CONTENT_MARGIN = 4;
 const MINIMAL_OVERLAY_CONTENT_SIZE = {
@@ -35,10 +39,18 @@ const HYDRATION_SVG = `
 const HYDRATION_SKIPPED_SVG = `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><rect fill="none" height="24" width="24"/><path d="M21.19,21.19L2.81,2.81L1.39,4.22l4.2,4.2c-1,1.31-1.6,2.94-1.6,4.7C4,17.48,7.58,21,12,21c1.75,0,3.36-0.56,4.67-1.5 l3.1,3.1L21.19,21.19z M12,19c-3.31,0-6-2.63-6-5.87c0-1.19,0.36-2.32,1.02-3.28L12,14.83V19z M8.38,5.56L12,2l5.65,5.56l0,0 C19.1,8.99,20,10.96,20,13.13c0,1.18-0.27,2.29-0.74,3.3L12,9.17V4.81L9.8,6.97L8.38,5.56z"/></svg>`;
 const HYDRATION_ERROR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M11 15h2v2h-2v-2zm0-8h2v6h-2V7zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>`;
 
-function createOverlay(color: RgbColor): {overlay: HTMLElement; overlayContent: HTMLElement} {
+function createOverlay(
+  color: RgbColor,
+  fillAlpha: number = DEFAULT_OVERLAY_FILL_ALPHA,
+  showBorder: boolean = false,
+): {overlay: HTMLElement; overlayContent: HTMLElement} {
   const overlay = document.createElement('div');
   overlay.className = 'ng-devtools-overlay';
-  overlay.style.backgroundColor = toCSSColor(...color, 0.35);
+  overlay.style.backgroundColor = toCSSColor(...color, fillAlpha);
+  if (showBorder) {
+    overlay.style.border = `1px solid ${toCSSColor(...color)}`;
+    overlay.style.boxSizing = 'border-box';
+  }
   overlay.style.position = 'absolute';
   overlay.style.zIndex = '2147483647';
   overlay.style.pointerEvents = 'none';
@@ -87,9 +99,40 @@ export function highlightSelectedElement(el: Node): void {
   if (el === selectedElement) {
     return;
   }
-  unHighlight();
-  selectedElementOverlay = addHighlightForElement(el);
-  selectedElement = el;
+  highlightSelectedElements([el]);
+}
+
+export function highlightSelectedElementsForProfiler(elements: Node[]): void {
+  unHighlightProfiler();
+  profilerOverlays = elements
+    .map((element) =>
+      addHighlightForElement(
+        element,
+        PROFILER_OVERLAY_COLOR,
+        undefined,
+        PROFILER_OVERLAY_FILL_ALPHA,
+        true,
+        true,
+      ),
+    )
+    .filter((overlay): overlay is HTMLElement => overlay !== null);
+}
+
+export function unHighlightProfiler(): void {
+  profilerOverlays.forEach((overlay) => {
+    if (inDoc(overlay)) {
+      document.body.removeChild(overlay);
+    }
+  });
+  profilerOverlays = [];
+}
+
+export function highlightSelectedElements(elements: Node[]): void {
+  clearSelectedElementHighlights();
+  selectedElement = null;
+  selectedElementOverlays = elements
+    .map((element) => addHighlightForElement(element))
+    .filter((overlay): overlay is HTMLElement => overlay !== null);
 }
 
 export function highlightHydrationElement(el: Node, status: HydrationStatus) {
@@ -108,19 +151,18 @@ export function highlightHydrationElement(el: Node, status: HydrationStatus) {
 }
 
 export function unHighlight(): void {
-  if (!selectedElementOverlay) {
-    return;
-  }
+  clearSelectedElementHighlights();
+}
 
-  for (const node of document.body.childNodes) {
-    if (node === selectedElementOverlay) {
-      document.body.removeChild(selectedElementOverlay);
-
-      break;
+function clearSelectedElementHighlights(): void {
+  selectedElementOverlays.forEach((overlay) => {
+    if (inDoc(overlay)) {
+      document.body.removeChild(overlay);
     }
-  }
+  });
 
-  selectedElementOverlay = null;
+  selectedElementOverlays = [];
+  selectedElement = null;
 }
 
 export function removeHydrationHighlights(): void {
@@ -145,6 +187,9 @@ function addHighlightForElement(
   el: Node,
   color: RgbColor = COLORS.blue,
   overlayType?: NonNullable<HydrationStatus>['status'],
+  fillAlpha: number = DEFAULT_OVERLAY_FILL_ALPHA,
+  showLabel: boolean = true,
+  showBorder: boolean = false,
 ): HTMLElement | null {
   const cmp = findComponentAndHost(el).component;
   const rect = getComponentRect(el);
@@ -153,7 +198,7 @@ function addHighlightForElement(
     return null;
   }
 
-  const {overlay, overlayContent} = createOverlay(color);
+  const {overlay, overlayContent} = createOverlay(color, fillAlpha, showBorder);
   if (!rect) return null;
 
   const content: Node[] = [];
@@ -169,7 +214,7 @@ function addHighlightForElement(
       const svg = createOverlaySvgElement(overlayType!);
       content.push(svg);
     }
-  } else if (componentName) {
+  } else if (showLabel && componentName) {
     const middleText = document.createTextNode(componentName);
     const pre = document.createElement('span');
     pre.innerText = `<`;
