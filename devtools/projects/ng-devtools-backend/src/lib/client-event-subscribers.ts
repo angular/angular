@@ -432,6 +432,7 @@ const prepareForestForSerialization = (
             name: node.component.name,
             isElement: node.component.isElement,
             id: getDirectiveForestManager().getDirectiveId(node.component.instance)!,
+            instanceId: ngDebugClient()?.ɵgetComponentInstanceDeepLinkId?.(node.component.instance),
           }
         : null,
       directives: node.directives?.map((d) => ({
