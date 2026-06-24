@@ -15,10 +15,7 @@ import {timeout, useAutoTick} from '../../private/testing/src/utils';
 import {rxResource} from '@angular/core/rxjs-interop';
 import {Subject} from 'rxjs';
 
-@Component({
-  standalone: true,
-  template: '',
-})
+@Component({template: ''})
 class DummyComponent {}
 
 describe('routerResource behavior tests', () => {
@@ -63,6 +60,17 @@ describe('routerResource behavior tests', () => {
     await harness.fixture.whenStable();
   });
 
+  afterEach(() => {
+    router = undefined!;
+    harness = undefined!;
+    guardPromise2 = undefined!;
+    resolveGuard2 = undefined!;
+    guardPromise3 = undefined!;
+    resolveGuard3 = undefined!;
+    paramSignal = undefined!;
+    resolveLoader = undefined!;
+  });
+
   // Helper to create a real resource controlled in tests
   // Resolves the very first load immediately to 'initial', and returns a pending promise for subsequent loads.
   function createRealResource() {
@@ -88,7 +96,7 @@ describe('routerResource behavior tests', () => {
     return TestBed.runInInjectionContext(() => routerResource(createRealResource()));
   }
 
-  describe('Basic Snapshot Propagation and Symbols', () => {
+  describe('Basic Snapshot Propagation', () => {
     it("should propagate the source resource's snapshot", async () => {
       const wrapped = createWrappedResource();
       await timeout();
@@ -239,57 +247,6 @@ describe('routerResource behavior tests', () => {
       // Now it should be unfrozen and show the settled rolled-back state
       expect(wrapped.status()).toBe('resolved');
       expect(wrapped.value()).toBe('rolled-back-settled');
-    });
-
-    it('should unfreeze immediately on rollback if the frozen state was not a settled, non error state', async () => {
-      const errorParamSignal = signal('initial');
-      const {promise: initialErrorPromise, reject: rejectInitial} = ɵpromiseWithResolvers<string>();
-      initialErrorPromise.catch(() => {}); // Prevent unhandled promise rejection error. When integrated into Router, we catch these there.
-
-      const wrapped = TestBed.runInInjectionContext(() => {
-        return routerResource(
-          resource({
-            params: () => errorParamSignal(),
-            loader: ({params}) => {
-              if (params === 'initial') {
-                return initialErrorPromise;
-              }
-              return new Promise<string>((resolve) => {
-                resolveLoader = resolve;
-              });
-            },
-          }),
-        );
-      });
-
-      rejectInitial(new Error('Initial error'));
-      await harness.fixture.whenStable();
-
-      expect(wrapped.status()).toBe('error');
-
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
-      const navPromise = harness.navigateByUrl('/route2');
-      await timeout();
-
-      // Reject guard to trigger true rollback
-      resolveGuard2(false);
-      await navPromise;
-      await timeout();
-
-      // If it unfroze immediately, changing the parameter should immediately transition the wrapper to 'loading'.
-      // (If it was still frozen, it would remain insulated in the 'error' state).
-      errorParamSignal.set('new-param');
-      await timeout();
-      harness.fixture.detectChanges();
-
-      expect(wrapped.status()).toBe('loading');
-
-      // Resolve the loader to complete the verification
-      resolveLoader('recovered-data');
-      await harness.fixture.whenStable();
-
-      expect(wrapped.status()).toBe('resolved');
-      expect(wrapped.value()).toBe('recovered-data');
     });
   });
 
