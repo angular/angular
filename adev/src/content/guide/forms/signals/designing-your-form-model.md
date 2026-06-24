@@ -380,7 +380,7 @@ class MyForm {
 
   handleSubmit() {
     submit(this.myForm, async () => {
-      await this.myDataService.update(formModelToDomainModel(this.myForm.value()));
+      await this.myDataService.update(formModelToDomainModel(this.myForm().value()));
     });
   };
 }
@@ -402,7 +402,7 @@ class MyForm {
     effect(() => {
       // When the form model changes to a valid value, update the domain model.
       if (this.myForm().valid()) {
-        this.domainModel.set(formModelToDomainModel(this.myForm.value()));
+        this.domainModel.set(formModelToDomainModel(this.myForm().value()));
       }
     });
   };
