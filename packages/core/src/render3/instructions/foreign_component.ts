@@ -6,33 +6,36 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Injector} from '../../di/injector';
+import {InternalInjectFlags} from '../../di/interface/injector';
 import {
-  ForeignComponent,
-  RENDER,
-  ON_DESTROY,
   CONTENT_ADAPTER,
+  ForeignComponent,
+  GET_CONTEXT,
+  ON_DESTROY,
+  RENDER,
 } from '../../interface/foreign_component';
+import {assertDefined, assertNotSame} from '../../util/assert';
+import {assertLContainer} from '../assert';
+import {collectNativeNodes} from '../collect_native_nodes';
 import {attachPatchData} from '../context_discovery';
+import {getOrCreateInjectable} from '../di';
 import {nativeInsertBefore} from '../dom_node_manipulation';
+import {FOREIGN_CONTEXT} from '../foreign_context';
 import {createForeignView} from '../foreign_view';
+import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags} from '../interfaces/container';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, RENDERER, TVIEW, FLAGS} from '../interfaces/view';
+import {Renderer} from '../interfaces/renderer';
+import {RNode} from '../interfaces/renderer_dom';
+import {isDestroyed} from '../interfaces/type_checks';
+import {FLAGS, HEADER_OFFSET, LView, RENDERER, TVIEW} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
 import {getLView, getTView, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {getOrCreateTNode} from '../tnode_manipulation';
-import {addToEndOfViewTree} from '../view/construction';
-import {createLContainer, addLViewToLContainer, removeLViewFromLContainer} from '../view/container';
-import {NodeInjector} from '../di';
-import {runInInjectionContext} from '../../di';
-import {Renderer} from '../interfaces/renderer';
-import {RNode} from '../interfaces/renderer_dom';
-import {createAndRenderEmbeddedLView} from '../view_manipulation';
-import {collectNativeNodes} from '../collect_native_nodes';
-import {assertLContainer} from '../assert';
-import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags} from '../interfaces/container';
 import {getConstant} from '../util/view_utils';
-import {isDestroyed} from '../interfaces/type_checks';
-import {assertNotSame} from '../../util/assert';
+import {addToEndOfViewTree} from '../view/construction';
+import {addLViewToLContainer, createLContainer, removeLViewFromLContainer} from '../view/container';
+import {createAndRenderEmbeddedLView} from '../view_manipulation';
 
 /**
  * Creation phase instruction to render a foreign component.
@@ -50,7 +53,10 @@ export function ɵɵforeignComponent(
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
-  const foreignComponent = getConstant<ForeignComponent<any>>(tView.consts, foreignComponentIndex)!;
+  const foreignComponent = getConstant<ForeignComponent<any, any>>(
+    tView.consts,
+    foreignComponentIndex,
+  )!;
 
   // 1. Get or create TNode for this container slot
   let tNode: TContainerNode;
@@ -77,9 +83,16 @@ export function ɵɵforeignComponent(
   // 4. Create the Foreign View and insert it at index 0 of the container
   const viewRef = createForeignView(lContainer, 0);
 
-  // 5. Call the RENDER function to get the nodes and DisposeFn
-  const injector = new NodeInjector(tNode, lView);
-  const [nodes, dispose] = runInInjectionContext(injector, () => foreignComponent[RENDER](props));
+  // 5. Resolve context and call the RENDER function to get the nodes and DisposeFn
+  // Context is optional because foreign components may not require context or a FOREIGN_CONTEXT
+  // provider might not be configured in the component/element injector hierarchy.
+  const context = getOrCreateInjectable(
+    tNode,
+    lView,
+    FOREIGN_CONTEXT,
+    InternalInjectFlags.Optional,
+  );
+  const [nodes, dispose] = foreignComponent[RENDER](props, context ?? undefined);
 
   // 6. Insert the returned nodes into the foreign view, between its head and tail comment anchors.
   const tail = viewRef.tail as RNode;
@@ -97,14 +110,24 @@ export function ɵɵforeignComponent(
 }
 
 /**
- * Creation phase instruction to render foreign content (children of a foreign component)
- * and extract its root DOM nodes.
- *
- * @param index The index of the container in the data array.
- * @param foreignComponentConstIndex The index of the matched foreign component in the constant pool.
- * @codeGenApi
+ * Reusable injector class that intercepts requests for {@link FOREIGN_CONTEXT} during
+ * embedded view creation and returns the captured runtime context.
  */
-export function ɵɵforeignContent(index: number, foreignComponentConstIndex: number): any {
+class ForeignContextInjector implements Injector {
+  constructor(private context: unknown) {}
+
+  get(token: any, notFoundValue?: any): any {
+    return token === FOREIGN_CONTEXT ? this.context : notFoundValue;
+  }
+}
+
+/**
+ * Resolves container and foreign component metadata for foreign content projection instructions.
+ */
+function resolveForeignContentContainer(
+  index: number,
+  foreignComponentConstIndex: number,
+): [LView, LContainer, TContainerNode, ForeignComponent<any, any>] {
   const lView = getLView();
   const adjustedIndex = index + HEADER_OFFSET;
 
@@ -115,15 +138,41 @@ export function ɵɵforeignContent(index: number, foreignComponentConstIndex: nu
 
   const tView = getTView();
   const tNode = tView.data[adjustedIndex] as TContainerNode;
-  const foreignComponent = getConstant<ForeignComponent<any>>(
+  const foreignComponent = getConstant<ForeignComponent<any, any>>(
     tView.consts,
     foreignComponentConstIndex,
   )!;
+  ngDevMode &&
+    assertDefined(foreignComponent, 'Foreign component must be defined in constant pool.');
+
+  return [lView, lContainer, tNode, foreignComponent];
+}
+
+/**
+ * Creation phase instruction to render foreign content (children of a foreign component)
+ * and extract its root DOM nodes.
+ *
+ * @param index The index of the container in the data array.
+ * @param foreignComponentConstIndex The index of the matched foreign component in the constant pool.
+ * @codeGenApi
+ */
+export function ɵɵforeignContent(index: number, foreignComponentConstIndex: number): any {
+  const [lView, lContainer, tNode, foreignComponent] = resolveForeignContentContainer(
+    index,
+    foreignComponentConstIndex,
+  );
   const adapter = foreignComponent[CONTENT_ADAPTER];
   const onDestroy = foreignComponent[ON_DESTROY];
+  const getContext = foreignComponent[GET_CONTEXT];
 
   const producer = () => {
-    const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, null);
+    const options = getContext
+      ? {embeddedViewInjector: new ForeignContextInjector(getContext())}
+      : undefined;
+
+    // Instantiate and render the embedded view inside the container, but do not add its elements to
+    // the DOM at the container anchor since the nodes will be projected into a foreign view.
+    const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, null, options);
     addLViewToLContainer(
       lContainer,
       embeddedLView,
@@ -139,6 +188,7 @@ export function ɵɵforeignContent(index: number, foreignComponentConstIndex: nu
       }
     });
 
+    // Extract and return the root nodes of the created view
     const embeddedTView = embeddedLView[TVIEW];
     return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
   };
@@ -158,26 +208,23 @@ export function ɵɵforeignContentFn(
   index: number,
   foreignComponentConstIndex: number,
 ): (...args: any[]) => any {
-  const lView = getLView();
-  const adjustedIndex = index + HEADER_OFFSET;
-
-  // The template is already declared at adjustedIndex, so lContainer must exist.
-  const lContainer = lView[adjustedIndex] as LContainer;
-  ngDevMode && assertLContainer(lContainer);
-  lContainer[FLAGS] |= LContainerFlags.LogicalOnly;
-
-  const tView = getTView();
-  const tNode = tView.data[adjustedIndex] as TContainerNode;
-  const foreignComponent = getConstant<ForeignComponent<any>>(
-    tView.consts,
+  const [lView, lContainer, tNode, foreignComponent] = resolveForeignContentContainer(
+    index,
     foreignComponentConstIndex,
-  )!;
+  );
   const adapter = foreignComponent[CONTENT_ADAPTER];
   const onDestroy = foreignComponent[ON_DESTROY];
+  const getContext = foreignComponent[GET_CONTEXT];
 
   return (...args: any[]) => {
     const producer = () => {
-      const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, args);
+      const options = getContext
+        ? {embeddedViewInjector: new ForeignContextInjector(getContext())}
+        : undefined;
+
+      // When the function is called, instantiate and render a new embedded view inside the container.
+      // The arguments are passed directly as the context of the view.
+      const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, args, options);
 
       addLViewToLContainer(
         lContainer,

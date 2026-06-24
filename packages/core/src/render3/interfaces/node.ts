@@ -229,7 +229,7 @@ export type TAttributes = (string | AttributeMarker | CssSelector)[];
  * - Translated messages (i18n).
  * - Foreign components.
  */
-export type TConstants = (TAttributes | string | ForeignComponent<any>)[];
+export type TConstants = (TAttributes | string | ForeignComponent<any, any>)[];
 
 /**
  * Factory function that returns an array of consts. Consts can be represented as a function in

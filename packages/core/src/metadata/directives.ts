@@ -648,7 +648,7 @@ export interface Component extends Directive {
    *
    * @internal // 3p-only
    */
-  foreignImports?: ForeignComponent<any>[];
+  foreignImports?: ForeignComponent<any, any>[];
 
   /**
    * The `deferredImports` property specifies a standalone component's template dependencies,
