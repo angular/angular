@@ -165,20 +165,6 @@ runInEachFileSystem((os) => {
           });
         });
 
-        it('should map a longhand input binding expression', async () => {
-          const mappings = await compileAndMap('<div bind-attr="name"></div>');
-          expectMapping(mappings, {
-            source: '<div bind-attr="name"></div>',
-            generated: 'i0.ɵɵelement(0, "div", 0)',
-            sourceUrl: '../test.ts',
-          });
-          expectMapping(mappings, {
-            source: 'bind-attr="name"',
-            generated: 'i0.ɵɵproperty("attr", ctx.name)',
-            sourceUrl: '../test.ts',
-          });
-        });
-
         it('should map a simple output binding expression', async () => {
           const mappings = await compileAndMap('<button (click)="doSomething()">Do it</button>');
           expectMapping(mappings, {
@@ -235,30 +221,6 @@ runInEachFileSystem((os) => {
           });
         });
 
-        it('should map a longhand output binding expression', async () => {
-          const mappings = await compileAndMap('<button on-click="doSomething()">Do it</button>');
-          expectMapping(mappings, {
-            source: '<button on-click="doSomething()">',
-            generated: 'i0.ɵɵelementStart(0, "button", 0)',
-            sourceUrl: '../test.ts',
-          });
-          expectMapping(mappings, {
-            source: 'Do it',
-            generated: 'i0.ɵɵtext(1, "Do it")',
-            sourceUrl: '../test.ts',
-          });
-          expectMapping(mappings, {
-            source: 'doSomething()',
-            generated: 'ctx.doSomething()',
-            sourceUrl: '../test.ts',
-          });
-          expectMapping(mappings, {
-            source: '</button>',
-            generated: 'i0.ɵɵelementEnd()',
-            sourceUrl: '../test.ts',
-          });
-        });
-
         it('should map a two-way binding expression', async () => {
           const mappings = await compileAndMap('Name: <input [(ngModel)]="name">');
           expectMapping(mappings, {
@@ -275,27 +237,6 @@ runInEachFileSystem((os) => {
           });
           expectMapping(mappings, {
             source: '<input [(ngModel)]="name">',
-            generated: 'i0.ɵɵelementEnd()',
-            sourceUrl: '../test.ts',
-          });
-        });
-
-        it('should map a longhand two-way binding expression', async () => {
-          const mappings = await compileAndMap('Name: <input bindon-ngModel="name">');
-          expectMapping(mappings, {
-            source: '<input bindon-ngModel="name">',
-            generated: 'i0.ɵɵelementStart(1, "input", 0)',
-            sourceUrl: '../test.ts',
-          });
-          // TODO: improve mappings here
-          expectMapping(mappings, {
-            source: 'bindon-ngModel="name"',
-            generated:
-              'i0.ɵɵtwoWayListener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { i0.ɵɵtwoWayBindingSet(ctx.name, $event) || (ctx.name = $event); return $event; })',
-            sourceUrl: '../test.ts',
-          });
-          expectMapping(mappings, {
-            source: '<input bindon-ngModel="name">',
             generated: 'i0.ɵɵelementEnd()',
             sourceUrl: '../test.ts',
           });

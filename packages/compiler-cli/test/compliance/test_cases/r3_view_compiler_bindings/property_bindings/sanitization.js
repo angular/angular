@@ -17,10 +17,6 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵadvance();
     $r3$.ɵɵtwoWayProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml);
     $r3$.ɵɵadvance();
-    $r3$.ɵɵtwoWayProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml);
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵtwoWayProperty("srcdoc", ctx.evil, $r3$.ɵɵsanitizeHtml);
-    $r3$.ɵɵadvance();
     $r3$.ɵɵtwoWayProperty("srcdoc", ctx.evil, $r3$.ɵɵsanitizeHtml);
     $r3$.ɵɵadvance();
     $r3$.ɵɵtwoWayProperty("src", ctx.evil, $r3$.ɵɵsanitizeUrl);

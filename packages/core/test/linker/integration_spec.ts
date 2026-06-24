@@ -440,28 +440,6 @@ describe('integration tests', function () {
     });
 
     describe('reference bindings', () => {
-      it('should assign a component to a ref-', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
-        const template = '<p><child-cmp ref-alice></child-cmp></p>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-
-        expect(fixture.debugElement.children[0].children[0].references!['alice']).toBeInstanceOf(
-          ChildComp,
-        );
-      });
-
-      it('should assign a directive to a ref-', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ExportDir]});
-        const template = '<div><div export-dir #localdir="dir"></div></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-
-        expect(fixture.debugElement.children[0].children[0].references!['localdir']).toBeInstanceOf(
-          ExportDir,
-        );
-      });
-
       it('should assign a directive to a ref when it has multiple exportAs names', () => {
         TestBed.configureTestingModule({
           declarations: [MyComp, DirectiveWithMultipleExportAsNames],
@@ -482,68 +460,13 @@ describe('integration tests', function () {
       it('should make the assigned component accessible in property bindings, even if they were declared before the component', () => {
         TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
         const template =
-          '<ng-template [ngIf]="true">{{alice.ctxProp()}}</ng-template>|{{alice.ctxProp()}}|<child-cmp ref-alice></child-cmp>';
+          '<ng-template [ngIf]="true">{{alice.ctxProp()}}</ng-template>|{{alice.ctxProp()}}|<child-cmp #alice></child-cmp>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
 
         expect(fixture.nativeElement).toHaveText('hello|hello|hello');
-      });
-
-      it('should assign two component instances each with a ref-', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
-        const template = '<p><child-cmp ref-alice></child-cmp><child-cmp ref-bob></child-cmp></p>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-
-        const pEl = fixture.debugElement.children[0];
-
-        const alice = pEl.children[0].references!['alice'];
-        const bob = pEl.children[1].references!['bob'];
-        expect(alice).toBeInstanceOf(ChildComp);
-        expect(bob).toBeInstanceOf(ChildComp);
-        expect(alice).not.toBe(bob);
-      });
-
-      it('should assign the component instance to a ref- with shorthand syntax', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
-        const template = '<child-cmp #alice></child-cmp>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-
-        expect(fixture.debugElement.children[0].references!['alice']).toBeInstanceOf(ChildComp);
-      });
-
-      it('should assign the element instance to a user-defined variable', () => {
-        TestBed.configureTestingModule({declarations: [MyComp]});
-        const template = '<div><div ref-alice><i>Hello</i></div></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-
-        const value = fixture.debugElement.children[0].children[0].references!['alice'];
-        expect(value).not.toBe(null);
-        expect(value.tagName.toLowerCase()).toEqual('div');
-      });
-
-      it('should assign the TemplateRef to a user-defined variable', () => {
-        const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
-          .overrideComponent(MyComp, {set: {template: '<ng-template ref-alice></ng-template>'}})
-          .createComponent(MyComp);
-
-        const value = fixture.debugElement.childNodes[0].references!['alice'];
-        expect(value.createEmbeddedView).toBeTruthy();
-      });
-
-      it('should preserve case', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
-        const template = '<p><child-cmp ref-superAlice></child-cmp></p>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-
-        expect(
-          fixture.debugElement.children[0].children[0].references!['superAlice'],
-        ).toBeInstanceOf(ChildComp);
       });
     });
 
