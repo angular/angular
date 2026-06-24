@@ -162,11 +162,12 @@ a,
   }
 }
 
-.docs-external-link {
+.docs-external-link.docs-faceted-list-item-text {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  max-width: 100%;
   gap: 0.5rem;
   &::after {
     content: 'open_in_new';
@@ -174,7 +175,11 @@ a,
     font-size: 1.1rem;
     color: var(--quinary-contrast);
     transition: color 0.3s ease;
-    margin-inline-end: 0.4rem;
+    margin-inline-end: 0.2rem;
+  }
+
+  a:hover &::after {
+    color: var(--primary-contrast);
   }
 }
 
