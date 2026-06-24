@@ -25,7 +25,6 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
-import {createContentBlock} from './r3_content_blocks';
 import {
   createForLoop,
   createIfBlock,
