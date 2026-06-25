@@ -327,6 +327,60 @@ The RouterLinkActive directive can also be applied to an ancestor element in ord
 
 For more information, check out the [API docs for RouterLinkActive](/api/router/RouterLinkActive).
 
+### Disable active link behavior
+
+`RouterLinkActive` accepts `null` or `undefined` for optional inputs. This helps reusable components keep one template while allowing the parent component to turn active styling or active-state matching on and off.
+
+The two inputs treat `null` and `undefined` differently:
+
+| Input                     | `undefined`                             | `null`                           |
+| :------------------------ | :-------------------------------------- | :------------------------------- |
+| `routerLinkActive`        | Applies no CSS classes.                 | Applies no CSS classes.          |
+| `routerLinkActiveOptions` | Uses the default subset match behavior. | Treats the link as never active. |
+
+This is useful when building a reusable link component whose active behavior is configured by a parent:
+
+```angular-ts
+import {Component, input} from '@angular/core';
+import {RouterLink, RouterLinkActive, IsActiveMatchOptions} from '@angular/router';
+
+@Component({
+  selector: 'app-nav-link',
+  imports: [RouterLink, RouterLinkActive],
+  template: `
+    <a
+      [routerLink]="href()"
+      [routerLinkActive]="activeClass()"
+      [routerLinkActiveOptions]="activeOptions()"
+    >
+      <ng-content />
+    </a>
+  `,
+})
+export class NavLink {
+  href = input.required<string>();
+  activeClass = input<string | string[] | null | undefined>(undefined);
+  activeOptions = input<{exact: boolean} | Partial<IsActiveMatchOptions> | null | undefined>(
+    undefined,
+  );
+}
+```
+
+With this component, a navigation menu can pass an active class while a content area can pass `null` to disable highlighting without a second template branch:
+
+```html
+<nav>
+  <!-- Highlighted when the route is active -->
+  <app-nav-link href="/dashboard" activeClass="active-link">Dashboard</app-nav-link>
+  <app-nav-link href="/settings" activeClass="active-link">Settings</app-nav-link>
+</nav>
+
+<!-- No CSS class or active state, even when the URL matches -->
+<app-nav-link href="/dashboard" [activeClass]="null" [activeOptions]="null">
+  Overview
+</app-nav-link>
+```
+
 ## Check if a URL is active
 
 The `isActive` function returns a computed signal that tracks whether a given URL is currently active in the router. The signal automatically updates as the router state changes.
