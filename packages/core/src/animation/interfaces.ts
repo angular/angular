@@ -94,4 +94,4 @@ export interface AnimationLViewData {
 /**
  * Function that returns the class or class list binded to the animate instruction
  */
-export type AnimationClassBindingFn = () => string | string[];
+export type AnimationClassBindingFn = () => string | string[] | undefined | null;
