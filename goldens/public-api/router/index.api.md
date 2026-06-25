@@ -597,7 +597,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
-export class RedirectCommand {
+export class RedirectCommand extends Error {
     constructor(redirectTo: UrlTree, navigationBehaviorOptions?: NavigationBehaviorOptions | undefined);
     // (undocumented)
     readonly navigationBehaviorOptions?: NavigationBehaviorOptions | undefined;
