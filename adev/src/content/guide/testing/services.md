@@ -151,6 +151,10 @@ describe('OrderTotal', () => {
     service = TestBed.inject(OrderTotal);
   });
 
+  afterEach(() => {
+    taxCalculatorStub.calculate.mockClear();
+  });
+
   it('adds tax to the subtotal', () => {
     expect(service.total(100)).toBe(105);
   });
@@ -158,7 +162,7 @@ describe('OrderTotal', () => {
   // Verify the interaction with a spy
   it('calls the tax calculator', () => {
     service.total(100);
-    expect(taxCalculatorStub.calculate).toHaveBeenCalledExactlyOnce();
+    expect(taxCalculatorStub.calculate).toHaveBeenCalledExactlyOnceWith(100);
   });
 });
 ```
