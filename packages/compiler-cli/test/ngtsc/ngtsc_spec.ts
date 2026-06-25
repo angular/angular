@@ -3256,6 +3256,25 @@ runInEachFileSystem((os: string) => {
         );
       });
 
+      it('should report a diagnostic instead of crashing when a host property binding has a non-static value', () => {
+        env.tsconfig({});
+        env.write(
+          'test.ts',
+          `
+              import {Directive} from '@angular/core';
+
+              declare function getValue(): string;
+
+              @Directive({
+                selector: 'test-dir',
+                host: {'[class.foo]': getValue()}
+              })
+              export class TestDir {}
+            `,
+        );
+        verifyThrownError(ErrorCode.HOST_BINDING_PARSE_ERROR, 'Property binding must be string');
+      });
+
       it('should throw error if @Directive.queries field has wrong type', () => {
         env.tsconfig({});
         env.write(
@@ -8648,34 +8667,6 @@ runInEachFileSystem((os: string) => {
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
       });
 
-      it('should generate sanitizers for URL properties in SVG script fn in Component', () => {
-        env.write(
-          'test.ts',
-          `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              template: \`
-                <svg>
-                  <script [attr.xlink:href]="attr" [attr.href]="attr"></script>
-                </svg>
-              \`,
-            })
-            export class TestCmp {
-              attr = './script.js';
-            }
-          `,
-        );
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵattribute("href", ctx.attr, i0.ɵɵsanitizeResourceUrl, "xlink")("href", ctx.attr, i0.ɵɵsanitizeResourceUrl);',
-        );
-      });
-
       it('should not generate sanitizers for URL properties in hostBindings fn in Component', () => {
         env.write(
           `test.ts`,
@@ -9972,6 +9963,33 @@ runInEachFileSystem((os: string) => {
         expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
       });
 
+      it('should generate a validator fn for credentialless bindings when on <iframe>', () => {
+        env.write(
+          'test.ts',
+          `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  template: \`
+                    <iframe src="http://angular.io"
+                      [credentialless]="true"
+                      [attr.credentialless]="''"
+                    ></iframe>
+                  \`
+                })
+                export class SomeComponent {}
+              `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain(
+          'ɵɵdomProperty("credentialless", true, i0.ɵɵvalidateAttribute)',
+        );
+        expect(jsContents).toContain('ɵɵattribute("credentialless", "", i0.ɵɵvalidateAttribute)');
+      });
+
       it(
         'should generate an attribute binding instruction with a validator function ' +
           "(making sure it's case-insensitive, since this is allowed in Angular templates)",
@@ -10062,6 +10080,33 @@ runInEachFileSystem((os: string) => {
         // Similar to the above, but for an attribute binding (host attributes are
         // represented via `ɵɵattribute`).
         expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
+      });
+
+      it('should generate a validator fn for credentialless host bindings on a directive', () => {
+        env.write(
+          'test.ts',
+          `
+              import {Directive} from '@angular/core';
+
+              @Directive({
+                selector: 'iframe[someDir]',
+                host: {
+                  '[credentialless]': 'true',
+                  '[attr.credentialless]': "''",
+                  'src': 'http://angular.io'
+                }
+              })
+              export class SomeDir {}
+            `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain(
+          'ɵɵdomProperty("credentialless", true, i0.ɵɵvalidateAttribute)',
+        );
+        expect(jsContents).toContain('ɵɵattribute("credentialless", "", i0.ɵɵvalidateAttribute)');
       });
 
       it(

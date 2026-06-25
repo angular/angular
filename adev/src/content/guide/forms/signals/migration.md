@@ -347,7 +347,7 @@ export class UserProfile {
 
   readonly emailControl = new SignalFormControl('', (p) => {
     // The control becomes disabled whenever isLoading is true
-    disabled(p, () => this.isLoading());
+    disabled(p, {when: () => this.isLoading()});
   });
 
   async saveData() {

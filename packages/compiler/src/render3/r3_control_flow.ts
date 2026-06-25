@@ -12,6 +12,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
+import {IDENTIFIER_PATTERN, LET_PATTERN} from './util';
 
 /** Pattern for the expression in a for loop block. */
 const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+([\S\s]*)/;
@@ -24,12 +25,6 @@ const CONDITIONAL_ALIAS_PATTERN = /^(as\s+)(.*)/;
 
 /** Pattern used to identify an `else if` block. */
 const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
-
-/** Pattern used to identify a `let` parameter. */
-const FOR_LOOP_LET_PATTERN = /^let\s+([\S\s]*)/;
-
-/** Pattern used to validate a JavaScript identifier. */
-const IDENTIFIER_PATTERN = /^[$A-Z_][0-9A-Z_$]*$/i;
 
 /**
  * Pattern to group a string into leading whitespace, non whitespace, and trailing whitespace.
@@ -183,35 +178,40 @@ export function createForLoop(
   }
 
   if (params !== null) {
+    // The `for` block has a main span that includes the `empty` branch. For only the span of the
+    // main `for` body, use `mainSourceSpan`.
+    const endSpan = empty?.endSourceSpan ?? ast.endSourceSpan;
+    const sourceSpan = new ParseSourceSpan(
+      ast.sourceSpan.start,
+      endSpan?.end ?? ast.sourceSpan.end,
+    );
+    let trackExpression: ASTWithSource | null;
+    let trackKeywordSpan: ParseSourceSpan | null;
+
     if (params.trackBy === null) {
-      // TODO: We should not fail here, and instead try to produce some AST for the language
-      // service.
+      trackExpression = trackKeywordSpan = null;
       errors.push(new ParseError(ast.startSourceSpan, '@for loop must have a "track" expression'));
     } else {
-      // The `for` block has a main span that includes the `empty` branch. For only the span of the
-      // main `for` body, use `mainSourceSpan`.
-      const endSpan = empty?.endSourceSpan ?? ast.endSourceSpan;
-      const sourceSpan = new ParseSourceSpan(
-        ast.sourceSpan.start,
-        endSpan?.end ?? ast.sourceSpan.end,
-      );
+      trackExpression = params.trackBy.expression;
+      trackKeywordSpan = params.trackBy.keywordSpan;
       validateTrackByExpression(params.trackBy.expression, params.trackBy.keywordSpan, errors);
-      node = new t.ForLoopBlock(
-        params.itemName,
-        params.expression,
-        params.trackBy.expression,
-        params.trackBy.keywordSpan,
-        params.context,
-        html.visitAll(visitor, ast.children, ast.children),
-        empty,
-        sourceSpan,
-        ast.sourceSpan,
-        ast.startSourceSpan,
-        endSpan,
-        ast.nameSpan,
-        ast.i18n,
-      );
     }
+
+    node = new t.ForLoopBlock(
+      params.itemName,
+      params.expression,
+      trackExpression,
+      trackKeywordSpan,
+      params.context,
+      html.visitAll(visitor, ast.children, ast.children),
+      empty,
+      sourceSpan,
+      ast.sourceSpan,
+      ast.startSourceSpan,
+      endSpan,
+      ast.nameSpan,
+      ast.i18n,
+    );
   }
 
   return {node, errors};
@@ -426,7 +426,7 @@ function parseForLoopParameters(
   };
 
   for (const param of secondaryParams) {
-    const letMatch = param.expression.match(FOR_LOOP_LET_PATTERN);
+    const letMatch = param.expression.match(LET_PATTERN);
 
     if (letMatch !== null) {
       const variablesSpan = new ParseSourceSpan(

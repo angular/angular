@@ -8,7 +8,7 @@
 
 import {ContainerType, Descriptor, NestedProp, PropType} from '../../../../protocol';
 
-import {isSignal, safelyReadSignalValue, unwrapSignal} from '../utils';
+import {isSignal, safelyReadSignalValue, unwrapSignal} from '../utils/general';
 
 import {getDescriptor, getKeys} from './object-utils';
 
@@ -61,9 +61,13 @@ const typeToDescriptorPreview: Formatter<string> = {
   [PropType.HTMLNode]: (prop: Node) => prop.constructor.name,
   [PropType.Null]: (_: null) => 'null',
   [PropType.Number]: (prop: any) => prop.toString(),
-  [PropType.Object]: (prop: Object) =>
-    (prop.constructor.name !== 'Object' ? `${prop.constructor.name} ` : '') +
-    (getKeys(prop).length > 0 ? '{...}' : '{}'),
+  [PropType.Object]: (prop: Object) => {
+    // Some type of objects don't have a constructor (e.g. Object.create(null)),
+    return (
+      (prop.constructor && prop.constructor.name !== 'Object' ? `${prop.constructor.name} ` : '') +
+      (getKeys(prop).length > 0 ? '{...}' : '{}')
+    );
+  },
   [PropType.Symbol]: (symbol: symbol) => `Symbol(${symbol.description})`,
   [PropType.Undefined]: (_: undefined) => 'undefined',
   [PropType.Date]: (prop: unknown) => {

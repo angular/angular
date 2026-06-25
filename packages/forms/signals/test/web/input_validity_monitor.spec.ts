@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DestroyRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
 
 describe('InputValidityMonitor', () => {
   let monitor: InputValidityMonitor;
+  let destroyRef: DestroyRef;
 
   beforeEach(() => {
     monitor = TestBed.inject(InputValidityMonitor);
+    destroyRef = TestBed.inject(DestroyRef);
   });
 
   describe('Document injected styles', () => {
@@ -27,11 +30,11 @@ describe('InputValidityMonitor', () => {
 
       const initialStyleCount = document.head.querySelectorAll('style').length;
 
-      monitor.watchValidity(input1, () => {});
+      monitor.watchValidity(destroyRef, input1, () => {});
       const stylesAfterFirst = document.head.querySelectorAll('style').length;
       expect(stylesAfterFirst).toBe(initialStyleCount + 1);
 
-      monitor.watchValidity(input2, () => {});
+      monitor.watchValidity(destroyRef, input2, () => {});
       const stylesAfterSecond = document.head.querySelectorAll('style').length;
       expect(stylesAfterSecond).toBe(initialStyleCount + 1); // Deduped, count should not increase
 
@@ -45,7 +48,7 @@ describe('InputValidityMonitor', () => {
 
       const initialStyleCount = document.head.querySelectorAll('style').length;
 
-      monitor.watchValidity(input, () => {});
+      monitor.watchValidity(destroyRef, input, () => {});
       expect(document.head.querySelectorAll('style').length).toBe(initialStyleCount + 1);
 
       (monitor as any).ngOnDestroy();
@@ -69,10 +72,10 @@ describe('InputValidityMonitor', () => {
       // Verify no styles are present
       expect(targetShadowRoot.querySelectorAll('style').length).toBe(0);
 
-      monitor.watchValidity(input1, () => {});
+      monitor.watchValidity(destroyRef, input1, () => {});
       expect(targetShadowRoot.querySelectorAll('style').length).toBe(1);
 
-      monitor.watchValidity(input2, () => {});
+      monitor.watchValidity(destroyRef, input2, () => {});
       expect(targetShadowRoot.querySelectorAll('style').length).toBe(1); // Deduped
 
       document.body.removeChild(host);
@@ -92,8 +95,8 @@ describe('InputValidityMonitor', () => {
       document.body.appendChild(host1);
       document.body.appendChild(host2);
 
-      monitor.watchValidity(input1, () => {});
-      monitor.watchValidity(input2, () => {});
+      monitor.watchValidity(destroyRef, input1, () => {});
+      monitor.watchValidity(destroyRef, input2, () => {});
 
       expect(targetShadowRoot1.querySelectorAll('style').length).toBe(1);
       expect(targetShadowRoot2.querySelectorAll('style').length).toBe(1);

@@ -226,9 +226,9 @@
             "rawComment": ""
           },
           "entryType": "function",
-          "description": "",
+          "description": "Click the element at the default location for the current environment. If you need to guarantee\nthe element is clicked at a specific location, consider using `click('center')` or\n`click(x, y)` instead.",
           "jsdocTags": [],
-          "rawComment": "",
+          "rawComment": "/**\n   * Click the element at the default location for the current environment. If you need to guarantee\n   * the element is clicked at a specific location, consider using `click('center')` or\n   * `click(x, y)` instead.\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -302,9 +302,22 @@
             "rawComment": ""
           },
           "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
+          "description": "Right clicks on the element at the specified coordinates relative to the top-left of it.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "Coordinate within the element, along the X-axis at which to click."
+            },
+            {
+              "name": "param",
+              "comment": "Coordinate within the element, along the Y-axis at which to click."
+            },
+            {
+              "name": "param",
+              "comment": "Modifier keys held while clicking"
+            }
+          ],
+          "rawComment": "/**\n   * Right clicks on the element at the specified coordinates relative to the top-left of it.\n   * @param relativeX Coordinate within the element, along the X-axis at which to click.\n   * @param relativeY Coordinate within the element, along the Y-axis at which to click.\n   * @param modifiers Modifier keys held while clicking\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -525,9 +538,9 @@
             "rawComment": ""
           },
           "entryType": "function",
-          "description": "",
+          "description": "Sends the given string to the input as a series of key presses. Also fires input events\nand attempts to add the string to the Element's value.",
           "jsdocTags": [],
-          "rawComment": "",
+          "rawComment": "/**\n   * Sends the given string to the input as a series of key presses. Also fires input events\n   * and attempts to add the string to the Element's value.\n   */",
           "memberType": "method",
           "memberTags": []
         },

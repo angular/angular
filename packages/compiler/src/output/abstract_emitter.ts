@@ -661,27 +661,11 @@ export abstract class AbstractEmitterVisitor
     ctx: EmitterVisitorContext,
     separator: string,
   ): void {
-    let incrementedIndent = false;
     for (let i = 0; i < expressions.length; i++) {
       if (i > 0) {
-        if (ctx.lineLength() > 80) {
-          ctx.print(null, separator, true);
-          if (!incrementedIndent) {
-            // continuation are marked with double indent.
-            ctx.incIndent();
-            ctx.incIndent();
-            incrementedIndent = true;
-          }
-        } else {
-          ctx.print(null, separator, false);
-        }
+        ctx.print(null, separator, false);
       }
       handler(expressions[i]);
-    }
-    if (incrementedIndent) {
-      // continuation are marked with double indent.
-      ctx.decIndent();
-      ctx.decIndent();
     }
   }
 

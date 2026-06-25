@@ -32,7 +32,7 @@ Angular components and directives automatically participate in DI, meaning that 
 
 ## What are services?
 
-An Angular _service_ is a TypeScript class decorated with `@Injectable`, which allows you to inject an instance of the class as a dependency. Services are the most common way of sharing data and functionality across an application.
+An Angular _service_ is a TypeScript class decorated with `@Service`, which allows you to inject an instance of the class as a dependency. Services are the most common way of sharing data and functionality across an application.
 
 Common types of services include:
 
@@ -46,9 +46,9 @@ Common types of services include:
 The following example declares a service named `AnalyticsLogger`:
 
 ```ts
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class AnalyticsLogger {
   trackEvent(category: string, value: string) {
     console.log('Analytics event logged:', {
@@ -60,9 +60,9 @@ export class AnalyticsLogger {
 }
 ```
 
-NOTE: The `providedIn: 'root'` option makes this service available throughout your entire application as a singleton. This is the recommended approach for most services.
+NOTE: The `@Service` makes this service available throughout your entire application as a singleton. This is the recommended approach for most services.
 
-HELPFUL: You can also use the [`@Service`](guide/di/creating-and-using-services#using-the-service-decorator) decorator, a ergonomic shorthand for `@Injectable({providedIn: 'root'})`.
+HELPFUL: The [`@Service`](guide/di/creating-and-using-services#using-the-service-decorator) decorator is an ergonomic shorthand for `@Injectable({providedIn: 'root'})`.
 
 ## Injecting dependencies with `inject()`
 
@@ -121,10 +121,10 @@ export class MyDirective {
 ```
 
 ```ts
-import {Injectable, inject} from '@angular/core';
+import {Service, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class MyService {
   // ✅ In a service
   private http = inject(HttpClient);

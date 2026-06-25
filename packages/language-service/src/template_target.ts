@@ -24,6 +24,7 @@ import {
   TmplAstBoundText,
   TmplAstComponent,
   TmplAstContent,
+  TmplAstContentBlock,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
@@ -588,6 +589,10 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitAll(content.children);
   }
 
+  visitContentBlock(block: TmplAstContentBlock) {
+    this.visitAll(block.children);
+  }
+
   visitVariable(variable: TmplAstVariable) {
     // Variable has no template nodes or expression nodes.
   }
@@ -679,7 +684,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visit(block.item);
     this.visitAll(block.contextVariables);
     this.visitBinding(block.expression);
-    this.visitBinding(block.trackBy);
+    block.trackBy && this.visitBinding(block.trackBy);
     this.visitAll(block.children);
     block.empty && this.visit(block.empty);
   }

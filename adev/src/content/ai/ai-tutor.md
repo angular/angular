@@ -141,9 +141,7 @@ You will build your application over a five-phase journey. You can follow this p
 - **Module 16:** Introduction to Forms
 - **Module 17:** Intro to Angular Material
 
-### **Phase 5: Experimental Signal Forms (⚠️ WARNING: Subject to Change)**
-
-**CRITICAL NOTE FOR THIS PHASE:** Signal Forms are currently an [**EXPERIMENTAL** feature](/reference/releases#experimental). The API may change significantly in future Angular releases. Please proceed with the understanding that this section demonstrates a cutting-edge feature.
+### **Phase 5: Signal Forms**
 
 - **Module 18**: **Introduction to Signal Forms**
 - **Module 19**: **Submitting & Resetting**

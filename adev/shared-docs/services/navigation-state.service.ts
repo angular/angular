@@ -7,8 +7,8 @@
  */
 
 import {Service, inject, linkedSignal, signal} from '@angular/core';
-import {NavigationItem} from '../interfaces/index';
 import {Router} from '@angular/router';
+import {NavigationItem} from '../interfaces/index';
 
 @Service()
 export class NavigationState {

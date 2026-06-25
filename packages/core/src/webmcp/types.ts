@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// g3-only-start
+// import type {
+//   InferArgsFromInputSchema,
+//   JsonSchemaForInference,
+// } from '@mcp-b/webmcp-types';
+// g3-only-end
+// 3p-only-start
 import type {
   InferArgsFromInputSchema,
   JsonSchemaForInference,
 } from '../../third_party/@mcp-b/webmcp-types';
+// 3p-only-end
 
 /**
  * The client context of a given WebMCP tool execution.
@@ -58,7 +66,7 @@ export interface ToolDescriptor<InputSchema extends JsonSchemaForInference> {
   name: string;
 
   /** A description of what the tool does and how the agent should consider using it. */
-  description?: string;
+  description: string;
 
   /**
    * A schema which describes the input arguments expected by the {@link execute} function
@@ -70,7 +78,7 @@ export interface ToolDescriptor<InputSchema extends JsonSchemaForInference> {
   execute: Execute<InputSchema>;
 }
 
-/** The `window.navigator.modelContext` object for imperatively registering WebMCP tools. */
+/** The `window.document.modelContext` object for imperatively registering WebMCP tools. */
 export interface ModelContext {
   /**
    * Register a WebMCP tool for the agent to invoke.

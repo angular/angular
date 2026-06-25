@@ -8,7 +8,7 @@
 
 import {PropType} from '../../../../protocol';
 
-import {isSignal, safelyReadSignalValue} from '../utils';
+import {isSignal, safelyReadSignalValue} from '../utils/general';
 
 const commonTypes = {
   boolean: PropType.Boolean,

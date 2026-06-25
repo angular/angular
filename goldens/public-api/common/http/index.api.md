@@ -236,7 +236,9 @@ export class HttpClient {
     } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
     head(url: string, options?: HttpClientCommonOptions): Observable<Object>;
     head<T>(url: string, options?: HttpClientCommonOptions): Observable<T>;
+    // @deprecated
     jsonp(url: string, callbackParam: string): Observable<Object>;
+    // @deprecated
     jsonp<T>(url: string, callbackParam: string): Observable<T>;
     options(url: string, options: {
         observe?: 'body';
@@ -1208,7 +1210,7 @@ export abstract class HttpXsrfTokenExtractor {
     static ɵprov: i0.ɵɵInjectableDeclaration<HttpXsrfTokenExtractor>;
 }
 
-// @public
+// @public @deprecated
 export class JsonpClientBackend implements HttpBackend {
     constructor(callbackMap: JsonpCallbackContext, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;
@@ -1218,7 +1220,7 @@ export class JsonpClientBackend implements HttpBackend {
     static ɵprov: i0.ɵɵInjectableDeclaration<JsonpClientBackend>;
 }
 
-// @public
+// @public @deprecated
 export class JsonpInterceptor {
     constructor(injector: EnvironmentInjector);
     intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
@@ -1240,7 +1242,7 @@ export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeatu
 // @public
 export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
 
-// @public
+// @public @deprecated
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
 
 // @public

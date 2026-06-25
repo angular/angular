@@ -17,6 +17,7 @@ import {
   FormArray,
   FormControl,
   FormGroup,
+  FormRecord,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
   ValidationErrors,
@@ -947,6 +948,65 @@ import {
 
       it('should not get inherited properties', () => {
         expect(group.get('constructor')).toBe(null);
+      });
+    });
+
+    describe('prototype-shadowed control names', () => {
+      it('should register a control named toString', () => {
+        const group: FormGroup = new FormGroup({});
+
+        group.addControl('toString', new FormControl('', Validators.required));
+
+        expect(group.contains('toString')).toBe(true);
+        expect(group.get('toString')).toBe(group.controls['toString']);
+        expect(group.valid).toBe(false);
+      });
+
+      it('should support contains and get for hasOwnProperty controls', () => {
+        const group = new FormGroup({'hasOwnProperty': new FormControl('value')});
+
+        expect(group.contains('hasOwnProperty')).toBe(true);
+        expect(group.get('hasOwnProperty')).toBe(group.controls['hasOwnProperty']);
+      });
+
+      it('should support setControl and removeControl for toString', () => {
+        const group: FormGroup = new FormGroup({});
+
+        group.setControl('toString', new FormControl('value'));
+        expect((group.get('toString') as FormControl).value).toBe('value');
+
+        group.removeControl('toString');
+        expect(group.get('toString')).toBe(null);
+      });
+
+      it('should support hasOwnProperty controls in FormRecord', () => {
+        const record = new FormRecord<FormControl<string | null>>({});
+
+        record.addControl('hasOwnProperty', new FormControl('value'));
+
+        expect(record.contains('hasOwnProperty')).toBe(true);
+        expect(record.get('hasOwnProperty')?.value).toBe('value');
+      });
+
+      it('should not crash when patching a shadowed control name', () => {
+        const group = new FormGroup({});
+        expect(() => group.patchValue({toString: 'value'})).not.toThrow();
+        expect(group.get('toString')).toBe(null);
+      });
+
+      it('should throw no-controls error when setting value on an empty group with a shadowed key', () => {
+        const group = new FormGroup({});
+        expect(() => group.setValue({toString: 'value'})).toThrowError(
+          new RegExp(`no form controls registered with this group`),
+        );
+      });
+
+      it('should throw missing-control error (not crash) for shadowed key in setValue', () => {
+        const group = new FormGroup({'one': new FormControl('')});
+
+        expect(() => group.setValue({one: 'v', toString: 'value'} as any)).toThrowError(
+          new RegExp(`NG01001: Cannot find form control with name: 'toString'`),
+        );
       });
     });
 

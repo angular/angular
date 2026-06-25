@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Injector} from '@angular/core';
 import {DevToolsNode, ElementPosition} from '../../../../../../../protocol';
 
 export interface IndexedNode extends DevToolsNode {
   position: ElementPosition;
   children: IndexedNode[];
 
-  // native elements are not serializable and thus not accessible in this structure
   nativeElement?: never;
   // Instead we will have this boolean
   hasNativeElement: boolean;
+  injector?: Injector;
 }
 
 const indexTree = (
@@ -26,7 +27,7 @@ const indexTree = (
   const position = parentPosition.concat([idx]);
   return {
     position,
-    element: node.element,
+    tagName: node.tagName,
     component: node.component,
     directives: node.directives?.map((d) => ({name: d.name, id: d.id})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
@@ -34,6 +35,7 @@ const indexTree = (
     controlFlowBlock: node.controlFlowBlock,
     changeDetection: node.changeDetection,
     hasNativeElement: (node as any).hasNativeElement,
+    injector: node.injector,
   };
 };
 

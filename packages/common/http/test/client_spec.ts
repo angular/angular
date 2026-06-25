@@ -144,6 +144,16 @@ describe('HttpClient', () => {
       expect(req.request.reportDownloadProgress).toBe(true);
       req.flush({});
     });
+
+    it('post with a split progress events enabled', (done) => {
+      client
+        .post('/test', {}, {reportUploadProgress: true, reportDownloadProgress: true})
+        .subscribe(() => done());
+      const req = backend.expectOne('/test');
+      expect(req.request.reportUploadProgress).toBe(true);
+      expect(req.request.reportDownloadProgress).toBe(true);
+      req.flush({});
+    });
   });
   describe('makes a POST request', () => {
     it('with text data', (done) => {

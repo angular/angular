@@ -10,7 +10,6 @@ ng_project(
         "//packages/core",
         "//packages/core/testing",
         "//packages/forms",
-        "//packages/forms:node_modules/@standard-schema/spec",
         "//packages/forms:node_modules/zod",
         "//packages/forms/signals",
         "//packages/forms/signals/compat",

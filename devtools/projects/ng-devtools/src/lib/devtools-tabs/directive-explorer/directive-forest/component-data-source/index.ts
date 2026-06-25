@@ -32,7 +32,7 @@ export interface FlatNode {
   level: number;
   original: IndexedNode;
   newItem?: boolean;
-  hydration: HydrationStatus;
+  hydration?: HydrationStatus;
   controlFlowBlock: ControlFlowBlock | null;
   changeDetection?: ChangeDetection;
   hasNativeElement: boolean;
@@ -74,7 +74,7 @@ const getId = (node: IndexedNode) => {
 const filterCommentNodes = (nodes: IndexedNode[]) => {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    if (node.element !== '#comment') {
+    if (node.tagName !== '#comment') {
       continue;
     }
     nodes.splice(i, 1, ...node.children);
@@ -104,7 +104,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         // based on this identifier directly, since it's a reference type
         // and the reference is preserved after transformation.
         position: node.position,
-        name: node.component ? node.component.name : node.element,
+        name: node.component ? node.component.name : (node.tagName ?? ''),
         directives: node.directives?.map((d) => d.name) ?? [],
         original: node,
         level,

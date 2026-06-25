@@ -361,10 +361,11 @@ import {
   Injectable,
   inputBinding,
   outputBinding,
+  Service,
 } from '@angular/core';
 import {Popup} from './popup';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class PopupService {
   private readonly injector = inject(EnvironmentInjector);
   private readonly appRef = inject(ApplicationRef);

@@ -1,8 +1,6 @@
 # Learn Angular Signal Forms
 
-This interactive tutorial will teach you how to build reactive forms using Angular's experimental Signal Forms API.
-
-IMPORTANT: Signal Forms is currently [experimental](reference/releases#experimental). The API may change before stabilizing. Check the [official documentation](guide/forms/signals/overview) for the latest updates.
+This interactive tutorial will teach you how to build reactive forms using Angular's Signal Forms API.
 
 ## How to use this tutorial
 

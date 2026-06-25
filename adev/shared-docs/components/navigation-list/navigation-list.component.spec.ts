@@ -31,6 +31,32 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
+const navigationItemsWithCategoryStatus: NavigationItem[] = [
+  {
+    label: 'Forms',
+    level: 1,
+    categoriesStatus: [{'Signal Forms': 'new'}],
+    children: [],
+  },
+];
+
+navigationItemsWithCategoryStatus[0].children = [
+  {
+    label: 'Overview',
+    path: 'guide/forms',
+    level: 2,
+    category: 'Signal Forms',
+    parent: navigationItemsWithCategoryStatus[0],
+  },
+  {
+    label: 'Signals',
+    path: 'guide/forms/signals',
+    level: 2,
+    category: 'Signal Forms',
+    parent: navigationItemsWithCategoryStatus[0],
+  },
+];
+
 describe('NavigationList', () => {
   let component: NavigationList;
   let fixture: ComponentFixture<NavigationList>;
@@ -56,6 +82,20 @@ describe('NavigationList', () => {
 
     expect(links.length).toBe(3);
     expect(nonClickableItem.length).toBe(1);
+  });
+
+  it('should show category status on grouped navigation headers', async () => {
+    fixture.componentRef.setInput('navigationItems', [...navigationItemsWithCategoryStatus]);
+    await fixture.whenStable();
+
+    const categoryGroup = fixture.debugElement.query(By.css('.docs-navigation-group'));
+    const categoryStatus = fixture.debugElement.query(
+      By.css('.docs-navigation-group .docs-new-item'),
+    );
+
+    expect(categoryGroup.nativeElement.innerText).toContain('Signal Forms');
+    expect(categoryStatus).toBeTruthy();
+    expect(categoryStatus.nativeElement.innerText).toBe('New');
   });
 
   it('should append `docs-navigation-list-dropdown` when isDropdownView is true', async () => {

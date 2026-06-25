@@ -79,6 +79,7 @@ import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -290,6 +291,10 @@ export abstract class ViewContainerRef {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__: () => ViewContainerRef = injectViewContainerRef;
+}
+
+if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  registerSpecialProvider(ViewContainerRef);
 }
 
 /**

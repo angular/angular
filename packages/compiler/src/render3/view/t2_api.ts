@@ -31,6 +31,7 @@ import {
   Template,
   TextAttribute,
   Variable,
+  ContentBlock,
 } from '../r3_ast';
 
 /** Node that has a `Scope` associated with it. */
@@ -45,6 +46,7 @@ export type ScopedNode =
   | DeferredBlockLoading
   | DeferredBlockPlaceholder
   | Content
+  | ContentBlock
   | HostElement;
 
 /** Possible values that a reference can be resolved to. */
@@ -173,6 +175,22 @@ export interface DirectiveMeta {
 }
 
 /**
+ * Metadata regarding a foreign component that's needed to match it against template elements.
+ */
+export interface ForeignComponentMeta {
+  /**
+   * Name of the foreign component (used for matching and debugging).
+   */
+  name: string;
+
+  /** Reference to the foreign component declaration site. */
+  ref: {
+    /** Key that uniquely identifies the reference. */
+    key: string;
+  };
+}
+
+/**
  * Possible ways that a directive can be matched.
  */
 export enum MatchSource {
@@ -212,6 +230,12 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * which matched the node, if any.
    */
   getDirectivesOfNode(node: DirectiveOwner): DirectiveT[] | null;
+
+  /**
+   * For a given template node (usually an `Element`), get the foreign component that matched
+   * the node, if any.
+   */
+  getForeignComponent(element: Element): ForeignComponentMeta | null;
 
   /**
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or

@@ -51,7 +51,7 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
   /**
    * Wrapper around the `Headers` constructor.
    */
-  newHeaders(headers: {[name: string]: string}): Headers {
+  newHeaders(headers: HeadersInit): Headers {
     return new Headers(headers);
   }
 

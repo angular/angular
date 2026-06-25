@@ -337,12 +337,11 @@ function serializeLContainer(
       // host element was used as a ViewContainerRef anchor (e.g. a `ViewContainerRef`
       // was injected within the component class). This case requires special handling.
       if (isLContainer(childLView)) {
-        // Calculate the number of root nodes in all views in a given container
-        // and increment by one to account for an anchor node itself, i.e. in this
-        // scenario we'll have a layout that would look like this:
+        // Calculate the number of root nodes in all attached views and add 2 to account for the
+        // component's host node and the container's anchor node. i.e. in this scenario we'll have a
+        // layout that would look like this:
         // `<app-root /><#VIEW1><#VIEW2>...<!--container-->`
-        // The `+1` is to capture the `<app-root />` element.
-        numRootNodes = calcNumRootNodesInLContainer(childLView) + 1;
+        numRootNodes = calcNumRootNodesInLContainer(childLView) + 2;
 
         annotateLContainerForHydration(childLView, context);
 

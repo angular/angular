@@ -573,7 +573,7 @@ runInEachFileSystem(() => {
         });
 
         it('should retrieve a symbol for the track expression', () => {
-          const userSymbol = templateTypeChecker.getSymbolOfNode(forLoopNode.trackBy.ast, cmp)!;
+          const userSymbol = templateTypeChecker.getSymbolOfNode(forLoopNode.trackBy!.ast, cmp)!;
           expectUserSymbol(userSymbol);
         });
 

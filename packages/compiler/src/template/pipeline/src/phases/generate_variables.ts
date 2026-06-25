@@ -261,7 +261,14 @@ function generateVariablesInScopeForView(
   for (const [name, value] of scopeView.contextVariables) {
     const context = new ir.ContextExpr(scope.view);
     // We either read the context, or, if the variable is CTX_REF, use the context directly.
-    const variable = value === ir.CTX_REF ? context : new o.ReadPropExpr(context, value);
+    let variable: o.Expression;
+    if (value === ir.CTX_REF) {
+      variable = context;
+    } else if (typeof value === 'number') {
+      variable = new o.ReadKeyExpr(context, o.literal(value));
+    } else {
+      variable = new o.ReadPropExpr(context, value);
+    }
     // Add the variable declaration.
     newOps.push(
       ir.createVariableOp(

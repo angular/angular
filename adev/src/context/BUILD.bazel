@@ -27,7 +27,6 @@ ts_project(
     name = "llms_lib",
     srcs = ["llms.mts"],
     tsconfig = ":tsconfig_build",
-    deps = [":llms_src"],
 )
 
 js_binary(

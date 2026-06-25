@@ -3,6 +3,8 @@
 Signals are useful because they notify interested consumers when they change. An **effect** is an operation that runs whenever one or more signal values change. You can create an effect with the `effect` function:
 
 ```ts
+import {effect} from '@angular/core';
+
 effect(() => {
   console.log(`The current count is: ${count()}`);
 });

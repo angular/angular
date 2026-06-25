@@ -18,8 +18,8 @@ import {TestBed} from '../../testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {SecurityContext} from '../../src/sanitization/dom_security_schema';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/security';
 
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
@@ -678,6 +678,30 @@ describe('sanitization', () => {
     );
   });
 
+  // The SVG `attributeName` is case-sensitive when accessed via the DOM API
+  // (i.e. `setAttribute('attributename', ...)` and `setAttribute('attributeName', ...)`
+  // create two distinct attributes). However, the browser tokenizer normalizes
+  // the lowercase form `attributename` to `attributeName` on initial parsing,
+  // which means the client-side sanitizer still ends up seeing `attributeName`.
+  // The SSR renderer (Domino) does not perform this normalization, so we
+  // explicitly look up the lowercase form as well to make sure the sanitizer
+  // is triggered consistently in both environments.
+  it('should throw when binding to set element with attributename="href"', () => {
+    @Component({
+      selector: 'test-comp',
+      template: `<svg><set attributename="href" [attr.to]="'foo'"></set></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
+
   it('should not throw when binding to animate element when attributeName is not href', () => {
     @Component({
       selector: 'test-comp',
@@ -690,6 +714,50 @@ describe('sanitization', () => {
     });
     const fixture = TestBed.createComponent(TestComp);
     expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should throw on uppercase iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.src]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <IFRAME unsafeUrlHostBindingDir></IFRAME>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
+  });
+
+  it('should throw on uppercase SRC attribute on iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.SRC]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <iframe unsafeUrlHostBindingDir></iframe>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
   });
 });
 

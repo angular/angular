@@ -74,7 +74,7 @@ debouncedFilter = debounced(filter, 200, {
 To use `debounced` outside of an injection context, pass an explicit `Injector` via the options:
 
 ```ts
-@Injectable({providedIn: 'root'})
+@Service()
 export class SearchService {
   private injector = inject(Injector);
 

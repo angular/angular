@@ -214,6 +214,49 @@ Toolbars automatically support right-to-left languages. Wrap the toolbar in a co
   </docs-tab>
 </docs-tab-group>
 
+## Testing
+
+Angular Aria provides component harnesses for testing toolbar components.
+Here is an example of how to use the harnesses in a component test:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ToolbarHarness} from '@angular/aria/toolbar/testing';
+import {MyToolbarComponent} from './my-toolbar'; // Your component
+
+describe('MyToolbarComponent', () => {
+  let fixture: ComponentFixture<MyToolbarComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyToolbarComponent],
+    });
+
+    fixture = TestBed.createComponent(MyToolbarComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should have widgets and allow selection', async () => {
+    // Load the toolbar harness
+    const toolbar = await loader.getHarness(ToolbarHarness);
+
+    // Get all widgets
+    const widgets = await toolbar.getWidgets();
+    expect(widgets.length).toBe(3);
+
+    // Click the first widget
+    await widgets[0].click();
+
+    // Verify selection state
+    expect(await widgets[0].isSelected()).toBe(true);
+  });
+});
+```
+
 ## APIs
 
 ### Toolbar Directive
@@ -228,6 +271,7 @@ The `ngToolbar` directive provides the container for toolbar functionality.
 | `disabled`     | `boolean`                      | `false`        | Disables the entire toolbar                            |
 | `softDisabled` | `boolean`                      | `true`         | Whether disabled items can receive focus               |
 | `wrap`         | `boolean`                      | `true`         | Whether focus should wrap at the edges                 |
+| `value`        | `V[]`                          | `[]`           | Selected widget values (supports two-way binding)      |
 
 ### ToolbarWidget Directive
 

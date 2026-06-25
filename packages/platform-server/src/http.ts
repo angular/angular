@@ -8,15 +8,24 @@
 
 import {PlatformLocation, XhrFactory} from '@angular/common';
 import {
+  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
   HttpEvent,
   HttpHandlerFn,
   HttpRequest,
-  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
 } from '@angular/common/http';
-import {inject, Injectable, Provider} from '@angular/core';
+import {inject, Injectable, Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable} from 'rxjs';
 
+import {RuntimeErrorCode} from './errors';
+import {resolveUrl} from './url';
+
 @Injectable()
+/**
+ * @deprecated Use the HttpClient fetch backend instead. Intent to remove in Angular 23.
+ * XHR support in `@angular/platform-server` is deprecated because the underlying `xhr2`
+ * library does not safely handle redirects (e.g. it can forward `Authorization` headers
+ * on cross-origin redirects and is susceptible to denial-of-service (DoS) via redirect loops).
+ */
 export class ServerXhr implements XhrFactory {
   private xhrImpl: typeof import('xhr2') | undefined;
 
@@ -26,6 +35,16 @@ export class ServerXhr implements XhrFactory {
   // server platform (via shims, etc).
   private async ɵloadImpl(): Promise<void> {
     if (!this.xhrImpl) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        console.warn(
+          'XHR support in `@angular/platform-server` is deprecated and will be removed ' +
+            'in Angular 23. It has known security and performance issues in server ' +
+            'environments, such as forwarding `Authorization` headers on cross-origin ' +
+            'redirects and susceptibility to denial-of-service (DoS) via redirect loops. ' +
+            'Please use the HttpClient fetch backend instead, which is the default since Angular 22.',
+        );
+      }
+
       const {default: xhr} = await import('xhr2');
       this.xhrImpl = xhr;
     }
@@ -34,17 +53,32 @@ export class ServerXhr implements XhrFactory {
   build(): XMLHttpRequest {
     const impl = this.xhrImpl;
     if (!impl) {
-      throw new Error('Unexpected state in ServerXhr: XHR implementation is not loaded.');
+      throw new RuntimeError(
+        RuntimeErrorCode.XHR_NOT_LOADED,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'Unexpected state in ServerXhr: XHR implementation is not loaded.',
+      );
     }
 
     return new impl.XMLHttpRequest();
   }
 }
 
+/**
+ * Regex to match a URL schema.
+ */
+const URL_SCHEMA_REGEXP = /^(?:[a-zA-Z][a-zA-Z0-9+\-.]*:)/;
+
 function relativeUrlsTransformerInterceptorFn(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
+  const trimmedUrl = request.url.trim();
+  if (URL_SCHEMA_REGEXP.test(trimmedUrl)) {
+    // URLs with a schema should be left unchanged.
+    return next(request);
+  }
+
   const platformLocation = inject(PlatformLocation);
   const {href, protocol, hostname, port} = platformLocation;
   if (!protocol.startsWith('http')) {
@@ -58,9 +92,12 @@ function relativeUrlsTransformerInterceptorFn(
 
   const baseHref = platformLocation.getBaseHrefFromDOM() || href;
   const baseUrl = new URL(baseHref, urlPrefix);
-  const newUrl = new URL(request.url, baseUrl).toString();
 
-  return next(request.clone({url: newUrl}));
+  const parsedUrl = resolveUrl(request.url, baseUrl, {
+    allowProtocolRelative: true,
+  });
+
+  return next(request.clone({url: parsedUrl.toString()}));
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [

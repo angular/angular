@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {unwrapSignal} from '../utils';
+import {unwrapSignal} from '../utils/general';
 
 // Intentionally do not include all the prototype (Except for getters and setters)
 // because it contains inherited methods (hasOwnProperty, etc.). Also ignore symbols

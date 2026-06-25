@@ -20,13 +20,27 @@
   color: var(--on-primary);
   background-color: var(--primary);
   border: 1px solid color-mix(in srgb, var(--primary) 80%, transparent);
+  /* Modernized additions for div-trigger Select: */
+  height: 3rem;
+  padding: 0 3.5rem;
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 16rem;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+
+.select span {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .select:hover {
   background-color: color-mix(in srgb, var(--primary) 90%, transparent);
 }
 
-.select:has([ngComboboxInput][aria-disabled='true']) {
+.select[aria-disabled='true'] {
   opacity: 0.6;
   cursor: default;
 }
@@ -35,15 +49,8 @@
   font-size: 1.25rem;
 }
 
-[ngComboboxInput] {
-  opacity: 0;
-  border: none;
-  cursor: pointer;
-  height: 3rem;
-  padding: 0 3.5rem;
-}
-
-[ngCombobox]:focus-within .select {
+.select:focus,
+.select:focus-within {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
@@ -64,7 +71,7 @@
   transition: transform 150ms ease-in-out;
 }
 
-[ngComboboxInput][aria-expanded='true'] ~ .example-arrow {
+.select[aria-expanded='true'] .example-arrow {
   transform: rotate(180deg);
 }
 
@@ -75,14 +82,40 @@
   border-radius: 2rem;
   background-color: var(--septenary-contrast);
   font-size: 0.9rem;
-
   max-height: 13rem;
-  opacity: 1;
-  visibility: visible;
-  transition:
-    max-height 150ms ease-out,
-    visibility 0s,
-    opacity 25ms ease-out;
+  box-sizing: border-box;
+  overflow: hidden;
+  animation: smoothPopupOpen 150ms ease-out forwards;
+  transform-origin: top;
+}
+
+@keyframes smoothPopupOpen {
+  0% {
+    max-height: 0;
+    opacity: 0;
+  }
+  16.7% {
+    opacity: 1;
+  }
+  100% {
+    max-height: 13rem;
+    opacity: 1;
+  }
+}
+
+.example-popup-container.closing {
+  animation: smoothPopupClose 150ms ease-in forwards;
+}
+
+@keyframes smoothPopupClose {
+  0% {
+    max-height: 13rem;
+    opacity: 1;
+  }
+  100% {
+    max-height: 0;
+    opacity: 0;
+  }
 }
 
 [ngListbox] {
@@ -92,20 +125,7 @@
   display: flex;
   overflow: auto;
   flex-direction: column;
-}
-
-[ngCombobox]:has([ngComboboxInput][aria-expanded='false']) .example-popup-container {
-  max-height: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    max-height 150ms ease-in,
-    visibility 0s 150ms,
-    opacity 150ms ease-in;
-}
-
-[ngCombobox]:has([ngComboboxInput][aria-expanded='true']) [ngListbox] {
-  display: flex;
+  outline: none;
 }
 
 [ngOption] {
@@ -115,6 +135,7 @@
   padding: 0 1rem;
   min-height: 3rem;
   border-radius: 3rem;
+  outline: none;
 }
 
 [ngOption]:hover,

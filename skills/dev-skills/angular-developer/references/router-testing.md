@@ -22,7 +22,7 @@ describe('Dashboard Component Routing', () => {
 
   beforeEach(async () => {
     // 1. Configure TestBed with test routes
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
         // Use provideRouter with your test-specific routes
         provideRouter([
@@ -30,7 +30,7 @@ describe('Dashboard Component Routing', () => {
           {path: 'heroes/:id', component: HeroDetail},
         ]),
       ],
-    }).compileComponents();
+    });
 
     // 2. Create the RouterTestingHarness
     harness = await RouterTestingHarness.create();

@@ -46,7 +46,7 @@ import {StateKey, TransferState} from '../transfer_state';
  *
  * @see [Async reactivity with resources](guide/signals/resource)
  *
- * @experimental 19.0
+ * @publicApi 22.0
  */
 export function resource<T, R>(
   options: ResourceOptions<T, R> & {defaultValue: NoInfer<T>},
@@ -60,7 +60,7 @@ export function resource<T, R>(
  * `resource` will cancel in-progress loads via the `AbortSignal` when destroyed or when a new
  * request object becomes available, which could prematurely abort mutations.
  *
- * @experimental 19.0
+ * @publicApi 22.0
  * @see [Async reactivity with resources](guide/signals/resource)
  */
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;

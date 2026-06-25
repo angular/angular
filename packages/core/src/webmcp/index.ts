@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {declareWebMcpTool} from './declare_tool';
-export {provideWebMcpTools} from './provide_tools';
+export {declareExperimentalWebMcpTool} from './declare_tool';
+export {provideExperimentalWebMcpTools} from './provide_tools';
 export type {
   Execute as WebMcpToolExecute,
   Client as WebMcpClient,

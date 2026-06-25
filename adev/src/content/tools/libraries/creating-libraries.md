@@ -23,7 +23,7 @@ You should be very careful when choosing the name of your library if you want to
 See [Publishing your library](tools/libraries/creating-libraries#publishing-your-library).
 
 Avoid using a name that is prefixed with `ng-`, such as `ng-library`.
-The `ng-` prefix is a reserved keyword used from the Angular framework and its libraries.
+The `ng-` prefix is a reserved keyword used by the Angular framework and its libraries.
 The `ngx-` prefix is preferred as a convention used to denote that the library is suitable for use with Angular.
 It is also an excellent indication to consumers of the registry to differentiate between libraries of different JavaScript frameworks.
 

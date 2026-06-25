@@ -19,6 +19,7 @@ import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
+import {REGISTER_WEBMCP_FORM} from '../webmcp/tokens';
 import {DYNAMIC} from '../schema/logic';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
@@ -51,8 +52,23 @@ export interface FormOptions<TModel> {
    * current [injection context](guide/di/dependency-injection-context), will be used.
    */
   injector?: Injector;
+
   /** The name of the root form, used in generating name attributes for the fields. */
   name?: string;
+
+  /**
+   * Configuration options to expose this form as an experimental WebMCP AI agent tool.
+   *
+   * @experimental
+   */
+  experimentalWebMcpTool?: {
+    /** The unique name of the WebMCP tool to create from this form. */
+    name: string;
+
+    /** A description of the tool's purpose and usage information. */
+    description: string;
+  };
+
   /** Options that define how to handle form submission. */
   submission?: FormSubmitOptions<TModel, unknown>;
 }
@@ -196,6 +212,29 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
+
+  // Register a WebMCP tool for the form if configured.
+  const {experimentalWebMcpTool} = options ?? {};
+  if (experimentalWebMcpTool) {
+    const registerWebMcpForm = runInInjectionContext(injector, () =>
+      inject(REGISTER_WEBMCP_FORM, {optional: true}),
+    );
+    if (registerWebMcpForm) {
+      runInInjectionContext(injector, () =>
+        registerWebMcpForm(fieldRoot.fieldTree, {
+          name: experimentalWebMcpTool.name,
+          description: experimentalWebMcpTool.description,
+        }),
+      );
+    } else {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+        throw new Error(
+          `Cannot register form "${experimentalWebMcpTool.name}" as a WebMCP tool. ` +
+            `Make sure to use \`provideExperimentalWebMcpForms()\` in your application bootstrap configuration.`,
+        );
+      }
+    }
+  }
 
   return fieldRoot.fieldTree as FieldTree<TModel>;
 }

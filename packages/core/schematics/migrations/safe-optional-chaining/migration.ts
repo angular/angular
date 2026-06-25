@@ -68,6 +68,8 @@ export interface MigrationConfig {
   shouldMigrate?: (containingFile: ProjectFile) => boolean;
 }
 
+const SAFE_NAVIGATION_MIGRATION_FN = '$safeNavigationMigration';
+
 /**
  * This migration wraps optional chaining expressions in Angular templates with a call to the
  * `$safeNavigationMigration()` magic function. This function doesn't exist at runtime, but is
@@ -371,6 +373,11 @@ class ExpressionMigrator extends RecursiveAstVisitor {
   // ---------------------------------------------------------------------------
 
   override visitCall(ast: Call, nullSensitive: boolean): any {
+    if (isSafeNavigationMigrationCall(ast)) {
+      this.visit(ast.receiver, false);
+      return;
+    }
+
     if (nullSensitive && this.hasSafeReceiver(ast.receiver)) {
       this.addReplacement(ast);
     }
@@ -392,7 +399,13 @@ class ExpressionMigrator extends RecursiveAstVisitor {
   // ---------------------------------------------------------------------------
 
   override visitBinary(ast: Binary, nullSensitive: boolean): any {
-    if (ast.operation === '||' || ast.operation === '&&' || ast.operation === '??') {
+    if (
+      ast.operation === '||' ||
+      ast.operation === '&&' ||
+      ast.operation === '??' ||
+      ast.operation === '==' ||
+      ast.operation === '!='
+    ) {
       // These operators normalise null and undefined (both produce the same result),
       // so the operands are not null-sensitive.
       this.visit(ast.left, false);
@@ -500,6 +513,16 @@ function isNullishLiteralAST(ast: AST): boolean {
   return (
     innerAst instanceof LiteralPrimitive &&
     (innerAst.value === null || innerAst.value === undefined)
+  );
+}
+
+function isSafeNavigationMigrationCall(ast: AST): boolean {
+  const innerAst = ast instanceof ASTWithSource ? ast.ast : ast;
+
+  return (
+    innerAst instanceof Call &&
+    innerAst.receiver instanceof PropertyRead &&
+    innerAst.receiver.name === SAFE_NAVIGATION_MIGRATION_FN
   );
 }
 
@@ -703,7 +726,7 @@ class TmplVisitor extends TmplAstRecursiveVisitor {
 
   override visitForLoopBlock(block: TmplAstForLoopBlock) {
     block.expression.visit(this.exprMigrator, false);
-    block.trackBy.visit(this.exprMigrator, false);
+    block.trackBy?.visit(this.exprMigrator, false);
     super.visitForLoopBlock(block);
   }
 

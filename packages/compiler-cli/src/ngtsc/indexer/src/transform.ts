@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ParseSourceFile} from '@angular/compiler';
-
 import {DeclarationNode} from '../../reflection';
 
 import {IndexedComponent, NodeAdapter} from './api.js';
@@ -30,34 +28,23 @@ export function generateAnalysis<T = DeclarationNode>(
     const name = adapter.getName(declaration);
     const fileName = adapter.getFileName(declaration);
 
-    const usedComponents = new Set<T>();
-    const usedDirs = boundTemplate.getUsedDirectives();
-    usedDirs.forEach((dir) => {
-      if (dir.isComponent) {
-        usedComponents.add(dir.ref.node);
-      }
-    });
-
     // Get source files for the component and the template. If the template is inline, its source
     // file is the component's.
-    const componentFile = new ParseSourceFile(adapter.getContent(declaration), fileName);
-    let templateFile: ParseSourceFile;
+    let templateFileUrl: string;
     if (templateMeta.isInline) {
-      templateFile = componentFile;
+      templateFileUrl = fileName;
     } else {
-      templateFile = templateMeta.file;
+      templateFileUrl = templateMeta.file.url;
     }
 
     const {identifiers, errors} = getTemplateIdentifiers<T>(boundTemplate);
     analysis.set(declaration, {
       name,
       selector,
-      file: componentFile,
+      fileUrl: fileName,
       template: {
         identifiers,
-        usedComponents,
-        isInline: templateMeta.isInline,
-        file: templateFile,
+        fileUrl: templateFileUrl,
       },
       errors,
     });

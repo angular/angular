@@ -12,7 +12,7 @@ import {DevToolsNode} from '../../../../../../../protocol';
 import {ComponentDataSource, FlatNode} from '.';
 
 const tree1: DevToolsNode = {
-  element: 'app',
+  tagName: 'app',
   directives: [
     {
       id: 1,
@@ -20,7 +20,6 @@ const tree1: DevToolsNode = {
     },
   ],
   component: null,
-  hydration: null,
   controlFlowBlock: null,
 
   children: [
@@ -32,8 +31,7 @@ const tree1: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: 'bar',
-      hydration: null,
+      tagName: 'bar',
       nativeElement: document.createElement('bar'),
       controlFlowBlock: null,
     },
@@ -42,7 +40,7 @@ const tree1: DevToolsNode = {
 };
 
 const tree2: DevToolsNode = {
-  element: 'app',
+  tagName: 'app',
   directives: [
     {
       id: 1,
@@ -50,7 +48,6 @@ const tree2: DevToolsNode = {
     },
   ],
   component: null,
-  hydration: null,
   controlFlowBlock: null,
 
   children: [
@@ -62,8 +59,7 @@ const tree2: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: 'bar',
-      hydration: null,
+      tagName: 'bar',
       nativeElement: document.createElement('bar'),
       controlFlowBlock: null,
     },
@@ -75,8 +71,7 @@ const tree2: DevToolsNode = {
         name: 'qux',
       },
       directives: [],
-      element: 'qux',
-      hydration: null,
+      tagName: 'qux',
       controlFlowBlock: null,
     },
   ],
@@ -84,7 +79,7 @@ const tree2: DevToolsNode = {
 };
 
 const tree3: DevToolsNode = {
-  element: 'app',
+  tagName: 'app',
   directives: [
     {
       id: 1,
@@ -92,7 +87,6 @@ const tree3: DevToolsNode = {
     },
   ],
   component: null,
-  hydration: null,
   controlFlowBlock: null,
   children: [
     {
@@ -103,8 +97,7 @@ const tree3: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: '#comment',
-      hydration: null,
+      tagName: '#comment',
       controlFlowBlock: null,
       nativeElement: document.createComment('bar'),
     },
@@ -116,8 +109,7 @@ const tree3: DevToolsNode = {
         name: 'qux',
       },
       directives: [],
-      element: '#comment',
-      hydration: null,
+      tagName: '#comment',
       controlFlowBlock: null,
       nativeElement: document.createComment('bar'),
     },
@@ -126,8 +118,7 @@ const tree3: DevToolsNode = {
 };
 
 const tree4: DevToolsNode = {
-  element: 'app',
-  hydration: null,
+  tagName: 'app',
   controlFlowBlock: null,
   directives: [
     {
@@ -153,8 +144,7 @@ const tree4: DevToolsNode = {
                         name: 'qux',
                       },
                       directives: [],
-                      element: 'bar',
-                      hydration: null,
+                      tagName: 'bar',
                       controlFlowBlock: null,
                       nativeElement: document.createComment('bar'),
                     },
@@ -165,8 +155,7 @@ const tree4: DevToolsNode = {
                     name: 'qux',
                   },
                   directives: [],
-                  element: '#comment',
-                  hydration: null,
+                  tagName: '#comment',
                   controlFlowBlock: null,
                   nativeElement: document.createComment('bar'),
                 },
@@ -177,8 +166,7 @@ const tree4: DevToolsNode = {
                 name: 'qux',
               },
               directives: [],
-              element: '#comment',
-              hydration: null,
+              tagName: '#comment',
               controlFlowBlock: null,
               nativeElement: document.createComment('bar'),
             },
@@ -189,8 +177,7 @@ const tree4: DevToolsNode = {
             name: 'qux',
           },
           directives: [],
-          element: '#comment',
-          hydration: null,
+          tagName: '#comment',
           controlFlowBlock: null,
           nativeElement: document.createComment('bar'),
         },
@@ -201,8 +188,7 @@ const tree4: DevToolsNode = {
         name: 'bar',
       },
       directives: [],
-      element: '#comment',
-      hydration: null,
+      tagName: '#comment',
       nativeElement: document.createComment('bar'),
       controlFlowBlock: null,
     },

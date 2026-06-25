@@ -16,12 +16,13 @@ import {
   removeHydrationHighlights,
   unHighlight,
 } from '../highlighter';
-import {initializeOrGetDirectiveForestHooks} from '../hooks';
+import {getDirectiveForestManager} from '../directive-forest/manager';
 import {ComponentTreeNode} from '../interfaces';
 
 interface Type<T> extends Function {
   new (...args: any[]): T;
 }
+
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
   onComponentSelect: (id: number) => void;
@@ -65,7 +66,7 @@ export class ComponentInspector {
 
     if (this._selectedComponent.component && this._selectedComponent.host) {
       this._onComponentSelect(
-        initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!,
+        getDirectiveForestManager().getDirectiveId(this._selectedComponent.component)!,
       );
     }
   }
@@ -82,7 +83,7 @@ export class ComponentInspector {
     if (this._selectedComponent.component && this._selectedComponent.host) {
       highlightSelectedElement(this._selectedComponent.host);
       this._onComponentEnter(
-        initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!,
+        getDirectiveForestManager().getDirectiveId(this._selectedComponent.component)!,
       );
     }
   }
@@ -102,7 +103,7 @@ export class ComponentInspector {
   }
 
   highlightByPosition(position: ElementPosition): void {
-    const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
+    const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
     const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
     if (elementToHighlight) {
       highlightSelectedElement(elementToHighlight);
@@ -110,7 +111,7 @@ export class ComponentInspector {
   }
 
   highlightHydrationNodes(): void {
-    const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
+    const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
 
     // drop the root nodes, we don't want to highlight it
     const forestWithoutRoots = forest.flatMap((rootNode) => rootNode.children);

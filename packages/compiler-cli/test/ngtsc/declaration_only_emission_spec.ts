@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an @NgModule with an external reference in declarations', () => {
+    it('should emit type declarations containing external reference in NgModule declarations', () => {
       env.write(
         'test.ts',
         `
@@ -86,17 +86,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
-        'Value at position 0 in the NgModule.declarations of CompModule is an external reference. ' +
-          'External references in @NgModule declarations are not supported in experimental declaration-only emission mode',
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, never, never>;',
       );
     });
 
-    it('should show correct error message when using an @NgModule with an external reference in imports', () => {
+    it('should emit type declarations containing external reference in NgModule imports', () => {
       env.write(
         'test.ts',
         `
@@ -110,17 +108,206 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
-        'Value at position 0 in the NgModule.imports of CompModule is an external reference. ' +
-          'External references in @NgModule declarations are not supported in experimental declaration-only emission mode',
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.Comp], never>;',
       );
     });
 
-    it('should show correct error message when using an @NgModule with an external reference in exports', () => {
+    it('should emit `ReturnType<typeof ...>` for a `forRoot()`-style call in NgModule imports', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule} from '@angular/core';
+        import {FooModule} from './foo';
+
+        @NgModule({
+          imports: [FooModule.forRoot()],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [ReturnType<typeof i1.FooModule.forRoot>], never>;',
+      );
+    });
+
+    it('should emit `ReturnType<typeof ...>` for a bare function call in NgModule imports', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule} from '@angular/core';
+        import {provideFoo} from './foo';
+
+        @NgModule({
+          imports: [provideFoo()],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [ReturnType<typeof i1.provideFoo>], never>;',
+      );
+    });
+
+    it('should emit `ReturnType<typeof ...>` alongside plain `typeof` entries in NgModule imports', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule} from '@angular/core';
+        import {BarModule} from './bar';
+        import {FooModule} from './foo';
+
+        @NgModule({
+          imports: [BarModule, FooModule.forRoot()],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.BarModule, ReturnType<typeof i2.FooModule.forRoot>], never>;',
+      );
+    });
+
+    it('should emit `ReturnType<typeof ...>` for a `forRoot()`-style call in NgModule exports', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule} from '@angular/core';
+        import {FooModule} from './foo';
+
+        @NgModule({
+          exports: [FooModule.forRoot()],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, never, [ReturnType<typeof i1.FooModule.forRoot>]>;',
+      );
+    });
+
+    it('should resolve local function in NgModule imports and emit concrete references', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule} from '@angular/core';
+        
+        class BarModule {}
+        
+        function getImports() {
+          return [BarModule];
+        }
+
+        @NgModule({
+          imports: [getImports()],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [[typeof BarModule]], never>;',
+      );
+    });
+
+    it('should resolve mixed array in NgModule imports', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule} from '@angular/core';
+        import {provideFoo} from './foo';
+        
+        class BarModule {}
+        
+        function getLocalImports() {
+          return [BarModule];
+        }
+
+        @NgModule({
+          imports: [getLocalImports(), provideFoo()],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [[typeof BarModule], ReturnType<typeof i1.provideFoo>], never>;',
+      );
+    });
+
+    it('should produce a diagnostic when an unsupported expression is used in NgModule imports', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule} from '@angular/core';
+        import {isDev} from './config';
+        
+        class DevModule {}
+        class ProdModule {}
+
+        @NgModule({
+          imports: [isDev ? DevModule : ProdModule],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
+        'In experimental declaration-only emission mode, this expression is not supported',
+      );
+    });
+
+    it('should syntactically unwrap `forwardRef(() => X)` in NgModule imports', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule, forwardRef} from '@angular/core';
+        import {FooModule} from './foo';
+
+        @NgModule({
+          imports: [forwardRef(() => FooModule)],
+        })
+        export class CompModule {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.FooModule], never>;',
+      );
+    });
+
+    it('should emit type declarations containing external reference in NgModule exports', () => {
       env.write(
         'test.ts',
         `
@@ -134,17 +321,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
-        'Value at position 0 in the NgModule.exports of CompModule is an external reference. ' +
-          'External references in @NgModule declarations are not supported in experimental declaration-only emission mode',
+      expect(dtsContent).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, never, [typeof i1.Comp]>;',
       );
     });
 
-    it('should show correct error message when using an @NgModule with an external reference in bootstrap', () => {
+    it('should not error when using an @NgModule with an external reference in bootstrap', () => {
       env.write(
         'test.ts',
         `
@@ -158,14 +343,8 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
-
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
-        'Value at position 0 in the NgModule.bootstrap of CompModule is an external reference. ' +
-          'External references in @NgModule declarations are not supported in experimental declaration-only emission mode',
-      );
+      env.driveMain();
+      // No errors expected
     });
 
     it('should emit type declarations containing external reference in simple host directive on a component', () => {
@@ -266,7 +445,59 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an indirect external reference in a simple host directive on a component', () => {
+    it('should emit type declarations containing external reference via namespace import in host directive on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import * as n from './dir';
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [n.Dir],
+        })
+        export class HostComp {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof n.Dir; inputs: {}; outputs: {}; }]>;',
+      );
+    });
+
+    it('should emit type declarations containing external reference with inputs and outputs in host directive on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {Dir} from './dir';
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [{
+            directive: Dir,
+            inputs: ['a: b'],
+            outputs: ['c: d'],
+          }],
+        })
+        export class HostComp {}
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: { "a": "b"; }; outputs: { "c": "d"; }; }]>;',
+      );
+    });
+
+    it('should emit type declarations when using an indirect external reference in a simple host directive on a component', () => {
       env.write(
         'test.ts',
         `
@@ -284,16 +515,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using an indirect external reference in host directive object on a component', () => {
+    it('should emit type declarations when using an indirect external reference in host directive object on a component', () => {
       env.write(
         'test.ts',
         `
@@ -313,16 +543,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using an indirect external reference in a simple host directive on a directive', () => {
+    it('should emit type declarations when using an indirect external reference in a simple host directive on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -339,16 +568,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using an indirect external reference in host directive object on a directive', () => {
+    it('should emit type declarations when using an indirect external reference in host directive object on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -367,16 +595,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using a property access expression resolving to an indirect external reference in a simple host directive on a component', () => {
+    it('should emit type declarations when using a property access expression resolving to an indirect external reference in a simple host directive on a component', () => {
       env.write(
         'test.ts',
         `
@@ -396,16 +623,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using a property access expression resolving to an indirect external reference in host directive object on a component', () => {
+    it('should emit type declarations when using a property access expression resolving to an indirect external reference in host directive object on a component', () => {
       env.write(
         'test.ts',
         `
@@ -427,16 +653,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using a property access expression resolving to an indirect external reference in a simple host directive on a directive', () => {
+    it('should emit type declarations when using a property access expression resolving to an indirect external reference in a simple host directive on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -455,16 +680,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using a property access expression resolving to an indirect external reference in host directive object on a directive', () => {
+    it('should emit type declarations when using a property access expression resolving to an indirect external reference in host directive object on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -485,12 +709,11 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      expect(dtsContent).toContain(
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
       );
     });
 
@@ -604,7 +827,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an @Input decorator with a transform function', () => {
+    it('should emit type declarations when using an @Input decorator with a transform function', () => {
       env.write(
         'test.ts',
         `
@@ -617,16 +840,52 @@ runInEachFileSystem(() => {
         `,
       );
 
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ngAcceptInputType_decoratedInput: Parameters<typeof i0.booleanAttribute>[0];',
+      );
+    });
+
+    it('should emit type declarations when using an @Input decorator with an inline transform function', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, Input} from '@angular/core';
+
+        @Component({template: '', selector: 'comp'})
+        export class Comp {
+          @Input({ transform: (v: string) => !!v }) decoratedInput!: boolean;
+        }
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain('static ngAcceptInputType_decoratedInput: string;');
+    });
+
+    it('should produce a diagnostic when using an @Input decorator with an inline transform function missing a parameter type', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, Input} from '@angular/core';
+
+        @Component({template: '', selector: 'comp'})
+        export class Comp {
+          @Input({ transform: (v) => !!v }) decoratedInput!: boolean;
+        }
+        `,
+      );
+
       const errors = env.driveDiagnostics();
 
       expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
-      const errorMessage = ts.flattenDiagnosticMessageText(errors[0].messageText, '\n');
-      expect(errorMessage).toContain(
-        '@Input decorators with a transform function are not supported in experimental declaration-only emission mode',
-      );
-      expect(errorMessage).toContain(
-        `Consider converting 'Comp.decoratedInput' to an input signal`,
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.VALUE_HAS_WRONG_TYPE));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
+        'Input transform function first parameter must have a type',
       );
     });
 

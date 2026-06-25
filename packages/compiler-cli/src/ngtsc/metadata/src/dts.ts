@@ -10,6 +10,7 @@ import {ClassPropertyMapping, MatchSource} from '@angular/compiler';
 import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
+import {ForeignTypeResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator/index';
 import {
   ClassDeclaration,
   isNamedClassDeclaration,
@@ -29,7 +30,6 @@ import {
 } from './api';
 import {
   extractDirectiveTypeCheckMeta,
-  extractReferencesFromType,
   extraReferenceFromTypeQuery,
   readBooleanType,
   readMapType,
@@ -42,10 +42,14 @@ import {
  * from an upstream compilation already.
  */
 export class DtsMetadataReader implements MetadataReader {
+  private evaluator: PartialEvaluator;
+
   constructor(
     private checker: ts.TypeChecker,
     private reflector: ReflectionHost,
-  ) {}
+  ) {
+    this.evaluator = new PartialEvaluator(this.reflector, this.checker, null);
+  }
 
   /**
    * Read the metadata from a class that has already been compiled somehow (either it's in a .d.ts
@@ -76,21 +80,26 @@ export class DtsMetadataReader implements MetadataReader {
     // Read the ModuleData out of the type arguments.
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
 
-    const declarations = extractReferencesFromType(
-      this.checker,
-      declarationMetadata,
-      ref.bestGuessOwningModule,
+    const foreignTypeResolver: ForeignTypeResolver = (typeNode: ts.TypeNode) => {
+      return moduleWithProvidersTypeArgument(typeNode, this.reflector);
+    };
+
+    const evaluateMetadata = (metadataNode: ts.TypeNode) => {
+      return metadataNode.kind === ts.SyntaxKind.NeverKeyword
+        ? []
+        : this.evaluator.evaluateType(
+            metadataNode,
+            ref.bestGuessOwningModule,
+            undefined,
+            foreignTypeResolver,
+          );
+    };
+
+    const declarations = this.extractReferencesFromResolvedValue(
+      evaluateMetadata(declarationMetadata),
     );
-    const exports = extractReferencesFromType(
-      this.checker,
-      exportMetadata,
-      ref.bestGuessOwningModule,
-    );
-    const imports = extractReferencesFromType(
-      this.checker,
-      importMetadata,
-      ref.bestGuessOwningModule,
-    );
+    const exports = this.extractReferencesFromResolvedValue(evaluateMetadata(exportMetadata));
+    const imports = this.extractReferencesFromResolvedValue(evaluateMetadata(importMetadata));
 
     // The module is considered poisoned if it's exports couldn't be
     // resolved completely. This would make the module not necessarily
@@ -114,6 +123,30 @@ export class DtsMetadataReader implements MetadataReader {
       // would be a non-breaking change for a library to introduce providers at any point.
       mayDeclareProviders: true,
     };
+  }
+
+  private extractReferencesFromResolvedValue(value: ResolvedValue): {
+    result: Reference<ClassDeclaration>[];
+    isIncomplete: boolean;
+  } {
+    const result: Reference<ClassDeclaration>[] = [];
+    let isIncomplete = false;
+
+    if (Array.isArray(value)) {
+      for (const element of value) {
+        if (element instanceof Reference && this.reflector.isClass(element.node)) {
+          result.push(element as Reference<ClassDeclaration>);
+        } else {
+          isIncomplete = true;
+        }
+      }
+    } else if (value instanceof Reference && this.reflector.isClass(value.node)) {
+      result.push(value as Reference<ClassDeclaration>);
+    } else {
+      isIncomplete = true;
+    }
+
+    return {result, isIncomplete};
   }
 
   /**
@@ -207,6 +240,7 @@ export class DtsMetadataReader implements MetadataReader {
       // Imports are tracked in metadata only for template type-checking purposes,
       // so standalone components from .d.ts files don't have any.
       imports: null,
+      foreignImports: null,
       rawImports: null,
       deferredImports: null,
       // The same goes for schemas.
@@ -395,4 +429,32 @@ function readHostDirectivesType(
   }
 
   return result.length > 0 ? {result, isIncomplete} : null;
+}
+
+/**
+ * If `type` is `ModuleWithProviders<T>` (resolving to the symbol exported by `@angular/core`, where
+ * determinable), returns the `T` type node; otherwise `null`.
+ */
+function moduleWithProvidersTypeArgument(
+  type: ts.TypeNode | undefined,
+  host: ReflectionHost,
+): ts.TypeNode | null {
+  if (type === undefined || !ts.isTypeReferenceNode(type)) {
+    return null;
+  }
+  const name = ts.isQualifiedName(type.typeName) ? type.typeName.right : type.typeName;
+  if (name.text !== 'ModuleWithProviders') {
+    return null;
+  }
+  // If the reference can be traced to an import, require it to be from `@angular/core`. If it can't
+  // (e.g. a namespace-qualified `i0.ModuleWithProviders` or a local re-declaration in a `.d.ts`),
+  // fall back to trusting the name.
+  const imp = host.getImportOfIdentifier(name);
+  if (imp !== null && (imp.name !== 'ModuleWithProviders' || imp.from !== '@angular/core')) {
+    return null;
+  }
+  if (type.typeArguments === undefined || type.typeArguments.length !== 1) {
+    return null;
+  }
+  return type.typeArguments[0];
 }

@@ -10,6 +10,7 @@ import '@angular/compiler';
 import {animate, AnimationBuilder, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, ɵgetDOM as getDOM, isPlatformServer, PlatformLocation} from '@angular/common';
 import {
+  ɵHTTP_FETCH_MAX_RESPONSE_SIZE as HTTP_FETCH_MAX_RESPONSE_SIZE,
   HTTP_INTERCEPTORS,
   HttpClient,
   HttpClientModule,
@@ -1455,6 +1456,31 @@ class HiddenModule {}
         });
       });
 
+      it('prevents SSRF bypasses via backslash URLs in HttpClient by throwing a suspicious origin error', async () => {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {document: '<app></app>', url: 'http://localhost:4000/base'},
+          },
+        ]);
+        await platform.bootstrapModule(HttpClientExampleModule).then((ref) => {
+          const mock = ref.injector.get(HttpTestingController);
+          const http = ref.injector.get(HttpClient);
+          ref.injector.get(NgZone).run(() => {
+            http.get('/\\evil.com/api').subscribe({
+              next: () => fail('Expected request to fail, but it succeeded.'),
+              error: (err) => {
+                expect(err.message).toBe(
+                  `NG05703: URL /\\evil.com/api changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                );
+              },
+            });
+
+            mock.verify();
+          });
+        });
+      });
+
       it('can use HttpInterceptor that injects HttpClient', async () => {
         const platform = platformServer([
           {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
@@ -1548,7 +1574,131 @@ class HiddenModule {}
             mock.expectOne('http://localhost/testing').flush('success!');
           });
         });
+
+        it('should allow legitimate protocol-relative URLs', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('//example.com/testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://example.com/testing').flush('success!');
+          });
+        });
+
+        it('should reject backslash bypass SSRF attempts in relative requests and throw a suspicious origin error', async () => {
+          const badUrls = [
+            '/\\attacker.com',
+            '\\\\attacker.com',
+            '  /\\attacker.com',
+            '\r\n/\\attacker.com',
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const badUrl of badUrls) {
+              http.get(badUrl).subscribe({
+                next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
+                error: (err) => {
+                  expect(err.message).toBe(
+                    `NG05703: URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                  );
+                },
+              });
+            }
+
+            mock.verify();
+          });
+        });
+
+        it('should reject obfuscated protocal SSRF attempts in relative requests and throw a suspicious origin error', async () => {
+          const badUrls = [
+            'htt\rps://evil.com/path',
+            ' htt\rps://evil.com/path',
+            '\r\nhtt\rps://evil.com/path',
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const badUrl of badUrls) {
+              http.get(badUrl).subscribe({
+                next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
+                error: (err) => {
+                  expect(err.message).toBe(
+                    `NG05703: URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
+                  );
+                },
+              });
+            }
+
+            mock.verify();
+          });
+        });
+
+        it('should resolve safe path-relative URLs containing backslashes without origin change', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('\\testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/testing').flush('success!');
+          });
+        });
+
+        it('should resolve backslashes inside path-relative segments without origin change', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('/foo\\bar').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/foo/bar').flush('success!');
+          });
+        });
+
+        it('should resolve relative request URLs without leading slash relative to parent path', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/testing').flush('success!');
+          });
+        });
       });
+
+      describe(`given 'url' is provided in 'INITIAL_CONFIG' with a trailing slash`, () => {
+        let mock: HttpTestingController;
+        let ref: NgModuleRef<HttpInterceptorExampleModule>;
+        let http: HttpClient;
+
+        beforeEach(async () => {
+          const platform = platformServer([
+            {
+              provide: INITIAL_CONFIG,
+              useValue: {
+                document: '<app></app>',
+                url: 'http://localhost:4000/foo/',
+              },
+            },
+          ]);
+
+          ref = await platform.bootstrapModule(HttpInterceptorExampleModule);
+          mock = ref.injector.get(HttpTestingController);
+          http = ref.injector.get(HttpClient);
+        });
+
+        it('should resolve sub-path relative request URLs relative to trailing-slash base URL', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('testing').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/foo/testing').flush('success!');
+          });
+        });
+      });
+    });
+
+    it('should configure max response body size when specified', () => {
+      const maxResponseBodySize = 2048;
+
+      TestBed.configureTestingModule({
+        providers: [provideServerRendering({maxResponseBodySize})],
+      });
+
+      expect(TestBed.inject(HTTP_FETCH_MAX_RESPONSE_SIZE)).toBe(maxResponseBodySize);
     });
   });
 })();

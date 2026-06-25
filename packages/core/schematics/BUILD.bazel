@@ -52,6 +52,7 @@ npm_package(
         "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
         "//packages/core/schematics/ng-generate/router-testing-module-migration:static_files",
         "//packages/core/schematics/ng-generate/self-closing-tags-migration:static_files",
+        "//packages/core/schematics/ng-generate/service-migration:static_files",
         "//packages/core/schematics/ng-generate/signal-input-migration:static_files",
         "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
         "//packages/core/schematics/ng-generate/signals:static_files",
@@ -96,6 +97,10 @@ bundle_entrypoints = [
     [
         "self-closing-tags-migration",
         "packages/core/schematics/ng-generate/self-closing-tags-migration/index.js",
+    ],
+    [
+        "service-migration",
+        "packages/core/schematics/ng-generate/service-migration/index.js",
     ],
     [
         "common-to-standalone-migration",
@@ -178,6 +183,7 @@ rollup.rollup(
         "//packages/core/schematics/ng-generate/route-lazy-loading",
         "//packages/core/schematics/ng-generate/router-testing-module-migration",
         "//packages/core/schematics/ng-generate/self-closing-tags-migration",
+        "//packages/core/schematics/ng-generate/service-migration",
         "//packages/core/schematics/ng-generate/signal-input-migration",
         "//packages/core/schematics/ng-generate/signal-queries-migration",
         "//packages/core/schematics/ng-generate/signals",

@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
+// g3-only import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
+import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types'; // 3p-only
 import {EnvironmentProviders, makeEnvironmentProviders, provideEnvironmentInitializer} from '../di';
-import {declareWebMcpTool} from './declare_tool';
+import {declareExperimentalWebMcpTool} from './declare_tool';
 import type {ToolDescriptor} from './types';
 
 /**
@@ -25,12 +26,12 @@ import type {ToolDescriptor} from './types';
  *     or route providers.
  * @experimental
  */
-export function provideWebMcpTools<const InputSchema extends JsonSchemaForInference>(
+export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(
   tools: ToolDescriptor<InputSchema>[],
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideEnvironmentInitializer(() => {
-      for (const tool of tools) declareWebMcpTool(tool);
+      for (const tool of tools) declareExperimentalWebMcpTool(tool);
     }),
   ]);
 }

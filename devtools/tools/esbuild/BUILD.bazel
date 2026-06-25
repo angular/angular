@@ -8,7 +8,6 @@ ts_project(
     deps = [
         "//:node_modules/@angular/compiler-cli",
         "//devtools/tools/angular-optimization:js_lib",
-        "//packages:package_json",
     ],
 )
 

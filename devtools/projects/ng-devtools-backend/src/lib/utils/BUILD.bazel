@@ -1,0 +1,34 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ng_project(
+    name = "utils",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "serialization.spec.ts",
+        "signal-graph-ref.spec.ts",
+    ],
+    deps = [
+        ":utils",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

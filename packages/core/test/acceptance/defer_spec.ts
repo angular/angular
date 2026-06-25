@@ -48,7 +48,15 @@ import {ChainedInjector} from '../../src/render3/chained_injector';
 import {getComponentDef} from '../../src/render3/def_getters';
 import {getInjectorResolutionPath} from '../../src/render3/util/injector_discovery_utils';
 import {global} from '../../src/util/global';
-import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '../../testing';
+import {
+  ComponentFixture,
+  DeferBlockBehavior,
+  DeferBlockState,
+  fakeAsync,
+  flush,
+  TestBed,
+  tick,
+} from '../../testing';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -4532,7 +4540,6 @@ describe('@defer', () => {
                 @placeholder {<button>p{{item}} </button>}
               }
            `,
-      
         changeDetection: ChangeDetectionStrategy.Eager,})
       class MyCmp {
         items = [1, 2, 3, 4, 5, 6];
@@ -4652,6 +4659,36 @@ describe('@defer', () => {
       expect(activeObservers[2].observedElements.has(button)).toBe(true);
       expect(activeObservers[2].options).toEqual({rootMargin: '1vh'});
     }));
+
+    it('should not attach observer if rendering manually', async () => {
+      @Component({
+        template: `
+          @defer (on viewport(trigger)) {
+            Main content
+          } @placeholder {
+            Placeholder
+          }
+
+          <button #trigger></button>
+        `,
+      })
+      class MyCmp {}
+
+      TestBed.configureTestingModule({
+        deferBlockBehavior: DeferBlockBehavior.Manual,
+      });
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      expect(activeObservers.length).toBe(0);
+      expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+      const deferBlock = (await fixture.getDeferBlocks())[0];
+      await deferBlock.render(DeferBlockState.Complete);
+
+      expect(activeObservers.length).toBe(0);
+      expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+    });
   });
 
   describe('DOM-based events cleanup', () => {

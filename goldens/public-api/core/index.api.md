@@ -541,7 +541,7 @@ export class DebugNode {
 }
 
 // @public
-export function declareWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): void;
+export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): void;
 
 // @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
@@ -1168,6 +1168,7 @@ export class KeyValueDiffers {
 export function linkedSignal<D>(computation: () => D, options?: {
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public
@@ -1179,6 +1180,7 @@ export function linkedSignal<S, D>(options: {
     }) => D;
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public
@@ -1500,6 +1502,9 @@ export function provideCheckNoChangesConfig(options: {
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
+export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
+
+// @public
 export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;
 
 // @public
@@ -1516,9 +1521,6 @@ export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 
 // @public
 export function provideStabilityDebugging(): EnvironmentProviders;
-
-// @public
-export function provideWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
 
 // @public
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
@@ -1769,6 +1771,8 @@ export interface SchemaMetadata {
 
 // @public
 export enum SecurityContext {
+    // (undocumented)
+    ATTRIBUTE_NO_BINDING = 6,
     // (undocumented)
     HTML = 1,
     // (undocumented)
@@ -2135,7 +2139,7 @@ export interface WebMcpClient {
 
 // @public
 export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
-    description?: string;
+    description: string;
     execute: WebMcpToolExecute<InputSchema>;
     inputSchema: InputSchema;
     name: string;

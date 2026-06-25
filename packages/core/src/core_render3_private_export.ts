@@ -150,6 +150,9 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
   ɵɵelementStart,
+  ɵɵforeignComponent,
+  ɵɵforeignContent,
+  ɵɵforeignContentFn,
   ɵɵenableBindings,
   ɵɵExternalStylesFeature,
   ɵɵFactoryDeclaration,
@@ -288,9 +291,14 @@ export {
   ForLoopBlockData as ɵForLoopBlockData,
 } from './render3/util/control_flow_types';
 export {
+  ExternalCoreGlobalUtils as ɵExternalCoreGlobalUtils,
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
-  GlobalDevModeUtils as ɵGlobalDevModeUtils,
 } from './render3/util/global_utils';
+export {
+  DebugSignalGraph as ɵDebugSignalGraph,
+  DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
+  DebugSignalGraphNode as ɵDebugSignalGraphNode,
+} from './render3/util/signal_debug';
 export {getTransferState as ɵgetTransferState} from './render3/util/transfer_state_utils';
 export {
   isViewDirty as ɵisViewDirty,

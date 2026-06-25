@@ -17,24 +17,7 @@ import {inject, Injectable, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG} from './tokens';
-
-/**
- * Parses a URL string and returns a URL object.
- * @param urlStr The string to parse.
- * @param origin The origin to use for resolving the URL.
- * @returns The parsed URL.
- */
-export function parseUrl(urlStr: string, origin: string): URL {
-  if (URL.canParse(urlStr)) {
-    return new URL(urlStr);
-  }
-
-  if (urlStr && urlStr[0] !== '/') {
-    urlStr = `/${urlStr}`;
-  }
-
-  return new URL(origin + urlStr);
-}
+import {resolveUrl} from './url';
 
 /**
  * Server-side implementation of URL state. Implements `pathname`, `search`, and `hash`
@@ -50,7 +33,8 @@ export class ServerPlatformLocation implements PlatformLocation {
   public readonly search: string = '';
   public readonly hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
-  private _doc = inject(DOCUMENT);
+  private readonly _doc = inject(DOCUMENT);
+  private readonly origin = this._doc.location.origin;
 
   constructor() {
     const config = inject(INITIAL_CONFIG, {optional: true});
@@ -58,9 +42,9 @@ export class ServerPlatformLocation implements PlatformLocation {
       return;
     }
     if (config.url) {
-      const {protocol, hostname, port, pathname, search, hash, href} = parseUrl(
+      const {protocol, hostname, port, pathname, search, hash, href, origin} = resolveUrl(
         config.url,
-        this._doc.location.origin,
+        this.origin,
       );
       this.protocol = protocol;
       this.hostname = hostname;
@@ -69,6 +53,7 @@ export class ServerPlatformLocation implements PlatformLocation {
       this.search = search;
       this.hash = hash;
       this.href = href;
+      this.origin = origin;
     }
   }
 
@@ -110,7 +95,9 @@ export class ServerPlatformLocation implements PlatformLocation {
 
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
-    const {pathname, search, hash, href, protocol} = parseUrl(newUrl, this._doc.location.origin);
+    const {pathname, search, hash, href, protocol} = resolveUrl(newUrl, this.origin, {
+      allowOriginChange: false,
+    });
     const writableThis = this as Writable<this>;
     writableThis.pathname = pathname;
     writableThis.search = search;

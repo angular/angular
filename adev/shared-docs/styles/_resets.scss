@@ -34,6 +34,7 @@
       color 0.3s ease,
       background-color 0.3s ease;
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   @media (prefers-reduced-motion) {
@@ -46,6 +47,7 @@
     margin: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-gutter: stable;
   }
 
   html,
@@ -310,13 +312,17 @@
         padding-inline: 15px !important;
       }
 
+      .mdc-tab__text-label {
+        transition: none;
+      }
+
       .mdc-tab--active {
         border: 0;
         border-block-end-width: 2px;
         border-style: solid;
         border-image: var(--purple-to-blue-horizontal-gradient) 1;
 
-        span {
+        .mdc-tab__text-label {
           background-image: var(--purple-to-blue-horizontal-gradient);
           background-clip: text;
           -webkit-background-clip: text;

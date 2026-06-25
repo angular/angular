@@ -43,24 +43,7 @@ export interface HttpClientCommonOptions extends Omit<HttpRequestOptions, 'heade
 function addBody<T>(options: HttpClientCommonOptions, body: T | null): any {
   return {
     body,
-    headers: options.headers,
-    context: options.context,
-    observe: options.observe,
-    params: options.params,
-    reportProgress: options.reportProgress,
-    responseType: options.responseType,
-    withCredentials: options.withCredentials,
-    credentials: options.credentials,
-    transferCache: options.transferCache,
-    timeout: options.timeout,
-    keepalive: options.keepalive,
-    priority: options.priority,
-    cache: options.cache,
-    mode: options.mode,
-    redirect: options.redirect,
-    integrity: options.integrity,
-    referrer: options.referrer,
-    referrerPolicy: options.referrerPolicy,
+    ...options,
   };
 }
 
@@ -92,14 +75,6 @@ function addBody<T>(options: HttpClientCommonOptions, body: T | null): any {
  * by directly joining to the URL.
  * ```ts
  * this.httpClient.request('GET', this.heroesUrl + '?' + 'name=term', {responseType:'json'});
- * ```
- *
- *
- * ### JSONP Example
- * ```ts
- * requestJsonp(url, callback = 'callback') {
- *  return this.httpClient.jsonp(this.heroesURL, callback);
- * }
  * ```
  *
  * ### PATCH Example
@@ -1478,6 +1453,7 @@ export class HttpClient {
    * @param callbackParam The callback function name.
    *
    * @return An `Observable` of the response object, with response body as an object.
+   * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
    */
   jsonp(url: string, callbackParam: string): Observable<Object>;
 
@@ -1492,6 +1468,7 @@ export class HttpClient {
    * then the `JSONP` request can be rejected by the configured backend.
    *
    * @return An `Observable` of the response object, with response body in the requested type.
+   * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
    */
   jsonp<T>(url: string, callbackParam: string): Observable<T>;
 
@@ -1511,7 +1488,7 @@ export class HttpClient {
    *
    * @param url The resource URL.
    * @param callbackParam The callback function name.
-   *
+   * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
    */
   jsonp<T>(url: string, callbackParam: string): Observable<T> {
     return this.request<any>('JSONP', url, {

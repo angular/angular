@@ -154,6 +154,14 @@ export class ActivatedRoute {
   /** An observable of the static and resolved data of this route. */
   public data: Observable<Data>;
 
+  /**
+   * Injector scoped to the lifetime of this ActivatedRoute object.
+   * Created only when features tied to ActivatedRoute lifetime are used.
+   *
+   * @internal
+   */
+  _localInjector?: EnvironmentInjector;
+
   /** @internal */
   constructor(
     /** @internal */
@@ -240,7 +248,8 @@ export class ActivatedRoute {
 
 export type ParamsInheritanceStrategy = 'emptyOnly' | 'always';
 
-export const DEFAULT_PARAMS_INHERITANCE_STRATEGY: ParamsInheritanceStrategy = 'always';
+// g3-only export const DEFAULT_PARAMS_INHERITANCE_STRATEGY: ParamsInheritanceStrategy = 'emptyOnly';
+export const DEFAULT_PARAMS_INHERITANCE_STRATEGY: ParamsInheritanceStrategy = 'always'; // 3p-only
 
 /** @internal */
 export type Inherited = {

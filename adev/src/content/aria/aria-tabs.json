@@ -13,20 +13,91 @@
       "description": "A TabContent container for the lazy-loaded content.\n\nThis structural directive should be applied to an `ng-template` within an `ngTabPanel`.\nIt enables lazy loading of the tab's content, meaning the content is only rendered\nwhen the tab is activated for the first time.\n\n```html\n<div ngTabPanel value=\"myTabId\">\n  <ng-template ngTabContent>\n    <p>This content will be loaded when 'myTabId' is selected.</p>\n  </ng-template>\n</div>\n```",
       "jsdocTags": [
         {
-          "name": "developerPreview",
-          "comment": "21.0"
+          "name": "see",
+          "comment": "[Tabs](guide/aria/tabs)"
+        }
+      ],
+      "rawComment": "/**\n * A TabContent container for the lazy-loaded content.\n *\n * This structural directive should be applied to an `ng-template` within an `ngTabPanel`.\n * It enables lazy loading of the tab's content, meaning the content is only rendered\n * when the tab is activated for the first time.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <p>This content will be loaded when 'myTabId' is selected.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @see [Tabs](guide/aria/tabs)\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/aria/tabs/tab-content.ts",
+        "startLine": 29,
+        "endLine": 34
+      }
+    },
+    {
+      "name": "Tabs",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
         },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "A Tabs container.\n\nThe `ngTabs` directive represents a set of layered sections of content. It acts as the\noverarching container for a tabbed interface, coordinating the behavior of `ngTabList`,\n`ngTab`, and `ngTabPanel` directives.\n\n```html\n<div ngTabs>\n  <ul ngTabList [(selectedTab)]=\"selectedTabValue\">\n    <li ngTab value=\"tab1\">Tab 1</li>\n    <li ngTab value=\"tab2\">Tab 2</li>\n    <li ngTab value=\"tab3\">Tab 3</li>\n  </ul>\n\n  <div ngTabPanel value=\"tab1\">\n     <ng-template ngTabContent>Content for Tab 1</ng-template>\n  </div>\n  <div ngTabPanel value=\"tab2\">\n     <ng-template ngTabContent>Content for Tab 2</ng-template>\n  </div>\n  <div ngTabPanel value=\"tab3\">\n     <ng-template ngTabContent>Content for Tab 3</ng-template>\n  </div>\n</div>\n```",
+      "jsdocTags": [
         {
           "name": "see",
           "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A TabContent container for the lazy-loaded content.\n *\n * This structural directive should be applied to an `ng-template` within an `ngTabPanel`.\n * It enables lazy loading of the tab's content, meaning the content is only rendered\n * when the tab is activated for the first time.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <p>This content will be loaded when 'myTabId' is selected.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
-      "implements": [],
+      "rawComment": "/**\n * A Tabs container.\n *\n * The `ngTabs` directive represents a set of layered sections of content. It acts as the\n * overarching container for a tabbed interface, coordinating the behavior of `ngTabList`,\n * `ngTab`, and `ngTabPanel` directives.\n *\n * ```html\n * <div ngTabs>\n *   <ul ngTabList [(selectedTab)]=\"selectedTabValue\">\n *     <li ngTab value=\"tab1\">Tab 1</li>\n *     <li ngTab value=\"tab2\">Tab 2</li>\n *     <li ngTab value=\"tab3\">Tab 3</li>\n *   </ul>\n *\n *   <div ngTabPanel value=\"tab1\">\n *      <ng-template ngTabContent>Content for Tab 1</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab2\">\n *      <ng-template ngTabContent>Content for Tab 2</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab3\">\n *      <ng-template ngTabContent>Content for Tab 3</ng-template>\n *   </div>\n * </div>\n * ```\n *\n * @see [Tabs](guide/aria/tabs)\n */",
+      "implements": [
+        "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[ngTabs]",
+      "exportAs": [
+        "ngTabs"
+      ],
+      "aliases": [
+        "ngTabs"
+      ],
       "source": {
-        "filePath": "/src/aria/tabs/tab-content.ts",
-        "startLine": 31,
-        "endLine": 36
+        "filePath": "/src/aria/tabs/tabs.ts",
+        "startLine": 52,
+        "endLine": 116
       }
     },
     {
@@ -207,15 +278,11 @@
       "description": "A selectable tab in a TabList.\n\nThe `ngTab` directive represents an individual tab control within an `ngTabList`. It\nrequires a `value` that uniquely identifies it and links it to a corresponding `ngTabPanel`.\n\n```html\n<li ngTab value=\"myTabId\" [disabled]=\"isTabDisabled\">\n  My Tab Label\n</li>\n```",
       "jsdocTags": [
         {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
           "name": "see",
           "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A selectable tab in a TabList.\n *\n * The `ngTab` directive represents an individual tab control within an `ngTabList`. It\n * requires a `value` that uniquely identifies it and links it to a corresponding `ngTabPanel`.\n *\n * ```html\n * <li ngTab value=\"myTabId\" [disabled]=\"isTabDisabled\">\n *   My Tab Label\n * </li>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
+      "rawComment": "/**\n * A selectable tab in a TabList.\n *\n * The `ngTab` directive represents an individual tab control within an `ngTabList`. It\n * requires a `value` that uniquely identifies it and links it to a corresponding `ngTabPanel`.\n *\n * ```html\n * <li ngTab value=\"myTabId\" [disabled]=\"isTabDisabled\">\n *   My Tab Label\n * </li>\n * ```\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [
         "HasElement",
         "OnInit",
@@ -231,8 +298,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tab.ts",
-        "startLine": 39,
-        "endLine": 102
+        "startLine": 38,
+        "endLine": 124
       }
     },
     {
@@ -351,15 +418,11 @@
       "description": "A TabPanel container for the resources of layered content associated with a tab.\n\nThe `ngTabPanel` directive holds the content for a specific tab. It is linked to an\n`ngTab` by a matching `value`. If a tab panel is hidden, the `inert` attribute will be\napplied to remove it from the accessibility tree. Proper styling is required for visual hiding.\n\n```html\n<div ngTabPanel value=\"myTabId\">\n  <ng-template ngTabContent>\n    <!-- Content for the tab panel -->\n  </ng-template>\n</div>\n```",
       "jsdocTags": [
         {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
           "name": "see",
           "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A TabPanel container for the resources of layered content associated with a tab.\n *\n * The `ngTabPanel` directive holds the content for a specific tab. It is linked to an\n * `ngTab` by a matching `value`. If a tab panel is hidden, the `inert` attribute will be\n * applied to remove it from the accessibility tree. Proper styling is required for visual hiding.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <!-- Content for the tab panel -->\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
+      "rawComment": "/**\n * A TabPanel container for the resources of layered content associated with a tab.\n *\n * The `ngTabPanel` directive holds the content for a specific tab. It is linked to an\n * `ngTab` by a matching `value`. If a tab panel is hidden, the `inert` attribute will be\n * applied to remove it from the accessibility tree. Proper styling is required for visual hiding.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <!-- Content for the tab panel -->\n *   </ng-template>\n * </div>\n * ```\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
@@ -367,86 +430,7 @@
       "source": {
         "filePath": "/src/aria/tabs/tab-panel.ts",
         "startLine": 42,
-        "endLine": 103
-      }
-    },
-    {
-      "name": "Tabs",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the host element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        }
-      ],
-      "generics": [],
-      "description": "A Tabs container.\n\nThe `ngTabs` directive represents a set of layered sections of content. It acts as the\noverarching container for a tabbed interface, coordinating the behavior of `ngTabList`,\n`ngTab`, and `ngTabPanel` directives.\n\n```html\n<div ngTabs>\n  <ul ngTabList [(selectedTab)]=\"selectedTabValue\">\n    <li ngTab value=\"tab1\">Tab 1</li>\n    <li ngTab value=\"tab2\">Tab 2</li>\n    <li ngTab value=\"tab3\">Tab 3</li>\n  </ul>\n\n  <div ngTabPanel value=\"tab1\">\n     <ng-template ngTabContent>Content for Tab 1</ng-template>\n  </div>\n  <div ngTabPanel value=\"tab2\">\n     <ng-template ngTabContent>Content for Tab 2</ng-template>\n  </div>\n  <div ngTabPanel value=\"tab3\">\n     <ng-template ngTabContent>Content for Tab 3</ng-template>\n  </div>\n</div>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
-          "name": "see",
-          "comment": "[Tabs](guide/aria/tabs)"
-        }
-      ],
-      "rawComment": "/**\n * A Tabs container.\n *\n * The `ngTabs` directive represents a set of layered sections of content. It acts as the\n * overarching container for a tabbed interface, coordinating the behavior of `ngTabList`,\n * `ngTab`, and `ngTabPanel` directives.\n *\n * ```html\n * <div ngTabs>\n *   <ul ngTabList [(selectedTab)]=\"selectedTabValue\">\n *     <li ngTab value=\"tab1\">Tab 1</li>\n *     <li ngTab value=\"tab2\">Tab 2</li>\n *     <li ngTab value=\"tab3\">Tab 3</li>\n *   </ul>\n *\n *   <div ngTabPanel value=\"tab1\">\n *      <ng-template ngTabContent>Content for Tab 1</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab2\">\n *      <ng-template ngTabContent>Content for Tab 2</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab3\">\n *      <ng-template ngTabContent>Content for Tab 3</ng-template>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
-      "implements": [
-        "OnDestroy"
-      ],
-      "isStandalone": true,
-      "selector": "[ngTabs]",
-      "exportAs": [
-        "ngTabs"
-      ],
-      "aliases": [
-        "ngTabs"
-      ],
-      "source": {
-        "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 54,
-        "endLine": 118
+        "endLine": 130
       }
     },
     {
@@ -736,15 +720,11 @@
       "description": "A TabList container.\n\nThe `ngTabList` directive controls a list of `ngTab` elements. It manages keyboard\nnavigation, selection, and the overall orientation of the tabs. It should be placed\nwithin an `ngTabs` container.\n\n```html\n<ul ngTabList [(selectedTab)]=\"mySelectedTab\" orientation=\"horizontal\" selectionMode=\"explicit\">\n  <li ngTab value=\"first\">First Tab</li>\n  <li ngTab value=\"second\">Second Tab</li>\n</ul>\n```",
       "jsdocTags": [
         {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
-        {
           "name": "see",
           "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A TabList container.\n *\n * The `ngTabList` directive controls a list of `ngTab` elements. It manages keyboard\n * navigation, selection, and the overall orientation of the tabs. It should be placed\n * within an `ngTabs` container.\n *\n * ```html\n * <ul ngTabList [(selectedTab)]=\"mySelectedTab\" orientation=\"horizontal\" selectionMode=\"explicit\">\n *   <li ngTab value=\"first\">First Tab</li>\n *   <li ngTab value=\"second\">Second Tab</li>\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
+      "rawComment": "/**\n * A TabList container.\n *\n * The `ngTabList` directive controls a list of `ngTab` elements. It manages keyboard\n * navigation, selection, and the overall orientation of the tabs. It should be placed\n * within an `ngTabs` container.\n *\n * ```html\n * <ul ngTabList [(selectedTab)]=\"mySelectedTab\" orientation=\"horizontal\" selectionMode=\"explicit\">\n *   <li ngTab value=\"first\">First Tab</li>\n *   <li ngTab value=\"second\">Second Tab</li>\n * </ul>\n * ```\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
@@ -759,8 +739,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tab-list.ts",
-        "startLine": 48,
-        "endLine": 171
+        "startLine": 46,
+        "endLine": 186
       }
     }
   ],
@@ -770,15 +750,23 @@
       "@angular/core"
     ],
     [
-      "_IdGenerator",
-      "@angular/cdk/a11y"
+      "computed",
+      "@angular/core"
     ],
     [
       "ElementRef",
       "@angular/core"
     ],
     [
-      "OnInit",
+      "inject",
+      "@angular/core"
+    ],
+    [
+      "signal",
+      "@angular/core"
+    ],
+    [
+      "afterNextRender",
       "@angular/core"
     ],
     [
@@ -786,15 +774,15 @@
       "@angular/core"
     ],
     [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
+      "OnInit",
+      "@angular/core"
+    ],
+    [
       "booleanAttribute",
-      "@angular/core"
-    ],
-    [
-      "computed",
-      "@angular/core"
-    ],
-    [
-      "inject",
       "@angular/core"
     ],
     [
@@ -806,11 +794,7 @@
       "@angular/core"
     ],
     [
-      "signal",
-      "@angular/core"
-    ],
-    [
-      "afterNextRender",
+      "contentChild",
       "@angular/core"
     ],
     [
@@ -834,6 +818,10 @@
       "@angular/aria/tabs"
     ],
     [
+      "Tabs",
+      "@angular/aria/tabs"
+    ],
+    [
       "Tab",
       "@angular/aria/tabs"
     ],
@@ -842,15 +830,23 @@
       "@angular/aria/tabs"
     ],
     [
-      "Tabs",
-      "@angular/aria/tabs"
-    ],
-    [
       "TabList",
       "@angular/aria/tabs"
     ],
     [
       "TabContent",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs.element",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs.ngOnDestroy",
       "@angular/aria/tabs"
     ],
     [
@@ -919,18 +915,6 @@
     ],
     [
       "TabPanel.ngOnDestroy",
-      "@angular/aria/tabs"
-    ],
-    [
-      "Tabs",
-      "@angular/aria/tabs"
-    ],
-    [
-      "Tabs.element",
-      "@angular/aria/tabs"
-    ],
-    [
-      "Tabs.ngOnDestroy",
       "@angular/aria/tabs"
     ],
     [

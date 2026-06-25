@@ -46,9 +46,6 @@ const adapter: NodeAdapter<DeclarationNode> = {
   getFileName(node: DeclarationNode): string {
     return node.getSourceFile().fileName;
   },
-  getContent(node: DeclarationNode): string {
-    return node.getSourceFile().getFullText();
-  },
 };
 
 runInEachFileSystem(() => {
@@ -66,13 +63,11 @@ runInEachFileSystem(() => {
       expect(info).toEqual({
         name: 'C',
         selector: 'c-selector',
-        file: new ParseSourceFile('class C {}', decl.getSourceFile().fileName),
+        fileUrl: decl.getSourceFile().fileName,
         template: {
           identifiers: getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>'))
             .identifiers,
-          usedComponents: new Set(),
-          isInline: false,
-          file: new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
+          fileUrl: decl.getSourceFile().fileName,
         },
         errors: [],
       });
@@ -96,9 +91,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info!.template.file).toEqual(
-        new ParseSourceFile('class C {}', decl.getSourceFile().fileName),
-      );
+      expect(info!.template.fileUrl).toEqual(decl.getSourceFile().fileName);
     });
 
     it('should give external templates their own source file', () => {
@@ -112,41 +105,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info!.template.file).toEqual(
-        new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
-      );
-    });
-
-    it('should emit used components', () => {
-      const context = new IndexingContext();
-
-      const templateA = '<b-selector></b-selector>';
-      const declA = util.getComponentDeclaration('class A {}', 'A');
-
-      const templateB = '<a-selector></a-selector>';
-      const declB = util.getComponentDeclaration('class B {}', 'B');
-
-      const boundA = util.getBoundTemplate(templateA, {}, [
-        {selector: 'b-selector', declaration: declB},
-      ]);
-      const boundB = util.getBoundTemplate(templateB, {}, [
-        {selector: 'a-selector', declaration: declA},
-      ]);
-
-      populateContext(context, declA, 'a-selector', templateA, boundA);
-      populateContext(context, declB, 'b-selector', templateB, boundB);
-
-      const analysis = generateAnalysis(context, adapter);
-
-      expect(analysis.size).toBe(2);
-
-      const infoA = analysis.get(declA);
-      expect(infoA).toBeDefined();
-      expect(infoA!.template.usedComponents).toEqual(new Set([declB]));
-
-      const infoB = analysis.get(declB);
-      expect(infoB).toBeDefined();
-      expect(infoB!.template.usedComponents).toEqual(new Set([declA]));
+      expect(info!.template.fileUrl).toEqual(decl.getSourceFile().fileName);
     });
   });
 });

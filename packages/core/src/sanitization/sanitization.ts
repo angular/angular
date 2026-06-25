@@ -10,10 +10,10 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {getDocument} from '../render3/interfaces/document';
-import {TNodeType} from '../render3/interfaces/node';
+import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {ENVIRONMENT} from '../render3/interfaces/view';
-import {getLView, getSelectedTNode} from '../render3/state';
+import {getLView, getSelectedIndex, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode} from '../render3/util/view_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
@@ -25,11 +25,11 @@ import {
 } from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
-import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './security';
-import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
+import {SecurityContext} from './dom_security_schema';
+import {_sanitizeUrl} from './url_sanitizer';
 
 /**
  * An `html` sanitizer which converts untrusted `html` **string** into trusted string by removing
@@ -219,7 +219,7 @@ const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined>
   'frame': {'src': true},
   'iframe': {'src': true},
   'media': {'src': true},
-  'script': {'src': true, 'href': true, 'xlink:href': true},
+
   'base': {'href': true},
   'link': {'href': true},
   'object': {'data': true, 'codebase': true},
@@ -233,7 +233,7 @@ const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined>
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  const isResource = RESOURCE_MAP[tag]?.[prop] === true;
+  const isResource = RESOURCE_MAP[tag.toLowerCase()]?.[prop.toLowerCase()] === true;
 
   return isResource ? ɵɵsanitizeResourceUrl : ɵɵsanitizeUrl;
 }
@@ -277,12 +277,13 @@ function getSanitizer(): Sanitizer | null {
  * Set of attributes that are sensitive and should be sanitized.
  */
 const SECURITY_SENSITIVE_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(['href', 'xlink:href']);
+const SVG_ANIMATION_ATTRIBUTE_NAME_CANDIDATES = ['attributeName', 'attributename'] as const;
 
 /**
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-export const SECURITY_SENSITIVE_ELEMENTS: Record<
+const SECURITY_SENSITIVE_ELEMENTS: Record<
   string,
   Record<string, true | undefined | ReadonlySet<string>> | undefined
 > = {
@@ -293,16 +294,17 @@ export const SECURITY_SENSITIVE_ELEMENTS: Record<
     'referrerpolicy': true,
     'csp': true,
     'fetchpriority': true,
+    'credentialless': true,
   },
-  'animate': {
+  ':svg:animate': {
     'attributename': true,
     'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
     'values': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
     'from': SECURITY_SENSITIVE_ATTRIBUTE_NAMES,
   },
-  'set': {'attributename': true, 'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES},
-  'animatemotion': {'attributename': true},
-  'animatetransform': {'attributename': true},
+  ':svg:set': {'attributename': true, 'to': SECURITY_SENSITIVE_ATTRIBUTE_NAMES},
+  ':svg:animatemotion': {'attributename': true},
+  ':svg:animatetransform': {'attributename': true},
 };
 
 /**
@@ -315,32 +317,58 @@ export const SECURITY_SENSITIVE_ELEMENTS: Record<
 export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
-  const validationConfig = SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.[lowerCaseAttrName];
+
+  const index = getSelectedIndex();
+  const tNode: TNode | null = index === -1 ? null : getSelectedTNode();
+  if (tNode && tNode.type !== TNodeType.Element) {
+    return value;
+  }
+
+  // Leverage tNode.namespace if active, otherwise check both namespaced and base variants.
+  const fullTagName =
+    lowerCaseTagName[0] !== ':' && tNode?.namespace
+      ? `:${tNode.namespace}:${lowerCaseTagName}`
+      : lowerCaseTagName;
+
+  const validationConfig = SECURITY_SENSITIVE_ELEMENTS[fullTagName]?.[lowerCaseAttrName];
+
   if (!validationConfig) {
     return value;
   }
 
-  const tNode = getSelectedTNode()!;
-  if (tNode.type !== TNodeType.Element) {
-    return value;
-  }
-
   const lView = getLView();
-  if (lowerCaseTagName === 'iframe') {
+  if (tNode && lowerCaseTagName === 'iframe') {
     const element = getNativeByTNode(tNode, lView) as RElement;
     enforceIframeSecurity(element as HTMLIFrameElement);
   }
 
-  if (typeof validationConfig !== 'boolean') {
-    const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
-    const attributeNameValue = element.getAttribute('attributeName');
+  const displayTagName = tagName[0] === ':' ? tagName.split(':').pop()! : tagName;
 
-    if (attributeNameValue && validationConfig.has(attributeNameValue.toLowerCase())) {
+  if (typeof validationConfig !== 'boolean') {
+    if (!tNode) {
       const errorMessage =
         ngDevMode &&
         `Angular has detected that the \`${attributeName}\` was applied ` +
-          `as a binding to the <${tagName}> element${getTemplateLocationDetails(lView)}. ` +
+          `as a binding to the <${tagName}> element. ` +
           `For security reasons, the \`${attributeName}\` can be set on the <${tagName}> element ` +
+          `as a static attribute only. \n` +
+          `To fix this, switch the \`${attributeName}\` binding to a static attribute ` +
+          `in a template or in host bindings section.`;
+      throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
+    }
+
+    const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
+    const attributeNameValue = getSecuritySensitiveSVGAnimationAttributeName(
+      element,
+      validationConfig,
+    );
+
+    if (attributeNameValue) {
+      const errorMessage =
+        ngDevMode &&
+        `Angular has detected that the \`${attributeName}\` was applied ` +
+          `as a binding to the <${displayTagName}> element${getTemplateLocationDetails(lView)}. ` +
+          `For security reasons, the \`${attributeName}\` can be set on the <${displayTagName}> element ` +
           `as a static attribute only when the "attributeName" is set to \'${attributeNameValue}\'. \n` +
           `To fix this, switch the \`${attributeNameValue}\` binding to a static attribute ` +
           `in a template or in host bindings section.`;
@@ -354,10 +382,24 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
   const errorMessage =
     ngDevMode &&
     `Angular has detected that the \`${attributeName}\` was applied ` +
-      `as a binding to the <${tagName}> element${getTemplateLocationDetails(lView)}. ` +
-      `For security reasons, the \`${attributeName}\` can be set on the <${tagName}> element ` +
+      `as a binding to the <${displayTagName}> element${tNode ? getTemplateLocationDetails(lView) : ''}. ` +
+      `For security reasons, the \`${attributeName}\` can be set on the <${displayTagName}> element ` +
       `as a static attribute only. \n` +
       `To fix this, switch the \`${attributeName}\` binding to a static attribute ` +
       `in a template or in host bindings section.`;
   throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
+}
+
+function getSecuritySensitiveSVGAnimationAttributeName(
+  element: SVGAnimateElement,
+  validationConfig: ReadonlySet<string>,
+): string | null {
+  for (const attributeName of SVG_ANIMATION_ATTRIBUTE_NAME_CANDIDATES) {
+    const attributeNameValue = element.getAttribute(attributeName);
+    if (attributeNameValue !== null && validationConfig.has(attributeNameValue.toLowerCase())) {
+      return attributeNameValue;
+    }
+  }
+
+  return null;
 }

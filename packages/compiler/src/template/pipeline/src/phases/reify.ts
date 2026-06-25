@@ -8,6 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import {CONTEXT_NAME} from '../../../../render3/view/util';
+import {isUnsafeObjectKey} from '../../../../render3/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -140,6 +141,22 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 op.localRefs as number | null,
                 op.wholeSourceSpan,
               ),
+        );
+        break;
+      case ir.OpKind.ForeignComponent:
+        const propsExpr =
+          op.props.size > 0
+            ? o.literalMap(
+                Array.from(op.props.entries()).map(([key, value]) => ({
+                  key,
+                  value,
+                  quoted: isUnsafeObjectKey(key),
+                })),
+              )
+            : null;
+        ir.OpList.replace(
+          op,
+          ng.foreignComponent(op.handle.slot!, o.literal(op.constIndex), propsExpr, op.sourceSpan),
         );
         break;
       case ir.OpKind.ElementEnd:
@@ -782,6 +799,17 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
       return ng.nextContext(expr.steps);
     case ir.ExpressionKind.Reference:
       return ng.reference(expr.targetSlot.slot! + 1 + expr.offset);
+    case ir.ExpressionKind.ForeignContent:
+      if (!(unit instanceof ViewCompilationUnit)) {
+        throw new Error(`AssertionError: must be compiling a component`);
+      }
+      const isFn = unit.job.views.get(expr.childrenViewXref)!.contextVariables.size > 0;
+      const slot = o.literal(expr.childrenViewHandle.slot!);
+      return isFn
+        ? o
+            .importExpr(Identifiers.foreignContentFn)
+            .callFn([slot, o.literal(expr.foreignComponentConstIndex)])
+        : o.importExpr(Identifiers.foreignContent).callFn([slot]);
     case ir.ExpressionKind.LexicalRead:
       throw new Error(`AssertionError: unresolved LexicalRead of ${expr.name}`);
     case ir.ExpressionKind.TwoWayBindingSet:

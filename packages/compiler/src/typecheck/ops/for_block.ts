@@ -48,11 +48,21 @@ export class TcbForOfOp extends TcbOp {
     const expression = new TcbExpr(
       `${tcbExpression(this.block.expression, this.tcb, this.scope).print()}!`,
     );
-    const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
-    const trackExpression = trackTranslator.translate(this.block.trackBy);
-    const block = getStatementsBlock([...loopScope.render(), trackExpression]);
+
+    let statements: TcbExpr[];
+
+    if (this.block.trackBy === null) {
+      statements = loopScope.render();
+    } else {
+      const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
+      const trackExpression = trackTranslator.translate(this.block.trackBy);
+      statements = [...loopScope.render(), trackExpression];
+    }
+
     this.scope.addStatement(
-      new TcbExpr(`for (${initializer.print()} of ${expression.print()}) {\n${block} }`),
+      new TcbExpr(
+        `for (${initializer.print()} of ${expression.print()}) {\n${getStatementsBlock(statements)} }`,
+      ),
     );
     return null;
   }

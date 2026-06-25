@@ -73,28 +73,21 @@ ng generate service heroes/hero
 This command creates the following default `HeroService`:
 
 ```ts {header: 'heroes/hero.service.ts (CLI-generated)'}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class HeroService {}
 ```
 
-The `@Injectable()` decorator specifies that Angular can use this class in the DI system.
-The `providedIn: 'root'` metadata specifies that the `HeroService` is available throughout your application.
+The `@Service()` decorator specifies that Angular can use this class in the DI system and that the `HeroService` is available throughout your application.
 
 Add a `getHeroes()` method that returns the heroes from `mock.heroes.ts` to get the hero mock data:
 
 ```ts {header: 'hero.service.ts'}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 import {HEROES} from './mock-heroes';
 
-@Injectable({
-  // declares that this service should be created
-  // by the root application injector.
-  providedIn: 'root',
-})
+@Service()
 export class HeroService {
   getHeroes() {
     return HEROES;
@@ -133,13 +126,11 @@ When a service depends on another service, follow the same pattern as injecting 
 In the following example, `HeroService` depends on a `Logger` service to report its activities:
 
 ```ts {header: 'hero.service.ts, highlight: [[3],[9],[12]]}
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {HEROES} from './mock-heroes';
 import {Logger} from '../logger.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class HeroService {
   private logger = inject(Logger);
 

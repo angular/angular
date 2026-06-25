@@ -127,6 +127,7 @@ export function createQuickInfoForBuiltIn(
       partSpan = node.nameSpan;
     } else if (
       node instanceof TmplAstForLoopBlock &&
+      node.trackKeywordSpan !== null &&
       isWithin(cursorPositionInTemplate, node.trackKeywordSpan)
     ) {
       partSpan = node.trackKeywordSpan;
