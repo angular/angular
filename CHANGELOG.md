@@ -1,3 +1,34 @@
+<a name="22.0.3"></a>
+# 22.0.3 (2026-06-25)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f90c20df40](https://github.com/angular/angular/commit/f90c20df4064dcdc4fe63d3148e0d696a61f562c) | fix | account for NgModule dependencies in JIT-compiled partial declarations |
+| [f4f7f3755c](https://github.com/angular/angular/commit/f4f7f3755cc74c7ee73da32a14d99cdb9265177c) | fix | remove unused import breaking CI in 22.0.x |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [06d854929c](https://github.com/angular/angular/commit/06d854929c31213df363274f80a64b9049f0310c) | fix | report diagnostic instead of crashing on malformed host binding |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2799304259](https://github.com/angular/angular/commit/279930425910c804e369a04f8df3a259f16b8daf) | fix | avoid uncaught promise errors in injectAsync prefetching |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8cdc202dfc](https://github.com/angular/angular/commit/8cdc202dfcd45b95fdcabb2af3493571f57a4762) | fix | prevent caching of responses with Set-Cookie headers |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b4a5a2fb4e](https://github.com/angular/angular/commit/b4a5a2fb4eb2b2ffb6e79170d453d55af2c72e73) | fix | preserve referrer in asset requests |
+| [a16f9b2263](https://github.com/angular/angular/commit/a16f9b22633ef88f64517e18b29923c74da6bff6) | fix | preserve referrer policy in asset requests |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bcc648f4b6](https://github.com/angular/angular/commit/bcc648f4b6dae63d600a9f1c40854940bf8442c7) | fix | support model() signals in downgradeComponent |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.2"></a>
 # 22.0.2 (2026-06-17)
 ### common
