@@ -548,7 +548,7 @@ form(
 ### `src/app/app.ts`
 
 ```ts
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {
   form,
   FormField,
@@ -563,10 +563,8 @@ import {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [FormField],
   templateUrl: './app.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   protected readonly model = signal({
