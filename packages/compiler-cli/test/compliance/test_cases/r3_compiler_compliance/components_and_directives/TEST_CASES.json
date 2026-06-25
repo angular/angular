@@ -179,6 +179,22 @@
         }
       ],
       "compilationModeFilter": ["full compile", "instruction compile"]
+    },
+    {
+      "description": "should support host binding with animate.enter",
+      "inputFiles": ["host_animate_enter.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output",
+          "files": [
+            {
+              "expected": "host_animate_enter.js",
+              "generated": "host_animate_enter.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "instruction compile"]
     }
   ]
 }
