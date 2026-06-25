@@ -59,11 +59,11 @@ If the `params` computation returns `undefined`, the loader function does not ru
 
 ### Streaming resources
 
-Use `loader` when a resource performs a single asynchronous operation, such as fetching data from an HTTP endpoint.
+Some asynchronous data sources produce multiple values over time instead of returning a single result. Examples include WebSockets, Server-Sent Events (SSE), and Firestore `onSnapshot` listeners.
 
-Use `stream` when your data source can emit multiple values over time. Unlike `loader`, which resolves once for each request, `stream` returns a signal whose value can continue to update as new data becomes available.
+Use `stream` for these continuously updating data sources. Unlike `loader`, which resolves once for each request, `stream` returns a signal whose value can continue to update as new data becomes available.
 
-Streaming resources are useful for continuously updating data sources such as WebSockets, Server-Sent Events (SSE), or Firestore `onSnapshot` listeners.
+Use `loader` for one-time asynchronous operations, such as fetching data from an HTTP endpoint.
 
 ```typescript
 const userUpdates = signal({value: 'Alice'});
