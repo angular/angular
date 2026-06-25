@@ -2488,5 +2488,61 @@ export function guardsIntegrationSuite() {
       await router.navigateByUrl('/a?q=2');
       expect(resolveCount).toBe(2);
     });
+
+    describe('throwing redirect', () => {
+      it('should redirect when a guard throws a RedirectCommand', async () => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {
+            path: 'a',
+            canActivate: [
+              () => {
+                throw new RedirectCommand(router.parseUrl('/b'));
+              },
+            ],
+            component: BlankCmp,
+          },
+          {
+            path: 'b',
+            component: BlankCmp,
+          },
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+
+        expect(location.path()).toEqual('/b');
+      });
+
+      it('should redirect when a resolver throws a RedirectCommand', async () => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {
+            path: 'a',
+            resolve: {
+              data: () => {
+                throw new RedirectCommand(router.parseUrl('/b'));
+              },
+            },
+            component: BlankCmp,
+          },
+          {
+            path: 'b',
+            component: BlankCmp,
+          },
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+
+        expect(location.path()).toEqual('/b');
+      });
+    });
   });
 }
