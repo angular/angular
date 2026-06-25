@@ -81,26 +81,59 @@ export const legacyAnimationTriggerResolver: ForeignFunctionResolver = (
   return res;
 };
 
+export interface FlattenedImports {
+  imports: Reference<ClassDeclaration>[];
+  importsByBlock: Map<string, Reference<ClassDeclaration>[]> | null;
+  diagnostics: ts.Diagnostic[];
+}
+
 export function validateAndFlattenComponentImports(
   imports: ResolvedValue,
   expr: ts.Expression,
   isDeferred: boolean,
-): {
-  imports: Reference<ClassDeclaration>[];
-  diagnostics: ts.Diagnostic[];
-} {
+): FlattenedImports {
   const flattened: Reference<ClassDeclaration>[] = [];
+  const diagnostics: ts.Diagnostic[] = [];
+  let importsByBlock: Map<string, Reference<ClassDeclaration>[]> | null = null;
+
   const errorMessage = isDeferred
-    ? `'deferredImports' must be an array of components, directives, or pipes.`
+    ? `'deferredImports' must be an array of components, directives, or pipes, or an object mapping block names to dependency arrays.`
     : `'imports' must be an array of components, directives, pipes, or NgModules.`;
+
+  if (isDeferred && imports instanceof Map) {
+    importsByBlock = new Map();
+    for (const [blockName, blockValue] of imports.entries()) {
+      let propExpr = expr;
+      if (ts.isObjectLiteralExpression(expr)) {
+        const prop = expr.properties.find(
+          (p) =>
+            ts.isPropertyAssignment(p) &&
+            (ts.isIdentifier(p.name) || ts.isStringLiteral(p.name)) &&
+            p.name.text === blockName,
+        );
+        if (prop && ts.isPropertyAssignment(prop)) {
+          propExpr = prop.initializer;
+        }
+      }
+
+      const {imports: blockImports, diagnostics: blockDiagnostics} =
+        validateAndFlattenComponentImports(blockValue, propExpr, isDeferred);
+
+      diagnostics.push(...blockDiagnostics);
+      flattened.push(...blockImports);
+      importsByBlock.set(blockName, blockImports);
+    }
+    return {imports: flattened, importsByBlock, diagnostics};
+  }
+
   if (!Array.isArray(imports)) {
     const error = createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic();
     return {
       imports: [],
+      importsByBlock: null,
       diagnostics: [error],
     };
   }
-  const diagnostics: ts.Diagnostic[] = [];
 
   for (let i = 0; i < imports.length; i++) {
     const ref = imports[i];
@@ -161,7 +194,7 @@ export function validateAndFlattenComponentImports(
     }
   }
 
-  return {imports: flattened, diagnostics};
+  return {imports: flattened, importsByBlock, diagnostics};
 }
 
 export function validateAndFlattenForeignImports(
