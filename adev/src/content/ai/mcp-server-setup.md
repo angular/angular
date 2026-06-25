@@ -1,9 +1,9 @@
 # Angular CLI MCP Server
 
-The Angular CLI includes a Model Context Protocol (MCP) server that enables AI assistants (like Cursor, Gemini CLI, JetBrains AI, etc.) to interact directly with the Angular CLI. It provides tools for code generation, workspace analysis, and running builds/tests.
+The Angular CLI includes a Model Context Protocol (MCP) server that enables AI assistants (like Cursor, Antigravity, JetBrains AI, etc.) to interact directly with the Angular CLI. It provides tools for code generation, workspace analysis, and running builds/tests.
 
 <docs-callout title="Integration with Angular AI Agent Skills">
-  If your host environment supports custom Agent Skills (such as Antigravity IDE or Gemini CLI), you can combine the Angular CLI MCP server with the official [Angular AI Skills](https://angular.dev/ai/skills). While the skills provide the agent with deep instruction-level guidance and coding standards, the MCP server provides the action tools (like compiling, running tests, and analyzing workspaces) to execute those guidelines, resulting in a complete and powerful development agent.
+  If your host environment supports custom Agent Skills (such as Antigravity), you can combine the Angular CLI MCP server with the official [Angular AI Skills](https://angular.dev/ai/skills). While the skills provide the agent with deep instruction-level guidance and coding standards, the MCP server provides the action tools (like compiling, running tests, and analyzing workspaces) to execute those guidelines, resulting in a complete and powerful development agent.
 </docs-callout>
 
 ## Get Started
@@ -13,22 +13,6 @@ To use the MCP server, you configure your host environment (IDE or CLI) to run `
 <docs-tab-group>
   <docs-tab label="Antigravity IDE">
     Create a file named `.antigravity/mcp.json` in your project's root:
-
-    ```json
-    {
-      "mcpServers": {
-        "angular-cli": {
-          "command": "npx",
-          "args": ["-y", "@angular/cli", "mcp"]
-        }
-      }
-    }
-    ```
-
-  </docs-tab>
-
-  <docs-tab label="Gemini CLI">
-    Create `.gemini/settings.json` in the project root:
 
     ```json
     {
@@ -83,21 +67,14 @@ When the MCP server is enabled, AI agents have access to the following tools:
 | Name                        | Description                                                                                               |
 | :-------------------------- | :-------------------------------------------------------------------------------------------------------- |
 | `ai_tutor`                  | Launches an interactive AI-powered Angular tutor.                                                         |
+| `devserver.start`           | Asynchronously starts a dev server (`ng serve`). Returns immediately.                                     |
+| `devserver.stop`            | Stops the dev server.                                                                                     |
+| `devserver.wait_for_build`  | Returns the logs of the most recent build in a running dev server.                                        |
 | `get_best_practices`        | Retrieves the Angular Best Practices Guide (crucial for standalone components, typed forms, etc.).        |
 | `list_projects`             | Lists all applications and libraries in the workspace by reading `angular.json`.                          |
 | `onpush_zoneless_migration` | Analyzes code and provides a plan to migrate it to `OnPush` change detection (prerequisite for zoneless). |
+| `run_target`                | Executes a configured target (e.g., build, test, lint, e2e, deploy).                                      |
 | `search_documentation`      | Searches the official documentation at `https://angular.dev`.                                             |
-
-## Experimental Tools
-
-Some tools must be enabled explicitly using the `--experimental-tool` (or `-E`) flag.
-
-| Name                       | Description                                                           |
-| :------------------------- | :-------------------------------------------------------------------- |
-| `run_target`               | Executes a configured target (e.g., build, test, lint, e2e, deploy).  |
-| `devserver.start`          | Asynchronously starts a dev server (`ng serve`). Returns immediately. |
-| `devserver.stop`           | Stops the dev server.                                                 |
-| `devserver.wait_for_build` | Returns the logs of the most recent build in a running dev server.    |
 
 ## Common Workflows
 
@@ -140,10 +117,9 @@ You can pass arguments to the MCP server in the `args` array of your configurati
 
 - `--read-only`: Only registers tools that do not modify the project.
 - `--local-only`: Only registers tools that do not require an internet connection.
-- `--experimental-tool` (`-E`): Enables specific experimental tools (e.g., `-E run_target`, `-E devserver`).
 
-Example for read-only mode with experimental tools enabled:
+Example for read-only mode:
 
 ```json
-"args": ["-y", "@angular/cli", "mcp", "--read-only", "-E", "run_target", "-E", "devserver"]
+"args": ["-y", "@angular/cli", "mcp", "--read-only"]
 ```
