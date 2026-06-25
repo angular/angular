@@ -5502,4 +5502,158 @@ describe('IdleScheduler', () => {
     capturedCbs[0]({didTimeout: false, timeRemaining: () => 10});
     expect(cb1).toHaveBeenCalledTimes(1);
   });
+
+  it('should not register a spurious requestOnIdle when a callback re-entrantly adds to the same bucket', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.add(cbB);
+    });
+
+    scheduler.add(cbA);
+    expect(ricCount).toBe(1);
+
+    capturedCb!({didTimeout: false, timeRemaining: () => 9999});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(1);
+    expect(ricCount).toBe(1);
+  });
+
+  it('should defer a re-entrantly-added same-bucket callback to the next idle period when the deadline expires', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.add(cbB);
+    });
+
+    scheduler.add(cbA);
+    capturedCbs[0]({didTimeout: false, timeRemaining: () => 0});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(0);
+    expect(ricCount).toBe(2);
+    capturedCbs[1]({didTimeout: false, timeRemaining: () => 10});
+    expect(cbB).toHaveBeenCalledTimes(1);
+  });
+
+  it('should isolate a re-entrantly-added callback in a different bucket from the current drain', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.add(cbB, {timeout: 500});
+    });
+
+    scheduler.add(cbA);
+    capturedCbs[0]({didTimeout: false, timeRemaining: () => 10});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(0);
+    expect(ricCount).toBe(2);
+
+    capturedCbs[1]({didTimeout: false, timeRemaining: () => 10});
+    expect(cbB).toHaveBeenCalledTimes(1);
+  });
+
+  it('should skip a same-bucket sibling that is removed during a drain', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbC = jasmine.createSpy('cbC');
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.remove(cbC);
+    });
+
+    scheduler.add(cbA);
+    scheduler.add(cbB);
+    scheduler.add(cbC);
+
+    capturedCb!({didTimeout: false, timeRemaining: () => 10});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(1);
+    expect(cbC).toHaveBeenCalledTimes(0);
+    expect(ricCount).toBe(1);
+  });
+
+  it('should skip the immediately-next callback when it is removed during a drain', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.remove(cbB);
+    });
+
+    scheduler.add(cbA);
+    scheduler.add(cbB);
+
+    capturedCb!({didTimeout: false, timeRemaining: () => 10});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(0);
+    expect(ricCount).toBe(1);
+  });
+
+  it('should ignore re-entrant remove() calls for callbacks already processed in the current drain', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbA = jasmine.createSpy('cbA');
+    const cbB = jasmine.createSpy('cbB').and.callFake(() => {
+      scheduler.remove(cbA);
+    });
+
+    scheduler.add(cbA);
+    scheduler.add(cbB);
+
+    expect(() => capturedCb!({didTimeout: false, timeRemaining: () => 10})).not.toThrow();
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(1);
+    expect(ricCount).toBe(1);
+  });
 });
