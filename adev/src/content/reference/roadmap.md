@@ -20,12 +20,13 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
-- [Signal Forms](/guide/forms/signals/overview)
-- [Resource API](/guide/signals/resource)
-- [httpResource](/api/common/http/httpResource)
+- [Web MCP](/ai/webmcp)
 
 ### Production ready
 
+- [Signal Forms](/guide/forms/signals/overview)
+- [Resource API](/guide/signals/resource)
+- [httpResource](/api/common/http/httpResource)
 - [Zoneless change detection](/guide/zoneless)
 - [Linked Signal API](/guide/signals/linked-signal)
 - [Incremental hydration](/guide/incremental-hydration)
@@ -70,16 +71,6 @@ As part of this project, we'll explore the requirement space of cross framework 
 
   </docs-card>
 
-  <docs-card title="Signal Forms" href="/guide/forms/signals/overview">
-  In Angular v21, we landed an experimental version of Signal Forms. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. Next, our plans include promoting Signal Forms to stable and enhancing interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
-  </docs-card>
-  <docs-card title="Reactivity">
-  We introduced experimental signal APIs, resource() and httpResource(), for flexible asynchronous data handling. We plan to promote these APIs to developer preview/stable based on community feedback.
-  We are also evaluating new APIs for unhandled use cases, considering community benefits and tradeoffs before implementation after careful consideration.
-  </docs-card>
-  <docs-card title="Change Detection">
-  With Zoneless being stable and default, we are also planning to shift the default change detection strategy to OnPush, to follow current best practices. [See the RFC discussion for details](https://github.com/angular/angular/discussions/66779).
-  </docs-card>
   <docs-card title="Components">
   In Angular v21, we launched Angular Aria in developer preview, providing eight patterns for accessible, headless components. We're planning to promote these patterns to stable and introduce new patterns where needed . We want to provide developers with a solid foundation for developing their own components using Angular Aria - we provide the interactions and you bring the style that matches your design systems. Developers will have the choice of developing custom components with Angular Aria, use interaction patterns from the CDK, or use ready-made styled Material Components.
 
@@ -98,14 +89,29 @@ For accessibility, we are continuously evaluating the components and patterns ag
 ## Completed projects
 
 <docs-card-container>
-  <docs-card title="Signal debugging in Angular DevTools" link="Completed in 2025">
-  With the evolution of Signals in Angular, we are working on a better tooling for debugging them. High on the priority list is a UI for inspecting and debugging signals.
-  </docs-card>
-  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306" link="Completed in 2025">
-  We're working towards faster edit/refresh cycle by enabling hot module replacement.
 
-In Angular v19 we shipped initial support for CSS and template HMR and in v20 we graduated template HMR to stable. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
+  <docs-card title="Signal Forms" href="/guide/forms/signals/overview" link="Completed in 2026">
+  Signal Forms are now stable. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. We promoted Signal Forms to stable and enhanced interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
+  </docs-card>
+  
+  <docs-card title="Reactivity" href="/guide/signals" link="Completed in 2026">
+  We introduced new signal APIs, `resource()` and `httpResource()`, for flexible asynchronous data handling. We promoted these APIs to developer stable.
+  </docs-card>
+  
+  <docs-card title="Change Detection" href="/api/core/ChangeDetectionStrategy" link="Completed in 2026">
+  With Zoneless being stable and default, we set the default change detection strategy to `OnPush`, to follow current best practices. We also renamed `ChangeDetectionStrategy.Default` to `ChangeDetectionStrategy.Eager`.
+  
+  [See the RFC discussion for details](https://github.com/angular/angular/discussions/66779).
+  </docs-card>
+
+  <docs-card title="Signal debugging in Angular DevTools" link="Completed in 2026">
+  We've added better tooling for debugging Signals using Angular DevTools. This change includes a new UI for inspecting and debugging signals.
+  </docs-card>
+
+  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306" link="Completed in 2025">
+  We're working towards faster edit/refresh cycle by enabling hot module replacement. In Angular v19 we shipped initial support for CSS and template HMR and in v20 we graduated template HMR to stable. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
 </docs-card>
+
 <docs-card title="Zoneless Angular"  link="Completed in Q4 2025">
 In v18 we shipped experimental zoneless support in Angular. It enables developers to use the framework without including zone.js in their bundle, which improves performance, debugging experience, and interoperability. As part of the initial release we also introduced zoneless support to the Angular CDK and Angular Material.
 
