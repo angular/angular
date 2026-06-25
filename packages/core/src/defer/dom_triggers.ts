@@ -31,6 +31,7 @@ import {
   TriggerType,
 } from './interfaces';
 import {getLDeferBlockDetails} from './utils';
+import {shouldTriggerDeferBlock} from './rendering';
 
 /**
  * Wrapper for onViewport trigger with angular specific Injector for resolving NgZone instance
@@ -134,6 +135,10 @@ export function registerDomTrigger<O>(
   type: TriggerType,
   options?: O,
 ) {
+  if (!shouldTriggerDeferBlock(type, initialLView)) {
+    return;
+  }
+
   const injector = initialLView[INJECTOR];
   const zone = injector.get(NgZone);
   let poll: AfterRenderRef;

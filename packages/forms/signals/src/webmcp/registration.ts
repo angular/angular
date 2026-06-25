@@ -8,28 +8,48 @@
 
 import {
   declareExperimentalWebMcpTool,
+  effect,
   EnvironmentProviders,
+  inject,
+  Injector,
   makeEnvironmentProviders,
   untracked,
 } from '@angular/core';
 import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
 import {submit} from '../api/structure';
+import {FieldTree} from '../api/types';
 import {FieldNode} from '../field/node';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from './tokens';
 
-const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
-  untracked(() => {
-    const node = formTree() as FieldNode;
-    const inputSchema = inferSchemaFromFieldNode(node);
+const registerWebMcpForm: RegisterWebMcpForm = async (formTree, options) => {
+  const injector = inject(Injector);
 
-    if (!inputSchema) {
-      throw new Error(
-        `Could not accurately infer WebMCP schema for form "${options.name}". ` +
-          `Ensure that the form model does not contain null, undefined, empty arrays, or unsupported types.`,
-      );
-    }
+  // we want to defer the registration until the context is fully initialized,
+  // This is especially useful if the form model is a derivation of a required input
+  effect(() => {
+    untracked(() => {
+      initWebMcpForm(formTree, options, injector);
+    });
+  });
+};
 
-    declareExperimentalWebMcpTool({
+function initWebMcpForm(
+  formTree: FieldTree<unknown>,
+  options: {name: string; description: string},
+  injector: Injector,
+) {
+  const node = formTree() as FieldNode;
+  const inputSchema = inferSchemaFromFieldNode(node);
+
+  if (!inputSchema) {
+    throw new Error(
+      `Could not accurately infer WebMCP schema for form "${options.name}". ` +
+        `Ensure that the form model does not contain null, undefined, empty arrays, or unsupported types.`,
+    );
+  }
+
+  declareExperimentalWebMcpTool(
+    {
       name: options.name,
       description: options.description,
       inputSchema,
@@ -54,9 +74,10 @@ const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
           return {content: [{type: 'text', text: `Form submission failed:\n${errorMessages}`}]};
         }
       },
-    });
-  });
-};
+    },
+    injector,
+  );
+}
 
 /** Infers the JSON schema from a specific form field. */
 function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | undefined {
@@ -105,6 +126,7 @@ function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | und
       type: 'object',
       properties,
       required,
+      additionalProperties: false,
     };
   }
 

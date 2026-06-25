@@ -28,7 +28,9 @@ export class JsonpCmp {
   people: Person[] = [];
 
   constructor(http: HttpClient) {
-    http.jsonp('./people.json', 'callback').subscribe((res: unknown) => {
+    const peopleUrl = new URL('./people.json', window.location.href).toString();
+
+    http.jsonp(peopleUrl, 'callback').subscribe((res: unknown) => {
       this.people = res as Person[];
     });
   }

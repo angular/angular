@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
-import {Type, Writable} from '../interface/type';
+import {AbstractType, Type, Writable} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
@@ -111,7 +111,7 @@ interface DirectiveDefinition<T> {
   /**
    * Directive type, needed to configure the injector.
    */
-  type: Type<T>;
+  type: Type<T> | AbstractType<T>;
 
   /** The selectors that will be used to match nodes to this directive. */
   selectors?: (string | number)[][];
@@ -676,7 +676,7 @@ export function extractDefListOrFactory<T>(
 /**
  * A map that contains the generated component IDs and type.
  */
-export const GENERATED_COMP_IDS = new Map<string, Type<unknown>>();
+export const GENERATED_COMP_IDS = new Map<string, Type<unknown> | AbstractType<unknown>>();
 
 /**
  * A method can returns a component ID from the component definition using a variant of DJB2 hash

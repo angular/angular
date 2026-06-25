@@ -6,6 +6,7 @@
   [element]="signalGraph.element()"
   (nodeClick)="onNodeClick($event)"
   (clusterCollapse)="detailsVisible.set(false)"
+  (searchedNodeFound)="detailsVisible.set(false)"
 />
 
 @let node = selectedNode();

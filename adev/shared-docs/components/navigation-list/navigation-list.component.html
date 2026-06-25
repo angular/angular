@@ -9,11 +9,17 @@
   >
     @for (itemGroup of groupItems(navigationItems, preserveOtherCategoryOrder); track $index) {
       @let groupLabel = itemGroup[0];
-      @let items = itemGroup[1];
+      @let group = itemGroup[1];
+      @let items = group.items;
       @let firstItem = items[0];
 
       @if (groupLabel && collapsableLevel() !== firstItem.level && items.length > 1) {
-        <li class="docs-navigation-group">{{ groupLabel }}</li>
+        <li class="docs-navigation-group">
+          <span>{{ groupLabel }}</span>
+          <ng-container
+            *ngTemplateOutlet="itemStatus; context: {$implicit: {status: group.status}}"
+          />
+        </li>
       }
       @for (item of items; track $index) {
         <li
@@ -27,7 +33,7 @@
                 [href]="item.path"
                 target="_blank"
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="itemLabel.length < 27"
+                [matTooltipDisabled]="itemLabel.length < labelTruncationThreshold"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"
@@ -55,7 +61,7 @@
                 }"
                 (click)="emitClickOnLink(item)"
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="itemLabel.length < 27"
+                [matTooltipDisabled]="itemLabel.length < labelTruncationThreshold"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"
@@ -76,7 +82,7 @@
               <div
                 class="docs-secondary-nav-header"
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="itemLabel.length < 27"
+                [matTooltipDisabled]="itemLabel.length < labelTruncationThreshold"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"
@@ -106,7 +112,7 @@
                   item.children && item.level === expandableLevel() && !item.isExpanded
                 "
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="itemLabel.length < 27"
+                [matTooltipDisabled]="itemLabel.length < labelTruncationThreshold"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"

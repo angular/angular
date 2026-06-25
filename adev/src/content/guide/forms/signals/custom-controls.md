@@ -245,7 +245,7 @@ The minimal controls shown above work, but they don't respond to form state. You
 Here's a comprehensive example that implements common state properties:
 
 ```angular-ts
-import {Component, model, input, ChangeDetectionStrategy} from '@angular/core';
+import {Component, model, input, output, ChangeDetectionStrategy} from '@angular/core';
 import {
   FormValueControl,
   WithOptionalFieldTree,
@@ -266,7 +266,7 @@ import {
           [readonly]="readonly()"
           [class.invalid]="invalid()"
           [attr.aria-invalid]="invalid()"
-          (blur)="touched.set(true)"
+          (blur)="touch.emit()"
         />
 
         @if (invalid()) {
@@ -293,7 +293,8 @@ export class StatefulInput implements FormValueControl<string> {
   value = model<string>('');
 
   // Writable interaction state - control updates these
-  touched = model<boolean>(false);
+  touched = input<boolean>(false);
+  touch = output<void>();
 
   // Read-only state - form system manages these
   disabled = input<boolean>(false);
@@ -338,6 +339,54 @@ When the user types an invalid email, the FormField directive automatically upda
 ### Signal types for state properties
 
 Most state properties use `input()` (read-only from the form). Use `model()` for `touched` when your control updates it on user interaction. The `touched` property uniquely supports `model()`, `input()`, or `OutputRef` depending on your needs.
+
+### Working with `debounce('blur')`
+
+The [`debounce('blur')`](api/forms/signals/debounce) rule delays updates from the UI to the form model until the field is blurred, instead of applying them on every keystroke. Built-in controls report a blur to the form automatically. A custom control only participates if it emits its `touch` output in response to the native [`blur` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event):
+
+```angular-ts
+import {Component, model, output} from '@angular/core';
+import {FormValueControl} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-custom-input',
+  template: `
+    <input
+      type="text"
+      [value]="value()"
+      (input)="value.set($event.target.value)"
+      (blur)="touch.emit()"
+    />
+  `,
+})
+export class CustomInput implements FormValueControl<string> {
+  value = model('');
+  touch = output<void>();
+}
+```
+
+With the `touch` output in place, `debounce('blur')` behaves the same for your control as it does for built-in inputs:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {debounce, form, FormField} from '@angular/forms/signals';
+import {CustomInput} from './custom-input';
+
+@Component({
+  selector: 'app-root',
+  imports: [CustomInput, FormField],
+  template: `<app-custom-input [formField]="userForm.name" />`,
+})
+export class App {
+  userModel = signal({name: ''});
+
+  userForm = form(this.userModel, (schemaPath) => {
+    debounce(schemaPath.name, 'blur');
+  });
+}
+```
+
+IMPORTANT: Emit `touch` on `blur` (when focus leaves the control), not on `focus`. Without the `touch` output the field never registers as blurred, so `debounce('blur')` has no effect on your control.
 
 ## Value transformation
 

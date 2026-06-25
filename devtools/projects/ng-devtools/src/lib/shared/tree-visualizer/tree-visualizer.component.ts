@@ -102,6 +102,10 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
     this.visualizer()?.snapToNode(node, scale);
   }
 
+  highlightNode(node: T | null) {
+    this.visualizer()?.highlightNode(node);
+  }
+
   getNodeById(id: string) {
     return this.visualizer()?.getInternalNodeById(id);
   }

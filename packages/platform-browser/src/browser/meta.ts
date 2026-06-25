@@ -102,7 +102,8 @@ export class Meta {
    */
   getTag(attrSelector: string): HTMLMetaElement | null {
     if (!attrSelector) return null;
-    return this._doc.querySelector(`meta[${attrSelector}]`) || null;
+    const meta = this._doc.querySelector(`meta[${attrSelector}]`);
+    return meta?.nodeName.toLowerCase() === 'meta' ? meta : null;
   }
 
   /**
@@ -114,7 +115,11 @@ export class Meta {
   getTags(attrSelector: string): HTMLMetaElement[] {
     if (!attrSelector) return [];
     const list /*NodeList*/ = this._doc.querySelectorAll(`meta[${attrSelector}]`);
-    return list ? [].slice.call(list) : [];
+    return list
+      ? (([].slice.call(list) as HTMLElement[]).filter(
+          (elem) => elem.nodeName.toLowerCase() === 'meta',
+        ) as HTMLMetaElement[])
+      : [];
   }
 
   /**
@@ -183,7 +188,13 @@ export class Meta {
 
   private _parseSelector(tag: MetaDefinition): string {
     const attr: string = tag.name ? 'name' : 'property';
-    return `${attr}="${tag[attr]}"`;
+    return `${attr}=${this._escapeSelectorValue(String(tag[attr]))}`;
+  }
+
+  private _escapeSelectorValue(value: string): string {
+    // Escape backslashes and double quotes to prevent CSS selector injection.
+    // This securely confines the value inside an attribute selector.
+    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
   }
 
   private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {

@@ -125,6 +125,7 @@ export {
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {Writable as ɵWritable} from './interface/type';
 export {getClosestComponentName as ɵgetClosestComponentName} from './internal/get_closest_component_name';
+export {getCurrentClosestComponentInstance as ɵgetCurrentClosestComponentInstance} from './internal/get_current_closest_component_instance';
 export {
   clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue,
   isComponentDefPendingResolution as ɵisComponentDefPendingResolution,

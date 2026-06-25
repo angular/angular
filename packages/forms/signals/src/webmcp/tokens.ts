@@ -22,5 +22,5 @@ export const REGISTER_WEBMCP_FORM = new InjectionToken<RegisterWebMcpForm>(
  */
 export type RegisterWebMcpForm = (
   form: FieldTree<unknown>,
-  options: {name: string; description?: string},
+  options: {name: string; description: string},
 ) => void;

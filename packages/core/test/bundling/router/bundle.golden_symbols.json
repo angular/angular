@@ -1,6 +1,7 @@
 {
   "chunks": {
     "main": [
+      "ACTIVATED_ROUTE_INJECTOR_FEATURE",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "ANIMATION_QUEUE",
@@ -380,6 +381,7 @@
       "_locateOrCreateAnchorNode",
       "_locateOrCreateElementNode",
       "_locateOrCreateTextNode",
+      "_ngOnChangesFeatureImpl",
       "_platformInjector",
       "_processI18nInsertBefore",
       "_retrieveHydrationInfoImpl",
@@ -572,6 +574,7 @@
       "diPublicInInjector",
       "directiveHostEndFirstCreatePass",
       "directiveHostFirstCreatePass",
+      "discardNewActivatedRoutes",
       "documentSupported",
       "domOnlyFirstCreatePass",
       "elementAttributeInternal",
@@ -663,6 +666,7 @@
       "getData",
       "getDataKeys",
       "getDeclarationTNode",
+      "getDeclarationView",
       "getDirectiveDef",
       "getDocument",
       "getElementDepthCount",
@@ -691,6 +695,7 @@
       "getNextLContainer",
       "getNgDirectiveDef",
       "getNgModuleDef",
+      "getNgOnChangesFeatureImpl",
       "getNodeInjectable",
       "getNullInjector",
       "getOrBorrowReactiveLViewConsumer",
@@ -864,7 +869,6 @@
       "isTemplateNode",
       "isTypeProvider",
       "isUrlTree",
-      "isValidLink",
       "isValueProvider",
       "isWrappedDefaultExport",
       "iterator",

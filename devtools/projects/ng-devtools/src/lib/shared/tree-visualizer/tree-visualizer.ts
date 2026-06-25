@@ -64,6 +64,7 @@ function wrapEvent<E, V>(fn: (e: E, node: V) => void): (e: E, node: V) => void {
 export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer<T, TreeD3Node<T>> {
   private zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
   private snappedNode: {node: TreeD3Node<T>; scale: number} | null = null;
+  private highlightedNode: T | null = null;
   private snappedNodeListenersDisposeFn?: () => void;
   private readonly config: TreeVisualizerConfig<T>;
   private readonly defaultConfig: TreeVisualizerConfig<T> = {
@@ -102,7 +103,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     }
   }
 
-  /** Snaps to root node. NOTE: Relies on container size. */
+  /** Snaps to the root node. NOTE: Relies on container size. */
   override snapToRoot(scale = 1): void {
     if (this.root) {
       this.snapToD3Node(this.root, scale);
@@ -115,6 +116,14 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     if (d3Node) {
       this.snapToD3Node(d3Node, scale);
     }
+  }
+
+  /** Adds an outline to the provided node. Using `null`, clears the highlighted node. */
+  override highlightNode(node: T | null) {
+    this.highlightedNode = node;
+    d3.select(this.containerElement)
+      .selectAll<HTMLElement, TreeD3Node<T>>('.node-wrapper .node')
+      .classed('highlighted', (n) => n.data === node);
   }
 
   override getInternalNodeById(id: string): TreeD3Node<T> | null {
@@ -301,6 +310,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .attr('y', -halfLabelHeight)
       .append('xhtml:div')
       .attr('class', 'node')
+      .classed('highlighted', (n) => n.data === this.highlightedNode)
       .style('position', 'relative')
       .text((node: TreeD3Node<T>) => {
         const label = node.data.label;

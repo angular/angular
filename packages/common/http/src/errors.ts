@@ -21,8 +21,17 @@ export const enum RuntimeErrorCode {
   RESPONSE_IS_NOT_A_BLOB = 2807,
   RESPONSE_IS_NOT_A_STRING = 2808,
   UNHANDLED_OBSERVE_TYPE = 2809,
+  /**
+   * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
+   */
   JSONP_WRONG_METHOD = 2810,
+  /**
+   * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
+   */
   JSONP_WRONG_RESPONSE_TYPE = 2811,
+  /**
+   * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
+   */
   JSONP_HEADERS_NOT_SUPPORTED = 2812,
   KEEPALIVE_NOT_SUPPORTED_WITH_XHR = 2813,
   CACHE_NOT_SUPPORTED_WITH_XHR = 2814,
@@ -37,4 +46,9 @@ export const enum RuntimeErrorCode {
   REFERRER_POLICY_NOT_SUPPORTED_WITH_XHR = 2823,
 
   FETCH_UPLOAD_PROGRESS_NOT_SUPPORTED = 2824,
+  FETCH_RESPONSE_BODY_TOO_LARGE = 2825,
+  /**
+   * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
+   */
+  JSONP_UNSAFE_URL = 2826,
 }

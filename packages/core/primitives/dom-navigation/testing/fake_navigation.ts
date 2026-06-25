@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// 3p-only-start
 import {
   NavigationNavigateOptions,
   NavigationTypeString,
@@ -21,6 +22,7 @@ import {
   NavigationDestination,
   Navigation,
 } from '../src/navigation_types';
+// 3p-only-end
 
 /**
  * Fake implementation of user agent history and navigation behavior. This is a
@@ -616,13 +618,13 @@ export class FakeNavigation implements Navigation {
 
   set oncurrententrychange(
     _handler: // tslint:disable-next-line:no-any
-    ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
+      ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
   ) {
     throw new Error('unimplemented');
   }
 
   get oncurrententrychange(): // tslint:disable-next-line:no-any
-  ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
+    ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
     throw new Error('unimplemented');
   }
 

@@ -224,6 +224,66 @@ Disable specific tabs to prevent user interaction. Control whether disabled tabs
 
 When `[softDisabled]="true"` on the tab list, disabled tabs can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled tabs are skipped during keyboard navigation.
 
+## Testing
+
+Angular Aria provides component harnesses for testing tabs components.
+Here is an example of how to use the harnesses in a component test:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComponentHarness, HarnessLoader} from '@angular/cdk/testing';
+import {TabsHarness} from '@angular/aria/tabs/testing';
+import {MyTabsComponent} from './my-tabs'; // Your component
+
+// A simple harness to help query content inside the tab panel
+class TestContentHarness extends ComponentHarness {
+  static hostSelector = '.test-content';
+  async getText(): Promise<string> {
+    return (await this.host()).text();
+  }
+}
+
+describe('MyTabsComponent', () => {
+  let fixture: ComponentFixture<MyTabsComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyTabsComponent],
+    });
+
+    fixture = TestBed.createComponent(MyTabsComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should switch tabs and scope panel queries', async () => {
+    const tabs = await loader.getHarness(TabsHarness);
+
+    // Get all tabs
+    const tabItems = await tabs.getTabs();
+    expect(tabItems.length).toBe(3);
+
+    // Verify initial selection
+    expect(await tabItems[0].isSelected()).toBe(true);
+    expect(await tabItems[1].isSelected()).toBe(false);
+
+    // Query content inside the active tab panel
+    // TabHarness automatically scopes queries to its associated panel
+    const content = await tabItems[0].getHarness(TestContentHarness);
+    expect(await content.getText()).toBe('Content 1');
+
+    // Switch to the second tab
+    await tabItems[1].select();
+
+    // Verify selection updated
+    expect(await tabItems[0].isSelected()).toBe(false);
+    expect(await tabItems[1].isSelected()).toBe(true);
+  });
+});
+```
+
 ## APIs
 
 ### Tabs
@@ -238,13 +298,14 @@ The container for tab buttons that manages selection and keyboard navigation.
 
 #### Inputs
 
-| Property        | Type                         | Default        | Description                                                        |
-| --------------- | ---------------------------- | -------------- | ------------------------------------------------------------------ |
-| `orientation`   | `'horizontal' \| 'vertical'` | `'horizontal'` | Tab list layout direction                                          |
-| `wrap`          | `boolean`                    | `false`        | Whether keyboard navigation wraps from last to first tab           |
-| `softDisabled`  | `boolean`                    | `true`         | When `true`, disabled tabs are focusable but not activatable       |
-| `selectionMode` | `'follow' \| 'explicit'`     | `'follow'`     | Whether tabs activate on focus or require explicit activation      |
-| `selectedTab`   | `any`                        | —              | The value of the currently selected tab (supports two-way binding) |
+| Property        | Type                             | Default        | Description                                                        |
+| --------------- | -------------------------------- | -------------- | ------------------------------------------------------------------ |
+| `orientation`   | `'horizontal' \| 'vertical'`     | `'horizontal'` | Tab list layout direction                                          |
+| `wrap`          | `boolean`                        | `true`         | Whether keyboard navigation wraps from last to first tab           |
+| `softDisabled`  | `boolean`                        | `true`         | When `true`, disabled tabs are focusable but not activatable       |
+| `selectionMode` | `'follow' \| 'explicit'`         | `'follow'`     | Whether tabs activate on focus or require explicit activation      |
+| `focusMode`     | `'roving' \| 'activedescendant'` | `'roving'`     | Focus management strategy                                          |
+| `selectedTab`   | `any`                            | —              | The value of the currently selected tab (supports two-way binding) |
 
 ### Tab
 

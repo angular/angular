@@ -22,13 +22,16 @@ import {
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵstartMeasuring as startMeasuring,
   ɵstopMeasuring as stopMeasuring,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {BootstrapContext} from '@angular/platform-browser';
 
+import {RuntimeErrorCode} from './errors';
 import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {createScript} from './transfer_state';
+import {resolveUrl} from './url';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -377,11 +380,19 @@ export async function renderApplication(
 }
 
 function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | undefined) {
-  if (typeof url === 'string' && URL.canParse(url)) {
-    const hostname = new URL(url).hostname;
-    const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
-    if (!isHostAllowed(hostname, allowedHostsSet)) {
-      throw new Error(`Host ${url} is not allowed. You can configure \`allowedHosts\` option.`);
+  if (typeof url === 'string') {
+    const parsedUrl = resolveUrl(url);
+    if (parsedUrl !== null) {
+      const hostname = parsedUrl.hostname;
+      const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
+      if (!isHostAllowed(hostname, allowedHostsSet)) {
+        throw new RuntimeError(
+          RuntimeErrorCode.HOST_NOT_ALLOWED,
+          typeof ngDevMode === 'undefined' || ngDevMode
+            ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
+            : url,
+        );
+      }
     }
   }
 }

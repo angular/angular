@@ -9,9 +9,20 @@ Angular Aria is a collection of headless, accessible directives that implement c
 
 ## Installation
 
-```shell
-npm install @angular/aria
-```
+<docs-code-multifile>
+  <docs-code header="npm" language="shell">
+    npm install @angular/aria
+  </docs-code>
+  <docs-code header="yarn" language="shell">
+    yarn add @angular/aria
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add @angular/aria
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add @angular/aria
+  </docs-code>
+</docs-code-multifile>
 
 ## Showcase
 

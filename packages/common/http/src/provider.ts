@@ -240,6 +240,7 @@ export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtec
  * Add JSONP support to the configuration of the current `HttpClient` instance.
  *
  * @see {@link provideHttpClient}
+ * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
  */
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
   return makeHttpFeature(HttpFeatureKind.JsonpSupport, [
@@ -308,6 +309,15 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
  * Configures the current `HttpClient` instance to make requests using the Xhr API.
  *
  * Use this feature if you want to report progress on uploads as the Xhr API supports it.
+ *
+ * <div class="docs-alert docs-alert-critical">
+ *
+ * Do not use {@link withXhr} in server-side rendering (SSR) environments. XHR support on the
+ * server is **deprecated** and is intended to be removed in Angular 23 because the underlying `xhr2`
+ * library does not safely handle redirects (e.g. it can forward `Authorization` headers on
+ * cross-origin redirects and is susceptible to denial-of-service via redirect loops).
+ *
+ * </div>
  *
  * @see {@link provideHttpClient}
  * @publicApi

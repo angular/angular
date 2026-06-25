@@ -74,7 +74,10 @@ export function injectAsync<T>(
   };
 
   if (options?.prefetch) {
-    options.prefetch().then(() => load());
+    options
+      .prefetch()
+      .then(() => load())
+      .catch(() => {});
   }
 
   // We can't use `inject` later on because of the async nature of the loader
@@ -131,7 +134,7 @@ export type PrefetchTrigger = () => Promise<void>;
  */
 export function onIdle(options?: {timeout?: number}): Promise<void> {
   if (ngDevMode) {
-    assertInInjectionContext(injectAsync);
+    assertInInjectionContext(onIdle);
   }
 
   const idleService = inject(IDLE_SERVICE);

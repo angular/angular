@@ -392,6 +392,19 @@
           "isRequiredInput": false
         },
         {
+          "name": "readonly",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the combobox is readonly.",
+          "jsdocTags": [],
+          "inputAlias": "readonly",
+          "isRequiredInput": false
+        },
+        {
           "name": "softDisabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
@@ -530,9 +543,9 @@
         }
       ],
       "generics": [],
-      "description": "The container element that wraps a combobox input and popup, and orchestrates its behavior.\n\nThe `ngCombobox` directive is the main entry point for creating a combobox and customizing its\nbehavior. It coordinates the interactions between the input and the popup.\n\n```html\n<div ngCombobox [(expanded)]=\"expanded\">\n  <input ngComboboxInput />\n\n  <ng-template ngComboboxPopup>\n    <div ngComboboxWidget>\n      <!-- ... options ... -->\n    </div>\n  </ng-template>\n</div>\n```",
+      "description": "A directive that coordinates a combobox trigger element and its associated popup widget.\n\nThe `ngCombobox` directive is applied directly to the interactive trigger element, which can be\neither an editable `<input>` (for search/autocomplete behaviors) or a non-editable element like\na `<div>` (for custom select dropdowns). It manages focus and expansion states, coordinates autocomplete\nsuggestions (if editable), and forwards navigation keys down into the active popup.\n\n### Example 1: Editable Autocomplete Input\n```html\n<input ngCombobox #combobox=\"ngCombobox\" [(value)]=\"searchQuery\" [(expanded)]=\"isExpanded\" />\n\n<ng-template ngComboboxPopup [combobox]=\"combobox\">\n  <div ngComboboxWidget #listbox=\"ngListbox\" ngListbox [(value)]=\"selectedValues\" [activeDescendant]=\"listbox.activeDescendant()\">\n    <div ngOption value=\"first\">First Option</div>\n    <div ngOption value=\"second\">Second Option</div>\n  </div>\n</ng-template>\n```\n\n### Example 2: Non-Editable Custom Select Dropdown\n```html\n<div ngCombobox #combobox=\"ngCombobox\" [(expanded)]=\"isExpanded\" class=\"select-trigger\">\n  {{selectedValue}}\n</div>\n\n<ng-template ngComboboxPopup [combobox]=\"combobox\">\n  <div ngComboboxWidget #listbox=\"ngListbox\" ngListbox [(value)]=\"selectedValues\" [activeDescendant]=\"listbox.activeDescendant()\">\n    <div ngOption value=\"first\">First Option</div>\n    <div ngOption value=\"second\">Second Option</div>\n  </div>\n</ng-template>\n```",
       "jsdocTags": [],
-      "rawComment": "/**\n * The container element that wraps a combobox input and popup, and orchestrates its behavior.\n *\n * The `ngCombobox` directive is the main entry point for creating a combobox and customizing its\n * behavior. It coordinates the interactions between the input and the popup.\n *\n * ```html\n * <div ngCombobox [(expanded)]=\"expanded\">\n *   <input ngComboboxInput />\n *\n *   <ng-template ngComboboxPopup>\n *     <div ngComboboxWidget>\n *       <!-- ... options ... -->\n *     </div>\n *   </ng-template>\n * </div>\n * ```\n */",
+      "rawComment": "/**\n * A directive that coordinates a combobox trigger element and its associated popup widget.\n *\n * The `ngCombobox` directive is applied directly to the interactive trigger element, which can be\n * either an editable `<input>` (for search/autocomplete behaviors) or a non-editable element like\n * a `<div>` (for custom select dropdowns). It manages focus and expansion states, coordinates autocomplete\n * suggestions (if editable), and forwards navigation keys down into the active popup.\n *\n * ### Example 1: Editable Autocomplete Input\n * ```html\n * <input ngCombobox #combobox=\"ngCombobox\" [(value)]=\"searchQuery\" [(expanded)]=\"isExpanded\" />\n *\n * <ng-template ngComboboxPopup [combobox]=\"combobox\">\n *   <div ngComboboxWidget #listbox=\"ngListbox\" ngListbox [(value)]=\"selectedValues\" [activeDescendant]=\"listbox.activeDescendant()\">\n *     <div ngOption value=\"first\">First Option</div>\n *     <div ngOption value=\"second\">Second Option</div>\n *   </div>\n * </ng-template>\n * ```\n *\n * ### Example 2: Non-Editable Custom Select Dropdown\n * ```html\n * <div ngCombobox #combobox=\"ngCombobox\" [(expanded)]=\"isExpanded\" class=\"select-trigger\">\n *   {{selectedValue}}\n * </div>\n *\n * <ng-template ngComboboxPopup [combobox]=\"combobox\">\n *   <div ngComboboxWidget #listbox=\"ngListbox\" ngListbox [(value)]=\"selectedValues\" [activeDescendant]=\"listbox.activeDescendant()\">\n *     <div ngOption value=\"first\">First Option</div>\n *     <div ngOption value=\"second\">Second Option</div>\n *   </div>\n * </ng-template>\n * ```\n */",
       "extends": "DeferredContentAware",
       "implements": [
         "OnInit"
@@ -547,8 +560,8 @@
       ],
       "source": {
         "filePath": "/src/aria/combobox/combobox.ts",
-        "startLine": 43,
-        "endLine": 143
+        "startLine": 59,
+        "endLine": 164
       }
     }
   ],
@@ -707,6 +720,10 @@
     ],
     [
       "Combobox.disabled",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.readonly",
       "@angular/aria/combobox"
     ],
     [

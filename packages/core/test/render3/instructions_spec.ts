@@ -17,6 +17,7 @@ import {
   ɵɵproperty,
   ɵɵstyleMap,
   ɵɵstyleProp,
+  ɵɵforeignComponent,
 } from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/attribute_marker';
 import {
@@ -37,7 +38,7 @@ import {
   ɵɵsanitizeUrl,
 } from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/security';
+import {SecurityContext} from '../../src/sanitization/dom_security_schema';
 
 import {ViewFixture} from './view_fixture';
 

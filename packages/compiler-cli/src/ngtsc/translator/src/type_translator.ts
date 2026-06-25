@@ -251,9 +251,24 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, context: Context): ts.TypeNode {
     const node: ts.Node = ast.node;
     if (ts.isEntityName(node)) {
-      return ts.factory.createTypeReferenceNode(node);
+      return ts.factory.createTypeReferenceNode(this.routeEntityNameThroughImportManager(node));
+    } else if (ts.isPropertyAccessExpression(node)) {
+      const entityName = expressionToEntityName(node);
+      if (entityName !== null) {
+        return ts.factory.createTypeReferenceNode(
+          this.routeEntityNameThroughImportManager(entityName),
+        );
+      }
+      throw new Error(
+        `Unsupported PropertyAccessExpression in TypeTranslatorVisitor: ${node.getText()} in ${node.getSourceFile()?.fileName}`,
+      );
     } else if (ts.isTypeNode(node)) {
-      return node;
+      // The wrapped type node may reference identifiers from another source file (e.g. when the
+      // NgModule isolated-declarations transform synthesizes `ReturnType<typeof Foo.forRoot>`).
+      // Route the leftmost identifier of each entity name through the `ImportManager` so the
+      // emitted `.d.ts` carries the needed imports, namespaced consistently with what the standard
+      // (non-isolated) compilation path produces.
+      return this.routeEntityNamesInTypeNodeThroughImportManager(node);
     } else if (ts.isLiteralExpression(node)) {
       return ts.factory.createLiteralTypeNode(node);
     } else if (ts.isTypeParameterDeclaration(node)) {
@@ -263,6 +278,59 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
         `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]} in ${node.getSourceFile()?.fileName}`,
       );
     }
+  }
+
+  /**
+   * If `name`'s leftmost identifier resolves to an import in the source file, replace it with a
+   * namespaced reference registered via the `ImportManager` (e.g. `Foo` → `iN.Foo` + `import * as
+   * iN from './foo'` in the emitted file). Returns the entity name unchanged for local symbols or
+   * synthetic identifiers (e.g. the global `ReturnType`).
+   */
+  private routeEntityNameThroughImportManager(name: ts.EntityName): ts.EntityName {
+    let leftmost: ts.EntityName = name;
+    while (ts.isQualifiedName(leftmost)) {
+      leftmost = leftmost.left;
+    }
+    if (!ts.isIdentifier(leftmost)) {
+      return name;
+    }
+    // Synthetic identifiers (with no parent) can't be resolved via `getImportOfIdentifier`, which
+    // relies on the parent chain - and shouldn't be rewritten anyway (e.g. the global `ReturnType`).
+    if (leftmost.parent === undefined) {
+      return name;
+    }
+    const imp = this.reflector.getImportOfIdentifier(leftmost);
+    if (imp === null) {
+      return name;
+    }
+    const namespaced = this.imports.addImport({
+      exportModuleSpecifier: imp.from,
+      exportSymbolName: imp.name,
+      requestedFile: this.contextFile,
+      asTypeReference: true,
+    });
+    return replaceLeftmostEntityName(name, namespaced);
+  }
+
+  private routeEntityNamesInTypeNodeThroughImportManager(typeNode: ts.TypeNode): ts.TypeNode {
+    const transformer: ts.TransformerFactory<ts.TypeNode> = (context) => {
+      const visit = (node: ts.Node): ts.Node => {
+        if (ts.isTypeReferenceNode(node)) {
+          const typeName = this.routeEntityNameThroughImportManager(node.typeName);
+          const typeArguments = node.typeArguments
+            ? ts.visitNodes(node.typeArguments, visit, ts.isTypeNode)
+            : undefined;
+          return ts.factory.updateTypeReferenceNode(node, typeName, typeArguments);
+        }
+        if (ts.isTypeQueryNode(node)) {
+          const exprName = this.routeEntityNameThroughImportManager(node.exprName);
+          return ts.factory.updateTypeQueryNode(node, exprName, node.typeArguments);
+        }
+        return ts.visitEachChild(node, visit, context);
+      };
+      return (root) => ts.visitNode(root, visit, ts.isTypeNode) as ts.TypeNode;
+    };
+    return ts.transform(typeNode, [transformer]).transformed[0];
   }
 
   visitTypeofExpr(ast: o.TypeofExpr, context: Context): ts.TypeQueryNode {
@@ -349,4 +417,30 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     }
     return typeNode;
   }
+}
+
+/**
+ * Returns a new `ts.EntityName` with `name`'s leftmost identifier replaced by `newLeftmost`. For a
+ * single-identifier name this is just `newLeftmost`; for a qualified chain it preserves the `right`
+ * identifiers and re-builds the qualified name.
+ */
+function replaceLeftmostEntityName(name: ts.EntityName, newLeftmost: ts.EntityName): ts.EntityName {
+  if (ts.isIdentifier(name)) {
+    return newLeftmost;
+  }
+  return ts.factory.createQualifiedName(
+    replaceLeftmostEntityName(name.left, newLeftmost),
+    name.right,
+  );
+}
+
+function expressionToEntityName(expr: ts.Expression): ts.EntityName | null {
+  if (ts.isIdentifier(expr)) {
+    return ts.factory.createIdentifier(expr.text);
+  }
+  if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) {
+    const left = expressionToEntityName(expr.expression);
+    return left === null ? null : ts.factory.createQualifiedName(left, expr.name);
+  }
+  return null;
 }

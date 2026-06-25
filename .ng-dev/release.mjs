@@ -7,7 +7,14 @@ export const release = {
   publishRegistry: 'https://wombat-dressing-room.appspot.com',
   representativeNpmPackage: '@angular/core',
   npmPackages: [
-    {name: '@angular/animations'},
+    {
+      name: '@angular/animations',
+      deprecated: {
+        version: '>=20.2.0-next.3',
+        message:
+          '@angular/animations is deprecated. Use `animate.enter` and `animate.leave` instead. For more information see: https://v22.angular.dev/guide/animations.',
+      },
+    },
     {name: '@angular/common'},
     {name: '@angular/compiler-cli'},
     {name: '@angular/compiler'},
@@ -17,7 +24,14 @@ export const release = {
     {name: '@angular/language-server'},
     {name: '@angular/language-service'},
     {name: '@angular/localize'},
-    {name: '@angular/platform-browser-dynamic'},
+    {
+      name: '@angular/platform-browser-dynamic',
+      deprecated: {
+        version: '>=20.1.0-next.0',
+        message:
+          '@angular/platform-browser-dynamic is deprecated. Use `@angular/platform-browser` instead.',
+      },
+    },
     {name: '@angular/platform-browser'},
     {name: '@angular/platform-server'},
     {name: '@angular/router'},

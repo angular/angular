@@ -460,6 +460,32 @@ export enum ErrorCode {
   CONFLICTING_HOST_DIRECTIVE_BINDING = -8024,
 
   /**
+   * Raised when a foreign component node has an unsupported Angular binding.
+   */
+  FOREIGN_COMPONENT_UNSUPPORTED_BINDING = 8025,
+
+  /**
+   * Raised when a `@content` block is not used as a direct child of a foreign component.
+   */
+  INVALID_CONTENT_PLACEMENT = 8026,
+
+  /**
+   * Raised when a `@content` block is named 'children', which is unnecessary because children should be passed
+   * implicitly.
+   */
+  FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN = 8027,
+
+  /**
+   * Raised when multiple `@content` blocks with the same name are defined for a foreign component.
+   */
+  CONFLICTING_CONTENT_DECLARATION = 8028,
+
+  /**
+   * Raised when a `@content` block name conflicts with an input binding on the parent foreign component.
+   */
+  CONFLICTING_CONTENT_AND_PROPERTY = 8029,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *

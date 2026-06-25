@@ -40,14 +40,16 @@ Calling `required(path.username)` contributes a value to the `REQUIRED` metadata
 
 Several built-in constraint validators follow this pattern:
 
-| Validator     | Metadata key | Type                  | `FieldState` getter |
-| ------------- | ------------ | --------------------- | ------------------- |
-| `required()`  | `REQUIRED`   | `boolean`             | `required`          |
-| `min()`       | `MIN`        | `number \| undefined` | `min`               |
-| `max()`       | `MAX`        | `number \| undefined` | `max`               |
-| `minLength()` | `MIN_LENGTH` | `number \| undefined` | `minLength`         |
-| `maxLength()` | `MAX_LENGTH` | `number \| undefined` | `maxLength`         |
-| `pattern()`   | `PATTERN`    | `RegExp[]`            | `pattern`           |
+| Validator     | Metadata key               | Type                  | `FieldState` getter |
+| ------------- | -------------------------- | --------------------- | ------------------- |
+| `required()`  | `REQUIRED`                 | `boolean`             | `required`          |
+| `min()`       | `MIN` selects `MIN_NUMBER` | `number \| undefined` | `min`               |
+| `max()`       | `MAX` selects `MAX_NUMBER` | `number \| undefined` | `max`               |
+| `minDate()`   | `MIN` selects `MIN_DATE`   | `Date \| undefined`   | `min`               |
+| `maxDate()`   | `MAX` selects `MAX_DATE`   | `Date \| undefined`   | `max`               |
+| `minLength()` | `MIN_LENGTH`               | `number \| undefined` | `minLength`         |
+| `maxLength()` | `MAX_LENGTH`               | `number \| undefined` | `maxLength`         |
+| `pattern()`   | `PATTERN`                  | `RegExp[]`            | `pattern`           |
 
 Non-constraint validators like `email()` and `validate()` do not contribute to metadata. They run their check and surface a validation error, but they do not publish a reactive value for templates to read.
 
@@ -217,16 +219,20 @@ While `MetadataReducer.min()` and `MetadataReducer.max()` are reducers, you may 
 
 The built-in constraint keys pick their reducers based on what "strictest" means for the constraint, which is often the opposite of what the key's name suggests:
 
-| Key          | Reducer          | Reasoning                                                                                                                             |
-| ------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `REQUIRED`   | `or()`           | If any `required()` rule evaluates to `true`, the field is required.                                                                  |
-| `MIN`        | `max()`          | A minimum-value constraint is strictest when largest. If one rule requires `>= 5` and another `>= 10`, the effective minimum is `10`. |
-| `MAX`        | `min()`          | A maximum-value constraint is strictest when smallest. If one rule caps at `100` and another at `50`, the effective maximum is `50`.  |
-| `MIN_LENGTH` | `max()`          | Same logic as `MIN`: the longest required length wins.                                                                                |
-| `MAX_LENGTH` | `min()`          | Same logic as `MAX`: the shortest allowed length wins.                                                                                |
-| `PATTERN`    | `list<RegExp>()` | Each `pattern()` call contributes a regex; the value must match all of them.                                                          |
+| Key          | Reducer          | Reasoning                                                                                                                              |
+| ------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `REQUIRED`   | `or()`           | If any `required()` rule evaluates to `true`, the field is required.                                                                   |
+| `MIN_NUMBER` | `max()`          | A minimum-number constraint is strictest when largest. If one rule requires `>= 5` and another `>= 10`, the effective minimum is `10`. |
+| `MIN_DATE`   | `max()`          | Same logic as `MIN_NUMBER`: the latest required date wins.                                                                             |
+| `MAX_NUMBER` | `min()`          | A maximum-number constraint is strictest when smallest. If one rule caps at `100` and another at `50`, the effective maximum is `50`.  |
+| `MAX_DATE`   | `min()`          | Same logic as `MAX_NUMBER`: the earliest allowed date wins.                                                                            |
+| `MIN_LENGTH` | `max()`          | Same logic as `MIN_NUMBER`: the longest required length wins.                                                                          |
+| `MAX_LENGTH` | `min()`          | Same logic as `MAX_NUMBER`: the shortest allowed length wins.                                                                          |
+| `PATTERN`    | `list<RegExp>()` | Each `pattern()` call contributes a regex; the value must match all of them.                                                           |
 
-This pairing of "strictest wins" is why calling `min(path.age, 18)` and `min(path.age, 21)` in two composed schemas works correctly. Each call registers its own validator that enforces its specific bound (so a value below either bound fails validation). Separately, each call contributes to the public `MIN` key, and `state.metadata(MIN)!()` reports the aggregate (`21`) so UI and custom controls can read the effective minimum.
+`MIN` and `MAX` are selection keys. They point to the concrete key that matches the field's value type, such as `MIN_NUMBER` for `min()` and `MIN_DATE` for `minDate()`. This is why `field().min()` and `field().max()` work for both numeric and date fields.
+
+This pairing of "strictest wins" is why calling `min(path.age, 18)` and `min(path.age, 21)` in two composed schemas works correctly. Each call registers its own validator that enforces its specific bound (so a value below either bound fails validation). Separately, each call contributes to the `MIN_NUMBER` key, and `state.min!()` reports the aggregate (`21`) so UI and custom controls can read the effective minimum.
 
 ### Writing a custom reducer
 

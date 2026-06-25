@@ -55,14 +55,13 @@ Open a terminal (if you're using [Visual Studio Code](https://code.visualstudio.
     >
     bun install -g @angular/cli
     </docs-code>
-
 </docs-code-multifile>
 
 If you are having issues running this command in Windows or Unix, check out the [CLI docs](/tools/cli/setup-local#install-the-angular-cli) for more info.
 
 #### Create a new project
 
-In your terminal, run the CLI command `ng new` with the desired project name. In the following examples, we'll be using the example project name of `my-first-angular-app`.
+In your terminal, run the CLI command [`ng new`](cli/new) with the desired project name. In the following examples, we'll be using the example project name of `my-first-angular-app`.
 
 ```shell
 ng new <project-name>

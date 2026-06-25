@@ -14,9 +14,9 @@ import { Component, resource, signal, computed } from '@angular/core';
 
 @Component({...})
 export class UserProfile {
-  userId = signal('123');
+  protected readonly userId = signal('123');
 
-  userResource = resource({
+  protected readonly userResource = resource({
     // Reactively tracking userId
     params: () => ({ id: this.userId() }),
 
@@ -29,7 +29,7 @@ export class UserProfile {
   });
 
   // Use the resource value in computed signals
-  userName = computed(() => {
+  protected readonly userName = computed(() => {
     if (this.userResource.hasValue()) {
       return this.userResource.value()?.name;
     } else {

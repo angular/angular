@@ -423,6 +423,15 @@ describe('styling', () => {
             'x',
           ] as any);
         });
+        it('should parse objects with null prototype', () => {
+          const nullProtoObj = Object.assign(Object.create(null), {X: 'x', A: 'a'});
+          expect(toStylingKeyValueArray(keyValueArraySet, null!, nullProtoObj)).toEqual([
+            'A',
+            'a',
+            'X',
+            'x',
+          ] as any);
+        });
       });
     });
   });

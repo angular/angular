@@ -76,8 +76,8 @@
     trusted type support, help protect your users from common vulnerabilities like
     cross-site scripting and cross-site request forgery.
   </docs-card>
-  <docs-card title="Keep large teams productive with Vite and esbuild" href="tools/cli/build-system-migration" link="ESBuild and Vite" titleIconName="sensors">
-    Angular CLI includes a fast, modern build pipeline using Vite and ESBuild. Developers report
+  <docs-card title="Keep large teams productive with Vite and esbuild" href="tools/cli/build-system-migration" link="Vite and esbuild" titleIconName="sensors">
+    Angular CLI includes a fast, modern build pipeline using Vite and esbuild. Developers report
     building projects with hundreds of thousands of lines of code in less than a minute.
   </docs-card>
   <docs-card title="Proven in some of Google's largest web apps" titleIconName="sensors">
@@ -108,7 +108,7 @@
   <docs-card title="Partnering with other Google technologies" titleIconName="sensors">
     <p>Angular partners closely with other Google technologies and teams to improve the web.</p>
     <p>Our ongoing partnership with Chrome’s Aurora actively explores improvements to user experience across the web, developing built-in performance optimizations like <code>NgOptimizedImage</code> and improvements to Angular’s Core Web Vitals.</p>
-    <p>We are also working with <a href="https://firebase.google.com/">Firebase</a>, <a href="https://www.tensorflow.org/">Tensorflow</a>, <a href="https://flutter.dev/">Flutter</a>, <a href="https://m3.material.io/">Material Design</a>, and <a href="https://cloud.google.com/">Google Cloud</a> to ensure we provide meaningful integrations across the developer workflow.</p>
+    <p>We are also working with <a href="https://firebase.google.com/" target="_blank">Firebase</a>, <a href="https://www.tensorflow.org/" target="_blank">TensorFlow</a>, <a href="https://flutter.dev/" target="_blank">Flutter</a>, <a href="https://m3.material.io/" target="_blank">Material Design</a>, and <a href="https://cloud.google.com/" target="_blank">Google Cloud</a> to ensure we provide meaningful integrations across the developer workflow.</p>
   </docs-card>
 </docs-card-container>
 

@@ -313,13 +313,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Overview',
             path: 'guide/di',
             contentPath: 'guide/di/overview',
-            status: 'updated',
           },
           {
             label: 'Creating and using services',
             path: 'guide/di/creating-and-using-services',
             contentPath: 'guide/di/creating-and-using-services',
-            status: 'updated',
           },
           {
             label: 'Lazy loading services',
@@ -331,7 +329,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Defining dependency providers',
             path: 'guide/di/defining-dependency-providers',
             contentPath: 'guide/di/defining-dependency-providers',
-            status: 'updated',
           },
           {
             label: 'Injection context',
@@ -363,7 +360,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Routing',
-        status: 'updated',
         children: [
           {
             label: 'Overview',
@@ -419,7 +415,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Testing routing and navigation',
             path: 'guide/routing/testing',
             contentPath: 'guide/routing/testing',
-            status: 'new',
           },
           {
             label: 'Other routing tasks',
@@ -435,13 +430,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Rendering strategies',
             path: 'guide/routing/rendering-strategies',
             contentPath: 'guide/routing/rendering-strategies',
-            status: 'new',
           },
           {
             label: 'Customizing route behavior',
             path: 'guide/routing/customizing-route-behavior',
             contentPath: 'guide/routing/customizing-route-behavior',
-            status: 'new',
           },
           {
             label: 'Router reference',
@@ -459,6 +452,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Forms',
         status: 'updated',
         preserveOtherCategoryOrder: true,
+        categoriesStatus: [
+          {
+            'Signal Forms': 'new',
+          },
+        ],
         children: [
           {
             label: 'Overview',
@@ -471,98 +469,84 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/forms/signals/overview',
             contentPath: 'guide/forms/signals/overview',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Form models',
             path: 'guide/forms/signals/models',
             contentPath: 'guide/forms/signals/models',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Form model design',
             path: 'guide/forms/signals/model-design',
             contentPath: 'guide/forms/signals/designing-your-form-model',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Field state management',
             path: 'guide/forms/signals/field-state-management',
             contentPath: 'guide/forms/signals/field-state-management',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Validation',
             path: 'guide/forms/signals/validation',
             contentPath: 'guide/forms/signals/validation',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Form logic',
             path: 'guide/forms/signals/form-logic',
             contentPath: 'guide/forms/signals/form-logic',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Cross-field logic',
             path: 'guide/forms/signals/cross-field-logic',
             contentPath: 'guide/forms/signals/cross-field-logic',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Form submission',
             path: 'guide/forms/signals/form-submission',
             contentPath: 'guide/forms/signals/form-submission',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Schemas',
             path: 'guide/forms/signals/schemas',
             contentPath: 'guide/forms/signals/schemas',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Field metadata',
             path: 'guide/forms/signals/field-metadata',
             contentPath: 'guide/forms/signals/field-metadata',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Async operations',
             path: 'guide/forms/signals/async-operations',
             contentPath: 'guide/forms/signals/async-operations',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Custom controls',
             path: 'guide/forms/signals/custom-controls',
             contentPath: 'guide/forms/signals/custom-controls',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Comparison with other form systems',
             path: 'guide/forms/signals/comparison',
             contentPath: 'guide/forms/signals/comparison',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Migrating from Reactive Forms',
             path: 'guide/forms/signals/migration',
             contentPath: 'guide/forms/signals/migration',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Reactive forms',
@@ -887,13 +871,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Animations',
-        status: 'updated',
         children: [
           {
             label: 'Enter and Leave animations',
             path: 'guide/animations',
             contentPath: 'guide/animations/enter-and-leave',
-            status: 'new',
           },
           {
             label: 'Complex Animations with CSS',
@@ -948,6 +930,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Design Patterns',
         path: 'ai/design-patterns',
         contentPath: 'ai/design-patterns',
+      },
+      {
+        label: 'WebMCP',
+        path: 'ai/webmcp',
+        contentPath: 'ai/webmcp',
+        status: 'new',
       },
     ],
   },
@@ -1109,7 +1097,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Style Guide',
         path: 'style-guide',
         contentPath: 'best-practices/style-guide',
-        status: 'updated',
       },
       {
         label: 'Security',
@@ -1147,6 +1134,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Deferred loading with @defer',
             path: 'best-practices/performance/defer',
             contentPath: 'guide/templates/defer',
+            category: 'Loading Performance',
+          },
+          {
+            label: 'Lazy loading services',
+            path: 'best-practices/performance/lazy-loading-services',
+            contentPath: 'guide/di/lazy-loading-services',
             category: 'Loading Performance',
           },
           {
@@ -1213,10 +1206,15 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     label: 'Developer Events',
     children: [
       {
+        label: 'Angular v22 Release',
+        path: 'events/v22',
+        contentPath: 'events/v22',
+        status: 'new',
+      },
+      {
         label: 'Angular v21 Release',
         path: 'events/v21',
         contentPath: 'events/v21',
-        status: 'new',
       },
     ],
   },
@@ -1337,7 +1335,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Tailwind',
         path: 'guide/tailwind',
         contentPath: 'guide/tailwind',
-        status: 'new',
       },
       {
         label: 'Angular Fire',
@@ -1743,25 +1740,21 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'NgClass to Class',
         path: 'reference/migrations/ngclass-to-class',
         contentPath: 'reference/migrations/ngclass-to-class',
-        status: 'new',
       },
       {
         label: 'NgStyle to Style',
         path: 'reference/migrations/ngstyle-to-style',
         contentPath: 'reference/migrations/ngstyle-to-style',
-        status: 'new',
       },
       {
         label: 'Router Testing Module Migration',
         path: 'reference/migrations/router-testing-module-migration',
         contentPath: 'reference/migrations/router-testing-module-migration',
-        status: 'new',
       },
       {
         label: 'CommonModule to Standalone',
         path: 'reference/migrations/common-to-standalone',
         contentPath: 'reference/migrations/common-to-standalone',
-        status: 'new',
       },
     ],
   },

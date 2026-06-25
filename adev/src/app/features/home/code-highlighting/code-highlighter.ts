@@ -15,8 +15,8 @@ import {CodeToHastOptions, createHighlighterCoreSync, HighlighterCore} from 'shi
 import {createOnigurumaEngine} from 'shiki/engine/oniguruma';
 
 @Service()
-export class CodeHighligher implements OnDestroy {
-  private cachedHighligher: HighlighterCore | undefined;
+export class CodeHighlighter implements OnDestroy {
+  private cachedHighlighter: HighlighterCore | undefined;
 
   async codeToHtml(code: string, options: CodeToHastOptions): Promise<string> {
     const highlighter = await this.getHighlighter();
@@ -24,19 +24,19 @@ export class CodeHighligher implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.cachedHighligher?.dispose();
+    this.cachedHighlighter?.dispose();
   }
 
   private async getHighlighter() {
-    if (!this.cachedHighligher) {
+    if (!this.cachedHighlighter) {
       const engine = await createOnigurumaEngine(import('shiki/wasm'));
-      this.cachedHighligher = createHighlighterCoreSync({
+      this.cachedHighlighter = createHighlighterCoreSync({
         themes: [githubLight, githubDark],
         langs: [angularTs, angularHtml],
         engine,
       });
     }
 
-    return this.cachedHighligher;
+    return this.cachedHighlighter;
   }
 }

@@ -327,6 +327,20 @@ describe('property-mutation', () => {
         );
       });
 
+      it('throw on mutating __proto__, constructor, or prototype properties', () => {
+        const obj = {foo: signal({})};
+
+        expect(() => mutateNestedProp(obj, ['foo', '__proto__'], {})).toThrowError(
+          /Access to property `__proto__` is blocked for security reasons./,
+        );
+        expect(() => mutateNestedProp(obj, ['foo', 'constructor'], {})).toThrowError(
+          /Access to property `constructor` is blocked for security reasons./,
+        );
+        expect(() => mutateNestedProp(obj, ['foo', 'prototype'], {})).toThrowError(
+          /Access to property `prototype` is blocked for security reasons./,
+        );
+      });
+
       it('immutable updates objects with unrelated nested signals', () => {
         const obj = {
           foo: signal({

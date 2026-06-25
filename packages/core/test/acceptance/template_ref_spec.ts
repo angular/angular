@@ -115,8 +115,8 @@ describe('TemplateRef', () => {
       </ng-template>`);
 
       expect(rootNodes.length).toBe(3);
-      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[0].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.COMMENT_NODE);
       expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 
@@ -153,8 +153,8 @@ describe('TemplateRef', () => {
         `);
 
       expect(rootNodes.length).toBe(3);
-      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[0].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.COMMENT_NODE);
       expect(rootNodes[2].nodeType).toBe(Node.TEXT_NODE);
     });
 

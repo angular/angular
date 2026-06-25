@@ -16,7 +16,7 @@ import {
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {ComponentRef as AbstractComponentRef} from '../linker/component_factory';
 import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
@@ -111,7 +111,7 @@ function verifyNotAnOrphanComponent(componentDef: ComponentDef<unknown>) {
     (typeof ngJitMode === 'undefined' || ngJitMode) &&
     componentDef.debugInfo?.forbidOrphanRendering
   ) {
-    if (depsTracker.isOrphanComponent(componentDef.type)) {
+    if (depsTracker.isOrphanComponent(componentDef.type as Type<any>)) {
       throw new RuntimeError(
         RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
         `Orphan component found! Trying to render the component ${debugStringifyTypeForError(
@@ -234,7 +234,7 @@ export class ComponentFactory<T> {
     private componentDef: ComponentDef<any>,
     private ngModule?: NgModuleRef<any>,
   ) {
-    this.componentType = componentDef.type;
+    this.componentType = componentDef.type as Type<any>;
     this.selector = stringifyCSSSelectorList(componentDef.selectors);
     this.ngContentSelectors = componentDef.ngContentSelectors ?? [];
     this.isBoundToModule = !!ngModule;

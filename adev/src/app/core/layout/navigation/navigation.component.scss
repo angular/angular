@@ -175,6 +175,7 @@
 
     // version dropdown button
     .adev-version-button {
+      anchor-name: --version-trigger;
       border: 1px solid var(--senary-contrast);
       border-radius: 0.25rem;
       width: fit-content;
@@ -258,6 +259,14 @@
 
       @include mq.for-tablet {
         padding-inline: 0.5rem;
+      }
+
+      &[aria-controls='social-mini-menu'] {
+        anchor-name: --social-trigger;
+      }
+
+      &[aria-controls='theme-mini-menu'] {
+        anchor-name: --theme-trigger;
       }
 
       docs-icon {

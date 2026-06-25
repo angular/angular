@@ -1212,6 +1212,24 @@ import {Component, input} from '@angular/core';
 export class WithConcatTemplate {
   readonly bla = input(true);
 }
+@@@@@@ template_icu.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    {foo(), plural,
+      =0 {{bar(), plural, =0 {zero} other {zero, <b>bar is {{ bar() }}</b>}}}
+      other {foo is {{ foo() }}}
+    }
+  `,
+})
+export class MyComp {
+  readonly foo = input(0);
+  readonly bar = input(0);
+}
 @@@@@@ template_ng_if.ts @@@@@@
 
 // tslint:disable

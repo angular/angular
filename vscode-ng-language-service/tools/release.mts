@@ -415,7 +415,9 @@ async function createGithubRelease(version: string, changelog: string): Promise<
     'X-GitHub-Api-Version': '2022-11-28',
   };
   const {owner, repo} = getRepoDetails(angularRepoRemote);
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
+  const githubReleasesApiUrl = `https://api.github.com/repos/${owner}/${repo}/releases`;
+
+  const response = await fetch(githubReleasesApiUrl, {
     method: 'POST',
     headers: {
       ...commonHeaders,
@@ -430,6 +432,7 @@ async function createGithubRelease(version: string, changelog: string): Promise<
         .trim(),
       make_latest: 'false',
       prerelease: false,
+      draft: true,
     }),
   });
 
@@ -437,7 +440,7 @@ async function createGithubRelease(version: string, changelog: string): Promise<
     throw new Error(`Failed to create release: ${response.statusText} ${await response.text()}`);
   }
 
-  const release = (await response.json()) as {upload_url: string};
+  const release = (await response.json()) as {id: number; upload_url: string};
   const uploadUrl = release.upload_url.replace(
     '{?name,label}',
     `?name=ng-template-${version}.vsix`,
@@ -459,7 +462,25 @@ async function createGithubRelease(version: string, changelog: string): Promise<
     );
   }
 
-  console.log(chalk.green('GitHub release created and asset uploaded.'));
+  const publishResponse = await fetch(`${githubReleasesApiUrl}/${release.id}`, {
+    method: 'PATCH',
+    headers: {
+      ...commonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      draft: false,
+      make_latest: 'false',
+    }),
+  });
+
+  if (!publishResponse.ok) {
+    throw new Error(
+      `Failed to publish release: ${publishResponse.statusText} ${await publishResponse.text()}`,
+    );
+  }
+
+  console.log(chalk.green('GitHub release created, asset uploaded, and release published.'));
 }
 
 /**

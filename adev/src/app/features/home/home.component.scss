@@ -191,6 +191,8 @@ section {
   }
 
   .search-field {
+    display: flex;
+
     @include mq.for-tablet-landscape-down() {
       display: none;
     }

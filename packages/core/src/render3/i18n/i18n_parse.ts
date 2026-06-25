@@ -9,18 +9,17 @@ import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
-import {
-  getTemplateContent,
-  SENSITIVE_ATTRS,
-  VALID_ATTRS,
-  VALID_ELEMENTS,
-} from '../../sanitization/html_sanitizer';
+import {checkSecurityContext, SecurityContext} from '../../sanitization/dom_security_schema';
+import {getTemplateContent, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
-import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
 import {
+  ɵɵsanitizeHtml as _sanitizeHtml,
+  ɵɵsanitizeResourceUrl as _sanitizeResourceUrl,
+  ɵɵsanitizeScript as _sanitizeScript,
+  ɵɵsanitizeStyle as _sanitizeStyle,
   ɵɵvalidateAttribute as _validateAttribute,
-  SECURITY_SENSITIVE_ELEMENTS,
 } from '../../sanitization/sanitization';
+import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
 import {
   assertDefined,
   assertEqual,
@@ -57,6 +56,8 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
 
+import {createTNodeAtIndex} from '../tnode_manipulation';
+import {allocExpando} from '../view/construction';
 import {
   i18nCreateOpCodesToString,
   i18nRemoveOpCodesToString,
@@ -72,8 +73,6 @@ import {
   setTIcu,
   setTNodeInsertBeforeIndex,
 } from './i18n_util';
-import {createTNodeAtIndex} from '../tnode_manipulation';
-import {allocExpando} from '../view/construction';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
@@ -386,13 +385,16 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
         // the compiler treats static i18n attributes as regular attribute bindings.
         // Since this may not be the first i18n attribute on this element we need to pass in how
         // many previous bindings there have already been.
+        const tagName = previousElement.namespace
+          ? `:${previousElement.namespace}:${previousElement.value}`
+          : previousElement.value;
         generateBindingUpdateOpCodes(
           updateOpCodes,
           message,
           previousElementIndex,
           attrName,
           countBindings(updateOpCodes),
-          i18nSanitizeAttribute(attrName),
+          i18nResolveSanitizer(attrName, tagName),
         );
       }
     }
@@ -812,6 +814,13 @@ function walkIcuTree(
             const attr = elAttrs.item(i)!;
             const lowerAttrName = attr.name.toLowerCase();
             const hasBinding = !!attr.value.match(BINDING_REGEXP);
+            const elementNS = element.namespaceURI;
+            const tagNameWithNamespace =
+              elementNS === 'http://www.w3.org/2000/svg'
+                ? `:svg:${tagName}`
+                : elementNS === 'http://www.w3.org/1998/Math/MathML'
+                  ? `:math:${tagName}`
+                  : tagName;
             if (hasBinding) {
               if (VALID_ATTRS.hasOwnProperty(lowerAttrName)) {
                 generateBindingUpdateOpCodes(
@@ -820,7 +829,7 @@ function walkIcuTree(
                   newIndex,
                   attr.name,
                   0,
-                  i18nSanitizeAttribute(lowerAttrName),
+                  i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace),
                 );
               } else {
                 ngDevMode &&
@@ -831,9 +840,9 @@ function walkIcuTree(
                   );
               }
             } else if (VALID_ATTRS[lowerAttrName]) {
-              if (SENSITIVE_ATTRS[lowerAttrName]) {
-                // Don't sanitize, because no value is acceptable in sensitive attributes.
-                // Translators are not allowed to create URIs.
+              let val = attr.value;
+              const sanitizer = i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace);
+              if (sanitizer) {
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                   console.warn(
                     `WARNING: ignoring unsafe attribute ` +
@@ -841,9 +850,10 @@ function walkIcuTree(
                       `(see ${XSS_SECURITY_URL})`,
                   );
                 }
+
                 addCreateAttribute(create, newIndex, attr.name, 'unsafe:blocked');
               } else {
-                addCreateAttribute(create, newIndex, attr.name, attr.value);
+                addCreateAttribute(create, newIndex, attr.name, val);
               }
             } else {
               if (typeof ngDevMode !== 'undefined' && ngDevMode) {
@@ -974,32 +984,48 @@ function addCreateAttribute(
   create.push((newIndex << IcuCreateOpCode.SHIFT_REF) | IcuCreateOpCode.Attr, attrName, attrValue);
 }
 
-/**
- * Caches all keys of `SECURITY_SENSITIVE_ELEMENTS` in a Set to avoid recomputing
- * or scanning them on every invocation.
- */
-const SECURITY_SENSITIVE_ATTRS: ReadonlySet<string> = /* @__PURE__ */ (() =>
-  new Set(
-    Object.values(SECURITY_SENSITIVE_ELEMENTS).flatMap((attrs) =>
-      attrs ? Object.keys(attrs) : [],
-    ),
-  ))();
-
-/**
- * Returns a sanitizer for the given attribute name or null if the attribute is not security sensitive.
- *
- * @param attrName The name of the attribute to sanitize.
- * @returns The sanitizer for the given attribute name.
- */
-function i18nSanitizeAttribute(attrName: string): SanitizerFn | null {
-  const lowerAttrName = attrName.toLowerCase();
-  if (SENSITIVE_ATTRS[lowerAttrName]) {
-    return _sanitizeUrl;
+function splitNsName(elementName: string, fatal: boolean = true): [string | null, string] {
+  if (elementName[0] != ':') {
+    return [null, elementName];
   }
 
-  if (SECURITY_SENSITIVE_ATTRS.has(lowerAttrName)) {
-    return _validateAttribute;
+  const colonIndex = elementName.indexOf(':', 1);
+
+  if (colonIndex === -1) {
+    if (fatal) {
+      throw new Error(`Unsupported format "${elementName}" expecting ":namespace:name"`);
+    } else {
+      return [null, elementName];
+    }
   }
 
-  return null;
+  return [elementName.slice(1, colonIndex), elementName.slice(colonIndex + 1)];
+}
+
+function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn | null {
+  let schemaContext: SecurityContext;
+
+  if (tagName) {
+    const [ns, name] = splitNsName(tagName, false);
+    schemaContext = checkSecurityContext(name, attrName, ns);
+  } else {
+    schemaContext = checkSecurityContext('*', attrName);
+  }
+
+  switch (schemaContext) {
+    case SecurityContext.HTML:
+      return _sanitizeHtml;
+    case SecurityContext.STYLE:
+      return _sanitizeStyle;
+    case SecurityContext.SCRIPT:
+      return _sanitizeScript;
+    case SecurityContext.URL:
+      return _sanitizeUrl;
+    case SecurityContext.RESOURCE_URL:
+      return _sanitizeResourceUrl;
+    case SecurityContext.ATTRIBUTE_NO_BINDING:
+      return _validateAttribute;
+    default:
+      return null;
+  }
 }

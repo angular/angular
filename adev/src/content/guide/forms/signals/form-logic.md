@@ -458,16 +458,16 @@ Don't use debouncing if:
 
 Metadata attaches reactive data to a field. Validation rules use this system internally, and you can publish your own keys for application-specific information like help text, configuration, or computed display values.
 
-Signal Forms provides six pre-defined metadata keys that built-in validators populate automatically:
+Signal Forms provides pre-defined metadata keys that built-in validators populate automatically:
 
-| Key          | Populated by  | Read via              |
-| ------------ | ------------- | --------------------- |
-| `REQUIRED`   | `required()`  | `field().required()`  |
-| `MIN`        | `min()`       | `field().min()`       |
-| `MAX`        | `max()`       | `field().max()`       |
-| `MIN_LENGTH` | `minLength()` | `field().minLength()` |
-| `MAX_LENGTH` | `maxLength()` | `field().maxLength()` |
-| `PATTERN`    | `pattern()`   | `field().pattern()`   |
+| Key          | Populated by         | Read via              |
+| ------------ | -------------------- | --------------------- |
+| `REQUIRED`   | `required()`         | `field().required()`  |
+| `MIN`        | `min()`, `minDate()` | `field().min()`       |
+| `MAX`        | `max()`, `maxDate()` | `field().max()`       |
+| `MIN_LENGTH` | `minLength()`        | `field().minLength()` |
+| `MAX_LENGTH` | `maxLength()`        | `field().maxLength()` |
+| `PATTERN`    | `pattern()`          | `field().pattern()`   |
 
 The `[formField]` directive automatically binds five of these (`REQUIRED`, `MIN`, `MAX`, `MIN_LENGTH`, and `MAX_LENGTH`) to the corresponding HTML attribute on a native form control. `PATTERN` is the exception, because Signal Forms supports multiple patterns per field but the HTML `pattern` attribute accepts only a single regular expression.
 
@@ -480,7 +480,7 @@ import {form, FormField, required, min, max} from '@angular/forms/signals';
   imports: [FormField],
   template: `
     <label>
-      Age (between {{ ageForm.age().min() }} and {{ ageForm.age().max() }})
+      Age (between {{ ageForm.age().min?.() }} and {{ ageForm.age().max?.() }})
       <input type="number" [formField]="ageForm.age" />
     </label>
 
@@ -521,12 +521,8 @@ import {form, FormField, max} from '@angular/forms/signals';
     </label>
 
     <label>
-      Quantity (max: {{ inventoryForm.quantity().max() }})
-      <input
-        type="number"
-        [formField]="inventoryForm.quantity"
-        [max]="inventoryForm.quantity().max()"
-      />
+      Quantity (max: {{ inventoryForm.quantity().max?.() }})
+      <input type="number" [formField]="inventoryForm.quantity" />
     </label>
   `,
 })

@@ -113,7 +113,10 @@ export interface FormUiControl<TValue> {
     | InputSignal<readonly RegExp[]>
     | InputSignalWithTransform<readonly RegExp[], unknown>;
   /**
-   * An output to emit when the control is touched.
+   * An output to emit when the user finishes interacting with the control, marking the field as
+   * touched. Emit this in response to the native `blur` event (when focus leaves the control), not
+   * `focus`. The `Field` directive listens to this output to update the field's touched status,
+   * which blur-based rules such as `debounce('blur')` rely on.
    */
   readonly touch?: OutputRef<void>;
   /**

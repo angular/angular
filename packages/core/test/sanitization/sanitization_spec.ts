@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SECURITY_SCHEMA} from '@angular/compiler';
 import {ENVIRONMENT, LView} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
 
@@ -28,7 +27,7 @@ import {
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
 } from '../../src/sanitization/sanitization';
-import {SecurityContext} from '../../src/sanitization/security';
+import {SECURITY_SCHEMA, SecurityContext} from '../../src/sanitization/dom_security_schema';
 
 function fakeLView(): LView {
   const fake = [null, {}] as LView;
@@ -117,18 +116,53 @@ describe('sanitization', () => {
       [SecurityContext.URL, ɵɵsanitizeUrl],
       [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl],
     ]);
-    Object.entries(schema).forEach(([key, context]) => {
-      if (context === SecurityContext.URL || SecurityContext.RESOURCE_URL) {
-        const [tag, prop] = key.split('|');
-        const contexts = contextsByProp.get(prop) || new Set<number>();
-        contexts.add(context);
-        contextsByProp.set(prop, contexts);
-        // check only in case a prop can be a part of both URL contexts
-        if (contexts.size === 2) {
-          expect(getUrlSanitizer(tag, prop)).toEqual(sanitizerNameByContext.get(context)!);
+
+    for (const [prop, nsSchema] of Object.entries(schema)) {
+      for (const [ns, tagSchema] of Object.entries(nsSchema)) {
+        for (const [tag, context] of Object.entries(tagSchema)) {
+          if (context !== SecurityContext.URL && context !== SecurityContext.RESOURCE_URL) {
+            continue;
+          }
+
+          const contexts = contextsByProp.get(prop) || new Set<number>();
+          contexts.add(context);
+          contextsByProp.set(prop, contexts);
+
+          // check only in case a prop can be a part of both URL contexts
+          if (contexts.size === 2) {
+            expect(getUrlSanitizer(tag, prop))
+              .withContext(`ns: ${ns}, tag: ${tag}, prop: ${prop}, context: ${context}`)
+              .toEqual(sanitizerNameByContext.get(context)!);
+          }
         }
       }
-    });
+    }
+  });
+
+  it('should select URL sanitizer case-insensitively', () => {
+    expect(getUrlSanitizer('IFRAME', 'SRC')).toEqual(ɵɵsanitizeResourceUrl);
+    expect(getUrlSanitizer('IFRAME', 'src')).toEqual(ɵɵsanitizeResourceUrl);
+    expect(getUrlSanitizer('iframe', 'SRC')).toEqual(ɵɵsanitizeResourceUrl);
+    expect(getUrlSanitizer('ScRiPt', 'xLiNk:HrEf')).toEqual(ɵɵsanitizeUrl);
+    expect(getUrlSanitizer('A', 'HREF')).toEqual(ɵɵsanitizeUrl);
+  });
+
+  it('should sanitize URL or ResourceURL case-insensitively', () => {
+    const ERROR = /NG0904: unsafe value used in a resource URL context.*/;
+
+    expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'IFRAME', 'SRC')).toThrowError(ERROR);
+
+    expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'IFRAME', 'src')).toThrowError(ERROR);
+
+    expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'iframe', 'SRC')).toThrowError(ERROR);
+
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'ScRiPt', 'xLiNk:HrEf')).toEqual(
+      'unsafe:javascript:true',
+    );
+
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'A', 'HREF')).toEqual(
+      'unsafe:javascript:true',
+    );
   });
 
   it('should sanitize resourceUrls via sanitizeUrlOrResourceUrl', () => {

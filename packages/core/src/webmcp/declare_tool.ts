@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
+// g3-only import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
+import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types'; // 3p-only
 import {assertInInjectionContext, inject, Injector, runInInjectionContext} from '../di';
-import type {ModelContext, ToolDescriptor} from './types';
 import {DestroyRef} from '../linker';
+import type {ModelContext, ToolDescriptor} from './types';
 
 /**
  * Declares a WebMCP tool.
@@ -32,12 +33,18 @@ export function declareExperimentalWebMcpTool<const InputSchema extends JsonSche
   tool: ToolDescriptor<InputSchema>,
   injector?: Injector,
 ): void {
-  const {modelContext} = globalThis.navigator as typeof globalThis.navigator & {
-    modelContext?: ModelContext;
-  };
+  // SSR may not have a document yet, so we abort before checking it.
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
-  // Verify WebMCP is supported in this client.
-  if (!modelContext) return;
+  // modelContext was moved from `navigator` to `document` in the spec, but we check both for compatibility with different environments.
+  const modelContext =
+    (globalThis.document as {modelContext?: ModelContext}).modelContext ??
+    (globalThis.navigator as unknown as {modelContext?: ModelContext}).modelContext;
+
+  // Verify WebMCP is supported in this client. The typeof check guards against
+  // DOM clobbering (e.g. <form id="modelContext">), which would produce a truthy
+  // Element instead of a ModelContext object.
+  if (!modelContext || typeof modelContext.registerTool !== 'function') return;
 
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     if (!injector) assertInInjectionContext(declareExperimentalWebMcpTool);
@@ -65,11 +72,5 @@ export function declareExperimentalWebMcpTool<const InputSchema extends JsonSche
   modelContext.registerTool(wrappedTool, {signal: abortCtrl.signal});
 
   // Unregister when the associated `Injector` is destroyed.
-  destroyRef.onDestroy(() => {
-    abortCtrl.abort();
-
-    // `unregisterTool` has been removed from the spec, but we continue to
-    // call it because `@mcp-b/webmcp-polyfill` still relies on it for tests.
-    modelContext.unregisterTool?.({name: tool.name});
-  });
+  destroyRef.onDestroy(() => void abortCtrl.abort());
 }

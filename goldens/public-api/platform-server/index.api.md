@@ -43,7 +43,9 @@ export class PlatformState {
 }
 
 // @public
-export function provideServerRendering(): EnvironmentProviders;
+export function provideServerRendering(options?: {
+    maxResponseBodySize: number;
+}): EnvironmentProviders;
 
 // @public
 export function renderApplication(bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>, options: {
@@ -60,6 +62,24 @@ export function renderModule<T>(moduleType: Type<T>, options: {
     extraProviders?: StaticProvider[];
     allowedHosts?: Readonly<string>[];
 }): Promise<string>;
+
+// @public
+export const enum RuntimeErrorCode {
+    // (undocumented)
+    DISABLED_DOM_EMULATION_IN_NON_BROWSER = 5704,
+    // (undocumented)
+    GET_COOKIE_NOT_IMPLEMENTED = 5700,
+    // (undocumented)
+    HOST_NOT_ALLOWED = 5706,
+    // (undocumented)
+    INVALID_URL = 5701,
+    // (undocumented)
+    PROTOCOL_RELATIVE_URL_NOT_ALLOWED = 5702,
+    // (undocumented)
+    SUSPICIOUS_URL_CHANGE_ORIGIN = 5703,
+    // (undocumented)
+    XHR_NOT_LOADED = 5705
+}
 
 // @public
 export class ServerModule {

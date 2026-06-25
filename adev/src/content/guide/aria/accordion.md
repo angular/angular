@@ -145,8 +145,8 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 ```angular-html
 <div ngAccordionGroup>
   <div>
-    <button ngAccordionTrigger panelId="item-1">Trigger Text</button>
-    <div ngAccordionPanel panelId="item-1">
+    <button ngAccordionTrigger [panel]="panel1">Trigger Text</button>
+    <div ngAccordionPanel #panel1="ngAccordionPanel">
       <ng-template ngAccordionContent>
         <!-- This content only renders when the panel first opens -->
         <img src="large-image.jpg" alt="Description" />
@@ -158,6 +158,55 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 ```
 
 By default, content remains in the DOM after the panel collapses. Set `[preserveContent]="false"` to remove the content from the DOM when the panel closes.
+
+## Testing
+
+Angular Aria provides component harnesses for testing accordion components.
+Here is an example of how to use the harnesses in a component test:
+
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {AccordionGroupHarness} from '@angular/aria/accordion/testing';
+import {MyAccordionComponent} from './my-accordion'; // Your component
+
+describe('MyAccordionComponent', () => {
+  let fixture: ComponentFixture<MyAccordionComponent>;
+  let loader: HarnessLoader;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyAccordionComponent],
+    });
+
+    fixture = TestBed.createComponent(MyAccordionComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
+
+  it('should allow expanding panels', async () => {
+    // Load the accordion group harness
+    const group = await loader.getHarness(AccordionGroupHarness);
+
+    // Get all individual accordions (items) in the group
+    const accordions = await group.getAccordions();
+    expect(accordions.length).toBe(3);
+
+    // Verify initial state (first expanded, others collapsed)
+    expect(await accordions[0].isExpanded()).toBe(true);
+    expect(await accordions[1].isExpanded()).toBe(false);
+
+    // Expand the second panel
+    await accordions[1].expand();
+
+    // Verify updated state
+    expect(await accordions[1].isExpanded()).toBe(true);
+    // If multiExpandable is false, the first one should now be collapsed
+    expect(await accordions[0].isExpanded()).toBe(false);
+  });
+});
+```
 
 ## APIs
 
@@ -187,12 +236,12 @@ The directive applied to the button element that toggles panel visibility.
 
 #### Inputs
 
-| Property   | Type      | Default | Description                                                    |
-| ---------- | --------- | ------- | -------------------------------------------------------------- |
-| `id`       | `string`  | auto    | Unique identifier for the trigger                              |
-| `panelId`  | `string`  | —       | **Required.** Must match the `panelId` of the associated panel |
-| `disabled` | `boolean` | `false` | Disables this trigger                                          |
-| `expanded` | `boolean` | `false` | Whether the panel is expanded (supports two-way binding)       |
+| Property   | Type             | Default | Description                                                    |
+| ---------- | ---------------- | ------- | -------------------------------------------------------------- |
+| `panel`    | `AccordionPanel` | —       | **Required.** The reference of the controlled accordion panel. |
+| `id`       | `string`         | auto    | Unique identifier for the trigger                              |
+| `disabled` | `boolean`        | `false` | Disables this trigger                                          |
+| `expanded` | `boolean`        | `false` | Whether the panel is expanded (supports two-way binding)       |
 
 #### Signals
 
@@ -214,11 +263,10 @@ The directive applied to the element containing the collapsible content.
 
 #### Inputs
 
-| Property          | Type      | Default | Description                                                      |
-| ----------------- | --------- | ------- | ---------------------------------------------------------------- |
-| `id`              | `string`  | auto    | Unique identifier for the panel                                  |
-| `panelId`         | `string`  | —       | **Required.** Must match the `panelId` of the associated trigger |
-| `preserveContent` | `boolean` | `true`  | Whether to keep content in DOM after panel collapses             |
+| Property          | Type      | Default | Description                                          |
+| ----------------- | --------- | ------- | ---------------------------------------------------- |
+| `id`              | `string`  | auto    | Unique identifier for the panel                      |
+| `preserveContent` | `boolean` | `true`  | Whether to keep content in DOM after panel collapses |
 
 #### Signals
 
@@ -241,7 +289,7 @@ The structural directive applied to an `ng-template` inside an accordion panel t
 This directive has no inputs, outputs, or methods. Apply it to an `ng-template` element:
 
 ```angular-html
-<div ngAccordionPanel panelId="item-1">
+<div ngAccordionPanel #panel1="ngAccordionPanel">
   <ng-template ngAccordionContent>
     <!-- Content here is lazily rendered -->
   </ng-template>

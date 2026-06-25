@@ -283,13 +283,14 @@ groups:
     reviewers:
       users:
         - AleksanderBodurri
+        - csmick
         - ~devversion
         - dgp1130
+        - eduhmc
         - hawkgs
-        - hybrist
-        - ~josephperrott
         - JeanMeche
-        - milomg
+        - ~josephperrott
+        - ~milomg
 
   # =========================================================
   #  Dev-infra
@@ -409,6 +410,7 @@ groups:
         - ~AndrewKushnir
         - atscott
         - kirjs
+        - JeanMeche
         - ~thePunderWoman
         - ~pkozlowski-opensource
         - ~amishne

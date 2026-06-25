@@ -38,13 +38,16 @@ export class TabManager {
 
   static initialize(tabs: Tabs, runtime: typeof chrome.runtime = chrome.runtime): TabManager {
     const manager = new TabManager(tabs, runtime);
-    manager.initialize();
+    manager.initialize(runtime);
     return manager;
   }
 
-  private initialize(): void {
+  private initialize(runtime: typeof chrome.runtime): void {
     this.runtime.onConnect.addListener((port) => {
-      if (isNumeric(port.name)) {
+      // Verify that the connection is actually from the extension's DevTools page
+      const isFromExtension = port.sender?.url?.startsWith(runtime.getURL(''));
+
+      if (isNumeric(port.name) && isFromExtension) {
         this.registerDevToolsForTab(port);
         return;
       }

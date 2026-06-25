@@ -209,7 +209,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-trigger.ts",
         "startLine": 41,
-        "endLine": 103
+        "endLine": 109
       }
     },
     {
@@ -280,6 +280,19 @@
           "inputAlias": "searchTerm",
           "isRequiredInput": false,
           "outputAlias": "searchTermChange"
+        },
+        {
+          "name": "role",
+          "type": "InputSignal<\"menuitem\" | \"menuitemradio\" | \"menuitemcheckbox\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The role of the menu item.",
+          "jsdocTags": [],
+          "inputAlias": "role",
+          "isRequiredInput": false
         },
         {
           "name": "parent",
@@ -499,7 +512,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-item.ts",
         "startLine": 43,
-        "endLine": 136
+        "endLine": 140
       }
     },
     {
@@ -704,7 +717,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-bar.ts",
         "startLine": 55,
-        "endLine": 140
+        "endLine": 139
       }
     },
     {
@@ -780,6 +793,16 @@
             "readonly"
           ],
           "description": "A reference to the parent menu item or menu trigger.",
+          "jsdocTags": []
+        },
+        {
+          "name": "softDisabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu is soft disabled.",
           "jsdocTags": []
         },
         {
@@ -912,7 +935,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 57,
-        "endLine": 213
+        "endLine": 215
       }
     }
   ],
@@ -1078,6 +1101,10 @@
       "@angular/aria/menu"
     ],
     [
+      "MenuItem.role",
+      "@angular/aria/menu"
+    ],
+    [
       "MenuItem.parent",
       "@angular/aria/menu"
     ],
@@ -1187,6 +1214,10 @@
     ],
     [
       "Menu.parent",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.softDisabled",
       "@angular/aria/menu"
     ],
     [

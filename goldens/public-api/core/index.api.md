@@ -1168,6 +1168,7 @@ export class KeyValueDiffers {
 export function linkedSignal<D>(computation: () => D, options?: {
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public
@@ -1179,6 +1180,7 @@ export function linkedSignal<S, D>(options: {
     }) => D;
     equal?: ValueEqualityFn<NoInfer<D>>;
     debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
 }): WritableSignal<D>;
 
 // @public
@@ -1770,6 +1772,8 @@ export interface SchemaMetadata {
 // @public
 export enum SecurityContext {
     // (undocumented)
+    ATTRIBUTE_NO_BINDING = 6,
+    // (undocumented)
     HTML = 1,
     // (undocumented)
     NONE = 0,
@@ -2135,7 +2139,7 @@ export interface WebMcpClient {
 
 // @public
 export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
-    description?: string;
+    description: string;
     execute: WebMcpToolExecute<InputSchema>;
     inputSchema: InputSchema;
     name: string;

@@ -27,7 +27,7 @@ import {maxDateError} from './validation_errors';
  *
  * @see [Signal Form Max Validation](guide/forms/signals/validation#min-and-max)
  * @category validation
- * @experimental 22.0.0
+ * @publicApi 22.0
  */
 export function maxDate<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

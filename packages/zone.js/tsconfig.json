@@ -18,7 +18,8 @@
       "es2015.iterable",
       "es2015.promise",
       "es2015.symbol",
-      "es2015.symbol.wellknown"
-    ],
-  },
+      "es2015.symbol.wellknown",
+      "es2022.object"
+    ]
+  }
 }
