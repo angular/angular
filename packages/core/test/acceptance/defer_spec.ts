@@ -5486,4 +5486,173 @@ describe('IdleScheduler', () => {
     capturedCbs[0]({didTimeout: false, timeRemaining: () => 10});
     expect(cb1).toHaveBeenCalledTimes(1);
   });
+
+  it('should not register a spurious requestOnIdle when a callback re-entrantly adds to the same bucket', () => {
+    // Regression: cancelBucket() at the top of the drain set idleId to null, so a
+    // re-entrant scheduler.add() during the drain called scheduleBucket() and registered
+    // a second requestOnIdle handle. That handle was then orphaned (never cancelled)
+    // because the bucket was removed from this.buckets once the queue emptied in the
+    // same drain iteration.
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      // Re-entrantly schedule B into the same bucket (no options → key '').
+      scheduler.add(cbB);
+    });
+
+    scheduler.add(cbA);
+    expect(ricCount).toBe(1);
+
+    capturedCb!({didTimeout: false, timeRemaining: () => 9999});
+
+    // A and B both ran (JS Set iterator visits B because it was appended after the cursor).
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(1);
+
+    // Exactly one requestOnIdle was issued. No spurious second registration means no
+    // orphaned handle that would survive ngOnDestroy and fire against a destroyed scheduler.
+    expect(ricCount).toBe(1);
+  });
+
+  it('should defer a re-entrantly-added same-bucket callback to the next idle period when the deadline expires', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.add(cbB); // re-entrant add — same bucket (no options)
+    });
+
+    scheduler.add(cbA);
+    capturedCbs[0]({didTimeout: false, timeRemaining: () => 0}); // deadline expires after A
+
+    // A ran; deadline expired before B was visited.
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(0);
+
+    // A second idle was registered for B by the post-drain scheduleBucket call.
+    expect(ricCount).toBe(2);
+    capturedCbs[1]({didTimeout: false, timeRemaining: () => 10});
+    expect(cbB).toHaveBeenCalledTimes(1);
+  });
+
+  it('should isolate a re-entrantly-added callback in a different bucket from the current drain', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.add(cbB, {timeout: 500}); // different bucket key
+    });
+
+    scheduler.add(cbA);
+    capturedCbs[0]({didTimeout: false, timeRemaining: () => 10});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(0); // B is in its own bucket, not yet visited
+    expect(ricCount).toBe(2); // one registration per bucket — both legitimate
+
+    capturedCbs[1]({didTimeout: false, timeRemaining: () => 10});
+    expect(cbB).toHaveBeenCalledTimes(1);
+  });
+
+  it('should skip a same-bucket sibling that is removed during a drain', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbC = jasmine.createSpy('cbC');
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.remove(cbC); // remove C before the iterator reaches it
+    });
+
+    scheduler.add(cbA);
+    scheduler.add(cbB);
+    scheduler.add(cbC);
+
+    capturedCb!({didTimeout: false, timeRemaining: () => 10});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(1);
+    expect(cbC).toHaveBeenCalledTimes(0); // deleted from the Set before the iterator reached it
+    expect(ricCount).toBe(1); // remove() did not trigger spurious scheduling
+  });
+
+  it('should skip the immediately-next callback when it is removed during a drain', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.remove(cbB);
+    });
+
+    scheduler.add(cbA);
+    scheduler.add(cbB);
+
+    capturedCb!({didTimeout: false, timeRemaining: () => 10});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(0); // skipped
+    expect(ricCount).toBe(1);
+  });
+
+  it('should ignore re-entrant remove() calls for callbacks already processed in the current drain', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
+
+    const cbA = jasmine.createSpy('cbA');
+    const cbB = jasmine.createSpy('cbB').and.callFake(() => {
+      // A has already been fully processed: the drain deleted it from callbackBucket.
+      // remove(A) finds no entry → returns early with no side-effects.
+      scheduler.remove(cbA);
+    });
+
+    scheduler.add(cbA);
+    scheduler.add(cbB);
+
+    expect(() => capturedCb!({didTimeout: false, timeRemaining: () => 10})).not.toThrow();
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(1);
+    expect(ricCount).toBe(1); // no extra scheduling from the no-op remove()
+  });
 });
