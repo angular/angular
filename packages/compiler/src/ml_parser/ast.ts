@@ -105,7 +105,7 @@ export class StartTagComment implements BaseNode {
     public sourceSpan: ParseSourceSpan,
   ) {}
   visit(visitor: Visitor, context: any): any {
-    return visitor.visitAttributeComment ? visitor.visitAttributeComment(this, context) : undefined;
+    return visitor.visitStartTagComment ? visitor.visitStartTagComment(this, context) : undefined;
   }
 }
 
@@ -237,7 +237,7 @@ export interface Visitor {
   visitLetDeclaration(decl: LetDeclaration, context: any): any;
   visitComponent(component: Component, context: any): any;
   visitDirective(directive: Directive, context: any): any;
-  visitAttributeComment?(comment: StartTagComment, context: any): any;
+  visitStartTagComment?(comment: StartTagComment, context: any): any;
 }
 
 export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): any[] {
@@ -268,7 +268,7 @@ export class RecursiveVisitor implements Visitor {
   }
 
   visitAttribute(ast: Attribute, context: any): any {}
-  visitAttributeComment(ast: StartTagComment, context: any): any {}
+  visitStartTagComment(ast: StartTagComment, context: any): any {}
   visitText(ast: Text, context: any): any {}
   visitComment(ast: Comment, context: any): any {}
 
