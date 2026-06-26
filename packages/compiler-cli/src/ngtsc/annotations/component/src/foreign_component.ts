@@ -347,7 +347,7 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
       );
     }
 
-    // Explicitly defining a `@content(children)` block without parameters is unnecessary because
+    // Explicitly defining a `@content (children)` block without parameters is unnecessary because
     // child nodes are implicitly passed to the `children` property.
     if (block.name === CHILDREN && block.variables.length === 0) {
       this.diagnostics.push(

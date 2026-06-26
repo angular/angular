@@ -421,10 +421,10 @@ export class TestCmpChildren {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpChildren, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpChildren, isStandalone: true, selector: "main-children", ngImport: i0, template: `
     <FancyButton [label]="title">
-      @content(icon) {
+      @content (icon) {
         <span>Icon!</span>
       }
-      @content(description) {
+      @content (description) {
         <span>Description text</span>
       }
       <span>Other children</span>
@@ -437,10 +437,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'main-children',
                     template: `
     <FancyButton [label]="title">
-      @content(icon) {
+      @content (icon) {
         <span>Icon!</span>
       }
-      @content(description) {
+      @content (description) {
         <span>Description text</span>
       }
       <span>Other children</span>
@@ -458,7 +458,7 @@ export class TestCmpRenderProps {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpRenderProps, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpRenderProps, isStandalone: true, selector: "main-render-props", ngImport: i0, template: `
     <FancyButton [label]="title">
-      @content(items; let item, index) {
+      @content (items; let item, index) {
         <span>#{{index}}: {{item}}</span>
       }
     </FancyButton>
@@ -470,7 +470,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'main-render-props',
                     template: `
     <FancyButton [label]="title">
-      @content(items; let item, index) {
+      @content (items; let item, index) {
         <span>#{{index}}: {{item}}</span>
       }
     </FancyButton>

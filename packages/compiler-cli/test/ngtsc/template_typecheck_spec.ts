@@ -2329,7 +2329,7 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'test',
-            template: '<FancyButton> @content(icon) {} </FancyButton>',
+            template: '<FancyButton> @content (icon) {} </FancyButton>',
             foreignImports: [frameworkImport(FancyButton)],
           })
           export class TestCmp {}
@@ -2347,7 +2347,7 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'test',
-            template: '<div> @content(icon) {} </div>',
+            template: '<div> @content (icon) {} </div>',
             foreignImports: [frameworkImport(FancyButton)],
           })
           export class TestCmp {}
@@ -2369,7 +2369,7 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'test',
-            template: '<FancyButton> <div> @content(icon) {} </div> </FancyButton>',
+            template: '<FancyButton> <div> @content (icon) {} </div> </FancyButton>',
             foreignImports: [frameworkImport(FancyButton)],
           })
           export class TestCmp {}

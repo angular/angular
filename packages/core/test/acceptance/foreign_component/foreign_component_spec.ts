@@ -226,11 +226,11 @@ describe('foreign components', () => {
         selector: 'test-cmp',
         template: `
           <Card>
-            @content(header) {
+            @content (header) {
               <h1>My Title</h1>
             }
             <p>Card body content</p>
-            @content(footer) {
+            @content (footer) {
               <button>Close</button>
             }
           </Card>
@@ -377,10 +377,10 @@ describe('foreign components', () => {
 
       expect(fixture.nativeElement.innerHTML).toBe(
         '' +
-          '<!--container-->' + // @content(children) (implicit)
+          '<!--container-->' + // @content (children) (implicit)
           '<!--foreign-view-head-->' + // <SimpleWrapper>
           '<div class="wrapper">' +
-          '<!--container-->' + // @content(children) (implicit)
+          '<!--container-->' + // @content (children) (implicit)
           '<!--foreign-view-head-->' + // <FancyButton>
           '<button>' +
           '<span id="text">Inside wrapper button</span>' +
@@ -448,7 +448,7 @@ describe('foreign components', () => {
         selector: 'test-cmp',
         template: `
           <FancyList>
-            @content(renderHeader; let _) {
+            @content (renderHeader; let _) {
               <span>Header Content</span>
             }
           </FancyList>
@@ -463,7 +463,7 @@ describe('foreign components', () => {
 
       expect(fixture.nativeElement.innerHTML).toBe(
         '' +
-          '<!--container-->' + // for @content(renderHeader)
+          '<!--container-->' + // for @content (renderHeader)
           '<!--foreign-view-head-->' +
           '<div><span>Header Content</span></div>' +
           '<!--foreign-view-tail-->' +
@@ -487,7 +487,7 @@ describe('foreign components', () => {
         selector: 'test-cmp',
         template: `
           <FancyList>
-            @content(renderItem; let item) {
+            @content (renderItem; let item) {
               <span>{{ item }}</span>
             }
           </FancyList>
@@ -502,7 +502,7 @@ describe('foreign components', () => {
 
       expect(fixture.nativeElement.innerHTML).toBe(
         '' +
-          '<!--container-->' + // for @content(renderItem)
+          '<!--container-->' + // for @content (renderItem)
           '<!--foreign-view-head-->' +
           '<div><span>Hello Single</span></div>' +
           '<!--foreign-view-tail-->' +
@@ -528,7 +528,7 @@ describe('foreign components', () => {
         selector: 'test-cmp',
         template: `
           <FancyTable>
-            @content(renderRow; let row, idx, isLast) {
+            @content (renderRow; let row, idx, isLast) {
               <span>{{ idx }} - {{ row }} (Last: {{ isLast }})</span>
             }
           </FancyTable>
@@ -543,7 +543,7 @@ describe('foreign components', () => {
 
       expect(fixture.nativeElement.innerHTML).toBe(
         '' +
-          '<!--container-->' + // for @content(renderRow)
+          '<!--container-->' + // for @content (renderRow)
           '<!--foreign-view-head-->' +
           '<div><span>0 - RowA (Last: false)</span></div>' +
           '<!--foreign-view-tail-->' +
@@ -591,9 +591,9 @@ describe('foreign components', () => {
         selector: 'test-cmp',
         template: `
           <OuterComp>
-            @content(renderContent; let message) {
+            @content (renderContent; let message) {
               <InnerComp>
-                @content(renderHeader; let innerMessage) {
+                @content (renderHeader; let innerMessage) {
                   {{ message }} - {{ innerMessage }}
                 }
                 Body Content
@@ -611,11 +611,11 @@ describe('foreign components', () => {
 
       expect(fixture.nativeElement.innerHTML).toBe(
         '' +
-          '<!--container-->' + // @content(renderContent)
+          '<!--container-->' + // @content (renderContent)
           '<!--foreign-view-head-->' + // <OuterComp>
           '<div class="outer">' +
-          '<!--container-->' + // @content(renderHeader)
-          '<!--container-->' + // @content(children) (implicit)
+          '<!--container-->' + // @content (renderHeader)
+          '<!--container-->' + // @content (children) (implicit)
           '<!--foreign-view-head-->' + // <InnerComp>
           '<div class="inner">' +
           '<div class="inner-header"> Outer Msg - Inner Msg </div>' +
@@ -887,7 +887,7 @@ describe('foreign components', () => {
       @Component({
         template: `
           <DynamicIf [injector]="injector" [cond]="visible">
-            @content(children; let result) {
+            @content (children; let result) {
               <child>{{ result }}</child>
             }
           </DynamicIf>

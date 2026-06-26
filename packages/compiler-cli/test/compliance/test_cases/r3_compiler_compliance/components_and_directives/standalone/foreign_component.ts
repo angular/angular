@@ -31,10 +31,10 @@ export class TestCmp {
   selector: 'main-children',
   template: `
     <FancyButton [label]="title">
-      @content(icon) {
+      @content (icon) {
         <span>Icon!</span>
       }
-      @content(description) {
+      @content (description) {
         <span>Description text</span>
       }
       <span>Other children</span>
@@ -54,7 +54,7 @@ export class TestCmpChildren {
   selector: 'main-render-props',
   template: `
     <FancyButton [label]="title">
-      @content(items; let item, index) {
+      @content (items; let item, index) {
         <span>#{{index}}: {{item}}</span>
       }
     </FancyButton>
