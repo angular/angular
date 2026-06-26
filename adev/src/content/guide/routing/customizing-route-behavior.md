@@ -37,7 +37,7 @@ This is useful when you want repeated clicks on a list filter, left-nav item, or
 provideRouter(routes, withRouterConfig({onSameUrlNavigation: 'reload'}));
 ```
 
-You can also control this behavior on individual navigations rather than globally. This allows you to keep the keep the default of `'ignore'` while selectively enabling reload behavior for specific use cases:
+You can also control this behavior on individual navigations rather than globally. This allows you to keep the default of `'ignore'` while selectively enabling reload behavior for specific use cases:
 
 ```ts
 router.navigate(['/some-path'], {onSameUrlNavigation: 'reload'});
