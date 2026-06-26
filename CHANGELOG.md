@@ -1,3 +1,12 @@
+<a name="22.1.0-next.3"></a>
+# 22.1.0-next.3 (2026-06-26)
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [26b0c719ef](https://github.com/angular/angular/commit/26b0c719effc6b4ff649803033e2e6f4b66c99f7) | fix | resolve migration failure when tsconfig specifies rootDir |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.4"></a>
 # 22.0.4 (2026-06-26)
 ### migrations
