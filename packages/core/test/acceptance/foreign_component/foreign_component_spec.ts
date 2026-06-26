@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ElementRef, computed, effect, signal, viewChildren} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  computed,
+  effect,
+  signal,
+  untracked,
+  viewChildren,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ForeignComponent} from '../../../src/interface/foreign_component';
 import {foreignImport} from '../../../src/render3/foreign_import';
@@ -15,6 +23,7 @@ function frameworkImport<TProps>(component: (props: TProps) => Node[]): ForeignC
   return foreignImport(
     (props) => [component(props)],
     () => {},
+    (producer) => producer(),
   );
 }
 
@@ -692,45 +701,87 @@ describe('foreign components', () => {
   });
 
   describe('lifecycle', () => {
-    it('should destroy projected content when its foreign container is destroyed', async () => {
-      // Track the destroy callback registered by the projected content.
-      let destroy: VoidFunction | undefined;
-      function frameworkOnDestroy(callback: VoidFunction) {
-        destroy = callback;
+    // A minimal foreign context system for tracking cleanup.
+    class Context {
+      private static current: Context | undefined;
+
+      // Ensures there is currently an active context and returns it.
+      static get active(): Context {
+        if (!Context.current) {
+          throw new Error('There is no active context');
+        }
+        return Context.current;
       }
 
-      function frameworkImport<TProps>(
-        component: (props: TProps) => Node[],
-      ): ForeignComponent<TProps> {
-        return foreignImport((props) => [component(props)], frameworkOnDestroy);
+      private destroyFn: VoidFunction | undefined;
+
+      // Executes action with this context.
+      run<T>(action: () => T): T {
+        const prev = Context.current;
+        Context.current = this;
+        try {
+          return action();
+        } finally {
+          Context.current = prev;
+        }
       }
 
-      // A foreign component that acts like a conditional container (e.g. @if).
-      function Conditional(props: {when: () => boolean; then: () => Node[]}) {
+      // Destroys this context.
+      destroy() {
+        this.destroyFn?.();
+        this.destroyFn = undefined;
+      }
+
+      // Registers a callback to be invoked when this context is destroyed.
+      onDestroy(callback: VoidFunction) {
+        if (this.destroyFn) {
+          throw new Error('There is already a destroy callback registered');
+        }
+        this.destroyFn = callback;
+      }
+    }
+
+    function frameworkImport<TProps>(
+      component: (props: TProps) => Node[],
+    ): ForeignComponent<TProps> {
+      return foreignImport(
+        (props) => [component(props)],
+        (callback) => Context.active.onDestroy(callback),
+        // Do *not* render nodes eagerly. Return the node producer function directly.
+        (producer) => producer,
+      );
+    }
+
+    it('should integrate lifecycle of static content', async () => {
+      function StaticIf(props: {cond: () => boolean; children: () => Node[]}) {
+        const container = document.createElement('div');
+        const context = new Context();
+
         effect((onCleanup) => {
-          // On cleanup (when `when()` changes or the component is destroyed), call the destroy
-          // callback registered by Angular for the projected content.
-          onCleanup(() => destroy?.());
+          onCleanup(() => context.destroy());
 
-          if (props.when()) {
-            // Render the conditional content, instantiating any Angular views contained within.
-            // Internally this will call `frameworkOnDestroy` to register a callback to destroy the
-            // views when this effect's cleanup is run.
-            props.then();
+          if (props.cond()) {
+            context.run(() => {
+              const nodes = untracked(() => props.children());
+              for (const node of nodes) {
+                container.appendChild(node);
+              }
+            });
           }
         });
 
-        // We don't care about returning any nodes since we're just testing the content lifecycle.
-        return [];
+        return [container];
       }
 
-      const ngOnDestroySpy = jasmine.createSpy();
+      const ngOnInitSpy = jasmine.createSpy('ngOnInit');
+      const ngOnDestroySpy = jasmine.createSpy('ngOnDestroy');
 
-      @Component({
-        selector: 'disposable',
-        template: ``,
-      })
-      class Disposable {
+      @Component({selector: 'child', template: '<div>child</div>'})
+      class Child {
+        ngOnInit() {
+          ngOnInitSpy();
+        }
+
         ngOnDestroy() {
           ngOnDestroySpy();
         }
@@ -738,46 +789,135 @@ describe('foreign components', () => {
 
       @Component({
         template: `
-          <Conditional [when]="visible">
-            @content (then; let _) {
-              <disposable />
-            }
-          </Conditional>
+          <StaticIf [cond]="visible">
+            <child />
+          </StaticIf>
         `,
-        imports: [Disposable],
+        imports: [Child],
         // @ts-ignore
-        foreignImports: [frameworkImport(Conditional)],
+        foreignImports: [frameworkImport(StaticIf)],
       })
-      class TestDisposal {
-        readonly visible = signal(true);
+      class App {
+        readonly visible = signal(false);
       }
 
-      const fixture = TestBed.createComponent(TestDisposal);
+      const fixture = TestBed.createComponent(App);
       await fixture.whenStable();
 
-      // Initially, visible is true, so the <disposable> component is created and NOT destroyed.
+      // Initially, visible is false, so <child> is not rendered.
+      expect(ngOnInitSpy).not.toHaveBeenCalled();
       expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('');
 
-      // Toggle visible to false: this triggers the Conditional component's effect cleanup,
-      // which calls the destroy callback registered during props.then() invocation.
-      fixture.componentInstance.visible.set(false);
-      await fixture.whenStable();
-
-      // The projected Angular content <disposable> should be destroyed.
-      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
-
-      // Toggle visible back to true: a new instance of <disposable> is created.
+      // Toggle visible to true: this renders <child>.
       fixture.componentInstance.visible.set(true);
       await fixture.whenStable();
 
-      // Since the new instance is not yet destroyed, the destroy spy count remains at 1.
-      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('child');
 
-      // Toggle visible to false again: the new instance is destroyed.
+      // Toggle visible back to false: this destroys the previously rendered <child>.
       fixture.componentInstance.visible.set(false);
       await fixture.whenStable();
 
-      expect(ngOnDestroySpy).toHaveBeenCalledTimes(2);
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Toggle visible to true again: this renders a new <child>.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(2);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('child');
+    });
+
+    it('should integrate lifecycle of dynamic content', async () => {
+      function DynamicIf(props: {cond: () => boolean; children: (value: boolean) => () => Node[]}) {
+        const container = document.createElement('div');
+        const context = new Context();
+
+        effect((onCleanup) => {
+          onCleanup(() => context.destroy());
+
+          const result = props.cond();
+          if (result) {
+            context.run(() => {
+              const children = untracked(() => props.children(result));
+              const nodes = children();
+              for (const node of nodes) {
+                container.appendChild(node);
+              }
+            });
+          }
+        });
+
+        return [container];
+      }
+
+      const ngOnInitSpy = jasmine.createSpy('ngOnInit');
+      const ngOnDestroySpy = jasmine.createSpy('ngOnDestroy');
+
+      @Component({selector: 'child', template: '<ng-content />'})
+      class Child {
+        ngOnInit() {
+          ngOnInitSpy();
+        }
+
+        ngOnDestroy() {
+          ngOnDestroySpy();
+        }
+      }
+
+      @Component({
+        template: `
+          <DynamicIf [cond]="visible">
+            @content(children; let result) {
+              <child>{{ result }}</child>
+            }
+          </DynamicIf>
+        `,
+        imports: [Child],
+        // @ts-ignore
+        foreignImports: [frameworkImport(DynamicIf)],
+      })
+      class App {
+        readonly visible = signal(false);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+
+      // Initially, visible is false, so <child> is not rendered.
+      expect(ngOnInitSpy).not.toHaveBeenCalled();
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Toggle visible to true: this renders <child>.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('true');
+
+      // Toggle visible back to false: this destroys the previously rendered <child>.
+      fixture.componentInstance.visible.set(false);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Toggle visible to true again: this renders a new <child>.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(2);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('true');
     });
   });
 });

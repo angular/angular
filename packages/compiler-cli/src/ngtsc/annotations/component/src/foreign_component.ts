@@ -347,9 +347,9 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
       );
     }
 
-    // Explicitly defining a `@content(children)` block is unnecessary because child nodes are
-    // implicitly passed to the `children` property.
-    if (block.name === CHILDREN) {
+    // Explicitly defining a `@content(children)` block without parameters is unnecessary because
+    // child nodes are implicitly passed to the `children` property.
+    if (block.name === CHILDREN && block.variables.length === 0) {
       this.diagnostics.push(
         makeTemplateDiagnostic(
           '' as TypeCheckId,
@@ -357,7 +357,7 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
           block.sourceSpan,
           ts.DiagnosticCategory.Error,
           ngErrorCode(ErrorCode.FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN),
-          `Defining a @content (${CHILDREN}) block is unnecessary. ` +
+          `Defining a @content (${CHILDREN}) block with no parameters is unnecessary. ` +
             'Pass children as direct nested content of the foreign component instead.',
         ),
       );

@@ -6,13 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ForeignComponent, RENDER, ON_DESTROY} from '../../interface/foreign_component';
+import {
+  ForeignComponent,
+  RENDER,
+  ON_DESTROY,
+  CONTENT_ADAPTER,
+} from '../../interface/foreign_component';
 import {attachPatchData} from '../context_discovery';
 import {nativeInsertBefore} from '../dom_node_manipulation';
 import {createForeignView} from '../foreign_view';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, RENDERER, TVIEW, FLAGS, LViewFlags} from '../interfaces/view';
-import {appendChild, destroyLView} from '../node_manipulation';
+import {HEADER_OFFSET, RENDERER, TVIEW, FLAGS} from '../interfaces/view';
+import {appendChild} from '../node_manipulation';
 import {getLView, getTView, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {addToEndOfViewTree} from '../view/construction';
@@ -27,7 +32,7 @@ import {assertLContainer} from '../assert';
 import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags} from '../interfaces/container';
 import {getConstant} from '../util/view_utils';
 import {isDestroyed} from '../interfaces/type_checks';
-import {assertNotEqual, assertNotSame} from '../../util/assert';
+import {assertNotSame} from '../../util/assert';
 
 /**
  * Creation phase instruction to render a foreign component.
@@ -96,42 +101,10 @@ export function ɵɵforeignComponent(
  * and extract its root DOM nodes.
  *
  * @param index The index of the container in the data array.
- * @codeGenApi
- */
-export function ɵɵforeignContent(index: number): any[] {
-  const lView = getLView();
-  const adjustedIndex = index + HEADER_OFFSET;
-
-  // The template is already declared at adjustedIndex, so lContainer must exist.
-  const lContainer = lView[adjustedIndex] as LContainer;
-  ngDevMode && assertLContainer(lContainer);
-  lContainer[FLAGS] |= LContainerFlags.LogicalOnly;
-
-  const tView = getTView();
-  const tNode = tView.data[adjustedIndex] as TContainerNode;
-
-  // Instantiate and render the embedded view inside the container, but do not add its elements to
-  // the DOM at the container anchor since the nodes will be projected into a foreign view.
-  const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, null);
-  addLViewToLContainer(lContainer, embeddedLView, 0, /* addToDOM */ false);
-
-  // Extract and return the root nodes of the created view
-  const embeddedTView = embeddedLView[TVIEW];
-  return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
-}
-
-/**
- * Creation phase instruction to return a function for rendering foreign content dynamically
- * with arguments.
- *
- * @param index The index of the container in the data array.
  * @param foreignComponentConstIndex The index of the matched foreign component in the constant pool.
  * @codeGenApi
  */
-export function ɵɵforeignContentFn(
-  index: number,
-  foreignComponentConstIndex: number,
-): (...args: any[]) => any[] {
+export function ɵɵforeignContent(index: number, foreignComponentConstIndex: number): any {
   const lView = getLView();
   const adjustedIndex = index + HEADER_OFFSET;
 
@@ -146,13 +119,11 @@ export function ɵɵforeignContentFn(
     tView.consts,
     foreignComponentConstIndex,
   )!;
+  const adapter = foreignComponent[CONTENT_ADAPTER];
   const onDestroy = foreignComponent[ON_DESTROY];
 
-  return (...args: any[]) => {
-    // When the function is called, instantiate and render a new embedded view inside the container.
-    // The arguments are passed directly as the context of the view.
-    const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, args);
-
+  const producer = () => {
+    const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, null);
     addLViewToLContainer(
       lContainer,
       embeddedLView,
@@ -168,8 +139,66 @@ export function ɵɵforeignContentFn(
       }
     });
 
-    // Extract and return the root nodes of the created view
     const embeddedTView = embeddedLView[TVIEW];
     return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
+  };
+
+  return adapter(producer);
+}
+
+/**
+ * Creation phase instruction to return a function for rendering foreign content dynamically
+ * with arguments.
+ *
+ * @param index The index of the container in the data array.
+ * @param foreignComponentConstIndex The index of the matched foreign component in the constant pool.
+ * @codeGenApi
+ */
+export function ɵɵforeignContentFn(
+  index: number,
+  foreignComponentConstIndex: number,
+): (...args: any[]) => any {
+  const lView = getLView();
+  const adjustedIndex = index + HEADER_OFFSET;
+
+  // The template is already declared at adjustedIndex, so lContainer must exist.
+  const lContainer = lView[adjustedIndex] as LContainer;
+  ngDevMode && assertLContainer(lContainer);
+  lContainer[FLAGS] |= LContainerFlags.LogicalOnly;
+
+  const tView = getTView();
+  const tNode = tView.data[adjustedIndex] as TContainerNode;
+  const foreignComponent = getConstant<ForeignComponent<any>>(
+    tView.consts,
+    foreignComponentConstIndex,
+  )!;
+  const adapter = foreignComponent[CONTENT_ADAPTER];
+  const onDestroy = foreignComponent[ON_DESTROY];
+
+  return (...args: any[]) => {
+    const producer = () => {
+      const embeddedLView = createAndRenderEmbeddedLView(lView, tNode, args);
+
+      addLViewToLContainer(
+        lContainer,
+        embeddedLView,
+        lContainer.length - CONTAINER_HEADER_OFFSET,
+        /* addToDOM */ false,
+      );
+
+      onDestroy(() => {
+        if (!isDestroyed(embeddedLView)) {
+          const embeddedLViewIndex = lContainer.indexOf(embeddedLView, CONTAINER_HEADER_OFFSET);
+          ngDevMode &&
+            assertNotSame(embeddedLViewIndex, -1, 'Embedded view not found in container');
+          removeLViewFromLContainer(lContainer, embeddedLViewIndex - CONTAINER_HEADER_OFFSET);
+        }
+      });
+
+      const embeddedTView = embeddedLView[TVIEW];
+      return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
+    };
+
+    return adapter(producer);
   };
 }

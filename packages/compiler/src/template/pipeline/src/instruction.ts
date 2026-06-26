@@ -62,6 +62,16 @@ export function foreignComponent(
   return call(Identifiers.foreignComponent, args, sourceSpan);
 }
 
+export function foreignContent(
+  slot: number,
+  foreignComponentIndex: number,
+  parameterized: boolean,
+): o.Expression {
+  return o
+    .importExpr(parameterized ? Identifiers.foreignContentFn : Identifiers.foreignContent)
+    .callFn([o.literal(slot), o.literal(foreignComponentIndex)]);
+}
+
 function elementOrContainerBase(
   instruction: o.ExternalReference,
   slot: number,

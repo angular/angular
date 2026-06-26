@@ -68,7 +68,7 @@ export class TestCmpChildren {
     template: function TestCmpChildren_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵtemplate(0, TestCmpChildren_Icon_0_Template, 2, 0)(1, TestCmpChildren_Description_1_Template, 2, 0)(2, TestCmpChildren_Children_2_Template, 2, 0);
-        i0.ɵɵforeignComponent(3, 0, { label: ctx.title, icon: i0.ɵɵforeignContent(0), description: i0.ɵɵforeignContent(1), children: i0.ɵɵforeignContent(2) });
+        i0.ɵɵforeignComponent(3, 0, { label: ctx.title, icon: i0.ɵɵforeignContent(0, 0), description: i0.ɵɵforeignContent(1, 0), children: i0.ɵɵforeignContent(2, 0) });
       }
     },
     encapsulation: 2
