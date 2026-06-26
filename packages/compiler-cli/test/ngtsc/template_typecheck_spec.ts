@@ -2425,9 +2425,27 @@ runInEachFileSystem(() => {
           ngErrorCode(ErrorCode.FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN),
         );
         expect(diags[0].messageText).toEqual(
-          'Defining a @content (children) block is unnecessary. ' +
+          'Defining a @content (children) block with no parameters is unnecessary. ' +
             'Pass children as direct nested content of the foreign component instead.',
         );
+      });
+
+      it('should allow @content (children, let ...) with parameters', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            template: '<FancyButton> @content (children; let arg) {} </FancyButton>',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
       });
 
       it('should detect duplicate @content blocks under the same foreign component', () => {

@@ -12,6 +12,9 @@ export const RENDER: unique symbol = Symbol('RENDER');
 /** Symbol used to store and retrieve the disposal registration function for a foreign component. */
 export const ON_DESTROY: unique symbol = Symbol('ON_DESTROY');
 
+/** Symbol used to store and retrieve the content adapter function for a foreign component. */
+export const CONTENT_ADAPTER: unique symbol = Symbol('CONTENT_ADAPTER');
+
 /**
  * A function used to render a foreign component in an Angular template.
  *
@@ -34,6 +37,12 @@ export type ForeignRenderFn<TProps> = (props: TProps) => [Node[], VoidFunction?]
 export type ForeignOnDestroyFn = (destroy: VoidFunction) => void;
 
 /**
+ * A function that adapts an Angular content producer callback into a compatible representation for
+ * the foreign component.
+ */
+export type ForeignContentAdapterFn = (producer: () => Node[]) => any;
+
+/**
  * Represents a component from another framework that Angular can import and render.
  *
  * @template TProps The properties of the foreign component.
@@ -41,4 +50,5 @@ export type ForeignOnDestroyFn = (destroy: VoidFunction) => void;
 export interface ForeignComponent<TProps> {
   readonly [RENDER]: ForeignRenderFn<TProps>;
   readonly [ON_DESTROY]: ForeignOnDestroyFn;
+  readonly [CONTENT_ADAPTER]: ForeignContentAdapterFn;
 }
