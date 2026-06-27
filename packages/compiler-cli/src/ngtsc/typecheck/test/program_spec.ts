@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {FileUpdate, TsCreateProgramDriver, UpdateMode} from '../../program_driver';
-import {sfExtensionData, ShimReferenceTagger} from '../../shims';
+import {sfExtensionData, ShimReferenceTagger, isExtended} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
 import {OptimizeFor} from '../api';
 
@@ -63,6 +63,32 @@ runInEachFileSystem(() => {
       );
 
       expectCompleteReuse(programStrategy.getProgram());
+    });
+
+    it('should not crash getSemanticDiagnostics after updateFiles', () => {
+      const {program, host, options, mainPath} = makeSingleFileProgramWithTypecheckShim();
+      const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
+
+      programStrategy.updateFiles(
+        new Map([[mainPath, createUpdate('export const STILL_NOT_A_COMPONENT = true;')]]),
+        UpdateMode.Complete,
+      );
+
+      const updatedProgram = programStrategy.getProgram();
+      const mainSf = getSourceFileOrError(updatedProgram, mainPath);
+
+      // Without the fix, untagging the old program also untags shared SourceFiles in the new
+      // program, leaving referencedFiles shorter than taggedReferenceFiles.
+      expect(isExtended(mainSf)).toBe(true);
+      const ext = sfExtensionData(mainSf);
+      expect(ext.taggedReferenceFiles).not.toBeNull();
+      expect(mainSf.referencedFiles.length).toBe(ext.taggedReferenceFiles!.length);
+
+      for (const sf of updatedProgram.getSourceFiles()) {
+        if (!sf.isDeclarationFile) {
+          expect(() => updatedProgram.getSemanticDiagnostics(sf)).not.toThrow();
+        }
+      }
     });
   });
 });
