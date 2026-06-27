@@ -313,6 +313,27 @@ describe('createComponent', () => {
       expect(hostElement.getAttribute('attr-three')).toBe('host');
     });
 
+    it('should retain classes from an existing host element', () => {
+      @Component({
+        template: '',
+        host: {'class': 'host'},
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class HostComponent {}
+
+      const hostElement = document.createElement('div');
+      hostElement.className = 'existing other';
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      createComponent(HostComponent, {
+        hostElement,
+        environmentInjector,
+      });
+
+      expect(hostElement.classList.contains('existing')).toBeTrue();
+      expect(hostElement.classList.contains('other')).toBeTrue();
+      expect(hostElement.classList.contains('host')).toBeTrue();
+    });
+
     it('should support setting the value of a directive using setInput', () => {
       let dirInstance: Dir;
 
