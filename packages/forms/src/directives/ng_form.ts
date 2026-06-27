@@ -37,6 +37,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import type {NgModel} from './ng_model';
 import type {NgModelGroup} from './ng_model_group';
+import {missingFormContainerException} from './template_driven_errors';
 import {
   CALL_SET_DISABLED_STATE,
   SetDisabledStateOption,
@@ -226,13 +227,16 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    */
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
-      const container = this._findContainer(dir.path);
+      if (dir._destroyed) return;
+      const container = this._registrationContainer(dir.path, dir);
+      if (!container) return;
       (dir as Writable<NgModel>).control = <FormControl>(
         container.registerControl(dir.name, dir.control)
       );
       dir._setupWithForm(this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.add(dir);
+      (dir as Writable<NgModel>)._registered = true;
     });
   }
 
@@ -259,6 +263,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       container?.removeControl(dir.name);
 
       this._directives.delete(dir);
+      if ('_registered' in dir) {
+        (dir as Writable<NgModel>)._registered = false;
+      }
     });
   }
 
@@ -270,7 +277,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    */
   addFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
-      const container = this._findContainer(dir.path);
+      if (dir._destroyed) return;
+      const container = this._registrationContainer(dir.path, dir);
+      if (!container) return;
       const group = new FormGroup({});
       setUpFormContainer(group, dir);
       container.registerControl(dir.name, group);
@@ -366,8 +375,23 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     }
   }
 
-  private _findContainer(path: string[]): FormGroup {
+  private _findContainer(path: string[]): FormGroup | null {
+    path = path.slice();
     path.pop();
-    return path.length ? <FormGroup>this.form.get(path) : this.form;
+    return path.length ? (this.form.get(path) as FormGroup | null) : this.form;
+  }
+
+  private _registrationContainer(
+    path: string[],
+    dir: {_destroyed: boolean},
+  ): FormGroup | null {
+    const container = this._findContainer(path);
+    if (container) {
+      return container;
+    }
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && !dir._destroyed) {
+      throw missingFormContainerException(path);
+    }
+    return null;
   }
 }
