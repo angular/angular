@@ -375,6 +375,7 @@
       "assertAllValuesPresent",
       "assertControlPresent",
       "assertNotDestroyed",
+      "assertNotScriptHostElement",
       "assertPlatform",
       "attachPatchData",
       "baseElement",
