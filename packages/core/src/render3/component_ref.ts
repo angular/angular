@@ -197,6 +197,15 @@ function createHostElement(componentDef: ComponentDef<unknown>, renderer: Render
   return createElementNode(renderer, tagName, namespace);
 }
 
+function assertNotScriptHostElement(tagName: string | null | undefined): void {
+  if (tagName?.toLowerCase() === 'script') {
+    throw new RuntimeError(
+      RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
+      ngDevMode && `"<script>" tag is not allowed as a component host element.`,
+    );
+  }
+}
+
 /**
  * Infers the tag name that should be used for a component based on its definition.
  * @param componentDef Definition for which to resolve the tag name.
@@ -318,6 +327,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
       : createHostElement(cmpDef, hostRenderer);
+    assertNotScriptHostElement(hostElement?.tagName);
     const hasInputBindings =
       componentBindings?.some(isInputBinding) ||
       directives?.some((d) => typeof d !== 'function' && d.bindings.some(isInputBinding));

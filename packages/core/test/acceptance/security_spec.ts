@@ -794,6 +794,19 @@ describe('innerHTML processing', () => {
 });
 
 describe('Component host element validation', () => {
+  it('should throw an error when dynamically creating a component with a script selector', () => {
+    @Component({
+      selector: 'script',
+      template: '',
+    })
+    class ScriptHost {}
+
+    const environmentInjector = TestBed.inject(EnvironmentInjector);
+    expect(() => {
+      createComponent(ScriptHost, {environmentInjector});
+    }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+  });
+
   it('should throw an error when dynamically mounting a component onto a script tag', () => {
     @Component({
       selector: 'my-sink',
