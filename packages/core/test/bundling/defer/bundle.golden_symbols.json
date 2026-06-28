@@ -309,6 +309,7 @@
       "areAnimationSupported",
       "arrRemove",
       "assertNotDestroyed",
+      "assertNotScriptHostElement",
       "assertTypeDefined",
       "attachPatchData",
       "bind",

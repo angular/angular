@@ -423,6 +423,7 @@
       "arrRemove",
       "arrayEquals",
       "assertNotDestroyed",
+      "assertNotScriptHostElement",
       "assertTypeDefined",
       "attachPatchData",
       "baseElement",
