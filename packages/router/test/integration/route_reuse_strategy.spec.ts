@@ -433,6 +433,222 @@ export function routeReuseIntegrationSuite() {
       expect(createdComps).toEqual(['parent', 'child', 'child']);
     });
 
+    it('should render child routes on reused list when outer shell is destroyed and recreated', async () => {
+      // https://github.com/angular/angular/issues/57285
+
+      @Component({selector: 'root', template: '<router-outlet></router-outlet>', standalone: false})
+      class Root {}
+
+      @Component({
+        selector: 'events-shell-cmp',
+        template: '<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class EventsShellCmp {}
+
+      @Component({
+        selector: 'event-list-cmp',
+        template: '<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class EventListCmp {}
+
+      @Component({
+        selector: 'event-detail-cmp',
+        template: '<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class EventDetailCmp {}
+
+      @Component({selector: 'event-edit-cmp', template: 'edit', standalone: false})
+      class EventEditCmp {}
+
+      @Component({selector: 'chats-cmp', template: 'chats', standalone: false})
+      class ChatsCmp {}
+
+      class ReusableStrategy implements RouteReuseStrategy {
+        private handles = new Map<object, DetachedRouteHandle>();
+
+        shouldDetach(route: ActivatedRouteSnapshot): boolean {
+          return !!route.routeConfig?.data?.['reusable'];
+        }
+        store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
+          if (route.routeConfig && handle) {
+            this.handles.set(route.routeConfig, handle);
+          } else if (route.routeConfig) {
+            this.handles.delete(route.routeConfig);
+          }
+        }
+        shouldAttach(route: ActivatedRouteSnapshot): boolean {
+          return !!(route.routeConfig && this.handles.has(route.routeConfig));
+        }
+        retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+          return (route.routeConfig && this.handles.get(route.routeConfig)) ?? null;
+        }
+        shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+          return future.routeConfig === curr.routeConfig;
+        }
+      }
+
+      @NgModule({
+        declarations: [Root, EventsShellCmp, EventListCmp, EventDetailCmp, EventEditCmp, ChatsCmp],
+        imports: [...ROUTER_DIRECTIVES],
+        providers: [
+          {provide: RouteReuseStrategy, useClass: ReusableStrategy},
+          provideRouter([
+            {
+              path: 'events',
+              component: EventsShellCmp,
+              children: [
+                {
+                  path: '',
+                  data: {reusable: true},
+                  component: EventListCmp,
+                  children: [
+                    {
+                      path: ':id',
+                      data: {reusable: true},
+                      component: EventDetailCmp,
+                      children: [{path: 'edit', component: EventEditCmp}],
+                    },
+                  ],
+                },
+              ],
+            },
+            {path: 'chats', component: ChatsCmp},
+          ]),
+        ],
+      })
+      class TestModule {}
+
+      TestBed.configureTestingModule({imports: [TestModule]});
+      const router = TestBed.inject(Router);
+      const fixture = await createRoot(router, Root);
+
+      router.navigateByUrl('/chats');
+      await advance(fixture);
+
+      router.navigateByUrl('/events');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventListCmp))).toBeTruthy();
+
+      router.navigateByUrl('/chats');
+      await advance(fixture);
+
+      // Shell is recreated and the stored list is re-attached into it.
+      router.navigateByUrl('/events');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventListCmp))).toBeTruthy();
+
+      router.navigateByUrl('/events/1/edit');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventEditCmp))).toBeTruthy();
+    });
+
+    it('should render child routes of a reused tab after a sibling tab was shown in the same outlet', async () => {
+      // https://github.com/angular/angular/issues/57285 (sibling outlet case)
+
+      @Component({selector: 'root', template: '<router-outlet></router-outlet>', standalone: false})
+      class Root {}
+
+      @Component({
+        selector: 'tabs-shell-cmp',
+        template: '<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class TabsShellCmp {}
+
+      @Component({
+        selector: 'tab1-cmp',
+        template: '<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class Tab1Cmp {}
+
+      @Component({selector: 'tab1-inner-cmp', template: 'tab1-inner', standalone: false})
+      class Tab1InnerCmp {}
+
+      @Component({
+        selector: 'tab2-cmp',
+        template: '<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class Tab2Cmp {}
+
+      @Component({selector: 'tab2-inner-cmp', template: 'tab2-inner', standalone: false})
+      class Tab2InnerCmp {}
+
+      class ReusableStrategy implements RouteReuseStrategy {
+        private handles = new Map<object, DetachedRouteHandle>();
+
+        shouldDetach(route: ActivatedRouteSnapshot): boolean {
+          return !!route.routeConfig?.data?.['reusable'];
+        }
+        store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
+          if (route.routeConfig && handle) {
+            this.handles.set(route.routeConfig, handle);
+          } else if (route.routeConfig) {
+            this.handles.delete(route.routeConfig);
+          }
+        }
+        shouldAttach(route: ActivatedRouteSnapshot): boolean {
+          return !!(route.routeConfig && this.handles.has(route.routeConfig));
+        }
+        retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+          return (route.routeConfig && this.handles.get(route.routeConfig)) ?? null;
+        }
+        shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+          return future.routeConfig === curr.routeConfig;
+        }
+      }
+
+      @NgModule({
+        declarations: [Root, TabsShellCmp, Tab1Cmp, Tab1InnerCmp, Tab2Cmp, Tab2InnerCmp],
+        imports: [...ROUTER_DIRECTIVES],
+        providers: [
+          {provide: RouteReuseStrategy, useClass: ReusableStrategy},
+          provideRouter([
+            {
+              path: 'tabs',
+              component: TabsShellCmp,
+              children: [
+                {
+                  path: 'tab1',
+                  data: {reusable: true},
+                  component: Tab1Cmp,
+                  children: [{path: 'inner', component: Tab1InnerCmp}],
+                },
+                {
+                  path: 'tab2',
+                  component: Tab2Cmp,
+                  children: [{path: 'inner', component: Tab2InnerCmp}],
+                },
+              ],
+            },
+          ]),
+        ],
+      })
+      class TestModule {}
+      TestBed.configureTestingModule({imports: [TestModule]});
+
+      const router = TestBed.inject(Router);
+      const fixture = await createRoot(router, Root);
+
+      router.navigateByUrl('/tabs/tab1/inner');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(Tab1InnerCmp))).toBeTruthy();
+
+      router.navigateByUrl('/tabs/tab2/inner');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(Tab2InnerCmp))).toBeTruthy();
+      expect(fixture.debugElement.query(By.directive(Tab1InnerCmp))).toBeNull();
+
+      router.navigateByUrl('/tabs/tab1/inner');
+      await advance(fixture);
+      expect(router.url).toEqual('/tabs/tab1/inner');
+      expect(fixture.debugElement.query(By.directive(Tab1InnerCmp))).toBeTruthy();
+    });
+
     it('should not try to detach the outlet of a route that does not get to attach a component', async () => {
       @Component({
         selector: 'root',
