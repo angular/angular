@@ -15,7 +15,6 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 
 import {ProfilerEvent} from '../../../primitives/devtools';
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
 import {assertIndexInRange, assertNotSame} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
@@ -181,12 +180,6 @@ export function locateHostElement(
     encapsulation === ViewEncapsulation.ShadowDom ||
     encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom;
   const rootElement = renderer.selectRootElement(elementOrSelector, preserveContent);
-  if (rootElement.tagName.toLowerCase() === 'script') {
-    throw new RuntimeError(
-      RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
-      ngDevMode && `"<script>" tag is not allowed as a component host element.`,
-    );
-  }
   applyRootElementTransform(rootElement as HTMLElement);
   return rootElement;
 }
