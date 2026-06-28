@@ -68,9 +68,13 @@ export class ChildrenOutletContexts {
    * Because the component get destroyed, all children outlet are destroyed.
    */
   onOutletDeactivated(): Map<string, OutletContext> {
-    const contexts = this.contexts;
-    this.contexts = new Map();
-    return contexts;
+    // Keep the same Map instance. A RouterOutlet inside a detached component is injected with
+    // this ChildrenOutletContexts at creation time and holds that reference for its lifetime.
+    // Swapping in a new Map here splits the context tree in two: the outlet would write into
+    // the old instance while the router reads from the new one after onOutletReAttached().
+    // Stale outlet references left behind by destroyed components are cleaned up naturally
+    // through ngOnDestroy → onChildOutletDestroyed().
+    return this.contexts;
   }
 
   onOutletReAttached(contexts: Map<string, OutletContext>): void {
