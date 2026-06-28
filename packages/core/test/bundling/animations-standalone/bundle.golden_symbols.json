@@ -337,6 +337,7 @@
       "areAnimationSupported",
       "arrRemove",
       "assertNotDestroyed",
+      "assertNotScriptHostElement",
       "assertTypeDefined",
       "attachPatchData",
       "balancePreviousStylesIntoKeyframes",
