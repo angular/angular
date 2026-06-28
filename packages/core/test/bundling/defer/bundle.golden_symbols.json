@@ -315,6 +315,7 @@
       "areAnimationSupported",
       "arrRemove",
       "assertNotDestroyed",
+      "assertNotScriptHostElement",
       "attachPatchData",
       "bind",
       "bindingUpdated",

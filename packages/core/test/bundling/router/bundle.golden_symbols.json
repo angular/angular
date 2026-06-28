@@ -421,6 +421,7 @@
       "arrRemove",
       "arrayEquals",
       "assertNotDestroyed",
+      "assertNotScriptHostElement",
       "attachPatchData",
       "baseElement",
       "bind",
