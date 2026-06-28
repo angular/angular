@@ -21,8 +21,8 @@ The schema function receives a `SchemaPathTree` object that lets you define your
 <docs-code
   header="app.ts"
   path="adev/src/content/examples/signal-forms/src/login-validation-complete/app/app.ts"
-  visibleLines="[21,22,23,24,25,26,27]"
-  highlight="[23,24,26]"
+  visibleLines="[29,30,31,32,33,34]"
+  highlight="[30,31,33]"
 />
 
 The schema function runs once during form initialization. Validation rules bind to fields using the schema path parameter (such as `schemaPath.email`, `schemaPath.password`), and validation runs automatically whenever field values change.
