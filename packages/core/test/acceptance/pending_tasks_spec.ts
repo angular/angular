@@ -134,6 +134,61 @@ describe('public PendingTasks', () => {
     expect(spy).toHaveBeenCalled();
     expect(spy.calls.mostRecent().args[0].message).toContain('Sync error');
   });
+
+  it('should clean up pending task even if error handler throws during sync error', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ErrorHandler,
+          useValue: {
+            handleError() {
+              throw new Error('error handler threw');
+            },
+          },
+        },
+      ],
+      rethrowApplicationErrors: false,
+    });
+
+    const pendingTasksInternal = TestBed.inject(PendingTasksInternal);
+    const pendingTasks = TestBed.inject(PendingTasks);
+    const removeSpy = spyOn(pendingTasksInternal, 'remove').and.callThrough();
+
+    expect(() => {
+      pendingTasks.run(() => {
+        throw new Error('sync error');
+      });
+    }).toThrowError('error handler threw');
+
+    expect(removeSpy).toHaveBeenCalled();
+  });
+
+  it('should clean up pending task when async rejection and error handler throws', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ErrorHandler,
+          useValue: {
+            handleError() {
+              throw new Error('error handler threw');
+            },
+          },
+        },
+      ],
+      rethrowApplicationErrors: false,
+    });
+
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasksInternal = TestBed.inject(PendingTasksInternal);
+    const pendingTasks = TestBed.inject(PendingTasks);
+
+    pendingTasks.run(() => Promise.reject(new Error('async rejection')));
+    // whenStable() resolves as soon as all pending tasks are removed (PendingTasksInternal
+    // BehaviorSubject), independent of NgZone stability.
+    await appRef.whenStable();
+
+    expect(pendingTasksInternal.hasPendingTasks).toBeFalse();
+  });
 });
 
 function applicationRefIsStable(applicationRef: ApplicationRef) {

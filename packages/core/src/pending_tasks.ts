@@ -78,8 +78,11 @@ export class PendingTasks {
     try {
       fn().catch(this.errorHandler).finally(removeTask);
     } catch (err) {
-      this.errorHandler(err);
-      removeTask();
+      try {
+        this.errorHandler(err);
+      } finally {
+        removeTask();
+      }
     }
   }
 
