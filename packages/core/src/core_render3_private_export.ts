@@ -11,6 +11,9 @@
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
+  type DebugSignalGraph as ɵDebugSignalGraph,
+  type DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
+  type DebugSignalGraphNode as ɵDebugSignalGraphNode,
   Framework as ɵFramework,
   Profiler as ɵProfiler,
   ProfilerEvent as ɵProfilerEvent,
@@ -295,11 +298,6 @@ export {
   ExternalCoreGlobalUtils as ɵExternalCoreGlobalUtils,
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
 } from './render3/util/global_utils';
-export {
-  DebugSignalGraph as ɵDebugSignalGraph,
-  DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
-  DebugSignalGraphNode as ɵDebugSignalGraphNode,
-} from './render3/util/signal_debug';
 export {getTransferState as ɵgetTransferState} from './render3/util/transfer_state_utils';
 export {
   isViewDirty as ɵisViewDirty,

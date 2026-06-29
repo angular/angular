@@ -8,8 +8,8 @@
 
 import {NullInjector} from '../../di/null_injector';
 import {getInjector} from '../../render3/util/discovery_utils';
-import {DebugSignalGraph, getSignalGraph} from '../../render3/util/signal_debug';
-import {ToolDefinition} from '../../../primitives/devtools';
+import {getSignalGraph} from '../../render3/util/signal_debug';
+import type {DebugSignalGraph, ToolDefinition} from '../../../primitives/devtools';
 
 // Omit `debuggableFn` and `id` from returned signal graph to AI agent.
 type AiSignalGraph = Omit<DebugSignalGraph, 'nodes'> & {
