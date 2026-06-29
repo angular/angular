@@ -150,7 +150,7 @@
     "adm-zip": "^0.5.10",
     "cldr": "8.0.0",
     "cldrjs": "0.5.5",
-    "conventional-changelog": "^7.0.0",
+    "conventional-changelog": "^8.0.0",
     "cypress": "15.17.0",
     "firebase-tools": "^15.0.0",
     "get-tsconfig": "^4.10.1",
