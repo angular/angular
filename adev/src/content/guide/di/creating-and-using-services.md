@@ -35,38 +35,26 @@ export class BasicDataStore {
 
 ## How services become available
 
-When you use `@Injectable({ providedIn: 'root' })` in your service, Angular:
+Services are provisioned at the root level by default. When a service is provided globally, Angular guarantees three main benefits:
 
-- **Creates a single instance** (a singleton) for the entire application
-- **Makes it available throughout your application** without additional configuration
-- **Enables tree-shaking** so Angular only includes the service in your JavaScript bundle if you actually use it
+- **Singleton Instance:** Creates a single, shared instance for the entire application.
+- **Global Availability:** Automatically accessible anywhere without manual provider registration.
+- **Tree-shakability:** Ensures the service is excluded from the final production bundle if your code never explicitly uses it.
 
-This is the recommended approach for most services.
+### Using the `@Service` vs `@Injectable` decorator
 
-## Using the `@Service` decorator
+The `@Service` decorator serves as a modern, ergonomic shorthand for the traditional `@Injectable({ providedIn: 'root' })` syntax.
 
-For the common case of a singleton service available throughout your application, Angular provides the `@Service` decorator as a more ergonomic alternative to `@Injectable({providedIn: 'root'})`.
+Use this quick reference to decide which decorator fits your scenario:
 
-The earlier `BasicDataStore` example can be rewritten with `@Service`:
-
-```ts {header: "src/app/basic-data-store.ts"}
-import {Service} from '@angular/core';
-
-@Service()
-export class BasicDataStore {
-  private data: string[] = [];
-
-  addData(item: string): void {
-    this.data.push(item);
-  }
-
-  getData(): string[] {
-    return [...this.data];
-  }
-}
-```
-
-This behaves the same as the `@Injectable({providedIn: 'root'})` version above: Angular creates a single instance, makes it available everywhere, and tree-shakes it from the bundle if it is never injected.
+| Feature / Requirement                         | `@Service` | `@Injectable`                           |
+| --------------------------------------------- | ---------- | --------------------------------------- |
+| **`inject()` function support**               | Yes        | Yes                                     |
+| **Constructor-based DI**                      | ❌ No      | Yes                                     |
+| **Implicit root singleton provider**          | Yes        | ❌ No (requires `{providedIn: 'root'}`) |
+| **Advanced provider keys (`useClass`, etc.)** | ❌ No      | Yes                                     |
+| **Custom initialization factories**           | Yes        | Yes                                     |
+| **Non-root scopes (`platform`, etc.)**        | ❌ No      | Yes                                     |
 
 ### Replacing the implementation with a factory
 

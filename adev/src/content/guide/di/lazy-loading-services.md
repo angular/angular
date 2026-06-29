@@ -1,6 +1,6 @@
 # Lazy loading services
 
-IMPORTANT: For lazy loading to work, the service you load must be auto-provided. Decorate it with either `@Injectable({providedIn: 'root'})` or [`@Service()`](guide/di/creating-and-using-services#using-the-service-decorator). Without auto-provisioning, Angular has no way to construct the service after it loads.
+IMPORTANT: For lazy loading to work, the service you load must be auto-provided. Decorate it with either `@Injectable({providedIn: 'root'})` or [`@Service()`](guide/di/creating-and-using-services#using-the-service-vs-injectable-decorator). Without auto-provisioning, Angular has no way to construct the service after it loads.
 
 Angular's `injectAsync` function lets you load a service on demand, only when it's actually needed. This is useful when a service depends on a large library or rarely used feature, and you don't want to pay for it on the initial page load.
 
