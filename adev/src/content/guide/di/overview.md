@@ -62,7 +62,7 @@ export class AnalyticsLogger {
 
 NOTE: The `@Service` makes this service available throughout your entire application as a singleton. This is the recommended approach for most services.
 
-HELPFUL: The [`@Service`](guide/di/creating-and-using-services#using-the-service-decorator) decorator is an ergonomic shorthand for `@Injectable({providedIn: 'root'})`.
+HELPFUL: The [`@Service`](guide/di/creating-and-using-services#using-the-service-vs-injectable-decorator) decorator is an ergonomic shorthand for `@Injectable({providedIn: 'root'})`.
 
 ## Injecting dependencies with `inject()`
 
