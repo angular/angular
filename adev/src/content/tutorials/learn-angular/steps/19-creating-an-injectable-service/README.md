@@ -21,7 +21,7 @@ class UserService {
 
 The `@Service` decorator marks the class as a service and notifies the DI system that `UserService` can be accessed anywhere in your application. By default, Angular provides the service across your entire application, so you don't need to write any extra configuration.
 
-NOTE: By default, `@Service` provides the class at the root injector. If you want to provide it manually, for example, to scope it to a specific route or component, set `autoProvided: false`. Learn more in the [guide on creating and using services](guide/di/creating-and-using-services#using-the-service-decorator).
+NOTE: By default, `@Service` provides the class at the root injector. If you want to provide it manually, for example, to scope it to a specific route or component, set `autoProvided: false`. Learn more in the [guide on creating and using services](guide/di/creating-and-using-services#using-the-service-vs-injectable-decorator).
 
 Alright, you try:
 
