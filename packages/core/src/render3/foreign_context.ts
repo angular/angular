@@ -19,9 +19,8 @@ export const FOREIGN_CONTEXT = new InjectionToken<unknown>('FOREIGN_CONTEXT');
  * hierarchy.
  *
  * @param contextFactory The factory function that creates the root context object.
- * @template TContext The foreign context type.
  */
-export function provideForeignRootContext<TContext>(contextFactory: () => TContext): Provider {
+export function provideForeignRootContext(contextFactory: () => unknown): Provider {
   return {
     provide: FOREIGN_CONTEXT,
     useFactory: contextFactory,
