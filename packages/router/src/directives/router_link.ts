@@ -587,8 +587,6 @@ export class RouterLink implements OnChanges, OnDestroy {
  * An alias for the `RouterLink` directive.
  * Deprecated since v15, use `RouterLink` directive instead.
  *
-export { RouterLink as RouterLinkWithHref };
-nstead.
  * @publicApi
  */
 export {RouterLink as RouterLinkWithHref};
