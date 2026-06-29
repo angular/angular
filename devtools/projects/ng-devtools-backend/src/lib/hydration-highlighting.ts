@@ -8,17 +8,15 @@
 
 import {HydrationStatus} from '../../../protocol';
 import {getDirectiveForestManager} from './directive-forest/manager';
-import {highlightElement} from './highlighter';
+import {highlightElement, removeHighlightsByType} from './highlighter';
 import {
-  Highlight,
   HighlightTemplate,
   hydrationMismatchedHighlightTemplate,
   hydrationCompletedHighlightTemplate,
   hydrationSkippedHighlightTemplate,
+  HighlightType,
 } from './highlighter/highlights';
 import {ComponentTreeNode} from './interfaces';
-
-let hydrationHighlights: Highlight[] = [];
 
 export function highlightHydrationNodes(): void {
   const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
@@ -41,10 +39,9 @@ export function highlightHydrationNodes(): void {
 }
 
 export function removeHydrationHighlights() {
-  for (const h of hydrationHighlights) {
-    h.destroy();
-  }
-  hydrationHighlights = [];
+  removeHighlightsByType(HighlightType.HydrationCompleted);
+  removeHighlightsByType(HighlightType.HydrationMismatched);
+  removeHighlightsByType(HighlightType.HydrationSkipped);
 }
 
 function highlightHydrationElement(node: Element, {status}: HydrationStatus) {
@@ -64,10 +61,7 @@ function highlightHydrationElement(node: Element, {status}: HydrationStatus) {
       throw new Error(`Unsupported hydration status highlighting: ${status}`);
   }
 
-  const highlight = highlightElement(node, template, {'icon': [status]});
-  if (highlight) {
-    hydrationHighlights.push(highlight);
-  }
+  highlightElement(node, template, {'icon': [status]});
 }
 
 /**

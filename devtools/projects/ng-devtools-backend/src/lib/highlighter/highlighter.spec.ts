@@ -124,6 +124,23 @@ describe('highlighter', () => {
 
       expect(getHighlightOverlays()[0].textContent).toContain('<MyComponent>');
     });
+
+    it('should highlight an SVG element', () => {
+      const width = 100;
+      const height = 50;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+      document.body.appendChild(el);
+      spyOn(el, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 0, width, height));
+      testElements.push(el as unknown as HTMLElement);
+
+      highlightElement(el, inspectElementHighlightTemplate, {
+        'component-name': ['Svg'],
+      });
+
+      expect(getHighlightOverlays().length).toBe(1);
+      expect(getHighlightOverlays()[0].textContent).toContain('<Svg>');
+    });
   });
 
   describe('removeElementHighlights', () => {
