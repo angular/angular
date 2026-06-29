@@ -263,9 +263,6 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       container?.removeControl(dir.name);
 
       this._directives.delete(dir);
-      if ('_registered' in dir) {
-        (dir as Writable<NgModel>)._registered = false;
-      }
     });
   }
 

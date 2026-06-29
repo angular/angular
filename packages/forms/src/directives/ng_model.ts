@@ -286,6 +286,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   /** @docs-private */
   ngOnDestroy(): void {
     this._destroyed = true;
+    this._registered = false;
     this.formDirective?.removeControl(this);
   }
 
