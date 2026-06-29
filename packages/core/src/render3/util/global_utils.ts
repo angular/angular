@@ -37,7 +37,7 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from './injector_discovery_utils';
-import {DebugSignalGraph, getSignalGraph} from './signal_debug';
+import {getSignalGraph} from './signal_debug';
 
 import {
   enableProfiling,
@@ -50,7 +50,7 @@ import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
 
 import {Type} from '../../interface/type';
 import {RElement} from '../interfaces/renderer_dom';
-import {type Profiler} from '../../../primitives/devtools';
+import type {DebugSignalGraph, Profiler} from '../../../primitives/devtools';
 import {ControlFlowBlock} from './control_flow_types';
 
 /**
