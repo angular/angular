@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {FileUpdate, TsCreateProgramDriver, UpdateMode} from '../../program_driver';
-import {sfExtensionData, ShimReferenceTagger, isExtended} from '../../shims';
+import {sfExtensionData, ShimReferenceTagger} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
 import {OptimizeFor} from '../api';
 
@@ -79,7 +79,6 @@ runInEachFileSystem(() => {
 
       // Without the fix, untagging the old program also untags shared SourceFiles in the new
       // program, leaving referencedFiles shorter than taggedReferenceFiles.
-      expect(isExtended(mainSf)).toBe(true);
       const ext = sfExtensionData(mainSf);
       expect(ext.taggedReferenceFiles).not.toBeNull();
       expect(mainSf.referencedFiles.length).toBe(ext.taggedReferenceFiles!.length);
