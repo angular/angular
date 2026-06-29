@@ -440,7 +440,7 @@ TIP: Always export tokens from a shared file and import them everywhere they're 
 
 When you define a TypeScript interface, it only exists during compilation for type checking. TypeScript erases all interface definitions when it compiles to JavaScript, so at runtime there's no object for Angular to use as an injection token. If you try to inject an interface type, Angular has nothing to match against the provider configuration.
 
-```angular-ts {avoid, header: 'Can't inject interface'}
+```angular-ts {avoid, header: "Can't inject interface"}
 interface UserConfig {
   name: string;
   email: string;
