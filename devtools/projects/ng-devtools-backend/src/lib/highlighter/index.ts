@@ -116,6 +116,7 @@ highlightDestroyEvents.subscribe(([highlight]) => {
     const idx = targetHighlights.indexOf(highlight);
     if (idx > -1) {
       targetHighlights.splice(idx, 1);
+      highlightsRegistry.unregister(h);
 
       // Determine if there are any other highlights that can be rendered.
       displayElementHighlights(target);
@@ -138,7 +139,7 @@ highlightDestroyEvents.subscribe(([highlight]) => {
 function storeHighlight(targetElement: Element, highlight: Highlight) {
   const currentHighlights = activeHighlights.get(targetElement) ?? [];
   currentHighlights.push(highlight);
-  highlightsRegistry.register(targetElement, highlight);
+  highlightsRegistry.register(targetElement, highlight, highlight);
 
   if (currentHighlights.length === 1) {
     activeHighlights.set(targetElement, currentHighlights);
@@ -245,7 +246,7 @@ function forEachActiveHighlight(cb: (h: Highlight, t: Element) => any) {
     for (const h of highlights) {
       // Break the array, if the CB returns explicit false
       if (cb(h, target) === false) {
-        break;
+        return;
       }
     }
   }
