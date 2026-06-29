@@ -8,3 +8,8 @@
 
 export {ProfilerEvent, type Profiler} from './src/profiler_types';
 export {Framework} from './src/framework';
+export type {
+  DebugSignalGraph,
+  DebugSignalGraphEdge,
+  DebugSignalGraphNode,
+} from './src/signal_debug_types';

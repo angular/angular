@@ -14,43 +14,13 @@ import {EffectNode, EffectRefImpl} from '../reactivity/effect';
 import {Injector} from '../../di/injector';
 import {R3Injector} from '../../di/r3_injector';
 import {throwError} from '../../util/assert';
-import {
-  ComputedNode,
-  ReactiveNode,
-  ReactiveNodeKind,
-  SIGNAL,
-  SignalNode,
-} from '../../../primitives/signals';
+import {ComputedNode, ReactiveNode, SIGNAL, SignalNode} from '../../../primitives/signals';
 import {isLView} from '../interfaces/type_checks';
-
-export interface DebugSignalGraphNode {
-  kind: ReactiveNodeKind;
-  id: string;
-  epoch: number;
-  label?: string;
-  value?: unknown;
-  debuggableFn?: () => unknown;
-}
-
-export interface DebugSignalGraphEdge {
-  /**
-   * Index of a signal node in the `nodes` array that is a consumer of the signal produced by the producer node.
-   */
-  consumer: number;
-
-  /**
-   * Index of a signal node in the `nodes` array that is a producer of the signal consumed by the consumer node.
-   */
-  producer: number;
-}
-
-/**
- * A debug representation of the signal graph.
- */
-export interface DebugSignalGraph {
-  nodes: DebugSignalGraphNode[];
-  edges: DebugSignalGraphEdge[];
-}
+import type {
+  DebugSignalGraph,
+  DebugSignalGraphEdge,
+  DebugSignalGraphNode,
+} from '../../../primitives/devtools';
 
 function isComputedNode(node: ReactiveNode): node is ComputedNode<unknown> {
   return node.kind === 'computed';
