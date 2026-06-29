@@ -182,6 +182,7 @@ $code-font-size: 0.875rem;
       flex-direction: column;
       font-size: $code-font-size;
       counter-reset: line;
+      max-height: 100vh;
     }
 
     &.compact {
