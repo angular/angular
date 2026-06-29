@@ -38,7 +38,7 @@ export const docsCodeBlockExtension = {
     if (match) {
       const metadataStr = match[2].trim();
 
-      const headerRule = /header\s*:\s*(['"`])([^'"`]+)\1/; // The 2nd capture matters here
+      const headerRule = /header\s*:\s*(['"`])(.*?)\1/; // The 2nd capture matters here
       const highlightRule = /highlight\s*:\s*(.*)([^,])/;
       const hideCopyRule = /hideCopy/;
       const hideDollarRule = /hideDollar/;
