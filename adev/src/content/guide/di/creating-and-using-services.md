@@ -12,14 +12,14 @@ ng generate service CUSTOM_NAME
 
 This command creates a dedicated `CUSTOM_NAME.ts` file in your `src` directory.
 
-You can also manually create a service by adding the `@Service()` decorator to a TypeScript class. This tells Angular that you can use the class as an injectable dependency.
+You can also manually create a service by adding the `@Injectable()` decorator to a TypeScript class with `providedIn: 'root'`. This tells Angular that you can use the class as an injectable dependency.
 
 The following example defines a service that allows users to add and retrieve data:
 
 ```ts {header: "src/app/basic-data-store.ts"}
-import {Service} from '@angular/core';
+import {Injectable} from '@angular/core';
 
-@Service()
+@Injectable({providedIn: 'root'})
 export class BasicDataStore {
   private data: string[] = [];
 
