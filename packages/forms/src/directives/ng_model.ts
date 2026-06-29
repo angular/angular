@@ -349,12 +349,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
       return;
     }
     this._setUpdateStrategy();
-    if (this._isStandalone()) {
-      this._setUpStandalone();
-      this._registered = true;
-    } else {
-      this.formDirective.addControl(this);
-    }
+    this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this);
+    this._registered = true;
   }
 
   private _setUpdateStrategy(): void {

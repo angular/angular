@@ -236,7 +236,6 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       dir._setupWithForm(this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.add(dir);
-      (dir as Writable<NgModel>)._registered = true;
     });
   }
 
