@@ -11,6 +11,9 @@
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
+  type DebugSignalGraph as ɵDebugSignalGraph,
+  type DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
+  type DebugSignalGraphNode as ɵDebugSignalGraphNode,
   Framework as ɵFramework,
   Profiler as ɵProfiler,
   ProfilerEvent as ɵProfilerEvent,

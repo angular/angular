@@ -14,11 +14,15 @@ describe('IdentityTracker', () => {
   beforeEach(() => {
     (IdentityTracker as any)._instance = undefined;
     tracker = IdentityTracker.getInstance();
+    (window as any).ng = {
+      getComponent: () => {},
+    };
   });
 
   afterEach(() => {
     (IdentityTracker as any)._instance = undefined;
     document.querySelectorAll('[ng-version]').forEach((el) => el.remove());
+    delete (window as any).ng;
   });
 
   function seedDirective(opts: {dir: object; id: number; isComponent?: boolean}): void {
