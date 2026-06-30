@@ -7,13 +7,9 @@
  */
 import {leadingComment} from '@angular/compiler';
 import {types as t, template} from '@babel/core';
-import _generate from '@babel/generator';
+import generate from '@babel/generator';
 
 import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
-
-// Babel is a CJS package and misuses the `default` named binding:
-// https://github.com/babel/babel/issues/15269.
-const generate = (_generate as any)['default'] as typeof _generate;
 
 // Exposes shorthands for the `expression` and `statement`
 // methods exposed by `@babel/template`.
@@ -284,7 +280,7 @@ describe('BabelAstFactory', () => {
 
     it('should create a number literal for `NaN`', () => {
       const literal = factory.createLiteral(NaN);
-      expect(t.isNumericLiteral(literal)).toBe(true);
+      expect(t.isIdentifier(literal)).toBe(true);
       expect(generate(literal).code).toEqual('NaN');
     });
 

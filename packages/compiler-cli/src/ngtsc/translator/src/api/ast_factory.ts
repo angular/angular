@@ -388,6 +388,24 @@ export interface Parameter<TType> {
   type: TType | null;
 }
 
+export type AssignmentOperator =
+  | '='
+  | '+='
+  | '-='
+  | '*='
+  | '/='
+  | '%='
+  | '**='
+  | '&&='
+  | '||='
+  | '??='
+  | '&='
+  | '|='
+  | '>>='
+  | '>>>='
+  | '<<='
+  | '^=';
+
 /**
  * The binary operators supported by the `AstFactory`.
  */
@@ -411,18 +429,9 @@ export type BinaryOperator =
   | '||'
   | '+'
   | '??'
-  | '='
-  | '+='
-  | '-='
-  | '*='
-  | '/='
-  | '%='
-  | '**='
-  | '&&='
-  | '||='
-  | '??='
   | 'in'
-  | 'instanceof';
+  | 'instanceof'
+  | AssignmentOperator;
 
 /**
  * The original location of the start or end of a node created by the `AstFactory`.
