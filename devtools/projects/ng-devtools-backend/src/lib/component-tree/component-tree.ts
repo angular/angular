@@ -825,3 +825,29 @@ export function serializeResolutionPath(resolutionPath: Injector[]): SerializedI
 
   return serializedResolutionPath;
 }
+
+export function findComponentAndHost(el: Node | undefined): {
+  component: any;
+  host: HTMLElement | null;
+} {
+  const ng = ngDebugClient();
+  if (!el) {
+    return {component: null, host: null};
+  }
+  while (el) {
+    const component = el instanceof HTMLElement && ng.getComponent!(el);
+    if (component) {
+      return {component, host: el as HTMLElement};
+    }
+    if (!el.parentElement) {
+      break;
+    }
+    el = el.parentElement;
+  }
+  return {component: null, host: null};
+}
+
+// Note(hawkgs): Duplicate in directive-forest due ot cyclic dependency.
+export function getDirectiveName(dir: Type<unknown> | undefined | null): string {
+  return dir ? dir.constructor.name : 'unknown';
+}
