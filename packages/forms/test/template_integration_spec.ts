@@ -25,8 +25,10 @@ import {
   AbstractControl,
   AsyncValidator,
   COMPOSITION_BUFFER_MODE,
+  ControlContainer,
   ControlValueAccessor,
   FormControl,
+  FormGroup,
   FormsModule,
   MaxValidator,
   MinValidator,
@@ -35,6 +37,7 @@ import {
   NG_VALUE_ACCESSOR,
   NgForm,
   NgModel,
+  ReactiveFormsModule,
   Validator,
 } from '../index';
 
@@ -2774,6 +2777,79 @@ describe('template-driven forms integration tests', () => {
       await timeout();
       expect(() => fixture.detectChanges()).not.toThrowError();
     });
+
+    describe('cross-component boundary warning', () => {
+      it('should warn when ngModel in a child component cannot reach parent NgForm via @Host()', () => {
+        const warnSpy = spyOn(console, 'warn');
+        const fixture = initTest(NgModelCrossComponentParent, NgModelCrossComponentChild);
+        fixture.detectChanges();
+        expect(warnSpy).toHaveBeenCalledWith(jasmine.stringContaining('NgForm'));
+        expect(warnSpy).toHaveBeenCalledWith(jasmine.stringContaining('viewProviders'));
+      });
+
+      it('should warn with FormGroupDirective name when ngModel cannot reach parent FormGroupDirective via @Host()', () => {
+        const warnSpy = spyOn(console, 'warn');
+        TestBed.configureTestingModule({
+          declarations: [NgModelCrossComponentFormGroupParent, NgModelCrossComponentFormGroupChild],
+          imports: [FormsModule, ReactiveFormsModule, CommonModule],
+        });
+        const fixture = TestBed.createComponent(NgModelCrossComponentFormGroupParent);
+        fixture.detectChanges();
+        expect(warnSpy).toHaveBeenCalledWith(jasmine.stringContaining('FormGroupDirective'));
+        expect(warnSpy).toHaveBeenCalledWith(jasmine.stringContaining('viewProviders'));
+      });
+
+      it('should not warn when ngModel is in the same component as NgForm', async () => {
+        const warnSpy = spyOn(console, 'warn');
+        const fixture = initTest(NgModelForm);
+        fixture.detectChanges();
+        await timeout();
+        expect(warnSpy).not.toHaveBeenCalledWith(jasmine.stringContaining('viewProviders'));
+      });
+
+      it('should not warn when child component uses viewProviders to bridge ControlContainer', () => {
+        const warnSpy = spyOn(console, 'warn');
+        const fixture = initTest(
+          NgModelCrossComponentParentWithViewProviders,
+          NgModelCrossComponentChildWithViewProviders,
+        );
+        fixture.detectChanges();
+        expect(warnSpy).not.toHaveBeenCalledWith(jasmine.stringContaining('viewProviders'));
+      });
+
+      it('should not warn when ngModel is standalone with no parent form', async () => {
+        const warnSpy = spyOn(console, 'warn');
+        const fixture = initTest(StandaloneNgModel);
+        fixture.detectChanges();
+        await timeout();
+        expect(warnSpy).not.toHaveBeenCalledWith(jasmine.stringContaining('viewProviders'));
+      });
+
+      it('should not warn when ngModel in a child component uses [ngModelOptions]="{standalone: true}"', () => {
+        const warnSpy = spyOn(console, 'warn');
+        TestBed.configureTestingModule({
+          declarations: [
+            NgModelCrossComponentParentStandaloneOpt,
+            NgModelCrossComponentChildStandaloneOpt,
+          ],
+          imports: [FormsModule],
+        });
+        const fixture = TestBed.createComponent(NgModelCrossComponentParentStandaloneOpt);
+        fixture.detectChanges();
+        expect(warnSpy).not.toHaveBeenCalledWith(jasmine.stringContaining('viewProviders'));
+      });
+
+      it('should not warn when ngModel inside a ControlValueAccessor uses [ngModelOptions]="{standalone: true}"', () => {
+        const warnSpy = spyOn(console, 'warn');
+        TestBed.configureTestingModule({
+          declarations: [NgModelCvaHostParent, NgModelCvaWithInternalNgModel],
+          imports: [FormsModule],
+        });
+        const fixture = TestBed.createComponent(NgModelCvaHostParent);
+        fixture.detectChanges();
+        expect(warnSpy).not.toHaveBeenCalledWith(jasmine.stringContaining('viewProviders'));
+      });
+    });
   });
 });
 
@@ -3124,3 +3200,118 @@ class NgModelNoMinMaxValidator {
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
 }
+
+@Component({
+  selector: 'ng-model-cross-component-child',
+  template: `<input type="text" name="child" [(ngModel)]="value" />`,
+  standalone: false,
+})
+class NgModelCrossComponentChild {
+  value = '';
+}
+
+@Component({
+  selector: 'ng-model-cross-component-child-vp',
+  template: `<input type="text" name="child" [(ngModel)]="value" />`,
+  standalone: false,
+  viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+})
+class NgModelCrossComponentChildWithViewProviders {
+  value = '';
+}
+
+@Component({
+  selector: 'ng-model-cross-component-parent',
+  template: `
+    <form>
+      <input type="text" name="parent" [(ngModel)]="value" />
+      <ng-model-cross-component-child></ng-model-cross-component-child>
+    </form>
+  `,
+  standalone: false,
+})
+class NgModelCrossComponentParent {
+  value = '';
+}
+
+@Component({
+  selector: 'ng-model-cross-component-parent-vp',
+  template: `
+    <form>
+      <input type="text" name="parent" [(ngModel)]="value" />
+      <ng-model-cross-component-child-vp></ng-model-cross-component-child-vp>
+    </form>
+  `,
+  standalone: false,
+})
+class NgModelCrossComponentParentWithViewProviders {
+  value = '';
+}
+
+@Component({
+  selector: 'ng-model-cross-component-form-group-child',
+  template: `<input type="text" name="child" [(ngModel)]="value" />`,
+  standalone: false,
+})
+class NgModelCrossComponentFormGroupChild {
+  value = '';
+}
+
+@Component({
+  selector: 'ng-model-cross-component-form-group-parent',
+  template: `
+    <div [formGroup]="form">
+      <ng-model-cross-component-form-group-child></ng-model-cross-component-form-group-child>
+    </div>
+  `,
+  standalone: false,
+})
+class NgModelCrossComponentFormGroupParent {
+  form = new FormGroup({});
+}
+
+@Component({
+  selector: 'ng-model-cross-component-child-standalone-opt',
+  template: `<input type="text" [ngModelOptions]="{standalone: true}" ngModel />`,
+  standalone: false,
+})
+class NgModelCrossComponentChildStandaloneOpt {}
+
+@Component({
+  selector: 'ng-model-cross-component-parent-standalone-opt',
+  template: `
+    <form>
+      <ng-model-cross-component-child-standalone-opt></ng-model-cross-component-child-standalone-opt>
+    </form>
+  `,
+  standalone: false,
+})
+class NgModelCrossComponentParentStandaloneOpt {}
+
+@Component({
+  selector: 'ng-model-cva-with-internal-ng-model',
+  template: `<input type="text" [(ngModel)]="internal" [ngModelOptions]="{standalone: true}" />`,
+  standalone: false,
+  providers: [
+    {provide: NG_VALUE_ACCESSOR, useExisting: NgModelCvaWithInternalNgModel, multi: true},
+  ],
+})
+class NgModelCvaWithInternalNgModel implements ControlValueAccessor {
+  internal = '';
+  writeValue(val: any) {
+    this.internal = val;
+  }
+  registerOnChange(_fn: any) {}
+  registerOnTouched(_fn: any) {}
+}
+
+@Component({
+  selector: 'ng-model-cva-host-parent',
+  template: `
+    <form>
+      <ng-model-cva-with-internal-ng-model name="x" ngModel></ng-model-cva-with-internal-ng-model>
+    </form>
+  `,
+  standalone: false,
+})
+class NgModelCvaHostParent {}
