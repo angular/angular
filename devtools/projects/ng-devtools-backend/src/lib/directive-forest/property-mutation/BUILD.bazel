@@ -1,0 +1,26 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "property-mutation",
+    srcs = ["property-mutation.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = ["property-mutation.spec.ts"],
+    deps = [
+        ":property-mutation",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

@@ -12,11 +12,11 @@ import {
   findDirectiveAndHost,
   findNodeInForest,
   getDirectiveName,
-} from '../component-tree/component-tree';
+} from '../directive-forest/component-tree/component-tree';
 import {getDirectiveForestManager} from '../directive-forest/manager';
-import {Highlight, inspectElementHighlightTemplate} from '../highlighter/highlights';
-import {highlightElement} from '../highlighter';
-import {ComponentTreeNode} from '../interfaces';
+import {Highlight, inspectElementHighlightTemplate} from '../shared/highlighter/highlights';
+import {highlightElement} from '../shared/highlighter';
+import {ComponentTreeNode} from '../shared/interfaces';
 
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;

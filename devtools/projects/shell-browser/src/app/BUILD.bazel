@@ -76,8 +76,8 @@ ts_project(
     ],
     deps = [
         "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
         "//devtools/projects/protocol",
     ],
 )
@@ -201,7 +201,7 @@ ts_project(
         ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib/highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
     ],
 )
 

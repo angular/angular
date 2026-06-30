@@ -8,7 +8,7 @@ ts_project(
     deps = [
         "//devtools/projects/ng-devtools-backend/src/lib",
         "//devtools/projects/ng-devtools-backend/src/lib:client_event_subscribers",
-        "//devtools/projects/ng-devtools-backend/src/lib:router_tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/router-tree",
     ],
 )

@@ -1,0 +1,29 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "router-tree",
+    srcs = ["router-tree.ts"],
+    deps = [
+        "//:node_modules/@angular/router",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "router-tree.spec.ts",
+    ],
+    deps = [
+        ":router-tree",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

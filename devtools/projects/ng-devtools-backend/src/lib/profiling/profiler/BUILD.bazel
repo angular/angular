@@ -11,11 +11,12 @@ ts_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:identity-tracker",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
-        "//devtools/projects/ng-devtools-backend/src/lib/utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/identity-tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/tree-strategies",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/protocol",
     ],
 )

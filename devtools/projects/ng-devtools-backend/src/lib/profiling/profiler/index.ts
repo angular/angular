@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ngDebugClient} from '../../ng-debug-api/ng-debug-api';
+import {ngDebugClient} from '../../shared/ng-debug-api/ng-debug-api';
 
 import {NgProfiler} from './native';
 import {PatchingProfiler} from './polyfill';

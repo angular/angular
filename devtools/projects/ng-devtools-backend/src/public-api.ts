@@ -11,6 +11,6 @@
  */
 
 export * from './lib';
-export {findNodeFromSerializedPosition} from './lib/component-tree/component-tree';
+export {findNodeFromSerializedPosition} from './lib/directive-forest/component-tree/component-tree';
 export {viewSourceFromRouter} from './lib/client-event-subscribers';
-export {type RoutePropertyType} from './lib/router-tree';
+export {type RoutePropertyType} from './lib/router-tree/router-tree';

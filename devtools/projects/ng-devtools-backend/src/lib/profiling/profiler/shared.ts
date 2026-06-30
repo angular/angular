@@ -9,8 +9,8 @@
 import {ElementPosition, LifecycleProfile} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
-import {NodeArray} from '../../directive-forest/identity-tracker';
-import {ComponentInstance, DirectiveInstance} from '../../interfaces';
+import {NodeArray} from '../../directive-forest/identity-tracker/identity-tracker';
+import {ComponentInstance, DirectiveInstance} from '../../shared/interfaces';
 
 type CreationHook = (
   componentOrDirective: DirectiveInstance,

@@ -9,77 +9,10 @@ ts_project(
         ":client_event_subscribers",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
-        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
         "//devtools/projects/protocol",
-    ],
-)
-
-ts_project(
-    name = "interfaces",
-    srcs = ["interfaces.ts"],
-    deps = [
-        "//devtools/projects/protocol",
-    ],
-)
-
-ts_project(
-    name = "property_mutation",
-    srcs = ["property-mutation.ts"],
-    deps = [
-        "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools-backend/src/lib/utils",
-    ],
-)
-
-ts_test_library(
-    name = "property_mutation_test_lib",
-    srcs = ["property-mutation.spec.ts"],
-    deps = [
-        ":property_mutation",
-        "//:node_modules/@angular/core",
-    ],
-)
-
-zoneless_web_test_suite(
-    name = "property_mutation_test",
-    deps = [":property_mutation_test_lib"],
-)
-
-zoneless_web_test_suite(
-    name = "router_tree_test",
-    deps = [
-        ":router_tree_test_lib",
-    ],
-)
-
-ts_test_library(
-    name = "router_tree_test_lib",
-    srcs = [
-        "router-tree.spec.ts",
-    ],
-    deps = [
-        ":router_tree",
-    ],
-)
-
-ts_project(
-    name = "router_tree",
-    srcs = ["router-tree.ts"],
-    deps = [
-        "//:node_modules/@angular/router",
-        "//devtools/projects/protocol",
-    ],
-)
-
-ts_project(
-    name = "set_console_reference",
-    srcs = ["set-console-reference.ts"],
-    deps = [
-        ":interfaces",
-        "//devtools/projects/protocol",
-        "//devtools/projects/shared-utils",
     ],
 )
 
@@ -102,7 +35,7 @@ ts_test_library(
     ],
     deps = [
         ":client_event_subscribers",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:identity-tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/identity-tracker",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
@@ -113,33 +46,24 @@ ts_project(
     name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
     deps = [
-        ":hydration-highlighting",
-        ":interfaces",
-        ":router_tree",
-        ":set_console_reference",
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/console:set-console-reference",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
-        "//devtools/projects/ng-devtools-backend/src/lib/highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/hydration:hydration-highlighting",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
-        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
-        "//devtools/projects/ng-devtools-backend/src/lib/utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/router-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:serialization",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:signal-graph-ref",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
-    ],
-)
-
-ts_project(
-    name = "hydration-highlighting",
-    srcs = ["hydration-highlighting.ts"],
-    deps = [
-        ":interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
-        "//devtools/projects/ng-devtools-backend/src/lib/highlighter",
-        "//devtools/projects/protocol",
     ],
 )
