@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {runOutsideAngular} from '../../shared/utils/general';
+import {IdentityTracker, NodeArray} from '../../directive-forest/identity-tracker/identity-tracker';
+import {getLifeCycleName, Profiler} from './shared';
+import {ComponentInstance, DirectiveInstance} from '../../shared/interfaces';
 import {
   getDirectiveHostElement,
   getLViewFromDirectiveOrElementInstance,
   METADATA_PROPERTY_NAME,
-} from '../../directive-forest';
-import {runOutsideAngular} from '../../utils/general';
-import {IdentityTracker, NodeArray} from '../../directive-forest/identity-tracker';
-import {getLifeCycleName, Profiler} from './shared';
-import {ComponentInstance, DirectiveInstance} from '../../interfaces';
+} from '../../directive-forest/tree-strategies/ltree';
 
 const hookTViewProperties = [
   'preOrderHooks',

@@ -7,13 +7,13 @@
  */
 
 import {ɵProfilerEvent} from '@angular/core';
-import {getDirectiveHostElement} from '../../directive-forest';
-import {ngDebugClient} from '../../ng-debug-api/ng-debug-api';
-import {runOutsideAngular} from '../../utils/general';
-import {IdentityTracker, NodeArray} from '../../directive-forest/identity-tracker';
+import {ngDebugClient} from '../../shared/ng-debug-api/ng-debug-api';
+import {runOutsideAngular} from '../../shared/utils/general';
+import {IdentityTracker, NodeArray} from '../../directive-forest/identity-tracker/identity-tracker';
 
 import {getLifeCycleName, Hooks, Profiler} from './shared';
-import {DirectiveInstance} from '../../interfaces';
+import {DirectiveInstance} from '../../shared/interfaces';
+import {getDirectiveHostElement} from '../../directive-forest/tree-strategies/ltree';
 
 type ProfilerCallback = (event: ɵProfilerEvent, instanceOrLView: {} | null, eventFn: any) => void;
 
