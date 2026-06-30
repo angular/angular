@@ -560,6 +560,10 @@ class HtmlAstToIvyAst implements html.Visitor {
     predicate: (blockName: string) => boolean,
   ): html.Block[] {
     const relatedBlocks: html.Block[] = [];
+    // Whitespace-only text nodes to mark as processed only if a connected block follows them.
+    // We defer this so that significant whitespace (e.g. &ngsp;, converted to ' ' by the
+    // whitespace visitor) between two unrelated @if blocks is not silently eaten.
+    const pendingTextNodes: html.Text[] = [];
 
     for (let i = primaryBlockIndex + 1; i < siblings.length; i++) {
       const node = siblings[i];
@@ -569,11 +573,10 @@ class HtmlAstToIvyAst implements html.Visitor {
         continue;
       }
 
-      // Ignore empty text nodes between blocks.
+      // Collect whitespace-only text nodes; only mark them as processed once we confirm
+      // they precede a connected block (e.g. @else / @else if).
       if (node instanceof html.Text && node.value.trim().length === 0) {
-        // Add the text node to the processed nodes since we don't want
-        // it to be generated between the connected nodes.
-        this.processedNodes.add(node);
+        pendingTextNodes.push(node);
         continue;
       }
 
@@ -581,6 +584,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       if (!(node instanceof html.Block) || !predicate(node.name)) {
         break;
       }
+
+      // A connected block was found — commit the pending whitespace nodes as processed.
+      for (const pending of pendingTextNodes) {
+        this.processedNodes.add(pending);
+      }
+      pendingTextNodes.length = 0;
 
       relatedBlocks.push(node);
       this.processedNodes.add(node);
