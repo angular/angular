@@ -49,3 +49,33 @@ export class HostBindingIframeDir {
 export class HostBindingSvgAnimateDir {
   evil = 'evil';
 }
+
+@Directive({
+  selector: 'safe-srcdoc-carrier',
+  host: {
+    '[attr.srcdoc]': 'evil',
+  },
+})
+export class HostBindingCustomSrcdocDir {
+  evil = 'evil';
+}
+
+@Directive({
+  selector: 'safe-src-carrier',
+  host: {
+    '[attr.src]': 'evil',
+  },
+})
+export class HostBindingCustomSrcDir {
+  evil = 'evil';
+}
+
+@Directive({
+  selector: 'safe-data-carrier',
+  host: {
+    '[attr.data]': 'evil',
+  },
+})
+export class HostBindingCustomDataDir {
+  evil = 'evil';
+}
