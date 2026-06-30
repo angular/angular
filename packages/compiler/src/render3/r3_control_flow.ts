@@ -23,9 +23,6 @@ const FOR_LOOP_TRACK_PATTERN = /^track\s+([\S\s]*)/;
 /** Pattern for the `as` expression in a conditional block. */
 const CONDITIONAL_ALIAS_PATTERN = /^(as\s+)(.*)/;
 
-/** Pattern used to identify an `else if` block. */
-const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
-
 /**
  * Pattern to group a string into leading whitespace, non whitespace, and trailing whitespace.
  * Useful for getting the variable name span when a span can contain leading and trailing space.
@@ -55,7 +52,7 @@ export function isConnectedForLoopBlock(name: string): boolean {
  * a specific name cam be connected to an `if` block.
  */
 export function isConnectedIfLoopBlock(name: string): boolean {
-  return name === 'else' || ELSE_IF_PATTERN.test(name);
+  return name === 'else' || name === 'else if';
 }
 
 /** Creates an `if` loop block from an HTML AST node. */
@@ -85,7 +82,7 @@ export function createIfBlock(
   }
 
   for (const block of connectedBlocks) {
-    if (ELSE_IF_PATTERN.test(block.name)) {
+    if (block.name === 'else if') {
       const params = parseConditionalBlockParameters(block, errors, bindingParser);
 
       if (params !== null) {
@@ -588,7 +585,7 @@ function validateIfConnectedBlocks(connectedBlocks: html.Block[]): ParseError[] 
         errors.push(new ParseError(block.startSourceSpan, '@else block cannot have parameters'));
       }
       hasElse = true;
-    } else if (!ELSE_IF_PATTERN.test(block.name)) {
+    } else if (block.name !== 'else if') {
       errors.push(
         new ParseError(block.startSourceSpan, `Unrecognized conditional block @${block.name}`),
       );
@@ -721,7 +718,7 @@ function parseConditionalBlockParameters(
           `Unrecognized conditional parameter "${param.expression}"`,
         ),
       );
-    } else if (block.name !== 'if' && !ELSE_IF_PATTERN.test(block.name)) {
+    } else if (block.name !== 'if' && block.name !== 'else if') {
       errors.push(
         new ParseError(
           param.sourceSpan,

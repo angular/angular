@@ -3464,6 +3464,16 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should normalize @else if block name with spaces', () => {
+      expect(tokenizeAndHumanizeParts('@else            if {hello}')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'else if'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TEXT, 'hello'],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse a block with an arbitrary amount of spaces around the parentheses', () => {
       const expected = [
         [TokenType.BLOCK_OPEN_START, 'for'],
