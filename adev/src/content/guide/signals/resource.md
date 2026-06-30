@@ -7,7 +7,7 @@ You can use a `Resource` to perform any kind of async operation, but the most co
 The easiest way to create a `Resource` is the `resource` function.
 
 ```typescript
-import {resource, Signal} from '@angular/core';
+import {computed, resource, Signal} from '@angular/core';
 
 const userId: Signal<string> = getUserId();
 
