@@ -69,6 +69,42 @@ describe('EmbeddedTutorialManager', () => {
     expect(service.openFiles()).toEqual(openFiles);
   });
 
+  it('should restore the user work in progress files', () => {
+    const initialTutorialFiles = {'file.ts': 'initial'};
+    const workInProgressTutorialFiles = {'file.ts': 'work-in-progress', 'extra.ts': 'extra'};
+    const answerFiles = {'file.ts': 'answer', 'answer-only.ts': 'answer-only'};
+    const initialOpenFiles = ['file.ts'];
+    const workInProgressOpenFiles = ['file.ts', 'extra.ts'];
+    const workInProgressAllFiles = ['file.ts', 'extra.ts'];
+
+    service['metadata'].set({
+      answerFiles,
+      tutorialFiles: initialTutorialFiles,
+      openFiles: initialOpenFiles,
+      hiddenFiles: [],
+      type: TutorialType.EDITOR,
+      dependencies: {},
+      allFiles: initialOpenFiles,
+    });
+
+    service['tutorialFiles'].set(workInProgressTutorialFiles);
+    service['openFiles'].set(workInProgressOpenFiles);
+    service['allFiles'].set(workInProgressAllFiles);
+    service['answerFiles'].set(answerFiles);
+
+    service.revealAnswer();
+
+    expect(service.tutorialFiles()['file.ts']).toBe('answer');
+    expect(service.tutorialFiles()['extra.ts']).toBe('extra');
+    expect(service.openFiles()).toContain('answer-only.ts');
+
+    service.restoreWorkInProgress();
+
+    expect(service.tutorialFiles()).toEqual(workInProgressTutorialFiles);
+    expect(service.openFiles()).toEqual(workInProgressOpenFiles);
+    expect(service['allFiles']()).toEqual(workInProgressAllFiles);
+  });
+
   it('should not have hiddenFiles in openFiles on reveal and reset answer', () => {
     const hiddenFiles = ['hidden1.ts', 'hidden2.ts'];
     const openFiles = ['open.ts'];
