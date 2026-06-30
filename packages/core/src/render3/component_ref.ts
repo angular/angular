@@ -42,6 +42,7 @@ import {
   TElementContainerNode,
   TElementNode,
   TNode,
+  TNodeName,
   TNodeType,
 } from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
@@ -359,7 +360,7 @@ export class ComponentFactory<T> {
         HEADER_OFFSET,
         rootLView,
         TNodeType.Element,
-        '#host',
+        TNodeName.DynamicHost,
         () => rootTView.directiveRegistry,
         true,
         0,
