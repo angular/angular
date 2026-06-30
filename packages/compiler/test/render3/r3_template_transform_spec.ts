@@ -1748,10 +1748,16 @@ describe('R3 template transform', () => {
 
     it('should parse a switch block with a default never case', () => {
       expectFromHtml(`
-          @switch (cond.kind) {
-            @default never;
-          }
-        `).toEqual([['SwitchBlock', 'cond.kind'], ['SwitchExhaustiveCheck']]);
+        @switch (cond.kind) {
+          @default never;
+        }
+      `).toEqual([['SwitchBlock', 'cond.kind'], ['SwitchExhaustiveCheck']]);
+
+      expectFromHtml(`
+        @switch (cond.kind) {
+          @default                              never;
+        }
+      `).toEqual([['SwitchBlock', 'cond.kind'], ['SwitchExhaustiveCheck']]);
     });
 
     // This is a special case for `switch` blocks, because `preserveWhitespaces` will cause
