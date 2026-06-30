@@ -162,12 +162,16 @@ export function getJitStandaloneDefaultForVersion(version: string): boolean {
  * @returns The namespaced CSS variable name.
  */
 export function namespaceCssVariable(varName: string): string {
-  if (varName.startsWith('--global-') && !varName.startsWith('--global--')) {
-    throw new Error(
-      `CSS variable "${varName}" has a single hyphen after "--global". ` +
-        `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`,
-    );
-  }
+  // TODO: Enforce this in v23. This is a breaking change.
+  //       Enable tests under platform-browser and compiler matching "has a single hyphen".
+  // g3-only-start
+  // if (varName.startsWith('--global-') && !varName.startsWith('--global--')) {
+  //   throw new Error(
+  //     `CSS variable "${varName}" has a single hyphen after "--global". ` +
+  //       `Use two hyphens ("--global--${varName.substring('--global-'.length)}") to opt-out of namespacing.`,
+  //   );
+  // }
+  // g3-only-end
 
   if (varName.startsWith('--global--')) {
     return '--' + varName.substring('--global--'.length);

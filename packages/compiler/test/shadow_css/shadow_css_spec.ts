@@ -585,7 +585,8 @@ p {
       `);
     });
 
-    it('should throw an error when a CSS variable has a single hyphen after --global', () => {
+    // TODO: Enforce this in v23.
+    xit('should throw an error when a CSS variable has a single hyphen after --global', () => {
       expect(() => namespaceCssVariables('p { --global-foo: red; }')).toThrowError(
         'CSS variable "--global-foo" has a single hyphen after "--global". Use two hyphens ("--global--foo") to opt-out of namespacing.',
       );

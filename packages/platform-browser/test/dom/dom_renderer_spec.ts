@@ -520,7 +520,8 @@ describe('DefaultDomRendererV2', () => {
         expect(div.style.getPropertyValue('--foo')).toBe('');
       });
 
-      it('should throw an error if style property binding starts with `--global-` with a single hyphen', () => {
+      // TODO: Enforce this in v23.
+      xit('should throw an error if style property binding starts with `--global-` with a single hyphen', () => {
         @Component({
           selector: 'cmp-style-prop-error',
           template: `<div [style.--global-foo]="'blue'"></div>`,
