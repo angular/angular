@@ -67,6 +67,28 @@ describe('dom adapter', () => {
 
         expect(baseHref.endsWith('/base')).toBe(true);
       });
+
+      it('should resolve a local absolute base href when having a local file path', () => {
+        const doc = getDOM().getDefaultDocument();
+
+        Object.defineProperty(doc, 'baseURI', {
+          value: 'file:///C:/Users/Test/Somewhere(2)/',
+          configurable: true,
+        });
+
+        const baseEl = getDOM().createElement('base');
+        baseEl.setAttribute('href', 'base');
+        const headEl = defaultDoc.head;
+        headEl.appendChild(baseEl);
+
+        const baseHref = getDOM().getBaseHref(defaultDoc)!;
+
+        baseEl.remove();
+        getDOM().resetBaseElement();
+        delete (doc as any).baseURI;
+
+        expect(baseHref).toEqual('/C:/Users/Test/Somewhere(2)/base');
+      });
     });
   }
 });
