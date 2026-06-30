@@ -238,6 +238,16 @@ describe('DocViewer', () => {
     expect(copyButton).toBeTruthy();
   });
 
+  it('should not leak any icon text content (so it stays out of the search index)', () => {
+    const fixture = TestBed.createComponent(CopyLinkButton);
+    fixture.componentRef.setInput('href', '#test-section');
+    fixture.componentRef.setInput('label', 'Test Section');
+    fixture.componentRef.setInput('matTooltip', 'Copy link to Test Section');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent.trim()).toBe('');
+  });
+
   it('should copy link to clipboard when copy button is clicked', async () => {
     const clipboard = TestBed.inject(Clipboard);
     const clipboardSpy = spyOn(clipboard, 'copy').and.returnValue(true);
