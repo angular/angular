@@ -160,6 +160,8 @@ const INTERPOLATION = {start: '{{', end: '}}'} as const;
 
 const DEFAULT_NEVER_PATTERN = /^default[^\S\r\n]+never/;
 
+const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
+
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
@@ -298,7 +300,9 @@ class _Tokenizer {
     let result = this._cursor.getChars(nameCursor).trim();
 
     // Normalize whitespaces.
-    if (DEFAULT_NEVER_PATTERN.test(result)) {
+    if (ELSE_IF_PATTERN.test(result)) {
+      result = 'else if';
+    } else if (DEFAULT_NEVER_PATTERN.test(result)) {
       result = 'default never';
     }
 
