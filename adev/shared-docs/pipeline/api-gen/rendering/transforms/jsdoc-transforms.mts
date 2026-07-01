@@ -34,6 +34,7 @@ import {
   unknownSymbolMessage,
 } from '../symbol-context.mjs';
 import {addApiLinksToHtml} from './code-transforms.mjs';
+import {isExternalLink} from '../../../shared/marked/helpers.mjs';
 
 const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
 export const JS_DOC_SEE_TAG = 'see';
@@ -144,17 +145,19 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
   const seeAlsoLinks = entry.jsdocTags
     .filter((tag) => tag.name === JS_DOC_SEE_TAG)
     .map((tag) => tag.comment)
-    .map((comment) => {
+    .map((comment): LinkEntryRenderable | undefined => {
       // TODO: Throw when the comment is an absolute link.
       // With TS 5.9 this is not possible as the ts api that extracts comments from tags strips the "http" part of links.
 
       const markdownLinkMatch = comment.match(markdownLinkRule);
 
       if (markdownLinkMatch) {
+        const url = markdownLinkMatch[2];
         return {
           label: convertBackticksToCodeTags(markdownLinkMatch[1]),
-          url: markdownLinkMatch[2],
+          url,
           title: markdownLinkMatch[3],
+          ...(isExternalLink(url) ? {target: '_blank'} : {}),
         };
       }
 
@@ -163,11 +166,9 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
       if (linkMatch) {
         const link = linkMatch[1];
         const parsed = parseAtLink(link);
-        if (!parsed) {
-          return undefined;
-        }
+        if (!parsed) return undefined;
         const {url, label} = parsed;
-        return {label, url};
+        return {label, url, ...(isExternalLink(url) ? {target: '_blank'} : {})};
       }
 
       return undefined;
