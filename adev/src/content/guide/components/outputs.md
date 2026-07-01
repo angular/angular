@@ -4,7 +4,7 @@ TIP: This guide assumes you've already read the [Essentials Guide](essentials). 
 
 Angular components can define custom events by assigning a property to the `output` function:
 
-```ts {highlight:[3]}
+```ts {highlight:[5]}
 @Component({
   /*...*/
 })
