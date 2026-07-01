@@ -36,7 +36,7 @@ import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/to
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../directive_matching';
-import {splitAtColon, splitAtPeriod} from '../util';
+import {namespaceCssVariable, splitAtColon, splitAtPeriod} from '../util';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
@@ -594,7 +594,16 @@ export class BindingParser {
         securityContexts = [SecurityContext.NONE];
       } else if (parts[0] == STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
-        boundPropertyName = parts[1];
+        const boundName = parts[1];
+        if (!boundName.startsWith('--')) {
+          boundPropertyName = boundName;
+        } else {
+          try {
+            boundPropertyName = namespaceCssVariable(boundName);
+          } catch (e) {
+            this._reportError((e as Error).message, boundProp.sourceSpan);
+          }
+        }
         bindingType = BindingType.Style;
         securityContexts = [SecurityContext.STYLE];
       } else if (parts[0] == ANIMATE_PREFIX) {
