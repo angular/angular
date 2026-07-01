@@ -8,7 +8,7 @@
 
 import {signalGraphTool} from '../../../src/debug/ai/signal_graph';
 import {registerAiTools} from '../../../src/debug/ai';
-import {DevtoolsToolDiscoveryEvent} from '../../../src/debug/ai/tool_definitions';
+import {DevtoolsToolDiscoveryEvent} from '../../../primitives/devtools';
 import {destroyPlatform} from '../../../src/core';
 
 describe('registration', () => {
