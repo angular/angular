@@ -16,32 +16,32 @@ importers:
   .:
     dependencies:
       '@angular-devkit/build-angular':
-        specifier: 22.0.2
-        version: 22.0.2(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tsx@4.22.4)(typescript@6.0.3)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tsx@4.22.4)(typescript@6.0.3)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       '@angular-devkit/core':
-        specifier: 22.0.2
-        version: 22.0.2(chokidar@5.0.0)
+        specifier: 22.0.5
+        version: 22.0.5(chokidar@5.0.0)
       '@angular-devkit/schematics':
-        specifier: 22.0.2
-        version: 22.0.2(chokidar@5.0.0)
+        specifier: 22.0.5
+        version: 22.0.5(chokidar@5.0.0)
       '@angular/animations':
         specifier: workspace:*
         version: link:packages/animations
       '@angular/aria':
-        specifier: 22.0.1
-        version: 22.0.1(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.0.3
+        version: 22.0.3(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/benchpress':
         specifier: 'workspace: *'
         version: link:packages/benchpress
       '@angular/build':
-        specifier: 22.0.2
-        version: 22.0.2(5e2828a62412fb2f4875316d764334ff)
+        specifier: 22.0.5
+        version: 22.0.5(565f823545865c87e003fd18834064d9)
       '@angular/cdk':
-        specifier: 22.0.1
-        version: 22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.3
+        version: 22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
-        specifier: 22.0.2
-        version: 22.0.2(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(chokidar@5.0.0)
+        specifier: 22.0.5
+        version: 22.0.5(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(chokidar@5.0.0)
       '@angular/common':
         specifier: workspace:*
         version: link:packages/common
@@ -67,8 +67,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 22.0.1
-        version: 22.0.1(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.3
+        version: 22.0.3(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -85,8 +85,8 @@ importers:
         specifier: workspace:*
         version: link:packages/service-worker
       '@angular/ssr':
-        specifier: 22.0.2
-        version: 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       '@angular/upgrade':
         specifier: 'workspace: *'
         version: link:packages/upgrade
@@ -106,8 +106,8 @@ importers:
         specifier: ^16.0.0
         version: 16.0.3(rollup@4.60.2)
       '@schematics/angular':
-        specifier: 22.0.2
-        version: 22.0.2(chokidar@5.0.0)
+        specifier: 22.0.5
+        version: 22.0.5(chokidar@5.0.0)
       '@types/angular':
         specifier: ^1.6.47
         version: 1.8.9
@@ -260,8 +260,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdd4a4146520ed794b0342d0a86a0e2b31f129e3
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#7b4897289f0d1f94cb511ddda789129c828b579c
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7b4897289f0d1f94cb511ddda789129c828b579c(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^7.27.1
         version: 7.29.7(@babel/core@7.29.7)
@@ -359,17 +359,17 @@ importers:
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/aria':
-        specifier: 22.0.1
-        version: 22.0.1(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.0.3
+        version: 22.0.3(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
-        specifier: 22.0.2
-        version: 22.0.2(2cc5034bee002b94615c17a5a272d25e)
+        specifier: 22.0.5
+        version: 22.0.5(6949893728695dd36768d12e817f33a7)
       '@angular/cdk':
-        specifier: 22.0.1
-        version: 22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.3
+        version: 22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
-        specifier: 22.0.2
-        version: 22.0.2(@cfworker/json-schema@4.1.1)(@types/node@24.12.2)(chokidar@5.0.0)
+        specifier: 22.0.5
+        version: 22.0.5(@cfworker/json-schema@4.1.1)(@types/node@24.12.2)(chokidar@5.0.0)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -389,8 +389,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 22.0.1
-        version: 22.0.1(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.3
+        version: 22.0.3(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -401,8 +401,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/router
       '@angular/ssr':
-        specifier: 22.0.2
-        version: 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       '@codemirror/autocomplete':
         specifier: 6.20.1
         version: 6.20.1
@@ -579,7 +579,7 @@ importers:
         version: 11.14.0
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       open-in-idx:
         specifier: 0.1.1
         version: 0.1.1
@@ -726,8 +726,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/router
       '@angular/ssr':
-        specifier: 22.0.2
-        version: 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -736,11 +736,11 @@ importers:
         version: 2.8.1
     devDependencies:
       '@angular/build':
-        specifier: 22.0.2
-        version: 22.0.2(68069347b0a0a56304d0347919867256)
+        specifier: 22.0.5
+        version: 22.0.5(b19adae0acb204d2bdaad1790f7c351d)
       '@angular/cli':
-        specifier: 22.0.2
-        version: 22.0.2(@cfworker/json-schema@4.1.1)(@types/node@24.13.2)(chokidar@5.0.0)
+        specifier: 22.0.5
+        version: 22.0.5(@cfworker/json-schema@4.1.1)(@types/node@24.13.2)(chokidar@5.0.0)
       '@angular/compiler-cli':
         specifier: workspace:*
         version: link:../packages/compiler-cli
@@ -836,8 +836,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/benchpress
       '@angular/build':
-        specifier: 22.0.2
-        version: 22.0.2(732a43a4006b1fa4183e4d4ba6f8645e)
+        specifier: 22.0.5
+        version: 22.0.5(8bdbdc51bc83e7124a1d713156d8314a)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1021,8 +1021,8 @@ importers:
         specifier: workspace:*
         version: link:../../../animations
       '@angular/build':
-        specifier: 22.0.2
-        version: 22.0.2(68069347b0a0a56304d0347919867256)
+        specifier: 22.0.5
+        version: 22.0.5(b19adae0acb204d2bdaad1790f7c351d)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1391,8 +1391,8 @@ importers:
         version: 7.8.2
     devDependencies:
       ng-packagr:
-        specifier: 22.0.0
-        version: 22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+        specifier: 22.0.1
+        version: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -1509,13 +1509,13 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@angular-devkit/architect@0.2200.2':
-    resolution: {integrity: sha512-Zqtj37XCQXQrZp8W4+b883Kc4NMOKB6rm2jKCtZwvUlZFnlb5VeRZ6IANLxoGIfHAFS564KNjepMKsb4tkDxFw==}
+  '@angular-devkit/architect@0.2200.5':
+    resolution: {integrity: sha512-Fbki7xEx37gn8uH5AFOh0EmfGV4y5xag2fTv1vn6KxY/h33L02KuAjiUX3h2YmSjnYSc1dXto3Q5c4lWs/I5Zw==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
 
-  '@angular-devkit/build-angular@22.0.2':
-    resolution: {integrity: sha512-wc3YlmTPN+ng+2o6f0z6eBFrNYWp7P5jAiniKZ8j0w87ba8jG7J+FdBeSvXX4wQOrYLhqOXYbHR4XqIj3uRRSw==}
+  '@angular-devkit/build-angular@22.0.5':
+    resolution: {integrity: sha512-+YUOzWeQCwUpV2usFQwHBh01DQYxhcqUpxFKHw73ASIFC4+QsJNX+92++J9PvDOsXWHtGivX+6YmwI9/rcudIA==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
@@ -1525,7 +1525,7 @@ packages:
       '@angular/platform-browser': ^22.0.0
       '@angular/platform-server': ^22.0.0
       '@angular/service-worker': ^22.0.0
-      '@angular/ssr': ^22.0.2
+      '@angular/ssr': ^22.0.5
       browser-sync: ^3.0.2
       karma: ^6.3.0
       ng-packagr: ^22.0.0
@@ -1553,15 +1553,15 @@ packages:
       tailwindcss:
         optional: true
 
-  '@angular-devkit/build-webpack@0.2200.2':
-    resolution: {integrity: sha512-GDkKRRo9yStSl3O7qw5mm23OOVXCwLVVymd1VJoqTStW8aAqY3GBXY6VsY+HVBz/05MF3csEsreeCm4fFZXpmA==}
+  '@angular-devkit/build-webpack@0.2200.5':
+    resolution: {integrity: sha512-oLNCK+Zpv0/iY9yC/kX9wxZINqdwBQNcidXteC2xtcj99FE0PS8D5zHTZquoGyu9/v91FIt3q1dGtHXSz6MpTg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       webpack: ^5.30.0
       webpack-dev-server: ^5.0.2
 
-  '@angular-devkit/core@22.0.2':
-    resolution: {integrity: sha512-ftckkaxbPsJmsqsbcsEV3b4j5jpDIjcCFCnSYgqdAl5/Km2Br1+J4S4qsTW13F2oUp2OFRYvH9gP+AaYQVAfWg==}
+  '@angular-devkit/core@22.0.5':
+    resolution: {integrity: sha512-xxd3b9X0bbdGuYqDj1OgxtlGotrb/gsxQ5+4aqivWBHq4q/1RI8JfVB7gqcoYTvAfTq63Dwsk7Qd33hC4yJ1Wg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       chokidar: ^5.0.0
@@ -1569,18 +1569,18 @@ packages:
       chokidar:
         optional: true
 
-  '@angular-devkit/schematics@22.0.2':
-    resolution: {integrity: sha512-85jWZnkWPpXhe0RnAjxBzF4GAI+OzRFVjP9g4LY5lLkKlY4YKRxt9a4Wa6LfuArP10Js/gpkvNv/7NPj14tu7Q==}
+  '@angular-devkit/schematics@22.0.5':
+    resolution: {integrity: sha512-yKkImZuFLIbylmk1REyoW3EWQeqnr6qwtrzs4EPeaJgzjj+MZurq5slQ3fanK9lfX2q+W+dnSQFKBXHxlUGJ8Q==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@angular/aria@22.0.1':
-    resolution: {integrity: sha512-pi9E2BY13jwRDyEEkl/YLVEcMrFF0iuzejQTykrCYQUySK2i8yejFEwWsdJMzAmpKZwVZNgO406fpQMeGf5gTA==}
+  '@angular/aria@22.0.3':
+    resolution: {integrity: sha512-hyOxxZez4T1UI4UN6OZCSkaKkQa2+xFZD0Ia2lwov98WMKdvDCVM5a82TWCPDUcLIh0WXUvMK/Yr0tRivVx6Ag==}
     peerDependencies:
-      '@angular/cdk': 22.0.1
+      '@angular/cdk': 22.0.3
       '@angular/core': ^22.0.0 || ^23.0.0
 
-  '@angular/build@22.0.2':
-    resolution: {integrity: sha512-EtVbjMfHhEkrf2YsECBPqqYKFuxNB3pGEebP3dFsSikoNdIn/dNCoT6ZraXwfCbt4EzJMyH740LLxsvIeoIqLg==}
+  '@angular/build@22.0.5':
+    resolution: {integrity: sha512-uVXf1cSKTMDvpiP5x0X8h7D7dICHC2XsbmvRYtxdyTRy+zJduqtCdZTwnwmCrwIc5hOF+bmwa5p17P6XirYVfw==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler': ^22.0.0
@@ -1590,7 +1590,7 @@ packages:
       '@angular/platform-browser': ^22.0.0
       '@angular/platform-server': ^22.0.0
       '@angular/service-worker': ^22.0.0
-      '@angular/ssr': ^22.0.2
+      '@angular/ssr': ^22.0.5
       istanbul-lib-instrument: ^6.0.0
       karma: ^6.4.0
       less: ^4.2.0
@@ -1628,16 +1628,16 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.0.1':
-    resolution: {integrity: sha512-hSFqsNEmkT9x1Qc+0aJvAEKFo2DPuS8h/ltOVuDYIyXd57DfD7pSLO3CuxfSUK49YhbhwX/TB2L0IfkrnvtXew==}
+  '@angular/cdk@22.0.3':
+    resolution: {integrity: sha512-dNPQHkxIM8Hkn028eJxBjBDXFBYJtYjGZCZTG6xGb6OugIuDvPM4hGVqOdXkGnvabfuLNgxbtiSL8l3xXPjUqQ==}
     peerDependencies:
       '@angular/common': ^22.0.0 || ^23.0.0
       '@angular/core': ^22.0.0 || ^23.0.0
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/cli@22.0.2':
-    resolution: {integrity: sha512-hjp2et2xcYJNESaDwWQgkLmeZ2PusStRDPWq31lLglnmsfvCtCoOqrlrp/TNTDiDhknhhpc0Q7hrU8+92ZUmcQ==}
+  '@angular/cli@22.0.5':
+    resolution: {integrity: sha512-BYg2dWsbqdbpv3UVLNtDns1DoUbsROR8htPPIJEETj4Nfu7VF+g0nnM1CX2Ia+3002xtASgHp4YnRGQN/vAhWA==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
 
@@ -1654,23 +1654,23 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-v8Dm8di7rv/S1kWC+KsZ3Qidlt6gvWilfZTXIczxBsjmYeKBNyn5RXhR6DEuzh5Kie3JsFHOD/8aGsKXbj3jBg==, tarball: https://codeload.github.com/angular/domino/tar.gz/a9e9e17af7a54af8dde66f651bfde671c3a10444}
     version: 2.1.6
 
-  '@angular/material@22.0.1':
-    resolution: {integrity: sha512-qP28XmDwRjH7Bd/r02a1GaiMd1ao0VgUOAITCrPQB8McrxFC2wDJBR3MBQaSriZnyWpCzj3jGcQWhZpQMoxOFA==}
+  '@angular/material@22.0.3':
+    resolution: {integrity: sha512-GHnGiG+YShHoY/uGpebo9vB/uH6gJ5/dJls6opA7w8xFQZg6jxGaW2boCBXi2FqpXsvMjiFYnk7SNc62J/uqYQ==}
     peerDependencies:
-      '@angular/cdk': 22.0.1
+      '@angular/cdk': 22.0.3
       '@angular/common': ^22.0.0 || ^23.0.0
       '@angular/core': ^22.0.0 || ^23.0.0
       '@angular/forms': ^22.0.0 || ^23.0.0
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3':
-    resolution: {gitHosted: true, integrity: sha512-77lzhDNz78hakS5ahbzVbcCKSJgwLSbDlCwQgLQWphzdaaMid0ILM5eHywGCkgBqzg6jrrScrEfN62io2eFz7A==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3}
-    version: 0.0.0-e9faacd5b4df391f59989b6fb448b2c24115d592
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7b4897289f0d1f94cb511ddda789129c828b579c':
+    resolution: {gitHosted: true, integrity: sha512-GqojUDMKdGEsQH4uHa5gVRhTXYb6kq5Q+1nhNc3clUryp0mkqC5KvIyNS1KWTml/jLfLgHcdHsGEPZS9RWPjeg==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7b4897289f0d1f94cb511ddda789129c828b579c}
+    version: 0.0.0-1b83fcd99cec9ff01e539f293c643ee962adc217
     hasBin: true
 
-  '@angular/ssr@22.0.2':
-    resolution: {integrity: sha512-2ynMSsux7/MTEuFzFrDW7Jl1H/UbTUo1648okP5KHRLdFfRSn9QlvEFB+wntH2uh4kvejaONsgEJKiVtgi3DOw==}
+  '@angular/ssr@22.0.5':
+    resolution: {integrity: sha512-fK1P0M8+0BsVDp5NG/y3l3YHGNdyPRdtox7haLwxZu9nvra1Tra2yfwuURdnCwJKm30TUfdxR+cf5kkresA3tw==}
     peerDependencies:
       '@angular/common': ^22.0.0
       '@angular/core': ^22.0.0
@@ -3053,8 +3053,8 @@ packages:
   '@externs/nodejs@1.5.0':
     resolution: {integrity: sha512-2J+FRDjGfKKldTQ5YqLmhQ04/sA9swTQ6OTtPzo4xhg41u1+eiufciXiqW6u3UXEcmm413a27NakgnLbzfp0wQ==}
 
-  '@firebase/ai@2.13.0':
-    resolution: {integrity: sha512-nJJDQKqjAcbkZdZGT/5WTVLrGZ+pYhWbwKC90nNzmvtoRTtnOJaNS34fhKSHQeB9SALgD2kxuWT5I4AkytdZ/Q==}
+  '@firebase/ai@2.13.1':
+    resolution: {integrity: sha512-RhT/VViTPBSplhQSuEp62HhLvfsV+LowMh8ZUo5MMRDzG7oFtSget4Kmg5oHP50hDVyWQuQj6to9iPFEZk08Tw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app': 0.x
@@ -3073,8 +3073,8 @@ packages:
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/app-check-compat@0.4.4':
-    resolution: {integrity: sha512-9iP0MvmaVagulNXmrca96U3tqNAI3j98wsC1z7rj62nnOTajlrHM//jjB9VoHqRw6/islMskp6RsKnM7vhLDqA==}
+  '@firebase/app-check-compat@0.4.5':
+    resolution: {integrity: sha512-JI17mVcZs34zO6ZeSCrw4U2iohqy+n6GIzkbmsA+TbVjmvFLkUKt3bs5M+qRBteQm/0IWzqSHYFzEQLzDTQebg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app-compat': 0.x
@@ -3085,25 +3085,25 @@ packages:
   '@firebase/app-check-types@0.5.4':
     resolution: {integrity: sha512-xV7JsIyzVr15aA7f3Pi0rB9gdBuVubs89FGA8VkRYA4g0l78poADgdfrScgf7NndSg9mm7cR7PJyY0+t22KaGw==}
 
-  '@firebase/app-check@0.11.4':
-    resolution: {integrity: sha512-G8EsbVJV9gSfoibx0dNoNOUrvr+PkL7J//+W/BST/oUassimkZeq9bjj3bKkB0pn4og5GMQ9qs7FefwP00kkgg==}
+  '@firebase/app-check@0.12.0':
+    resolution: {integrity: sha512-wMeT6HLWRAuW7Cp/5UjWBGKgjPNxWNOoNf4PRIv0weljoGMZVeqbUY7wNBWTI2/31cX1NlXx8gQruDLsUShB3Q==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/app-compat@0.5.13':
-    resolution: {integrity: sha512-pn3FvXwUR34kWPccDQfCKsNZcM2wD1OS+J1jeEgzM1ZNXoxR2NaF6e5DjDuRrnTwR6LN2XQQt0IqE6yKmgpCQg==}
+  '@firebase/app-compat@0.5.14':
+    resolution: {integrity: sha512-rgFmiofYsdS9ZG/Bht3OBxJtPD3zWE1cffShWubEm+4+qZeyzCbmtb1q6jOEjN9fB7uufe4rQmWOPXouR3758Q==}
     engines: {node: '>=20.0.0'}
 
   '@firebase/app-types@0.9.5':
     resolution: {integrity: sha512-YevqTjvo7Iujsa9Dwowmd6dSoElhzmD63ZSrq6bzjvQ6POjYgNjOFHLmNIgJs48eNO093NCERibuFnxbfOvU7A==}
 
-  '@firebase/app@0.14.13':
-    resolution: {integrity: sha512-H89Jeyp31+EZk9GPu6vaeL9mEmoXgM3nASB7UPBYYS/lqAks21mO1BU1dF8NbsVTL6tgGZkGUtiGJgxtDiwHkw==}
+  '@firebase/app@0.15.0':
+    resolution: {integrity: sha512-soIskolmGgbpi0K/MfrjtdpO1220qRCbXA4Z8Qx3lM+fVwA3q40m+OM+7zBHd2nuQCrLXb33L6Oc1aBH3Y26AQ==}
     engines: {node: '>=20.0.0'}
 
-  '@firebase/auth-compat@0.6.7':
-    resolution: {integrity: sha512-XgKnOgY1Siq7gylAmLkYtHAlRxNeWEAspH+nO3gJZJnfHqoTHbr9UjJ3nHNFALYXV5CfpQlyPROyB2ztySBHBQ==}
+  '@firebase/auth-compat@0.6.8':
+    resolution: {integrity: sha512-llcBREUC4iSNKZ6rvwud7Oz9Q7aAWU6KuQLa6pdu7Q+QAQsy4JLw6yFgxwtmzabsgznHmmcsX2UjHLLzqUxi3Q==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app-compat': 0.x
@@ -3117,8 +3117,8 @@ packages:
       '@firebase/app-types': 0.x
       '@firebase/util': 1.x
 
-  '@firebase/auth@1.13.2':
-    resolution: {integrity: sha512-B4w0iS7MxRg28oIh2fJFTE6cM0lYdBrW19eHpc42jqEcloUjlYyVrpPqZvqA4+v9KFEVSKEs2SfWyta7hbzkJQ==}
+  '@firebase/auth@1.13.3':
+    resolution: {integrity: sha512-bqiq4uubDN2YyQkdvSWPQeJyXAv2O76ImF41En9b6UhV5JuBVYDoHYrrrE3NzIuGkpFMKagfhMRP4Vz6t+yQSQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app': 0.x
@@ -3147,8 +3147,8 @@ packages:
     resolution: {integrity: sha512-XwWCa+E4TvNGpGwXrycLRNfdogADwFcvuhyow6wDWma9W54roaQIhe+4PM0KiLsIftBdSCGI7OKCXrdSRHbIhw==}
     engines: {node: '>=20.0.0'}
 
-  '@firebase/firestore-compat@0.4.10':
-    resolution: {integrity: sha512-yMP3FADDjikdrQv4YmvL4EkIny6Hw+N+a2O5T40rlHiniyMpRPxgYkKiFOvMZnsqKLqBVnKqCAElC0pa/IZtdw==}
+  '@firebase/firestore-compat@0.4.11':
+    resolution: {integrity: sha512-W7o1WdwWq5aABK5Up2ncSvTQs/QGLR/fy7cVpFBNqhsXtxoMtflHf2xBIG6+aoptcuGAobddq4g2Sq27wqHaYw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app-compat': 0.x
@@ -3159,8 +3159,8 @@ packages:
       '@firebase/app-types': 0.x
       '@firebase/util': 1.x
 
-  '@firebase/firestore@4.15.0':
-    resolution: {integrity: sha512-Fj9osqYkz2Rqr7kW3/A8BRd8CyJ7yA5K8YjhihRdyJWbL+FsELVcR6DpoCplrp1IyU+xeGgTubo1UOySXpY+EA==}
+  '@firebase/firestore@4.16.0':
+    resolution: {integrity: sha512-qdHMHMvMr0nRMuZyWNR/ArWa0YlPE3C4eAbmxTASJMYXAesKPL0Y54p70moggrNPzaK7MSIIq5RDJJyntQyIYA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@firebase/app': 0.x
@@ -3225,16 +3225,16 @@ packages:
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/remote-config-compat@0.2.25':
-    resolution: {integrity: sha512-FnA5S4IxFJAAFrCnYzWlO0FCaizlYdqhe42ygFMA+wE/mUP+w36iXzHyKj1OO1A+2gyMFjeRHyg8HhkJ6c5vRA==}
+  '@firebase/remote-config-compat@0.2.26':
+    resolution: {integrity: sha512-uC57Tc7GYYOCnMgLkGIVf999XlaYaPDONoa54c93YTKDctlvCZI89z0zQ2RbhGR8Zf+QuCbQHs/99vqoE84a7g==}
     peerDependencies:
       '@firebase/app-compat': 0.x
 
   '@firebase/remote-config-types@0.5.1':
     resolution: {integrity: sha512-cX/1LT6KQwkXzck2eSzeKnuvXZCyr8qaPpDcikoJs7jmI+oBOXixpDLeDtWj1U6GNMkIoXrEDNoyT2Ypcyp5/A==}
 
-  '@firebase/remote-config@0.8.4':
-    resolution: {integrity: sha512-lslywR5lGvHWTu4z/MPoYs3UwS3CKdeY+ELXY87087VsOpBpkD+9Orra23tA9GW683arPTDOM3CM6eKmtiOO3g==}
+  '@firebase/remote-config@0.8.5':
+    resolution: {integrity: sha512-zb+7CDGFP2wYVF1LXQoYIFdoESIQM3p0+uiW1welw8+zvDxAL50K75PKTXXtunJADUrksTVpV7mD0pn54vzJRA==}
     peerDependencies:
       '@firebase/app': 0.x
 
@@ -3307,8 +3307,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@2.8.0':
-    resolution: {integrity: sha512-pc2ayxqO5+O7AvnHBqpNHIk7PAZkHZgL31tbyx0gJZBSS9qPYiQoqwK7oYOw/ePmG6QY4EMSu+304vD5QlhXAw==}
+  '@google/genai@2.10.0':
+    resolution: {integrity: sha512-e4cFxj3tiuMtsgOT4G9c1hXyGJhg7/Buj7VVeBacRY3fRtkRZZ59Q3nuVp2xbq8BGQXLXCDB253qMhklMOeUDg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.2
@@ -4155,8 +4155,8 @@ packages:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
 
-  '@ngtools/webpack@22.0.2':
-    resolution: {integrity: sha512-1VixkDMvPYPA+O7Hqcw7ry1M96oobSckxR+pT561Radt88uanTZhuQ/S06UmBjT5nZWk0HVND1NgRRcZSdj2Yg==}
+  '@ngtools/webpack@22.0.5':
+    resolution: {integrity: sha512-f0vNCwM4Z4GIl1XORd2z9TyMiq1Vs5lcK9Se4joQiTPd5yEIS1+UPDhJ1Lh38J+nXzdJyieZzQi0GjmS6Iv7Cw==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
@@ -4814,8 +4814,8 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
-  '@schematics/angular@22.0.2':
-    resolution: {integrity: sha512-5yVlR7i5oyYcv0OuaBL5CPTrUETSZGZiqMPHhh+0Z6VbIolwr2ps0Nqa0jlmQhNmC2OL7NDIQJilX9wJgyWwUg==}
+  '@schematics/angular@22.0.5':
+    resolution: {integrity: sha512-e+1Ob5Kxt9QH2Gige0Bl56CXclG819RMl5Fso3kwO58+9AQnR2QxvjbetB7LDRl+YEG3TXCE4s3vdrV4gqRRAQ==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
   '@secretlint/config-creator@10.2.2':
@@ -7741,8 +7741,8 @@ packages:
     engines: {node: '>=20.0.0 || >=22.0.0 || >=24.0.0'}
     hasBin: true
 
-  firebase@12.14.0:
-    resolution: {integrity: sha512-aEZ/lniDR1hOCYpx/x/V8Nrrqq9pepKDNkqP/4WGZFC69gTv6F59Z4/54W/SUP4L/hFlrRNmWj35aweQq+IHow==}
+  firebase@12.15.0:
+    resolution: {integrity: sha512-p0YTLcRSTiBXMx9sGr4ZNSfLjc/RVBEw4C/TXjVMtw65+6E1Pbm47UY3F4/AqRoDobEcNX3gsbPGy7jPjxbgSQ==}
 
   flagged-respawn@2.0.0:
     resolution: {integrity: sha512-Gq/a6YCi8zexmGHMuJwahTGzXlAZAOsbCVKduWXC6TlLCjjFRlExMJc4GC2NYPYZ0r/brw9P7CpRgQmlPVeOoA==}
@@ -9815,8 +9815,8 @@ packages:
     resolution: {integrity: sha512-eonl3sLUha+S1GzTPxychyhnUzKyeQkZ7jLjKrBagJgPla13F+uQ71HgpFefyHgqrjEbCPkDArxYsjY8/+gLKA==}
     engines: {node: '>= 0.4.0'}
 
-  ng-packagr@22.0.0:
-    resolution: {integrity: sha512-2mXzUdprkDHk4j0NVDcpkVztVwdb1b3o63vLK8YQVCJqCMvCv8BBkFjBo9f1KJmuPf+CE/xuvylhyqfzXoTTqw==}
+  ng-packagr@22.0.1:
+    resolution: {integrity: sha512-gL03L/OBNWz4nqTo8l5u6f3hySYzAVwx3aVZs6X7UGQv+cT+HUozr2XquAvvl/beray0AgCAfydGELDAJAFyKg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
     hasBin: true
     peerDependencies:
@@ -10370,10 +10370,6 @@ packages:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
 
-  piscina@5.1.4:
-    resolution: {integrity: sha512-7uU4ZnKeQq22t9AsmHGD2w4OYQGonwFnTypDypaWi7Qr2EvQIFVtG8J5D/3bE7W123Wdc9+v4CZDu5hJXVCtBg==}
-    engines: {node: '>=20.x'}
-
   piscina@5.2.0:
     resolution: {integrity: sha512-DszUCKeVN/5G5QKo6jAVHL8fmKnkJvQ0ACiVgY7YGCq3TUB2oznAOayvZPIAdEThvhczkXR+qm3IHsNXpFCYfA==}
     engines: {node: '>=20.x'}
@@ -10735,6 +10731,9 @@ packages:
   re2@1.25.0:
     resolution: {integrity: sha512-mtxKjWS+VYIt2ijgt6ohEdwzNlGPom1whyaEKJD40cBc/wqkO1vJoOyK539Qb8Xa9m4GA6hiPGDIbW/d3egSRQ==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
+
+  re2js@0.4.3:
+    resolution: {integrity: sha512-EuNmh7jurhHEE8Ge/lBo9JuMLb3qf866Xjjfyovw3wPc7+hlqDkZq4LwhrCQMEI+ARWfrKrHozEndzlpNT0WDg==}
 
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
@@ -11104,11 +11103,6 @@ packages:
 
   semver@7.7.4:
     resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
-    engines: {node: '>=10'}
-    hasBin: true
-
-  semver@7.8.4:
-    resolution: {integrity: sha512-rUCObTnP32Q08R2uuIrt7r9PlEonuTmtuXYcW6s5kjdlj3xbnwe+21yXptAUYcMAABLkYYTtnmzb3w3EDZfueA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -12217,8 +12211,8 @@ packages:
     resolution: {integrity: sha512-0QwqXteBNXgnLCdWdvPQBX6FXRHtIH3VhJPTd5Lwn28tJXc34YqSCWUmkOvtJHBmB3gGoPtrOKk3Ts8/kEZ9aA==}
     engines: {node: '>=10.13.0'}
 
-  vite@7.3.2:
-    resolution: {integrity: sha512-Bby3NOsna2jsjfLVOHKes8sGwgl4TT0E6vvpYgnAYDIF/tie7MRaFthmKuHx1NSXjiTueXH3do80FMQgvEktRg==}
+  vite@7.3.5:
+    resolution: {integrity: sha512-KuOaNhcnGFN2zIPGA7wRmzF+lJA1sea7rHq17aiJ++9lzY1WWG6Jpwqwe1KNbRVPIqHmr8GLYx7jbrQcN/7/ww==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -12946,20 +12940,20 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@angular-devkit/architect@0.2200.2(chokidar@5.0.0)':
+  '@angular-devkit/architect@0.2200.5(chokidar@5.0.0)':
     dependencies:
-      '@angular-devkit/core': 22.0.2(chokidar@5.0.0)
+      '@angular-devkit/core': 22.0.5(chokidar@5.0.0)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@22.0.2(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tsx@4.22.4)(typescript@6.0.3)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)':
+  '@angular-devkit/build-angular@22.0.5(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tsx@4.22.4)(typescript@6.0.3)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
-      '@angular-devkit/build-webpack': 0.2200.2(chokidar@5.0.0)(webpack-dev-server@5.2.3(bufferutil@4.1.0)(tslib@2.8.1)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)))(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
-      '@angular-devkit/core': 22.0.2(chokidar@5.0.0)
-      '@angular/build': 22.0.2(16236e29401f0776fbb8fea5e143c976)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
+      '@angular-devkit/build-webpack': 0.2200.5(chokidar@5.0.0)(webpack-dev-server@5.2.3(bufferutil@4.1.0)(tslib@2.8.1)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)))(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
+      '@angular-devkit/core': 22.0.5(chokidar@5.0.0)
+      '@angular/build': 22.0.5(02dfe1077bbe8fbce91e6635fce7204b)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -12971,7 +12965,7 @@ snapshots:
       '@babel/preset-env': 7.29.3(@babel/core@7.29.0)
       '@babel/runtime': 7.29.2
       '@discoveryjs/json-ext': 1.1.0
-      '@ngtools/webpack': 22.0.2(@angular/compiler-cli@packages+compiler-cli)(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
+      '@ngtools/webpack': 22.0.5(@angular/compiler-cli@packages+compiler-cli)(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
       ansi-colors: 4.1.3
       autoprefixer: 10.5.0(postcss@8.5.13)
       babel-loader: 10.1.1(@babel/core@7.29.0)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
@@ -12991,7 +12985,7 @@ snapshots:
       open: 11.0.0
       ora: 9.4.0
       picomatch: 4.0.4
-      piscina: 5.1.4
+      piscina: 5.2.0
       postcss: 8.5.13
       postcss-loader: 8.2.1(postcss@8.5.13)(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
       resolve-url-loader: 5.0.0
@@ -13016,10 +13010,10 @@ snapshots:
       '@angular/platform-browser': link:packages/platform-browser
       '@angular/platform-server': link:packages/platform-server
       '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      '@angular/ssr': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       esbuild: 0.28.1
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      ng-packagr: 22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@angular/compiler'
@@ -13051,16 +13045,16 @@ snapshots:
       - webpack-cli
       - yaml
 
-  '@angular-devkit/build-webpack@0.2200.2(chokidar@5.0.0)(webpack-dev-server@5.2.3(bufferutil@4.1.0)(tslib@2.8.1)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)))(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))':
+  '@angular-devkit/build-webpack@0.2200.5(chokidar@5.0.0)(webpack-dev-server@5.2.3(bufferutil@4.1.0)(tslib@2.8.1)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)))(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))':
     dependencies:
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
       rxjs: 7.8.2
       webpack: 5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)
       webpack-dev-server: 5.2.3(bufferutil@4.1.0)(tslib@2.8.1)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/core@22.0.2(chokidar@5.0.0)':
+  '@angular-devkit/core@22.0.5(chokidar@5.0.0)':
     dependencies:
       ajv: 8.20.0
       ajv-formats: 3.0.1
@@ -13071,9 +13065,9 @@ snapshots:
     optionalDependencies:
       chokidar: 5.0.0
 
-  '@angular-devkit/schematics@22.0.2(chokidar@5.0.0)':
+  '@angular-devkit/schematics@22.0.5(chokidar@5.0.0)':
     dependencies:
-      '@angular-devkit/core': 22.0.2(chokidar@5.0.0)
+      '@angular-devkit/core': 22.0.5(chokidar@5.0.0)
       jsonc-parser: 3.3.1
       magic-string: 0.30.21
       ora: 9.4.0
@@ -13081,23 +13075,23 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/aria@22.0.1(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
+  '@angular/aria@22.0.3(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
     dependencies:
-      '@angular/cdk': 22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@22.0.2(16236e29401f0776fbb8fea5e143c976)':
+  '@angular/build@22.0.5(02dfe1077bbe8fbce91e6635fce7204b)':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
       '@angular/compiler': link:packages/compiler
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.29.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 6.0.12(@types/node@20.19.43)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
       beasties: 0.4.2
       browserslist: 4.28.4
       esbuild: 0.28.1
@@ -13108,7 +13102,7 @@ snapshots:
       mrmime: 2.0.1
       parse5-html-rewriting-stream: 8.0.1
       picomatch: 4.0.4
-      piscina: 5.1.4
+      piscina: 5.2.0
       rollup: 4.60.2
       sass: 1.99.0
       semver: 7.7.4
@@ -13116,7 +13110,7 @@ snapshots:
       tinyglobby: 0.2.16
       tslib: 2.8.1
       typescript: 6.0.3
-      vite: 7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
       watchpack: 2.5.1
     optionalDependencies:
       '@angular/core': link:packages/core
@@ -13124,12 +13118,12 @@ snapshots:
       '@angular/platform-browser': link:packages/platform-browser
       '@angular/platform-server': link:packages/platform-server
       '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      '@angular/ssr': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       istanbul-lib-instrument: 6.0.3
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.4
       lmdb: 3.5.4
-      ng-packagr: 22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       postcss: 8.5.13
       tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
       vitest: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
@@ -13146,76 +13140,17 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@22.0.2(2cc5034bee002b94615c17a5a272d25e)':
+  '@angular/build@22.0.5(565f823545865c87e003fd18834064d9)':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.29.0
-      '@babel/helper-annotate-as-pure': 7.27.3
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
-      beasties: 0.4.2
-      browserslist: 4.28.4
-      esbuild: 0.28.1
-      https-proxy-agent: 9.0.0
-      jsonc-parser: 3.3.1
-      listr2: 10.2.1
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.4
-      piscina: 5.1.4
-      rollup: 4.60.2
-      sass: 1.99.0
-      semver: 7.7.4
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.16
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 7.3.2(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
-      watchpack: 2.5.1
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      less: 4.6.7
-      lmdb: 3.5.4
-      ng-packagr: 22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.13
-      tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
-      vitest: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@22.0.2(5e2828a62412fb2f4875316d764334ff)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
       '@angular/compiler': link:packages/compiler
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.29.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 6.0.12(@types/node@20.19.43)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
       beasties: 0.4.2
       browserslist: 4.28.4
       esbuild: 0.28.1
@@ -13226,7 +13161,7 @@ snapshots:
       mrmime: 2.0.1
       parse5-html-rewriting-stream: 8.0.1
       picomatch: 4.0.4
-      piscina: 5.1.4
+      piscina: 5.2.0
       rollup: 4.60.2
       sass: 1.99.0
       semver: 7.7.4
@@ -13234,7 +13169,7 @@ snapshots:
       tinyglobby: 0.2.16
       tslib: 2.8.1
       typescript: 6.0.3
-      vite: 7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
       watchpack: 2.5.1
     optionalDependencies:
       '@angular/core': link:packages/core
@@ -13242,12 +13177,12 @@ snapshots:
       '@angular/platform-browser': link:packages/platform-browser
       '@angular/platform-server': link:packages/platform-server
       '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      '@angular/ssr': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       istanbul-lib-instrument: 6.0.3
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.7
       lmdb: 3.5.4
-      ng-packagr: 22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       postcss: 8.5.16
       tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
       vitest: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
@@ -13264,17 +13199,17 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@22.0.2(68069347b0a0a56304d0347919867256)':
+  '@angular/build@22.0.5(6949893728695dd36768d12e817f33a7)':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
       '@angular/compiler': link:packages/compiler
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.29.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@24.13.2)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
+      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
       beasties: 0.4.2
       browserslist: 4.28.4
       esbuild: 0.28.1
@@ -13285,7 +13220,7 @@ snapshots:
       mrmime: 2.0.1
       parse5-html-rewriting-stream: 8.0.1
       picomatch: 4.0.4
-      piscina: 5.1.4
+      piscina: 5.2.0
       rollup: 4.60.2
       sass: 1.99.0
       semver: 7.7.4
@@ -13293,7 +13228,7 @@ snapshots:
       tinyglobby: 0.2.16
       tslib: 2.8.1
       typescript: 6.0.3
-      vite: 7.3.2(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
       watchpack: 2.5.1
     optionalDependencies:
       '@angular/core': link:packages/core
@@ -13301,12 +13236,130 @@ snapshots:
       '@angular/platform-browser': link:packages/platform-browser
       '@angular/platform-server': link:packages/platform-server
       '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      '@angular/ssr': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       istanbul-lib-instrument: 6.0.3
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.7
       lmdb: 3.5.4
-      ng-packagr: 22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.13
+      tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
+      vitest: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@22.0.5(8bdbdc51bc83e7124a1d713156d8314a)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.0
+      '@babel/helper-annotate-as-pure': 7.27.3
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
+      beasties: 0.4.2
+      browserslist: 4.28.4
+      esbuild: 0.28.1
+      https-proxy-agent: 9.0.0
+      jsonc-parser: 3.3.1
+      listr2: 10.2.1
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.4
+      piscina: 5.2.0
+      rollup: 4.60.2
+      sass: 1.99.0
+      semver: 7.7.4
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.16
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.6.7
+      lmdb: 3.5.4
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.16
+      tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
+      vitest: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@22.0.5(b19adae0acb204d2bdaad1790f7c351d)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.0
+      '@babel/helper-annotate-as-pure': 7.27.3
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 6.0.12(@types/node@24.13.2)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
+      beasties: 0.4.2
+      browserslist: 4.28.4
+      esbuild: 0.28.1
+      https-proxy-agent: 9.0.0
+      jsonc-parser: 3.3.1
+      listr2: 10.2.1
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.4
+      piscina: 5.2.0
+      rollup: 4.60.2
+      sass: 1.99.0
+      semver: 7.7.4
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.16
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 7.3.5(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.6.7
+      lmdb: 3.5.4
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       postcss: 8.5.16
       tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
       vitest: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.13.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
@@ -13323,66 +13376,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@22.0.2(732a43a4006b1fa4183e4d4ba6f8645e)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.29.0
-      '@babel/helper-annotate-as-pure': 7.27.3
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))
-      beasties: 0.4.2
-      browserslist: 4.28.4
-      esbuild: 0.28.1
-      https-proxy-agent: 9.0.0
-      jsonc-parser: 3.3.1
-      listr2: 10.2.1
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.4
-      piscina: 5.1.4
-      rollup: 4.60.2
-      sass: 1.99.0
-      semver: 7.7.4
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.16
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 7.3.2(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
-      watchpack: 2.5.1
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      less: 4.6.7
-      lmdb: 3.5.4
-      ng-packagr: 22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.16
-      tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
-      vitest: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -13391,15 +13385,15 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/cli@22.0.2(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(chokidar@5.0.0)':
+  '@angular/cli@22.0.5(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(chokidar@5.0.0)':
     dependencies:
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
-      '@angular-devkit/core': 22.0.2(chokidar@5.0.0)
-      '@angular-devkit/schematics': 22.0.2(chokidar@5.0.0)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
+      '@angular-devkit/core': 22.0.5(chokidar@5.0.0)
+      '@angular-devkit/schematics': 22.0.5(chokidar@5.0.0)
       '@inquirer/prompts': 8.4.2(@types/node@20.19.43)
       '@listr2/prompt-adapter-inquirer': 4.2.3(@inquirer/prompts@8.4.2(@types/node@20.19.43))(@types/node@20.19.43)(listr2@10.2.1)
       '@modelcontextprotocol/sdk': 1.29.0(@cfworker/json-schema@4.1.1)
-      '@schematics/angular': 22.0.2(chokidar@5.0.0)
+      '@schematics/angular': 22.0.5(chokidar@5.0.0)
       '@yarnpkg/lockfile': 1.1.0
       algoliasearch: 5.52.0
       ini: 6.0.0
@@ -13417,15 +13411,15 @@ snapshots:
       - chokidar
       - supports-color
 
-  '@angular/cli@22.0.2(@cfworker/json-schema@4.1.1)(@types/node@24.12.2)(chokidar@5.0.0)':
+  '@angular/cli@22.0.5(@cfworker/json-schema@4.1.1)(@types/node@24.12.2)(chokidar@5.0.0)':
     dependencies:
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
-      '@angular-devkit/core': 22.0.2(chokidar@5.0.0)
-      '@angular-devkit/schematics': 22.0.2(chokidar@5.0.0)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
+      '@angular-devkit/core': 22.0.5(chokidar@5.0.0)
+      '@angular-devkit/schematics': 22.0.5(chokidar@5.0.0)
       '@inquirer/prompts': 8.4.2(@types/node@24.12.2)
       '@listr2/prompt-adapter-inquirer': 4.2.3(@inquirer/prompts@8.4.2(@types/node@24.12.2))(@types/node@24.12.2)(listr2@10.2.1)
       '@modelcontextprotocol/sdk': 1.29.0(@cfworker/json-schema@4.1.1)
-      '@schematics/angular': 22.0.2(chokidar@5.0.0)
+      '@schematics/angular': 22.0.5(chokidar@5.0.0)
       '@yarnpkg/lockfile': 1.1.0
       algoliasearch: 5.52.0
       ini: 6.0.0
@@ -13443,15 +13437,15 @@ snapshots:
       - chokidar
       - supports-color
 
-  '@angular/cli@22.0.2(@cfworker/json-schema@4.1.1)(@types/node@24.13.2)(chokidar@5.0.0)':
+  '@angular/cli@22.0.5(@cfworker/json-schema@4.1.1)(@types/node@24.13.2)(chokidar@5.0.0)':
     dependencies:
-      '@angular-devkit/architect': 0.2200.2(chokidar@5.0.0)
-      '@angular-devkit/core': 22.0.2(chokidar@5.0.0)
-      '@angular-devkit/schematics': 22.0.2(chokidar@5.0.0)
+      '@angular-devkit/architect': 0.2200.5(chokidar@5.0.0)
+      '@angular-devkit/core': 22.0.5(chokidar@5.0.0)
+      '@angular-devkit/schematics': 22.0.5(chokidar@5.0.0)
       '@inquirer/prompts': 8.4.2(@types/node@24.13.2)
       '@listr2/prompt-adapter-inquirer': 4.2.3(@inquirer/prompts@8.4.2(@types/node@24.13.2))(@types/node@24.13.2)(listr2@10.2.1)
       '@modelcontextprotocol/sdk': 1.29.0(@cfworker/json-schema@4.1.1)
-      '@schematics/angular': 22.0.2(chokidar@5.0.0)
+      '@schematics/angular': 22.0.5(chokidar@5.0.0)
       '@yarnpkg/lockfile': 1.1.0
       algoliasearch: 5.52.0
       ini: 6.0.0
@@ -13479,9 +13473,9 @@ snapshots:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/a9e9e17af7a54af8dde66f651bfde671c3a10444': {}
 
-  '@angular/material@22.0.1(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/material@22.0.3(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -13489,12 +13483,12 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/cdd4a4146520ed794b0342d0a86a0e2b31f129e3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7b4897289f0d1f94cb511ddda789129c828b579c(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 2.8.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
+      '@google/genai': 2.10.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
       '@inquirer/prompts': 8.5.2(@types/node@24.13.2)
       '@inquirer/type': 4.0.7(@types/node@24.13.2)
       '@octokit/auth-app': 8.2.0
@@ -13526,7 +13520,7 @@ snapshots:
       ejs: 6.0.1
       encoding: 0.1.13
       fast-glob: 3.3.3
-      firebase: 12.14.0
+      firebase: 12.15.0
       folder-hash: 4.1.3(supports-color@10.2.2)
       jasmine: 6.3.0
       jasmine-core: 6.3.0
@@ -13535,7 +13529,7 @@ snapshots:
       minimatch: 10.2.5
       multimatch: 8.0.0
       nock: 14.0.15
-      semver: 7.8.4
+      semver: 7.8.5
       supports-color: 10.2.2
       tsx: 4.22.4
       typed-graphqlify: 3.1.6
@@ -13549,7 +13543,7 @@ snapshots:
       - '@modelcontextprotocol/sdk'
       - '@react-native-async-storage/async-storage'
 
-  '@angular/ssr@22.0.2(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)':
+  '@angular/ssr@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -15020,9 +15014,9 @@ snapshots:
 
   '@externs/nodejs@1.5.0': {}
 
-  '@firebase/ai@2.13.0(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)':
+  '@firebase/ai@2.13.1(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/app-check-interop-types': 0.3.4
       '@firebase/app-types': 0.9.5
       '@firebase/component': 0.7.3
@@ -15030,11 +15024,11 @@ snapshots:
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/analytics-compat@0.2.28(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)':
+  '@firebase/analytics-compat@0.2.28(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/analytics': 0.10.22(@firebase/app@0.14.13)
+      '@firebase/analytics': 0.10.22(@firebase/app@0.15.0)
       '@firebase/analytics-types': 0.8.4
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15043,20 +15037,20 @@ snapshots:
 
   '@firebase/analytics-types@0.8.4': {}
 
-  '@firebase/analytics@0.10.22(@firebase/app@0.14.13)':
+  '@firebase/analytics@0.10.22(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.14.13)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/app-check-compat@0.4.4(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)':
+  '@firebase/app-check-compat@0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-check': 0.11.4(@firebase/app@0.14.13)
+      '@firebase/app-check': 0.12.0(@firebase/app@0.15.0)
       '@firebase/app-check-types': 0.5.4
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
@@ -15068,17 +15062,17 @@ snapshots:
 
   '@firebase/app-check-types@0.5.4': {}
 
-  '@firebase/app-check@0.11.4(@firebase/app@0.14.13)':
+  '@firebase/app-check@0.12.0(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/app-compat@0.5.13':
+  '@firebase/app-compat@0.5.14':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
@@ -15088,7 +15082,7 @@ snapshots:
     dependencies:
       '@firebase/logger': 0.5.1
 
-  '@firebase/app@0.14.13':
+  '@firebase/app@0.15.0':
     dependencies:
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
@@ -15096,10 +15090,10 @@ snapshots:
       idb: 7.1.1
       tslib: 2.8.1
 
-  '@firebase/auth-compat@0.6.7(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)':
+  '@firebase/auth-compat@0.6.8(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
-      '@firebase/auth': 1.13.2(@firebase/app@0.14.13)
+      '@firebase/app-compat': 0.5.14
+      '@firebase/auth': 1.13.3(@firebase/app@0.15.0)
       '@firebase/auth-types': 0.13.1(@firebase/app-types@0.9.5)(@firebase/util@1.15.1)
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
@@ -15116,9 +15110,9 @@ snapshots:
       '@firebase/app-types': 0.9.5
       '@firebase/util': 1.15.1
 
-  '@firebase/auth@1.13.2(@firebase/app@0.14.13)':
+  '@firebase/auth@1.13.3(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
@@ -15129,9 +15123,9 @@ snapshots:
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/data-connect@0.7.1(@firebase/app@0.14.13)':
+  '@firebase/data-connect@0.7.1(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/auth-interop-types': 0.2.5
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
@@ -15162,11 +15156,11 @@ snapshots:
       faye-websocket: 0.11.4
       tslib: 2.8.1
 
-  '@firebase/firestore-compat@0.4.10(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)':
+  '@firebase/firestore-compat@0.4.11(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
-      '@firebase/firestore': 4.15.0(@firebase/app@0.14.13)
+      '@firebase/firestore': 4.16.0(@firebase/app@0.15.0)
       '@firebase/firestore-types': 3.0.4(@firebase/app-types@0.9.5)(@firebase/util@1.15.1)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15179,22 +15173,23 @@ snapshots:
       '@firebase/app-types': 0.9.5
       '@firebase/util': 1.15.1
 
-  '@firebase/firestore@4.15.0(@firebase/app@0.14.13)':
+  '@firebase/firestore@4.16.0(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       '@firebase/webchannel-wrapper': 1.0.6
       '@grpc/grpc-js': 1.9.16
       '@grpc/proto-loader': 0.7.15
+      re2js: 0.4.3
       tslib: 2.8.1
 
-  '@firebase/functions-compat@0.4.5(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)':
+  '@firebase/functions-compat@0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
-      '@firebase/functions': 0.13.5(@firebase/app@0.14.13)
+      '@firebase/functions': 0.13.5(@firebase/app@0.15.0)
       '@firebase/functions-types': 0.6.4
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15203,9 +15198,9 @@ snapshots:
 
   '@firebase/functions-types@0.6.4': {}
 
-  '@firebase/functions@0.13.5(@firebase/app@0.14.13)':
+  '@firebase/functions@0.13.5(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/app-check-interop-types': 0.3.4
       '@firebase/auth-interop-types': 0.2.5
       '@firebase/component': 0.7.3
@@ -15213,11 +15208,11 @@ snapshots:
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/installations-compat@0.2.22(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)':
+  '@firebase/installations-compat@0.2.22(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.14.13)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
       '@firebase/installations-types': 0.5.4(@firebase/app-types@0.9.5)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15229,9 +15224,9 @@ snapshots:
     dependencies:
       '@firebase/app-types': 0.9.5
 
-  '@firebase/installations@0.6.22(@firebase/app@0.14.13)':
+  '@firebase/installations@0.6.22(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
       idb: 7.1.1
@@ -15241,11 +15236,11 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@firebase/messaging-compat@0.2.27(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)':
+  '@firebase/messaging-compat@0.2.27(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
-      '@firebase/messaging': 0.13.0(@firebase/app@0.14.13)
+      '@firebase/messaging': 0.13.0(@firebase/app@0.15.0)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -15253,22 +15248,22 @@ snapshots:
 
   '@firebase/messaging-interop-types@0.2.5': {}
 
-  '@firebase/messaging@0.13.0(@firebase/app@0.14.13)':
+  '@firebase/messaging@0.13.0(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.14.13)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
       '@firebase/messaging-interop-types': 0.2.5
       '@firebase/util': 1.15.1
       idb: 7.1.1
       tslib: 2.8.1
 
-  '@firebase/performance-compat@0.2.25(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)':
+  '@firebase/performance-compat@0.2.25(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
-      '@firebase/performance': 0.7.12(@firebase/app@0.14.13)
+      '@firebase/performance': 0.7.12(@firebase/app@0.15.0)
       '@firebase/performance-types': 0.2.4
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15277,22 +15272,22 @@ snapshots:
 
   '@firebase/performance-types@0.2.4': {}
 
-  '@firebase/performance@0.7.12(@firebase/app@0.14.13)':
+  '@firebase/performance@0.7.12(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.14.13)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
       web-vitals: 4.2.4
 
-  '@firebase/remote-config-compat@0.2.25(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)':
+  '@firebase/remote-config-compat@0.2.26(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
-      '@firebase/remote-config': 0.8.4(@firebase/app@0.14.13)
+      '@firebase/remote-config': 0.8.5(@firebase/app@0.15.0)
       '@firebase/remote-config-types': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15301,20 +15296,20 @@ snapshots:
 
   '@firebase/remote-config-types@0.5.1': {}
 
-  '@firebase/remote-config@0.8.4(@firebase/app@0.14.13)':
+  '@firebase/remote-config@0.8.5(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.14.13)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/storage-compat@0.4.3(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)':
+  '@firebase/storage-compat@0.4.3(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app-compat': 0.5.13
+      '@firebase/app-compat': 0.5.14
       '@firebase/component': 0.7.3
-      '@firebase/storage': 0.14.3(@firebase/app@0.14.13)
+      '@firebase/storage': 0.14.3(@firebase/app@0.15.0)
       '@firebase/storage-types': 0.8.4(@firebase/app-types@0.9.5)(@firebase/util@1.15.1)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15327,9 +15322,9 @@ snapshots:
       '@firebase/app-types': 0.9.5
       '@firebase/util': 1.15.1
 
-  '@firebase/storage@0.14.3(@firebase/app@0.14.13)':
+  '@firebase/storage@0.14.3(@firebase/app@0.15.0)':
     dependencies:
-      '@firebase/app': 0.14.13
+      '@firebase/app': 0.15.0
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15436,7 +15431,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@2.8.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
+  '@google/genai@2.10.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
     dependencies:
       google-auth-library: 10.9.0(supports-color@10.2.2)
       p-retry: 4.6.2
@@ -16514,8 +16509,8 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 4.4.2
-      zod-to-json-schema: 3.25.2(zod@4.4.2)
+      zod: 4.4.3
+      zod-to-json-schema: 3.25.2(zod@4.4.3)
     optionalDependencies:
       '@cfworker/json-schema': 4.1.1
     transitivePeerDependencies:
@@ -16634,7 +16629,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.3
     optional: true
 
-  '@ngtools/webpack@22.0.2(@angular/compiler-cli@packages+compiler-cli)(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))':
+  '@ngtools/webpack@22.0.5(@angular/compiler-cli@packages+compiler-cli)(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))':
     dependencies:
       '@angular/compiler-cli': link:packages/compiler-cli
       typescript: 6.0.3
@@ -16669,7 +16664,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -16679,7 +16674,7 @@ snapshots:
       lru-cache: 11.5.1
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -16696,7 +16691,7 @@ snapshots:
       hosted-git-info: 9.0.3
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -17237,10 +17232,10 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  '@schematics/angular@22.0.2(chokidar@5.0.0)':
+  '@schematics/angular@22.0.5(chokidar@5.0.0)':
     dependencies:
-      '@angular-devkit/core': 22.0.2(chokidar@5.0.0)
-      '@angular-devkit/schematics': 22.0.2(chokidar@5.0.0)
+      '@angular-devkit/core': 22.0.5(chokidar@5.0.0)
+      '@angular-devkit/schematics': 22.0.5(chokidar@5.0.0)
       jsonc-parser: 3.3.1
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -18001,21 +17996,21 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.2(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.2(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.2(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.2(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
 
   '@vitest/expect@4.1.9':
     dependencies:
@@ -20712,35 +20707,35 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  firebase@12.14.0:
+  firebase@12.15.0:
     dependencies:
-      '@firebase/ai': 2.13.0(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)
-      '@firebase/analytics': 0.10.22(@firebase/app@0.14.13)
-      '@firebase/analytics-compat': 0.2.28(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)
-      '@firebase/app': 0.14.13
-      '@firebase/app-check': 0.11.4(@firebase/app@0.14.13)
-      '@firebase/app-check-compat': 0.4.4(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)
-      '@firebase/app-compat': 0.5.13
+      '@firebase/ai': 2.13.1(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
+      '@firebase/analytics': 0.10.22(@firebase/app@0.15.0)
+      '@firebase/analytics-compat': 0.2.28(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
+      '@firebase/app': 0.15.0
+      '@firebase/app-check': 0.12.0(@firebase/app@0.15.0)
+      '@firebase/app-check-compat': 0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
+      '@firebase/app-compat': 0.5.14
       '@firebase/app-types': 0.9.5
-      '@firebase/auth': 1.13.2(@firebase/app@0.14.13)
-      '@firebase/auth-compat': 0.6.7(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)
-      '@firebase/data-connect': 0.7.1(@firebase/app@0.14.13)
+      '@firebase/auth': 1.13.3(@firebase/app@0.15.0)
+      '@firebase/auth-compat': 0.6.8(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
+      '@firebase/data-connect': 0.7.1(@firebase/app@0.15.0)
       '@firebase/database': 1.1.3
       '@firebase/database-compat': 2.1.4
-      '@firebase/firestore': 4.15.0(@firebase/app@0.14.13)
-      '@firebase/firestore-compat': 0.4.10(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)
-      '@firebase/functions': 0.13.5(@firebase/app@0.14.13)
-      '@firebase/functions-compat': 0.4.5(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)
-      '@firebase/installations': 0.6.22(@firebase/app@0.14.13)
-      '@firebase/installations-compat': 0.2.22(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)
-      '@firebase/messaging': 0.13.0(@firebase/app@0.14.13)
-      '@firebase/messaging-compat': 0.2.27(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)
-      '@firebase/performance': 0.7.12(@firebase/app@0.14.13)
-      '@firebase/performance-compat': 0.2.25(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)
-      '@firebase/remote-config': 0.8.4(@firebase/app@0.14.13)
-      '@firebase/remote-config-compat': 0.2.25(@firebase/app-compat@0.5.13)(@firebase/app@0.14.13)
-      '@firebase/storage': 0.14.3(@firebase/app@0.14.13)
-      '@firebase/storage-compat': 0.4.3(@firebase/app-compat@0.5.13)(@firebase/app-types@0.9.5)(@firebase/app@0.14.13)
+      '@firebase/firestore': 4.16.0(@firebase/app@0.15.0)
+      '@firebase/firestore-compat': 0.4.11(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
+      '@firebase/functions': 0.13.5(@firebase/app@0.15.0)
+      '@firebase/functions-compat': 0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
+      '@firebase/installations-compat': 0.2.22(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
+      '@firebase/messaging': 0.13.0(@firebase/app@0.15.0)
+      '@firebase/messaging-compat': 0.2.27(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
+      '@firebase/performance': 0.7.12(@firebase/app@0.15.0)
+      '@firebase/performance-compat': 0.2.25(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
+      '@firebase/remote-config': 0.8.5(@firebase/app@0.15.0)
+      '@firebase/remote-config-compat': 0.2.26(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
+      '@firebase/storage': 0.14.3(@firebase/app@0.15.0)
+      '@firebase/storage-compat': 0.4.3(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
       '@firebase/util': 1.15.1
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
@@ -20912,7 +20907,7 @@ snapshots:
   gcp-metadata@8.1.2(supports-color@10.2.2):
     dependencies:
       gaxios: 7.1.5(supports-color@10.2.2)
-      google-logging-utils: 1.1.3
+      google-logging-utils: 1.1.4
       json-bigint: 1.0.0
     transitivePeerDependencies:
       - supports-color
@@ -23239,7 +23234,7 @@ snapshots:
 
   netmask@2.1.1: {}
 
-  ng-packagr@22.0.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3):
+  ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': link:packages/compiler-cli
@@ -23274,9 +23269,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 22.0.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
@@ -23337,7 +23332,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       tar: 7.5.19
       tinyglobby: 0.2.16
       undici: 6.27.0
@@ -23403,7 +23398,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -23411,7 +23406,7 @@ snapshots:
     dependencies:
       hosted-git-info: 9.0.3
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       validate-npm-package-name: 7.0.2
 
   npm-packlist@10.0.4:
@@ -23424,7 +23419,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.4
+      semver: 7.8.5
 
   npm-registry-fetch@19.1.1:
     dependencies:
@@ -23869,10 +23864,6 @@ snapshots:
 
   pirates@4.0.7: {}
 
-  piscina@5.1.4:
-    optionalDependencies:
-      '@napi-rs/nice': 1.1.1
-
   piscina@5.2.0:
     optionalDependencies:
       '@napi-rs/nice': 1.1.1
@@ -24242,6 +24233,8 @@ snapshots:
       nan: 2.28.0
       node-gyp: 13.0.0
     optional: true
+
+  re2js@0.4.3: {}
 
   react-is@18.3.1: {}
 
@@ -24702,8 +24695,6 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.7.4: {}
-
-  semver@7.8.4: {}
 
   semver@7.8.5: {}
 
@@ -26047,7 +26038,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
+  vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.4)
@@ -26066,7 +26057,7 @@ snapshots:
       tsx: 4.22.4
       yaml: 2.9.0
 
-  vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
+  vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.4)
@@ -26085,7 +26076,7 @@ snapshots:
       tsx: 4.22.4
       yaml: 2.9.0
 
-  vite@7.3.2(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
+  vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.4)
@@ -26104,7 +26095,7 @@ snapshots:
       tsx: 4.22.4
       yaml: 2.9.0
 
-  vite@7.3.2(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
+  vite@7.3.5(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.4)
@@ -26864,9 +26855,9 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod-to-json-schema@3.25.2(zod@4.4.2):
+  zod-to-json-schema@3.25.2(zod@4.4.3):
     dependencies:
-      zod: 4.4.2
+      zod: 4.4.3
 
   zod@4.4.2: {}
 
