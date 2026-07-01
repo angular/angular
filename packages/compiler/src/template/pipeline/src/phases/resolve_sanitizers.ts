@@ -60,14 +60,12 @@ export function resolveSanitizers(job: CompilationJob): void {
           let sanitizerFn: o.ExternalReference | null = null;
           if (
             Array.isArray(op.securityContext) &&
-            op.securityContext.length === 2 &&
-            op.securityContext.includes(SecurityContext.URL) &&
-            op.securityContext.includes(SecurityContext.RESOURCE_URL)
+            hasCompositeUrlSecurityContext(op.securityContext)
           ) {
-            // When the host element isn't known, some URL attributes (such as "src" and "href") may
-            // be part of multiple different security contexts. In this case we use special
-            // sanitization function and select the actual sanitizer at runtime based on a tag name
-            // that is provided while invoking sanitization function.
+            // When the host element isn't known, attributes such as `href`, `src`, `data`,
+            // `action`, and `codebase` may be part of multiple security contexts. In this case we
+            // use a special sanitization function and select the actual behavior at runtime based
+            // on the concrete host element.
             sanitizerFn = Identifiers.sanitizeUrlOrResourceUrl;
           } else {
             sanitizerFn = sanitizerFns.get(getOnlySecurityContext(op.securityContext)) ?? null;
@@ -81,21 +79,56 @@ export function resolveSanitizers(job: CompilationJob): void {
   }
 }
 
+function hasCompositeUrlSecurityContext(securityContext: SecurityContext[]): boolean {
+  let hasUrlContext = false;
+  let hasResourceUrlContext = false;
+  let hasNoneContext = false;
+
+  for (const context of securityContext) {
+    switch (context) {
+      case SecurityContext.URL:
+        hasUrlContext = true;
+        break;
+      case SecurityContext.RESOURCE_URL:
+        hasResourceUrlContext = true;
+        break;
+      case SecurityContext.NONE:
+        hasNoneContext = true;
+        break;
+      default:
+        return false;
+    }
+  }
+
+  return (
+    ((hasUrlContext || hasResourceUrlContext) && hasNoneContext) ||
+    (hasUrlContext && hasResourceUrlContext)
+  );
+}
+
 /**
- * Asserts that there is only a single security context and returns it.
+ * Asserts that there is only a single non-NONE security context and returns it.
  */
 function getOnlySecurityContext(
   securityContext: SecurityContext | SecurityContext[],
 ): SecurityContext {
-  if (Array.isArray(securityContext)) {
-    if (securityContext.length > 1) {
-      // TODO: What should we do here? TDB just took the first one, but this feels like something we
-      // would want to know about and create a special case for like we did for Url/ResourceUrl. My
-      // guess is that, outside of the Url/ResourceUrl case, this never actually happens. If there
-      // do turn out to be other cases, throwing an error until we can address it feels safer.
-      throw Error(`AssertionError: Ambiguous security context`);
-    }
-    return securityContext[0] || SecurityContext.NONE;
+  if (!Array.isArray(securityContext)) {
+    return securityContext;
   }
-  return securityContext;
+
+  if (securityContext.length < 2) {
+    return securityContext[0] ?? SecurityContext.NONE;
+  }
+
+  const nonNoneSecurityContexts = securityContext.filter(
+    (context) => context !== SecurityContext.NONE,
+  );
+  if (nonNoneSecurityContexts.length > 1) {
+    // TODO: What should we do here? TDB just took the first one, but this feels like something we
+    // would want to know about and create a special case for like we did for Url/ResourceUrl. My
+    // guess is that, outside of the Url/ResourceUrl case, this never actually happens. If there
+    // do turn out to be other cases, throwing an error until we can address it feels safer.
+    throw Error(`AssertionError: Ambiguous security context`);
+  }
+  return nonNoneSecurityContexts[0] ?? SecurityContext.NONE;
 }

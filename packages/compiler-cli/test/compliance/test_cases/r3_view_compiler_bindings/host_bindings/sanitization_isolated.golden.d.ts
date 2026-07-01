@@ -21,4 +21,18 @@ export declare class HostBindingSvgAnimateDir {
     static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingSvgAnimateDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingSvgAnimateDir, "animateMotion[hostBindingSvgAnimateDir]", never, {}, {}, never, never, true, never>;
 }
-
+export declare class HostBindingCustomSrcdocDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingCustomSrcdocDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingCustomSrcdocDir, "safe-srcdoc-carrier", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingCustomSrcDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingCustomSrcDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingCustomSrcDir, "safe-src-carrier", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingCustomDataDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingCustomDataDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingCustomDataDir, "safe-data-carrier", never, {}, {}, never, never, true, never>;
+}

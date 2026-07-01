@@ -10,12 +10,18 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {getDocument} from '../render3/interfaces/document';
-import {TNode, TNodeType} from '../render3/interfaces/node';
+import {TNode, TNodeName, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {ENVIRONMENT} from '../render3/interfaces/view';
 import {getLView, getSelectedIndex, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode} from '../render3/util/view_utils';
+import {
+  MATH_ML_NAMESPACE,
+  MATH_ML_NAMESPACE_URI,
+  SVG_NAMESPACE,
+  SVG_NAMESPACE_URI,
+} from '../render3/namespaces';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {
@@ -28,7 +34,7 @@ import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './by
 import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './dom_security_schema';
+import {checkSecurityContext, SecurityContext} from './dom_security_schema';
 import {_sanitizeUrl} from './url_sanitizer';
 
 /**
@@ -46,7 +52,19 @@ import {_sanitizeUrl} from './url_sanitizer';
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML | string {
+export function ɵɵsanitizeHtml(
+  unsafeHtml: any,
+  tagName?: string,
+  propName?: string,
+): TrustedHTML | string {
+  if (
+    tagName !== undefined &&
+    propName !== undefined &&
+    getSecurityContext(tagName, propName) !== SecurityContext.HTML
+  ) {
+    return unsafeHtml;
+  }
+
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
@@ -213,29 +231,22 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
   return trustedScriptURLFromString(url[0]);
 }
 
-// Define sets outside the function for O(1) lookups and memory efficiency
-const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined> = {
-  'embed': {'src': true},
-  'frame': {'src': true},
-  'iframe': {'src': true},
-  'media': {'src': true},
-
-  'base': {'href': true},
-  'link': {'href': true},
-  'object': {'data': true, 'codebase': true},
-};
-
 /**
  * Detects which sanitizer to use for URL property, based on tag name and prop name.
  *
- * The rules are based on the RESOURCE_URL context config from
+ * The rules are based on the URL and RESOURCE_URL context config from
  * `packages/compiler/src/schema/dom_security_schema.ts`.
- * If tag and prop names don't match Resource URL schema, use URL sanitizer.
+ * If tag and prop names don't match URL or Resource URL schema, no sanitizer is required.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  const isResource = RESOURCE_MAP[tag.toLowerCase()]?.[prop.toLowerCase()] === true;
-
-  return isResource ? ɵɵsanitizeResourceUrl : ɵɵsanitizeUrl;
+  switch (getSecurityContext(tag, prop)) {
+    case SecurityContext.RESOURCE_URL:
+      return ɵɵsanitizeResourceUrl;
+    case SecurityContext.URL:
+      return ɵɵsanitizeUrl;
+    default:
+      return null;
+  }
 }
 
 /**
@@ -254,7 +265,44 @@ export function getUrlSanitizer(tag: string, prop: string) {
  * @codeGenApi
  */
 export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
-  return getUrlSanitizer(tag, prop)(unsafeUrl);
+  const sanitizer = getUrlSanitizer(tag, prop);
+  return sanitizer === null ? unsafeUrl : sanitizer(unsafeUrl);
+}
+
+function getSecurityContext(tagName: string, propName: string): SecurityContext {
+  const resolvedElement = resolveElement(tagName);
+  return checkSecurityContext(resolvedElement.tagName, propName, resolvedElement.namespace);
+}
+
+function resolveElement(tagName: string): {tagName: string; namespace: string | null | undefined} {
+  const index = getSelectedIndex();
+  const tNode = index === -1 ? null : getSelectedTNode();
+  let namespace = tNode?.namespace;
+
+  if (tagName === TNodeName.DynamicHost && tNode !== null && tNode.type & TNodeType.Element) {
+    const element = getNativeByTNode(tNode, getLView()) as RElement;
+    if (element.tagName) {
+      tagName = element.tagName;
+    }
+    if (namespace == null) {
+      namespace = namespaceUriToKey(
+        (element as RElement & {namespaceURI?: string | null}).namespaceURI,
+      );
+    }
+  }
+
+  return {tagName: tagName.toLowerCase(), namespace};
+}
+
+function namespaceUriToKey(namespaceUri: string | null | undefined): string | null {
+  switch (namespaceUri?.toLowerCase()) {
+    case SVG_NAMESPACE_URI:
+      return SVG_NAMESPACE;
+    case MATH_ML_NAMESPACE_URI:
+      return MATH_ML_NAMESPACE;
+    default:
+      return null;
+  }
 }
 
 export function validateAgainstEventProperties(name: string) {
@@ -315,19 +363,30 @@ const SECURITY_SENSITIVE_ELEMENTS: Record<
  * @param attributeName The name of the attribute.
  */
 export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
-  const lowerCaseTagName = tagName.toLowerCase();
-  const lowerCaseAttrName = attributeName.toLowerCase();
-
   const index = getSelectedIndex();
   const tNode: TNode | null = index === -1 ? null : getSelectedTNode();
   if (tNode && tNode.type !== TNodeType.Element) {
     return value;
   }
 
+  let namespace = tNode?.namespace;
+  if (tagName === TNodeName.DynamicHost && tNode !== null) {
+    const element = getNativeByTNode(tNode, getLView()) as RElement;
+    tagName = (element.tagName || tagName).toLowerCase();
+    if (namespace == null) {
+      namespace = namespaceUriToKey(
+        (element as RElement & {namespaceURI?: string | null}).namespaceURI,
+      );
+    }
+  }
+
+  const lowerCaseTagName = tagName.toLowerCase();
+  const lowerCaseAttrName = attributeName.toLowerCase();
+
   // Leverage tNode.namespace if active, otherwise check both namespaced and base variants.
   const fullTagName =
-    lowerCaseTagName[0] !== ':' && tNode?.namespace
-      ? `:${tNode.namespace}:${lowerCaseTagName}`
+    lowerCaseTagName[0] !== ':' && namespace
+      ? `:${namespace}:${lowerCaseTagName}`
       : lowerCaseTagName;
 
   const validationConfig = SECURITY_SENSITIVE_ELEMENTS[fullTagName]?.[lowerCaseAttrName];
