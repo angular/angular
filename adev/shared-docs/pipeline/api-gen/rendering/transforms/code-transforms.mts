@@ -507,7 +507,7 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
     const implementsStr =
       entry.implements.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
 
-    const signature = `${entry.name}${generics}${extendsStr}${implementsStr}`;
+    const signature = `${entry.name}${generics}${extendsStr}${implementsStr}`.replaceAll('\n', '');
     if (isClassEntry(entry)) {
       const abstractPrefix = entry.isAbstract ? 'abstract ' : '';
       appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${signature} {`, `\n}`);
