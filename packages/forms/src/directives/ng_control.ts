@@ -9,14 +9,14 @@
 import {
   ChangeDetectorRef,
   DestroyRef,
+  Provider,
+  Signal,
   computed,
   effect,
-  type Injector,
-  type Renderer2,
-  Signal,
   inject,
   type ɵControlDirectiveHost as ControlDirectiveHost,
-  Provider,
+  type Injector,
+  type Renderer2,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -28,8 +28,8 @@ import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {isNativeFormElement, setNativeDomProperty, type NativeFormControl} from './native';
 import {ReactiveValidationError} from './reactive_validation_error';
+import {ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION, selectValueAccessor} from './shared';
 import {RequiredValidator, ValidationErrors, ValidatorFn} from './validators';
-import {selectValueAccessor, ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION} from './shared';
 
 type ParseError = {readonly kind: string};
 
@@ -166,6 +166,15 @@ export abstract class NgControl extends AbstractControlDirective {
     this.injector = injector;
     this.renderer = renderer;
     this.rawValueAccessors = rawValueAccessors;
+    // Keep valueAccessor available during directive construction on the same element.
+    if (rawValueAccessors?.length) {
+      // try {
+      this.valueAccessor = this.selectedValueAccessor;
+      // } catch {
+      // Ignore errors from multiple CVAs or missing inputs during construction.
+      // Real validation and error reporting is deferred to ngOnChanges / ngControlCreate.
+      // }
+    }
     this.injector?.get(DestroyRef)?.onDestroy(() => {
       this.removeParseErrorsValidator(this.control);
       this.subscription?.unsubscribe();

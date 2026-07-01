@@ -33,6 +33,7 @@ import {
   NG_ASYNC_VALIDATORS,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
+  NgControl,
   NgForm,
   NgModel,
   Validator,
@@ -81,6 +82,14 @@ describe('template-driven forms integration tests', () => {
       const form = fixture.debugElement.children[0].injector.get(NgForm);
       expect(form.value).toEqual({name: 'Nancy'});
       expect(form.valid).toBe(false);
+    });
+
+    it('should throw an error with the correct control path if multiple value accessors are present', async () => {
+      TestBed.configureTestingModule({imports: [NgModelMultipleCvaTestComp]});
+      const fixture = TestBed.createComponent(NgModelMultipleCvaTestComp);
+
+      // It successfully delays throwing to ngOnChanges, allowing the name to be fully populated.
+      expect(() => fixture.detectChanges()).toThrowError(/name: 'login'/);
     });
 
     it('should report properties which are written outside of template bindings', async () => {
@@ -3123,4 +3132,49 @@ class NgModelNoMinMaxValidator {
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
+}
+
+@Directive({
+  selector: '[myCustomCvaNgModel]',
+  standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MyCustomCvaNgModel),
+      multi: true,
+    },
+  ],
+})
+class MyCustomCvaNgModel implements ControlValueAccessor {
+  writeValue() {}
+  registerOnChange() {}
+  registerOnTouched() {}
+}
+
+@Directive({
+  selector: '[myCustomCva2NgModel]',
+  standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MyCustomCva2NgModel),
+      multi: true,
+    },
+  ],
+})
+class MyCustomCva2NgModel implements ControlValueAccessor {
+  writeValue() {}
+  registerOnChange() {}
+  registerOnTouched() {}
+}
+
+@Component({
+  selector: 'ng-model-multiple-cva-test-comp',
+  template:
+    '<input type="text" [(ngModel)]="val" name="login" myCustomCvaNgModel myCustomCva2NgModel>',
+  standalone: true,
+  imports: [FormsModule, MyCustomCvaNgModel, MyCustomCva2NgModel],
+})
+class NgModelMultipleCvaTestComp {
+  val = 'test';
 }
