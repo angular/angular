@@ -39,7 +39,7 @@ The `createCustomElement()` function converts a component into a class that can 
 After you register your configured class with the browser's custom-element registry, use the new element just like a built-in HTML element in content that you add directly into the DOM:
 
 ```html
-<my-popup message="Use Angular!"></my-popup>
+<my-popup message="Use Angular!" />
 ```
 
 When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM.
