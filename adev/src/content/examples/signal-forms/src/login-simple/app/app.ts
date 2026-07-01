@@ -19,4 +19,14 @@ export class App {
   });
 
   loginForm = form(this.loginModel);
+
+  onSubmit(event: Event) {
+    event.preventDefault();
+
+    // Perform login logic here
+    const credentials = this.loginModel();
+    console.log('Logging in with:', credentials);
+
+    // e.g., await this.authService.login(credentials);
+  }
 }
