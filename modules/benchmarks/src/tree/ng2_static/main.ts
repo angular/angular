@@ -8,7 +8,7 @@
 
 import '@angular/compiler';
 
-import {ApplicationRef, enableProdMode} from '@angular/core';
+import {ApplicationRef, dangerousAllowJitInProduction, enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
 import {bindAction, profile} from '../../util';
@@ -32,6 +32,7 @@ function createDom() {
 function noop() {}
 
 function init() {
+  dangerousAllowJitInProduction();
   initTreeUtils();
   enableProdMode();
 
