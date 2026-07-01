@@ -18,7 +18,7 @@ You can use interceptors to implement a variety of common patterns, such as:
 - Customizing the parsing of responses.
 - Measuring server response times and logging them.
 - Driving UI elements such as a loading spinner while network operations are in progress.
-- Collecting and batch requests made within a certain timeframe.
+- Collecting and batching requests made within a certain timeframe.
 - Automatically failing requests after a configurable deadline or timeout.
 - Regularly polling the server and refreshing results.
 
