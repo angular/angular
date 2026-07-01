@@ -49,6 +49,13 @@ describe('Number pipes', () => {
         expect(pipe.transform('1.1234')).toEqual('1.123');
       });
 
+      it('should support "Infinity" and "-Infinity" strings, same as the numeric values', () => {
+        expect(pipe.transform('Infinity')).toEqual(pipe.transform(Infinity));
+        expect(pipe.transform('-Infinity')).toEqual(pipe.transform(-Infinity));
+        // Also covers any string both `Number()` and `parseFloat()` resolve to Infinity.
+        expect(pipe.transform('1e500')).toEqual(pipe.transform(Infinity));
+      });
+
       it('should return null for NaN', () => {
         expect(pipe.transform(Number.NaN)).toEqual(null);
       });
@@ -109,6 +116,11 @@ describe('Number pipes', () => {
         expect(pipe.transform(1.234)).toEqual('123%');
         expect(pipe.transform(1.236)).toEqual('124%');
         expect(pipe.transform(12.3456, '0.0-10')).toEqual('1,234.56%');
+      });
+
+      it('should support "Infinity" and "-Infinity" strings, same as the numeric values', () => {
+        expect(pipe.transform('Infinity')).toEqual(pipe.transform(Infinity));
+        expect(pipe.transform('-Infinity')).toEqual(pipe.transform(-Infinity));
       });
 
       it('should return null for NaN', () => {
@@ -198,6 +210,11 @@ describe('Number pipes', () => {
         expect(pipe.transform(5.1234, 'unexisting_ISO_code', 'Custom name')).toEqual(
           'Custom name5.12',
         );
+      });
+
+      it('should support "Infinity" and "-Infinity" strings, same as the numeric values', () => {
+        expect(pipe.transform('Infinity')).toEqual(pipe.transform(Infinity));
+        expect(pipe.transform('-Infinity')).toEqual(pipe.transform(-Infinity));
       });
 
       it('should return null for NaN', () => {

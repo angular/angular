@@ -323,8 +323,16 @@ function isValue(value: number | string | null | undefined): value is number | s
  */
 function strToNumber(value: number | string): number {
   // Convert strings to numbers
-  if (typeof value === 'string' && !isNaN(Number(value) - parseFloat(value))) {
-    return Number(value);
+  if (typeof value === 'string') {
+    const num = Number(value);
+    const parsed = parseFloat(value);
+    // `Number()` and `parseFloat()` normally agree on a string's numeric value, which is what
+    // the `isNaN` check below verifies. The exception is `Infinity`/`-Infinity`: both parsers
+    // resolve to the same infinite value, but `Infinity - Infinity` is `NaN`, so that case has
+    // to be handled separately from the subtraction check.
+    if (!isNaN(num - parsed) || (num === parsed && !isFinite(num))) {
+      return num;
+    }
   }
   if (typeof value !== 'number') {
     throw new RuntimeError(
