@@ -16,7 +16,7 @@ userId = input.required<string>();
 user = httpResource(() => `/api/user/${userId()}`); // A reactive function as argument
 ```
 
-`httpResource` is reactive, meaning that whenever one of the signal it depends on changes (like `userId`), the resource will emit a new http request.
+`httpResource` is reactive, meaning that whenever one of the signals it depends on changes (like `userId`), the resource will emit a new http request.
 If a request is already pending, the resource cancels the outstanding request before issuing a new one.
 
 HELPFUL: `httpResource` differs from the `HttpClient` as it initiates the request _eagerly_. In contrast, the `HttpClient` only initiates requests upon subscription to the returned `Observable`.
@@ -54,7 +54,7 @@ The signals of the `httpResource` can be used in the template to control which e
 
 ```angular-html
 @if(user.hasValue()) {
-  <user-details [user]="user.value()">
+  <user-details [user]="user.value()" />
 } @else if (user.error()) {
   <div>Could not load user information</div>
 } @else if (user.isLoading()) {
@@ -66,7 +66,7 @@ HELPFUL: Reading the `value` signal on a `resource` that is in error state throw
 
 ### Response types
 
-By default, `httpResource` returns and parses the response as JSON. However, you can specify alternate return with additional functions on `httpResource`:
+By default, `httpResource` returns and parses the response as JSON. However, you can specify an alternate return type with additional functions on `httpResource`:
 
 ```ts
 httpResource.text(() => ({ … })); // returns a string in value()

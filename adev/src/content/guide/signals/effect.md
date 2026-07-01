@@ -21,7 +21,7 @@ Effects should be the last API you reach for. Always prefer `computed()` for der
 TIP: There are no situations where effect is good, only situations where it is appropriate.
 
 - Logging signal values, either for analytics or as a debugging tool.
-- Keeping data in sync with different kind of storages: `window.localStorage`, session storage, cookies etc.
+- Keeping data in sync with different kinds of storage: `window.localStorage`, session storage, cookies, etc.
 - Adding custom DOM behavior that can't be expressed with template syntax.
 - Performing custom rendering to a `<canvas>` element, charting library, or other third party UI library.
 
