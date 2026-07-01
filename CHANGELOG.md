@@ -1,3 +1,25 @@
+<a name="22.0.5"></a>
+# 22.0.5 (2026-07-01)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eb8fb9fe58](https://github.com/angular/angular/commit/eb8fb9fe58687fe0f341dc3beb5d0fb469605179) | fix | use Object.hasOwn in I18nSelectPipe to handle null-prototype and shadowed mappings |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [baf09a9939](https://github.com/angular/angular/commit/baf09a993945d3209f32cbe7b163a451409d31bb) | fix | include toSignal in debugName transform |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e598dc843f](https://github.com/angular/angular/commit/e598dc843fb6d1f5a70f59448478c9d04bb28845) | fix | improve input writes migration in best effort mode |
+| [ced0180b06](https://github.com/angular/angular/commit/ced0180b0641597c1af78471e82cc30d42117c88) | fix | reject dynamic script host elements |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca13b42e7c](https://github.com/angular/angular/commit/ca13b42e7c459de8419d35b5c1bf6da4b0512476) | fix | fix malformed jsdoc comment for RouterLinkWithHref export |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.0-next.3"></a>
 # 22.1.0-next.3 (2026-06-26)
 ### migrations
