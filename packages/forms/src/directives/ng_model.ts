@@ -38,6 +38,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {NG_CONTROL_INTEGRATION_PROVIDER, NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
+import {FormGroupDirective} from './reactive_directives/form_group_directive';
 import {
   CALL_SET_DISABLED_STATE,
   controlPath,
@@ -49,6 +50,7 @@ import {
   formGroupNameException,
   missingNameException,
   modelParentException,
+  ngModelInChildComponentWarning,
 } from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
@@ -182,6 +184,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   /** @internal */
   _registered = false;
 
+  private _ngModelInjector?: Injector;
+
   /**
    * Internal reference to the view model value.
    * @docs-private
@@ -249,12 +253,33 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   ) {
     super(injector, renderer, valueAccessors);
     this._parent = parent;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      this._ngModelInjector = injector;
+    }
+
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
   }
 
   /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
+    if (
+      !this._registered &&
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      this._parent === null &&
+      !this.options?.standalone
+    ) {
+      const parentContainer = this._ngModelInjector?.get(ControlContainer, null);
+      if (parentContainer != null) {
+        const typeName =
+          parentContainer instanceof NgForm
+            ? 'NgForm'
+            : parentContainer instanceof FormGroupDirective
+              ? 'FormGroupDirective'
+              : 'ControlContainer';
+        console.warn(ngModelInChildComponentWarning(typeName));
+      }
+    }
     this._checkForErrors();
     if (!this._registered || 'name' in changes) {
       if (this._registered) {
