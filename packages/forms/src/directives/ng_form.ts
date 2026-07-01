@@ -227,12 +227,14 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      (dir as Writable<NgModel>).control = <FormControl>(
-        container.registerControl(dir.name, dir.control)
-      );
-      dir._setupWithForm(this.callSetDisabledState);
-      dir.control.updateValueAndValidity({emitEvent: false});
-      this._directives.add(dir);
+      if (container) {
+        (dir as Writable<NgModel>).control = <FormControl>(
+          container.registerControl(dir.name, dir.control)
+        );
+        dir._setupWithForm(this.callSetDisabledState);
+        dir.control.updateValueAndValidity({emitEvent: false});
+        this._directives.add(dir);
+      }
     });
   }
 
@@ -271,10 +273,12 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      const group = new FormGroup({});
-      setUpFormContainer(group, dir);
-      container.registerControl(dir.name, group);
-      group.updateValueAndValidity({emitEvent: false});
+      if (container) {
+        const group = new FormGroup({});
+        setUpFormContainer(group, dir);
+        container.registerControl(dir.name, group);
+        group.updateValueAndValidity({emitEvent: false});
+      }
     });
   }
 
@@ -366,7 +370,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     }
   }
 
-  private _findContainer(path: string[]): FormGroup {
+  private _findContainer(path: string[]): FormGroup | null {
     path.pop();
     return path.length ? <FormGroup>this.form.get(path) : this.form;
   }
