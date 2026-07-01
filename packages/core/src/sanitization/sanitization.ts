@@ -16,6 +16,12 @@ import {ENVIRONMENT} from '../render3/interfaces/view';
 import {getLView, getSelectedIndex, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode} from '../render3/util/view_utils';
+import {
+  MATH_ML_NAMESPACE,
+  MATH_ML_NAMESPACE_URI,
+  SVG_NAMESPACE,
+  SVG_NAMESPACE_URI,
+} from '../render3/namespaces';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {
@@ -28,7 +34,7 @@ import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './by
 import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './dom_security_schema';
+import {checkSecurityContext, SecurityContext} from './dom_security_schema';
 import {_sanitizeUrl} from './url_sanitizer';
 
 /**
@@ -225,53 +231,6 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
   return trustedScriptURLFromString(url[0]);
 }
 
-type SecurityContextMap = Record<string, Record<string, true | undefined> | undefined>;
-type NamespacedSecurityContextMap = Record<string, SecurityContextMap | undefined>;
-
-const NO_NAMESPACE = '';
-const MATCH_ALL_ELEMENTS = '*';
-const SVG_NAMESPACE = 'svg';
-const MATH_ML_NAMESPACE = 'math';
-const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
-const MATH_ML_NAMESPACE_URI = 'http://www.w3.org/1998/math/mathml';
-
-const HTML_MAP: NamespacedSecurityContextMap = {
-  [NO_NAMESPACE]: {
-    [MATCH_ALL_ELEMENTS]: {'innerhtml': true, 'outerhtml': true},
-    'iframe': {'srcdoc': true},
-  },
-};
-
-const URL_MAP: NamespacedSecurityContextMap = {
-  [NO_NAMESPACE]: {
-    [MATCH_ALL_ELEMENTS]: {'formaction': true},
-    'area': {'href': true},
-    'a': {'href': true, 'xlink:href': true},
-    'form': {'action': true},
-    'img': {'src': true},
-    'video': {'src': true},
-  },
-  [MATH_ML_NAMESPACE]: {
-    [MATCH_ALL_ELEMENTS]: {'href': true, 'xlink:href': true},
-  },
-  [SVG_NAMESPACE]: {
-    'a': {'href': true, 'xlink:href': true},
-  },
-};
-
-const RESOURCE_MAP: NamespacedSecurityContextMap = {
-  [NO_NAMESPACE]: {
-    'embed': {'src': true},
-    'frame': {'src': true},
-    'iframe': {'src': true},
-    'media': {'src': true},
-
-    'base': {'href': true},
-    'link': {'href': true},
-    'object': {'data': true, 'codebase': true},
-  },
-};
-
 /**
  * Detects which sanitizer to use for URL property, based on tag name and prop name.
  *
@@ -279,8 +238,8 @@ const RESOURCE_MAP: NamespacedSecurityContextMap = {
  * `packages/compiler/src/schema/dom_security_schema.ts`.
  * If tag and prop names don't match URL or Resource URL schema, no sanitizer is required.
  */
-export function getUrlSanitizer(tag: string, prop: string, elementNamespace?: string | null) {
-  switch (getSecurityContext(tag, prop, elementNamespace)) {
+export function getUrlSanitizer(tag: string, prop: string) {
+  switch (getSecurityContext(tag, prop)) {
     case SecurityContext.RESOURCE_URL:
       return ɵɵsanitizeResourceUrl;
     case SecurityContext.URL:
@@ -310,90 +269,35 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
   return sanitizer === null ? unsafeUrl : sanitizer(unsafeUrl);
 }
 
-function getSecurityContext(
-  tagName: string,
-  propName: string,
-  elementNamespace?: string | null,
-): SecurityContext {
-  const resolvedElement = resolveElement(tagName, elementNamespace);
-  tagName = resolvedElement.tagName.toLowerCase();
-  propName = propName.toLowerCase();
-  const namespace = normalizeElementNamespace(resolvedElement.namespace);
-
-  if (namespace) {
-    const namespaceContext = getSecurityContextForNamespace(tagName, propName, namespace);
-    if (namespaceContext !== undefined) {
-      return namespaceContext;
-    }
-  }
-
-  return getSecurityContextForNamespace(tagName, propName, NO_NAMESPACE) ?? SecurityContext.NONE;
+function getSecurityContext(tagName: string, propName: string): SecurityContext {
+  const resolvedElement = resolveElement(tagName);
+  return checkSecurityContext(resolvedElement.tagName, propName, resolvedElement.namespace);
 }
 
-function getSecurityContextForNamespace(
-  tagName: string,
-  propName: string,
-  namespace: string,
-): SecurityContext | undefined {
-  if (hasSecurityContext(RESOURCE_MAP[namespace], tagName, propName)) {
-    return SecurityContext.RESOURCE_URL;
-  }
-
-  if (hasSecurityContext(URL_MAP[namespace], tagName, propName)) {
-    return SecurityContext.URL;
-  }
-
-  if (hasSecurityContext(HTML_MAP[namespace], tagName, propName)) {
-    return SecurityContext.HTML;
-  }
-
-  return undefined;
-}
-
-function hasSecurityContext(
-  map: SecurityContextMap | undefined,
-  tagName: string,
-  propName: string,
-): boolean {
-  return map?.[tagName]?.[propName] === true || map?.[MATCH_ALL_ELEMENTS]?.[propName] === true;
-}
-
-function resolveElement(
-  tagName: string,
-  elementNamespace?: string | null,
-): {tagName: string; namespace: string | null | undefined} {
-  let namespace = elementNamespace;
+function resolveElement(tagName: string): {tagName: string; namespace: string | null | undefined} {
   const index = getSelectedIndex();
   const tNode = index === -1 ? null : getSelectedTNode();
-
-  if (namespace === undefined) {
-    namespace = tNode?.namespace;
-  }
+  let namespace = tNode?.namespace;
 
   if (tagName === TNodeName.DynamicHost && tNode !== null && tNode.type & TNodeType.Element) {
     const element = getNativeByTNode(tNode, getLView()) as RElement;
     if (element.tagName) {
-      tagName = element.tagName.toLowerCase();
+      tagName = element.tagName;
     }
     if (namespace == null) {
-      namespace = (element as RElement & {namespaceURI?: string | null}).namespaceURI;
+      namespace = namespaceUriToKey(
+        (element as RElement & {namespaceURI?: string | null}).namespaceURI,
+      );
     }
   }
 
-  return {tagName, namespace};
+  return {tagName: tagName.toLowerCase(), namespace};
 }
 
-function normalizeElementNamespace(namespace: string | null | undefined): string | null {
-  if (!namespace) {
-    return null;
-  }
-
-  const lowerNamespace = namespace.toLowerCase();
-  switch (lowerNamespace) {
-    case SVG_NAMESPACE:
+function namespaceUriToKey(namespaceUri: string | null | undefined): string | null {
+  switch (namespaceUri?.toLowerCase()) {
     case SVG_NAMESPACE_URI:
       return SVG_NAMESPACE;
-    case MATH_ML_NAMESPACE:
     case MATH_ML_NAMESPACE_URI:
       return MATH_ML_NAMESPACE;
     default:
@@ -464,8 +368,15 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
     return value;
   }
 
+  let namespace = tNode?.namespace;
   if (tagName === TNodeName.DynamicHost && tNode !== null) {
-    tagName = ((getNativeByTNode(tNode, getLView()) as RElement).tagName || tagName).toLowerCase();
+    const element = getNativeByTNode(tNode, getLView()) as RElement;
+    tagName = (element.tagName || tagName).toLowerCase();
+    if (namespace == null) {
+      namespace = namespaceUriToKey(
+        (element as RElement & {namespaceURI?: string | null}).namespaceURI,
+      );
+    }
   }
 
   const lowerCaseTagName = tagName.toLowerCase();
@@ -473,8 +384,8 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
 
   // Leverage tNode.namespace if active, otherwise check both namespaced and base variants.
   const fullTagName =
-    lowerCaseTagName[0] !== ':' && tNode?.namespace
-      ? `:${tNode.namespace}:${lowerCaseTagName}`
+    lowerCaseTagName[0] !== ':' && namespace
+      ? `:${namespace}:${lowerCaseTagName}`
       : lowerCaseTagName;
 
   const validationConfig = SECURITY_SENSITIVE_ELEMENTS[fullTagName]?.[lowerCaseAttrName];
