@@ -433,6 +433,161 @@ export function routeReuseIntegrationSuite() {
       expect(createdComps).toEqual(['parent', 'child', 'child']);
     });
 
+    it('should render child routes on reused list when outer shell is destroyed and recreated', async () => {
+      // Regression test for https://github.com/angular/angular/issues/57285
+      //
+      // EventListCmp (path '') is stored by the strategy; EventsShellCmp (path 'events') is not,
+      // so the shell is destroyed and recreated on every navigation. When the shell comes back,
+      // its fresh router-outlet creates a new OutletContext for the list, and onOutletReAttached()
+      // loads the saved child contexts into that new context's .children.
+      //
+      // The problem was that the router-outlet *inside* EventListCmp (which stayed alive while
+      // detached) was injected with the *original* ChildrenOutletContexts at component creation
+      // time. onOutletDeactivated() used to replace that instance's Map with an empty one, so
+      // when the inner outlet later activated EventDetailCmp it got a fresh, empty context. The
+      // edit outlet inside EventDetailCmp registered itself there, but the router traversed the
+      // restored context tree (a different object) and never found an outlet to render into —
+      // so EventEditCmp was silently dropped.
+
+      @Component({
+        selector: 'root',
+        template: '<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class Root {}
+
+      // Outer shell — NOT reusable. Destroyed and recreated on every navigation away from /events.
+      @Component({
+        selector: 'events-shell-cmp',
+        template: 'events-shell<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class EventsShellCmp {}
+
+      // List — reusable (stored by strategy). Contains its own router-outlet for detail/edit.
+      @Component({
+        selector: 'event-list-cmp',
+        template: 'event-list<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class EventListCmp {}
+
+      @Component({
+        selector: 'event-detail-cmp',
+        template: 'event-detail<router-outlet></router-outlet>',
+        standalone: false,
+      })
+      class EventDetailCmp {}
+
+      @Component({
+        selector: 'event-edit-cmp',
+        template: 'event-edit',
+        standalone: false,
+      })
+      class EventEditCmp {}
+
+      @Component({
+        selector: 'chats-cmp',
+        template: 'chats',
+        standalone: false,
+      })
+      class ChatsCmp {}
+
+      // Stores routes whose routeConfig carries `data.reusable: true`, keyed by routeConfig ref.
+      class ReusableStrategy implements RouteReuseStrategy {
+        private handles = new Map<object, DetachedRouteHandle>();
+
+        shouldDetach(route: ActivatedRouteSnapshot): boolean {
+          return !!route.routeConfig?.data?.['reusable'];
+        }
+        store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
+          if (route.routeConfig && handle) {
+            this.handles.set(route.routeConfig, handle);
+          } else if (route.routeConfig) {
+            this.handles.delete(route.routeConfig);
+          }
+        }
+        shouldAttach(route: ActivatedRouteSnapshot): boolean {
+          return !!(route.routeConfig && this.handles.has(route.routeConfig));
+        }
+        retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+          return (route.routeConfig && this.handles.get(route.routeConfig)) ?? null;
+        }
+        shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+          return future.routeConfig === curr.routeConfig;
+        }
+      }
+
+      @NgModule({
+        declarations: [Root, EventsShellCmp, EventListCmp, EventDetailCmp, EventEditCmp, ChatsCmp],
+        imports: [...ROUTER_DIRECTIVES],
+        providers: [
+          {provide: RouteReuseStrategy, useClass: ReusableStrategy},
+          provideRouter([
+            {
+              path: 'events',
+              component: EventsShellCmp, // not reusable — destroyed on every navigation away
+              children: [
+                {
+                  path: '',
+                  data: {reusable: true},
+                  component: EventListCmp, // reusable — stored and reattached
+                  children: [
+                    {
+                      path: ':id',
+                      data: {reusable: true},
+                      component: EventDetailCmp, // reusable
+                      children: [{path: 'edit', component: EventEditCmp}],
+                    },
+                  ],
+                },
+              ],
+            },
+            {path: 'chats', component: ChatsCmp},
+          ]),
+        ],
+      })
+      class TestModule {}
+
+      TestBed.configureTestingModule({imports: [TestModule]});
+      const fixture = await createRoot(TestBed.inject(Router), Root);
+      const router = TestBed.inject(Router);
+
+      // Start somewhere else so EventListCmp has never been created yet.
+      router.navigateByUrl('/chats');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(ChatsCmp))).toBeTruthy();
+
+      // Visit /events — EventsShellCmp and EventListCmp are both created fresh.
+      router.navigateByUrl('/events');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventListCmp))).toBeTruthy();
+
+      // Leave — EventListCmp is stored; EventsShellCmp is destroyed (not reusable).
+      router.navigateByUrl('/chats');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventListCmp))).toBeNull();
+
+      // Return to /events — EventsShellCmp is recreated fresh and EventListCmp is reattached.
+      // This is where context tree identity diverges: the new shell's outlet creates a new
+      // OutletContext, but EventListCmp's inner outlet still holds the original one.
+      router.navigateByUrl('/events');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventListCmp))).toBeTruthy();
+
+      // Drill into a detail — EventDetailCmp must activate inside EventListCmp's outlet.
+      router.navigateByUrl('/events/1');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventDetailCmp))).toBeTruthy();
+
+      // Navigate to the edit child — this is where the bug manifested: EventEditCmp was
+      // silently dropped because the router's context tree and the outlet's context tree
+      // had diverged and the outlet was never found.
+      router.navigateByUrl('/events/1/edit');
+      await advance(fixture);
+      expect(fixture.debugElement.query(By.directive(EventEditCmp))).toBeTruthy();
+    });
+
     it('should not try to detach the outlet of a route that does not get to attach a component', async () => {
       @Component({
         selector: 'root',
