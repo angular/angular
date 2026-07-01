@@ -125,28 +125,24 @@ describe('sanitization', () => {
 
     for (const [prop, nsSchema] of Object.entries(schema)) {
       for (const [ns, tagSchema] of Object.entries(nsSchema)) {
+        // `getUrlSanitizer` resolves namespaces from the selected runtime `TNode`, so direct
+        // unit tests only cover non-namespaced schema entries. Namespaced host bindings are
+        // covered by acceptance tests.
+        if (ns !== '') {
+          continue;
+        }
+
         for (const [tag, context] of Object.entries(tagSchema)) {
           if (context !== SecurityContext.URL && context !== SecurityContext.RESOURCE_URL) {
             continue;
           }
 
-          expect(getUrlSanitizer(tag, prop, ns))
+          expect(getUrlSanitizer(tag, prop))
             .withContext(`ns: ${ns}, tag: ${tag}, prop: ${prop}, context: ${context}`)
             .toEqual(sanitizerNameByContext.get(context)!);
         }
       }
     }
-  });
-
-  it('should select URL sanitizers for namespaced URL props', () => {
-    expect(getUrlSanitizer('base', 'href', 'math')).toEqual(ɵɵsanitizeUrl);
-    expect(getUrlSanitizer('link', 'href', 'math')).toEqual(ɵɵsanitizeUrl);
-    expect(getUrlSanitizer('unknown', 'xlink:href', 'math')).toEqual(ɵɵsanitizeUrl);
-
-    expect(getUrlSanitizer('a', 'href', 'svg')).toEqual(ɵɵsanitizeUrl);
-    expect(getUrlSanitizer('a', 'xlink:href', 'svg')).toEqual(ɵɵsanitizeUrl);
-    expect(getUrlSanitizer('rect', 'href', 'svg')).toBeNull();
-    expect(getUrlSanitizer('rect', 'xlink:href', 'svg')).toBeNull();
   });
 
   it('should select URL sanitizer case-insensitively', () => {
@@ -156,8 +152,6 @@ describe('sanitization', () => {
 
     expect(getUrlSanitizer('DiV', 'DaTa')).toBeNull();
     expect(getUrlSanitizer('A', 'HREF')).toEqual(ɵɵsanitizeUrl);
-    expect(getUrlSanitizer('BASE', 'HREF', 'MATH')).toEqual(ɵɵsanitizeUrl);
-    expect(getUrlSanitizer('A', 'XLINK:HREF', 'SVG')).toEqual(ɵɵsanitizeUrl);
   });
 
   it('should sanitize URL or ResourceURL case-insensitively', () => {
