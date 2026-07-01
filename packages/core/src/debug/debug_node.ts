@@ -350,7 +350,7 @@ export class DebugElement extends DebugNode {
    * @param eventName The name of the event to trigger
    * @param eventObj The _event object_ expected by the handler
    *
-   * @see [Testing components scenarios](guide/testing/components-scenarios#trigger-event-handler)
+   * @see [Testing components scenarios](guide/testing/components-scenarios#triggereventhandler)
    */
   triggerEventHandler(eventName: string, eventObj?: any): void {
     const node = this.nativeNode as any;
