@@ -26,6 +26,8 @@ export class AbstractControlStatus {
   }
 
   protected get isTouched() {
+    // re-evaluate once a deferred registration resolves the control
+    this._cd?._controlResolved();
     // track the touched signal
     this._cd?.control?._touched?.();
     return !!this._cd?.control?.touched;
@@ -36,6 +38,8 @@ export class AbstractControlStatus {
   }
 
   protected get isPristine() {
+    // re-evaluate once a deferred registration resolves the control
+    this._cd?._controlResolved();
     // track the pristine signal
     this._cd?.control?._pristine?.();
     return !!this._cd?.control?.pristine;
@@ -47,6 +51,8 @@ export class AbstractControlStatus {
   }
 
   protected get isValid() {
+    // re-evaluate once a deferred registration resolves the control
+    this._cd?._controlResolved();
     // track the status signal
     this._cd?.control?._status?.();
     return !!this._cd?.control?.valid;
