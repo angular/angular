@@ -10,6 +10,7 @@ import {
   Directive,
   EventEmitter,
   Inject,
+  Input,
   OnChanges,
   OnDestroy,
   Optional,
@@ -19,6 +20,8 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import {of, Subject, Subscription} from 'rxjs';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 
 import {FormGroup} from '../../model/form_group';
 import {FormArray} from '../../model/form_array';
@@ -102,6 +105,23 @@ export abstract class AbstractFormDirective
    */
   abstract ngSubmit: EventEmitter<any>;
 
+  /**
+   * @description
+   * When set to `true`, the `ngSubmit` event will not emit until all pending async validators
+   * on the form have completed. Defaults to `false` to preserve existing behavior.
+   *
+   * @usageNotes
+   * ```html
+   * <form [formGroup]="myForm" (ngSubmit)="onSubmit()" awaitAsyncValidators>
+   *   ...
+   * </form>
+   * ```
+   */
+  @Input() awaitAsyncValidators: boolean = false;
+
+  private readonly _pendingSubmit$ = new Subject<Event>();
+  private _pendingSubmitSub!: Subscription;
+
   constructor(
     @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator | ValidatorFn)[],
     @Optional()
@@ -115,6 +135,26 @@ export abstract class AbstractFormDirective
     super();
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
+    this._pendingSubmitSub = this._pendingSubmit$
+      .pipe(
+        switchMap((event) =>
+          this.awaitAsyncValidators && this.form.status === 'PENDING'
+            ? (() => {
+                const statusChanges$ = this.form.statusChanges.pipe(
+                  filter((status) => status !== 'PENDING'),
+                  take(1),
+                  map(() => event),
+                );
+                this.form._updateTreeValidity({emitEvent: true});
+                return statusChanges$;
+              })()
+            : of(event),
+        ),
+      )
+      .subscribe((event) => {
+        this.ngSubmit.emit(event);
+        this.form._events.next(new FormSubmittedEvent(this.control));
+      });
   }
 
   /** @nodoc */
@@ -140,6 +180,8 @@ export abstract class AbstractFormDirective
 
   /** @nodoc */
   protected onDestroy() {
+    this._pendingSubmit$.complete();
+    this._pendingSubmitSub.unsubscribe();
     if (this.form) {
       cleanUpValidators(this.form, this);
 
@@ -312,8 +354,8 @@ export abstract class AbstractFormDirective
   onSubmit($event: Event): boolean {
     (this as {submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this.directives);
-    this.ngSubmit.emit($event);
-    this.form._events.next(new FormSubmittedEvent(this.control));
+
+    this._pendingSubmit$.next($event);
 
     // Forms with `method="dialog"` have some special behavior that won't reload the page and that
     // shouldn't be prevented. Note that we need to null check the `event` and the `target`, because
