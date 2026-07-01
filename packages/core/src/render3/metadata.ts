@@ -59,12 +59,12 @@ export function hasAsyncClassMetadata(type: Type<unknown>): boolean {
  */
 export function setClassMetadataAsync(
   type: Type<any> | AbstractType<any>,
-  dependencyLoaderFn: () => Array<Promise<Type<unknown> | AbstractType<unknown>>>,
+  dependencyLoaderFn: () => Array<() => Promise<Type<unknown>> | AbstractType<unknown>>,
   metadataSetterFn: (...types: (Type<unknown> | AbstractType<unknown>)[]) => void,
 ): () => Promise<Array<Type<unknown> | AbstractType<unknown>>> {
   const componentClass = type as any; // cast to `any`, so that we can monkey-patch it
   componentClass[ASYNC_COMPONENT_METADATA_FN] = () =>
-    Promise.all(dependencyLoaderFn()).then((dependencies) => {
+    Promise.all(dependencyLoaderFn().map((dep) => dep())).then((dependencies) => {
       metadataSetterFn(...dependencies);
       // Metadata is now set, reset field value to indicate that this component
       // can by used/compiled synchronously.
