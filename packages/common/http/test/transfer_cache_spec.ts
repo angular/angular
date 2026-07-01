@@ -214,6 +214,32 @@ describe('TransferCache', () => {
       expect(secondNext).toHaveBeenCalledTimes(1);
     });
 
+    it('should not cache responses with a Set-Cookie header', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-set-cookie');
+
+      const firstNext = jasmine.createSpy('firstNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'user-a-session',
+            headers: new HttpHeaders({'Set-Cookie': 'session=user-a; HttpOnly'}),
+          }),
+        ),
+      );
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'user-b-session'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('user-a-session');
+        expect(runInterceptor(request, secondNext).body).toBe('user-b-session');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
     it('should not cache requests with Cache-Control: no-store', () => {
       configureInterceptor();
 
@@ -557,6 +583,14 @@ describe('TransferCache', () => {
       });
 
       makeRequestAndExpectOne('/test-private', 'fresh-data');
+    });
+
+    it('should not cache responses with a Set-Cookie header', () => {
+      makeRequestAndExpectOne('/test-set-cookie', 'user-a-session', {
+        responseHeaders: {'Set-Cookie': 'session=user-a; HttpOnly'},
+      });
+
+      makeRequestAndExpectOne('/test-set-cookie', 'user-b-session');
     });
 
     it('should not cache responses with Cache-Control containing no-store among other directives', () => {
