@@ -51,6 +51,18 @@ Use the **Record** button in the Chrome DevTools performance panel:
 
 See the [Chrome DevTools documentation](https://developer.chrome.com/docs/devtools/performance#record) for more details on recording profiles.
 
+## Open a component in Angular DevTools
+
+After recording a profile, select a component event in the **Angular** track.
+The **Summary** tab can include a **Component** link that uses the `angular-devtools://component/...` URL scheme.
+
+<img alt="Chrome DevTools Performance panel showing an Angular custom track with a selected _MainComponent event. The Summary tab displays a Component link that uses the angular-devtools://component URL scheme." src="assets/images/best-practices/runtime-performance/chrome-performance-deep-link.png">
+
+Click the link to open Angular DevTools and select the matching component in the **Components** tab.
+This helps you move from a browser-level profile to the component state and metadata for a selected event.
+
+NOTE: Opening component links requires Angular DevTools for Chrome and Chrome's experimental `chrome://flags/#enable-devtools-deep-link-via-extensibility-api` flag.
+
 ## Interpreting a recorded profile
 
 You can use the "Angular" custom track to quickly identify and diagnose performance issues. The following sections describe some common profiling scenarios.
