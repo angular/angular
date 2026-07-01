@@ -1,4 +1,4 @@
-<form>
+<form (submit)="onSubmit($event)">
   <label>
     Email:
     <input type="email" [formField]="loginForm.email" />
@@ -11,4 +11,6 @@
 
   <p>Hello {{ loginForm.email().value() }}!</p>
   <p>Password length: {{ loginForm.password().value().length }}</p>
+
+  <button type="submit">Log In</button>
 </form>

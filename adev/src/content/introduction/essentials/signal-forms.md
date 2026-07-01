@@ -83,7 +83,7 @@ As a result, both the field value and the model signal are updated automatically
 console.log(loginModel().email); // 'alice@wonderland.com'
 ```
 
-Here's a complete example:
+### Complete example
 
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/login-simple/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/signal-forms/src/login-simple/app/app.ts"/>
@@ -237,7 +237,7 @@ email(schemaPath.email, {message: 'Please enter a valid email address'});
 
 Each form field exposes its validation state through signals. For example, you can check `field().valid()` to see if validation passes, `field().touched()` to see if the user has interacted with it, and `field().errors()` to get the list of validation errors.
 
-Here's a complete example:
+### Complete example
 
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/login-validation/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/signal-forms/src/login-validation/app/app.ts"/>
