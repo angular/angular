@@ -35,6 +35,7 @@
     "electrontest": "cd test/extra && node electron.js",
     "jest:test": "jest --config ./test/jest/jest.config.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js",
+    "frozen-intrinsics:test": "node --frozen-intrinsics ./test/node/frozen_intrinsics_load.js",
     "vitest:test": "vitest ./test/vitest/*.spec.js --exclude ./test/vitest/*-globals.spec.js",
     "vitest-globals:test": "vitest ./test/vitest/*-globals.spec.js --globals",
     "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs",
