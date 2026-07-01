@@ -25,11 +25,8 @@ import {
   setupFrameworkInjectorProfiler,
 } from '../../src/render3/debug/framework_injector_profiler';
 import {setInjectorProfiler} from '../../src/render3/debug/injector_profiler';
-import {
-  DebugSignalGraphEdge,
-  DebugSignalGraphNode,
-  getSignalGraph,
-} from '../../src/render3/util/signal_debug';
+import type {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../primitives/devtools';
+import {getSignalGraph} from '../../src/render3/util/signal_debug';
 import {fakeAsync, TestBed, tick} from '../../testing';
 
 describe('getSignalGraph', () => {

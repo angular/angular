@@ -12,6 +12,9 @@ ts_project(
             "**/*.ts",
         ],
     ),
+    deps = [
+        "//packages/core/primitives/signals",
+    ],
 )
 
 filegroup(
