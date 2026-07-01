@@ -1,3 +1,29 @@
+<a name="22.1.0-next.4"></a>
+# 22.1.0-next.4 (2026-07-01)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [311aff05aa](https://github.com/angular/angular/commit/311aff05aa2cd55d49a0c259e7b240266ecee7bd) | fix | use Object.hasOwn in I18nSelectPipe to handle null-prototype and shadowed mappings |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [292199aa4d](https://github.com/angular/angular/commit/292199aa4dd4cbf09f14c20bd7049d6ab55d83f4) | fix | permissive whitespace parsing in default never blocks |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [165995285c](https://github.com/angular/angular/commit/165995285ca95302b2a2f01f5b42645b0a9eb022) | fix | include toSignal in debugName transform |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [74638cab84](https://github.com/angular/angular/commit/74638cab841c553fc85fc23a0e5052931a636531) | fix | improve input writes migration in best effort mode |
+| [d7f70616a0](https://github.com/angular/angular/commit/d7f70616a03aa00274f0a91c49f7a6fe4b2e3535) | fix | reject dynamic script host elements |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a74801c59c](https://github.com/angular/angular/commit/a74801c59cd453382ac177e85bbd51f20fbc2ad5) | fix | fix malformed jsdoc comment for RouterLinkWithHref export |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.5"></a>
 # 22.0.5 (2026-07-01)
 ### common
