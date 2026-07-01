@@ -130,8 +130,8 @@ export class MockRequest extends MockBody implements Request {
   readonly method: string = 'GET';
   readonly mode: RequestMode = 'cors';
   readonly redirect: RequestRedirect = 'follow';
-  readonly referrer: string = '';
-  readonly referrerPolicy: ReferrerPolicy = 'no-referrer';
+  readonly referrer: string = 'about:client';
+  readonly referrerPolicy: ReferrerPolicy = '';
   readonly signal: AbortSignal = null as any;
 
   url: string;
@@ -163,6 +163,12 @@ export class MockRequest extends MockBody implements Request {
     if (init.redirect !== undefined) {
       this.redirect = init.redirect;
     }
+    if (init.referrer !== undefined) {
+      this.referrer = init.referrer;
+    }
+    if (init.referrerPolicy !== undefined) {
+      this.referrerPolicy = init.referrerPolicy;
+    }
     if (init.destination !== undefined) {
       this.destination = init.destination;
     }
@@ -179,6 +185,8 @@ export class MockRequest extends MockBody implements Request {
       credentials: this.credentials,
       headers: this.headers,
       redirect: this.redirect,
+      referrer: this.referrer,
+      referrerPolicy: this.referrerPolicy,
     });
   }
 }

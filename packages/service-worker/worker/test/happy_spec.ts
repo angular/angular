@@ -1669,6 +1669,30 @@ import {envIsSupported} from '../testing/utils';
         expect(bazReq.credentials).toBe('omit');
       });
 
+      it(`passes 'referrer' through to the server`, async () => {
+        const reqInit = {referrer: 'http://localhost/profile?token=secret'};
+        expect(await makeRequest(scope, '/baz.txt', undefined, reqInit)).toBe('this is baz');
+
+        const [bazReq] = server.getRequestsFor('/baz.txt');
+        expect(bazReq.referrer).toBe('http://localhost/profile?token=secret');
+      });
+
+      it(`passes 'referrer: ""' through to the server`, async () => {
+        const reqInit = {referrer: ''};
+        expect(await makeRequest(scope, '/baz.txt', undefined, reqInit)).toBe('this is baz');
+
+        const [bazReq] = server.getRequestsFor('/baz.txt');
+        expect(bazReq.referrer).toBe('');
+      });
+
+      it(`passes 'referrerPolicy' through to the server`, async () => {
+        const reqInit = {referrerPolicy: 'no-referrer'};
+        expect(await makeRequest(scope, '/baz.txt', undefined, reqInit)).toBe('this is baz');
+
+        const [bazReq] = server.getRequestsFor('/baz.txt');
+        expect(bazReq.referrerPolicy).toBe('no-referrer');
+      });
+
       it(`passes 'cache' through to the server`, async () => {
         // Request a lazy-cached asset (so that it is fetched from the network) and provide an
         // explicit HTTP cache mode.
@@ -1760,6 +1784,36 @@ import {envIsSupported} from '../testing/utils';
           // reconstruction (instead of being replaced by the default `'same-origin'`).
           const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
           expect(redirectReq.credentials).toBe('omit');
+        });
+
+        it(`passes 'referrer' through to the server`, async () => {
+          const reqInit = {referrer: 'http://localhost/profile?token=secret'};
+          expect(await makeRequest(scope, '/lazy/redirected.txt', undefined, reqInit)).toBe(
+            'this was a redirect too',
+          );
+
+          const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
+          expect(redirectReq.referrer).toBe('http://localhost/profile?token=secret');
+        });
+
+        it(`passes 'referrer: ""' through to the server`, async () => {
+          const reqInit = {referrer: ''};
+          expect(await makeRequest(scope, '/lazy/redirected.txt', undefined, reqInit)).toBe(
+            'this was a redirect too',
+          );
+
+          const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
+          expect(redirectReq.referrer).toBe('');
+        });
+
+        it(`passes 'referrerPolicy' through to the server`, async () => {
+          const reqInit = {referrerPolicy: 'no-referrer'};
+          expect(await makeRequest(scope, '/lazy/redirected.txt', undefined, reqInit)).toBe(
+            'this was a redirect too',
+          );
+
+          const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
+          expect(redirectReq.referrerPolicy).toBe('no-referrer');
         });
 
         it(`passes 'cache' through to the server`, async () => {
