@@ -47,8 +47,8 @@ export class ResourceParamsStatus extends Error {
 export interface ResourceParamsContext {
   /**
    * Chains the current params off of the value of another resource, returning the value
-   * of the other resource if it is available, or propagating the status to the current resource by
-   * throwing the appropriate status code if the value is not available.
+   * of the other resource only when its status is `resolved` or `local`, or propagating status to
+   * the current resource by throwing the appropriate status code when the value is not available.
    */
   readonly chain: <T>(resource: Resource<T>) => T;
 }
