@@ -225,29 +225,51 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
   return trustedScriptURLFromString(url[0]);
 }
 
-const HTML_MAP: Record<string, Record<string, true | undefined> | undefined> = {
-  '*': {'innerhtml': true, 'outerhtml': true},
-  'iframe': {'srcdoc': true},
+type SecurityContextMap = Record<string, Record<string, true | undefined> | undefined>;
+type NamespacedSecurityContextMap = Record<string, SecurityContextMap | undefined>;
+
+const NO_NAMESPACE = '';
+const MATCH_ALL_ELEMENTS = '*';
+const SVG_NAMESPACE = 'svg';
+const MATH_ML_NAMESPACE = 'math';
+const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
+const MATH_ML_NAMESPACE_URI = 'http://www.w3.org/1998/math/mathml';
+
+const HTML_MAP: NamespacedSecurityContextMap = {
+  [NO_NAMESPACE]: {
+    [MATCH_ALL_ELEMENTS]: {'innerhtml': true, 'outerhtml': true},
+    'iframe': {'srcdoc': true},
+  },
 };
 
-const URL_MAP: Record<string, Record<string, true | undefined> | undefined> = {
-  '*': {'formaction': true},
-  'area': {'href': true},
-  'a': {'href': true, 'xlink:href': true},
-  'form': {'action': true},
-  'img': {'src': true},
-  'video': {'src': true},
+const URL_MAP: NamespacedSecurityContextMap = {
+  [NO_NAMESPACE]: {
+    [MATCH_ALL_ELEMENTS]: {'formaction': true},
+    'area': {'href': true},
+    'a': {'href': true, 'xlink:href': true},
+    'form': {'action': true},
+    'img': {'src': true},
+    'video': {'src': true},
+  },
+  [MATH_ML_NAMESPACE]: {
+    [MATCH_ALL_ELEMENTS]: {'href': true, 'xlink:href': true},
+  },
+  [SVG_NAMESPACE]: {
+    'a': {'href': true, 'xlink:href': true},
+  },
 };
 
-const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined> = {
-  'embed': {'src': true},
-  'frame': {'src': true},
-  'iframe': {'src': true},
-  'media': {'src': true},
+const RESOURCE_MAP: NamespacedSecurityContextMap = {
+  [NO_NAMESPACE]: {
+    'embed': {'src': true},
+    'frame': {'src': true},
+    'iframe': {'src': true},
+    'media': {'src': true},
 
-  'base': {'href': true},
-  'link': {'href': true},
-  'object': {'data': true, 'codebase': true},
+    'base': {'href': true},
+    'link': {'href': true},
+    'object': {'data': true, 'codebase': true},
+  },
 };
 
 /**
@@ -257,8 +279,8 @@ const RESOURCE_MAP: Record<string, Record<string, true | undefined> | undefined>
  * `packages/compiler/src/schema/dom_security_schema.ts`.
  * If tag and prop names don't match URL or Resource URL schema, no sanitizer is required.
  */
-export function getUrlSanitizer(tag: string, prop: string) {
-  switch (getSecurityContext(tag, prop)) {
+export function getUrlSanitizer(tag: string, prop: string, elementNamespace?: string | null) {
+  switch (getSecurityContext(tag, prop, elementNamespace)) {
     case SecurityContext.RESOURCE_URL:
       return ɵɵsanitizeResourceUrl;
     case SecurityContext.URL:
@@ -288,48 +310,95 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
   return sanitizer === null ? unsafeUrl : sanitizer(unsafeUrl);
 }
 
-function getSecurityContext(tagName: string, propName: string): SecurityContext {
-  tagName = resolveHostTagName(tagName).toLowerCase();
-  propName = propName.toLowerCase();
-
-  if (hasSecurityContext(RESOURCE_MAP, tagName, propName)) {
-    return SecurityContext.RESOURCE_URL;
-  }
-
-  if (hasSecurityContext(URL_MAP, tagName, propName)) {
-    return SecurityContext.URL;
-  }
-
-  if (hasSecurityContext(HTML_MAP, tagName, propName)) {
-    return SecurityContext.HTML;
-  }
-
-  return SecurityContext.NONE;
-}
-
-function hasSecurityContext(
-  map: Record<string, Record<string, true | undefined> | undefined>,
+function getSecurityContext(
   tagName: string,
   propName: string,
-): boolean {
-  return map[tagName]?.[propName] === true || map['*']?.[propName] === true;
-}
+  elementNamespace?: string | null,
+): SecurityContext {
+  const resolvedElement = resolveElement(tagName, elementNamespace);
+  tagName = resolvedElement.tagName.toLowerCase();
+  propName = propName.toLowerCase();
+  const namespace = normalizeElementNamespace(resolvedElement.namespace);
 
-function resolveHostTagName(tagName: string): string {
-  if (tagName !== TNodeName.DynamicHost) {
-    return tagName;
-  }
-
-  const index = getSelectedIndex();
-  const tNode = index === -1 ? null : getSelectedTNode();
-  if (tNode !== null && tNode.type & TNodeType.Element) {
-    const element = getNativeByTNode(tNode, getLView()) as RElement;
-    if (element.tagName) {
-      return element.tagName.toLowerCase();
+  if (namespace) {
+    const namespaceContext = getSecurityContextForNamespace(tagName, propName, namespace);
+    if (namespaceContext !== undefined) {
+      return namespaceContext;
     }
   }
 
-  return tagName;
+  return getSecurityContextForNamespace(tagName, propName, NO_NAMESPACE) ?? SecurityContext.NONE;
+}
+
+function getSecurityContextForNamespace(
+  tagName: string,
+  propName: string,
+  namespace: string,
+): SecurityContext | undefined {
+  if (hasSecurityContext(RESOURCE_MAP[namespace], tagName, propName)) {
+    return SecurityContext.RESOURCE_URL;
+  }
+
+  if (hasSecurityContext(URL_MAP[namespace], tagName, propName)) {
+    return SecurityContext.URL;
+  }
+
+  if (hasSecurityContext(HTML_MAP[namespace], tagName, propName)) {
+    return SecurityContext.HTML;
+  }
+
+  return undefined;
+}
+
+function hasSecurityContext(
+  map: SecurityContextMap | undefined,
+  tagName: string,
+  propName: string,
+): boolean {
+  return map?.[tagName]?.[propName] === true || map?.[MATCH_ALL_ELEMENTS]?.[propName] === true;
+}
+
+function resolveElement(
+  tagName: string,
+  elementNamespace?: string | null,
+): {tagName: string; namespace: string | null | undefined} {
+  let namespace = elementNamespace;
+  const index = getSelectedIndex();
+  const tNode = index === -1 ? null : getSelectedTNode();
+
+  if (namespace === undefined) {
+    namespace = tNode?.namespace;
+  }
+
+  if (tagName === TNodeName.DynamicHost && tNode !== null && tNode.type & TNodeType.Element) {
+    const element = getNativeByTNode(tNode, getLView()) as RElement;
+    if (element.tagName) {
+      tagName = element.tagName.toLowerCase();
+    }
+    if (namespace == null) {
+      namespace = (element as RElement & {namespaceURI?: string | null}).namespaceURI;
+    }
+  }
+
+  return {tagName, namespace};
+}
+
+function normalizeElementNamespace(namespace: string | null | undefined): string | null {
+  if (!namespace) {
+    return null;
+  }
+
+  const lowerNamespace = namespace.toLowerCase();
+  switch (lowerNamespace) {
+    case SVG_NAMESPACE:
+    case SVG_NAMESPACE_URI:
+      return SVG_NAMESPACE;
+    case MATH_ML_NAMESPACE:
+    case MATH_ML_NAMESPACE_URI:
+      return MATH_ML_NAMESPACE;
+    default:
+      return null;
+  }
 }
 
 export function validateAgainstEventProperties(name: string) {
