@@ -14,6 +14,10 @@ The logo graphics available for download on this page are provided under [CC BY 
     Our brand guidelines folders contain the design files, guidance and community examples for how the brand can be adapted.
     Read more about adapting the logo in the section below.
   </docs-card>
+  <docs-card title="Angular mascot" href="https://drive.google.com/drive/folders/1uX4H3exWWpwPqh52Bxig3GLS736gBEAf?usp=drive_link" link="Download from Google Drive">
+    ![Angular mascot cheerful](assets/images/press-kit/angular_mascot_cheerful.png "Angular mascot cheerful")
+    Angie is the official mascot of the Angular framework. The mascot folders contain different file formats and poses of our friendly companion for use in your community assets and presentations.
+  </docs-card>
 </docs-card-container>
 
 ## Press and Media
