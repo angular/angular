@@ -26,6 +26,8 @@ import {
  * i.e. `{[key: string]: unknown}`. It allows specific string keys to pass through, even if their
  * value is `unknown`, e.g. `{key: unknown}`.
  *
+ * @see [Integration with schema validation libraries](guide/forms/signals/validation#integration-with-schema-validation-libraries)
+ *
  * @publicApi 22.0
  */
 export type RemoveStringIndexUnknownKey<K, V> = string extends K
@@ -38,6 +40,8 @@ export type RemoveStringIndexUnknownKey<K, V> = string extends K
  * Utility type that recursively ignores unknown string index properties on the given object.
  * We use this on the `TSchema` type in `validateStandardSchema` in order to accommodate Zod's
  * `looseObject` which includes `{[key: string]: unknown}` as part of the type.
+ *
+ * @see [Integration with schema validation libraries](guide/forms/signals/validation#integration-with-schema-validation-libraries)
  *
  * @publicApi 22.0
  */
@@ -125,6 +129,8 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
  * @param issue The standard schema issue
  * @param options The validation error options
  *
+ * @see [Integration with schema validation libraries](guide/forms/signals/validation#integration-with-schema-validation-libraries)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -136,6 +142,8 @@ export function standardSchemaError(
  * Create a standard schema issue error
  * @param issue The standard schema issue
  * @param options The optional validation error options
+ *
+ * @see [Integration with schema validation libraries](guide/forms/signals/validation#integration-with-schema-validation-libraries)
  *
  * @category validation
  * @publicApi 22.0
@@ -172,6 +180,8 @@ function standardIssueToFormTreeError(
 
 /**
  * An error used to indicate an issue validating against a standard schema.
+ *
+ * @see [Integration with schema validation libraries](guide/forms/signals/validation#integration-with-schema-validation-libraries)
  *
  * @category validation
  * @publicApi 22.0

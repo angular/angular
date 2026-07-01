@@ -71,6 +71,8 @@ export interface FormFieldBindingOptions {
 /**
  * Lightweight DI token provided by the {@link FormField} directive.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
  * @publicApi 22.0
  */
@@ -95,6 +97,9 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
  *    forms.
  *
  * @category control
+ *
+ * @see [How the FormField directive works](guide/forms/signals/custom-controls#how-the-formfield-directive-works)
+ *
  * @publicApi 22.0
  */
 @Directive({
