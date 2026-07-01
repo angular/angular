@@ -155,12 +155,21 @@
   font-family: 'Press Start 2P';
   font-size: 0.6rem;
   user-select: none;
+
+  .docs-dark-mode & {
+    color: var(--win95-dark-gray);
+  }
 }
 
 .clear-button:hover {
   background: #e0e0e0;
   outline: 1px dashed var(--win95-dark-gray);
   outline-offset: 1px;
+  color: var(--win95-shadow);
+
+  .docs-dark-mode & {
+    color: var(--win95-dark-gray);
+  }
 }
 
 .clear-button:active {
