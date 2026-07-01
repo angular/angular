@@ -86,7 +86,7 @@ export class SlicePipe implements PipeTransform {
     const supports = typeof value === 'string' || Array.isArray(value);
 
     if (!supports) {
-      throw invalidPipeArgumentError(SlicePipe, value);
+      throw invalidPipeArgumentError(SlicePipe, typeof value);
     }
 
     return value.slice(start, end);
