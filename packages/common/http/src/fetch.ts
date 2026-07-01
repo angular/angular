@@ -143,14 +143,16 @@ export class FetchBackend implements HttpBackend {
           statusText: error.statusText,
           url: request.urlWithParams,
           headers: error.headers,
+          redirected: response?.redirected,
+          responseType: response?.type,
         }),
       );
       return;
     }
 
     const headers = new HttpHeaders(response.headers);
-    const statusText = response.statusText;
-    const url = response.url || request.urlWithParams;
+    const {statusText, url: responseUrl, redirected, type: responseType} = response;
+    const url = responseUrl || request.urlWithParams;
 
     let status = response.status;
     let body: string | ArrayBuffer | Blob | object | null = null;
@@ -261,6 +263,8 @@ export class FetchBackend implements HttpBackend {
             status: response.status,
             statusText: response.statusText,
             url: response.url || request.urlWithParams,
+            redirected,
+            responseType,
           }),
         );
         return;
@@ -277,10 +281,6 @@ export class FetchBackend implements HttpBackend {
     // but a successful status code can still result in an error if the user
     // asked for JSON data and the body cannot be parsed as such.
     const ok = status >= 200 && status < 300;
-
-    const redirected = response.redirected;
-
-    const responseType = response.type;
 
     if (ok) {
       observer.next(
