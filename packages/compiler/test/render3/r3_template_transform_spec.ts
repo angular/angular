@@ -2636,6 +2636,22 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should preserve &ngsp; between two sibling @if blocks', () => {
+      expectFromHtml(
+        `@if (true) {<span>Hello</span>}&ngsp;@if (true) {<span>World</span>}`,
+      ).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'true'],
+        ['Element', 'span'],
+        ['Text', 'Hello'],
+        ['Text', ' '],
+        ['IfBlock'],
+        ['IfBlockBranch', 'true'],
+        ['Element', 'span'],
+        ['Text', 'World'],
+      ]);
+    });
+
     describe('validations', () => {
       it('should report an if block without a condition', () => {
         expect(() =>
