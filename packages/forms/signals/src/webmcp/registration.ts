@@ -137,6 +137,8 @@ function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | und
  * Creates a provider that configures all signal forms with `experimentalWebMcpTool`
  * to be registered as WebMCP tools.
  *
+ * @see [Implicit tools in Signal Forms](ai/webmcp#implicit-tools-in-signal-forms)
+ *
  * @experimental
  */
 export function provideExperimentalWebMcpForms(): EnvironmentProviders {

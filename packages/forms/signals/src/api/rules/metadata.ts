@@ -24,6 +24,9 @@ import type {FieldState, LogicFn, PathKind, SchemaPath, SchemaPathRules} from '.
  * @template TKey The type of metadata key.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Field metadata](guide/forms/signals/field-metadata)
+ * @see [Setting values from a schema](guide/forms/signals/field-metadata#setting-values-from-a-schema)
+ *
  * @category logic
  * @publicApi 22.0
  */
@@ -55,6 +58,9 @@ export function metadata<
  *
  * @template TAcc The accumulated type of the reduce operation.
  * @template TItem The type of the individual items that are reduced over.
+ *
+ * @see [Combining contributions with reducers](guide/forms/signals/field-metadata#combining-contributions-with-reducers)
+ *
  * @publicApi 22.0
  */
 export interface MetadataReducer<TAcc, TItem> {
@@ -130,6 +136,8 @@ function override<T>(getInitial?: () => T): MetadataReducer<T | undefined, T> {
 /**
  * A symbol used to tag a `MetadataKey` as representing an asynchronous validation resource.
  *
+ * @see [Async validation](guide/forms/signals/validation#async-validation)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -144,6 +152,8 @@ export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol = Symbol('IS_ASYNC_VALI
  * @template TRead The type read from the `FieldState` for this key
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
+ *
+ * @see [Field metadata](guide/forms/signals/field-metadata)
  *
  * @publicApi 22.0
  */
@@ -164,6 +174,9 @@ export class MetadataKey<TRead, TWrite, TAcc> {
  * Represents metadata that is used to define a valid limit for a field.
  *
  * @template TLimit The type the limit value.
+ *
+ * @see [Validation constraints](guide/forms/signals/custom-controls#validation-constraints)
+ *
  * @publicApi 22.0
  */
 export type LimitKey<TLimit> = MetadataKey<
@@ -183,6 +196,8 @@ declare const LIMIT_SELECTION_KEY: unique symbol;
  * This indirection allows rules to bind a {@link LimitKey} of a specific limit type (e.g. `number`
  * or `Date`) matching the field's type to a generic {@link MetadataKey}.
  *
+ * @see [Validation constraints](guide/forms/signals/custom-controls#validation-constraints)
+ *
  * @publicApi 22.0
  */
 export type LimitSelectionKey = MetadataKey<
@@ -198,6 +213,8 @@ export type LimitSelectionKey = MetadataKey<
  *
  * @template TKey The `MetadataKey` type
  *
+ * @see [Field metadata](guide/forms/signals/field-metadata)
+ *
  * @publicApi 22.0
  */
 export type MetadataSetterType<TKey> =
@@ -208,6 +225,8 @@ export type MetadataSetterType<TKey> =
  * The last value set on a given field tree node overrides any previously set values.
  *
  * @template TWrite The type written to this key using the `metadata()` rule
+ *
+ * @see [Creating a metadata key](guide/forms/signals/field-metadata#creating-a-metadata-key)
  *
  * @publicApi 22.0
  */
@@ -222,6 +241,8 @@ export function createMetadataKey<TWrite>(): MetadataKey<
  * @param reducer The reducer used to combine individually set values into the final computed value.
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
+ *
+ * @see [Creating a metadata key](guide/forms/signals/field-metadata#creating-a-metadata-key)
  *
  * @publicApi 22.0
  */
@@ -247,6 +268,8 @@ export function createMetadataKey<TWrite, TAcc>(
  * @template TRead The type read from the `FieldState` for this key
  * @template TWrite The type written to this key using the `metadata()` rule
  *
+ * @see [Attaching lifecycle-aware objects with managed metadata](guide/forms/signals/field-metadata#attaching-lifecycle-aware-objects-with-managed-metadata)
+ *
  * @publicApi 22.0
  */
 export function createManagedMetadataKey<TRead, TWrite>(
@@ -264,6 +287,8 @@ export function createManagedMetadataKey<TRead, TWrite>(
  * @template TRead The type read from the `FieldState` for this key
  * @template TWrite The type written to this key using the `metadata()` rule
  * @template TAcc The type of the reducer's accumulated value.
+ *
+ * @see [Attaching lifecycle-aware objects with managed metadata](guide/forms/signals/field-metadata#attaching-lifecycle-aware-objects-with-managed-metadata)
  *
  * @publicApi 22.0
  */
@@ -284,6 +309,8 @@ export function createManagedMetadataKey<TRead, TWrite, TAcc>(
 /**
  * Creates a {@link LimitSelectionKey}.
  *
+ * @see [Validation constraints](guide/forms/signals/custom-controls#validation-constraints)
+ *
  * @publicApi 22.0
  */
 export function createLimitSelectionKey(): LimitSelectionKey {
@@ -292,6 +319,8 @@ export function createLimitSelectionKey(): LimitSelectionKey {
 
 /**
  * A {@link MetadataKey} representing whether the field is required.
+ *
+ * @see [Required validation](guide/forms/signals/validation#required)
  *
  * @category validation
  * @publicApi 22.0
@@ -306,6 +335,8 @@ export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMe
  * This indirection allows different keys to be used for different types of values with their
  * own reducers, such as {@link MIN_DATE} and {@link MIN_NUMBER}.
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -314,6 +345,8 @@ export const MIN: LimitSelectionKey = createLimitSelectionKey();
 /**
  * A {@link MetadataKey} representing the minimum valid value of a date field.
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -321,6 +354,8 @@ export const MIN_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.max())
 
 /**
  * A {@link MetadataKey} representing the minimum valid value of a number field.
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -333,6 +368,8 @@ export const MIN_NUMBER: LimitKey<number> = createMetadataKey(MetadataReducer.ma
  * This indirection allows different keys to be used for different types of values with their
  * own reducers, such as {@link MAX_DATE} and {@link MAX_NUMBER}.
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -340,6 +377,8 @@ export const MAX: LimitSelectionKey = createLimitSelectionKey();
 
 /**
  * A {@link MetadataKey} representing the maximum valid value of a date field.
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -349,6 +388,8 @@ export const MAX_DATE: LimitKey<Date> = createMetadataKey(MetadataReducer.min())
 /**
  * A {@link MetadataKey} representing the maximum valid value of a number field.
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -356,6 +397,8 @@ export const MAX_NUMBER: LimitKey<number> = createMetadataKey(MetadataReducer.mi
 
 /**
  * A {@link MetadataKey} representing the min length of the field.
+ *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
  *
  * @category validation
  * @publicApi 22.0
@@ -365,6 +408,8 @@ export const MIN_LENGTH: LimitKey<number> = createMetadataKey(MetadataReducer.ma
 /**
  * A {@link MetadataKey} representing the max length of the field.
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -372,6 +417,8 @@ export const MAX_LENGTH: LimitKey<number> = createMetadataKey(MetadataReducer.mi
 
 /**
  * A {@link MetadataKey} representing the patterns the field must match.
+ *
+ * @see [Pattern validation](guide/forms/signals/validation#pattern)
  *
  * @category validation
  * @publicApi 22.0

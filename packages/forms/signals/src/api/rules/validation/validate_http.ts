@@ -26,6 +26,9 @@ import {MapToErrorsFn, validateAsync} from './validate_async';
  * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
+ * @see [HTTP validation with validateHttp](guide/forms/signals/async-operations#http-validation-with-validatehttp)
+ * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -86,6 +89,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
+ * @see [HTTP validation with validateHttp](guide/forms/signals/async-operations#http-validation-with-validatehttp)
  * @category validation
  * @publicApi 22.0
  */

@@ -12,6 +12,8 @@ import type {SignalFormsConfig} from '../../../src/api/di';
  * A value that can be used for `SignalFormsConfig.classes` to automatically add
  * the `ng-*` status classes from reactive forms.
  *
+ * @see [Automatic status classes](guide/forms/signals/migration#automatic-status-classes)
+ *
  * @publicApi 22.0
  */
 export const NG_STATUS_CLASSES: SignalFormsConfig['classes'] = {
