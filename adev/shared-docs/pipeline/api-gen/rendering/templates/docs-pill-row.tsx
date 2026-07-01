@@ -20,6 +20,7 @@ export function DocsPillRow(props: {links: LinkEntryRenderable[]}) {
           class="docs-pill"
           href={link.url}
           title={link.title}
+          target={link.target}
           dangerouslySetInnerHTML={{__html: link.label}}
         ></a>
       ))}

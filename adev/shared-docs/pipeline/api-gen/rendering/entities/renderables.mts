@@ -149,6 +149,7 @@ export interface LinkEntryRenderable {
   label: string;
   url: string;
   title?: string;
+  target?: string;
 }
 
 export type CliOptionRenderable = CliOption & {
