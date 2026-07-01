@@ -47,6 +47,7 @@ export class ModelOutputMigration extends TsurgeFunnelMigration<
       }
 
       const importManager = new ImportManager();
+      const migratedModelReferences = new Set<ts.Identifier>();
 
       const visit = (node: ts.Node) => {
         if (ts.isClassDeclaration(node)) {
@@ -57,11 +58,23 @@ export class ModelOutputMigration extends TsurgeFunnelMigration<
             replacements,
             sourceFile,
             info,
+            migratedModelReferences,
           );
         }
         ts.forEachChild(node, visit);
       };
       visit(sourceFile);
+
+      if (
+        migratedModelReferences.size > 0 &&
+        this.canRemoveModelImport(
+          sourceFile,
+          info.program.getTypeChecker(),
+          migratedModelReferences,
+        )
+      ) {
+        importManager.removeImport(sourceFile, 'model', '@angular/core');
+      }
 
       applyImportManagerChanges(importManager, replacements, [sourceFile], info);
     }
@@ -78,6 +91,7 @@ export class ModelOutputMigration extends TsurgeFunnelMigration<
     replacements: Replacement[],
     sourceFile: ts.SourceFile,
     info: ProgramInfo,
+    migratedModelReferences: Set<ts.Identifier>,
   ) {
     const modelProperties: ts.PropertyDeclaration[] = [];
     const outputProperties = new Map<string, ts.PropertyDeclaration>();
@@ -107,22 +121,7 @@ export class ModelOutputMigration extends TsurgeFunnelMigration<
       }
 
       const call = member.initializer;
-      let identifier: ts.Identifier | null = null;
-      if (ts.isIdentifier(call.expression)) {
-        identifier = call.expression;
-      } else if (ts.isPropertyAccessExpression(call.expression)) {
-        let current: ts.Expression = call.expression;
-        while (ts.isPropertyAccessExpression(current)) {
-          if (ts.isIdentifier(current.name) && current.name.text === 'model') {
-            identifier = current.name;
-            break;
-          }
-          current = current.expression;
-        }
-        if (!identifier && ts.isIdentifier(current) && current.text === 'model') {
-          identifier = current;
-        }
-      }
+      const identifier = this.getModelIdentifier(call);
 
       if (!identifier) continue;
 
@@ -144,8 +143,62 @@ export class ModelOutputMigration extends TsurgeFunnelMigration<
       if (outputProperties.has(expectedOutputName)) {
         const update = this.migrateModelProperty(modelProp, importManager, sourceFile);
         replacements.push(new Replacement(projectFile(sourceFile, info), update));
+        const modelIdentifier = this.getModelIdentifier(modelProp.initializer as ts.CallExpression);
+        if (modelIdentifier !== null) {
+          migratedModelReferences.add(modelIdentifier);
+        }
       }
     }
+  }
+
+  private canRemoveModelImport(
+    sourceFile: ts.SourceFile,
+    typeChecker: ts.TypeChecker,
+    migratedModelReferences: Set<ts.Identifier>,
+  ): boolean {
+    let canRemove = true;
+
+    const visit = (node: ts.Node) => {
+      if (!canRemove) {
+        return;
+      }
+
+      if (ts.isImportDeclaration(node)) {
+        return;
+      }
+
+      if (ts.isIdentifier(node)) {
+        const imp = getImportOfIdentifier(typeChecker, node);
+        if (imp?.importModule === '@angular/core' && imp.name === 'model') {
+          canRemove = migratedModelReferences.has(node);
+          return;
+        }
+      }
+
+      ts.forEachChild(node, visit);
+    };
+
+    visit(sourceFile);
+    return canRemove;
+  }
+
+  private getModelIdentifier(call: ts.CallExpression): ts.Identifier | null {
+    if (ts.isIdentifier(call.expression)) {
+      return call.expression;
+    } else if (ts.isPropertyAccessExpression(call.expression)) {
+      let current: ts.Expression = call.expression;
+      while (ts.isPropertyAccessExpression(current)) {
+        if (ts.isIdentifier(current.name) && current.name.text === 'model') {
+          return current.name;
+        }
+        current = current.expression;
+      }
+      if (ts.isIdentifier(current) && current.text === 'model') {
+        return current;
+      }
+    }
+
+    return null;
   }
 
   private migrateModelProperty(

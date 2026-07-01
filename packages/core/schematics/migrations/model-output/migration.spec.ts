@@ -41,7 +41,7 @@ describe('ModelOutput migration', () => {
     expect(content).toContain('foo = linkedSignal(this.fooInput);');
     expect(content).toContain('fooChange = output<number>();');
     expect(content).toContain(
-      "import { Component, model, output, input, linkedSignal } from '@angular/core';",
+      "import { Component, output, input, linkedSignal } from '@angular/core';",
     );
   });
 
@@ -193,5 +193,34 @@ describe('ModelOutput migration', () => {
 
     const content = fs.readFile(absoluteFrom('/index.ts'));
     expect(content).toContain("fooInput = input(0, {alias: 'foo', debugName: 'my-foo'});");
+  });
+
+  it('should keep the model import if there are remaining usages', async () => {
+    const {fs} = await runTsurgeMigration(new ModelOutputMigration(), [
+      {
+        name: absoluteFrom('/index.ts'),
+        isProgramRootFile: true,
+        contents: `
+          import { Component, model, output } from '@angular/core';
+
+          @Component({
+            selector: 'my-comp',
+            template: ''
+          })
+          export class MyComp {
+            foo = model(0);
+            fooChange = output<number>();
+            bar = model(1);
+          }
+        `,
+      },
+    ]);
+
+    const content = fs.readFile(absoluteFrom('/index.ts'));
+    expect(content).toContain(
+      "import { Component, model, output, input, linkedSignal } from '@angular/core';",
+    );
+    expect(content).toContain("fooInput = input(0, {alias: 'foo'});");
+    expect(content).toContain('bar = model(1);');
   });
 });
