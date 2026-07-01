@@ -118,7 +118,6 @@ describe('sanitization', () => {
     // making sure security schema we have on compiler side is in sync with the `getUrlSanitizer`
     // runtime function definition
     const schema = SECURITY_SCHEMA();
-    const contextsByProp: Map<string, Set<number>> = new Map();
     const sanitizerNameByContext: Map<number, Function> = new Map([
       [SecurityContext.URL, ɵɵsanitizeUrl],
       [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl],
@@ -126,6 +125,9 @@ describe('sanitization', () => {
 
     for (const [prop, nsSchema] of Object.entries(schema)) {
       for (const [ns, tagSchema] of Object.entries(nsSchema)) {
+        // `getUrlSanitizer` resolves namespaces from the selected runtime `TNode`, so direct
+        // unit tests only cover non-namespaced schema entries. Namespaced host bindings are
+        // covered by acceptance tests.
         if (ns !== '') {
           continue;
         }
@@ -135,16 +137,9 @@ describe('sanitization', () => {
             continue;
           }
 
-          const contexts = contextsByProp.get(prop) || new Set<number>();
-          contexts.add(context);
-          contextsByProp.set(prop, contexts);
-
-          // check only in case a prop can be a part of both URL contexts
-          if (contexts.size === 2) {
-            expect(getUrlSanitizer(tag, prop))
-              .withContext(`ns: ${ns}, tag: ${tag}, prop: ${prop}, context: ${context}`)
-              .toEqual(sanitizerNameByContext.get(context)!);
-          }
+          expect(getUrlSanitizer(tag, prop))
+            .withContext(`ns: ${ns}, tag: ${tag}, prop: ${prop}, context: ${context}`)
+            .toEqual(sanitizerNameByContext.get(context)!);
         }
       }
     }
