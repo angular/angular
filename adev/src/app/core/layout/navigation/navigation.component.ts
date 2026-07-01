@@ -7,7 +7,7 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {ConnectionPositionPair} from '@angular/cdk/overlay';
+import {ConnectedPosition, ConnectionPositionPair} from '@angular/cdk/overlay';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
 import {Component, PLATFORM_ID, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
@@ -63,6 +63,12 @@ export class Navigation {
     new ConnectionPositionPair(
       {originX: 'end', originY: 'top'},
       {overlayX: 'start', overlayY: 'top'},
+    ),
+  ];
+  protected bottomMiniMenuPositions: ConnectedPosition[] = [
+    new ConnectionPositionPair(
+      {originX: 'end', originY: 'bottom'},
+      {overlayX: 'start', overlayY: 'bottom'},
     ),
   ];
 

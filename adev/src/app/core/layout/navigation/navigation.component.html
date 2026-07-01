@@ -296,7 +296,7 @@
         <button
           type="button"
           [cdkMenuTriggerFor]="socialMiniMenu"
-          [cdkMenuPosition]="miniMenuPositions"
+          [cdkMenuPosition]="bottomMiniMenuPositions"
           aria-label="Open social media links"
           (cdkMenuClosed)="closeMenu()"
           (cdkMenuOpened)="openMenu('social')"
@@ -318,7 +318,7 @@
                 <!-- Youtube Icon -->
                 <svg
                   width="20"
-                  height="15"
+                  height="20"
                   viewBox="0 0 20 15"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -339,8 +339,8 @@
               >
                 <!-- X Icon -->
                 <svg
-                  width="17"
-                  height="16"
+                  width="20"
+                  height="20"
                   viewBox="0 0 17 16"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -361,8 +361,8 @@
               >
                 <!-- Bluesky Icon -->
                 <svg
-                  width="16"
-                  height="16"
+                  width="20"
+                  height="20"
                   viewBox="0 0 16 16"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -467,7 +467,7 @@
         <button
           type="button"
           [cdkMenuTriggerFor]="themeMiniMenu"
-          [cdkMenuPosition]="miniMenuPositions"
+          [cdkMenuPosition]="bottomMiniMenuPositions"
           [aria-label]="'Change theme. Current theme: ' + theme()"
           aria-controls="theme-mini-menu"
           [aria-expanded]="openedMenu() === 'theme-picker'"
