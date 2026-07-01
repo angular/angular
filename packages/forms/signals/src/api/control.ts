@@ -14,6 +14,8 @@ import type {DisabledReason} from './types';
 /**
  * The base set of properties shared by all form control contracts.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
  * @publicApi 22.0
  */
@@ -150,6 +152,8 @@ type FormUiControlImplementsFormFieldBindingOptions = Check<
  *
  * @template TValue The type of `FieldTree` that the implementing component can edit.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
  * @publicApi 22.0
  */
@@ -178,6 +182,8 @@ export interface FormValueControl<TValue> extends FormUiControl<TValue> {
  * Many of the properties declared on this contract are optional. They do not need to be
  * implemented, but if they are will be kept in sync with the field state of the field bound to the
  * `Field` directive.
+ *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
  *
  * @category control
  * @publicApi 22.0
