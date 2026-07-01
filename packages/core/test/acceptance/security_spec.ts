@@ -1104,6 +1104,16 @@ describe('host binding sanitization', () => {
     );
   });
 
+  it('should sanitize href host bindings on dynamic SVG hosts as URLs', async () => {
+    await expectDynamicHostAttribute(
+      'a',
+      'href',
+      HOST_BINDING_UNSAFE_URL,
+      `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+      {namespace: SVG_NAMESPACE_URI, directive: HrefCarrierDirective},
+    );
+  });
+
   it('should sanitize href host bindings on dynamic MathML hosts as URLs', async () => {
     await expectDynamicHostAttribute(
       'base',
@@ -1318,6 +1328,28 @@ describe('host binding sanitization', () => {
     try {
       await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         /NG0910: Angular has detected that the `sandbox` was applied as a binding to the <iframe>/,
+      );
+    } finally {
+      fixture.componentInstance.componentRef.destroy();
+    }
+  });
+
+  it('should reject security-sensitive attribute host bindings on concrete dynamic SVG animation hosts', async () => {
+    @Directive({
+      selector: 'attribute-name-carrier',
+      host: {'[attr.attributeName]': 'attributeName'},
+    })
+    class AttributeNameCarrierDirective {
+      attributeName = 'href';
+    }
+
+    dynamicHostElement = document.createElementNS(SVG_NAMESPACE_URI, 'animate');
+    dynamicHostDirective = AttributeNameCarrierDirective;
+    const fixture = TestBed.createComponent(DynamicHostTestApp);
+
+    try {
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
       );
     } finally {
       fixture.componentInstance.componentRef.destroy();
