@@ -19,25 +19,83 @@ import {type Renderer2} from '@angular/core';
 export type NativeFormControl =
   | HTMLInputElement
   | HTMLSelectElement
-  | (HTMLTextAreaElement & {type: 'textarea'});
+  | (HTMLTextAreaElement & {type: 'textarea'})
+  | FormAssociatedCustomElement;
+
+/**
+ * Custom elements can be form associated via using the `ElementInternals` API.
+ * Properties are not guaranteed to be present on the element, but are included here for type safety.
+ * Adherence to the form element API convention is the responsibility of the custom element author.
+ *
+ * See also:
+ * https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals
+ * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/attachInternals#examples
+ */
+export interface FormAssociatedCustomElement extends HTMLElement {
+  type?: string;
+  checked?: boolean;
+  value?: string;
+  valueAsNumber?: number;
+  valueAsDate?: Date;
+  disabled?: boolean;
+  readonly validity?: ValidityState;
+  readonly validationMessage?: string;
+}
 
 export function isNativeFormElement(element: HTMLElement): element is NativeFormControl {
   return (
-    element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA'
+    element.tagName === 'INPUT' ||
+    element.tagName === 'SELECT' ||
+    element.tagName === 'TEXTAREA' ||
+    isFormAssociatedCustomElement(element)
   );
 }
 
 export function elementAcceptsMinMax(element: HTMLElement): boolean {
-  if (element.tagName !== 'INPUT') {
-    return false;
+  if (element.tagName === 'INPUT') {
+    const type = (element as HTMLInputElement).type;
+    return type === 'number' || type === 'range' || type === 'date' || type === 'month';
   }
 
-  const type = (element as HTMLInputElement).type;
-  return type === 'number' || type === 'range' || type === 'date' || type === 'month';
+  const {formAssociated, observedAttributes} = getCustomElementClass(element) ?? {};
+  return !!(
+    formAssociated &&
+    observedAttributes?.includes('min') &&
+    observedAttributes?.includes('max')
+  );
+}
+
+export function elementAcceptsMinMaxLength(element: HTMLElement): boolean {
+  if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+    return true;
+  }
+
+  const {formAssociated, observedAttributes} = getCustomElementClass(element) ?? {};
+  return !!(
+    formAssociated &&
+    observedAttributes?.includes('minlength') &&
+    observedAttributes?.includes('maxlength')
+  );
 }
 
 export function isTextualFormElement(element: HTMLElement): boolean {
   return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
+}
+
+export function isFormAssociatedCustomElement(
+  element: HTMLElement,
+): element is FormAssociatedCustomElement {
+  return getCustomElementClass(element)?.formAssociated === true;
+}
+
+function getCustomElementClass(
+  element: HTMLElement,
+):
+  | (CustomElementConstructor & {formAssociated?: boolean; observedAttributes?: string[]})
+  | undefined {
+  return typeof customElements === 'object'
+    ? customElements.get(element.tagName.toLowerCase())
+    : undefined;
 }
 
 /**
