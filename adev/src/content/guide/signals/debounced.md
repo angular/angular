@@ -35,7 +35,7 @@ export class Search {
 
 ## Status during debounce
 
-While the debounce timer is counting down, `status()` is `'loading'` and `value()` returns the previously resolved value. When the timer expires, the resource settles to `'resolved'`. If the source signal throws, the resource enters `'error'` immediately no timer runs.
+While the debounce timer is counting down, `status()` is `'loading'` and `value()` returns the previously resolved value. When the timer expires, the resource settles to `'resolved'`. If the source signal throws, the resource enters `'error'` immediately; no timer runs.
 
 See [Resource status](/guide/signals/resource#resource-status) for the full list of statuses and their `value()` behavior.
 
