@@ -20,6 +20,9 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Readonly fields](guide/forms/signals/form-logic#display-uneditable-fields-with-readonly)
+ * @see [Availability state](guide/forms/signals/field-state-management#availability-state)
+ *
  * @category logic
  * @publicApi 22.0
  */

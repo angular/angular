@@ -13,6 +13,8 @@ import {SIGNAL_FORMS_CONFIG} from '../field/di';
 /**
  * Configuration options for signal forms.
  *
+ * @see [Automatic status classes](guide/forms/signals/migration#automatic-status-classes)
+ *
  * @publicApi 22.0
  */
 export interface SignalFormsConfig {
@@ -24,6 +26,8 @@ export interface SignalFormsConfig {
 
 /**
  * Provides configuration options for signal forms.
+ *
+ * @see [Automatic status classes](guide/forms/signals/migration#automatic-status-classes)
  *
  * @publicApi 22.0
  */

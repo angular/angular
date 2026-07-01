@@ -77,6 +77,8 @@ export type ValueUpdateOptions = {
  *  </form>
  * ```
  *
+ * @see [Binding SignalFormControl](guide/forms/signals/migration#binding-signalformcontrol)
+ *
  * @publicApi 22.0
  */
 export class SignalFormControl<T> extends AbstractControl {

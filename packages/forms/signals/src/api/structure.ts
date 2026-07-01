@@ -43,6 +43,8 @@ import type {
 /**
  * Options that may be specified when creating a form.
  *
+ * @see [Signal Forms setup](guide/forms/signals/overview#setup)
+ *
  * @category structure
  * @publicApi 22.0
  */
@@ -96,6 +98,8 @@ export interface FormOptions<TModel> {
  * @return A `FieldTree` representing a form around the data model.
  * @template TModel The type of the data model.
  *
+ * @see [Creating models](guide/forms/signals/models#creating-models)
+ *
  * @category structure
  * @publicApi 22.0
  */
@@ -142,6 +146,8 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  *   2. The form options
  * @return A `FieldTree` representing a form around the data model
  * @template TValue The type of the data model.
+ *
+ * @see [Creating models](guide/forms/signals/models#creating-models)
  *
  * @category structure
  * @publicApi 22.0
@@ -190,6 +196,8 @@ export function form<TModel>(
  * @param options The form options
  * @return A `FieldTree` representing a form around the data model.
  * @template TModel The type of the data model.
+ *
+ * @see [Creating models](guide/forms/signals/models#creating-models)
  *
  * @category structure
  * @publicApi 22.0
@@ -258,6 +266,8 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
  * element of the array.
  * @template TValue The data type of the item field to apply the schema to.
  *
+ * @see [Array items with applyEach](guide/forms/signals/schemas#array-items-with-applyeach)
+ *
  * @category structure
  * @publicApi 22.0
  */
@@ -297,6 +307,8 @@ export function applyEach<TValue extends Object>(
  * @param schema The schema to apply to the property
  * @template TValue The data type of the field to apply the schema to.
  *
+ * @see [Using the schema with apply](guide/forms/signals/schemas#using-the-schema-with-apply)
+ *
  * @category structure
  * @publicApi 22.0
  */
@@ -317,6 +329,8 @@ export function apply<TValue>(
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the schema should be applied.
  * @param schema The schema to apply to the field when the `logic` function returns `true`.
  * @template TValue The data type of the field to apply the schema to.
+ *
+ * @see [Conditional schemas with applyWhen](guide/forms/signals/schemas#conditional-schemas-with-applywhen)
  *
  * @category structure
  * @publicApi 22.0
@@ -342,6 +356,8 @@ export function applyWhen<TValue>(
  * @template TValue The data type of the field to apply the schema to.
  * @template TNarrowed The data type of the schema (a narrowed type of TValue).
  *
+ * @see [Type-narrowing with applyWhenValue](guide/forms/signals/schemas#type-narrowing-with-applywhenvalue)
+ *
  * @category structure
  * @publicApi 22.0
  */
@@ -359,6 +375,8 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  *   should be applied.
  * @param schema The schema to apply to the field when `predicate` returns `true`.
  * @template TValue The data type of the field to apply the schema to.
+ *
+ * @see [Type-narrowing with applyWhenValue](guide/forms/signals/schemas#type-narrowing-with-applywhenvalue)
  *
  * @category structure
  * @publicApi 22.0
@@ -413,6 +431,8 @@ export function applyWhenValue(
  * @param options Options for the submission.
  * @returns Whether the submission was successful.
  * @template TModel The data type of the field being submitted.
+ *
+ * @see [Form submission](guide/forms/signals/form-submission)
  *
  * @category submission
  * @publicApi 22.0
@@ -480,6 +500,8 @@ export async function submit<TModel>(
  * @param fn A **non-reactive** function that sets up reactive logic rules for the form.
  * @returns A schema object that implements the given logic.
  * @template TValue The value type of a `FieldTree` that this schema binds to.
+ *
+ * @see [Create reusable schemas with schema](guide/forms/signals/schemas#create-reusable-schemas-with-schema)
  *
  * @category structure
  * @publicApi 22.0

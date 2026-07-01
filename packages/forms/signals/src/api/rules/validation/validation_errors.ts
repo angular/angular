@@ -22,6 +22,8 @@ export interface ValidationErrorOptions {
  * A type that requires the given type `T` to have a `field` property.
  * @template T The type to add a `field` to.
  *
+ * @see [Validation errors](guide/forms/signals/validation#validation-errors)
+ *
  * @publicApi 22.0
  */
 export type WithFieldTree<T> = T & {fieldTree: ReadonlyFieldTree<unknown>};
@@ -29,6 +31,8 @@ export type WithFieldTree<T> = T & {fieldTree: ReadonlyFieldTree<unknown>};
 /**
  * A type that allows the given type `T` to optionally have a `field` property.
  * @template T The type to optionally add a `field` to.
+ *
+ * @see [Validation errors](guide/forms/signals/validation#validation-errors)
  *
  * @publicApi 22.0
  */
@@ -40,6 +44,8 @@ export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {
  * A type that ensures the given type `T` does not have a `field` property.
  * @template T The type to remove the `field` from.
  *
+ * @see [Validation errors](guide/forms/signals/validation#validation-errors)
+ *
  * @publicApi 22.0
  */
 export type WithoutFieldTree<T> = T & {fieldTree: never};
@@ -47,6 +53,8 @@ export type WithoutFieldTree<T> = T & {fieldTree: never};
 /**
  * Create a required error associated with the target field
  * @param options The validation error options
+ *
+ * @see [Required validation](guide/forms/signals/validation#required)
  *
  * @publicApi 22.0
  */
@@ -56,6 +64,8 @@ export function requiredError(
 /**
  * Create a required error
  * @param options The optional validation error options
+ *
+ * @see [Required validation](guide/forms/signals/validation#required)
  *
  * @category validation
  * @publicApi 22.0
@@ -74,6 +84,8 @@ export function requiredError(
  * @param min The min value constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -85,6 +97,8 @@ export function minError(
  * Create a min value error
  * @param min The min value constraint
  * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -105,6 +119,8 @@ export function minError(
  * @param minDate The min date constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -116,6 +132,8 @@ export function minDateError(
  * Create a minDate error
  * @param minDate The min date constraint
  * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -136,6 +154,8 @@ export function minDateError(
  * @param max The max value constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -147,6 +167,8 @@ export function maxError(
  * Create a max value error
  * @param max The max value constraint
  * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -167,6 +189,8 @@ export function maxError(
  * @param maxDate The max date constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -178,6 +202,8 @@ export function maxDateError(
  * Create a maxDate error
  * @param maxDate The max date constraint
  * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -198,6 +224,8 @@ export function maxDateError(
  * @param minLength The minLength constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -209,6 +237,8 @@ export function minLengthError(
  * Create a minLength error
  * @param minLength The minLength constraint
  * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
  *
  * @category validation
  * @publicApi 22.0
@@ -229,6 +259,8 @@ export function minLengthError(
  * @param maxLength The maxLength constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -240,6 +272,8 @@ export function maxLengthError(
  * Create a maxLength error
  * @param maxLength The maxLength constraint
  * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
  *
  * @category validation
  * @publicApi 22.0
@@ -260,6 +294,8 @@ export function maxLengthError(
  * @param pattern The violated pattern
  * @param options The validation error options
  *
+ * @see [Pattern validation](guide/forms/signals/validation#pattern)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -271,6 +307,8 @@ export function patternError(
  * Create a pattern matching error
  * @param pattern The violated pattern
  * @param options The optional validation error options
+ *
+ * @see [Pattern validation](guide/forms/signals/validation#pattern)
  *
  * @category validation
  * @publicApi 22.0
@@ -290,6 +328,8 @@ export function patternError(
  * Create an email format error associated with the target field
  * @param options The validation error options
  *
+ * @see [Email validation](guide/forms/signals/validation#email)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -297,6 +337,8 @@ export function emailError(options: WithFieldTree<ValidationErrorOptions>): Emai
 /**
  * Create an email format error
  * @param options The optional validation error options
+ *
+ * @see [Email validation](guide/forms/signals/validation#email)
  *
  * @category validation
  * @publicApi 22.0
@@ -383,6 +425,8 @@ export declare namespace ValidationError {
  * Internal version of `NgValidationError`, we create this separately so we can change its type on
  * the exported version to a type union of the possible sub-classes.
  *
+ * @see [Signal Form Validation Errors](guide/forms/signals/validation#validation-errors)
+ *
  * @publicApi 22.0
  */
 export abstract class BaseNgValidationError implements ValidationError {
@@ -408,6 +452,8 @@ export abstract class BaseNgValidationError implements ValidationError {
 /**
  * An error used to indicate that a required field is empty.
  *
+ * @see [Required validation](guide/forms/signals/validation#required)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -417,6 +463,8 @@ export class RequiredValidationError extends BaseNgValidationError {
 
 /**
  * An error used to indicate that a value is lower than the minimum allowed.
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -435,6 +483,8 @@ export class MinValidationError extends BaseNgValidationError {
 /**
  * An error used to indicate that a date value is earlier than the minimum allowed.
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -451,6 +501,8 @@ export class MinDateValidationError extends BaseNgValidationError {
 
 /**
  * An error used to indicate that a value is higher than the maximum allowed.
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
  * @publicApi 22.0
@@ -469,6 +521,8 @@ export class MaxValidationError extends BaseNgValidationError {
 /**
  * An error used to indicate that a date value is later than the maximum allowed.
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -485,6 +539,8 @@ export class MaxDateValidationError extends BaseNgValidationError {
 
 /**
  * An error used to indicate that a value is shorter than the minimum allowed length.
+ *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
  *
  * @category validation
  * @publicApi 22.0
@@ -503,6 +559,8 @@ export class MinLengthValidationError extends BaseNgValidationError {
 /**
  * An error used to indicate that a value is longer than the maximum allowed length.
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -519,6 +577,8 @@ export class MaxLengthValidationError extends BaseNgValidationError {
 
 /**
  * An error used to indicate that a value does not match the required pattern.
+ *
+ * @see [Pattern validation](guide/forms/signals/validation#pattern)
  *
  * @category validation
  * @publicApi 22.0
@@ -537,6 +597,8 @@ export class PatternValidationError extends BaseNgValidationError {
 /**
  * An error used to indicate that a value is not a valid email.
  *
+ * @see [Email validation](guide/forms/signals/validation#email)
+ *
  * @category validation
  * @publicApi 22.0
  */
@@ -546,6 +608,8 @@ export class EmailValidationError extends BaseNgValidationError {
 
 /**
  * An error used to indicate that a value entered in a native input does not parse.
+ *
+ * @see [Value transformation](guide/forms/signals/custom-controls#value-transformation)
  *
  * @category validation
  * @publicApi 22.0
@@ -575,6 +639,8 @@ export class NativeInputParseError extends BaseNgValidationError {
  *   }
  * }
  * ```
+ *
+ * @see [Signal Form Validation Errors](guide/forms/signals/validation#validation-errors)
  *
  * @category validation
  * @publicApi 22.0
