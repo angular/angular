@@ -23,7 +23,13 @@ export {
   HttpInterceptorFn,
 } from './src/interceptor';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
-export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
+export {
+  // 3p-only-start
+  DangerousHttpClientJsonpModule,
+  // 3p-only-end
+  HttpClientModule,
+  HttpClientXsrfModule,
+} from './src/module';
 export {
   HttpParameterCodec,
   HttpParams,
@@ -34,10 +40,12 @@ export {
   HttpFeature,
   HttpFeatureKind,
   provideHttpClient,
+  // 3p-only-start
+  withDangerousJsonpSupport,
+  // 3p-only-end
   withFetch,
   withInterceptors,
   withInterceptorsFromDi,
-  withJsonpSupport,
   withNoXsrfProtection,
   withRequestsMadeViaParent,
   withXhr,
