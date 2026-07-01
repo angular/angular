@@ -71,7 +71,6 @@ APPLICATION_DEPS = [
     ":node_modules/fflate",
     ":node_modules/marked",
     ":node_modules/ngx-progressbar",
-    ":node_modules/open-in-idx",
     ":node_modules/tailwindcss",
     ":node_modules/typescript",
     ":node_modules/@types/dom-navigation",
