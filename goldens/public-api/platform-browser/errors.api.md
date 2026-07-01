@@ -19,7 +19,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     SANITIZATION_UNEXPECTED_CTX = 5202,
     // (undocumented)
-    SANITIZATION_UNSAFE_RESOURCE_URL = 5201,
+    SANITIZATION_UNSAFE_RESOURCE_URL = -5201,
     // (undocumented)
     SANITIZATION_UNSAFE_SCRIPT = 5200,
     // (undocumented)

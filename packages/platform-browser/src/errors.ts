@@ -24,7 +24,7 @@ export const enum RuntimeErrorCode {
 
   // Sanitization-related errors (5200-5300 range)
   SANITIZATION_UNSAFE_SCRIPT = 5200,
-  SANITIZATION_UNSAFE_RESOURCE_URL = 5201,
+  SANITIZATION_UNSAFE_RESOURCE_URL = -5201,
   SANITIZATION_UNEXPECTED_CTX = 5202,
 
   // Animations related errors (5300-5400 range)
