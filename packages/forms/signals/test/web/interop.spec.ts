@@ -607,6 +607,69 @@ describe('ControlValueAccessor', () => {
     expect(field().value()).toBe('initial');
   });
 
+  it('should not write stale model values back to a CVA while debounce is pending', () => {
+    let writeValues: string[] = [];
+
+    @Component({
+      selector: 'custom-control-writeback-test',
+      template: `<input [value]="value" (input)="onInput($event.target.value)" />`,
+      providers: [
+        {
+          provide: NG_VALUE_ACCESSOR,
+          useExisting: CustomControlWritebackTest,
+          multi: true,
+        },
+      ],
+    })
+    class CustomControlWritebackTest implements ControlValueAccessor {
+      value = '';
+
+      private onChangeFn?: (value: string) => void;
+
+      writeValue(newValue: string): void {
+        writeValues.push(newValue);
+        this.value = newValue;
+      }
+
+      registerOnChange(fn: (value: string) => void): void {
+        this.onChangeFn = fn;
+      }
+
+      registerOnTouched(fn: () => void): void {}
+
+      onInput(newValue: string) {
+        this.value = newValue;
+        this.onChangeFn?.(newValue);
+      }
+    }
+
+    @Component({
+      imports: [CustomControlWritebackTest, FormField],
+      template: `<custom-control-writeback-test [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('initial'), (p) => {
+        debounce(p, 'blur');
+      });
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+
+    const debugEl = fixture.debugElement.query(
+      (el) => el.componentInstance instanceof CustomControlWritebackTest,
+    );
+
+    const cvaInstance = debugEl.componentInstance as CustomControlWritebackTest;
+
+    writeValues = [];
+
+    act(() => cvaInstance.onInput('updated'));
+
+    expect(cvaInstance.value).toBe('updated');
+
+    expect(writeValues).toEqual([]);
+  });
+
   describe('properties', () => {
     describe('disabled', () => {
       it('should bind to directive input', () => {

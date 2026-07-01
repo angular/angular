@@ -88,12 +88,12 @@ export function cvaControlCreate(
 
   return () => {
     const fieldState = parent.state();
-    const value = fieldState.value();
+    const controlValue = fieldState.controlValue();
 
-    if (bindingUpdated(bindings, 'controlValue', value)) {
+    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
       // We don't know if the interop control has underlying signals, so we must use `untracked` to
       // prevent writing to a signal in a reactive context.
-      untracked(() => parent.controlValueAccessor!.writeValue(value));
+      untracked(() => parent.controlValueAccessor!.writeValue(controlValue));
     }
 
     for (const name of CONTROL_BINDING_NAMES) {
