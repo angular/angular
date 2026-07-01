@@ -128,7 +128,7 @@ The value of the conditional expression is compared to the case expression using
 
 **`@switch` does not have a fallthrough**, so you do not need an equivalent to a `break` or `return` statement in the block.
 
-You can specify multiple conditions for a single block by have consecutive `@case` statements.
+You can specify multiple conditions for a single block by having consecutive `@case` statements.
 
 You can optionally include a `@default` block. The content of the `@default` block displays if none of the preceding case expressions match the switch value.
 

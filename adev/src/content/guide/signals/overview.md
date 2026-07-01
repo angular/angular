@@ -40,7 +40,7 @@ Writable signals have the type `WritableSignal`.
 
 #### Converting writable signals to readonly
 
-`WritableSignal` provide a `asReadonly()` method that returns a readonly version of the signal. This is useful when you want to expose a signal's value to consumers without allowing them to modify it directly:
+`WritableSignal` provides an `asReadonly()` method that returns a readonly version of the signal. This is useful when you want to expose a signal's value to consumers without allowing them to modify it directly:
 
 ```ts
 @Service()
