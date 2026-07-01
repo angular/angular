@@ -638,9 +638,9 @@ class ResourceWrappedError extends Error {
 }
 
 /**
- * Chains the value of another resource into the params of the current resource, returning the value
- * of the other resource if it is available, or propagating the status to the current resource if it
- * is not.
+ * Chains the current params off of the value of another resource, returning the value
+ * of the other resource only when its status is `resolved` or `local`, or propagating status to
+ * the current resource by throwing the appropriate status code when the value is not available.
  */
 export function chain<T>(resource: Resource<T>): T {
   switch (resource.status()) {
