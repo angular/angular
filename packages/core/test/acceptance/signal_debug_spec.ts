@@ -122,6 +122,8 @@ describe('getSignalGraph', () => {
 
     const effectNode = nodes.find((node) => node.label === 'primitiveSignalEffect')!;
     expect(effectNode).toBeDefined();
+    expect(effectNode.debuggableFn).toBeDefined();
+    expect(typeof effectNode.debuggableFn).toBe('function');
 
     const signalNode = nodes.find((node) => node.label === 'primitiveSignal')!;
     expect(signalNode).toBeDefined();

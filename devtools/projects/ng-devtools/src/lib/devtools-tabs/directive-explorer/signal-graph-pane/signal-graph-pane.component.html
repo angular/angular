@@ -16,6 +16,7 @@
     [graph]="signalGraph.graph()!"
     [element]="signalGraph.element()!"
     (gotoSource)="gotoSource($event)"
+    (setBreakpoint)="setBreakpoint($event)"
     (expandCluster)="expandCluster($event)"
     (highlightDeps)="highlightDeps($event)"
     (close)="detailsVisible.set(false)"
