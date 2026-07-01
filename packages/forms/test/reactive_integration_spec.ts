@@ -50,6 +50,7 @@ import {
   NG_ASYNC_VALIDATORS,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
+  NgControl,
   ReactiveFormsModule,
   Validator,
   Validators,
@@ -220,6 +221,15 @@ describe('reactive forms integration tests', () => {
 
       expect(form.value).toEqual({'login': 'updatedValue'});
     });
+
+    it('should expose the selected value accessor during sibling directive construction', () => {
+      TestBed.configureTestingModule({imports: [FormGroupWithConstructorNgControlDirective]});
+      const fixture = TestBed.createComponent(FormGroupWithConstructorNgControlDirective);
+      fixture.componentInstance.form = new FormGroup({login: new FormControl('loginValue')});
+
+      expect(() => fixture.detectChanges()).not.toThrow();
+    });
+
   });
 
   describe('re-bound form groups', () => {
@@ -6371,6 +6381,18 @@ class UniqLoginValidator implements AsyncValidator {
   }
 }
 
+@Directive({
+  selector: '[constructor-ng-control-check]',
+  standalone: true,
+})
+class ConstructorNgControlCheck {
+  constructor(controlDir: NgControl) {
+    if (!controlDir.valueAccessor) {
+      throw new Error('Missing value accessor during directive construction.');
+    }
+  }
+}
+
 @Component({
   selector: 'form-control-comp',
   template: `<input type="text" [formControl]="control" />`,
@@ -6393,6 +6415,53 @@ class FormGroupComp {
   control!: FormControl;
   form!: FormGroup;
   event!: Event;
+}
+
+@Component({
+  selector: 'form-group-with-constructor-ng-control-directive',
+  template: ` <form [formGroup]="form">
+    <input type="text" formControlName="login" constructor-ng-control-check />
+  </form>`,
+  imports: [ReactiveFormsModule, ConstructorNgControlCheck],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class FormGroupWithConstructorNgControlDirective {
+  form!: FormGroup;
+}
+
+@Directive({
+  selector: '[myCustomCva]',
+  standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MyCustomCva),
+      multi: true,
+    },
+  ],
+})
+class MyCustomCva implements ControlValueAccessor {
+  writeValue() {}
+  registerOnChange() {}
+  registerOnTouched() {}
+}
+
+@Directive({
+  selector: '[myCustomCva2]',
+  standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MyCustomCva2),
+      multi: true,
+    },
+  ],
+})
+class MyCustomCva2 implements ControlValueAccessor {
+  writeValue() {}
+  registerOnChange() {}
+  registerOnTouched() {}
 }
 
 @Component({
