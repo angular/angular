@@ -29,6 +29,9 @@ import {RuntimeErrorCode} from '../../src/errors';
 import {global} from '../../src/util/global';
 import {ComponentFixture, TestBed} from '../../testing';
 
+const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
+const MATH_ML_NAMESPACE_URI = 'http://www.w3.org/1998/Math/MathML';
+
 describe('comment node text escaping', () => {
   // see: https://html.spec.whatwg.org/multipage/syntax.html#comments
   [
@@ -898,6 +901,40 @@ describe('host binding sanitization', () => {
     url = hostBindingValue;
   }
 
+  @Directive({
+    selector: '[href-carrier]',
+    host: {'[attr.href]': 'url'},
+  })
+  class HrefCarrierDirective {
+    url = hostBindingValue;
+  }
+
+  @Directive({
+    selector: '[xlink-href-carrier]',
+    host: {'[attr.xlink:href]': 'url'},
+  })
+  class XlinkHrefCarrierDirective {
+    url = hostBindingValue;
+  }
+
+  @Component({
+    template: `
+      <svg>
+        <a id="svg-href" href-carrier></a>
+        <rect id="svg-rect" href-carrier></rect>
+        <a id="svg-xlink-href" xlink-href-carrier></a>
+      </svg>
+    `,
+    imports: [HrefCarrierDirective, XlinkHrefCarrierDirective],
+  })
+  class SvgNamespaceHostBindingApp {}
+
+  @Component({
+    template: '<math><mi id="math-href" href-carrier></mi></math>',
+    imports: [HrefCarrierDirective],
+  })
+  class MathNamespaceHostBindingApp {}
+
   @Component({
     selector: 'host-srcdoc-carrier',
     template: '',
@@ -943,10 +980,14 @@ describe('host binding sanitization', () => {
     attrName: string,
     value: string,
     expected: string,
+    options: {namespace?: string; directive?: Type<unknown>} = {},
   ): Promise<void> {
     hostBindingValue = value;
-    dynamicHostElement = document.createElement(tagName);
-    dynamicHostDirective = DataCarrierDirective;
+    dynamicHostElement =
+      options.namespace === undefined
+        ? document.createElement(tagName)
+        : document.createElementNS(options.namespace, tagName);
+    dynamicHostDirective = options.directive ?? DataCarrierDirective;
     const fixture = TestBed.createComponent(DynamicHostTestApp);
 
     try {
@@ -971,6 +1012,21 @@ describe('host binding sanitization', () => {
     } finally {
       fixture.componentInstance.componentRef.destroy();
     }
+  }
+
+  async function expectTemplateHostAttribute(
+    type: Type<unknown>,
+    selector: string,
+    attrName: string,
+    value: string,
+    expected: string,
+  ): Promise<void> {
+    hostBindingValue = value;
+    const fixture = TestBed.createComponent(type);
+    await fixture.whenStable();
+
+    const element = fixture.nativeElement.querySelector(selector) as Element;
+    expect(element.getAttribute(attrName)).toBe(expected);
   }
 
   async function expectComponentHostAttribute(
@@ -1005,6 +1061,56 @@ describe('host binding sanitization', () => {
       'data',
       HOST_BINDING_UNSAFE_URL,
       HOST_BINDING_UNSAFE_URL,
+    );
+  });
+
+  it('should sanitize href host bindings on SVG links', async () => {
+    await expectTemplateHostAttribute(
+      SvgNamespaceHostBindingApp,
+      '#svg-href',
+      'href',
+      HOST_BINDING_UNSAFE_URL,
+      `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+    );
+  });
+
+  it('should not sanitize href host bindings on non-link SVG elements', async () => {
+    await expectTemplateHostAttribute(
+      SvgNamespaceHostBindingApp,
+      '#svg-rect',
+      'href',
+      HOST_BINDING_UNSAFE_URL,
+      HOST_BINDING_UNSAFE_URL,
+    );
+  });
+
+  it('should sanitize xlink:href host bindings on SVG links', async () => {
+    await expectTemplateHostAttribute(
+      SvgNamespaceHostBindingApp,
+      '#svg-xlink-href',
+      'xlink:href',
+      HOST_BINDING_UNSAFE_URL,
+      `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+    );
+  });
+
+  it('should sanitize href host bindings on MathML elements', async () => {
+    await expectTemplateHostAttribute(
+      MathNamespaceHostBindingApp,
+      '#math-href',
+      'href',
+      HOST_BINDING_UNSAFE_URL,
+      `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+    );
+  });
+
+  it('should sanitize href host bindings on dynamic MathML hosts as URLs', async () => {
+    await expectDynamicHostAttribute(
+      'base',
+      'href',
+      HOST_BINDING_UNSAFE_URL,
+      `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+      {namespace: MATH_ML_NAMESPACE_URI, directive: HrefCarrierDirective},
     );
   });
 
@@ -1287,7 +1393,7 @@ describe('Component host element validation', () => {
     })
     class MySvgSink {}
 
-    const svgScriptHost = document.createElementNS('http://www.w3.org/2000/svg', 'script');
+    const svgScriptHost = document.createElementNS(SVG_NAMESPACE_URI, 'script');
     document.head.appendChild(svgScriptHost);
 
     try {
