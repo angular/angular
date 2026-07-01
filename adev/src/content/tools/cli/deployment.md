@@ -28,13 +28,16 @@ The table below lists tools which implement deployment functionality to differen
 The `deploy` command for each package may require different command line options.
 You can read more by following the links associated with the package names below:
 
-| Deployment to                                                     | Setup Command                                                                               |
-| :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
-| [Firebase hosting](https://firebase.google.com/docs/hosting)      | [`ng add @angular/fire`](https://npmjs.org/package/@angular/fire)                           |
-| [Vercel](https://vercel.com/solutions/angular)                    | [`vercel init angular`](https://github.com/vercel/vercel/tree/main/examples/angular)        |
-| [Netlify](https://www.netlify.com)                                | [`ng add @netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy)       |
-| [GitHub Pages](https://pages.github.com)                          | [`ng add angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)               |
-| [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`ng add @jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy) |
+| Deployment to                                                     | Setup Command                                                                                                             |
+| :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ |
+| [Firebase hosting](https://firebase.google.com/docs/hosting)      | [`ng add @angular/fire`](https://npmjs.org/package/@angular/fire)                                                         |
+| [Vercel](https://vercel.com/solutions/angular)                    | [`vercel init angular`](https://github.com/vercel/vercel/tree/main/examples/angular)                                      |
+| [Netlify](https://www.netlify.com)                                | [`ng add @netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy)                                     |
+| [GitHub Pages](https://pages.github.com)                          | [`ng add angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)                                             |
+| [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`ng add @jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy)                               |
+| [Hostinger](https://www.hostinger.com/support/hpanel/node-js/)    | [Connect a Git repository or ZIP archive](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/) |
+
+Some providers in the table above don't use an `ng deploy` builder. For example, [Hostinger](https://www.hostinger.com/support/hpanel/node-js/) deploys an Angular application when you connect a Git repository or upload your project as an archive: the platform installs dependencies, runs `ng build`, and serves the output directory for you.
 
 If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either [create a builder](tools/cli/cli-builder) that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your application.
 
