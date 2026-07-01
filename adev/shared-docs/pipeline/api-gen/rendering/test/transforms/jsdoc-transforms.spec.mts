@@ -89,12 +89,14 @@ describe('jsdoc transforms', () => {
         label: 'Angular',
         url: 'https://angular.io',
         title: undefined,
+        target: '_blank',
       });
 
       expect(entry.additionalLinks[1]).toEqual({
         label: 'Angular',
         url: 'https://angular.io',
         title: 'Angular',
+        target: '_blank',
       });
 
       expect(entry.additionalLinks[2]).toEqual({
@@ -127,10 +129,12 @@ describe('jsdoc transforms', () => {
       expect(entry.additionalLinks[8]).toEqual({
         label: 'ApplicationRef',
         url: 'https://angular.dev/api/core/ApplicationRef',
+        target: '_blank',
       });
       expect(entry.additionalLinks[9]).toEqual({
         label: 'angular.dev',
         url: 'https://angular.dev',
+        target: '_blank',
       });
 
       expect(entry.additionalLinks[10]).toEqual({
@@ -182,6 +186,7 @@ describe('jsdoc transforms', () => {
         label: 'Method with <code>backticks</code> in title',
         url: 'https://example.com',
         title: 'Title with `code`',
+        target: '_blank',
       });
     });
 
