@@ -4117,6 +4117,44 @@ runInEachFileSystem(() => {
 3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
       });
 
+      it('should report an unknown property on ng-template when a standalone directive is not imported', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive, input} from '@angular/core';
+
+            @Directive({
+              selector: 'ng-template[auiTypedOption]',
+              standalone: true,
+            })
+            export class TypedOptionDirective {
+              auiTypedOption = input.required<any>();
+            }
+
+            @Component({
+              selector: 'test',
+              standalone: true,
+              imports: [],
+              template: \`
+                <ng-template [auiTypedOption]="searchResult()"></ng-template>
+              \`,
+            })
+            export class TestCmp {
+              searchResult() {
+                return {name: 'test'};
+              }
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Can't bind to 'auiTypedOption' since it isn't a known property of 'ng-template'.`,
+        );
+      });
+
       it('should have a descriptive error for unknown elements that contain a dash', () => {
         env.write(
           'test.ts',

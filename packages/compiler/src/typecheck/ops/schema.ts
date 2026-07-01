@@ -7,7 +7,7 @@
  */
 
 import {BindingType} from '../../expression_parser/ast';
-import {Component, Element, HostElement} from '../../render3/r3_ast';
+import {BoundAttribute, Component, Element, HostElement, Template} from '../../render3/r3_ast';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 const REGISTRY = new DomElementSchemaRegistry();
 import {TcbOp} from './base';
@@ -28,7 +28,7 @@ import {getComponentTagName} from './selectorless';
 export class TcbDomSchemaCheckerOp extends TcbOp {
   constructor(
     private tcb: Context,
-    private element: Element | Component | HostElement,
+    private element: Element | Component | Template | HostElement,
     private checkElement: boolean,
     private claimedInputs: Set<string> | null,
   ) {
@@ -41,8 +41,16 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
 
   override execute(): TcbExpr | null {
     const element = this.element;
-    const isTemplateElement = element instanceof Element || element instanceof Component;
-    const bindings = isTemplateElement ? element.inputs : element.bindings;
+    const isTemplateElement =
+      element instanceof Element || element instanceof Component || element instanceof Template;
+
+    let bindings = isTemplateElement ? element.inputs : element.bindings;
+    if (element instanceof Template) {
+      const boundAttrs = element.templateAttrs.filter(
+        (attr): attr is BoundAttribute => attr instanceof BoundAttribute,
+      );
+      bindings = [...bindings, ...boundAttrs];
+    }
 
     if (this.checkElement && isTemplateElement) {
       this.tcb.domSchemaChecker.checkElement(
@@ -91,7 +99,15 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
     return null;
   }
 
-  private getTagName(node: Element | Component): string {
-    return node instanceof Element ? node.name : getComponentTagName(node);
+  private getTagName(node: Element | Component | Template): string {
+    if (node instanceof Element) {
+      return node.name;
+    }
+
+    if (node instanceof Template) {
+      return 'ng-template';
+    }
+
+    return getComponentTagName(node);
   }
 }

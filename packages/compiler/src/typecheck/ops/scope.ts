@@ -558,19 +558,30 @@ export class Scope {
     if (directives === null || directives.length === 0) {
       // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
       // to add them if needed.
-      if (node instanceof Element) {
-        this.opQueue.push(
-          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
-        );
+      if (node instanceof Element || node instanceof Template) {
+        if (node instanceof Element) {
+          this.opQueue.push(
+            new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+          );
+        }
 
         // Skip DOM schema checks for elements matched as foreign components.
         // An element can never match both an Angular directive and a foreign component
         // without throwing a fatal error, so we are guaranteed that directives is empty
         // and we only need to intercept in this directiveless block.
-        const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+        const isForeign =
+          node instanceof Element && this.tcb.boundTarget.getForeignComponent(node) !== null;
         if (!isForeign) {
+          // Skip validating the structural 'ng-template' tag itself against the standard DOM element registry
+          const isTemplateTag = node instanceof Template;
+
           this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
+            new TcbDomSchemaCheckerOp(
+              this.tcb,
+              node,
+              /* checkElement */ !isTemplateTag,
+              claimedInputs,
+            ),
           );
         }
       }
@@ -609,7 +620,7 @@ export class Scope {
 
     // After expanding the directives, we might need to queue an operation to check any unclaimed
     // inputs.
-    if (node instanceof Element) {
+    if (node instanceof Element || node instanceof Template) {
       // Go through the directives and remove any inputs that it claims from `elementInputs`.
       for (const dir of directives) {
         for (const propertyName of dir.inputs.propertyNames) {
@@ -617,12 +628,16 @@ export class Scope {
         }
       }
 
-      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
+      if (node instanceof Element) {
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+        );
+      }
       // If there are no directives which match this element, then it's a "plain" DOM element (or a
       // web component), and should be checked against the DOM schema. If any directives match,
       // we must assume that the element could be custom (either a component, or a directive like
       // <router-outlet>) and shouldn't validate the element name itself.
-      const checkElement = directives.length === 0;
+      const checkElement = node instanceof Element && directives.length === 0;
       this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
     }
   }
