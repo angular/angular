@@ -10,13 +10,15 @@ import {Component, computed, effect, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {signalGraphTool} from '../../../src/debug/ai/signal_graph';
 import {setupFrameworkInjectorProfiler} from '../../../src/render3/debug/framework_injector_profiler';
+import {getInjector} from '../../../src/render3/util/discovery_utils';
+import {Injector} from '../../../src/di/injector';
 
 describe('signalGraphTool', () => {
   beforeEach(() => {
     setupFrameworkInjectorProfiler();
   });
 
-  it('should discover signal graph from targeted element', async () => {
+  it('should discover signal graph from targeted injector', async () => {
     @Component({
       selector: 'signal-graph-test-root',
       template: '<div>Signals test: {{ double() }}</div>',
@@ -40,8 +42,9 @@ describe('signalGraphTool', () => {
     await fixture.whenStable();
 
     const rootElement = fixture.nativeElement;
+    const injector = getInjector(rootElement);
 
-    const result = await signalGraphTool.execute({target: rootElement});
+    const result = await signalGraphTool.execute({injector});
 
     expect(result.nodes).toEqual(
       jasmine.arrayWithExactContents([
@@ -66,15 +69,21 @@ describe('signalGraphTool', () => {
     );
   });
 
-  it('should throw an error if target is not an HTMLElement', async () => {
-    await expectAsync(
-      signalGraphTool.execute({target: {} as unknown as HTMLElement}),
-    ).toBeRejectedWithError(/must be an HTMLElement/);
+  it('should throw an error if injector is null', async () => {
+    await expectAsync(signalGraphTool.execute({injector: null!})).toBeRejectedWithError(
+      /undefined, null, or an instance of NullInjector/,
+    );
   });
 
-  it('should throw an error if target is not an Angular component', async () => {
+  it('should throw an error if injector is undefined', async () => {
+    await expectAsync(signalGraphTool.execute({injector: undefined!})).toBeRejectedWithError(
+      /undefined, null, or an instance of NullInjector/,
+    );
+  });
+
+  it('should throw an error if injector is a NullInjector', async () => {
     await expectAsync(
-      signalGraphTool.execute({target: document.createElement('div')}),
-    ).toBeRejectedWithError(/not the host element of an Angular component/);
+      signalGraphTool.execute({injector: getInjector(document.createElement('div'))}),
+    ).toBeRejectedWithError(/undefined, null, or an instance of NullInjector/);
   });
 });

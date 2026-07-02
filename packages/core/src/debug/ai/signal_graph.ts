@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Injector} from '../../di/injector';
 import {NullInjector} from '../../di/null_injector';
-import {getInjector} from '../../render3/util/discovery_utils';
 import {DebugSignalGraph, getSignalGraph} from '../../render3/util/signal_debug';
 import {ToolDefinition} from './tool_definitions';
 
@@ -19,20 +19,19 @@ type AiSignalGraph = Omit<DebugSignalGraph, 'nodes'> & {
 /**
  * Tool that exposes Angular's signal dependency graph to AI agents.
  */
-export const signalGraphTool: ToolDefinition<{target: HTMLElement}, AiSignalGraph> = {
+export const signalGraphTool: ToolDefinition<{injector: Injector}, AiSignalGraph> = {
   name: 'angular:signal_graph',
   // tslint:disable-next-line:no-toplevel-property-access
   description: `
-Exposes the Angular signal dependency graph for a given DOM element.
+Exposes the Angular signal dependency graph for a given Injector.
 
 This tool extracts the reactive dependency graph (signals, computeds, and effects) that
-are transitive dependencies of the effects of that element. It will include signals
+are transitive dependencies of the effects of that injector. It will include signals
 authored in other components/services and depended upon by the target component, but
 will *not* include signals only used in descendant components effects.
 
 Params:
-- \`target\`: The element to get the signal graph for. Must be the host element of an
-  Angular component.
+- \`injector\`: The Injector to get the signal graph for.
 
 Returns:
 - \`nodes\`: An array of reactive nodes discovered in the context. Each node contains:
@@ -53,22 +52,19 @@ Example: An edge with \`{consumer: 2, producer: 0}\` means that \`nodes[2]\` (e.
   inputSchema: {
     type: 'object',
     properties: {
-      target: {
+      injector: {
         type: 'object',
-        description: 'The element to get the signal graph for.',
-        'x-mcp-type': 'HTMLElement',
+        description: 'The Injector to get the signal graph for.',
+        'x-mcp-type': 'Injector',
       },
     },
-    required: ['target'],
+    required: ['injector'],
   },
-  execute: async ({target}: {target: HTMLElement}) => {
-    if (!(target instanceof HTMLElement)) {
-      throw new Error('Invalid input: "target" must be an HTMLElement.');
-    }
-
-    const injector = getInjector(target);
-    if (injector instanceof NullInjector) {
-      throw new Error('Invalid input: "target" is not the host element of an Angular component.');
+  execute: async ({injector}: {injector: Injector}) => {
+    if (!injector || injector instanceof NullInjector) {
+      throw new Error(
+        'Invalid input: "injector" is undefined, null, or an instance of NullInjector',
+      );
     }
 
     const graph = getSignalGraph(injector);
