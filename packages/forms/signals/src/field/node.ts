@@ -216,6 +216,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
+  get isNonInteractive(): Signal<boolean> {
+    return this.nodeState.isNonInteractive;
+  }
+
   get formFieldBindings(): Signal<readonly FormField<unknown>[]> {
     return this.nodeState.formFieldBindings;
   }

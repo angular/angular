@@ -598,6 +598,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     hasMetadata(key: MetadataKey<any, any, any>): boolean;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
+    readonly isNonInteractive: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
     readonly max: Signal<NonNullable<TValue> | undefined> | undefined;
     readonly maxLength: Signal<number | undefined> | undefined;
