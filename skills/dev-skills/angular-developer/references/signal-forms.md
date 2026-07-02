@@ -2,7 +2,11 @@
 
 Signal Forms are the recommended approach for handling forms in modern Angular applications (v21+). They provide a reactive, type-safe, and model-driven way to manage form state using Angular Signals.
 
-**CRITICAL**: You MUST use Angular's new Signal Forms API for all form-related functionality. Do NOT use null as a value or type of any fields.
+**CRITICAL**: You MUST use Angular's new Signal Forms API for all form-related functionality.
+
+Avoid using `null` for required fields.
+
+For optional fields (including numeric fields), `null` can be used to represent an empty or unset value.
 
 ## Imports
 
@@ -48,7 +52,7 @@ export class Example {
   protected readonly userModel = signal({
     name: '', // CRITICAL: NEVER use null or undefined as initial values
     email: '',
-    age: 0, // Use 0 for numbers, NOT null
+    age: 0, // Use 0 for required numeric fields; use null for optional numeric fields
     address: {
       street: '',
       city: '',
@@ -56,10 +60,10 @@ export class Example {
     hobbies: [] as string[], // Use [] for arrays, NOT null
   });
 
-  // WRONG - DO NOT DO THIS:
+  // WRONG - DO NOT DO THIS for required fields:
   // badModel = signal({
-  //   name: null,      // ERROR: use '' instead
-  //   age: null,       // ERROR: use 0 instead
+  //   name: null,      // ERROR: use '' for required string fields
+  //   age: null,       // VALID only if the field is optional
   //   items: null      // ERROR: use [] instead
   // });
 
@@ -198,7 +202,7 @@ Do NOT do this: `<input min="1" [formField]>` or `<input [value]="val" [formFiel
   <option value="us">US</option>
 </select>
 
-<!-- userForm.name can NOT be nullable, because input does not accept null-->
+<!-- Required text inputs should not be nullable -->
 <input [formField]="userForm.name" />
 ```
 
