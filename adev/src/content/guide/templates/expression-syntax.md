@@ -91,7 +91,20 @@ Angular expressions additionally also support the following non-standard operato
 | Optional chaining\*             | `someObj.someProp?.nestedProp` |
 | Non-null assertion (TypeScript) | `someObj!.someProp`            |
 
-NOTE: Optional chaining behaves differently from the standard JavaScript version in that if the left side of Angular’s optional chaining operator is `null` or `undefined`, it returns `null` instead of `undefined`.
+### Safe navigation migration
+
+Prior to Angular 22, the optional chaining operator (`?.`) returned `null` when the left-hand side is `null` or `undefined`, whereas standard JavaScript's `?.` returns `undefined`.
+Since Angular 22, the optional chaining operator behavior in angular expressions is alligned with the standard Javascript's behavior.
+
+During the migration to v22, the `ng update` schematics added a `$safeNavigationMigration` magic function to existing expressions to preserve the previous `null`-returning behavior.
+
+```html
+{{ $safeNavigationMigration(foo?.bar) }}
+```
+
+`$safeNavigationMigration` is a **temporary migration aid only**. It instructs the compiler to compile the wrapped safe-navigation expression using the legacy null-returning semantics rather than the standard JavaScript `?.` semantics. It is not a real function and cannot be called from TypeScript.
+
+NOTE: Prefer migrating expressions to no longer rely on `null` vs `undefined` distinctions so that `$safeNavigationMigration` can be removed. This function may be removed in a future version of Angular.
 
 ### Unsupported operators
 
@@ -120,7 +133,7 @@ Generally speaking, declarations are not supported in Angular expressions. This 
 | Arrow Functions | `() => { }`                                 |
 | Classes         | `class Rectangle { }`                       |
 
-# Event listener statements
+## Event listener statements
 
 Event handlers are **statements** rather than expressions. While they support all of the same syntax as Angular expressions, there are two key differences:
 
