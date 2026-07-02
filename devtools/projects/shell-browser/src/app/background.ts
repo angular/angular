@@ -81,4 +81,162 @@ if (chrome !== undefined && chrome.runtime !== undefined) {
 
   const tabs = {};
   TabManager.initialize(tabs);
+
+  const scriptMap = new Map<string, string>();
+
+  chrome.debugger.onEvent.addListener((source, method, params) => {
+    if (method === 'Debugger.scriptParsed' && params) {
+      const {scriptId, url} = params as any;
+      scriptMap.set(scriptId, url);
+    }
+  });
+
+  const activeBreakpoints = new Map<number, Map<string, string>>();
+
+  function serializePosition(position: any): string {
+    return JSON.stringify({
+      element: position.element,
+      signalId: position.signalId,
+    });
+  }
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'setSignalBreakpoint') {
+      const {tabId, position} = message;
+      setBreakpointViaCDP(tabId, position)
+        .then((result) => sendResponse({success: true, result}))
+        .catch((err) => {
+          console.error('CDP Error:', err);
+          sendResponse({success: false, error: err.message || err});
+        });
+      return true; // Keep channel open
+    } else if (message.action === 'removeSignalBreakpoint') {
+      const {tabId, position} = message;
+      removeBreakpointViaCDP(tabId, position)
+        .then((result) => sendResponse({success: true, result}))
+        .catch((err) => {
+          console.error('CDP Error:', err);
+          sendResponse({success: false, error: err.message || err});
+        });
+      return true; // Keep channel open
+    }
+    return false;
+  });
+
+  function attachDebugger(target: chrome.debugger.Debuggee, version: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chrome.debugger.attach(target, version, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  function sendDebuggerCommand(
+    target: chrome.debugger.Debuggee,
+    method: string,
+    commandParams?: {[key: string]: any},
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      chrome.debugger.sendCommand(target, method, commandParams, (result) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  async function setBreakpointViaCDP(tabId: number, position: any) {
+    const target = {tabId};
+
+    try {
+      await attachDebugger(target, '1.3');
+    } catch (err: any) {
+      if (!err.message || !err.message.includes('Already attached')) {
+        throw err;
+      }
+    }
+
+    await sendDebuggerCommand(target, 'Debugger.enable');
+
+    const expression = `inspectedApplication.findSignalNodeByPosition('${JSON.stringify(position)}')`;
+    const evalResult = await sendDebuggerCommand(target, 'Runtime.evaluate', {
+      expression,
+      objectGroup: 'angular-devtools',
+    });
+
+    if (evalResult.exceptionDetails) {
+      throw new Error('Evaluation failed: ' + evalResult.exceptionDetails.exception.description);
+    }
+
+    const objectId = evalResult.result.objectId;
+    if (!objectId) {
+      throw new Error('Could not find function object');
+    }
+
+    const propsResult = await sendDebuggerCommand(target, 'Runtime.getProperties', {
+      objectId,
+    });
+
+    const internalProps = propsResult.internalProperties || [];
+    const locationProp = internalProps.find((p: any) => p.name === '[[FunctionLocation]]');
+
+    if (!locationProp || !locationProp.value || !locationProp.value.value) {
+      throw new Error('Could not find [[FunctionLocation]]');
+    }
+
+    const {scriptId, lineNumber, columnNumber} = locationProp.value.value;
+
+    let bpResult;
+    const url = scriptMap.get(scriptId);
+    if (!url) {
+      console.warn('Could not find URL for scriptId:', scriptId, 'falling back to scriptId');
+      bpResult = await sendDebuggerCommand(target, 'Debugger.setBreakpoint', {
+        location: {scriptId, lineNumber, columnNumber},
+      });
+    } else {
+      bpResult = await sendDebuggerCommand(target, 'Debugger.setBreakpointByUrl', {
+        url,
+        lineNumber,
+        columnNumber,
+      });
+    }
+
+    if (bpResult && bpResult.breakpointId) {
+      if (!activeBreakpoints.has(tabId)) {
+        activeBreakpoints.set(tabId, new Map());
+      }
+      const posKey = serializePosition(position);
+      activeBreakpoints.get(tabId)!.set(posKey, bpResult.breakpointId);
+    }
+
+    return bpResult;
+  }
+
+  async function removeBreakpointViaCDP(tabId: number, position: any) {
+    const target = {tabId};
+    const tabBps = activeBreakpoints.get(tabId);
+    if (!tabBps) {
+      throw new Error('No active breakpoints for this tab');
+    }
+    const posKey = serializePosition(position);
+    const breakpointId = tabBps.get(posKey);
+    if (!breakpointId) {
+      throw new Error('No active breakpoint found for this signal');
+    }
+
+    await sendDebuggerCommand(target, 'Debugger.removeBreakpoint', {
+      breakpointId,
+    });
+
+    tabBps.delete(posKey);
+    if (tabBps.size === 0) {
+      activeBreakpoints.delete(tabId);
+    }
+  }
 }

@@ -16,6 +16,17 @@
       >
         <mat-icon> code </mat-icon>
       </button>
+      <button
+        ng-button
+        size="compact"
+        class="action-btn"
+        btnType="secondary"
+        (click)="hasBreakpoint() ? removeBreakpoint.emit(node) : setBreakpoint.emit(node)"
+        [disabled]="!node.debuggable"
+        [matTooltip]="hasBreakpoint() ? 'Remove breakpoint' : 'Set breakpoint'"
+      >
+        <mat-icon [style.color]="hasBreakpoint() ? '#f44336' : 'inherit'"> fiber_manual_record </mat-icon>
+      </button>
     } @else if (isClusterNode) {
       <button
         ng-button
