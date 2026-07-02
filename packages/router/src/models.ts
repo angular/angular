@@ -117,11 +117,14 @@ export type GuardResult = boolean | UrlTree | RedirectCommand;
  *
  * @publicApi
  */
-export class RedirectCommand {
+export class RedirectCommand extends Error {
   constructor(
     readonly redirectTo: UrlTree,
     readonly navigationBehaviorOptions?: NavigationBehaviorOptions,
-  ) {}
+  ) {
+    super();
+    Object.setPrototypeOf(this, RedirectCommand.prototype);
+  }
 }
 
 /**
