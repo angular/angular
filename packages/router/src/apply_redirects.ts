@@ -142,7 +142,8 @@ export class ApplyRedirects {
   ): UrlSegmentGroup {
     const updatedSegments = this.createSegments(redirectTo, group.segments, segments, posParams);
 
-    let children: {[n: string]: UrlSegmentGroup} = {};
+    // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map.
+    let children: {[n: string]: UrlSegmentGroup} = Object.create(null);
     Object.entries(group.children).forEach(([name, child]) => {
       children[name] = this.createSegmentGroup(redirectTo, child, segments, posParams);
     });
