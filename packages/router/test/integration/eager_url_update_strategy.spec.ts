@@ -176,7 +176,7 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
       let navigation: Navigation = null!;
       router.events.subscribe((e) => {
         if (e instanceof NavigationStart) {
-          navigation = router.getCurrentNavigation()!;
+          navigation = router.currentNavigation()!;
         }
       });
 
