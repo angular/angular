@@ -76,4 +76,14 @@ describe('AngularJSUrlCodec', () => {
       }).toThrowError('Invalid URL (http://foo.bar) with base (abc)');
     });
   });
+
+  describe('encodePath', () => {
+    it('should only strip a literal /index.html suffix, not arbitrary characters', () => {
+      // The `.` in the strip regex must be escaped; otherwise it would match any
+      // character and turn e.g. `/foo/indexXhtml` into `/foo`.
+      expect(codec.encodePath('/page/indexXhtml')).toBe('/page/indexXhtml');
+      expect(codec.encodePath('/page/index_html')).toBe('/page/index_html');
+      expect(codec.encodePath('/page/index.html')).toBe('/page');
+    });
+  });
 });

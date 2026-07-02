@@ -235,7 +235,7 @@ export class AngularJSUrlCodec implements UrlCodec {
 }
 
 function _stripIndexHtml(url: string): string {
-  return url.replace(/\/index.html$/, '');
+  return url.replace(/\/index\.html$/, '');
 }
 
 /**
