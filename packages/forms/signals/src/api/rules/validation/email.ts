@@ -58,18 +58,19 @@ const EMAIL_REGEXP =
  * @category validation
  * @publicApi 22.0
  */
-export function email<TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
-  config?: BaseValidatorConfig<string, TPathKind>,
+export function email<TValue extends string | null, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   validate(path, (ctx) => {
     if (config?.when && !config.when(ctx)) {
       return undefined;
     }
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value == null || isEmpty(value)) {
       return undefined;
     }
-    if (!EMAIL_REGEXP.test(ctx.value())) {
+    if (!EMAIL_REGEXP.test(value)) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
