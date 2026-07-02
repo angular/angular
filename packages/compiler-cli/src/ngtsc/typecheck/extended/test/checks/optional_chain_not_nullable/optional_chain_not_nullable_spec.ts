@@ -370,4 +370,35 @@ runInEachFileSystem(() => {
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE));
     });
   });
+
+  it('should not produce a warning on function calls with consecutive optional chaining', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `{{ func()?.xx?.() }}`,
+        },
+        source: `
+               export class TestCmp {
+                func(): {xx?: () => void} | undefined {
+                  return undefined;
+                }
+              }
+             `,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [optionalChainNotNullableFactory],
+      {strictNullChecks: true} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(0);
+  });
+
+  it('should not produce a warning on function calls with consecutive optional chaining with legacy behavior', () => {});
 });
