@@ -401,7 +401,7 @@ class TcbExprTranslator implements AstVisitor {
     const args = argNodes.map((node) => node.print()).join(', ');
 
     if (this.config.strictSafeNavigationTypes) {
-      return new TcbExpr(`(0 as any ? ${expr}!(${args}) : undefined)`);
+      return new TcbExpr(`(${expr}?.(${args}))`);
     }
 
     if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {

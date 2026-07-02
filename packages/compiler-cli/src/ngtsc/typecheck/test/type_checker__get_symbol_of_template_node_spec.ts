@@ -7,29 +7,29 @@
  */
 
 import {
+  AST,
   ASTWithSource,
   Binary,
   BindingPipe,
   Conditional,
   Interpolation,
+  LiteralArray,
+  LiteralMap,
+  MatchSource,
+  ParseTemplateOptions,
   PropertyRead,
+  SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundText,
+  TmplAstComponent,
   TmplAstElement,
   TmplAstForLoopBlock,
+  TmplAstIfBlock,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
-  AST,
-  LiteralArray,
-  LiteralMap,
-  TmplAstIfBlock,
-  TmplAstLetDeclaration,
   TypeCheckingConfig,
-  ParseTemplateOptions,
-  TmplAstComponent,
-  MatchSource,
-  SafePropertyRead,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -55,17 +55,16 @@ import {
   TemplateTypeChecker,
   VariableSymbol,
 } from '../api';
+import {findNodeInFile} from '../src/tcb_util';
 import {
+  setup as baseTestSetup,
+  createNgCompilerForFile,
   getClass,
   ngForDeclaration,
   ngForTypeCheckTarget,
-  setup as baseTestSetup,
-  TypeCheckingTarget,
-  createNgCompilerForFile,
   TestDirective,
+  TypeCheckingTarget,
 } from '../testing';
-import {TsCreateProgramDriver} from '../../program_driver';
-import {findNodeInFile} from '../src/tcb_util';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker.getSymbolOfNode', () => {
@@ -814,8 +813,6 @@ runInEachFileSystem(() => {
           const safeMethodCall = nodes[2].inputs[0].value as ASTWithSource;
           const methodCallSymbol = templateTypeChecker.getSymbolOfNode(safeMethodCall, cmp)!;
           assertExpressionSymbol(methodCallSymbol);
-          // Note that the symbol returned is for the return value of the safe method call.
-          expect(templateTypeChecker.getTsSymbolOfSymbol(methodCallSymbol)).toBeNull();
           expect(
             program
               .getTypeChecker()

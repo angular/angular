@@ -19,10 +19,10 @@ import {
   ReferenceEmitResult,
   ReferenceEmitter,
 } from '../../imports';
-import {OptimizeFor} from '../api';
-import {ALL_ENABLED_CONFIG, diagnose, setup, tcb, TestDeclaration, TestDirective} from '../testing';
 import {InliningMode} from '../../program_driver';
+import {OptimizeFor} from '../api';
 import {TypeCheckShimGenerator} from '../src/shim';
+import {ALL_ENABLED_CONFIG, diagnose, setup, tcb, TestDeclaration, TestDirective} from '../testing';
 
 describe('type check blocks', () => {
   beforeEach(() => initMockFileSystem('Native'));
@@ -1480,10 +1480,10 @@ describe('type check blocks', () => {
 
       it('should use undefined for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('(0 as any ? (((this).a))?.method!() : undefined)');
+        expect(block).toContain('(((this).a))?.method?.())');
         expect(block).toContain('((((this).a))?.b)');
         expect(block).toContain('((((this).a))?.[0])');
-        expect(block).toContain('(0 as any ? (((((this).a)).optionalMethod))!() : undefined)');
+        expect(block).toContain('(((((this).a)).optionalMethod))?.())');
       });
 
       it('should use undefined for safe navigation operations when using the $safeNavigationMigration magic function', () => {
@@ -1491,10 +1491,10 @@ describe('type check blocks', () => {
         // See https://github.com/angular/angular/issues/37622
         const TEMPLATE = `{{$safeNavigationMigration(a?.b)}} {{$safeNavigationMigration(a?.method())}} {{$safeNavigationMigration(a?.[0])}} {{$safeNavigationMigration(a.optionalMethod?.())}}`;
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('(0 as any ? (((this).a))?.method!() : undefined)');
+        expect(block).toContain('((((this).a))?.method?.())');
         expect(block).toContain('((((this).a))?.b)');
         expect(block).toContain('((((this).a))?.[0])');
-        expect(block).toContain('(0 as any ? (((((this).a)).optionalMethod))!() : undefined)');
+        expect(block).toContain('((((((this).a)).optionalMethod))?.())');
       });
 
       it("should use an 'any' type for safe navigation operations when disabled", () => {
@@ -1515,11 +1515,9 @@ describe('type check blocks', () => {
       it('should check the presence of a property/method on the receiver when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('(((((this).a)).method())?.b)');
-        expect(block).toContain('(0 as any ? ((this).a())?.method!() : undefined)');
+        expect(block).toContain('(((this).a())?.method?.())');
         expect(block).toContain('(((((this).a)).method())?.[0])');
-        expect(block).toContain(
-          '(0 as any ? (((((this).a)).method())?.otherMethod)!() : undefined)',
-        );
+        expect(block).toContain('((((((this).a)).method())?.otherMethod)?.())');
       });
 
       it('should not check the presence of a property/method on the receiver when disabled', () => {
@@ -3177,7 +3175,7 @@ describe('type check blocks', () => {
         '_t1.value[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
       expect(block).toContain(
-        '_t1.max[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((0 as any ? (((((this).f)()).max))!() : undefined));',
+        '_t1.max[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = (((((((this).f)()).max))?.()));',
       );
       expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');

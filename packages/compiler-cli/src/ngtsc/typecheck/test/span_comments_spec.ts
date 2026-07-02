@@ -85,7 +85,7 @@ describe('type check blocks diagnostics', () => {
     it('should annotate safe calls', () => {
       const TEMPLATE = `{{ method?.(a, b) }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '((0 as any ? (((this).method /*3,9*/) /*3,9*/)!(((this).a /*12,13*/) /*12,13*/, ((this).b /*15,16*/) /*15,16*/) : undefined) /*3,17*/)',
+        '(((((this).method /*3,9*/) /*3,9*/)?.(((this).a /*12,13*/) /*12,13*/, ((this).b /*15,16*/) /*15,16*/)) /*3,17*/)',
       );
     });
 
@@ -146,7 +146,7 @@ describe('type check blocks diagnostics', () => {
     it('should annotate safe method calls', () => {
       const TEMPLATE = `{{ a?.method(b) }}`;
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '((0 as any ? (((this).a /*3,4*/) /*3,4*/)?.method /*6,12*/ /*3,12*/!(((this).b /*13,14*/) /*13,14*/) : undefined) /*3,15*/)',
+        '(((((this).a /*3,4*/) /*3,4*/)?.method /*6,12*/ /*3,12*/?.(((this).b /*13,14*/) /*13,14*/)) /*3,15*/)',
       );
     });
 
