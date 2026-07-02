@@ -103,7 +103,7 @@ describe('withPlatformNavigation feature', () => {
 
       location.go('/c');
       expect(changed).toBeFalse();
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      await timeout(1);
       expect(changed).toBeTrue();
     });
   });
