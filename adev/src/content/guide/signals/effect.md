@@ -31,6 +31,77 @@ Avoid using effects for propagation of state changes. This can result in `Expres
 Instead, use `computed` signals to model state that depends on other state.
 </docs-callout>
 
+### Common mistakes
+
+#### Avoid using effects for derived state
+
+Effects run **asynchronously**, after Angular's change detection cycle. Setting a signal inside an effect means the new value won't be visible until the next cycle — any code that reads that signal in the same frame will see a stale value.
+
+Avoid:
+
+```ts
+const total = signal(0);
+
+effect(() => {
+  total.set(price() * quantity());
+});
+```
+
+Here `total` is a writable signal that tries to mirror `price() * quantity()`, but it always lags one cycle behind. It can also get out of sync if anything else writes to `total` directly.
+
+Prefer `computed`, which recalculates synchronously and lazily — the value is always fresh when read and can never drift from its sources:
+
+```ts
+const total = computed(() => price() * quantity());
+```
+
+As a general rule: if a value can be derived from other signals, it should be a `computed`, not a signal updated by an effect.
+
+#### Avoid using effects to synchronize state
+
+Using an effect to copy one signal's value into another creates two independent pieces of state representing the same data. This makes the relationship between them implicit and easy to break.
+
+Avoid:
+
+```ts
+effect(() => {
+  selectedUserId.set(selectedUser()?.id);
+});
+```
+
+`selectedUserId` is a separate writable signal that can be set from anywhere else in the code, silently breaking its dependency on `selectedUser`. The reactive graph now has a hidden invariant that nothing enforces.
+
+Prefer deriving the value with `computed`, which makes the relationship explicit and always consistent:
+
+```ts
+const selectedUserId = computed(() => selectedUser()?.id);
+```
+
+#### Keep effects focused on side effects
+
+Effects are designed for **one-way communication** from Angular's reactive state to external, non-reactive systems. They are the right tool when you need to react to a signal change and call something outside the reactive graph.
+
+Common examples:
+
+- Logging and analytics
+- Browser APIs such as `localStorage`, `sessionStorage`, or cookies
+- Canvas rendering and charting libraries
+- Third-party UI libraries
+- Custom DOM integrations
+
+```ts
+effect(() => {
+  localStorage.setItem('theme', theme());
+});
+```
+
+A useful rule of thumb when choosing between `computed` and `effect`:
+
+- Use `computed` to **calculate a value** — something that other parts of your app will read.
+- Use `effect` to **trigger an action** — something that happens outside the reactive graph.
+
+If you can express what you need as a `computed`, that is almost always the better choice.
+
 ### Injection context
 
 By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the `inject` function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
