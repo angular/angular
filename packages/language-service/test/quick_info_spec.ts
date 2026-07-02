@@ -541,7 +541,7 @@ describe('quick info', () => {
         const appFile = project.openFile('app.ts');
         appFile.moveCursorToText('something?.va¦lue()');
         const info = appFile.getQuickInfoAtPosition()!;
-        expect(toText(info.displayParts)).toEqual('(property) value: Signal<number>');
+        expect(toText(info.displayParts)).toEqual('(property) value: () => number');
         expect(toText(info.documentation)).toEqual('Documentation for value.');
       });
 
