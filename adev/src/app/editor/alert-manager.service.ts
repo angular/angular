@@ -54,11 +54,20 @@ export class AlertManager {
   // Decrease count of running instances of the webcontainers when user close the app.
   private decreaseInstancesCounterOnPageClose(): void {
     this.window.addEventListener('beforeunload', () => {
-      const countOfRunningInstances = this.getStoredCountOfWebcontainerInstances() - 1;
-
-      this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, countOfRunningInstances.toString());
-      this.validateRunningInstances(countOfRunningInstances);
+      this.decreaseInstancesCounter();
     });
+  }
+
+  /**
+   * Decrease the counter of running webcontainer instances.
+   * This should be called when the webcontainer crashes or encounters an error,
+   * to ensure the counter accurately reflects the number of active instances.
+   */
+  decreaseInstancesCounter(): void {
+    const countOfRunningInstances = this.getStoredCountOfWebcontainerInstances() - 1;
+
+    this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, countOfRunningInstances.toString());
+    this.validateRunningInstances(countOfRunningInstances);
   }
 
   private getStoredCountOfWebcontainerInstances(): number {
