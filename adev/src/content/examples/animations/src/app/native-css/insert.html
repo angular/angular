@@ -1,0 +1,12 @@
+<!-- #docplaster -->
+<h2>Insert Element Example</h2>
+
+<nav>
+  <button type="button" class="toggle-btn" (click)="toggle()">Toggle Element</button>
+</nav>
+
+@if (isShown()) {
+  <div class="insert-container" animate.enter="enter-animation">
+    <p>The box is inserted</p>
+  </div>
+}

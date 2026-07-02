@@ -1,0 +1,250 @@
+@if (routerDebugApiSupport()) {
+  <div class="filter">
+    <ng-filter
+      #filter
+      (filter)="handleFilter($event)"
+      (nextMatched)="navigateMatchedRoute('next')"
+      (prevMatched)="navigateMatchedRoute('prev')"
+      [matchesCount]="searchMatches().length"
+      [currentMatch]="currentSearchMatchIdx() + 1"
+      placeholder="Search routes"
+      [debounce]="250"
+    />
+    <div class="show-full-path">
+      <input id="show-full-path" type="checkbox" (change)="togglePathSettings()" />
+      <label for="show-full-path">Show full path</label>
+    </div>
+  </div>
+
+  <as-split unit="percent" direction="horizontal" [gutterSize]="9" class="visualization">
+    <aside class="legend" aria-hidden="true">
+      <ul>
+        <li class="active">Active route</li>
+      </ul>
+    </aside>
+    <as-split-area size="70">
+      <as-split unit="percent" direction="vertical" [gutterSize]="9">
+        <as-split-area size="100">
+          @if (d3RootNode(); as d3RootNode) {
+            <ng-tree-visualizer
+              #routerTree
+              a11yTitle="Router tree visualization"
+              [root]="d3RootNode"
+              [config]="routerTreeConfig"
+              (render)="onRouterTreeRender($event)"
+              (nodeClick)="nodeClick($event)"
+            />
+          }
+        </as-split-area>
+      </as-split>
+    </as-split-area>
+
+    @let route = selectedRoute();
+    @let data = routeData();
+
+    @if (route && data) {
+      <as-split-area size="30" minSize="20">
+        <div class="side-pane">
+          <h2 class="router-title">Routes Details</h2>
+          <button ng-button btnType="icon" class="close-btn" (click)="selectedRoute.set(null)">
+            <mat-icon>close</mat-icon>
+          </button>
+
+          <!-- TODO: Convert to a description list (<dl>) -->
+          <div class="scrollable-wrapper">
+            <dl class="ng-dl">
+              @if (!data.matcher) {
+                <div
+                  ng-route-details-row
+                  label="Path"
+                  dataKey="path"
+                  [data]="data"
+                  actionBtnType="navigate"
+                  [actionBtnTooltip]="'Navigate to ' + data.path"
+                  (actionBtnClick)="navigateRoute(route)"
+                ></div>
+              } @else {
+                <div
+                  ng-route-details-row
+                  label="Matcher"
+                  dataKey="matcher"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewFunctionSource(data.matcher, 'matcher')"
+                ></div>
+              }
+
+              @if (!data.redirectTo) {
+                <div
+                  ng-route-details-row
+                  label="Component"
+                  dataKey="component"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  [actionBtnDisabled]="!!data?.isLazy"
+                  (actionBtnClick)="viewComponentSource(data.component)"
+                ></div>
+              } @else {
+                <div
+                  ng-route-details-row
+                  label="Redirect to"
+                  dataKey="redirectTo"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewFunctionSource(data.redirectTo, 'redirectTo')"
+                ></div>
+              }
+
+              @if (data.pathMatch) {
+                <div
+                  ng-route-details-row
+                  label="Path Match"
+                  dataKey="pathMatch"
+                  [data]="data"
+                ></div>
+              }
+              @if (data.data) {
+                <div
+                  ng-route-details-row
+                  label="Data"
+                  [renderValueAsJson]="true"
+                  dataKey="data"
+                  [data]="data"
+                ></div>
+              }
+              @if (data.resolvers) {
+                <div
+                  ng-route-details-row
+                  label="Resolvers"
+                  [renderValueAsJson]="true"
+                  dataKey="resolvers"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  (actionBtnClick)="viewSourceFromRouter($event, 'resolvers')"
+                ></div>
+              }
+
+              @if (data.canActivateGuards && data.canActivateGuards.length > 0) {
+                <div
+                  ng-route-details-row
+                  label="Can Activate Guards"
+                  type="list"
+                  dataKey="canActivateGuards"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewSourceFromRouter($event, 'canActivate')"
+                ></div>
+              }
+              @if (data.canActivateChildGuards && data.canActivateChildGuards.length > 0) {
+                <div
+                  ng-route-details-row
+                  label="Can Activate Child Guards"
+                  type="list"
+                  dataKey="canActivateChildGuards"
+                  [data]="data"
+                  (actionBtnClick)="viewSourceFromRouter($event, 'canActivateChild')"
+                ></div>
+              }
+              @if (data.canDeactivateGuards && data.canDeactivateGuards.length > 0) {
+                <div
+                  ng-route-details-row
+                  label="Can DeActivate Guards"
+                  type="list"
+                  dataKey="canDeactivateGuards"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewSourceFromRouter($event, 'canDeactivate')"
+                ></div>
+              }
+              @if (data.canMatchGuards && data.canMatchGuards.length > 0) {
+                <div
+                  ng-route-details-row
+                  label="Can Match Guards"
+                  type="list"
+                  dataKey="canMatchGuards"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewSourceFromRouter($event, 'canMatch')"
+                ></div>
+              }
+
+              @if (data.providers && data.providers.length > 0) {
+                <div
+                  ng-route-details-row
+                  label="Providers"
+                  type="list"
+                  dataKey="providers"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewSourceFromRouter($event, 'providers')"
+                ></div>
+              }
+              @if (data.title) {
+                <div
+                  ng-route-details-row
+                  label="Title"
+                  dataKey="title"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewFunctionSource(data.title, 'title')"
+                ></div>
+              }
+
+              @if (data.runGuardsAndResolvers) {
+                <div
+                  ng-route-details-row
+                  label="RunGuardsAndResolvers"
+                  dataKey="runGuardsAndResolvers"
+                  [data]="data"
+                  actionBtnTooltip="View source"
+                  [actionBtnType]="hasStaticOptionRunGuardsAndResolvers() ? 'none' : 'view-source'"
+                  (actionBtnClick)="
+                    viewFunctionSource(data.runGuardsAndResolvers, 'runGuardsAndResolvers')
+                  "
+                ></div>
+              }
+
+              <div
+                ng-route-details-row
+                label="Active"
+                type="flag"
+                dataKey="isActive"
+                [data]="data"
+              ></div>
+              <div
+                ng-route-details-row
+                label="Auxiliary"
+                type="flag"
+                dataKey="isAux"
+                [data]="data"
+              ></div>
+              <div
+                ng-route-details-row
+                label="Lazy"
+                type="flag"
+                dataKey="isLazy"
+                [data]="data"
+              ></div>
+            </dl>
+          </div>
+        </div>
+      </as-split-area>
+    }
+  </as-split>
+} @else {
+  <div class="unsupported-version">
+    <p>
+      Router tree visualization is available for Angular applications using the latest Angular
+      20.3.5 release and above. Please upgrade your application to Angular 20.3.5 or newer to use
+      this feature.
+    </p>
+  </div>
+}

@@ -1,0 +1,117 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {
+  ComputationFn,
+  createLinkedSignal,
+  LinkedSignalGetter,
+  LinkedSignalNode,
+  linkedSignalSetFn,
+  linkedSignalUpdateFn,
+  SIGNAL,
+} from '../../../primitives/signals';
+import {Signal, ValueEqualityFn} from './api';
+import {signalAsReadonlyFn, WritableSignal} from './signal';
+import {untracked} from './untracked';
+
+const identityFn = <T>(v: T) => v;
+
+/**
+ * Creates a writable signal whose value is initialized and reset by the linked, reactive computation.
+ *
+ * @publicApi 20.0
+ */
+export function linkedSignal<D>(
+  computation: () => D,
+  options?: {
+    equal?: ValueEqualityFn<NoInfer<D>>;
+    debugName?: string;
+    set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
+  },
+): WritableSignal<D>;
+
+/**
+ * Creates a writable signal whose value is initialized and reset by the linked, reactive computation.
+ * This is an advanced API form where the computation has access to the previous value of the signal and the computation result.
+ *
+ * Note: The computation is reactive, meaning the linked signal will automatically update whenever any of the signals used within the computation change.
+ *
+ * @publicApi 20.0
+ * @see [Dependent state with linkedSignal](guide/signals/linked-signal)
+ */
+export function linkedSignal<S, D>(options: {
+  source: () => S;
+  computation: (source: NoInfer<S>, previous?: {source: NoInfer<S>; value: NoInfer<D>}) => D;
+  equal?: ValueEqualityFn<NoInfer<D>>;
+  debugName?: string;
+  set?: (value: NoInfer<D>, rawSet: (value: NoInfer<D>) => void) => void;
+}): WritableSignal<D>;
+
+export function linkedSignal<S, D>(
+  optionsOrComputation:
+    | {
+        source: () => S;
+        computation: ComputationFn<S, D>;
+        equal?: ValueEqualityFn<D>;
+        debugName?: string;
+        set?: (value: D, rawSet: (value: D) => void) => void;
+      }
+    | (() => D),
+  options?: {
+    equal?: ValueEqualityFn<D>;
+    debugName?: string;
+    set?: (value: D, rawSet: (value: D) => void) => void;
+  },
+): WritableSignal<D> {
+  if (typeof optionsOrComputation === 'function') {
+    const getter = createLinkedSignal<D, D>(
+      optionsOrComputation,
+      identityFn<D>,
+      options?.equal,
+    ) as LinkedSignalGetter<D, D> & WritableSignal<D>;
+    return upgradeLinkedSignalGetter(getter, options?.debugName, options?.set);
+  } else {
+    const getter = createLinkedSignal<S, D>(
+      optionsOrComputation.source,
+      optionsOrComputation.computation,
+      optionsOrComputation.equal,
+    );
+    return upgradeLinkedSignalGetter(
+      getter,
+      optionsOrComputation.debugName,
+      optionsOrComputation.set,
+    );
+  }
+}
+
+function upgradeLinkedSignalGetter<S, D>(
+  getter: LinkedSignalGetter<S, D>,
+  debugName?: string,
+  customSet?: (value: D, rawSet: (value: D) => void) => void,
+): WritableSignal<D> {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    getter[SIGNAL].debugName = debugName;
+    getter.toString = () => `[LinkedSignal${debugName ? ' (' + debugName + ')' : ''}: ${getter()}]`;
+  }
+
+  const node = getter[SIGNAL] as LinkedSignalNode<S, D>;
+  const upgradedGetter = getter as LinkedSignalGetter<S, D> & WritableSignal<D>;
+
+  if (customSet !== undefined) {
+    const rawSet = (newValue: D) => linkedSignalSetFn(node, newValue);
+    upgradedGetter.set = (newValue: D) => customSet(newValue, rawSet);
+    upgradedGetter.update = (updateFn: (value: D) => D) =>
+      customSet(updateFn(untracked(getter)), rawSet);
+  } else {
+    upgradedGetter.set = (newValue: D) => linkedSignalSetFn(node, newValue);
+    upgradedGetter.update = (updateFn: (value: D) => D) => linkedSignalUpdateFn(node, updateFn);
+  }
+  upgradedGetter.asReadonly = signalAsReadonlyFn.bind(getter as any) as () => Signal<D>;
+
+  return upgradedGetter;
+}

@@ -1,0 +1,7 @@
+workflows:
+  build-adev:
+    name: Build adev
+    prepare:
+      - bazel clean
+    workflow:
+      - bazel build //adev:build

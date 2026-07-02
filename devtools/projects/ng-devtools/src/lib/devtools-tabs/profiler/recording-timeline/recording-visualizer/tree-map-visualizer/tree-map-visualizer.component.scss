@@ -1,0 +1,22 @@
+@use '../../../../../../styles/typography';
+
+:host {
+  ::ng-deep {
+    .webtreemap-node {
+      background: var(--color-background);
+    }
+    .webtreemap-caption {
+      @extend %body-01;
+    }
+    .webtreemap-node:hover {
+      background: var(--dynamic-blue-01);
+    }
+  }
+
+  .web-tree {
+    height: calc(100% - 1.5rem);
+    width: calc(100% - 1.5rem);
+    margin: auto;
+    margin-top: 0.75rem;
+  }
+}

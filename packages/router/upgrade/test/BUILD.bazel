@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/common",
+        "//packages/common/testing",
+        "//packages/common/upgrade",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/router",
+        "//packages/router/upgrade",
+        "//packages/upgrade/static",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

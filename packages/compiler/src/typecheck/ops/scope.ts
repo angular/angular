@@ -1,0 +1,1066 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {DirectiveOwner} from '../../render3/view/t2_api';
+import {
+  BoundAttribute,
+  BoundEvent,
+  BoundText,
+  Component,
+  Content,
+  DeferredBlock,
+  DeferredBlockTriggers,
+  Directive,
+  Element,
+  ForLoopBlock,
+  HostElement,
+  HoverDeferredTrigger,
+  Icu,
+  IfBlock,
+  IfBlockBranch,
+  InteractionDeferredTrigger,
+  LetDeclaration,
+  Node,
+  Reference,
+  SwitchBlock,
+  Template,
+  Text,
+  Variable,
+  ViewportDeferredTrigger,
+} from '../../render3/r3_ast';
+import {TcbOp} from './base';
+import {TcbExpr} from './codegen';
+import {TcbDirectiveMetadata} from '../api';
+import {Context} from './context';
+import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
+import {TcbElementOp} from './element';
+import {tcbExpression, TcbConditionOp, TcbExpressionOp} from './expression';
+import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
+import {TcbComponentContextCompletionOp} from './completions';
+import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
+import {TcbIfBlockOp} from './if_block';
+import {TcbSwitchOp} from './switch_block';
+import {TcbForOfOp} from './for_block';
+import {TcbLetDeclarationOp} from './let';
+import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
+import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbDirectiveOutputsOp, TcbUnclaimedOutputsOp} from './events';
+import {
+  CustomFormControlType,
+  getCustomFieldDirectiveType,
+  isFormControl,
+  isNativeField,
+  TcbNativeFieldOp,
+  TcbNativeRadioButtonFieldOp,
+} from './signal_forms';
+import {
+  TcbGenericDirectiveTypeWithAnyParamsOp,
+  TcbNonGenericDirectiveTypeOp,
+} from './directive_type';
+import {TcbDirectiveCtorOp} from './directive_constructor';
+import {TcbControlFlowContentProjectionOp} from './content_projection';
+import {TcbComponentNodeOp} from './selectorless';
+import {TcbIntersectionObserverOp} from './intersection_observer';
+import {TcbHostElementOp} from './host';
+
+/**
+ * Local scope within the type check block for a particular template.
+ *
+ * The top-level template and each nested `<ng-template>` have their own `Scope`, which exist in a
+ * hierarchy. The structure of this hierarchy mirrors the syntactic scopes in the generated type
+ * check block, where each nested template is encased in an `if` structure.
+ *
+ * As a template's `TcbOp`s are executed in a given `Scope`, statements are added via
+ * `addStatement()`. When this processing is complete, the `Scope` can be turned into a `ts.Block`
+ * via `renderToBlock()`.
+ *
+ * If a `TcbOp` requires the output of another, it can call `resolve()`.
+ */
+export class Scope {
+  /**
+   * A queue of operations which need to be performed to generate the TCB code for this scope.
+   *
+   * This array can contain either a `TcbOp` which has yet to be executed, or a `TcbExpr|null`
+   * representing the memoized result of executing the operation. As operations are executed, their
+   * results are written into the `opQueue`, overwriting the original operation.
+   *
+   * If an operation is in the process of being executed, it is temporarily overwritten here with
+   * `INFER_TYPE_FOR_CIRCULAR_OP_EXPR`. This way, if a cycle is encountered where an operation
+   * depends transitively on its own result, the inner operation will infer the least narrow type
+   * that fits instead. This has the same semantics as TypeScript itself when types are referenced
+   * circularly.
+   */
+  private opQueue: (TcbOp | TcbExpr | null)[] = [];
+
+  /**
+   * A map of `Element`s to the index of their `TcbElementOp` in the `opQueue`
+   */
+  private elementOpMap = new Map<Element, number>();
+
+  /**
+   * A map of `HostElement`s to the index of their `TcbHostElementOp` in the `opQueue`
+   */
+  private hostElementOpMap = new Map<HostElement, number>();
+
+  /**
+   * A map of `Component`s to the index of their `TcbComponentNodeOp` in the `opQueue`
+   */
+  private componentNodeOpMap = new Map<Component, number>();
+
+  /**
+   * A map of maps which tracks the index of `TcbDirectiveCtorOp`s in the `opQueue` for each
+   * directive on a `Element` or `Template` node.
+   */
+  private directiveOpMap = new Map<DirectiveOwner, Map<TcbDirectiveMetadata, number>>();
+
+  /**
+   * A map of `Reference`s to the index of their `TcbReferenceOp` in the `opQueue`
+   */
+  private referenceOpMap = new Map<Reference, number>();
+
+  /**
+   * Map of immediately nested <ng-template>s (within this `Scope`) represented by `Template`
+   * nodes to the index of their `TcbTemplateContextOp`s in the `opQueue`.
+   */
+  private templateCtxOpMap = new Map<Template, number>();
+
+  /**
+   * Map of variables declared on the template that created this `Scope` (represented by
+   * `Variable` nodes) to the index of their `TcbVariableOp`s in the `opQueue`, or to
+   * pre-resolved variable identifiers.
+   */
+  private varMap = new Map<Variable, number | TcbExpr>();
+
+  /**
+   * A map of the names of `LetDeclaration`s to the index of their op in the `opQueue`.
+   *
+   * Assumes that there won't be duplicated `@let` declarations within the same scope.
+   */
+  private letDeclOpMap = new Map<string, {opIndex: number; node: LetDeclaration}>();
+
+  /**
+   * Statements for this template.
+   *
+   * Executing the `TcbOp`s in the `opQueue` populates this array.
+   */
+  private statements: TcbExpr[] = [];
+
+  /**
+   * Gets names of the for loop context variables and their types.
+   */
+  private static getForLoopContextVariableTypes() {
+    return new Map<string, string>([
+      ['$first', 'boolean'],
+      ['$last', 'boolean'],
+      ['$even', 'boolean'],
+      ['$odd', 'boolean'],
+      ['$index', 'number'],
+      ['$count', 'number'],
+    ]);
+  }
+
+  private constructor(
+    private tcb: Context,
+    private parent: Scope | null = null,
+    private guard: TcbExpr | null = null,
+  ) {}
+
+  /**
+   * Constructs a `Scope` given either a `Template` or a list of `Node`s.
+   *
+   * @param tcb the overall context of TCB generation.
+   * @param parentScope the `Scope` of the parent template (if any) or `null` if this is the root
+   * `Scope`.
+   * @param scopedNode Node that provides the scope around the child nodes (e.g. a
+   * `Template` node exposing variables to its children).
+   * @param children Child nodes that should be appended to the TCB.
+   * @param guard an expression that is applied to this scope for type narrowing purposes.
+   */
+  static forNodes(
+    tcb: Context,
+    parentScope: Scope | null,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    children: Node[] | null,
+    guard: TcbExpr | null,
+  ): Scope {
+    const scope = new Scope(tcb, parentScope, guard);
+
+    if (parentScope === null && tcb.env.config.enableTemplateTypeChecker) {
+      // Add an autocompletion point for the component context.
+      scope.opQueue.push(new TcbComponentContextCompletionOp(scope));
+    }
+
+    // If given an actual `Template` instance, then process any additional information it
+    // has.
+    if (scopedNode instanceof Template) {
+      // The template's variable declarations need to be added as `TcbVariableOp`s.
+      const varMap = new Map<string, Variable>();
+
+      for (const v of scopedNode.variables) {
+        // Validate that variables on the `Template` are only declared once.
+        if (!varMap.has(v.name)) {
+          varMap.set(v.name, v);
+        } else {
+          const firstDecl = varMap.get(v.name)!;
+          tcb.oobRecorder.duplicateTemplateVar(tcb.id, v, firstDecl);
+        }
+        Scope.registerVariable(scope, v, new TcbTemplateVariableOp(tcb, scope, scopedNode, v));
+      }
+    } else if (scopedNode instanceof IfBlockBranch) {
+      const {expression, expressionAlias} = scopedNode;
+      if (expression !== null && expressionAlias !== null) {
+        Scope.registerVariable(
+          scope,
+          expressionAlias,
+          new TcbBlockVariableOp(
+            tcb,
+            scope,
+            tcbExpression(expression, tcb, scope),
+            expressionAlias,
+          ),
+        );
+      }
+    } else if (scopedNode instanceof ForLoopBlock) {
+      // Register the variable for the loop so it can be resolved by
+      // children. It'll be declared once the loop is created.
+      const loopInitializer = new TcbExpr(tcb.allocateId());
+      loopInitializer.addParseSpanInfo(scopedNode.item.sourceSpan);
+      scope.varMap.set(scopedNode.item, loopInitializer);
+
+      const forLoopContextVariableTypes = Scope.getForLoopContextVariableTypes();
+
+      for (const variable of scopedNode.contextVariables) {
+        if (!forLoopContextVariableTypes.has(variable.value)) {
+          throw new Error(`Unrecognized for loop context variable ${variable.name}`);
+        }
+
+        const type = new TcbExpr(forLoopContextVariableTypes.get(variable.value)!);
+        Scope.registerVariable(
+          scope,
+          variable,
+          new TcbBlockImplicitVariableOp(tcb, scope, type, variable),
+        );
+      }
+    } else if (scopedNode instanceof HostElement) {
+      scope.appendNode(scopedNode);
+    }
+    if (children !== null) {
+      for (const node of children) {
+        scope.appendNode(node);
+      }
+    }
+    // Once everything is registered, we need to check if there are `@let`
+    // declarations that conflict with other local symbols defined after them.
+    for (const variable of scope.varMap.keys()) {
+      Scope.checkConflictingLet(scope, variable);
+    }
+    for (const ref of scope.referenceOpMap.keys()) {
+      Scope.checkConflictingLet(scope, ref);
+    }
+    return scope;
+  }
+
+  /** Registers a local variable with a scope. */
+  private static registerVariable(scope: Scope, variable: Variable, op: TcbOp): void {
+    const opIndex = scope.opQueue.push(op) - 1;
+    scope.varMap.set(variable, opIndex);
+  }
+
+  /**
+   * Look up a `ts.Expression` representing the value of some operation in the current `Scope`,
+   * including any parent scope(s). This method always returns a mutable clone of the
+   * `ts.Expression` with the comments cleared.
+   *
+   * @param node a `Node` of the operation in question. The lookup performed will depend on
+   * the type of this node:
+   *
+   * Assuming `directive` is not present, then `resolve` will return:
+   *
+   * * `Element` - retrieve the expression for the element DOM node
+   * * `Template` - retrieve the template context variable
+   * * `Variable` - retrieve a template let- variable
+   * * `LetDeclaration` - retrieve a template `@let` declaration
+   * * `Reference` - retrieve variable created for the local ref
+   *
+   * @param directive if present, a directive type on a `Element` or `Template` to
+   * look up instead of the default for an element or template node.
+   */
+  resolve(node: LocalSymbol, directive?: TcbDirectiveMetadata): TcbExpr {
+    // Attempt to resolve the operation locally.
+    const res = this.resolveLocal(node, directive);
+    if (res !== null) {
+      return res;
+    } else if (this.parent !== null) {
+      // Check with the parent.
+      return this.parent.resolve(node, directive);
+    } else {
+      throw new Error(`Could not resolve ${node} / ${directive}`);
+    }
+  }
+
+  /**
+   * Add a statement to this scope.
+   */
+  addStatement(stmt: TcbExpr): void {
+    this.statements.push(stmt);
+  }
+
+  /**
+   * Get the statements.
+   */
+  render(): TcbExpr[] {
+    for (let i = 0; i < this.opQueue.length; i++) {
+      // Optional statements cannot be skipped when we are generating the TCB for use
+      // by the TemplateTypeChecker.
+      const skipOptional = !this.tcb.env.config.enableTemplateTypeChecker;
+      this.executeOp(i, skipOptional);
+    }
+    return this.statements;
+  }
+
+  /**
+   * Returns an expression of all template guards that apply to this scope, including those of
+   * parent scopes. If no guards have been applied, null is returned.
+   */
+  guards(): TcbExpr | null {
+    let parentGuards: TcbExpr | null = null;
+    if (this.parent !== null) {
+      // Start with the guards from the parent scope, if present.
+      parentGuards = this.parent.guards();
+    }
+
+    if (this.guard === null) {
+      // This scope does not have a guard, so return the parent's guards as is.
+      return parentGuards;
+    } else if (parentGuards === null) {
+      // There's no guards from the parent scope, so this scope's guard represents all available
+      // guards.
+      return typeof this.guard === 'string' ? new TcbExpr(this.guard) : this.guard;
+    } else {
+      // Both the parent scope and this scope provide a guard, so create a combination of the two.
+      // It is important that the parent guard is used as left operand, given that it may provide
+      // narrowing that is required for this scope's guard to be valid.
+      const guard = typeof this.guard === 'string' ? this.guard : this.guard.print();
+      return new TcbExpr(`(${parentGuards.print()}) && (${guard})`);
+    }
+  }
+
+  /** Returns whether a template symbol is defined locally within the current scope. */
+  isLocal(node: Variable | LetDeclaration | Reference): boolean {
+    if (node instanceof Variable) {
+      return this.varMap.has(node);
+    }
+    if (node instanceof LetDeclaration) {
+      return this.letDeclOpMap.has(node.name);
+    }
+    return this.referenceOpMap.has(node);
+  }
+
+  /**
+   * Constructs a `Scope` given either a `Template` or a list of `Node`s.
+   * This is identical to `Scope.forNodes` which we can't reference in some ops due to
+   * circular dependencies.
+   *.
+   * @param parentScope the `Scope` of the parent template.
+   * @param scopedNode Node that provides the scope around the child nodes (e.g. a
+   * `Template` node exposing variables to its children).
+   * @param children Child nodes that should be appended to the TCB.
+   * @param guard an expression that is applied to this scope for type narrowing purposes.
+   */
+  createChildScope(
+    parentScope: Scope,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    children: Node[] | null,
+    guard: TcbExpr | null,
+  ): Scope {
+    return Scope.forNodes(this.tcb, parentScope, scopedNode, children, guard);
+  }
+
+  private resolveLocal(ref: LocalSymbol, directive?: TcbDirectiveMetadata): TcbExpr | null {
+    if (ref instanceof Reference && this.referenceOpMap.has(ref)) {
+      return this.resolveOp(this.referenceOpMap.get(ref)!);
+    } else if (ref instanceof LetDeclaration && this.letDeclOpMap.has(ref.name)) {
+      return this.resolveOp(this.letDeclOpMap.get(ref.name)!.opIndex);
+    } else if (ref instanceof Variable && this.varMap.has(ref)) {
+      // Resolving a context variable for this template.
+      // Execute the `TcbVariableOp` associated with the `Variable`.
+      const opIndexOrNode = this.varMap.get(ref)!;
+      return typeof opIndexOrNode === 'number'
+        ? this.resolveOp(opIndexOrNode)
+        : new TcbExpr(opIndexOrNode.print(true /* ignoreComments */));
+    } else if (
+      ref instanceof Template &&
+      directive === undefined &&
+      this.templateCtxOpMap.has(ref)
+    ) {
+      // Resolving the context of the given sub-template.
+      // Execute the `TcbTemplateContextOp` for the template.
+      return this.resolveOp(this.templateCtxOpMap.get(ref)!);
+    } else if (
+      (ref instanceof Element ||
+        ref instanceof Template ||
+        ref instanceof Component ||
+        ref instanceof Directive ||
+        ref instanceof HostElement) &&
+      directive !== undefined &&
+      this.directiveOpMap.has(ref)
+    ) {
+      // Resolving a directive on an element or sub-template.
+      const dirMap = this.directiveOpMap.get(ref)!;
+      return dirMap.has(directive) ? this.resolveOp(dirMap.get(directive)!) : null;
+    } else if (ref instanceof Element && this.elementOpMap.has(ref)) {
+      // Resolving the DOM node of an element in this template.
+      return this.resolveOp(this.elementOpMap.get(ref)!);
+    } else if (ref instanceof Component && this.componentNodeOpMap.has(ref)) {
+      return this.resolveOp(this.componentNodeOpMap.get(ref)!);
+    } else if (ref instanceof HostElement && this.hostElementOpMap.has(ref)) {
+      return this.resolveOp(this.hostElementOpMap.get(ref)!);
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Like `executeOp`, but assert that the operation actually returned `TcbExpr`.
+   */
+  private resolveOp(opIndex: number): TcbExpr {
+    const res = this.executeOp(opIndex, /* skipOptional */ false);
+    if (res === null) {
+      throw new Error(`Error resolving operation, got null`);
+    }
+    return res;
+  }
+
+  /**
+   * Execute a particular `TcbOp` in the `opQueue`.
+   *
+   * This method replaces the operation in the `opQueue` with the result of execution (once done)
+   * and also protects against a circular dependency from the operation to itself by temporarily
+   * setting the operation's result to a special expression.
+   */
+  private executeOp(opIndex: number, skipOptional: boolean): TcbExpr | null {
+    const op = this.opQueue[opIndex];
+    if (!(op instanceof TcbOp)) {
+      return op === null ? null : new TcbExpr(op.print(true /* ignoreComments */));
+    }
+
+    if (skipOptional && op.optional) {
+      return null;
+    }
+
+    // Set the result of the operation in the queue to its circular fallback. If executing this
+    // operation results in a circular dependency, this will prevent an infinite loop and allow for
+    // the resolution of such cycles.
+    this.opQueue[opIndex] = op.circularFallback();
+    let res = op.execute();
+    if (res !== null) {
+      res = new TcbExpr(res.print(true /* ignoreComments */));
+    }
+    // Once the operation has finished executing, it's safe to cache the real result.
+    this.opQueue[opIndex] = res;
+    return res;
+  }
+
+  private appendNode(node: Node): void {
+    if (node instanceof Element) {
+      const opIndex = this.opQueue.push(new TcbElementOp(this.tcb, this, node)) - 1;
+      this.elementOpMap.set(node, opIndex);
+      if (this.tcb.env.config.controlFlowPreventingContentProjection !== 'suppress') {
+        this.appendContentProjectionCheckOp(node);
+      }
+      this.appendDirectivesAndInputsOfElementLikeNode(node);
+      this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
+      this.appendSelectorlessDirectives(node);
+      this.appendChildren(node);
+      this.checkAndAppendReferencesOfNode(node);
+    } else if (node instanceof Template) {
+      // Template children are rendered in a child scope.
+      this.appendDirectivesAndInputsOfElementLikeNode(node);
+      this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
+      this.appendSelectorlessDirectives(node);
+      const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
+      this.templateCtxOpMap.set(node, ctxIndex);
+      if (this.tcb.env.config.checkTemplateBodies) {
+        this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
+      } else if (this.tcb.env.config.alwaysCheckSchemaInTemplateBodies) {
+        this.appendDeepSchemaChecks(node.children);
+      }
+      this.checkAndAppendReferencesOfNode(node);
+    } else if (node instanceof Component) {
+      this.appendComponentNode(node);
+    } else if (node instanceof DeferredBlock) {
+      this.appendDeferredBlock(node);
+    } else if (node instanceof IfBlock) {
+      this.opQueue.push(new TcbIfBlockOp(this.tcb, this, node));
+    } else if (node instanceof SwitchBlock) {
+      this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
+    } else if (node instanceof ForLoopBlock) {
+      this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
+      node.empty && this.tcb.env.config.checkControlFlowBodies && this.appendChildren(node.empty);
+    } else if (node instanceof BoundText) {
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value));
+    } else if (node instanceof Icu) {
+      this.appendIcuExpressions(node);
+    } else if (node instanceof Content) {
+      this.appendChildren(node);
+    } else if (node instanceof LetDeclaration) {
+      const opIndex = this.opQueue.push(new TcbLetDeclarationOp(this.tcb, this, node)) - 1;
+      if (this.isLocal(node)) {
+        this.tcb.oobRecorder.conflictingDeclaration(this.tcb.id, node);
+      } else {
+        this.letDeclOpMap.set(node.name, {opIndex, node});
+      }
+    } else if (node instanceof HostElement) {
+      this.appendHostElement(node);
+    }
+  }
+
+  private appendChildren(node: Node & {children: Node[]}) {
+    for (const child of node.children) {
+      this.appendNode(child);
+    }
+  }
+
+  private checkAndAppendReferencesOfNode(node: Element | Template | Component | Directive): void {
+    for (const ref of node.references) {
+      const target = this.tcb.boundTarget.getReferenceTarget(ref);
+
+      let ctxIndex: number;
+      if (target === null) {
+        // The reference is invalid if it doesn't have a target, so report it as an error.
+        this.tcb.oobRecorder.missingReferenceTarget(this.tcb.id, ref);
+
+        // Any usages of the invalid reference will be resolved to a variable of type any.
+        ctxIndex = this.opQueue.push(new TcbInvalidReferenceOp(this.tcb, this)) - 1;
+      } else if (target instanceof Template || target instanceof Element) {
+        ctxIndex = this.opQueue.push(new TcbReferenceOp(this.tcb, this, ref, node, target)) - 1;
+      } else {
+        ctxIndex =
+          this.opQueue.push(new TcbReferenceOp(this.tcb, this, ref, node, target.directive)) - 1;
+      }
+      this.referenceOpMap.set(ref, ctxIndex);
+    }
+  }
+
+  private appendDirectivesAndInputsOfElementLikeNode(node: Element | Template): void {
+    // Collect all the inputs on the element.
+    const claimedInputs = new Set<string>();
+
+    // Don't resolve directives when selectorless is enabled and treat all the inputs on the element
+    // as unclaimed. In selectorless the inputs are defined either in component or directive nodes.
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+    if (directives === null || directives.length === 0) {
+      // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
+      // to add them if needed.
+      if (node instanceof Element) {
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+        );
+
+        // Skip DOM schema checks for elements matched as foreign components.
+        // An element can never match both an Angular directive and a foreign component
+        // without throwing a fatal error, so we are guaranteed that directives is empty
+        // and we only need to intercept in this directiveless block.
+        const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+        if (!isForeign) {
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
+          );
+        }
+      }
+      return;
+    }
+
+    this.reportConflictingBindings(node);
+
+    if (node instanceof Element) {
+      const isDeferred = this.tcb.boundTarget.isDeferred(node);
+      if (!isDeferred && directives.some((dirMeta) => dirMeta.isExplicitlyDeferred)) {
+        // This node has directives/components that were defer-loaded (included into
+        // `@Component.deferredImports`), but the node itself was used outside of a
+        // `@defer` block, which is the error.
+        this.tcb.oobRecorder.deferredComponentUsedEagerly(this.tcb.id, node);
+      }
+    }
+
+    if (node instanceof Element) {
+      const matchedComponents = directives.filter((dir) => dir.isComponent);
+      if (matchedComponents.length > 1) {
+        this.tcb.oobRecorder.multipleMatchingComponents(
+          this.tcb.id,
+          node,
+          matchedComponents.map((dir) => dir.name),
+        );
+      }
+    }
+
+    const dirMap = new Map<TcbDirectiveMetadata, number>();
+    for (let i = 0; i < directives.length; i++) {
+      const dir = directives[i];
+      this.appendDirectiveInputs(dir, node, dirMap, directives, i);
+    }
+    this.directiveOpMap.set(node, dirMap);
+
+    // After expanding the directives, we might need to queue an operation to check any unclaimed
+    // inputs.
+    if (node instanceof Element) {
+      // Go through the directives and remove any inputs that it claims from `elementInputs`.
+      for (const dir of directives) {
+        for (const propertyName of dir.inputs.propertyNames) {
+          claimedInputs.add(propertyName);
+        }
+      }
+
+      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
+      // If there are no directives which match this element, then it's a "plain" DOM element (or a
+      // web component), and should be checked against the DOM schema. If any directives match,
+      // we must assume that the element could be custom (either a component, or a directive like
+      // <router-outlet>) and shouldn't validate the element name itself.
+      const checkElement = directives.length === 0;
+      this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
+    }
+  }
+
+  private appendOutputsOfElementLikeNode(
+    node: Element | Template | HostElement,
+    bindings: BoundAttribute[] | null,
+    events: BoundEvent[],
+  ): void {
+    // Collect all the outputs on the element.
+    const claimedOutputs = new Set<string>();
+
+    // Don't resolve directives when selectorless is enabled and treat all the outputs on the
+    // element as unclaimed. In selectorless the outputs are defined either in component or
+    // directive nodes.
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+    if (directives === null || directives.length === 0) {
+      // If there are no directives, then all outputs are unclaimed outputs, so queue an operation
+      // to add them if needed.
+      if (node instanceof Element) {
+        this.opQueue.push(
+          new TcbUnclaimedOutputsOp(this.tcb, this, node, events, bindings, claimedOutputs),
+        );
+      }
+      return;
+    }
+
+    // Queue operations for all directives to check the relevant outputs for a directive.
+    for (const dir of directives) {
+      this.opQueue.push(new TcbDirectiveOutputsOp(this.tcb, this, node, bindings, events, dir));
+    }
+
+    // After expanding the directives, we might need to queue an operation to check any unclaimed
+    // outputs.
+    if (node instanceof Element || node instanceof HostElement) {
+      // Go through the directives and register any outputs that it claims in `claimedOutputs`.
+      for (const dir of directives) {
+        for (const outputProperty of dir.outputs.propertyNames) {
+          claimedOutputs.add(outputProperty);
+        }
+      }
+
+      this.opQueue.push(
+        new TcbUnclaimedOutputsOp(this.tcb, this, node, events, bindings, claimedOutputs),
+      );
+    }
+  }
+
+  private appendInputsOfSelectorlessNode(node: Component | Directive): void {
+    // Only resolve the directives that were brought in by this specific directive.
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+    const claimedInputs = new Set<string>();
+
+    if (directives !== null && directives.length > 0) {
+      const dirMap = new Map<TcbDirectiveMetadata, number>();
+      for (let i = 0; i < directives.length; i++) {
+        const dir = directives[i];
+        this.appendDirectiveInputs(dir, node, dirMap, directives, i);
+
+        for (const propertyName of dir.inputs.propertyNames) {
+          claimedInputs.add(propertyName);
+        }
+      }
+      this.directiveOpMap.set(node, dirMap);
+    }
+
+    this.reportConflictingBindings(node);
+
+    // In selectorless all directive inputs have to be claimed.
+    if (node instanceof Directive) {
+      for (const input of node.inputs) {
+        if (!claimedInputs.has(input.name)) {
+          this.tcb.oobRecorder.unclaimedDirectiveBinding(this.tcb.id, node, input);
+        }
+      }
+
+      for (const attr of node.attributes) {
+        if (!claimedInputs.has(attr.name)) {
+          this.tcb.oobRecorder.unclaimedDirectiveBinding(this.tcb.id, node, attr);
+        }
+      }
+    } else {
+      const checkElement = node.tagName !== null;
+      this.opQueue.push(
+        new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs),
+      );
+    }
+  }
+
+  private appendOutputsOfSelectorlessNode(node: Component | Directive): void {
+    // Only resolve the directives that were brought in by this specific directive.
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+    const claimedOutputs = new Set<string>();
+
+    if (directives !== null && directives.length > 0) {
+      for (const dir of directives) {
+        this.opQueue.push(
+          new TcbDirectiveOutputsOp(this.tcb, this, node, node.inputs, node.outputs, dir),
+        );
+
+        for (const outputProperty of dir.outputs.propertyNames) {
+          claimedOutputs.add(outputProperty);
+        }
+      }
+    }
+
+    // In selectorless all directive outputs have to be claimed.
+    if (node instanceof Directive) {
+      for (const output of node.outputs) {
+        if (!claimedOutputs.has(output.name)) {
+          this.tcb.oobRecorder.unclaimedDirectiveBinding(this.tcb.id, node, output);
+        }
+      }
+    } else {
+      this.opQueue.push(
+        new TcbUnclaimedOutputsOp(this.tcb, this, node, node.outputs, node.inputs, claimedOutputs),
+      );
+    }
+  }
+
+  private appendDirectiveInputs(
+    dir: TcbDirectiveMetadata,
+    node: Element | Template | Component | Directive,
+    dirMap: Map<TcbDirectiveMetadata, number>,
+    allDirectiveMatches: TcbDirectiveMetadata[],
+    directiveIndex?: number,
+  ): void {
+    const nodeIsFormControl = isFormControl(allDirectiveMatches);
+    const customFormControlType = nodeIsFormControl ? getCustomFieldDirectiveType(dir) : null;
+
+    const directiveOp = this.getDirectiveOp(dir, node, customFormControlType, directiveIndex);
+    const dirIndex = this.opQueue.push(directiveOp) - 1;
+    dirMap.set(dir, dirIndex);
+
+    if (isNativeField(dir, node, allDirectiveMatches)) {
+      const inputType =
+        (node.name === 'input' && node.attributes.find((attr) => attr.name === 'type')?.value) ||
+        null;
+
+      this.opQueue.push(
+        inputType === 'radio'
+          ? new TcbNativeRadioButtonFieldOp(this.tcb, this, node)
+          : new TcbNativeFieldOp(this.tcb, this, node, inputType),
+      );
+    }
+
+    this.opQueue.push(
+      new TcbDirectiveInputsOp(this.tcb, this, node, dir, nodeIsFormControl, customFormControlType),
+    );
+  }
+
+  private getDirectiveOp(
+    dir: TcbDirectiveMetadata,
+    node: DirectiveOwner,
+    customFieldType: CustomFormControlType | null,
+    directiveIndex?: number,
+  ): TcbOp {
+    if (!dir.isGeneric) {
+      // The most common case is that when a directive is not generic, we use the normal
+      // `TcbNonDirectiveTypeOp`.
+      return new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir, directiveIndex);
+    } else if (!dir.requiresInlineTypeCtor || this.tcb.env.config.useInlineTypeConstructors) {
+      // For generic directives, we use a type constructor to infer types. If a directive requires
+      // an inline type constructor, then inlining must be available to use the
+      // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.
+      return new TcbDirectiveCtorOp(this.tcb, this, node, dir, customFieldType, directiveIndex);
+    }
+
+    // If inlining is not available, then we give up on inferring the generic params, and use
+    // `any` type for the directive's generic parameters.
+    return new TcbGenericDirectiveTypeWithAnyParamsOp(this.tcb, this, node, dir, directiveIndex);
+  }
+
+  private appendSelectorlessDirectives(node: Element | Template | Component): void {
+    for (const directive of node.directives) {
+      // Check that the directive exists.
+      if (!this.tcb.boundTarget.referencedDirectiveExists(directive.name)) {
+        this.tcb.oobRecorder.missingNamedTemplateDependency(this.tcb.id, directive);
+        continue;
+      }
+
+      // Check that the class is a directive class.
+      const directives = this.tcb.boundTarget.getDirectivesOfNode(directive);
+      if (
+        directives === null ||
+        directives.length === 0 ||
+        directives.some((dir) => dir.isComponent || !dir.isStandalone)
+      ) {
+        this.tcb.oobRecorder.incorrectTemplateDependencyType(this.tcb.id, directive);
+        continue;
+      }
+
+      this.appendInputsOfSelectorlessNode(directive);
+      this.appendOutputsOfSelectorlessNode(directive);
+      this.checkAndAppendReferencesOfNode(directive);
+    }
+  }
+
+  private appendDeepSchemaChecks(nodes: Node[]): void {
+    for (const node of nodes) {
+      if (!(node instanceof Element || node instanceof Template)) {
+        continue;
+      }
+
+      if (node instanceof Element) {
+        const claimedInputs = new Set<string>();
+        let directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+        for (const dirNode of node.directives) {
+          const directiveResults = this.tcb.boundTarget.getDirectivesOfNode(dirNode);
+
+          if (directiveResults !== null && directiveResults.length > 0) {
+            directives ??= [];
+            directives.push(...directiveResults);
+          }
+        }
+
+        let hasDirectives: boolean;
+        if (directives === null || directives.length === 0) {
+          hasDirectives = false;
+        } else {
+          hasDirectives = true;
+          for (const dir of directives) {
+            for (const propertyName of dir.inputs.propertyNames) {
+              claimedInputs.add(propertyName);
+            }
+          }
+        }
+        const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+        if (!isForeign) {
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
+          );
+        }
+      }
+
+      this.appendDeepSchemaChecks(node.children);
+    }
+  }
+
+  private appendIcuExpressions(node: Icu): void {
+    for (const variable of Object.values(node.vars)) {
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, variable.value));
+    }
+    for (const placeholder of Object.values(node.placeholders)) {
+      if (placeholder instanceof BoundText) {
+        this.opQueue.push(new TcbExpressionOp(this.tcb, this, placeholder.value));
+      }
+    }
+  }
+
+  private appendContentProjectionCheckOp(root: Element | Component): void {
+    const meta =
+      this.tcb.boundTarget.getDirectivesOfNode(root)?.find((meta) => meta.isComponent) || null;
+
+    if (meta !== null && meta.ngContentSelectors !== null && meta.ngContentSelectors.length > 0) {
+      const selectors = meta.ngContentSelectors;
+
+      // We don't need to generate anything for components that don't have projection
+      // slots, or they only have one catch-all slot (represented by `*`).
+      if (selectors.length > 1 || (selectors.length === 1 && selectors[0] !== '*')) {
+        this.opQueue.push(
+          new TcbControlFlowContentProjectionOp(this.tcb, root, selectors, meta.name),
+        );
+      }
+    }
+  }
+
+  private appendComponentNode(node: Component): void {
+    // TODO(crisbeto): should we still append the children if the component is invalid?
+    // Check that the referenced class exists.
+    if (!this.tcb.boundTarget.referencedDirectiveExists(node.componentName)) {
+      this.tcb.oobRecorder.missingNamedTemplateDependency(this.tcb.id, node);
+      return;
+    }
+
+    // Check that the class is a component.
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+    if (
+      directives === null ||
+      directives.length === 0 ||
+      directives.every((dir) => !dir.isComponent || !dir.isStandalone)
+    ) {
+      this.tcb.oobRecorder.incorrectTemplateDependencyType(this.tcb.id, node);
+      return;
+    }
+
+    const opIndex = this.opQueue.push(new TcbComponentNodeOp(this.tcb, this, node)) - 1;
+    this.componentNodeOpMap.set(node, opIndex);
+    if (this.tcb.env.config.controlFlowPreventingContentProjection !== 'suppress') {
+      this.appendContentProjectionCheckOp(node);
+    }
+    this.appendInputsOfSelectorlessNode(node);
+    this.appendOutputsOfSelectorlessNode(node);
+    this.appendSelectorlessDirectives(node);
+    this.appendChildren(node);
+    this.checkAndAppendReferencesOfNode(node);
+  }
+
+  private appendDeferredBlock(block: DeferredBlock): void {
+    this.appendDeferredTriggers(block, block.triggers);
+    this.appendDeferredTriggers(block, block.prefetchTriggers);
+
+    // Only the `when` hydration trigger needs to be checked.
+    if (block.hydrateTriggers.when) {
+      this.opQueue.push(new TcbConditionOp(this.tcb, this, block.hydrateTriggers.when.value));
+    }
+
+    this.appendChildren(block);
+
+    if (block.placeholder !== null) {
+      this.appendChildren(block.placeholder);
+    }
+
+    if (block.loading !== null) {
+      this.appendChildren(block.loading);
+    }
+
+    if (block.error !== null) {
+      this.appendChildren(block.error);
+    }
+  }
+
+  private appendDeferredTriggers(block: DeferredBlock, triggers: DeferredBlockTriggers): void {
+    if (triggers.when !== undefined) {
+      this.opQueue.push(new TcbConditionOp(this.tcb, this, triggers.when.value));
+    }
+
+    if (triggers.viewport !== undefined && triggers.viewport.options !== null) {
+      this.opQueue.push(new TcbIntersectionObserverOp(this.tcb, this, triggers.viewport.options));
+    }
+
+    if (triggers.hover !== undefined) {
+      this.validateReferenceBasedDeferredTrigger(block, triggers.hover);
+    }
+
+    if (triggers.interaction !== undefined) {
+      this.validateReferenceBasedDeferredTrigger(block, triggers.interaction);
+    }
+
+    if (triggers.viewport !== undefined) {
+      this.validateReferenceBasedDeferredTrigger(block, triggers.viewport);
+    }
+  }
+
+  private appendHostElement(node: HostElement): void {
+    const opIndex = this.opQueue.push(new TcbHostElementOp(this.tcb, this, node)) - 1;
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+    if (directives !== null && directives.length > 0) {
+      const directiveOpMap = new Map<TcbDirectiveMetadata, number>();
+
+      for (const directive of directives) {
+        const directiveOp = this.getDirectiveOp(directive, node, null);
+        directiveOpMap.set(directive, this.opQueue.push(directiveOp) - 1);
+      }
+
+      this.directiveOpMap.set(node, directiveOpMap);
+    }
+
+    this.hostElementOpMap.set(node, opIndex);
+    this.opQueue.push(
+      new TcbUnclaimedInputsOp(this.tcb, this, node.bindings, node, null),
+      new TcbDomSchemaCheckerOp(this.tcb, node, false, null),
+    );
+    this.appendOutputsOfElementLikeNode(node, null, node.listeners);
+  }
+
+  private validateReferenceBasedDeferredTrigger(
+    block: DeferredBlock,
+    trigger: HoverDeferredTrigger | InteractionDeferredTrigger | ViewportDeferredTrigger,
+  ): void {
+    if (trigger.reference === null) {
+      if (block.placeholder === null) {
+        this.tcb.oobRecorder.deferImplicitTriggerMissingPlaceholder(this.tcb.id, trigger);
+        return;
+      }
+
+      let rootNode: Node | null = null;
+
+      for (const child of block.placeholder.children) {
+        // Skip over empty text nodes if the host doesn't preserve whitespaces.
+        if (
+          !this.tcb.hostPreserveWhitespaces &&
+          child instanceof Text &&
+          child.value.trim().length === 0
+        ) {
+          continue;
+        }
+
+        // Capture the first root node.
+        if (rootNode === null) {
+          rootNode = child;
+        } else {
+          // More than one root node is invalid. Reset it and break
+          // the loop so the assertion below can flag it.
+          rootNode = null;
+          break;
+        }
+      }
+
+      if (rootNode === null || !(rootNode instanceof Element)) {
+        this.tcb.oobRecorder.deferImplicitTriggerInvalidPlaceholder(this.tcb.id, trigger);
+      }
+      return;
+    }
+
+    if (this.tcb.boundTarget.getDeferredTriggerTarget(block, trigger) === null) {
+      this.tcb.oobRecorder.inaccessibleDeferredTriggerElement(this.tcb.id, trigger);
+    }
+  }
+
+  /** Reports a diagnostic if there are any `@let` declarations that conflict with a node. */
+  private static checkConflictingLet(scope: Scope, node: Variable | Reference): void {
+    if (scope.letDeclOpMap.has(node.name)) {
+      scope.tcb.oobRecorder.conflictingDeclaration(
+        scope.tcb.id,
+        scope.letDeclOpMap.get(node.name)!.node,
+      );
+    }
+  }
+
+  private reportConflictingBindings(node: Element | Template | Component | Directive): void {
+    const conflictingBindings = this.tcb.boundTarget.getConflictingHostDirectiveBindings(node);
+
+    if (conflictingBindings !== null) {
+      for (const binding of conflictingBindings) {
+        this.tcb.oobRecorder.conflictingHostDirectiveBinding(
+          this.tcb.id,
+          node,
+          binding.directive.name,
+          binding.kind,
+          binding.classPropertyName,
+          Array.from(binding.conflictingAliases),
+        );
+      }
+    }
+  }
+}

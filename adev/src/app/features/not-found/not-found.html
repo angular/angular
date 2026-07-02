@@ -1,0 +1,81 @@
+<main class="docs-viewer">
+  <header class="docs-header">
+    <div class="docs-page-title">
+      <h1 tabindex="-1"><span class="docs-emoji">Page Not Found 🙃</span></h1>
+    </div>
+  </header>
+  <p>
+    We couldn't find what you were looking for. We have initiated a search for the term extracted
+    from the URL.
+  </p>
+  <p>
+    If you think this is a mistake, please
+    <a
+      href="https://github.com/angular/angular/issues/new?template=3-docs-bug.yaml"
+      target="_blank"
+    >
+      open an issue</a
+    >
+    so we can fix it.
+  </p>
+
+  <!-- Search results that match the queried URL that we couldn't find  -->
+  @if (searchResults().length > 0) {
+    <!-- The search results are faded in if/once we have results -->
+    <div animate.enter="enter-animation">
+      <br /><br />
+      <h2>Feeling lucky?</h2>
+      <p>Maybe what you're looking for is in the list below:</p>
+
+      <ul class="docs-search-results docs-mini-scroll-track">
+        @for (result of searchResults(); track $index) {
+          <li docsSearchItem [item]="result" class="docs-search-result">
+            <a
+              [relativeTo]="null"
+              [routerLink]="'/' + result.url | relativeLink: 'pathname'"
+              [fragment]="result.url | relativeLink: 'hash'"
+            >
+              <div>
+                <p class="docs-search-result__label">
+                  <!-- Icon -->
+                  <span class="docs-search-result-icon" aria-hidden="true">
+                    <i role="presentation" class="material-symbols-outlined docs-icon-small">
+                      {{ result.type === 'code' ? 'code' : 'description' }}
+                    </i>
+                  </span>
+
+                  <!-- Page title -->
+                  <span [innerHtml]="result.labelHtml"></span>
+                  @if (result.package) {
+                    <span
+                      [innerHTML]="result.package"
+                      class="docs-search-result__label__package"
+                    ></span>
+                  }
+                </p>
+
+                @if (result.subLabelHtml) {
+                  <p class="docs-search-result__sub-label">
+                    <span class="docs-search-result-icon" aria-hidden="true">
+                      <i role="presentation" class="material-symbols-outlined docs-icon-small">
+                        grid_3x3
+                      </i>
+                    </span>
+                    <span [innerHtml]="result.subLabelHtml"></span>
+                  </p>
+                }
+
+                @if (result.contentHtml) {
+                  <p class="docs-search-result__content" [innerHtml]="result.contentHtml"></p>
+                }
+              </div>
+              <p class="docs-search-result__category">
+                {{ result.category }}
+              </p>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</main>

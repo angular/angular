@@ -1,0 +1,129 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {Component, computed, effect, inject, OnDestroy, signal} from '@angular/core';
+import {Events, MessageBus} from '../../../protocol';
+import {interval} from 'rxjs';
+
+import {FrameManager} from './application-services/frame_manager';
+import {ThemeService} from './application-services/theme_service';
+import {MatTooltip, MatTooltipModule} from '@angular/material/tooltip';
+import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {Frame} from './application-environment';
+import {BrowserStylesService} from './application-services/browser_styles_service';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {SUPPORTED_APIS} from './application-providers/supported_apis';
+import {APP_DATA} from './application-providers/app_data';
+import {Settings} from './application-services/settings';
+
+const DETECT_ANGULAR_ATTEMPTS = 20;
+
+enum AngularStatus {
+  /**
+   * This page may have Angular but we don't know yet. We're still trying to detect it.
+   */
+  UNKNOWN,
+
+  /**
+   * We've given up on trying to detect Angular. We tried ${DETECT_ANGULAR_ATTEMPTS} times and
+   * failed.
+   */
+  DOES_NOT_EXIST,
+
+  /**
+   * Angular was detected somewhere on the page.
+   */
+  EXISTS,
+}
+
+export const LAST_SUPPORTED_VERSION = 12;
+
+@Component({
+  selector: 'ng-devtools',
+  templateUrl: './devtools.component.html',
+  styleUrls: ['./devtools.component.scss'],
+  imports: [DevToolsTabsComponent, MatIcon, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
+})
+export class DevToolsComponent implements OnDestroy {
+  protected readonly supportedApis = inject(SUPPORTED_APIS);
+  protected readonly appData = inject(APP_DATA);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly frameManager = inject(FrameManager);
+  private readonly settings = inject(Settings);
+
+  readonly angularStatus = signal(AngularStatus.UNKNOWN);
+
+  readonly AngularStatus = AngularStatus;
+  readonly LAST_SUPPORTED_VERSION = LAST_SUPPORTED_VERSION;
+
+  readonly supportedVersion = computed(() => {
+    const {majorVersion, ivy} = this.appData();
+    // Check that major version is either greater or equal to the last supported version
+    // or that the major version is 0 for the (0.0.0-PLACEHOLDER) dev build case.
+    return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && ivy;
+  });
+
+  private interval$ = interval(500).subscribe((attempt) => {
+    if (attempt === DETECT_ANGULAR_ATTEMPTS) {
+      this.angularStatus.set(AngularStatus.DOES_NOT_EXIST);
+    }
+    this.messageBus.emit('queryNgAvailability');
+  });
+
+  constructor() {
+    inject(ThemeService).initializeThemeWatcher();
+    inject(BrowserStylesService).initBrowserSpecificStyles();
+    inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
+
+    this.messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
+      this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
+      this.appData.init({
+        version,
+        devMode,
+        ivy,
+        hydration,
+      });
+      this.interval$.unsubscribe();
+
+      if (supportedApis) {
+        this.supportedApis.init(supportedApis);
+      }
+    });
+
+    this.syncBackendWithSettings();
+  }
+
+  inspectFrame(frame: Frame) {
+    this.frameManager.inspectFrame(frame);
+  }
+
+  ngOnDestroy(): void {
+    this.interval$.unsubscribe();
+  }
+
+  private syncBackendWithSettings() {
+    // Keep BE in sync with timing API.
+    effect(() => {
+      if (this.settings.timingAPIEnabled()) {
+        this.messageBus.emit('enableTimingAPI');
+      } else {
+        this.messageBus.emit('disableTimingAPI');
+      }
+    });
+
+    // Keep BE in sync with hydration visualization.
+    effect(() => {
+      if (this.settings.showHydrationOverlays()) {
+        this.messageBus.emit('createHydrationOverlay');
+      } else {
+        this.messageBus.emit('removeHydrationOverlay');
+      }
+    });
+  }
+}

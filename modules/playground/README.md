@@ -1,0 +1,9 @@
+## How to serve the examples
+
+All playground examples are built and served with Bazel. Below is an example that
+demonstrates how a specific example can be built and served with Bazel:
+
+```bash
+# e.g. src/zippy_component
+pnpm bazel run modules/playground/src/zippy_component:devserver
+```

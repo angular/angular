@@ -1,0 +1,20 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "styles",
+    src = "prop-value-highlighter.scss",
+)
+
+ng_project(
+    name = "prop-value-highlighter",
+    srcs = [
+        "prop-value-highlighter.directive.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/protocol",
+    ],
+)

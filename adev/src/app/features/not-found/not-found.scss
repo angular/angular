@@ -1,0 +1,130 @@
+:host {
+  display: block;
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+}
+
+.docs-viewer {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+  box-sizing: border-box;
+  padding-inline: var(--layout-padding);
+}
+
+.enter-animation {
+  animation: slide-fade 1s;
+}
+@keyframes slide-fade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.docs-search-results {
+  list-style-type: none;
+  padding-inline: 0;
+  padding-block-start: 1rem;
+  padding-block-end: 1rem;
+  margin: 0;
+  max-width: 750px;
+
+  .docs-search-result {
+    border-inline-start: 2px solid var(--senary-contrast);
+    margin-inline-start: 1rem;
+    display: block;
+    font-size: 0.875rem;
+
+    .docs-search-result-icon {
+      display: inline-block;
+
+      i {
+        display: flex;
+        align-items: center;
+        font-size: 1.2rem;
+      }
+    }
+
+    /**
+      * This rule needs ng-deep to be applied to elements that are created via a [innerHTML] binding
+      */
+    ::ng-deep {
+      mark {
+        background: #e62600;
+        background: var(--red-to-orange-horizontal-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+    }
+
+    a {
+      color: var(--secondary-contrast);
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem;
+      gap: 0.5rem;
+    }
+
+    &__label,
+    &__sub-label,
+    &__content {
+      transition: color 0.3s ease;
+    }
+
+    &__label,
+    &__sub-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0;
+    }
+
+    &__label {
+      font-weight: 600;
+      flex-wrap: wrap;
+
+      &__package {
+        font-size: 0.75rem;
+      }
+    }
+
+    &__content,
+    &__category {
+      margin: 0;
+    }
+
+    &__sub-label,
+    &__content {
+      margin-block-start: 0.375rem;
+      margin-inline-start: 2rem;
+      color: var(--quaternary-contrast);
+    }
+
+    &__category {
+      font-weight: 400;
+      color: var(--quaternary-contrast);
+    }
+
+    &.active {
+      background-color: var(--septenary-contrast); // stylelint-disable-line
+    }
+
+    &:hover,
+    &.active {
+      background-color: var(--octonary-contrast); // stylelint-disable-line
+      border-inline-start: 2px solid var(--primary-contrast);
+
+      .docs-search-result__label,
+      .docs-search-result__sub-label,
+      .docs-search-result__content {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}

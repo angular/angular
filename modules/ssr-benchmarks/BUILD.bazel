@@ -1,0 +1,60 @@
+load("//integration:index.bzl", "ng_integration_test")
+
+ng_integration_test(
+    name = "run",
+    commands = [
+        "pnpm install --store-dir ./.pnpm-local-store",
+        "pnpm ng build",
+        "node ./dist/ssr-benchmarks/server/server.mjs",
+    ],
+    tags = ["manual"],
+)
+
+## This target is intended to run the benchmark in a browser
+## For this the benchmark script is loaded by an html page serve the http-server script
+## Note: This target doesn't end until the http-server is stopped. It should not run as part of our testset.
+ng_integration_test(
+    name = "run_browser",
+    commands = [
+        "pnpm install --store-dir ./.pnpm-local-store",
+
+        #
+        "NG_BUILD_MANGLE=0 pnpm ng build --configuration production,browser",
+        "pnpm exec http-server ./dist",
+    ],
+    tags = ["manual"],
+)
+
+# This target is mostly intended for investigating via the devTools using the flamechart
+ng_integration_test(
+    name = "run_browser_emulated_dom",
+    commands = [
+        "pnpm install --store-dir ./.pnpm-local-store",
+
+        # We keep the symbols with the NG_BUILD_MANGLE flag
+        "NG_BUILD_MANGLE=0 pnpm ng build",
+        "pnpm exec http-server ./dist",
+    ],
+    tags = ["manual"],
+)
+
+# This is a target to investigate with deopt explorer (https://github.com/microsoft/deoptexplorer-vscode)
+# The v8 log file will be generated in the test directory
+ng_integration_test(
+    name = "run_deopt",
+    commands = [
+        "pnpm install --store-dir ./.pnpm-local-store",
+        "NG_BUILD_MANGLE=0 pnpm ng build",
+        "pnpm node --prof \
+            --log-deopt \
+            --log-ic \
+            --log-maps \
+            --log-maps-details \
+            --log-internal-timer-events \
+            --log-code \
+            --log-source-code \
+            --detailed-line-info \
+            ./dist/ssr-benchmarks/server/server.mjs narrowRun",
+    ],
+    tags = ["manual"],
+)

@@ -1,0 +1,16 @@
+load("//adev/shared-docs:defaults.bzl", "copy_to_bin")
+
+exports_files(
+    glob(["*"]),
+)
+
+copy_to_bin(
+    name = "others",
+    srcs = glob(
+        include = ["**/*"],
+        exclude = ["BUILD.bazel"],
+    ),
+    visibility = [
+        "//visibility:public",
+    ],
+)

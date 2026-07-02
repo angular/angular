@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Your Company//Your Product v1.0//EN
+BEGIN:VEVENT
+UID:Angularv21Launch20251120
+DTSTAMP:20231027T100000Z
+DTSTART:20251120T170000Z
+DTEND:20251120T173000Z
+SUMMARY:Angular v21 Launch
+DESCRIPTION:Get ready for the future of web development with Angular. Tune in https://goo.gle/angular-v21
+LOCATION:https://goo.gle/angular-v21
+END:VEVENT
+END:VCALENDAR

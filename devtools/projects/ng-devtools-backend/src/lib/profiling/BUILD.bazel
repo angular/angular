@@ -1,0 +1,22 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "profiling",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = [
+            "*.spec.ts",
+        ],
+    ),
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:identity-tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
+        "//devtools/projects/ng-devtools-backend/src/lib/utils",
+        "//devtools/projects/protocol",
+    ],
+)

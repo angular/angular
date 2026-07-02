@@ -1,0 +1,937 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {
+  Component,
+  ElementRef,
+  Injector,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+  viewChildren,
+} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {ForeignComponent} from '../../../src/interface/foreign_component';
+import {foreignImport} from '../../../src/render3/foreign_import';
+
+function frameworkImport<TProps>(component: (props: TProps) => Node[]): ForeignComponent<TProps> {
+  return foreignImport(
+    (props) => [component(props)],
+    () => {},
+    (producer) => producer(),
+  );
+}
+
+function FancyButton(props: {children: Node[]}): Node[] {
+  const button = document.createElement('button');
+  for (const child of props.children) {
+    button.appendChild(child);
+  }
+  return [button];
+}
+
+describe('foreign components', () => {
+  describe('reactivity', () => {
+    it('should update foreign content', async () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyButton>
+            <span id="icon">{{ buttonIcon() }}</span>
+          </FancyButton>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyButton)],
+      })
+      class TestUpdateForeignContent {
+        readonly buttonIcon = signal('⭐');
+      }
+
+      const fixture = TestBed.createComponent(TestUpdateForeignContent);
+      await fixture.whenStable();
+
+      const icon = fixture.nativeElement.querySelector('#icon');
+      expect(icon).toBeTruthy();
+      expect(icon.textContent).toBe('⭐');
+
+      fixture.componentInstance.buttonIcon.set('🔥');
+      await fixture.whenStable();
+
+      expect(icon.textContent).toBe('🔥');
+    });
+
+    it('should update foreign content created from a callback', async () => {
+      function FancyIcon(props: {icon: () => Node[]}): Node[] {
+        const span = document.createElement('span');
+        span.id = 'icon';
+        for (const node of props.icon()) {
+          span.appendChild(node);
+        }
+        return [span];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyIcon>
+            @content (icon; let _) {
+              <span>{{ icon() }}</span>
+            }
+          </FancyIcon>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyIcon)],
+      })
+      class TestUpdateForeignContentCallback {
+        readonly icon = signal('⭐');
+      }
+
+      const fixture = TestBed.createComponent(TestUpdateForeignContentCallback);
+      await fixture.whenStable();
+
+      const icon = fixture.nativeElement.querySelector('#icon');
+      expect(icon).toBeTruthy();
+      expect(icon.textContent).toBe('⭐');
+
+      fixture.componentInstance.icon.set('🔥');
+      await fixture.whenStable();
+
+      expect(icon.textContent).toBe('🔥');
+    });
+
+    it('should update foreign content when the signal is passed from the callback', async () => {
+      function Doubler(props: {
+        value: () => number;
+        render: (count: () => number) => Node[];
+      }): Node[] {
+        const double = computed(() => 2 * props.value());
+        const div = document.createElement('div');
+        for (const node of props.render(double)) {
+          div.appendChild(node);
+        }
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <Doubler [value]="value">
+            @content (render; let double) {
+              <span id="value">{{ double() }}</span>
+            }
+          </Doubler>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(Doubler)],
+      })
+      class TestUpdateForeignContentCallbackSignal {
+        readonly value = signal(0);
+      }
+
+      const fixture = TestBed.createComponent(TestUpdateForeignContentCallbackSignal);
+      await fixture.whenStable();
+
+      const value = fixture.nativeElement.querySelector('#value');
+      expect(value).toBeTruthy();
+      expect(value.textContent).toBe('0');
+
+      fixture.componentInstance.value.set(1);
+      await fixture.whenStable();
+
+      expect(value.textContent).toBe('2');
+
+      fixture.componentInstance.value.set(32);
+      await fixture.whenStable();
+
+      expect(value.textContent).toBe('64');
+    });
+  });
+
+  describe('content projection', () => {
+    it('should not reparent content to next to its original container when added to the DOM', async () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          @if (true) {
+            <FancyButton>
+              <span>⭐</span>
+            </FancyButton>
+          }
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyButton)],
+      })
+      class TestNoReparenting {}
+
+      const fixture = TestBed.createComponent(TestNoReparenting);
+
+      // Change detection triggers insertion of the @if view, which contains the foreign component.
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          // The container in which @content is initially rendered.
+          '<!--container-->' +
+          // The start of the foreign view created for the foreign component.
+          '<!--foreign-view-head-->' +
+          '<button>' +
+          '<span>⭐</span>' +
+          '</button>' +
+          // The end of the foreign view created for the foreign component.
+          '<!--foreign-view-tail-->' +
+          // The container in which the foreign view is rendered.
+          '<!--foreign-component-->' +
+          // The container anchor for the @if block.
+          '<!--container-->',
+      );
+    });
+
+    it('should support multiple @content blocks', async () => {
+      function Card(props: {header: Node[]; children: Node[]; footer: Node[]}): Node[] {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'header';
+        for (const child of props.header) {
+          headerDiv.appendChild(child);
+        }
+        card.appendChild(headerDiv);
+
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'body';
+        for (const child of props.children) {
+          bodyDiv.appendChild(child);
+        }
+        card.appendChild(bodyDiv);
+
+        const footerDiv = document.createElement('div');
+        footerDiv.className = 'footer';
+        for (const child of props.footer) {
+          footerDiv.appendChild(child);
+        }
+        card.appendChild(footerDiv);
+
+        return [card];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <Card>
+            @content (header) {
+              <h1>My Title</h1>
+            }
+            <p>Card body content</p>
+            @content (footer) {
+              <button>Close</button>
+            }
+          </Card>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(Card)],
+      })
+      class TestMultiContent {}
+
+      const fixture = TestBed.createComponent(TestMultiContent);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toContain(
+        '' +
+          // The start of the foreign view created for the foreign component.
+          '<!--foreign-view-head-->' +
+          '<div class="card">' +
+          '<div class="header">' +
+          '<h1>My Title</h1>' +
+          '</div>' +
+          '<div class="body">' +
+          '<p>Card body content</p>' +
+          '</div>' +
+          '<div class="footer">' +
+          '<button>Close</button>' +
+          '</div>' +
+          '</div>' +
+          // The end of the foreign view created for the foreign component.
+          '<!--foreign-view-tail-->' +
+          // The container in which the foreign view is rendered.
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support conditional (@if) in projected foreign content', async () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyButton>
+            @if (show()) {
+              <span id="status">Active</span>
+            } @else {
+              <span id="status">Inactive</span>
+            }
+          </FancyButton>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyButton)],
+      })
+      class TestConditionalForeignContent {
+        readonly show = signal(true);
+      }
+
+      const fixture = TestBed.createComponent(TestConditionalForeignContent);
+      await fixture.whenStable();
+
+      const button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+      expect(button.textContent).toContain('Active');
+      expect(button.textContent).not.toContain('Inactive');
+
+      fixture.componentInstance.show.set(false);
+      await fixture.whenStable();
+
+      expect(button.textContent).toContain('Inactive');
+      expect(button.textContent).not.toContain('Active');
+    });
+
+    it('should support loops (@for) in projected foreign content', async () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyButton>
+            @for (item of items(); track item) {
+              <span class="item">{{ item }}</span>
+            }
+          </FancyButton>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyButton)],
+      })
+      class TestForLoopForeignContent {
+        readonly items = signal(['A', 'B', 'C']);
+      }
+
+      const fixture = TestBed.createComponent(TestForLoopForeignContent);
+      await fixture.whenStable();
+
+      const button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+
+      let items = button.querySelectorAll('.item');
+      expect(items.length).toBe(3);
+      expect(items[0].textContent).toBe('A');
+      expect(items[1].textContent).toBe('B');
+      expect(items[2].textContent).toBe('C');
+
+      // 1. Reorder and remove
+      fixture.componentInstance.items.set(['C', 'A']);
+      await fixture.whenStable();
+
+      items = button.querySelectorAll('.item');
+      expect(items.length).toBe(2);
+      expect(items[0].textContent).toBe('C');
+      expect(items[1].textContent).toBe('A');
+
+      // 2. Add new item
+      fixture.componentInstance.items.set(['C', 'D', 'A']);
+      await fixture.whenStable();
+
+      items = button.querySelectorAll('.item');
+      expect(items.length).toBe(3);
+      expect(items[0].textContent).toBe('C');
+      expect(items[1].textContent).toBe('D');
+      expect(items[2].textContent).toBe('A');
+    });
+
+    it('should support projecting a foreign component into a foreign component', async () => {
+      function SimpleWrapper(props: {children: Node[]}): Node[] {
+        const div = document.createElement('div');
+        div.className = 'wrapper';
+        for (const child of props.children) {
+          div.appendChild(child);
+        }
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <SimpleWrapper>
+            <FancyButton>
+              <span id="text">Inside wrapper button</span>
+            </FancyButton>
+          </SimpleWrapper>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(SimpleWrapper), frameworkImport(FancyButton)],
+      })
+      class TestNestedForeignComponents {}
+
+      const fixture = TestBed.createComponent(TestNestedForeignComponents);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // @content (children) (implicit)
+          '<!--foreign-view-head-->' + // <SimpleWrapper>
+          '<div class="wrapper">' +
+          '<!--container-->' + // @content (children) (implicit)
+          '<!--foreign-view-head-->' + // <FancyButton>
+          '<button>' +
+          '<span id="text">Inside wrapper button</span>' +
+          '</button>' +
+          '<!--foreign-view-tail-->' + // </FancyButton>
+          '<!--foreign-component-->' +
+          '</div>' +
+          '<!--foreign-view-tail-->' + // </SimpleWrapper>
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support projecting a foreign component into an Angular component', async () => {
+      @Component({
+        selector: 'angular-wrapper',
+        template: `<ng-content />`,
+      })
+      class AngularWrapper {}
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [AngularWrapper],
+        template: `
+          <angular-wrapper>
+            <FancyButton>
+              <span id="text">Inside Angular</span>
+            </FancyButton>
+          </angular-wrapper>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyButton)],
+      })
+      class TestProjectForeignIntoAngular {}
+
+      const fixture = TestBed.createComponent(TestProjectForeignIntoAngular);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<angular-wrapper>' +
+          '<!--container-->' +
+          '<!--foreign-view-head-->' +
+          '<button>' +
+          '<span id="text">Inside Angular</span>' +
+          '</button>' +
+          '<!--foreign-view-tail-->' +
+          '<!--foreign-component-->' +
+          '</angular-wrapper>',
+      );
+    });
+
+    it('should support zero parameter callback', async () => {
+      function FancyList(props: {renderHeader: () => Node[]}): Node[] {
+        const div = document.createElement('div');
+        const headerNodes = props.renderHeader();
+
+        for (const node of headerNodes) {
+          div.appendChild(node);
+        }
+
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyList>
+            @content (renderHeader; let _) {
+              <span>Header Content</span>
+            }
+          </FancyList>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyList)],
+      })
+      class TestNoParamContentFn {}
+
+      const fixture = TestBed.createComponent(TestNoParamContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // for @content (renderHeader)
+          '<!--foreign-view-head-->' +
+          '<div><span>Header Content</span></div>' +
+          '<!--foreign-view-tail-->' +
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support a single parameter callback', async () => {
+      function FancyList(props: {renderItem: (item: string) => Node[]}): Node[] {
+        const div = document.createElement('div');
+        const itemNodes = props.renderItem('Hello Single');
+
+        for (const node of itemNodes) {
+          div.appendChild(node);
+        }
+
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyList>
+            @content (renderItem; let item) {
+              <span>{{ item }}</span>
+            }
+          </FancyList>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyList)],
+      })
+      class TestOneParamContentFn {}
+
+      const fixture = TestBed.createComponent(TestOneParamContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // for @content (renderItem)
+          '<!--foreign-view-head-->' +
+          '<div><span>Hello Single</span></div>' +
+          '<!--foreign-view-tail-->' +
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support multiple parameter callback', async () => {
+      function FancyTable(props: {
+        renderRow: (row: string, index: number, isLast: boolean) => Node[];
+      }): Node[] {
+        const div = document.createElement('div');
+        const nodes = props.renderRow('RowA', 0, false);
+
+        for (const node of nodes) {
+          div.appendChild(node);
+        }
+
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyTable>
+            @content (renderRow; let row, idx, isLast) {
+              <span>{{ idx }} - {{ row }} (Last: {{ isLast }})</span>
+            }
+          </FancyTable>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyTable)],
+      })
+      class TestManyParamsContentFn {}
+
+      const fixture = TestBed.createComponent(TestManyParamsContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // for @content (renderRow)
+          '<!--foreign-view-head-->' +
+          '<div><span>0 - RowA (Last: false)</span></div>' +
+          '<!--foreign-view-tail-->' +
+          '<!--foreign-component-->',
+      );
+    });
+
+    it('should support nested callbacks', async () => {
+      function OuterComp(props: {renderContent: (msg: string) => Node[]}): Node[] {
+        const outer = document.createElement('div');
+        outer.className = 'outer';
+        const nodes = props.renderContent('Outer Msg');
+        for (const node of nodes) {
+          outer.appendChild(node);
+        }
+        return [outer];
+      }
+
+      function InnerComp(props: {
+        renderHeader: (innerMsg: string) => Node[];
+        children: Node[];
+      }): Node[] {
+        const inner = document.createElement('div');
+        inner.className = 'inner';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'inner-header';
+        const headerNodes = props.renderHeader('Inner Msg');
+        for (const child of headerNodes) {
+          headerDiv.appendChild(child);
+        }
+        inner.appendChild(headerDiv);
+
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'inner-body';
+        for (const child of props.children) {
+          bodyDiv.appendChild(child);
+        }
+        inner.appendChild(bodyDiv);
+
+        return [inner];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <OuterComp>
+            @content (renderContent; let message) {
+              <InnerComp>
+                @content (renderHeader; let innerMessage) {
+                  {{ message }} - {{ innerMessage }}
+                }
+                Body Content
+              </InnerComp>
+            }
+          </OuterComp>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(OuterComp), frameworkImport(InnerComp)],
+      })
+      class TestDeepNestedContentFn {}
+
+      const fixture = TestBed.createComponent(TestDeepNestedContentFn);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.innerHTML).toBe(
+        '' +
+          '<!--container-->' + // @content (renderContent)
+          '<!--foreign-view-head-->' + // <OuterComp>
+          '<div class="outer">' +
+          '<!--container-->' + // @content (renderHeader)
+          '<!--container-->' + // @content (children) (implicit)
+          '<!--foreign-view-head-->' + // <InnerComp>
+          '<div class="inner">' +
+          '<div class="inner-header"> Outer Msg - Inner Msg </div>' +
+          '<div class="inner-body"> Body Content </div>' +
+          '</div>' +
+          '<!--foreign-view-tail-->' + // </InnerComp>
+          '<!--foreign-component-->' +
+          '</div>' +
+          '<!--foreign-view-tail-->' + // </OuterComp>
+          '<!--foreign-component-->',
+      );
+    });
+  });
+
+  describe('queries', () => {
+    it('should support querying elements inside projected foreign content', async () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyButton>
+            @if (show()) {
+              <span #target id="icon">⭐</span>
+            }
+          </FancyButton>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyButton)],
+      })
+      class TestQueryForeignContent {
+        readonly show = signal(true);
+        readonly targets = viewChildren<ElementRef<HTMLSpanElement>>('target');
+      }
+
+      const fixture = TestBed.createComponent(TestQueryForeignContent);
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.targets().length).toBe(1);
+      expect(fixture.componentInstance.targets()[0].nativeElement.id).toBe('icon');
+
+      fixture.componentInstance.show.set(false);
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.targets().length).toBe(0);
+
+      fixture.componentInstance.show.set(true);
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.targets().length).toBe(1);
+      expect(fixture.componentInstance.targets()[0].nativeElement.id).toBe('icon');
+    });
+  });
+
+  describe('event handlers', () => {
+    it('should support event handlers on elements inside projected foreign content', async () => {
+      let clicked = false;
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <FancyButton>
+            <span id="icon" (click)="handleClick()">⭐</span>
+          </FancyButton>
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(FancyButton)],
+      })
+      class TestEventForeignContent {
+        handleClick() {
+          clicked = true;
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestEventForeignContent);
+      await fixture.whenStable();
+
+      const icon = fixture.nativeElement.querySelector('#icon');
+      expect(icon).toBeTruthy();
+      expect(clicked).toBeFalse();
+
+      icon.click();
+      await fixture.whenStable();
+
+      expect(clicked).toBeTrue();
+    });
+  });
+
+  describe('lifecycle', () => {
+    // A minimal foreign context system for tracking cleanup.
+    class Context {
+      private static current: Context | undefined;
+
+      // Ensures there is currently an active context and returns it.
+      static get active(): Context {
+        if (!Context.current) {
+          throw new Error('There is no active context');
+        }
+        return Context.current;
+      }
+
+      private destroyFn: VoidFunction | undefined;
+
+      // Executes action with this context.
+      run<T>(action: () => T): T {
+        const prev = Context.current;
+        Context.current = this;
+        try {
+          return action();
+        } finally {
+          Context.current = prev;
+        }
+      }
+
+      // Destroys this context.
+      destroy() {
+        this.destroyFn?.();
+        this.destroyFn = undefined;
+      }
+
+      // Registers a callback to be invoked when this context is destroyed.
+      onDestroy(callback: VoidFunction) {
+        if (this.destroyFn) {
+          throw new Error('There is already a destroy callback registered');
+        }
+        this.destroyFn = callback;
+      }
+    }
+
+    function frameworkImport<TProps>(
+      component: (props: TProps) => Node[],
+    ): ForeignComponent<TProps> {
+      return foreignImport(
+        (props) => [component(props)],
+        (callback) => Context.active.onDestroy(callback),
+        // Do *not* render nodes eagerly. Return the node producer function directly.
+        (producer) => producer,
+      );
+    }
+
+    it('should integrate lifecycle of static content', async () => {
+      function StaticIf(props: {injector: Injector; cond: () => boolean; children: () => Node[]}) {
+        const container = document.createElement('div');
+        const context = new Context();
+
+        effect(
+          (onCleanup) => {
+            onCleanup(() => context.destroy());
+
+            if (props.cond()) {
+              context.run(() => {
+                const nodes = untracked(() => props.children());
+                for (const node of nodes) {
+                  container.appendChild(node);
+                }
+              });
+            }
+          },
+          {injector: props.injector},
+        );
+
+        return [container];
+      }
+
+      const ngOnInitSpy = jasmine.createSpy('ngOnInit');
+      const ngOnDestroySpy = jasmine.createSpy('ngOnDestroy');
+
+      @Component({selector: 'child', template: '<div>child</div>'})
+      class Child {
+        ngOnInit() {
+          ngOnInitSpy();
+        }
+
+        ngOnDestroy() {
+          ngOnDestroySpy();
+        }
+      }
+
+      @Component({
+        template: `
+          <StaticIf [injector]="injector" [cond]="visible">
+            <child />
+          </StaticIf>
+        `,
+        imports: [Child],
+        // @ts-ignore
+        foreignImports: [frameworkImport(StaticIf)],
+      })
+      class App {
+        readonly injector = inject(Injector);
+        readonly visible = signal(false);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+
+      // Initially, visible is false, so <child> is not rendered.
+      expect(ngOnInitSpy).not.toHaveBeenCalled();
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Toggle visible to true: this renders <child>.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('child');
+
+      // Toggle visible back to false: this destroys the previously rendered <child>.
+      fixture.componentInstance.visible.set(false);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Toggle visible to true again: this renders a new <child>.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(2);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('child');
+    });
+
+    it('should integrate lifecycle of dynamic content', async () => {
+      function DynamicIf(props: {
+        injector: Injector;
+        cond: () => boolean;
+        children: (value: boolean) => () => Node[];
+      }) {
+        const container = document.createElement('div');
+        const context = new Context();
+
+        effect(
+          (onCleanup) => {
+            onCleanup(() => context.destroy());
+
+            const result = props.cond();
+            if (result) {
+              context.run(() => {
+                const children = untracked(() => props.children(result));
+                const nodes = children();
+                for (const node of nodes) {
+                  container.appendChild(node);
+                }
+              });
+            }
+          },
+          {injector: props.injector},
+        );
+
+        return [container];
+      }
+
+      const ngOnInitSpy = jasmine.createSpy('ngOnInit');
+      const ngOnDestroySpy = jasmine.createSpy('ngOnDestroy');
+
+      @Component({selector: 'child', template: '<ng-content />'})
+      class Child {
+        ngOnInit() {
+          ngOnInitSpy();
+        }
+
+        ngOnDestroy() {
+          ngOnDestroySpy();
+        }
+      }
+
+      @Component({
+        template: `
+          <DynamicIf [injector]="injector" [cond]="visible">
+            @content (children; let result) {
+              <child>{{ result }}</child>
+            }
+          </DynamicIf>
+        `,
+        imports: [Child],
+        // @ts-ignore
+        foreignImports: [frameworkImport(DynamicIf)],
+      })
+      class App {
+        readonly injector = inject(Injector);
+        readonly visible = signal(false);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+
+      // Initially, visible is false, so <child> is not rendered.
+      expect(ngOnInitSpy).not.toHaveBeenCalled();
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Toggle visible to true: this renders <child>.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).not.toHaveBeenCalled();
+      expect(fixture.nativeElement.textContent).toBe('true');
+
+      // Toggle visible back to false: this destroys the previously rendered <child>.
+      fixture.componentInstance.visible.set(false);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(1);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Toggle visible to true again: this renders a new <child>.
+      fixture.componentInstance.visible.set(true);
+      await fixture.whenStable();
+
+      expect(ngOnInitSpy).toHaveBeenCalledTimes(2);
+      expect(ngOnDestroySpy).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.textContent).toBe('true');
+    });
+  });
+});

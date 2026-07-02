@@ -1,0 +1,12 @@
+// Reference: https://code.visualstudio.com/docs/remote/containers#_devcontainerjson-reference
+{
+  "name": "Angular dev container",
+  "dockerFile": "Dockerfile",
+  "forwardPorts": [4200, 4201, 4205, 4206, 9876],
+  "postCreateCommand": "pnpm install",
+  "customizations": {
+    "vscode": {
+      "extensions": ["BazelBuild.vscode-bazel", "ms-vscode.vscode-typescript-tslint-plugin"]
+    }
+  }
+}

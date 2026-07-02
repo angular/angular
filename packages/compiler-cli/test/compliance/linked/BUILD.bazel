@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["linked_compile_spec.ts"],
+    deps = [
+        "//:node_modules/@types/babel__core",
+        "//packages/compiler-cli/linker",
+        "//packages/compiler-cli/linker/babel",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/test/compliance/test_helpers",
+    ],
+)
+
+jasmine_test(
+    name = "linked",
+    data = [
+        ":test_lib",
+        "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
+    ],
+    shard_count = 2,
+)

@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "es2015_class_output",
+    srcs = ["es2015_class_output.ts"],
+    tsconfig = "tsconfig.json",
+)
+
+copy_to_bin(
+    name = "fixtures",
+    srcs = glob([
+        "**/*.js",
+        "**/*.json",
+    ]),
+)

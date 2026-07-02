@@ -1,0 +1,9 @@
+{
+  "description": "Validation",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ],
+  "file": "src/app/app.component.ts"
+}

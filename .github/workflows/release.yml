@@ -1,0 +1,24 @@
+name: Publish Release
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+.x'
+  workflow_dispatch: # Allow manual trigger for verification
+
+# Ensure only one release runs at a time PER BRANCH to avoid race conditions.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read # Required to checkout the repository
+  id-token: write # Required for NPM provenance in reusable workflow
+
+jobs:
+  release:
+    uses: angular/dev-infra/.github/workflows/reusable-release.yml@a8a341bd2b49b931c92408d497588b6acd012eeb
+    secrets:
+      wombot-token: ${{ secrets.WOMBOT_TOKEN }}
+      angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

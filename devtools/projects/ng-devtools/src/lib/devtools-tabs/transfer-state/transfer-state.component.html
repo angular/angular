@@ -1,0 +1,152 @@
+<div class="transfer-state-container">
+  <div class="header">
+    <h2>
+      <mat-icon>swap_horiz</mat-icon>
+      Transfer State
+    </h2>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-icon class="spinning">hourglass_empty</mat-icon>
+      Loading transfer state...
+    </div>
+  } @else if (!hasData()) {
+    <div class="info-card">
+      <mat-icon class="info-icon">swap_horiz</mat-icon>
+      <h3>This app isn't using Transfer State</h3>
+      <p>
+        Transfer State carries data from the server to the client during Server-Side Rendering
+        (SSR), so a hydrated app doesn't have to re-fetch it.
+      </p>
+      <p>
+        Use the <code>TransferState</code> service on the server to set values that should be
+        available on the client during hydration. Any registered values will appear here.
+      </p>
+      <p>
+        <a
+          class="info-link"
+          href="https://angular.dev/api/core/TransferState"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Read the <code>TransferState</code> API docs
+          <mat-icon class="info-link-icon">open_in_new</mat-icon>
+        </a>
+      </p>
+      @if (error()) {
+        <p class="status-note">{{ error() }}</p>
+      }
+    </div>
+  } @else {
+    <div class="transfer-state-content">
+      <div class="toolbar">
+        <div class="summary-stats">
+          <div class="stat">
+            <span class="stat-value">{{ visibleItems().length }}</span>
+            <span class="stat-label">
+              @if (visibleItems().length !== transferStateItems().length) {
+                of {{ transferStateItems().length }}
+              }
+              Keys
+            </span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{{ visibleSize() }}</span>
+            <span class="stat-label">Size</span>
+          </div>
+        </div>
+        <div class="filter">
+          <!-- TODO(hawkgs): Consider substituting with ng-filter -->
+          <input
+            type="text"
+            class="ng-input filter-input"
+            placeholder="Filter keys"
+            [ngModel]="filterText()"
+            (ngModelChange)="filterText.set($event)"
+            aria-label="Filter keys"
+          />
+          @if (filterText()) {
+            <button
+              ng-button
+              btnType="icon"
+              class="filter-clear"
+              (click)="clearFilter()"
+              matTooltip="Clear filter"
+              aria-label="Clear filter"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table
+          mat-table
+          matSort
+          (matSortChange)="onSortChange($event)"
+          [dataSource]="visibleItems()"
+          class="transfer-state-table"
+        >
+          <!-- Key Column -->
+          <ng-container matColumnDef="key">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Key</th>
+            <td mat-cell *matCellDef="let item" class="key-cell">
+              <code>{{ item.key }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="type-badge type-{{ item.type }}">{{ item.type }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Size Column -->
+          <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              Size
+              <mat-icon class="info-icon" matTooltip="Uncompressed size">help_outline</mat-icon>
+            </th>
+            <td mat-cell *matCellDef="let item">{{ item.size }}</td>
+          </ng-container>
+
+          <!-- Value Column -->
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef>Value</th>
+            <td mat-cell *matCellDef="let item" class="value-cell">
+              <div class="value-container">
+                <ng-object-tree-explorer
+                  class="value-tree"
+                  [dataSource]="item.tree"
+                  [childrenAccessor]="treeChildrenAccessor"
+                  [omitRootNodesNames]="true"
+                />
+                <button
+                  ng-button
+                  btnType="icon"
+                  size="compact"
+                  class="copy-button"
+                  (click)="copyToClipboard(item)"
+                  [matTooltip]="item.isCopied ? 'Copied!' : 'Copy value to clipboard'"
+                >
+                  <mat-icon>{{ item.isCopied ? 'check' : 'content_copy' }}</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+          <tr *matNoDataRow>
+            <td [attr.colspan]="displayedColumns.length">No such key</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  }
+</div>

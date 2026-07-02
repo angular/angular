@@ -1,0 +1,68 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "forms_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/router",
+    ],
+)
+
+ts_project(
+    name = "forms_e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/e2e_test/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig_e2e",
+    deps = [
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/protractor",
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
+    ],
+)
+
+esbuild(
+    name = "app_bundle",
+    config = {
+        "resolveExtensions": [".js"],
+    },
+    entry_point = ":main.ts",
+    tsconfig = "//packages/examples:tsconfig_build",
+    deps = [
+        ":forms_examples",
+        "//packages/examples:tsconfig_build",
+    ],
+)
+
+http_server(
+    name = "devserver",
+    srcs = ["//packages/examples:index.html"],
+    additional_root_paths = ["_main/packages/examples"],
+    deps = [":app_bundle"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    server = ":devserver",
+    deps = [
+        ":forms_e2e_tests_lib",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

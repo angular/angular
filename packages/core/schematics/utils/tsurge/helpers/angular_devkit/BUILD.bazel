@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+package(default_visibility = ["//packages/core/schematics:__subpackages__"])
+
+ts_project(
+    name = "angular_devkit",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
+        "//packages/compiler-cli",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":angular_devkit",
+        "//:node_modules/@angular-devkit/schematics",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [":test_lib"],
+)

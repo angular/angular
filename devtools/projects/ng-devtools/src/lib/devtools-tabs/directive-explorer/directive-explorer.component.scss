@@ -1,0 +1,36 @@
+:host {
+  height: 100%;
+}
+
+.forest-breadcrumbs {
+  display: flex;
+  flex-direction: column;
+
+  .hydration,
+  ng-breadcrumbs {
+    border-top: 1px solid var(--color-separator);
+  }
+
+  .hydration {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.375rem;
+  }
+}
+
+.prop-split {
+  display: flex;
+  flex-direction: column;
+}
+
+.property-tab-wrapper {
+  flex: 1;
+  overflow: auto;
+  width: 100%;
+
+  .no-selected-element {
+    text-align: center;
+    padding: 1rem;
+  }
+}

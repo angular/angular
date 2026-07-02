@@ -1,0 +1,130 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should render pipes",
+      "inputFiles": [
+        "pipes.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid pipe definition",
+          "files": [
+            {
+              "expected": "pipes_my_pipe_def.js",
+              "generated": "pipes.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid pipe factory function",
+          "files": [
+            {
+              "expected": "pipes_my_pipe_fac.js",
+              "generated": "pipes.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid pure pipe definition",
+          "files": [
+            {
+              "expected": "pipes_my_pure_pipe_def.js",
+              "generated": "pipes.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid pure pipe factory function",
+          "files": [
+            {
+              "expected": "pipes_my_pure_pipe_fac.js",
+              "generated": "pipes.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid MyApp definition",
+          "files": [
+            {
+              "expected": "pipes_my_app_def.js",
+              "generated": "pipes.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should use appropriate function for a given no of pipe arguments",
+      "inputFiles": [
+        "pipe_invocation.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid MyApp definition",
+          "files": [
+            "pipe_invocation.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate the proper instruction when injecting ChangeDetectorRef into a pipe",
+      "inputFiles": [
+        "pipe_di_change_detector_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid pipe definition",
+          "files": [
+            {
+              "expected": "pipe_di_change_detector_ref_my_pipe_def.js",
+              "generated": "pipe_di_change_detector_ref.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid pipe factory function",
+          "files": [
+            {
+              "expected": "pipe_di_change_detector_ref_my_pipe_fac.js",
+              "generated": "pipe_di_change_detector_ref.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid alternate pipe definition",
+          "files": [
+            {
+              "expected": "pipe_di_change_detector_ref_my_other_pipe_def.js",
+              "generated": "pipe_di_change_detector_ref.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid alternate pipe factory function",
+          "files": [
+            {
+              "expected": "pipe_di_change_detector_ref_my_other_pipe_fac.js",
+              "generated": "pipe_di_change_detector_ref.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle a pipe that does not have a name",
+      "inputFiles": [
+        "nameless_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid definition",
+          "files": [
+            "nameless_pipe.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

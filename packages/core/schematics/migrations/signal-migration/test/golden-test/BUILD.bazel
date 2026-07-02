@@ -1,0 +1,12 @@
+package(
+    default_visibility =
+        ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
+)
+
+filegroup(
+    name = "test_files",
+    srcs = glob(
+        ["*"],
+        exclude = ["BUILD.bazel"],
+    ),
+)

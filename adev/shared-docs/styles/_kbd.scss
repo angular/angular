@@ -1,0 +1,32 @@
+@mixin kbd() {
+  // We only target non-nested kbd elements
+  kbd:not(:has(kbd)) {
+    position: relative;
+    color: var(---tertiary-contrast);
+    border: 1px solid var(--quinary-contrast);
+    box-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.2),
+      0 0 0 2px var(--octonary-contrast) inset;
+    // NOTE: This line (in addition to others) prevents proper contrast checking in Lighthouse
+    text-shadow: 0 1px 0 var(--octonary-contrast);
+    border-radius: 3px;
+    display: inline-block;
+    font-family: sans-serif;
+    line-height: 1.5;
+    margin: 0 0.1em;
+    padding: 1px 0.4em;
+    min-width: 14px;
+    min-height: 20px;
+    vertical-align: middle;
+    text-align: center;
+
+    @media (prefers-reduced-motion: no-preference) {
+      *:hover > & {
+        box-shadow:
+          0 0.5px 0 rgba(0, 0, 0, 0.2),
+          0 0 0 2px var(--octonary-contrast) inset;
+        top: 1px;
+      }
+    }
+  }
+}

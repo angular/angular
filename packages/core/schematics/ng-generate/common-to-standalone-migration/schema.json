@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularCommonToStandaloneMigration",
+  "title": "Angular Common to Standalone Migration Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the directory where all components and modules should be migrated.",
+      "x-prompt": "Which directory do you want to migrate?",
+      "default": "./"
+    }
+  }
+}

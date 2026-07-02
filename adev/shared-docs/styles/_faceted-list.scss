@@ -1,0 +1,58 @@
+@mixin faceted-list() {
+  .docs-faceted-list {
+    --faceted-list-border-width: 2px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-inline-start: calc(var(--faceted-list-border-width) - 1px) solid var(--senary-contrast);
+  }
+  .docs-faceted-list-item {
+    a,
+    button:not(.docs-expanded-button) {
+      position: relative;
+      background-color: var(--quaternary-contrast);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      transition: background-color 0.3s ease;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: calc(var(--faceted-list-border-width) * -1);
+        width: var(--faceted-list-border-width);
+        height: 100%;
+        background: var(--primary-contrast);
+        opacity: 0;
+        transform: scaleY(0.7);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      &:hover {
+        background-color: var(--primary-contrast);
+        &::before {
+          opacity: 0.3;
+        }
+      }
+
+      &.docs-faceted-list-item-active {
+        // font gradient
+        background-image: var(--pink-to-purple-vertical-gradient);
+
+        &::before {
+          opacity: 1;
+          transform: scaleY(1);
+          background: var(--pink-to-purple-vertical-gradient);
+        }
+
+        &:hover {
+          &::before {
+            opacity: 1;
+            transform: scaleY(1.1);
+          }
+        }
+      }
+    }
+  }
+}

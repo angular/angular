@@ -1,0 +1,73 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import type {ComponentDef} from '../render3';
+import {readPatchedLView} from '../render3/context_discovery';
+import {isComponentHost, isLContainer, isLView} from '../render3/interfaces/type_checks';
+import {HEADER_OFFSET, HOST, TVIEW} from '../render3/interfaces/view';
+import {getTNode} from '../render3/util/view_utils';
+
+/**
+ * Gets the class name of the closest component to a node.
+ * Warning! this function will return minified names if the name of the component is minified. The
+ * consumer of the function is responsible for resolving the minified name to its original name.
+ * @param node Node from which to start the search.
+ * @param predicate Predicate function that can be used to decide which nodes should be skipped over
+ *   during the search. Return true if the search should stop or false to keep going up the tree.
+ */
+export function getClosestComponentName(
+  node: Node,
+  predicate?: (current: HTMLElement, componentName: string) => boolean,
+): string | null {
+  let currentNode = node as Node | null;
+
+  while (currentNode) {
+    const lView = readPatchedLView(currentNode);
+
+    if (lView !== null) {
+      for (let i = HEADER_OFFSET; i < lView.length; i++) {
+        const current = lView[i];
+
+        if ((!isLView(current) && !isLContainer(current)) || current[HOST] !== currentNode) {
+          continue;
+        }
+
+        const tView = lView[TVIEW];
+        const tNode = getTNode(tView, i);
+        if (isComponentHost(tNode)) {
+          const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
+          const name = getComponentName(def);
+
+          // Note: the name may be an empty string if the class name is
+          // dropped due to minification. In such cases keep going up the tree.
+          if (name !== null && (!predicate || predicate(currentNode as HTMLElement, name))) {
+            return name;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+
+    currentNode = currentNode.parentNode;
+  }
+
+  return null;
+}
+
+/**
+ * Gets the class name of a component from its definition.
+ * Warning! this function will return minified names if the name of the component is minified. The
+ * consumer of the function is responsible for resolving the minified name to its original name.
+ * @param tView TView that the node belongs to.
+ * @param tNode TNode from which to extract the component name.
+ */
+export function getComponentName(def: ComponentDef<unknown>): string | null {
+  // Note: the name may be an empty string if the class name is dropped due to minification.
+  return def.debugInfo?.className || def.type.name || null;
+}

@@ -1,0 +1,119 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {
+  TcbDirectiveMetadata,
+  TcbExpr,
+  TcbPipeMetadata,
+  TcbReferenceKey,
+  TypeCheckingConfig,
+  TypeCtorMetadata,
+} from '@angular/compiler';
+import ts from 'typescript';
+import {AbsoluteFsPath} from '../../file_system';
+
+import {ReferenceEmitter} from '../../imports';
+
+import {ImportManager} from '../../translator';
+
+import {ReferenceEmitEnvironment} from './reference_emit_environment';
+import {generateTypeCtorDeclarationFn} from './type_constructor';
+
+/**
+ * A context which hosts one or more Type Check Blocks (TCBs).
+ *
+ * An `Environment` supports the generation of TCBs by tracking necessary imports, declarations of
+ * type constructors, and other statements beyond the type-checking code within the TCB itself.
+ * Through method calls on `Environment`, the TCB generator can request `ts.Expression`s which
+ * reference declarations in the `Environment` for these artifacts`.
+ *
+ * `Environment` can be used in a standalone fashion, or can be extended to support more specialized
+ * usage.
+ */
+export class Environment extends ReferenceEmitEnvironment {
+  private nextIds = {
+    pipeInst: 1,
+    typeCtor: 1,
+  };
+
+  private typeCtors = new Map<TcbReferenceKey, string>();
+  protected typeCtorStatements: TcbExpr[] = [];
+
+  private pipeInsts = new Map<TcbReferenceKey, string>();
+  protected pipeInstStatements: TcbExpr[] = [];
+
+  copiedSourceOriginPath?: AbsoluteFsPath;
+
+  constructor(
+    readonly config: TypeCheckingConfig,
+    importManager: ImportManager,
+    refEmitter: ReferenceEmitter,
+    contextFile: ts.SourceFile,
+    copiedSourceOriginPath?: AbsoluteFsPath,
+  ) {
+    super(importManager, refEmitter, contextFile);
+    this.copiedSourceOriginPath = copiedSourceOriginPath;
+  }
+
+  /**
+   * Get an expression referring to a type constructor for the given directive.
+   *
+   * Depending on the shape of the directive itself, this could be either a reference to a declared
+   * type constructor, or to an inline type constructor.
+   */
+  typeCtorFor(dir: TcbDirectiveMetadata): TcbExpr {
+    if (this.typeCtors.has(dir.ref.key)) {
+      return new TcbExpr(this.typeCtors.get(dir.ref.key)!);
+    }
+
+    if (dir.requiresInlineTypeCtor) {
+      // The constructor has already been created inline, we just need to construct a reference to
+      // it.
+      const typeCtorExpr = `${this.referenceTcbValue(dir.ref).print()}.ngTypeCtor`;
+      this.typeCtors.set(dir.ref.key, typeCtorExpr);
+      return new TcbExpr(typeCtorExpr);
+    } else {
+      const fnName = `_ctor${this.nextIds.typeCtor++}`;
+      const nodeTypeRef = this.referenceTcbValue(dir.ref);
+      const meta: TypeCtorMetadata = {
+        fnName,
+        body: true,
+        fields: {
+          inputs: dir.inputs,
+          // TODO: support queries
+        },
+        coercedInputFields: dir.coercedInputFields,
+      };
+
+      const typeParams = dir.typeParameters || undefined;
+      const typeCtor = generateTypeCtorDeclarationFn(this, meta, nodeTypeRef, typeParams);
+      this.typeCtorStatements.push(typeCtor);
+      this.typeCtors.set(dir.ref.key, fnName);
+      return new TcbExpr(fnName);
+    }
+  }
+
+  /*
+   * Get an expression referring to an instance of the given pipe.
+   */
+  pipeInst(pipe: TcbPipeMetadata): TcbExpr {
+    if (this.pipeInsts.has(pipe.ref.key)) {
+      return new TcbExpr(this.pipeInsts.get(pipe.ref.key)!);
+    }
+
+    const pipeType = this.referenceTcbValue(pipe.ref);
+    const pipeInstId = `_pipe${this.nextIds.pipeInst++}`;
+    this.pipeInsts.set(pipe.ref.key, pipeInstId);
+    this.pipeInstStatements.push(new TcbExpr(`var ${pipeInstId} = null! as ${pipeType.print()}`));
+    return new TcbExpr(pipeInstId);
+  }
+
+  getPreludeStatements(): TcbExpr[] {
+    return [...this.pipeInstStatements, ...this.typeCtorStatements];
+  }
+}

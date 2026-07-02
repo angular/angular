@@ -1,0 +1,24 @@
+<nav>
+  <a routerLink="/demo-app/todos/app">Todos</a>
+  <a routerLink="/demo-app/todos/about">About</a>
+  <a routerLink="/demo-app/todos/routes">Routes</a>
+</nav>
+
+<div class="guard-toggle-container">
+  <label class="guard-toggle-label">
+    <input
+      type="checkbox"
+      [checked]="allowGuard()"
+      (change)="toggleAllowGuard()"
+      class="guard-toggle-input"
+    />
+    <span>Allow Guard: {{ allowGuard() ? 'ON' : 'OFF' }}</span>
+  </label>
+  <p class="guard-toggle-description">
+    Toggle this to switch between About routes (with canMatch guards)
+  </p>
+</div>
+
+<button class="dialog-open-button" (click)="openDialog()">Open dialog</button>
+
+<router-outlet></router-outlet>

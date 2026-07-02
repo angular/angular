@@ -1,0 +1,31 @@
+load("//tools:defaults.bzl", "ng_project", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "init",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = ["src/bundled-domino.d.ts"],
+    ),
+    deps = [
+        "//packages/platform-server/third_party/domino:bundled_domino_lib",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":init",
+    tsconfig = "//packages:tsconfig_build",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

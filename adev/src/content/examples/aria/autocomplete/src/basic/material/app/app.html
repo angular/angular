@@ -1,0 +1,66 @@
+<div class="autocomplete-container">
+  <div #origin class="material-autocomplete">
+    <span class="search-icon material-symbols-outlined" translate="no" aria-hidden="true"
+      >search</span
+    >
+    <input
+      #combobox="ngCombobox"
+      ngCombobox
+      class="autocomplete-input"
+      placeholder="Select a country"
+      [(value)]="query"
+      [(expanded)]="popupExpanded"
+      (click)="popupExpanded.set(true)"
+      (focusout)="onBlur()"
+    />
+    <button
+      type="button"
+      class="clear-button"
+      aria-label="Clear"
+      (mousedown)="$event.preventDefault()"
+      (click)="clear()"
+    >
+      <span class="clear-icon material-symbols-outlined" translate="no" aria-hidden="true"
+        >close</span
+      >
+    </button>
+  </div>
+
+  <div aria-live="polite" class="cdk-visually-hidden">
+    {{ countries().length === 0 ? 'No results found for ' + query() : '' }}
+  </div>
+
+  <ng-template
+    [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
+    [cdkConnectedOverlayOpen]="popupExpanded()"
+  >
+    <ng-template ngComboboxPopup [combobox]="combobox">
+      <div class="popup">
+        @if (countries().length === 0) {
+          <div class="no-results">No results found</div>
+        }
+        <div
+          #listbox="ngListbox"
+          ngListbox
+          ngComboboxWidget
+          class="listbox"
+          focusMode="activedescendant"
+          [tabindex]="-1"
+          [activeDescendant]="listbox.activeDescendant()"
+          [(value)]="selectedOption"
+          (click)="onCommit()"
+          (keydown.enter)="onCommit()"
+        >
+          @for (country of countries(); track country) {
+            <div class="option" ngOption [value]="country" [label]="country">
+              <span class="option-label">{{ country }}</span>
+              <span class="check-icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >check</span
+              >
+            </div>
+          }
+        </div>
+      </div>
+    </ng-template>
+  </ng-template>
+</div>

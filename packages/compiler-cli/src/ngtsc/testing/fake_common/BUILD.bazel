@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "ng_package", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "fake_common",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    package = "@angular/common",
+    deps = [
+        ":fake_common",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common/http:fake_http",
+    ],
+)

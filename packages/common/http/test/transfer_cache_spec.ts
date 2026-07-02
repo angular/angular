@@ -1,0 +1,1172 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {DOCUMENT} from '../../index';
+import {
+  ApplicationRef,
+  Component,
+  Injectable,
+  PLATFORM_ID,
+  TransferState,
+  makeStateKey,
+} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {useAutoTick, timeout, withBody} from '@angular/private/testing';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpRequest,
+  HttpResponse,
+  provideHttpClient,
+} from '../public_api';
+import {
+  BODY,
+  CACHE_OPTIONS,
+  HEADERS,
+  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+  RESPONSE_TYPE,
+  STATUS,
+  STATUS_TEXT,
+  REQ_URL,
+  transferCacheInterceptorFn,
+  withHttpTransferCache,
+  generateHash,
+} from '../src/transfer_cache';
+import {HttpTestingController, provideHttpClientTesting} from '../testing';
+import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '../../src/platform_id';
+
+interface RequestParams {
+  method?: string;
+  observe?: 'body' | 'response';
+  transferCache?: {includeHeaders: string[]} | boolean;
+  headers?: {[key: string]: string};
+  /** Separate response headers for flush(); falls back to headers if not set  */
+  responseHeaders?: {[key: string]: string};
+  withCredentials?: boolean;
+  credentials?: RequestCredentials;
+  cache?: RequestCache;
+  body?: RequestBody;
+}
+
+type RequestBody =
+  | ArrayBuffer
+  | Blob
+  | boolean
+  | string
+  | number
+  | Object
+  | (boolean | string | number | Object | null)[]
+  | null;
+
+describe('TransferCache', () => {
+  useAutoTick();
+  @Component({
+    selector: 'test-app-http',
+    template: 'hello',
+    standalone: false,
+  })
+  class SomeComponent {}
+
+  describe('transferCacheInterceptorFn', () => {
+    afterEach(() => {
+      TestBed.resetTestingModule();
+    });
+
+    function configureInterceptor(options: {includeRequestsWithAuthHeaders?: boolean} = {}): void {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          TransferState,
+          {
+            provide: CACHE_OPTIONS,
+            useValue: {
+              isCacheActive: true,
+              ...options,
+            },
+          },
+        ],
+      });
+    }
+
+    function runOnServer<T>(callback: () => T): T {
+      const previousServerMode = globalThis['ngServerMode'];
+      globalThis['ngServerMode'] = true;
+      try {
+        return callback();
+      } finally {
+        globalThis['ngServerMode'] = previousServerMode;
+      }
+    }
+
+    function runInterceptor(
+      req: HttpRequest<unknown>,
+      next: (req: HttpRequest<unknown>) => Observable<HttpResponse<unknown>>,
+    ): HttpResponse<unknown> {
+      let response!: HttpResponse<unknown>;
+      TestBed.runInInjectionContext(() => {
+        transferCacheInterceptorFn(req, next).subscribe((event) => {
+          if (event instanceof HttpResponse) {
+            response = event;
+          }
+        });
+      });
+      return response;
+    }
+
+    it('should not reuse cached responses for Cookie-bearing requests by default', () => {
+      configureInterceptor();
+
+      const firstRequest = new HttpRequest('GET', '/test-cookie', null, {
+        headers: new HttpHeaders({Cookie: 'session=user-a'}),
+      });
+      const secondRequest = new HttpRequest('GET', '/test-cookie', null, {
+        headers: new HttpHeaders({Cookie: 'session=user-b'}),
+      });
+
+      const firstNext = jasmine
+        .createSpy('firstNext')
+        .and.returnValue(of(new HttpResponse({body: 'user-a-secret'})));
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'user-b-secret'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(firstRequest, firstNext).body).toBe('user-a-secret');
+        expect(runInterceptor(secondRequest, secondNext).body).toBe('user-b-secret');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it("should preserve opt-in caching for Cookie-bearing requests when 'includeRequestsWithAuthHeaders' is true", () => {
+      configureInterceptor({includeRequestsWithAuthHeaders: true});
+
+      const request = new HttpRequest('GET', '/test-cookie', null, {
+        headers: new HttpHeaders({Cookie: 'session=user-a'}),
+      });
+
+      const firstNext = jasmine
+        .createSpy('firstNext')
+        .and.returnValue(of(new HttpResponse({body: 'user-a-secret'})));
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'network-should-not-run'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('user-a-secret');
+        expect(runInterceptor(request, secondNext).body).toBe('user-a-secret');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).not.toHaveBeenCalled();
+    });
+
+    it('should not cache responses with Cache-Control: no-store', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-no-store');
+
+      const firstNext = jasmine.createSpy('firstNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'sensitive-data',
+            headers: new HttpHeaders({'Cache-Control': 'no-store'}),
+          }),
+        ),
+      );
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'fresh-data'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('sensitive-data');
+        expect(runInterceptor(request, secondNext).body).toBe('fresh-data');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not cache responses with Cache-Control: private', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-private');
+
+      const firstNext = jasmine.createSpy('firstNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'user-data',
+            headers: new HttpHeaders({'Cache-Control': 'private'}),
+          }),
+        ),
+      );
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'public-data'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('user-data');
+        expect(runInterceptor(request, secondNext).body).toBe('public-data');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not cache responses with a Set-Cookie header', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-set-cookie');
+
+      const firstNext = jasmine.createSpy('firstNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'user-a-session',
+            headers: new HttpHeaders({'Set-Cookie': 'session=user-a; HttpOnly'}),
+          }),
+        ),
+      );
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'user-b-session'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('user-a-session');
+        expect(runInterceptor(request, secondNext).body).toBe('user-b-session');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not cache requests with Cache-Control: no-store', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-req-no-store', null, {
+        headers: new HttpHeaders({'Cache-Control': 'no-store'}),
+      });
+
+      const firstNext = jasmine
+        .createSpy('firstNext')
+        .and.returnValue(of(new HttpResponse({body: 'data'})));
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'fresh-data'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('data');
+        expect(runInterceptor(request, secondNext).body).toBe('fresh-data');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not cache requests with Cache-Control: no-cache', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-req-no-cache', null, {
+        headers: new HttpHeaders({'Cache-Control': 'no-cache'}),
+      });
+
+      const firstNext = jasmine
+        .createSpy('firstNext')
+        .and.returnValue(of(new HttpResponse({body: 'data'})));
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'fresh-data'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('data');
+        expect(runInterceptor(request, secondNext).body).toBe('fresh-data');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('withHttpTransferCache', () => {
+    let isStable: BehaviorSubject<boolean>;
+
+    function makeRequestAndExpectOne(
+      url: string,
+      body: RequestBody,
+      params?: RequestParams,
+    ): string;
+    function makeRequestAndExpectOne(
+      url: string,
+      body: RequestBody,
+      params?: RequestParams & {observe: 'response'},
+    ): HttpResponse<string>;
+    function makeRequestAndExpectOne(url: string, body: RequestBody, params?: RequestParams): any {
+      let response!: any;
+      TestBed.inject(HttpClient)
+        .request(params?.method ?? 'GET', url, params)
+        .subscribe((r) => (response = r));
+      TestBed.inject(HttpTestingController)
+        .expectOne(url)
+        .flush(body, {headers: params?.responseHeaders ?? params?.headers});
+      return response;
+    }
+
+    function makeRequestAndExpectNone(
+      url: string,
+      method: string = 'GET',
+      params?: RequestParams,
+    ): HttpResponse<string> {
+      let response!: HttpResponse<string>;
+      TestBed.inject(HttpClient)
+        .request(method, url, {observe: 'response', ...params})
+        .subscribe((r) => (response = r));
+      TestBed.inject(HttpTestingController).expectNone(url);
+      return response;
+    }
+
+    beforeEach(() => {
+      globalThis['ngServerMode'] = true;
+    });
+
+    afterEach(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
+
+    beforeEach(
+      withBody('<test-app-http></test-app-http>', () => {
+        TestBed.resetTestingModule();
+        isStable = new BehaviorSubject<boolean>(false);
+
+        @Injectable()
+        class ApplicationRefPatched extends ApplicationRef {
+          override get isStable() {
+            return isStable;
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [SomeComponent],
+          providers: [
+            {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+            {provide: DOCUMENT, useFactory: () => document},
+            {provide: ApplicationRef, useClass: ApplicationRefPatched},
+            withHttpTransferCache({}),
+            provideHttpClient(),
+            provideHttpClientTesting(),
+          ],
+        });
+
+        const appRef = TestBed.inject(ApplicationRef);
+        appRef.bootstrap(SomeComponent);
+      }),
+    );
+
+    it('should store HTTP calls in cache when application is not stable', () => {
+      makeRequestAndExpectOne('/test', 'foo');
+      const transferState = TestBed.inject(TransferState);
+      const key = makeStateKey(Object.keys((transferState as any).store)[0]);
+      expect(transferState.get(key, null)).toEqual(jasmine.objectContaining({[BODY]: 'foo'}));
+    });
+
+    it('should cache arraybuffer responses correctly', () => {
+      const testData = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+      let response!: ArrayBuffer;
+      TestBed.inject(HttpClient)
+        .get('/test-arraybuffer', {responseType: 'arraybuffer'})
+        .subscribe((r) => (response = r));
+      TestBed.inject(HttpTestingController).expectOne('/test-arraybuffer').flush(testData);
+
+      expect(new Uint8Array(response)).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
+
+      let cachedResponse!: ArrayBuffer;
+      TestBed.inject(HttpClient)
+        .get('/test-arraybuffer', {responseType: 'arraybuffer'})
+        .subscribe((r) => (cachedResponse = r));
+      TestBed.inject(HttpTestingController).expectNone('/test-arraybuffer');
+
+      expect(new Uint8Array(cachedResponse)).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
+    });
+
+    it('should cache blob responses correctly', () => {
+      const testData = new Uint8Array([10, 20, 30, 40, 50]).buffer;
+      let response!: Blob;
+      TestBed.inject(HttpClient)
+        .get('/test-blob', {responseType: 'blob'})
+        .subscribe((r) => (response = r));
+      TestBed.inject(HttpTestingController).expectOne('/test-blob').flush(testData);
+
+      expect(response instanceof Blob).toBeTrue();
+      expect(response.size).toBe(5);
+    });
+
+    it('should stop storing HTTP calls in `TransferState` after application becomes stable', async () => {
+      makeRequestAndExpectOne('/test-1', 'foo');
+      makeRequestAndExpectOne('/test-2', 'buzz');
+
+      isStable.next(true);
+
+      await timeout();
+
+      makeRequestAndExpectOne('/test-3', 'bar');
+
+      const transferState = TestBed.inject(TransferState);
+      expect(JSON.parse(transferState.toJson()) as Record<string, unknown>).toEqual({
+        '2da5dfaf112523258ec9c26a0abe9a093b59ed7dbe5f43e4b5ee25a407ac9cf0': {
+          [BODY]: 'foo',
+          [HEADERS]: {},
+          [STATUS]: 200,
+          [STATUS_TEXT]: 'OK',
+          [REQ_URL]: '/test-1',
+          [RESPONSE_TYPE]: 'json',
+        },
+        '869485290d9385f3c0a9ba571918c335bbca9e03373bf8260d02f2b7dd335849': {
+          [BODY]: 'buzz',
+          [HEADERS]: {},
+          [STATUS]: 200,
+          [STATUS_TEXT]: 'OK',
+          [REQ_URL]: '/test-2',
+          [RESPONSE_TYPE]: 'json',
+        },
+      });
+    });
+
+    it(`should use calls from cache when present and application is not stable`, () => {
+      makeRequestAndExpectOne('/test-1', 'foo');
+      // Do the same call, this time it should served from cache.
+      makeRequestAndExpectNone('/test-1');
+    });
+
+    it(`should not use calls from cache when present and application is stable`, async () => {
+      makeRequestAndExpectOne('/test-1', 'foo');
+
+      isStable.next(true);
+      await timeout();
+      // Do the same call, this time it should go through as application is stable.
+      makeRequestAndExpectOne('/test-1', 'foo');
+    });
+
+    it(`should differentiate calls with different parameters`, async () => {
+      // make calls with different parameters. All of which should be saved in the state.
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo');
+      makeRequestAndExpectOne('/test-1', 'foo');
+      makeRequestAndExpectOne('/test-1?foo=2', 'buzz');
+
+      makeRequestAndExpectNone('/test-1?foo=1');
+      await expectAsync(TestBed.inject(HttpClient).get('/test-1?foo=1').toPromise()).toBeResolvedTo(
+        'foo',
+      );
+    });
+
+    it('should differentiate repeated parameters from scalar comma parameters', () => {
+      let scalarResponse!: string;
+      TestBed.inject(HttpClient)
+        .get('/test-params', {params: new HttpParams().set('role', 'user,admin')})
+        .subscribe((response) => (scalarResponse = response as string));
+      TestBed.inject(HttpTestingController)
+        .expectOne('/test-params?role=user,admin')
+        .flush('scalar');
+
+      let repeatedResponse!: string;
+      TestBed.inject(HttpClient)
+        .get('/test-params', {
+          params: new HttpParams().append('role', 'user').append('role', 'admin'),
+        })
+        .subscribe((response) => (repeatedResponse = response as string));
+      TestBed.inject(HttpTestingController)
+        .expectOne('/test-params?role=user&role=admin')
+        .flush('repeated');
+
+      let repeatedCachedResponse!: string;
+      TestBed.inject(HttpClient)
+        .get('/test-params', {
+          params: new HttpParams().append('role', 'user').append('role', 'admin'),
+        })
+        .subscribe((response) => (repeatedCachedResponse = response as string));
+      TestBed.inject(HttpTestingController).expectNone('/test-params?role=user&role=admin');
+
+      expect(scalarResponse).toBe('scalar');
+      expect(repeatedResponse).toBe('repeated');
+      expect(repeatedCachedResponse).toBe('repeated');
+    });
+
+    it('should skip cache when specified', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {transferCache: false});
+      // The previous request wasn't cached so this one can't use the cache
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo');
+      // But this one will
+      makeRequestAndExpectNone('/test-1?foo=1');
+    });
+
+    it('should not cache a POST even with filter true specified', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'post-body', {method: 'POST'});
+
+      // Previous POST request wasn't cached
+      makeRequestAndExpectOne('/test-1?foo=1', 'body2', {method: 'POST'});
+
+      // filter => true won't cache neither
+      makeRequestAndExpectOne('/test-1?foo=1', 'post-body', {method: 'POST', transferCache: true});
+
+      const response = makeRequestAndExpectOne('/test-1?foo=1', 'body2', {method: 'POST'});
+      expect(response).toBe('body2');
+    });
+
+    it('should not cache headers', async () => {
+      // HttpTransferCacheOptions: true = fallback to default = headers won't be cached
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {
+        headers: {foo: 'foo', bar: 'bar'},
+        transferCache: true,
+      });
+
+      // request returns the cache without any header.
+      const response2 = makeRequestAndExpectNone('/test-1?foo=1');
+      expect(response2.headers.keys().length).toBe(0);
+    });
+
+    it('should cache with headers', async () => {
+      // headers are case not sensitive
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {
+        headers: {foo: 'foo', bar: 'bar', 'BAZ': 'baz'},
+        transferCache: {includeHeaders: ['foo', 'baz']},
+      });
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      // request returns the cache with only 2 header entries.
+      const response = makeRequestAndExpectNone('/test-1?foo=1', 'GET', {
+        transferCache: {includeHeaders: ['foo', 'baz']},
+      });
+      expect(response.headers.keys().length).toBe(2);
+
+      // foo has been kept
+      const foo = response.headers.get('foo');
+      expect(foo).toBe('foo');
+
+      // foo wasn't removed, we won't log anything
+      expect(consoleWarnSpy.calls.count()).toBe(0);
+
+      // bar has been removed
+      response.headers.get('bar');
+      response.headers.get('some-other-header');
+
+      expect(consoleWarnSpy.calls.count()).toBe(2);
+
+      response.headers.get('some-other-header');
+
+      // We ensure the warning is only logged once per header method + entry
+      expect(consoleWarnSpy.calls.count()).toBe(2);
+
+      response.headers.has('some-other-header');
+
+      // Here the method is different, we get one more call.
+      expect(consoleWarnSpy.calls.count()).toBe(3);
+    });
+
+    it('should not cache POST by default', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
+    });
+
+    it('should cache POST with the transferCache option', () => {
+      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST', transferCache: true});
+      makeRequestAndExpectNone('/test-1?foo=1', 'POST', {transferCache: true});
+
+      makeRequestAndExpectOne('/test-2?foo=1', 'foo', {
+        method: 'POST',
+        transferCache: {includeHeaders: []},
+      });
+      makeRequestAndExpectNone('/test-2?foo=1', 'POST', {transferCache: true});
+    });
+
+    it('should not cache request that requires authorization by default', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        headers: {Authorization: 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo');
+    });
+
+    it('should not cache request that requires proxy authorization by default', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        headers: {'Proxy-Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo');
+    });
+
+    it('should not cache requests with credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        withCredentials: true,
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        withCredentials: true,
+      });
+    });
+
+    it('should not cache requests with included credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'include',
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'include',
+      });
+    });
+
+    it('should not cache requests with same-origin credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'same-origin',
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'same-origin',
+      });
+    });
+
+    it('should cache requests with omitted credentials', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        credentials: 'omit',
+      });
+
+      makeRequestAndExpectNone('/test-auth', 'GET', {
+        credentials: 'omit',
+      });
+    });
+
+    it('should not cache responses with Cache-Control: no-store', () => {
+      makeRequestAndExpectOne('/test-no-store', 'private-data', {
+        responseHeaders: {'Cache-Control': 'no-store'},
+      });
+
+      makeRequestAndExpectOne('/test-no-store', 'fresh-data');
+    });
+
+    it('should not cache responses with Cache-Control: private', () => {
+      makeRequestAndExpectOne('/test-private', 'user-data', {
+        responseHeaders: {'Cache-Control': 'private'},
+      });
+
+      makeRequestAndExpectOne('/test-private', 'fresh-data');
+    });
+
+    it('should not cache responses with a Set-Cookie header', () => {
+      makeRequestAndExpectOne('/test-set-cookie', 'user-a-session', {
+        responseHeaders: {'Set-Cookie': 'session=user-a; HttpOnly'},
+      });
+
+      makeRequestAndExpectOne('/test-set-cookie', 'user-b-session');
+    });
+
+    it('should not cache responses with Cache-Control containing no-store among other directives', () => {
+      makeRequestAndExpectOne('/test-multi', 'data', {
+        responseHeaders: {'Cache-Control': 'max-age=0, no-store, must-revalidate'},
+      });
+
+      makeRequestAndExpectOne('/test-multi', 'fresh-data');
+    });
+
+    it('should not cache responses with Cache-Control containing private among other directives', () => {
+      makeRequestAndExpectOne('/test-multi-private', 'data', {
+        responseHeaders: {'Cache-Control': 'max-age=60, private'},
+      });
+
+      makeRequestAndExpectOne('/test-multi-private', 'fresh-data');
+    });
+
+    it('should cache responses with Cache-Control: public', () => {
+      makeRequestAndExpectOne('/test-public', 'public-data', {
+        responseHeaders: {'Cache-Control': 'public'},
+      });
+
+      makeRequestAndExpectNone('/test-public');
+    });
+
+    it('should cache responses with Cache-Control: max-age without no-store or private', () => {
+      makeRequestAndExpectOne('/test-max-age', 'cacheable-data', {
+        responseHeaders: {'Cache-Control': 'max-age=3600'},
+      });
+
+      makeRequestAndExpectNone('/test-max-age');
+    });
+
+    it('should cache responses without Cache-Control header', () => {
+      makeRequestAndExpectOne('/test-no-cc', 'data');
+
+      makeRequestAndExpectNone('/test-no-cc');
+    });
+
+    it('should not cache responses with Cache-Control: no-store (case-insensitive)', () => {
+      makeRequestAndExpectOne('/test-case-resp', 'data', {
+        responseHeaders: {'Cache-Control': 'No-Store'},
+      });
+
+      makeRequestAndExpectOne('/test-case-resp', 'fresh-data');
+    });
+
+    it('should not cache requests with Cache-Control: no-store', () => {
+      makeRequestAndExpectOne('/test-req-no-store', 'data', {
+        headers: {'Cache-Control': 'no-store'},
+      });
+
+      makeRequestAndExpectOne('/test-req-no-store', 'fresh-data');
+    });
+
+    it('should not cache requests with Cache-Control: no-cache', () => {
+      makeRequestAndExpectOne('/test-req-no-cache', 'data', {
+        headers: {'Cache-Control': 'no-cache'},
+      });
+
+      makeRequestAndExpectOne('/test-req-no-cache', 'fresh-data');
+    });
+
+    it('should not cache requests with Cache-Control containing no-store among other directives', () => {
+      makeRequestAndExpectOne('/test-req-multi', 'data', {
+        headers: {'Cache-Control': 'max-age=0, no-store'},
+      });
+
+      makeRequestAndExpectOne('/test-req-multi', 'fresh-data');
+    });
+
+    it('should cache requests with Cache-Control: max-age', () => {
+      makeRequestAndExpectOne('/test-req-max-age', 'data', {
+        headers: {'Cache-Control': 'max-age=3600'},
+      });
+
+      makeRequestAndExpectNone('/test-req-max-age');
+    });
+
+    it('should not cache requests with Fetch API cache mode: no-store', () => {
+      makeRequestAndExpectOne('/test-fetch-no-store', 'data', {
+        cache: 'no-store',
+      });
+
+      makeRequestAndExpectOne('/test-fetch-no-store', 'fresh-data');
+    });
+
+    it('should not cache requests with Fetch API cache mode: no-cache', () => {
+      makeRequestAndExpectOne('/test-fetch-no-cache', 'data', {
+        cache: 'no-cache',
+      });
+
+      makeRequestAndExpectOne('/test-fetch-no-cache', 'fresh-data');
+    });
+
+    it('should cache POST with the differing body in string form', () => {
+      makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'foo'});
+      makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: 'foo'});
+      makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'bar'});
+    });
+
+    it('should cache POST with the differing body in object form', () => {
+      makeRequestAndExpectOne('/test-1', null, {
+        method: 'POST',
+        transferCache: true,
+        body: {foo: true},
+      });
+      makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: {foo: true}});
+      makeRequestAndExpectOne('/test-1', null, {
+        method: 'POST',
+        transferCache: true,
+        body: {foo: false},
+      });
+    });
+
+    it('should cache POST with the differing body in URLSearchParams form', () => {
+      makeRequestAndExpectOne('/test-1', null, {
+        method: 'POST',
+        transferCache: true,
+        body: new URLSearchParams('foo=1'),
+      });
+      makeRequestAndExpectNone('/test-1', 'POST', {
+        transferCache: true,
+        body: new URLSearchParams('foo=1'),
+      });
+      makeRequestAndExpectOne('/test-1', null, {
+        method: 'POST',
+        transferCache: true,
+        body: new URLSearchParams('foo=2'),
+      });
+    });
+
+    describe('caching in browser context', () => {
+      beforeEach(() => {
+        globalThis['ngServerMode'] = false;
+      });
+
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
+      });
+
+      beforeEach(
+        withBody('<test-app-http></test-app-http>', () => {
+          TestBed.resetTestingModule();
+          isStable = new BehaviorSubject<boolean>(false);
+
+          @Injectable()
+          class ApplicationRefPatched extends ApplicationRef {
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              withHttpTransferCache({}),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+          isStable = appRef.isStable as BehaviorSubject<boolean>;
+        }),
+      );
+
+      it('should skip storing in transfer cache when platform is browser', () => {
+        makeRequestAndExpectOne('/test-1?foo=1', 'foo');
+        makeRequestAndExpectOne('/test-1?foo=1', 'foo');
+      });
+    });
+
+    describe('caching with global setting', () => {
+      beforeEach(
+        withBody('<test-app-http></test-app-http>', () => {
+          TestBed.resetTestingModule();
+          isStable = new BehaviorSubject<boolean>(false);
+
+          @Injectable()
+          class ApplicationRefPatched extends ApplicationRef {
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              withHttpTransferCache({
+                filter: (req) => {
+                  if (req.url.includes('include')) {
+                    return true;
+                  } else if (req.url.includes('exclude')) {
+                    return false;
+                  } else {
+                    return true;
+                  }
+                },
+                includeHeaders: ['foo', 'bar'],
+                includePostRequests: true,
+                includeRequestsWithAuthHeaders: true,
+              }),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+          isStable = appRef.isStable as BehaviorSubject<boolean>;
+        }),
+      );
+
+      it('should cache because of global filter', () => {
+        makeRequestAndExpectOne('/include?foo=1', 'foo');
+        makeRequestAndExpectNone('/include?foo=1');
+      });
+
+      it('should not cache because of global filter', () => {
+        makeRequestAndExpectOne('/exclude?foo=1', 'foo');
+        makeRequestAndExpectOne('/exclude?foo=1', 'foo');
+      });
+
+      it(`should cache request that requires authorization when 'includeRequestsWithAuthHeaders' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          headers: {Authorization: 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
+        });
+
+        makeRequestAndExpectNone('/test-auth');
+      });
+
+      it(`should cache request that requires proxy authorization when 'includeRequestsWithAuthHeaders' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          headers: {'Proxy-Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
+        });
+
+        makeRequestAndExpectNone('/test-auth');
+      });
+
+      it(`should not cache requests with credentials when 'includeRequestsWithAuthHeaders' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          withCredentials: true,
+        });
+
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          withCredentials: true,
+        });
+      });
+
+      it(`should not cache requests with included credentials when 'includeRequestsWithAuthHeaders' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          credentials: 'include',
+        });
+
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          credentials: 'include',
+        });
+      });
+
+      it('should cache a POST request', () => {
+        makeRequestAndExpectOne('/include?foo=1', 'post-body', {method: 'POST'});
+
+        // Previous POST request wasn't cached
+        const response = makeRequestAndExpectNone('/include?foo=1', 'POST');
+        expect(response.body).toBe('post-body');
+      });
+
+      it('should cache with headers', () => {
+        //  nothing specified, should use global options = callback => include + headers
+        makeRequestAndExpectOne('/include?foo=1', 'foo', {headers: {foo: 'foo', bar: 'bar'}});
+
+        // This one was cached with headers
+        const response = makeRequestAndExpectNone('/include?foo=1');
+        expect(response.headers.keys().length).toBe(2);
+      });
+
+      it('should cache without headers because overridden', () => {
+        //  nothing specified, should use global options = callback => include + headers
+        makeRequestAndExpectOne('/include?foo=1', 'foo', {
+          headers: {foo: 'foo', bar: 'bar'},
+          transferCache: {includeHeaders: []},
+        });
+
+        // This one was cached with headers
+        const response = makeRequestAndExpectNone('/include?foo=1');
+        expect(response.headers.keys().length).toBe(0);
+      });
+    });
+
+    describe('caching with public origins', () => {
+      beforeEach(
+        withBody('<test-app-http></test-app-http>', () => {
+          TestBed.resetTestingModule();
+          isStable = new BehaviorSubject<boolean>(false);
+
+          @Injectable()
+          class ApplicationRefPatched extends ApplicationRef {
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              withHttpTransferCache({}),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+              {
+                provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                useValue: {
+                  'http://internal-domain.com:1234': 'https://external-domain.net:443',
+                },
+              },
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+          isStable = appRef.isStable as BehaviorSubject<boolean>;
+        }),
+      );
+
+      it('should cache with public origin', () => {
+        makeRequestAndExpectOne('http://internal-domain.com:1234/test-1?foo=1', 'foo');
+        const cachedRequest = makeRequestAndExpectNone(
+          'https://external-domain.net:443/test-1?foo=1',
+        );
+        expect(cachedRequest.url).toBe('https://external-domain.net:443/test-1?foo=1');
+      });
+
+      it('should cache normally when there is no mapping defined for the origin', () => {
+        makeRequestAndExpectOne('https://other.internal-domain.com:1234/test-1?foo=1', 'foo');
+        makeRequestAndExpectNone('https://other.internal-domain.com:1234/test-1?foo=1');
+      });
+
+      describe('when the origin map is configured with extra paths', () => {
+        beforeEach(
+          withBody('<test-app-http></test-app-http>', () => {
+            TestBed.resetTestingModule();
+            isStable = new BehaviorSubject<boolean>(false);
+
+            @Injectable()
+            class ApplicationRefPatched extends ApplicationRef {
+              override get isStable() {
+                return new BehaviorSubject<boolean>(false);
+              }
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                withHttpTransferCache({}),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {
+                  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                  useValue: {
+                    'http://internal-domain.com:1234': 'https://external-domain.net:443/path',
+                  },
+                },
+              ],
+            });
+
+            const appRef = TestBed.inject(ApplicationRef);
+            appRef.bootstrap(SomeComponent);
+            isStable = appRef.isStable as BehaviorSubject<boolean>;
+          }),
+        );
+
+        it('should throw an error when the origin map is configured with extra paths', () => {
+          TestBed.inject(HttpClient)
+            .request('GET', 'http://internal-domain.com:1234/path/test-1')
+            .subscribe({
+              error: (error: Error) => {
+                expect(error.message).toBe(
+                  'NG02804: Angular detected a URL with a path segment in the value provided for the ' +
+                    '`HTTP_TRANSFER_CACHE_ORIGIN_MAP` token: https://external-domain.net:443/path. ' +
+                    'The map should only contain origins without any other segments.',
+                );
+              },
+            });
+        });
+      });
+
+      describe('on the client', () => {
+        beforeEach(
+          withBody('<test-app-http></test-app-http>', () => {
+            TestBed.resetTestingModule();
+            isStable = new BehaviorSubject<boolean>(false);
+
+            @Injectable()
+            class ApplicationRefPatched extends ApplicationRef {
+              override get isStable() {
+                return new BehaviorSubject<boolean>(false);
+              }
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                withHttpTransferCache({}),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {
+                  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                  useValue: {
+                    'http://internal-domain.com:1234': 'https://external-domain.net:443',
+                  },
+                },
+                {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+              ],
+            });
+
+            // Make a request on the server to fill the transfer state then reuse it in the browser
+            makeRequestAndExpectOne('http://internal-domain.com:1234/test-1?foo=1', 'foo');
+            const transferState = TestBed.inject(TransferState);
+
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                withHttpTransferCache({}),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {
+                  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                  useValue: {
+                    'http://internal-domain.com:1234': 'https://external-domain.net:443',
+                  },
+                },
+                {provide: TransferState, useValue: transferState},
+                {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+              ],
+            });
+
+            const appRef = TestBed.inject(ApplicationRef);
+            appRef.bootstrap(SomeComponent);
+            isStable = appRef.isStable as BehaviorSubject<boolean>;
+          }),
+        );
+
+        it('should throw an error when origin mapping is defined', () => {
+          TestBed.inject(HttpClient)
+            .request('GET', 'https://external-domain.net:443/test-1?foo=1')
+            .subscribe({
+              error: (error: Error) => {
+                expect(error.message).toBe(
+                  'NG02803: Angular detected that the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token is configured and ' +
+                    'present in the client side code. Please ensure that this token is only provided in the ' +
+                    'server code of the application.',
+                );
+              },
+            });
+        });
+      });
+    });
+  });
+
+  describe('generateHash', () => {
+    async function computeNativeSha256(value: string): Promise<string> {
+      const msgUint8 = new TextEncoder().encode(value);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    it('should generate standard SHA-256 hashes matching Web Crypto specs', async () => {
+      const testCases = [
+        '',
+        'hello',
+        'angular',
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+        'Angular 🚀',
+        'a'.repeat(55),
+        'a'.repeat(56),
+        'a'.repeat(63),
+        'a'.repeat(64),
+        'a'.repeat(65),
+        'a'.repeat(1000),
+      ];
+
+      for (const testCase of testCases) {
+        const expected = await computeNativeSha256(testCase);
+        expect(generateHash(testCase)).withContext(`For: ${testCase}`).toBe(expected);
+      }
+    });
+  });
+});

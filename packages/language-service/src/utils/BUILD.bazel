@@ -1,0 +1,13 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//packages/language-service:__subpackages__"])
+
+ts_project(
+    name = "utils",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+    ],
+)

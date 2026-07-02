@@ -1,0 +1,5 @@
+{
+  "openFiles": ["src/app/app.ts", "src/app/highlight-directive.ts", "src/app/app.css"],
+  "type": "editor",
+  "title": "Using signals with directives"
+}

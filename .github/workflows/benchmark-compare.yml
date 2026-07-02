@@ -1,0 +1,85 @@
+name: Run benchmark comparison
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: read-all
+
+jobs:
+  benchmark-compare:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/benchmark-compare ')}}
+    steps:
+      - uses: TheModdingInquisition/actions-team-membership@057d91bb80f2976a1bc6dfab5b4ae1da9aebbd89 # v1.0
+        with:
+          team: 'team'
+          organization: angular
+          token: ${{secrets.BENCHMARK_COMPARE_MEMBERSHIP_GITHUB_TOKEN}}
+          exit: true
+
+      # Indicate that the benchmark command was received.
+      - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
+        with:
+          comment-id: ${{github.event.comment.id}}
+          token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
+          reactions: 'rocket'
+
+      - uses: alessbell/pull-request-comment-branch@ef3408c9757d05f89cb525036383033a313758a0 # v2.1.0
+        id: comment-branch
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # Specify repository as the PR branch might be from a fork.
+          repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
+          # Checkout the pull request and assume it being trusted given we've checked
+          # that the action was triggered by a team member.
+          ref: ${{steps.comment-branch.outputs.head_sha}}
+
+      # We cannot use `angular/dev-infra/github-actions/npm/checkout-and-setup-node` here
+      # because it does not support checking out from a fork (as it lacks a `repository` input).
+      # Thus, we checkout and setup Node/pnpm manually.
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@442c2fcbf06a321b5196b4c5fc70e78a49242958
+
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@442c2fcbf06a321b5196b4c5fc70e78a49242958
+        with:
+          bazelrc: ./.bazelrc.user
+
+      - name: Preparing benchmark for GitHub action
+        id: info
+        env:
+          # Untrusted input used in an executable code, must be wrapped as an env var to prevent injections
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: pnpm benchmarks prepare-for-github-action "$COMMENT_BODY"
+
+      - run: pnpm benchmarks run-compare "$COMPARE_SHA" "$BENCHMARK_TARGET"
+        id: benchmark
+        name: Running benchmark
+        env:
+          BENCHMARK_TARGET: ${{steps.info.outputs.benchmarkTarget}}
+          COMPARE_SHA: ${{steps.info.outputs.compareSha}}
+
+      - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
+        with:
+          issue-number: ${{github.event.issue.number}}
+          token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
+          body: |
+            ## Benchmark Test Results
+            **Test**: `${{steps.info.outputs.benchmarkTarget}}`
+
+            ### PR (${{steps.info.outputs.prHeadSha}})
+            ${{steps.benchmark.outputs.workingStageResultsText}}
+
+            ### Compare Ref (${{steps.info.outputs.compareSha}})
+            ${{steps.benchmark.outputs.comparisonResultsText}}

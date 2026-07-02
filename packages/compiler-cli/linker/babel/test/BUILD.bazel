@@ -1,0 +1,36 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages()
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/@babel/generator",
+        "//:node_modules/@types/babel__core",
+        "//:node_modules/@types/babel__generator",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/linker",
+        "//packages/compiler-cli/linker/babel",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
+        "//packages/compiler-cli/src/ngtsc/translator",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        # Needed for testing the Babel plugin loaded from `node_modules`.
+        ":node_modules/@angular/compiler-cli",
+        ":test_lib",
+    ],
+)

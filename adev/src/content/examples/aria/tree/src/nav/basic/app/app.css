@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  user-select: none;
+  font-family: var(--inter-font);
+}
+
+[ngTree] {
+  min-width: 24rem;
+  background-color: var(--septenary-contrast);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+[ngTreeItem] {
+  cursor: pointer;
+  list-style: none;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.3rem 1rem;
+  color: var(--primary-contrast);
+}
+
+[ngTreeItem][aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+[ngTreeItem]:focus,
+[ngTreeItem]:hover {
+  background-color: var(--quinary-contrast);
+}
+
+[ngTreeItem]:focus {
+  outline: 1px solid color-mix(in srgb, var(--hot-pink) 60%, transparent);
+}
+
+[ngTreeItem][aria-current] {
+  background-image: var(--pink-to-purple-horizontal-gradient);
+  background-clip: text;
+  color: transparent;
+}
+
+.material-symbols-outlined {
+  margin: 0;
+  width: 24px;
+}
+
+.expand-icon {
+  transition: transform 0.2s ease;
+}
+
+[ngTreeItem][aria-expanded='true'] .expand-icon {
+  transform: rotate(180deg);
+}
+
+li[aria-expanded='false'] + ul[role='group'] {
+  display: none;
+}
