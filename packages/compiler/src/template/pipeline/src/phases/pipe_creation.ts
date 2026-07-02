@@ -38,11 +38,11 @@ function processPipeBindingsInView(unit: CompilationUnit): void {
       }
 
       // TODO: We can delete this cast and check once compatibility mode is removed.
-      const slotHandle = (updateOp as any).target;
+      const slotHandle = (updateOp as {target?: ir.XrefId}).target;
       if (slotHandle == undefined) {
         throw new Error(`AssertionError: expected slot handle to be assigned for pipe creation`);
       }
-      addPipeToCreationBlock(unit, (updateOp as any).target, expr);
+      addPipeToCreationBlock(unit, slotHandle, expr);
     });
   }
 }

@@ -107,7 +107,7 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
         }
         break;
       default:
-        throw new Error(`Trigger kind ${(op.trigger as any).kind} not handled`);
+        throw new Error(`Trigger kind ${(op.trigger as ir.DeferTrigger).kind} not handled`);
     }
   }
 
