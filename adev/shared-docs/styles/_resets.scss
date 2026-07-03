@@ -310,16 +310,15 @@
 
       .mdc-tab {
         padding-inline: 15px !important;
+        border-block-end: 2px solid transparent;
       }
 
       .mdc-tab__text-label {
         transition: none;
+        line-height: 1.5;
       }
 
       .mdc-tab--active {
-        border: 0;
-        border-block-end-width: 2px;
-        border-style: solid;
         border-image: var(--purple-to-blue-horizontal-gradient) 1;
 
         .mdc-tab__text-label {
