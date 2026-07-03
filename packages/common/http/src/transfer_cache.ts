@@ -145,24 +145,31 @@ export const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
 const ALLOWED_METHODS = ['GET', 'HEAD'];
 
 function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions): boolean {
-  const {isCacheActive, ...globalOptions} = options;
+  const {
+    isCacheActive,
+    filter,
+    includePostRequests,
+    includeRequestsWithAuthHeaders,
+    includeRequestsWithCredentials,
+    includeNonCacheableRequests,
+  } = options;
   const {transferCache: requestOptions, method: requestMethod} = req;
 
   if (
     !isCacheActive ||
     requestOptions === false ||
-    // Do not cache requests sent with credentials unless explicitly enabled.
-    (!globalOptions.includeRequestsWithCredentials && hasOutgoingCredentials(req)) ||
     // POST requests are allowed either globally or at request level
-    (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
+    (requestMethod === 'POST' && !includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
     // Do not cache requests with authentication or cookie headers unless explicitly enabled.
-    (!globalOptions.includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
+    (!includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
+    // Do not cache requests sent with credentials unless explicitly enabled.
+    (!includeRequestsWithCredentials && hasOutgoingCredentials(req)) ||
     // Do not cache requests that explicitly forbid caching via Cache-Control
-    // or Fetch API cache mode.
-    (!globalOptions.includeNonCacheableRequests &&
+    // or Fetch API cache mode unless explicitly enabled.
+    (!includeNonCacheableRequests &&
       (hasUncacheableCacheControl(req.headers) || isNonCacheableRequest(req.cache))) ||
-    globalOptions.filter?.(req) === false
+    filter?.(req) === false
   ) {
     return false;
   }
