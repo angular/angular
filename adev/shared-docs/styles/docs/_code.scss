@@ -297,7 +297,7 @@ $code-font-size: 0.875rem;
 
   .docs-code:has(.docs-code-header) {
     button[docs-copy-source-code] {
-      top: 0.45rem;
+      top: 0.26rem;
     }
 
     .docs-code-header {
@@ -325,6 +325,9 @@ $code-font-size: 0.875rem;
 
   .docs-code-header {
     display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 2.9rem;
     padding: 0.75rem;
 
     background: var(--subtle-purple);
