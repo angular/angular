@@ -5,6 +5,7 @@ The Angular skills are designed to help coding agents create applications aligne
 ## Available Skills
 
 - **`angular-developer`**: Generates Angular code and provides architectural guidance. Useful for creating components, services, or obtaining best practices on reactivity (signals, linkedSignal, resource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling, testing, or CLI tooling.
+- **`angular-library`**: Guides the creation, build, and publishing of Angular libraries. Covers ng-packagr, secondary entry points, public API surface, library testing, schematics (`ng add`, `ng generate`), and publishing to npm.
 - **`angular-new-app`**: Creates a new Angular app using the Angular CLI. Provides important guidelines for effectively setting up and structuring a modern Angular application.
 
 ## Using Agent Skills
