@@ -548,7 +548,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/forms/signals/dynamic-forms-with-json',
             contentPath: 'guide/forms/signals/dynamic-forms-with-json',
             category: 'Signal Forms',
-            status: 'new',
           },
           {
             label: 'Custom controls',
