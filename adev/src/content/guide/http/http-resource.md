@@ -6,7 +6,7 @@ For more about Angular's `resource` pattern, see [Async reactivity with `resourc
 
 ## `Using httpResource`
 
-TIP: Make sure to include `provideHttpClient` in your application providers. See [Setting up HttpClient](/guide/http/setup) for details.
+TIP: `httpResource` uses the globally available `HttpClient`. Use `provideHttpClient(...)` only when you need to configure HTTP features, such as interceptors or XSRF options. See [Setting up HttpClient](/guide/http/setup) for details.
 
 You can define an HTTP resource by returning a url:
 
@@ -107,7 +107,7 @@ The following example shows a unit test for code using `httpResource`.
 
 ```ts
 TestBed.configureTestingModule({
-  providers: [provideHttpClient(), provideHttpClientTesting()],
+  providers: [provideHttpClientTesting()],
 });
 
 const id = signal(0);
