@@ -478,8 +478,6 @@ bootstrapApplication(App, {
 });
 ```
 
----
-
 ### `includeHeaders`
 
 Specifies which headers from the server response should be included in cached entries.  
@@ -495,8 +493,6 @@ IMPORTANT: Avoid including sensitive headers like authentication tokens. These c
 
 Including `Cache-Control` in `includeHeaders` only makes that header available on the hydrated response. Angular already evaluates `Cache-Control` headers automatically when deciding whether a request or response is eligible for transfer cache.
 
----
-
 ### `includePostRequests`
 
 By default, only `GET` and `HEAD` requests are cached.  
@@ -510,12 +506,10 @@ withHttpTransferCacheOptions({
 
 Use this only when `POST` requests are **idempotent** and safe to reuse between server and client renders.
 
----
-
 ### `includeRequestsWithAuthHeaders`
 
 Determines whether requests containing `Authorization`, `Proxy‑Authorization`, or `Cookie` headers are eligible for caching.  
-By default, these are excluded to prevent caching user‑specific responses. Requests sent with `withCredentials` or Fetch API `credentials` set to `include` or `same-origin` are also excluded by default.
+By default, these are excluded to prevent caching user‑specific responses.
 
 ```ts
 withHttpTransferCacheOptions({
@@ -524,6 +518,32 @@ withHttpTransferCacheOptions({
 ```
 
 Enable only when authentication headers do **not** affect the response content (for example, public tokens for analytics APIs).
+
+### `includeRequestsWithCredentials`
+
+Determines whether requests sent using `withCredentials` or Fetch API `credentials` modes (`include` or `same-origin`) are eligible for caching.  
+By default, these are excluded to prevent caching user‑specific responses.
+
+```ts
+withHttpTransferCacheOptions({
+  includeRequestsWithCredentials: true,
+});
+```
+
+Enable only when credentialed requests return responses that are safe to cache.
+
+### `includeNonCacheableRequests`
+
+Determines whether requests and responses containing `Cache-Control` directives that forbid caching (`no-store`, `no-cache`, or `private`), responses with a `Set-Cookie` header, or requests using Fetch API `cache` options (`no-store` or `no-cache`), are eligible for caching.  
+By default, these are excluded to respect HTTP caching controls.
+
+```ts
+withHttpTransferCacheOptions({
+  includeNonCacheableRequests: true,
+});
+```
+
+Enable only when you need to bypass cache-control restrictions for transfer caching.
 
 ### Per‑request overrides
 
