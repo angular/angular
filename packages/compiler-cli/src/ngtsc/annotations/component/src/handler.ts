@@ -44,6 +44,10 @@ import {
   SelectorlessMatcher,
   SelectorMatcher,
   TmplAstDeferredBlock,
+  TmplAstContent,
+  TmplAstNode,
+  TmplAstRecursiveVisitor,
+  tmplAstVisitAll,
   TypeCheckId,
   ViewEncapsulation,
 } from '@angular/compiler';
@@ -944,6 +948,24 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             ErrorCode.COMPONENT_INVALID_SHADOW_DOM_SELECTOR,
             component.get('selector')!,
             selectorError,
+          ),
+        );
+      }
+    }
+
+    // Check for ng-content in ExperimentalIsolatedShadowDom components
+    if (encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) {
+      const contentNode = findContentNode(template.nodes);
+      if (contentNode !== null) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.ISOLATED_SHADOW_DOM_INVALID_CONTENT_PROJECTION,
+            component.get('template') ?? node.name,
+            `ng-content projection is not supported with ViewEncapsulation.ExperimentalIsolatedShadowDom. ` +
+              `Use native <slot> elements instead. Content will remain in the light DOM and be projected via slots.`,
           ),
         );
       }
@@ -2741,4 +2763,18 @@ function validateStandaloneImports(
 /** Returns whether an ImportDeclaration is a default import. */
 function isDefaultImport(node: ts.ImportDeclaration): boolean {
   return node.importClause !== undefined && node.importClause.namedBindings === undefined;
+}
+
+function findContentNode(nodes: TmplAstNode[]): TmplAstContent | null {
+  const visitor = new ContentNodeFinder();
+  tmplAstVisitAll(visitor, nodes);
+  return visitor.contentNode;
+}
+
+class ContentNodeFinder extends TmplAstRecursiveVisitor {
+  contentNode: TmplAstContent | null = null;
+
+  override visitContent(content: TmplAstContent): void {
+    this.contentNode ??= content;
+  }
 }
