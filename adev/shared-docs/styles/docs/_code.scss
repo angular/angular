@@ -297,7 +297,7 @@ $code-font-size: 0.875rem;
 
   .docs-code:has(.docs-code-header) {
     button[docs-copy-source-code] {
-      top: 0.45rem;
+      top: 0.26rem;
     }
 
     .docs-code-header {
@@ -325,6 +325,9 @@ $code-font-size: 0.875rem;
 
   .docs-code-header {
     display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 2.9rem;
     padding: 0.75rem;
 
     background: var(--subtle-purple);
@@ -333,25 +336,37 @@ $code-font-size: 0.875rem;
 
     .docs-code-avoid &,
     .docs-code-prefer & {
-      background: color-mix(in srgb, var(--style-color) 17%, var(--page-background));
-      color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+      background: color-mix(in srgb, var(--style-color) 15%, var(--octonary-contrast));
+      box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--style-color) 35%, transparent);
       h3 {
         color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+        font-weight: 700;
       }
     }
 
     .docs-code-header-style {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      font-size: 0.8rem;
+      gap: 0.4rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--style-color) 20%, transparent);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: color-mix(in srgb, var(--style-color) 55%, var(--primary-contrast));
+
+      &:not(:last-child) {
+        margin-inline-end: 0.7rem;
+      }
 
       &::before {
+        color: var(--style-color);
         font-family: var(--icons);
-        margin-right: 0.5rem;
-      }
-      &:not(:last-child)::after {
-        content: '-';
-        margin: 0 0.5rem;
+        font-size: 0.9rem;
+        letter-spacing: normal;
+        text-transform: none;
       }
     }
 
@@ -366,7 +381,7 @@ $code-font-size: 0.875rem;
     .docs-code-header-style {
       .docs-code-avoid & {
         &::before {
-          content: 'dangerous';
+          content: 'close';
         }
       }
     }
