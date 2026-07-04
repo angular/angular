@@ -53,7 +53,7 @@ function throwNameError() {
  */
 @Service()
 export class RadioControlRegistry {
-  private _accessors: any[] = [];
+  private _accessors: [NgControl, RadioControlValueAccessor][] = [];
 
   /**
    * @description
