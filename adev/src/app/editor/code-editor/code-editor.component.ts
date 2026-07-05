@@ -176,6 +176,8 @@ export class CodeEditor {
     // Track the trusted preview origin once the WebContainer dev server starts.
     // The preview runs on a dynamic *.webcontainer.io subdomain (cross-origin)
     let trustedPreviewOrigin: string | null = null;
+    
+    if (this.nodeRuntimeSandbox) {
     this.nodeRuntimeSandbox.previewUrl$
        .pipe(
          filter((url): url is string => !!url),
@@ -185,12 +187,11 @@ export class CodeEditor {
         .subscribe((url) => {
           trustedPreviewOrigin = new URL(url).origin;
        });
-  
+    }
     const handlePostMessage = (event: MessageEvent) => {
       if (
         !trustedPreviewOrigin || 
         event.origin !== trustedPreviewOrigin ||
-        event.source !== iframe.contentWindow
       ) {
         return;
       }
