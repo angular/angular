@@ -48,6 +48,11 @@
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-gutter: stable;
+
+    // Lock background scrolling while the search dialog is open as a modal.
+    &:has(docs-search-dialog dialog[open]) {
+      overflow: hidden;
+    }
   }
 
   html,
