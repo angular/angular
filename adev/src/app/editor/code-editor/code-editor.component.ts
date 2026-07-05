@@ -82,7 +82,9 @@ export class CodeEditor {
   private readonly title = inject(Title);
   private readonly location = inject(Location);
   private readonly environmentInjector = inject(EnvironmentInjector);
-  private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox);
+  private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox, {
+    optional: true,
+  });
 
   private readonly errors$ = this.diagnosticsState.diagnostics$.pipe(
     // Display errors one second after code update
@@ -185,7 +187,11 @@ export class CodeEditor {
        });
   
     const handlePostMessage = (event: MessageEvent) => {
-      if (!trustedPreviewOrigin || event.origin !== trustedPreviewOrigin) {
+      if (
+        !trustedPreviewOrigin || 
+        event.origin !== trustedPreviewOrigin ||
+        event.source !== iframe.contentWindow
+      ) {
         return;
       }
       if (event.data?.type === 'openFileAtLocation') {
