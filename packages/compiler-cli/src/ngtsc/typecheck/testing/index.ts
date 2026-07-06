@@ -407,7 +407,6 @@ export function tcb(
     new Map(),
     selectorlessEnabled,
     foreignComponents,
-    (name) => getFunction(sf, name),
   );
   const binder = new R3TargetBinder<DirectiveMeta>(matcher, foreignMatcher);
   const boundTarget = binder.bind({template: nodes});
@@ -659,7 +658,6 @@ export function setup(
           fakeMetadataRegistry,
           overrides.parseOptions?.enableSelectorless ?? false,
           foreignComponents,
-          (name) => getFunction(sf, name),
         );
         const binder = new R3TargetBinder<DirectiveMeta>(matcher, foreignMatcher);
         const classRef = new Reference(classDecl);
@@ -834,7 +832,6 @@ function prepareDeclarations(
   metadataRegistry: Map<string, TypeCheckableDirectiveMeta>,
   selectorlessEnabled: boolean,
   foreignComponentNames: string[] = [],
-  resolveForeignComponent: (name: string) => ClassDeclaration,
 ) {
   const pipes = new Map<string, PipeMeta>();
   const hostDirectiveResolder = new HostDirectivesResolver(
@@ -867,12 +864,7 @@ function prepareDeclarations(
 
   const foreignRegistry = new Map<string, ForeignComponentMeta[]>();
   for (const name of foreignComponentNames) {
-    foreignRegistry.set(name, [
-      {
-        name,
-        ref: new Reference(resolveForeignComponent(name)),
-      },
-    ]);
+    foreignRegistry.set(name, [{name}]);
   }
   const foreignMatcher = new SelectorlessMatcher<ForeignComponentMeta>(foreignRegistry);
 
