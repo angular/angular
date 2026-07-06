@@ -466,9 +466,7 @@ import {
   FormGroup,
 } from '@angular/forms';
 
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class UnifiedEventsBasicComponent {
   form = new FormGroup({
     username: new FormControl(''),
