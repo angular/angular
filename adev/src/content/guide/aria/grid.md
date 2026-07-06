@@ -211,86 +211,11 @@ describe('MyGridComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### Grid
+For detailed API documentation, inspect the following API references:
 
-The container directive that provides keyboard navigation and focus management for rows and cells.
-
-#### Inputs
-
-| Property               | Type                                 | Default    | Description                                                   |
-| ---------------------- | ------------------------------------ | ---------- | ------------------------------------------------------------- |
-| `enableSelection`      | `boolean`                            | `false`    | Whether selection is enabled for the grid                     |
-| `disabled`             | `boolean`                            | `false`    | Disables the entire grid                                      |
-| `softDisabled`         | `boolean`                            | `true`     | When `true`, disabled cells are focusable but not interactive |
-| `focusMode`            | `'roving' \| 'activedescendant'`     | `'roving'` | Focus strategy used by the grid                               |
-| `rowWrap`              | `'continuous' \| 'loop' \| 'nowrap'` | `'loop'`   | Navigation wrapping behavior along rows                       |
-| `colWrap`              | `'continuous' \| 'loop' \| 'nowrap'` | `'loop'`   | Navigation wrapping behavior along columns                    |
-| `multi`                | `boolean`                            | `false`    | Whether multiple cells can be selected                        |
-| `selectionMode`        | `'follow' \| 'explicit'`             | `'follow'` | Whether selection follows focus or requires explicit action   |
-| `enableRangeSelection` | `boolean`                            | `false`    | Enable range selections with modifier keys or dragging        |
-
-### GridRow
-
-Represents a row within a grid and serves as a container for grid cells.
-
-#### Inputs
-
-| Property   | Type     | Default | Description                           |
-| ---------- | -------- | ------- | ------------------------------------- |
-| `rowIndex` | `number` | auto    | The index of this row within the grid |
-
-### GridCell
-
-Represents an individual cell within a grid row.
-
-#### Inputs
-
-| Property      | Type                         | Default        | Description                                             |
-| ------------- | ---------------------------- | -------------- | ------------------------------------------------------- |
-| `id`          | `string`                     | auto           | Unique identifier for the cell                          |
-| `role`        | `string`                     | `'gridcell'`   | Cell role: `gridcell`, `columnheader`, or `rowheader`   |
-| `disabled`    | `boolean`                    | `false`        | Disables this cell                                      |
-| `selected`    | `boolean`                    | `false`        | Whether the cell is selected (supports two-way binding) |
-| `selectable`  | `boolean`                    | `true`         | Whether the cell can be selected                        |
-| `rowSpan`     | `number`                     | —              | Number of rows the cell spans                           |
-| `colSpan`     | `number`                     | —              | Number of columns the cell spans                        |
-| `rowIndex`    | `number`                     | —              | Row index of the cell                                   |
-| `colIndex`    | `number`                     | —              | Column index of the cell                                |
-| `orientation` | `'vertical' \| 'horizontal'` | `'horizontal'` | Orientation for widgets within the cell                 |
-| `wrap`        | `boolean`                    | `true`         | Whether widget navigation wraps within the cell         |
-
-#### Signals
-
-| Property | Type              | Description                          |
-| -------- | ----------------- | ------------------------------------ |
-| `active` | `Signal<boolean>` | Whether the cell currently has focus |
-
-### GridCellWidget
-
-Applied to an interactive element inside a grid cell to allow for pausing grid navigation.
-
-#### Inputs
-
-| Property      | Type                                  | Default    | Description                                               |
-| ------------- | ------------------------------------- | ---------- | --------------------------------------------------------- |
-| `id`          | `string`                              | auto       | Unique identifier for the widget                          |
-| `widgetType`  | `'simple' \| 'complex' \| 'editable'` | `'simple'` | The widget type, controlling how activation behaves       |
-| `disabled`    | `boolean`                             | `false`    | Disables this cell widget                                 |
-| `focusTarget` | `ElementResolver<HTMLElement>`        | —          | Optional element reference to receive focus on activation |
-| `tabindex`    | `number`                              | —          | Tabindex override for the widget                          |
-
-#### Outputs
-
-| Property      | Type                                                     | Description                                    |
-| ------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| `activated`   | `EventEmitter<KeyboardEvent \| FocusEvent \| undefined>` | Emits when the cell widget becomes activated   |
-| `deactivated` | `EventEmitter<KeyboardEvent \| FocusEvent \| undefined>` | Emits when the cell widget becomes deactivated |
-
-#### Methods
-
-| Method       | Parameters | Description                       |
-| ------------ | ---------- | --------------------------------- |
-| `activate`   | none       | Forcefully activates the widget   |
-| `deactivate` | none       | Forcefully deactivates the widget |
+- [`Grid`](/api/aria/grid/Grid)
+- [`GridRow`](/api/aria/grid/GridRow)
+- [`GridCell`](/api/aria/grid/GridCell)
+- [`GridCellWidget`](/api/aria/grid/GridCellWidget)

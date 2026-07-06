@@ -215,85 +215,10 @@ describe('MyTreeComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### Tree
+For detailed API documentation, inspect the following API references:
 
-The container directive that manages hierarchical navigation and selection.
-
-#### Inputs
-
-| Property        | Type                             | Default      | Description                                                   |
-| --------------- | -------------------------------- | ------------ | ------------------------------------------------------------- |
-| `disabled`      | `boolean`                        | `false`      | Disables the entire tree                                      |
-| `softDisabled`  | `boolean`                        | `true`       | When `true`, disabled items are focusable but not interactive |
-| `multi`         | `boolean`                        | `false`      | Whether multiple items can be selected                        |
-| `selectionMode` | `'explicit' \| 'follow'`         | `'explicit'` | Whether selection requires explicit action or follows focus   |
-| `nav`           | `boolean`                        | `false`      | Whether the tree is in navigation mode (uses `aria-current`)  |
-| `wrap`          | `boolean`                        | `true`       | Whether keyboard navigation wraps from last to first item     |
-| `focusMode`     | `'roving' \| 'activedescendant'` | `'roving'`   | Focus strategy used by the tree                               |
-| `values`        | `any[]`                          | `[]`         | Selected item values (supports two-way binding)               |
-
-#### Methods
-
-| Method           | Parameters | Description                                   |
-| ---------------- | ---------- | --------------------------------------------- |
-| `expandAll`      | none       | Expands all tree nodes                        |
-| `collapseAll`    | none       | Collapses all tree nodes                      |
-| `selectAll`      | none       | Selects all items (only in multi-select mode) |
-| `clearSelection` | none       | Clears all selection                          |
-
-### TreeItem
-
-An individual node in the tree that can contain child nodes.
-
-#### Inputs
-
-| Property   | Type                    | Default | Description                                             |
-| ---------- | ----------------------- | ------- | ------------------------------------------------------- |
-| `parent`   | `Tree \| TreeItemGroup` | —       | **Required.** The parent Tree root or TreeItemGroup.    |
-| `value`    | `any`                   | —       | **Required.** Unique value for this tree item           |
-| `disabled` | `boolean`               | `false` | Disables this item                                      |
-| `expanded` | `boolean`               | `false` | Whether the node is expanded (supports two-way binding) |
-
-#### Signals
-
-| Property      | Type              | Description                          |
-| ------------- | ----------------- | ------------------------------------ |
-| `selected`    | `Signal<boolean>` | Whether the item is selected         |
-| `active`      | `Signal<boolean>` | Whether the item currently has focus |
-| `hasChildren` | `Signal<boolean>` | Whether the item has child nodes     |
-
-#### Methods
-
-| Method     | Parameters | Description                 |
-| ---------- | ---------- | --------------------------- |
-| `expand`   | none       | Expands this node           |
-| `collapse` | none       | Collapses this node         |
-| `toggle`   | none       | Toggles the expansion state |
-
-### TreeItemGroup
-
-The structural directive applied to an `ng-template` that holds the children nodes of an expandable tree item.
-
-#### Inputs
-
-| Property  | Type       | Default | Description                                             |
-| --------- | ---------- | ------- | ------------------------------------------------------- |
-| `ownedBy` | `TreeItem` | —       | **Required.** The reference of the parent `ngTreeItem`. |
-
-#### Usage
-
-```angular-html
-<ul ngTree #tree="ngTree">
-  <li ngTreeItem [parent]="tree" value="parent" #parentItem="ngTreeItem">
-    Parent Item
-    <ul role="group">
-      <ng-template ngTreeItemGroup [ownedBy]="parentItem" #group="ngTreeItemGroup">
-        <li ngTreeItem [parent]="group" value="child1">Child 1</li>
-        <li ngTreeItem [parent]="group" value="child2">Child 2</li>
-      </ng-template>
-    </ul>
-  </li>
-</ul>
-```
+- [`Tree`](/api/aria/tree/Tree)
+- [`TreeItem`](/api/aria/tree/TreeItem)
+- [`TreeItemGroup`](/api/aria/tree/TreeItemGroup)

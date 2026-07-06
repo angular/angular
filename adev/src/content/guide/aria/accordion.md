@@ -208,90 +208,11 @@ describe('MyAccordionComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### AccordionGroup
+For detailed API documentation, inspect the following API references:
 
-The container directive that manages keyboard navigation and expansion behavior for a group of accordion items.
-
-#### Inputs
-
-| Property          | Type      | Default | Description                                                               |
-| ----------------- | --------- | ------- | ------------------------------------------------------------------------- |
-| `disabled`        | `boolean` | `false` | Disables all triggers in the group                                        |
-| `multiExpandable` | `boolean` | `true`  | Whether multiple panels can be expanded simultaneously                    |
-| `softDisabled`    | `boolean` | `true`  | When `true`, disabled items are focusable. When `false`, they are skipped |
-| `wrap`            | `boolean` | `false` | Whether keyboard navigation wraps from last to first item and vice versa  |
-
-#### Methods
-
-| Method        | Parameters | Description                                                      |
-| ------------- | ---------- | ---------------------------------------------------------------- |
-| `expandAll`   | none       | Expands all panels (only works when `multiExpandable` is `true`) |
-| `collapseAll` | none       | Collapses all panels                                             |
-
-### AccordionTrigger
-
-The directive applied to the button element that toggles panel visibility.
-
-#### Inputs
-
-| Property   | Type             | Default | Description                                                    |
-| ---------- | ---------------- | ------- | -------------------------------------------------------------- |
-| `panel`    | `AccordionPanel` | —       | **Required.** The reference of the controlled accordion panel. |
-| `id`       | `string`         | auto    | Unique identifier for the trigger                              |
-| `disabled` | `boolean`        | `false` | Disables this trigger                                          |
-| `expanded` | `boolean`        | `false` | Whether the panel is expanded (supports two-way binding)       |
-
-#### Signals
-
-| Property | Type              | Description                             |
-| -------- | ----------------- | --------------------------------------- |
-| `active` | `Signal<boolean>` | Whether the trigger currently has focus |
-
-#### Methods
-
-| Method     | Parameters | Description                       |
-| ---------- | ---------- | --------------------------------- |
-| `expand`   | none       | Expands the associated panel      |
-| `collapse` | none       | Collapses the associated panel    |
-| `toggle`   | none       | Toggles the panel expansion state |
-
-### AccordionPanel
-
-The directive applied to the element containing the collapsible content.
-
-#### Inputs
-
-| Property          | Type      | Default | Description                                          |
-| ----------------- | --------- | ------- | ---------------------------------------------------- |
-| `id`              | `string`  | auto    | Unique identifier for the panel                      |
-| `preserveContent` | `boolean` | `true`  | Whether to keep content in DOM after panel collapses |
-
-#### Signals
-
-| Property  | Type              | Description                             |
-| --------- | ----------------- | --------------------------------------- |
-| `visible` | `Signal<boolean>` | Whether the panel is currently expanded |
-
-#### Methods
-
-| Method     | Parameters | Description                 |
-| ---------- | ---------- | --------------------------- |
-| `expand`   | none       | Expands this panel          |
-| `collapse` | none       | Collapses this panel        |
-| `toggle`   | none       | Toggles the expansion state |
-
-### AccordionContent
-
-The structural directive applied to an `ng-template` inside an accordion panel to enable lazy rendering.
-
-This directive has no inputs, outputs, or methods. Apply it to an `ng-template` element:
-
-```angular-html
-<div ngAccordionPanel #panel1="ngAccordionPanel">
-  <ng-template ngAccordionContent>
-    <!-- Content here is lazily rendered -->
-  </ng-template>
-</div>
-```
+- [`AccordionGroup`](/api/aria/accordion/AccordionGroup)
+- [`AccordionTrigger`](/api/aria/accordion/AccordionTrigger)
+- [`AccordionPanel`](/api/aria/accordion/AccordionPanel)
+- [`AccordionContent`](/api/aria/accordion/AccordionContent)

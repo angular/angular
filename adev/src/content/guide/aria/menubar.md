@@ -214,37 +214,11 @@ describe('MyMenubarComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-The menubar pattern uses directives from Angular's Aria library. See the [Menu guide](guide/aria/menu) for complete API documentation.
+For detailed API documentation, inspect the following API references:
 
-### MenuBar
-
-The horizontal container for top-level menu items.
-
-#### Inputs
-
-| Property         | Type      | Default | Description                                                   |
-| ---------------- | --------- | ------- | ------------------------------------------------------------- |
-| `disabled`       | `boolean` | `false` | Disables the entire menubar                                   |
-| `wrap`           | `boolean` | `true`  | Whether keyboard navigation wraps from last to first item     |
-| `softDisabled`   | `boolean` | `true`  | When `true`, disabled items are focusable but not interactive |
-| `value`          | `V[]`     | `[]`    | Selected menu item values (supports two-way binding)          |
-| `typeaheadDelay` | `number`  | `500`   | Milliseconds before the typeahead buffer is reset             |
-
-See the [Menu API documentation](guide/aria/menu#apis) for complete details on all available inputs and signals.
-
-### MenuItem
-
-Individual items within the menubar. Same API as Menu - see [MenuItem](guide/aria/menu#menuitem).
-
-**Menubar-specific behavior:**
-
-- Left/Right arrows navigate between menubar items (vs Up/Down in vertical menus)
-- First keyboard interaction or click enables hover-to-open for submenus
-- Enter or Down arrow opens the submenu and focuses the first item
-- `aria-haspopup="menu"` indicates items with submenus
-
-### MenuTrigger
-
-Not typically used in menubars - MenuItem handles trigger behavior directly when it has an associated submenu. See [MenuTrigger](guide/aria/menu#menutrigger) for standalone menu trigger patterns.
+- [`MenuBar`](/api/aria/menu/MenuBar)
+- [`MenuItem`](/api/aria/menu/MenuItem)
+- [`MenuTrigger`](/api/aria/menu/MenuTrigger)
+- [`Menu`](/api/aria/menu/Menu)

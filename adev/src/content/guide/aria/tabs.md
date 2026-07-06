@@ -284,74 +284,12 @@ describe('MyTabsComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### Tabs
+For detailed API documentation, inspect the following API references:
 
-The container directive that coordinates tab lists and panels.
-
-This directive has no inputs or outputs. It serves as the root container for `ngTabList`, `ngTab`, and `ngTabPanel` directives.
-
-### TabList
-
-The container for tab buttons that manages selection and keyboard navigation.
-
-#### Inputs
-
-| Property        | Type                             | Default        | Description                                                        |
-| --------------- | -------------------------------- | -------------- | ------------------------------------------------------------------ |
-| `orientation`   | `'horizontal' \| 'vertical'`     | `'horizontal'` | Tab list layout direction                                          |
-| `wrap`          | `boolean`                        | `true`         | Whether keyboard navigation wraps from last to first tab           |
-| `softDisabled`  | `boolean`                        | `true`         | When `true`, disabled tabs are focusable but not activatable       |
-| `selectionMode` | `'follow' \| 'explicit'`         | `'follow'`     | Whether tabs activate on focus or require explicit activation      |
-| `focusMode`     | `'roving' \| 'activedescendant'` | `'roving'`     | Focus management strategy                                          |
-| `selectedTab`   | `any`                            | —              | The value of the currently selected tab (supports two-way binding) |
-
-### Tab
-
-An individual tab button.
-
-#### Inputs
-
-| Property   | Type      | Default | Description                             |
-| ---------- | --------- | ------- | --------------------------------------- |
-| `value`    | `any`     | —       | **Required.** Unique value for this tab |
-| `disabled` | `boolean` | `false` | Disables this tab                       |
-
-#### Signals
-
-| Property   | Type              | Description                           |
-| ---------- | ----------------- | ------------------------------------- |
-| `selected` | `Signal<boolean>` | Whether the tab is currently selected |
-| `active`   | `Signal<boolean>` | Whether the tab currently has focus   |
-
-### TabPanel
-
-The content panel associated with a tab.
-
-#### Inputs
-
-| Property          | Type      | Default | Description                                                |
-| ----------------- | --------- | ------- | ---------------------------------------------------------- |
-| `value`           | `any`     | —       | **Required.** Must match the `value` of the associated tab |
-| `preserveContent` | `boolean` | `true`  | Whether to keep panel content in DOM after deactivation    |
-
-#### Signals
-
-| Property  | Type              | Description                            |
-| --------- | ----------------- | -------------------------------------- |
-| `visible` | `Signal<boolean>` | Whether the panel is currently visible |
-
-### TabContent
-
-A structural directive for lazy rendering tab panel content.
-
-This directive has no inputs, outputs, or methods. Apply it to an `ng-template` element inside a tab panel:
-
-```angular-html
-<div ngTabPanel value="tab1">
-  <ng-template ngTabContent>
-    <!-- Content here is lazily rendered -->
-  </ng-template>
-</div>
-```
+- [`Tabs`](/api/aria/tabs/Tabs)
+- [`TabList`](/api/aria/tabs/TabList)
+- [`Tab`](/api/aria/tabs/Tab)
+- [`TabPanel`](/api/aria/tabs/TabPanel)
+- [`TabContent`](/api/aria/tabs/TabContent)

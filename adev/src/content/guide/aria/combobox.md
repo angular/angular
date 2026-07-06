@@ -235,63 +235,23 @@ describe('MyComboboxComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### Combobox Directive
+For detailed API documentation, inspect the following API references:
 
-Coordinates an interactive trigger element (such as a text input, button, or div) with a popup container.
-
-#### Inputs / Model
-
-| Property           | Type                   | Default | Description                                                                                                          |
-| ------------------ | ---------------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
-| `value`            | `ModelSignal<string>`  | `''`    | Two-way bindable text value of the combobox                                                                          |
-| `expanded`         | `ModelSignal<boolean>` | `false` | Two-way bindable open/closed expanded state of the popup                                                             |
-| `disabled`         | `boolean`              | `false` | Disables the combobox trigger element                                                                                |
-| `softDisabled`     | `boolean`              | `true`  | Disables interaction while keeping the element keyboard focusable                                                    |
-| `readonly`         | `boolean`              | `false` | Makes the combobox read-only. Prevents the user from changing the value while keeping the element keyboard focusable |
-| `alwaysExpanded`   | `boolean`              | `false` | Forces the popup to always remain open                                                                               |
-| `inlineSuggestion` | `string \| undefined`  | -       | Sets an inline suggestion to be highlighted at the end of the input                                                  |
-| `tabIndex`         | `number \| undefined`  | -       | Tabindex of the combobox element (aliased to `tabindex`)                                                             |
-
-All keyboard events, focus coordination, and ARIA state properties (including `role="combobox"`, `aria-autocomplete`, and `aria-expanded`) are handled automatically on the host element.
-
----
-
-### ComboboxPopup Directive
-
-Marks an `<ng-template>` as the popup container for the combobox.
-
-#### Inputs
-
-| Property    | Type                                        | Default     | Description                                    |
-| ----------- | ------------------------------------------- | ----------- | ---------------------------------------------- |
-| `combobox`  | `Combobox`                                  | (Required)  | Reference to the parent `Combobox` directive   |
-| `popupType` | `'listbox' \| 'tree' \| 'grid' \| 'dialog'` | `'listbox'` | Specifies the layout/role profile of the popup |
-
----
-
-### ComboboxWidget Directive
-
-Connects the popup contents (such as a listbox or grid) with the parent combobox trigger.
-
-#### Inputs
-
-| Property           | Type                  | Description                                                                         |
-| ------------------ | --------------------- | ----------------------------------------------------------------------------------- |
-| `activeDescendant` | `string \| undefined` | The ID of the currently active option (bound to the active option ID in the widget) |
-
----
+- [`Combobox`](/api/aria/combobox/Combobox)
+- [`ComboboxPopup`](/api/aria/combobox/ComboboxPopup)
+- [`ComboboxWidget`](/api/aria/combobox/ComboboxWidget)
 
 ### Related patterns and directives
 
 Combobox is the primitive directive for these documented patterns:
 
-- **[Autocomplete](guide/aria/autocomplete)** - Filtering and suggestions pattern (coordinates input typing with options list)
-- **[Select](guide/aria/select)** - Single selection dropdown pattern (applied directly on non-editable button triggers)
-- **[Multiselect](guide/aria/multiselect)** - Multiple selection pattern (applied on non-editable triggers with multi-enabled Listbox)
+- [Autocomplete](guide/aria/autocomplete) - Filtering and suggestions pattern (coordinates input typing with options list)
+- [Select](guide/aria/select) - Single selection dropdown pattern (applied directly on non-editable button triggers)
+- [Multiselect](guide/aria/multiselect) - Multiple selection pattern (applied on non-editable triggers with multi-enabled Listbox)
 
 Combobox typically combines with:
 
-- **[Listbox](guide/aria/listbox)** - Most common popup content
-- **[Tree](guide/aria/tree)** - Hierarchical popup content (see Tree guide for examples)
+- [Listbox](guide/aria/listbox) - Most common popup content
+- [Tree](guide/aria/tree) - Hierarchical popup content (see Tree guide for examples)
