@@ -30,4 +30,12 @@ export const FOO_TEMPLATE = join(PROJECT_PATH, 'app', 'foo.component.html');
 export const FOO_TEMPLATE_URI = pathToFileURL(FOO_TEMPLATE).href;
 export const FOO_COMPONENT = join(PROJECT_PATH, 'app', 'foo.component.ts');
 export const FOO_COMPONENT_URI = pathToFileURL(FOO_COMPONENT).href;
+export const INLAY_HINTS_COMPONENT = join(PROJECT_PATH, 'app', 'inlay_hints.component.ts');
+export const INLAY_HINTS_COMPONENT_URI = pathToFileURL(INLAY_HINTS_COMPONENT).href;
+export const INLAY_HINTS_EXTERNAL_TEMPLATE = join(
+  PROJECT_PATH,
+  'app',
+  'inlay_hints_external.component.html',
+);
+export const INLAY_HINTS_EXTERNAL_TEMPLATE_URI = pathToFileURL(INLAY_HINTS_EXTERNAL_TEMPLATE).href;
 export const TSCONFIG = join(PROJECT_PATH, 'tsconfig.json');
