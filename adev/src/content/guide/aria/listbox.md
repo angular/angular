@@ -182,77 +182,19 @@ describe('MyListboxComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### Listbox Directive
+For detailed API documentation, inspect the following API references:
 
-The `ngListbox` directive creates an accessible list of selectable options.
-
-#### Inputs
-
-| Property         | Type                               | Default      | Description                                  |
-| ---------------- | ---------------------------------- | ------------ | -------------------------------------------- |
-| `id`             | `string`                           | auto         | Unique identifier for the listbox            |
-| `multi`          | `boolean`                          | `false`      | Enables multiple selection                   |
-| `orientation`    | `'vertical'` \| `'horizontal'`     | `'vertical'` | Layout direction of the list                 |
-| `wrap`           | `boolean`                          | `true`       | Whether focus wraps at list edges            |
-| `selectionMode`  | `'follow'` \| `'explicit'`         | `'follow'`   | How selection is triggered                   |
-| `focusMode`      | `'roving'` \| `'activedescendant'` | `'roving'`   | Focus management strategy                    |
-| `softDisabled`   | `boolean`                          | `true`       | Whether disabled items are focusable         |
-| `disabled`       | `boolean`                          | `false`      | Disables the entire listbox                  |
-| `readonly`       | `boolean`                          | `false`      | Makes listbox readonly                       |
-| `typeaheadDelay` | `number`                           | `500`        | Milliseconds before type-ahead search resets |
-
-#### Model
-
-| Property | Type  | Description                               |
-| -------- | ----- | ----------------------------------------- |
-| `value`  | `V[]` | Two-way bindable array of selected values |
-
-#### Signals
-
-| Property | Type          | Description                           |
-| -------- | ------------- | ------------------------------------- |
-| `value`  | `Signal<V[]>` | Currently selected values as a signal |
-
-#### Methods
-
-| Method                     | Parameters                        | Description                                |
-| -------------------------- | --------------------------------- | ------------------------------------------ |
-| `scrollActiveItemIntoView` | `options?: ScrollIntoViewOptions` | Scrolls the active item into view          |
-| `gotoFirst`                | none                              | Navigates to the first item in the listbox |
-
-### Option Directive
-
-The `ngOption` directive marks an item within a listbox.
-
-#### Inputs
-
-| Property   | Type      | Default | Description                                      |
-| ---------- | --------- | ------- | ------------------------------------------------ |
-| `id`       | `string`  | auto    | Unique identifier for the option                 |
-| `value`    | `V`       | -       | The value associated with this option (required) |
-| `label`    | `string`  | -       | Optional label for screen readers                |
-| `disabled` | `boolean` | `false` | Whether this option is disabled                  |
-
-#### Signals
-
-| Property   | Type              | Description                     |
-| ---------- | ----------------- | ------------------------------- |
-| `selected` | `Signal<boolean>` | Whether this option is selected |
-| `active`   | `Signal<boolean>` | Whether this option has focus   |
+- [`Listbox`](/api/aria/listbox/Listbox)
+- [`Option`](/api/aria/listbox/Option)
 
 ### Related patterns
 
 Listbox is used by these documented dropdown patterns:
 
-- **[Select](guide/aria/select)** - Single-selection dropdown pattern using readonly combobox + listbox
-- **[Multiselect](guide/aria/multiselect)** - Multiple-selection dropdown pattern using readonly combobox + listbox with `multi`
-- **[Autocomplete](guide/aria/autocomplete)** - Filterable dropdown pattern using combobox + listbox
+- [Select](guide/aria/select) - Single-selection dropdown pattern using readonly combobox + listbox
+- [Multiselect](guide/aria/multiselect) - Multiple-selection dropdown pattern using readonly combobox + listbox with `multi`
+- [Autocomplete](guide/aria/autocomplete) - Filterable dropdown pattern using combobox + listbox
 
 For complete dropdown patterns with trigger, popup, and overlay positioning, see those pattern guides instead of using listbox alone.
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="Listbox ARIA pattern"/>
-  <docs-pill href="/api/aria/listbox/Listbox" title="Listbox API Reference"/>
-</docs-pill-row>

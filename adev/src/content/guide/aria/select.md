@@ -212,56 +212,15 @@ describe('MySelectComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-The select pattern uses the following directives from Angular's Aria library. See the full API documentation in the linked guides.
+For detailed API documentation, inspect the following API references:
 
-### Combobox Directives
-
-The select pattern applies `ngCombobox` directly onto a non-interactive host element (such as a `div` or a `button`) to prevent text input while preserving keyboard navigation.
-
-#### Inputs
-
-| Property   | Type                   | Default | Description                |
-| ---------- | ---------------------- | ------- | -------------------------- |
-| `disabled` | `boolean`              | `false` | Disables the entire select |
-| `expanded` | `ModelSignal<boolean>` | `false` | Expanded state of select   |
-
-See the [Combobox API documentation](guide/aria/combobox#apis) for complete details on all available inputs and signals.
-
-#### Popup Directives
-
-The structural `ngComboboxPopup` directive marks the overlay template and requires a reference to the parent combobox:
-
-| Property   | Type       | Description                                 |
-| ---------- | ---------- | ------------------------------------------- |
-| `combobox` | `Combobox` | Required reference to the parent `Combobox` |
-
-#### ComboboxWidget Directive
-
-The `ngComboboxWidget` directive bridges the listbox with the combobox trigger to support active-descendant focus tracking.
-
-| Property           | Type                  | Description                                                                                                                                  |
-| ------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `activeDescendant` | `string \| undefined` | The ID of the currently active option (bound to `listbox.activeDescendant()`) to update the `aria-activedescendant` attribute on the trigger |
-
-### Listbox Directives
-
-The select pattern uses `ngListbox` for the dropdown list and `ngOption` for each selectable item.
-
-#### Inputs
-
-| Property        | Type                               | Default      | Description                                                                                                                     |
-| --------------- | ---------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `selectionMode` | `'follow'` \| `'explicit'`         | `'explicit'` | Set to `'explicit'` so options are toggled explicitly via click/Enter instead of following active focus                         |
-| `focusMode`     | `'roving'` \| `'activedescendant'` | `'roving'`   | The focus strategy used by the listbox. Set to `'activedescendant'` so browser focus remains on the combobox trigger.           |
-| `tabIndex`      | `number`                           | `0`          | The tabindex of the listbox. Set to `-1` to prevent keyboard focus from entering the popup container in active-descendant mode. |
-
-#### Model
-
-| Property | Type                 | Description                                                                  |
-| -------- | -------------------- | ---------------------------------------------------------------------------- |
-| `value`  | `ModelSignal<any[]>` | Two-way bindable array of selected values (contains single value for select) |
+- [`Combobox`](/api/aria/combobox/Combobox)
+- [`ComboboxPopup`](/api/aria/combobox/ComboboxPopup)
+- [`ComboboxWidget`](/api/aria/combobox/ComboboxWidget)
+- [`Listbox`](/api/aria/listbox/Listbox)
+- [`Option`](/api/aria/listbox/Option)
 
 ### Positioning
 

@@ -244,85 +244,12 @@ describe('MyMenuComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### Menu
+For detailed API documentation, inspect the following API references:
 
-The container directive for menu items.
-
-#### Inputs
-
-| Property       | Type      | Default | Description                                                   |
-| -------------- | --------- | ------- | ------------------------------------------------------------- |
-| `disabled`     | `boolean` | `false` | Disables all items in the menu                                |
-| `wrap`         | `boolean` | `true`  | Whether keyboard navigation wraps at edges                    |
-| `softDisabled` | `boolean` | `true`  | When `true`, disabled items are focusable but not interactive |
-
-#### Methods
-
-| Method  | Parameters | Description     |
-| ------- | ---------- | --------------- |
-| `close` | none       | Closes the menu |
-
-### MenuBar
-
-A horizontal container for multiple menus.
-
-#### Inputs
-
-| Property       | Type      | Default | Description                                                   |
-| -------------- | --------- | ------- | ------------------------------------------------------------- |
-| `disabled`     | `boolean` | `false` | Disables the entire menubar                                   |
-| `wrap`         | `boolean` | `true`  | Whether keyboard navigation wraps at edges                    |
-| `softDisabled` | `boolean` | `true`  | When `true`, disabled items are focusable but not interactive |
-
-### MenuItem
-
-An individual item within a menu.
-
-#### Inputs
-
-| Property     | Type                                                  | Default      | Description                                          |
-| ------------ | ----------------------------------------------------- | ------------ | ---------------------------------------------------- |
-| `value`      | `any`                                                 | —            | **Required.** Value for this item                    |
-| `role`       | `'menuitem' \| 'menuitemcheckbox' \| 'menuitemradio'` | `'menuitem'` | The ARIA role for the menu item                      |
-| `disabled`   | `boolean`                                             | `false`      | Disables this menu item                              |
-| `submenu`    | `Menu`                                                | —            | Reference to a submenu                               |
-| `searchTerm` | `string`                                              | `''`         | Search term for typeahead (supports two-way binding) |
-
-#### Signals
-
-| Property   | Type              | Description                                |
-| ---------- | ----------------- | ------------------------------------------ |
-| `active`   | `Signal<boolean>` | Whether the item currently has focus       |
-| `expanded` | `Signal<boolean>` | Whether the submenu is expanded            |
-| `hasPopup` | `Signal<boolean>` | Whether the item has an associated submenu |
-
-NOTE: MenuItem does not expose public methods. Use the `submenu` input to associate submenus with menu items.
-
-### MenuTrigger
-
-A button or element that opens a menu.
-
-#### Inputs
-
-| Property       | Type      | Default | Description                                |
-| -------------- | --------- | ------- | ------------------------------------------ |
-| `menu`         | `Menu`    | —       | **Required.** The menu to trigger          |
-| `disabled`     | `boolean` | `false` | Disables the trigger                       |
-| `softDisabled` | `boolean` | `true`  | When `true`, disabled trigger is focusable |
-
-#### Signals
-
-| Property   | Type              | Description                                |
-| ---------- | ----------------- | ------------------------------------------ |
-| `expanded` | `Signal<boolean>` | Whether the menu is currently open         |
-| `hasPopup` | `Signal<boolean>` | Whether the trigger has an associated menu |
-
-#### Methods
-
-| Method   | Parameters | Description                  |
-| -------- | ---------- | ---------------------------- |
-| `open`   | none       | Opens the menu               |
-| `close`  | none       | Closes the menu              |
-| `toggle` | none       | Toggles the menu open/closed |
+- [`Menu`](/api/aria/menu/Menu)
+- [`MenuBar`](/api/aria/menu/MenuBar)
+- [`MenuItem`](/api/aria/menu/MenuItem)
+- [`MenuTrigger`](/api/aria/menu/MenuTrigger)
+- [`MenuContent`](/api/aria/menu/MenuContent)

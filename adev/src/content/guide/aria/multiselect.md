@@ -215,61 +215,12 @@ describe('MyMultiselectComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-The multiselect pattern uses the following directives from Angular's Aria library. See the full API documentation in the linked guides.
+For detailed API documentation, inspect the following API references:
 
-### Combobox directives
-
-The multiselect pattern uses `ngCombobox` directly on the trigger element (such as a `div` or `button`) to create a select-like multiselect dropdown.
-
-#### Inputs
-
-| Property   | Type      | Default | Description                     |
-| ---------- | --------- | ------- | ------------------------------- |
-| `disabled` | `boolean` | `false` | Disables the entire multiselect |
-
-See the [Combobox API documentation](guide/aria/combobox#apis) for complete details on all available inputs and signals.
-
-#### Popup directives
-
-The structural `ngComboboxPopup` directive marks the overlay template and requires a reference to the parent combobox:
-
-| Property   | Type       | Description                                 |
-| ---------- | ---------- | ------------------------------------------- |
-| `combobox` | `Combobox` | Required reference to the parent `Combobox` |
-
-#### ComboboxWidget directive
-
-The `ngComboboxWidget` directive bridges the listbox with the combobox trigger to support active-descendant focus tracking.
-
-| Property           | Type                  | Description                                                                                                                                  |
-| ------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `activeDescendant` | `string \| undefined` | The ID of the currently active option (bound to `listbox.activeDescendant()`) to update the `aria-activedescendant` attribute on the trigger |
-
-### Listbox directives
-
-The multiselect pattern uses `ngListbox` with the `multi` attribute for multiple selection and `ngOption` for each selectable item.
-
-#### Inputs
-
-| Property        | Type                               | Default    | Description                                                                                                                     |
-| --------------- | ---------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `multi`         | `boolean`                          | `false`    | Set to `true` to enable multiple selection                                                                                      |
-| `selectionMode` | `'follow'` \| `'explicit'`         | `'follow'` | Set to `'explicit'` so options are toggled explicitly via click/Space instead of following active focus                         |
-| `focusMode`     | `'roving'` \| `'activedescendant'` | `'roving'` | The focus strategy used by the listbox. Set to `'activedescendant'` so browser focus remains on the combobox trigger.           |
-| `tabIndex`      | `number`                           | `0`        | The tabindex of the listbox. Set to `-1` to prevent keyboard focus from entering the popup container in active-descendant mode. |
-
-#### Model
-
-| Property | Type                 | Description                               |
-| -------- | -------------------- | ----------------------------------------- |
-| `value`  | `ModelSignal<any[]>` | Two-way bindable array of selected values |
-
-When `multi` is true, users can select multiple options using Space to toggle selection. The popup remains open after selection, allowing additional choices.
-
-See the [Listbox API documentation](guide/aria/listbox#apis) for complete details on listbox configuration, selection modes, and option properties.
-
-### Positioning
-
-The multiselect pattern integrates with [CDK Overlay](https://material.angular.io/cdk/overlay/overview) for smart positioning. Use `cdkConnectedOverlay` to handle viewport edges and scrolling automatically.
+- [`Combobox`](/api/aria/combobox/Combobox)
+- [`ComboboxPopup`](/api/aria/combobox/ComboboxPopup)
+- [`ComboboxWidget`](/api/aria/combobox/ComboboxWidget)
+- [`Listbox`](/api/aria/listbox/Listbox)
+- [`Option`](/api/aria/listbox/Option)

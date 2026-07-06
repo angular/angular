@@ -216,73 +216,12 @@ describe('MyAutocompleteComponent', () => {
 });
 ```
 
-## APIs
+## API reference
 
-### Combobox Directive
+For detailed API documentation, inspect the following API references:
 
-The `ngCombobox` directive is applied directly onto the editable text `<input>` or `<textarea>` to manage keyboard triggers and popover states.
-
-#### Inputs
-
-| Property           | Type                  | Default     | Description                                                     |
-| ------------------ | --------------------- | ----------- | --------------------------------------------------------------- |
-| `disabled`         | `boolean`             | `false`     | Disables the combobox                                           |
-| `softDisabled`     | `boolean`             | `true`      | Focusable when disabled                                         |
-| `inlineSuggestion` | `string \| undefined` | `undefined` | Displays an inline completion suggestion for autocomplete modes |
-
-#### Models
-
-| Property   | Type                   | Default | Description                                                       |
-| ---------- | ---------------------- | ------- | ----------------------------------------------------------------- |
-| `value`    | `ModelSignal<string>`  | `''`    | Two-way bindable value of the input using `[(value)]`             |
-| `expanded` | `ModelSignal<boolean>` | `false` | Two-way bindable expanded state of the popup using `[(expanded)]` |
-
----
-
-### ComboboxPopup Directive
-
-A structural directive applied to `<ng-template>` to mark the container used as the popup.
-
-#### Inputs
-
-| Property   | Type       | Description                                 |
-| ---------- | ---------- | ------------------------------------------- |
-| `combobox` | `Combobox` | Required reference to the parent `Combobox` |
-
----
-
-### ComboboxWidget Directive
-
-Applied to the popup content container to bridge active-descendant focus changes to the input trigger.
-
-#### Inputs
-
-| Property           | Type                  | Description                                                                       |
-| ------------------ | --------------------- | --------------------------------------------------------------------------------- |
-| `activeDescendant` | `string \| undefined` | The ID of the currently active descendant (bound to `listbox.activeDescendant()`) |
-
----
-
-### Listbox Directives
-
-Autocomplete suggestion lists use the standard standalone listbox directives.
-
-#### Inputs
-
-| Property        | Type                               | Default    | Description                                                                                          |
-| --------------- | ---------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------- |
-| `selectionMode` | `'follow'` \| `'explicit'`         | `'follow'` | In manual/explicit mode, updates are committed explicitly on click/Enter rather than following focus |
-| `focusMode`     | `'roving'` \| `'activedescendant'` | `'roving'` | Set to `'activedescendant'` so browser focus stays on the trigger input                              |
-| `tabIndex`      | `number`                           | `0`        | Set to `-1` to prevent keyboard tab focus from entering the popup listbox container                  |
-
-#### Models
-
-| Property | Type                 | Description                                                 |
-| -------- | -------------------- | ----------------------------------------------------------- |
-| `value`  | `ModelSignal<any[]>` | Two-way bindable array of selected values using `[(value)]` |
-
----
-
-### Related components
-
-Autocomplete uses standard standalone [Listbox](/api/aria/listbox/Listbox) and [Option](/api/aria/listbox/Option) directives. See the [Listbox documentation](/guide/aria/listbox) for advanced options.
+- [`Combobox`](/api/aria/combobox/Combobox)
+- [`ComboboxPopup`](/api/aria/combobox/ComboboxPopup)
+- [`ComboboxWidget`](/api/aria/combobox/ComboboxWidget)
+- [`Listbox`](/api/aria/listbox/Listbox)
+- [`Option`](/api/aria/listbox/Option)
