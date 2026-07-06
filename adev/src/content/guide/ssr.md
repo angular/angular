@@ -328,9 +328,7 @@ const serverConfig: ApplicationConfig = {
 Inject and use the service in your components:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class Checkout {
   private analytics = inject(AnalyticsService);
 

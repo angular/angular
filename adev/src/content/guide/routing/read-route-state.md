@@ -44,9 +44,7 @@ Here’s an example of how you’d access a route snapshot:
 ```angular-ts
 import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class UserProfile {
   readonly userId: string;
   private route = inject(ActivatedRoute);

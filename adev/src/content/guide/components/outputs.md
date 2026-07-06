@@ -73,9 +73,7 @@ export class App {
 The `output` function accepts a parameter that lets you specify a different name for the event in a template:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class CustomSlider {
   changed = output({alias: 'valueChanged'});
 }
@@ -134,9 +132,7 @@ original decorator-based `@Output` API remains fully supported.
 You can alternatively define custom events by assigning a property to a new `EventEmitter` and adding the `@Output` decorator:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class ExpandablePanel {
   @Output() panelClosed = new EventEmitter<void>();
 }
@@ -149,9 +145,7 @@ You can emit an event by calling the `emit` method on the `EventEmitter`.
 The `@Output` decorator accepts a parameter that lets you specify a different name for the event in a template:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class CustomSlider {
   @Output('valueChanged') changed = new EventEmitter<number>();
 }
