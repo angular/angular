@@ -311,7 +311,6 @@
       "__getOwnPropDescs",
       "__getOwnPropSymbols",
       "__hasOwnProp",
-      "__objRest",
       "__propIsEnum",
       "__spreadProps",
       "__spreadValues",

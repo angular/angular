@@ -1164,12 +1164,14 @@ export enum HttpStatusCode {
 }
 
 // @public
-export type HttpTransferCacheOptions = {
-    includeHeaders?: string[];
+export interface HttpTransferCacheOptions {
     filter?: (req: HttpRequest<unknown>) => boolean;
+    includeHeaders?: string[];
+    includeNonCacheableRequests?: boolean;
     includePostRequests?: boolean;
     includeRequestsWithAuthHeaders?: boolean;
-};
+    includeRequestsWithCredentials?: boolean;
+}
 
 // @public
 export interface HttpUploadProgressEvent extends HttpProgressEvent {

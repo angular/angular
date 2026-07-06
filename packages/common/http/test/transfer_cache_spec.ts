@@ -960,6 +960,97 @@ describe('TransferCache', () => {
       });
     });
 
+    describe('caching with includeRequestsWithCredentials and includeNonCacheableRequests', () => {
+      beforeEach(
+        withBody('<test-app-http></test-app-http>', () => {
+          TestBed.resetTestingModule();
+          isStable = new BehaviorSubject<boolean>(false);
+
+          @Injectable()
+          class ApplicationRefPatched extends ApplicationRef {
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              withHttpTransferCache({
+                includeRequestsWithCredentials: true,
+                includeNonCacheableRequests: true,
+              }),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+          isStable = appRef.isStable as BehaviorSubject<boolean>;
+        }),
+      );
+
+      it(`should cache requests with credentials when 'includeRequestsWithCredentials' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-cred', 'foo', {
+          withCredentials: true,
+        });
+
+        makeRequestAndExpectNone('/test-cred');
+      });
+
+      it(`should cache requests with included credentials mode when 'includeRequestsWithCredentials' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-cred', 'foo', {
+          credentials: 'include',
+        });
+
+        makeRequestAndExpectNone('/test-cred');
+      });
+
+      it(`should cache requests with same-origin credentials mode when 'includeRequestsWithCredentials' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-cred', 'foo', {
+          credentials: 'same-origin',
+        });
+
+        makeRequestAndExpectNone('/test-cred');
+      });
+
+      it(`should cache responses with Cache-Control: no-store when 'includeNonCacheableRequests' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-cache-control', 'foo', {
+          responseHeaders: {'Cache-Control': 'no-store'},
+        });
+
+        makeRequestAndExpectNone('/test-cache-control');
+      });
+
+      it(`should cache responses with Cache-Control: private when 'includeNonCacheableRequests' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-cache-control', 'foo', {
+          responseHeaders: {'Cache-Control': 'private'},
+        });
+
+        makeRequestAndExpectNone('/test-cache-control');
+      });
+
+      it(`should cache requests with Cache-Control: no-cache when 'includeNonCacheableRequests' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-cache-control', 'foo', {
+          headers: {'Cache-Control': 'no-cache'},
+        });
+
+        makeRequestAndExpectNone('/test-cache-control');
+      });
+
+      it(`should cache requests with cache: 'no-store' mode when 'includeNonCacheableRequests' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-cache-mode', 'foo', {
+          cache: 'no-store',
+        });
+
+        makeRequestAndExpectNone('/test-cache-mode');
+      });
+    });
+
     describe('caching with public origins', () => {
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {

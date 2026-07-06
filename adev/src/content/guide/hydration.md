@@ -90,9 +90,7 @@ The Event Replay is divided into three main phases:
 
 Event replay supports _native browser events_, for example `click`, `mouseover`, and `focusin`. If you'd like to learn more about JSAction, the library that powers event replay, you can read more [on the readme](https://github.com/angular/angular/tree/main/packages/core/primitives/event-dispatch#readme).
 
----
-
-This feature ensures a consistent user experience, preventing user actions performed before Hydration from being ignored.
+This feature ensures a consistent user experience, preventing user actions performed before hydration from being ignored.
 
 NOTE: If you have [incremental hydration](guide/incremental-hydration) enabled, event replay is automatically enabled under the hood.
 
