@@ -33,13 +33,13 @@ import {
   R3ComponentMetadata,
   R3DeferPerComponentDependency,
   R3DirectiveDependencyMetadata,
+  R3ForeignComponentMetadata,
   R3NgModuleDependencyMetadata,
   R3PipeDependencyMetadata,
   R3TargetBinder,
   R3TemplateDependency,
   R3TemplateDependencyKind,
   R3TemplateDependencyMetadata,
-  R3ForeignComponentMetadata,
   SchemaMetadata,
   SelectorlessMatcher,
   SelectorMatcher,
@@ -76,6 +76,7 @@ import {IndexingContext} from '../../../indexer';
 import {AbstractBoundTemplate} from '../../../indexer/src/api';
 
 import {
+  createForeignComponentMatcher,
   DirectiveMeta,
   extractDirectiveTypeCheckMeta,
   HostDirectivesResolver,
@@ -86,7 +87,6 @@ import {
   PipeMeta,
   Resource,
   ResourceRegistry,
-  createForeignComponentMatcher,
 } from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
@@ -146,7 +146,6 @@ import {
   getProviderDiagnostics,
   InjectableClassRegistry,
   isExpressionForwardReference,
-  parseStandaloneOption,
   readBaseClass,
   ReferencesRegistry,
   removeIdentifierReferences,
@@ -158,7 +157,6 @@ import {
   ResourceLoader,
   toFactoryMetadata,
   tryUnwrapForwardRef,
-  unwrapExpression,
   UndecoratedMetadataExtractor,
   validateHostDirectives,
   wrapFunctionExpressionsInParens,
@@ -177,8 +175,8 @@ import {getTemplateDiagnostics} from '../../../typecheck';
 import {getProjectRelativePath} from '../../../util/src/path';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {analyzeTemplateForAnimations} from './animations';
-import {analyzeForeignComponentFeatures} from './foreign_component';
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
+import {analyzeForeignComponentFeatures} from './foreign_component';
 import {
   ComponentAnalysisData,
   ComponentResolutionData,
@@ -203,11 +201,10 @@ import {analyzeTemplateForSelectorless} from './selectorless';
 import {ComponentSymbol} from './symbol';
 import {
   collectLegacyAnimationNames,
+  extractForeignImportsFromAst,
   legacyAnimationTriggerResolver,
   validateAndFlattenComponentImports,
-  validateAndFlattenForeignImports,
 } from './util';
-import {foreignComponentResolver} from './resolver';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -646,19 +643,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     } else if (rawImports || rawDeferredImports || rawForeignImports) {
       const importDiagnostics: ts.Diagnostic[] = [];
 
-      if (rawForeignImports) {
-        const foreignImportResolvers = combineResolvers([
-          createForwardRefResolver(this.isCore),
-          foreignComponentResolver,
-        ]);
-        const expr = rawForeignImports;
-        const imported = this.evaluator.evaluate(expr, foreignImportResolvers);
-        const {foreignImports: flattened, diagnostics} = validateAndFlattenForeignImports(
-          imported,
-          expr,
-        );
+      // There's no need to extract foreign imports if we're only emitting declarations.
+      if (rawForeignImports && !this.emitDeclarationOnly) {
+        const {foreignImports: imports, diagnostics} =
+          extractForeignImportsFromAst(rawForeignImports);
         importDiagnostics.push(...diagnostics);
-        foreignImports = flattened;
+        foreignImports = imports;
       }
 
       if (this.compilationMode !== CompilationMode.LOCAL && (rawImports || rawDeferredImports)) {
@@ -1506,7 +1496,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ? this.resolveAllDeferredDependencies(resolution)
       : null;
     const defer = this.compileDeferBlocks(resolution);
-    const foreignImports = this.resolveForeignComponentImports(node, analysis);
+    const foreignImports = this.resolveForeignComponentImports(analysis);
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
@@ -1638,7 +1628,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     const deferrableTypes = this.canDeferDeps ? analysis.explicitlyDeferredTypes : null;
 
     const defer = this.compileDeferBlocks(resolution);
-    const foreignImports = this.resolveForeignComponentImports(node, analysis);
+    const foreignImports = this.resolveForeignComponentImports(analysis);
     const meta = {
       ...analysis.meta,
       ...resolution,
@@ -1703,7 +1693,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     // Create a brand-new constant pool since there shouldn't be any constant sharing.
     const pool = new ConstantPool();
     const defer = this.compileDeferBlocks(resolution);
-    const foreignImports = this.resolveForeignComponentImports(node, analysis);
+    const foreignImports = this.resolveForeignComponentImports(analysis);
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
@@ -2346,20 +2336,15 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
    * Resolves imported foreign components for code generation.
    */
   private resolveForeignComponentImports(
-    node: ClassDeclaration,
     analysis: Readonly<ComponentAnalysisData>,
   ): R3ForeignComponentMetadata[] | null {
     if (analysis.foreignImports === null || analysis.foreignImports.length === 0) {
       return null;
     }
-    const context = getSourceFile(node);
-
     return analysis.foreignImports.map((foreignMeta) => {
-      const {name, ref, rawExpression} = foreignMeta;
+      const {name, rawExpression} = foreignMeta;
 
-      const emittedRef = this.refEmitter.emit(ref, context);
-      assertSuccessfulReferenceEmit(emittedRef, node.name, 'foreign component');
-
+      // Avoid copying comments from the source file into the compiled output.
       ts.setEmitFlags(rawExpression, ts.EmitFlags.NoComments | ts.EmitFlags.NoNestedComments);
 
       return {

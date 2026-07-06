@@ -13,6 +13,7 @@ import {
   BoundEvent,
   Component,
   Content,
+  ContentBlock,
   DeferredBlock,
   DeferredBlockError,
   DeferredBlockLoading,
@@ -31,7 +32,6 @@ import {
   Template,
   TextAttribute,
   Variable,
-  ContentBlock,
 } from '../r3_ast';
 
 /** Node that has a `Scope` associated with it. */
@@ -182,12 +182,6 @@ export interface ForeignComponentMeta {
    * Name of the foreign component (used for matching and debugging).
    */
   name: string;
-
-  /** Reference to the foreign component declaration site. */
-  ref: {
-    /** Key that uniquely identifies the reference. */
-    key: string;
-  };
 }
 
 /**

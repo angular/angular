@@ -7,9 +7,9 @@
  */
 
 import {LegacyAnimationTriggerNames} from '@angular/compiler';
-import {isResolvedModuleWithProviders, ResolvedModuleWithProviders} from '../../ng_module';
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../../diagnostics';
 import ts from 'typescript';
+import {ErrorCode, makeDiagnostic} from '../../../diagnostics';
+import {isResolvedModuleWithProviders, ResolvedModuleWithProviders} from '../../ng_module';
 
 import {Reference} from '../../../imports';
 import {
@@ -19,12 +19,12 @@ import {
   ResolvedValueMap,
   SyntheticValue,
 } from '../../../partial_evaluator';
+import {ClassDeclaration, isNamedClassDeclaration} from '../../../reflection';
 import {
-  ClassDeclaration,
-  isNamedClassDeclaration,
-  isNamedFunctionDeclaration,
-} from '../../../reflection';
-import {createValueHasWrongTypeError, getOriginNodeForDiagnostics} from '../../common';
+  createValueHasWrongTypeError,
+  getOriginNodeForDiagnostics,
+  unwrapExpression,
+} from '../../common';
 import {ForeignComponentMeta} from './metadata';
 
 /**
@@ -164,65 +164,80 @@ export function validateAndFlattenComponentImports(
   return {imports: flattened, diagnostics};
 }
 
-export function validateAndFlattenForeignImports(
-  imports: ResolvedValue,
-  expr: ts.Expression,
-): {
+export function extractForeignImportsFromAst(expr: ts.Expression): {
   foreignImports: ForeignComponentMeta[];
   diagnostics: ts.Diagnostic[];
 } {
-  const flattened: ForeignComponentMeta[] = [];
-  const errorMessage = `'foreignImports' must be an array of ForeignComponents.`;
-
-  if (!Array.isArray(imports)) {
-    const error = createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic();
-    return {
-      foreignImports: [],
-      diagnostics: [error],
-    };
-  }
-
+  const foreignImports: ForeignComponentMeta[] = [];
   const diagnostics: ts.Diagnostic[] = [];
 
-  for (let i = 0; i < imports.length; i++) {
-    const ref = imports[i];
-    let refExpr = expr;
-    if (
-      ts.isArrayLiteralExpression(expr) &&
-      expr.elements.length === imports.length &&
-      !expr.elements.some(ts.isSpreadAssignment)
-    ) {
-      refExpr = expr.elements[i];
-    }
-
-    if (Array.isArray(ref)) {
-      const {foreignImports: childForeignImports, diagnostics: childDiagnostics} =
-        validateAndFlattenForeignImports(ref, refExpr);
-      flattened.push(...childForeignImports);
-      diagnostics.push(...childDiagnostics);
-    } else if (ref instanceof Reference && isNamedFunctionDeclaration(ref.node)) {
-      // Use the local identity if available to account for import aliases.
-      const name = ref.getIdentityInExpression(refExpr)?.text ?? ref.node.name.getText();
-      flattened.push({
-        name,
-        ref: ref as Reference<ClassDeclaration>,
-        rawExpression: refExpr,
-      });
-    } else {
-      const {node: diagnosticNode, value: diagnosticValue} = getDiagnosticOrigin(
-        ref,
+  const unwrappedExpr = unwrapExpression(expr);
+  if (!ts.isArrayLiteralExpression(unwrappedExpr)) {
+    diagnostics.push(
+      makeDiagnostic(
+        ErrorCode.VALUE_HAS_WRONG_TYPE,
         expr,
-        refExpr,
-        imports,
-      );
-
-      diagnostics.push(
-        createValueHasWrongTypeError(diagnosticNode, diagnosticValue, errorMessage).toDiagnostic(),
-      );
-    }
+        `'foreignImports' must be an array of foreign imports, e.g. 'foreignImports: [myImport(MyComponent)]'.`,
+      ),
+    );
+    return {foreignImports, diagnostics};
   }
 
-  return {foreignImports: flattened, diagnostics};
+  for (const element of unwrappedExpr.elements) {
+    const unwrappedEl = unwrapExpression(element);
+    if (!ts.isCallExpression(unwrappedEl)) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          element,
+          `Each foreign import must be a call expression, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    const callee = unwrapExpression(unwrappedEl.expression);
+    if (!ts.isIdentifier(callee)) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          unwrappedEl.expression,
+          `The foreign import function must be a simple identifier, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    if (unwrappedEl.arguments.length !== 1) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          element,
+          `Foreign import calls must receive exactly one argument, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    const arg = unwrapExpression(unwrappedEl.arguments[0]);
+    if (!ts.isIdentifier(arg)) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          unwrappedEl.arguments[0],
+          `The component reference passed to the foreign import must be a simple identifier, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    foreignImports.push({
+      name: arg.text,
+      rawExpression: element,
+    });
+  }
+
+  return {foreignImports, diagnostics};
 }
 
 /**

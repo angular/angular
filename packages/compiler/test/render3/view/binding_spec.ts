@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../../src/directive_matching';
 import * as e from '../../../src/expression_parser/ast';
-import * as a from '../../../src/render3/r3_ast';
-import {DirectiveMeta, MatchSource, ForeignComponentMeta} from '../../../src/render3/view/t2_api';
 import {ClassPropertyMapping} from '../../../src/property_mapping';
+import * as a from '../../../src/render3/r3_ast';
+import {DirectiveMeta, ForeignComponentMeta, MatchSource} from '../../../src/render3/view/t2_api';
 import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate, ParseTemplateOptions} from '../../../src/render3/view/template';
-import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../../src/directive_matching';
 
 import {findExpression} from './util';
 
@@ -1599,7 +1599,7 @@ describe('t2 binding', () => {
     it('should match foreign components by tag name', () => {
       const template = parseTemplate('<FancyButton></FancyButton>', '', {});
       const registry = new Map<string, ForeignComponentMeta[]>();
-      registry.set('FancyButton', [{name: 'FancyButton', ref: {key: 'FancyButtonKey'}}]);
+      registry.set('FancyButton', [{name: 'FancyButton'}]);
       const foreignMatcher = new SelectorlessMatcher(registry);
 
       const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>(), foreignMatcher);
@@ -1614,7 +1614,7 @@ describe('t2 binding', () => {
     it('should throw an error when tag matches both directive and foreign component', () => {
       const template = parseTemplate('<comp></comp>', '', {});
       const registry = new Map<string, ForeignComponentMeta[]>();
-      registry.set('comp', [{name: 'comp', ref: {key: 'compKey'}}]);
+      registry.set('comp', [{name: 'comp'}]);
       const foreignMatcher = new SelectorlessMatcher(registry);
 
       const binder = new R3TargetBinder(makeSelectorMatcher(), foreignMatcher);

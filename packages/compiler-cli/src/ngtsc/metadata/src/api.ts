@@ -7,16 +7,16 @@
  */
 
 import {
-  DirectiveMeta as T2DirectiveMeta,
-  Expression,
-  SchemaMetadata,
-  ExternalReference,
-  MatchSource,
-  ClassPropertyName,
-  InputOrOutput,
   ClassPropertyMapping,
-  TemplateGuardMeta,
+  ClassPropertyName,
+  Expression,
+  ExternalReference,
+  InputOrOutput,
+  MatchSource,
+  SchemaMetadata,
+  DirectiveMeta as T2DirectiveMeta,
   ForeignComponentMeta as T2ForeignComponentMeta,
+  TemplateGuardMeta,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -25,7 +25,6 @@ import {ClassDeclaration} from '../../reflection';
 
 /** Metadata for a resolved foreign component import. */
 export interface ForeignComponentMeta extends T2ForeignComponentMeta {
-  ref: Reference<ClassDeclaration>;
   rawExpression: ts.Expression;
 }
 

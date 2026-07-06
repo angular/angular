@@ -1155,6 +1155,106 @@ runInEachFileSystem(() => {
         expect(analysis!.foreignImports![0].name).toBe('Alias');
       });
 
+      describe('invalid foreignImports expressions', () => {
+        function analyzeForeignImports(foreignImports: string): ts.Diagnostic[] | undefined {
+          const {program, options, host} = makeProgram([
+            {
+              name: _('/node_modules/@angular/core/index.d.ts'),
+              contents: `
+                export const Component: any;
+              `,
+            },
+            {
+              name: _('/node_modules/@angular/core/src/render3/foreign_import.ts'),
+              contents: `
+                export function foreignImport(render: any): any {}
+              `,
+            },
+            {
+              name: _('/entry.ts'),
+              contents: `
+                import {Component} from '@angular/core';
+                import {foreignImport} from '@angular/core/src/render3/foreign_import';
+
+                function FancyButton() {}
+
+                function frameworkImport(component?: unknown, extra?: unknown) {
+                  return foreignImport(() => {/* render component */});
+                }
+                const mod = {frameworkImport};
+                const imports: any[] = [];
+
+                @Component({
+                  template: '',
+                  foreignImports: ${foreignImports},
+                }) class TestCmp {}
+              `,
+            },
+          ]);
+          const {reflectionHost, handler} = setup(program, options, host);
+          const TestCmp = getDeclaration(
+            program,
+            _('/entry.ts'),
+            'TestCmp',
+            isNamedClassDeclaration,
+          );
+          const detected = handler.detect(
+            TestCmp,
+            reflectionHost.getDecoratorsOfDeclaration(TestCmp),
+          );
+          if (detected === undefined) {
+            fail('Failed to recognize @Component');
+            return undefined;
+          }
+          return handler.analyze(TestCmp, detected.metadata).diagnostics;
+        }
+
+        it('should produce diagnostic when entry is not a call expression', () => {
+          const diagnostics = analyzeForeignImports('[FancyButton]');
+          expect(diagnostics).toBeDefined();
+          expect(diagnostics!.length).toBe(1);
+          expect(diagnostics![0].messageText).toBe(
+            `Each foreign import must be a call expression, e.g. 'myImport(MyComponent)'.`,
+          );
+        });
+
+        it('should produce diagnostic when callee is not a simple identifier', () => {
+          const diagnostics = analyzeForeignImports('[mod.frameworkImport(FancyButton)]');
+          expect(diagnostics).toBeDefined();
+          expect(diagnostics!.length).toBe(1);
+          expect(diagnostics![0].messageText).toBe(
+            `The foreign import function must be a simple identifier, e.g. 'myImport(MyComponent)'.`,
+          );
+        });
+
+        it('should produce diagnostic when call receives wrong number of arguments', () => {
+          const diagnostics = analyzeForeignImports('[frameworkImport()]');
+          expect(diagnostics).toBeDefined();
+          expect(diagnostics!.length).toBe(1);
+          expect(diagnostics![0].messageText).toBe(
+            `Foreign import calls must receive exactly one argument, e.g. 'myImport(MyComponent)'.`,
+          );
+        });
+
+        it('should produce diagnostic when argument is not a simple identifier', () => {
+          const diagnostics = analyzeForeignImports("[frameworkImport('FancyButton')]");
+          expect(diagnostics).toBeDefined();
+          expect(diagnostics!.length).toBe(1);
+          expect(diagnostics![0].messageText).toBe(
+            `The component reference passed to the foreign import must be a simple identifier, e.g. 'myImport(MyComponent)'.`,
+          );
+        });
+
+        it('should produce diagnostic when foreignImports is not an array literal', () => {
+          const diagnostics = analyzeForeignImports('imports');
+          expect(diagnostics).toBeDefined();
+          expect(diagnostics!.length).toBe(1);
+          expect(diagnostics![0].messageText).toBe(
+            `'foreignImports' must be an array of foreign imports, e.g. 'foreignImports: [myImport(MyComponent)]'.`,
+          );
+        });
+      });
+
       it('should produce diagnostic for imports in non-standalone component', () => {
         const {program, options, host} = makeProgram(
           [
