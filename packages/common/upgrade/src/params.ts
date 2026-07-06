@@ -147,7 +147,7 @@ export class AngularJSUrlCodec implements UrlCodec {
     let i = segments.length;
 
     while (i--) {
-      segments[i] = decodeURIComponent(segments[i]);
+      segments[i] = tryDecodeURIComponent(segments[i]) ?? segments[i];
       if (html5Mode) {
         // encode forward slashes to prevent them from being mistaken for path separators
         segments[i] = segments[i].replace(/\//g, '%2F');
@@ -164,7 +164,7 @@ export class AngularJSUrlCodec implements UrlCodec {
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/location.js#L73
   decodeHash(hash: string) {
-    hash = decodeURIComponent(hash);
+    hash = tryDecodeURIComponent(hash) ?? hash;
     return hash[0] === '#' ? hash.substring(1) : hash;
   }
 
