@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {FileUpdate, TsCreateProgramDriver, UpdateMode} from '../../program_driver';
-import {sfExtensionData, ShimReferenceTagger} from '../../shims';
+import {sfExtensionData, ShimReferenceTagger, untagAllTsFiles} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
 import {OptimizeFor} from '../api';
 
@@ -64,8 +64,85 @@ runInEachFileSystem(() => {
 
       expectCompleteReuse(programStrategy.getProgram());
     });
+
+    it('should retain shim tags on shared SourceFiles after updateFiles', () => {
+      assertShimTagsRetainedAfterUpdate(UpdateMode.Complete);
+    });
+
+    it('should retain shim tags on shared SourceFiles after incremental updateFiles', () => {
+      const {program, host, options, typecheckPath, mainPath} =
+        makeSingleFileProgramWithTypecheckShim();
+
+      const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
+
+      programStrategy.updateFiles(
+        new Map([[typecheckPath, createUpdate('export const VERSION = 2;')]]),
+        UpdateMode.Complete,
+      );
+      programStrategy.updateFiles(
+        new Map([[typecheckPath, createUpdate('export const VERSION = 3;')]]),
+        UpdateMode.Incremental,
+      );
+
+      assertSharedSourceFileShimTags(programStrategy.getProgram(), mainPath);
+    });
+
+    it('should allow untagging the input program for emit after updateFiles', () => {
+      const {program, host, options, typecheckPath, mainPath} =
+        makeSingleFileProgramWithTypecheckShim();
+
+      const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
+
+      // Update only the shim file so /main.ts remains a shared SourceFile between programs.
+      programStrategy.updateFiles(
+        new Map([[typecheckPath, createUpdate('export const VERSION = 2;')]]),
+        UpdateMode.Complete,
+      );
+
+      const mainSf = getSourceFileOrError(program, mainPath);
+      const ext = sfExtensionData(mainSf);
+
+      expect(ext.taggedReferenceFiles).not.toBeNull();
+      expect(mainSf.referencedFiles.length).toEqual(ext.taggedReferenceFiles!.length);
+
+      // prepareEmit() untags the input program before emit (#56945).
+      untagAllTsFiles(program);
+
+      expect(ext.originalReferencedFiles).not.toBeNull();
+      expect(mainSf.referencedFiles).toEqual(ext.originalReferencedFiles!);
+      for (const ref of mainSf.referencedFiles) {
+        expect(ref.fileName).not.toContain('ngtypecheck');
+      }
+    });
   });
 });
+
+function assertShimTagsRetainedAfterUpdate(updateMode: UpdateMode): void {
+  const {program, host, options, typecheckPath, mainPath} =
+    makeSingleFileProgramWithTypecheckShim();
+
+  const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
+
+  // Update only the shim file so /main.ts remains a shared SourceFile between programs.
+  programStrategy.updateFiles(
+    new Map([[typecheckPath, createUpdate('export const VERSION = 2;')]]),
+    updateMode,
+  );
+
+  assertSharedSourceFileShimTags(programStrategy.getProgram(), mainPath);
+}
+
+function assertSharedSourceFileShimTags(program: ts.Program, mainPath: AbsoluteFsPath): void {
+  const mainSf = getSourceFileOrError(program, mainPath);
+  const ext = sfExtensionData(mainSf);
+
+  // Without the fix, untagging the old program also untags shared SourceFiles in the new
+  // program, leaving referencedFiles shorter than taggedReferenceFiles.
+  expect(ext.taggedReferenceFiles).not.toBeNull();
+  expect(mainSf.referencedFiles.length).toEqual(ext.taggedReferenceFiles!.length);
+
+  expect(() => program.getSemanticDiagnostics(mainSf)).not.toThrow();
+}
 
 function createUpdate(text: string): FileUpdate {
   return {
@@ -83,16 +160,24 @@ function makeSingleFileProgramWithTypecheckShim(): {
 } {
   const mainPath = absoluteFrom('/main.ts');
   const typecheckPath = absoluteFrom('/main.ngtypecheck.ts');
-  const {program, host, options} = makeProgram([
+  const {program, host, options} = makeProgram(
+    [
+      {
+        name: mainPath,
+        contents: 'export const NOT_A_COMPONENT = true;',
+      },
+      {
+        name: typecheckPath,
+        contents: 'export const VERSION = 1;',
+      },
+    ],
     {
-      name: mainPath,
-      contents: 'export const NOT_A_COMPONENT = true;',
+      composite: true,
+      declaration: true,
     },
-    {
-      name: typecheckPath,
-      contents: 'export const VERSION = 1;',
-    },
-  ]);
+    /* host */ undefined,
+    /* checkForErrors */ false,
+  );
 
   const sf = getSourceFileOrError(program, mainPath);
   const typecheckSf = getSourceFileOrError(program, typecheckPath);

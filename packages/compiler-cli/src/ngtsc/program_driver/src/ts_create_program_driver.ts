@@ -272,5 +272,12 @@ export class TsCreateProgramDriver implements ProgramDriver {
     // TS 5.5 not having the files tagged while producing diagnostics can lead to errors. See:
     // https://github.com/microsoft/TypeScript/pull/58398
     untagAllTsFiles(oldProgram);
+
+    // Re-tag the new program's files. Since TS reuses SourceFile objects between old and new
+    // programs, untagging the old program also untags shared files in the new program.
+    // Without re-tagging, getSemanticDiagnostics() crashes with "Cannot destructure property
+    // 'pos' of 'file.referencedFiles[index]'" because fileProcessingDiagnostics recorded
+    // indices into the tagged (longer) referencedFiles array during program creation.
+    retagAllTsFiles(this.program);
   }
 }
