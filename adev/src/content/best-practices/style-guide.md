@@ -196,9 +196,7 @@ properties initialized by `input`, `model`, `output`, and queries. The readonly 
 ensures that the value set by Angular is not overwritten.
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class UserProfile {
   readonly userId = input();
   readonly userSaved = output();
@@ -210,9 +208,7 @@ For components and directives that use the decorator-based `@Input`, `@Output`, 
 advice applies to output properties and queries, but not input properties.
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class UserProfile {
   @Output() readonly userSaved = new EventEmitter<void>();
   @ViewChildren(PaymentMethod) readonly paymentMethods?: QueryList<PaymentMethod>;
@@ -275,9 +271,7 @@ single well-named handler. In these cases, it's fine to fall back to a name like
 then delegate to more specific behaviors based on the event details:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 class RichText {
   handleKeydown(event: KeyboardEvent) {
     if (event.ctrlKey) {
@@ -322,9 +316,7 @@ your class, import and `implement` these interfaces to ensure that the methods a
 ```ts
 import {Component, OnInit} from '@angular/core';
 
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class UserProfile implements OnInit {
   // The `OnInit` interface ensures this method is named correctly.
   ngOnInit() {

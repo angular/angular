@@ -35,9 +35,7 @@ When you want to run code during specific navigation lifecycle events, you can d
 import {Component, inject, signal, effect} from '@angular/core';
 import {Event, Router, NavigationStart, NavigationEnd} from '@angular/router';
 
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class RouterEvents {
   private readonly router = inject(Router);
 

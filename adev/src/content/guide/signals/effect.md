@@ -36,9 +36,7 @@ Instead, use `computed` signals to model state that depends on other state.
 By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the `inject` function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class EffectiveCounter {
   readonly count = signal(0);
 
@@ -54,9 +52,7 @@ export class EffectiveCounter {
 To create an effect outside the constructor, you can pass an `Injector` to `effect` via its options:
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class EffectiveCounter {
   readonly count = signal(0);
   private injector = inject(Injector);
@@ -123,9 +119,7 @@ The `effect` function is a general-purpose tool for running code in reaction to 
 For these situations, you can use `afterRenderEffect`. It functions like `effect`, but runs after Angular has finished rendering and committed its changes to the DOM.
 
 ```ts
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class MyFancyChart {
   chartData = input.required<ChartData>();
   canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
