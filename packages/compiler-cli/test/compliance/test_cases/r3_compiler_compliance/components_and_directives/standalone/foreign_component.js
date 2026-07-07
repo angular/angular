@@ -38,7 +38,8 @@ function TestCmpRenderProps_Items_0_Template(rf, ctx) {
 
 function TestCmpConditional_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵforeignComponent(0, 0);
+    const ctx_r0 = i0.ɵɵnextContext();
+    i0.ɵɵforeignComponent(0, 0, { label: ctx_r0.title });
   }
 }
 

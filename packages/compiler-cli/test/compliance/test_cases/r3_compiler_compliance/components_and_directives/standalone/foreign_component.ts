@@ -68,7 +68,7 @@ export class TestCmpRenderProps {
   selector: 'main-conditional',
   template: `
     @if (condition) {
-      <FancyButton />
+      <FancyButton [label]="title" />
     }
   `,
   // @ts-ignore: @angular/core does not expose the `foreignImports` property.

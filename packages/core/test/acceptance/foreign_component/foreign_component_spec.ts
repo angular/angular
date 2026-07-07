@@ -630,6 +630,51 @@ describe('foreign components', () => {
     });
   });
 
+  describe('control flow', () => {
+    it('should support foreign component with bindings @if', async () => {
+      function LabeledButton(props: {label: () => string}): Node[] {
+        const button = document.createElement('button');
+        button.textContent = props.label();
+        return [button];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          @if (show()) {
+            <LabeledButton [label]="buttonText" />
+          }
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(LabeledButton)],
+      })
+      class TestForeignInIf {
+        readonly show = signal(true);
+        readonly buttonText = signal('Submit');
+      }
+
+      const fixture = TestBed.createComponent(TestForeignInIf);
+      await fixture.whenStable();
+
+      let button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+      expect(button.textContent).toBe('Submit');
+
+      fixture.componentInstance.show.set(false);
+      await fixture.whenStable();
+
+      button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeFalsy();
+
+      fixture.componentInstance.show.set(true);
+      await fixture.whenStable();
+
+      button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+      expect(button.textContent).toBe('Submit');
+    });
+  });
+
   describe('queries', () => {
     it('should support querying elements inside projected foreign content', async () => {
       @Component({
