@@ -49,7 +49,14 @@
             <ng-template ngComboboxPopup [combobox]="innerCombobox">
               <div class="example-popup example-popup-no-margin">
                 @if (filteredOptions().length === 0) {
-                  <div class="docs-select-no-results">No results found</div>
+                  <div class="docs-select-no-results">
+                    <img
+                      src="assets/images/angie/question.svg"
+                      class="docs-select-no-results-angie"
+                      aria-hidden="true"
+                    />
+                    <span>No results found</span>
+                  </div>
                 }
                 <div
                   #listbox="ngListbox"
