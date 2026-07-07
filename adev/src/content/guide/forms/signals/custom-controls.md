@@ -6,6 +6,8 @@ The browser's built-in form controls (like input, select, textarea) handle commo
 
 Signal Forms works with any component that implements specific interfaces. A **control interface** defines the properties and signals that allow your component to communicate with the form system. When your component implements one of these interfaces, the `[formField]` directive automatically connects your control to form state, validation, and data binding.
 
+HELPFUL: Custom Signal Form Controls [can be used](guide/forms/signals/migration#custom-controls) with Signal, Reactive and Template-Driven Forms without any extra compatibility code.
+
 ## Creating a basic custom control
 
 Let's start with a minimal implementation and add features as needed.
