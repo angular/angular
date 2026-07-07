@@ -1346,50 +1346,50 @@ packages:
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-core@4.57.8':
-    resolution: {integrity: sha512-YzVbwggV9452VCeHgo0bjsTaUt1O7JE0XpEsPar93nn/+RAwXk0mb1Y+f5EDJ3TRtRCFe+Ck5RuojdfB4jeHVw==}
+  '@jsonjoy.com/fs-core@4.58.0':
+    resolution: {integrity: sha512-K82t5e9w3NYQeIcw129f0SCH/Rn8m8GKPJBYge4W/sA4hhE5h7I8YQhs2HRpUQyUpi+qk7I9tbp1/b87eCM/PA==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-fsa@4.57.8':
-    resolution: {integrity: sha512-vmClyvCQMxgqz7uamDiGtRfp4MjzOznk3pcQjCxlIwJcw7TWeyr+bF30hI0x8NxdtNOGMg1pHM74VDIXOeyjuw==}
+  '@jsonjoy.com/fs-fsa@4.58.0':
+    resolution: {integrity: sha512-1/FdsxQao9pBo2OJLEfKrujHdVyGxXvDTT7EtNh9fvp3MK42nB+xHh1EJr2L1c0a05eCMyFCYZPID3KjX9EAng==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-node-builtins@4.57.8':
-    resolution: {integrity: sha512-mxXSXw8zZwRVakcjLqR2I/psy4gURFSASZS10kKJ2kJw05GC2nXGroGrWVHxwgkxXgQLsFQnB74QaLzsxzdL/w==}
+  '@jsonjoy.com/fs-node-builtins@4.58.0':
+    resolution: {integrity: sha512-M1sAhjR1de4CL7ivQAFYqJRDVE3krwVOmfcAgG5YQJiDWxYfcGDMLUNcx0p/+Rcs31/Inh1m9aUDk/0jfR1T5w==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-node-to-fsa@4.57.8':
-    resolution: {integrity: sha512-AWZcT/4+H+iDl4XCukbXrarvwEgOrf/prFI5/7eg4ix9FxqVsZysIDJd1Kjd+AjlCeHKHJOaRqjLd5HiGSCJEw==}
+  '@jsonjoy.com/fs-node-to-fsa@4.58.0':
+    resolution: {integrity: sha512-erivc39YHoqWY0U8q5IlEcn238AUkIBByMvM0w7OO/FU9hEH3P7oNkPpYWIMpEMncbePk672GiC8ZSwYc2m7fg==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-node-utils@4.57.8':
-    resolution: {integrity: sha512-E/bJ7sQAb4pu9nbeJhbULU3WnqWrswte4N9Js/oHt7aHB746S8/XBqKlcbrqIgnD3095XluovNEZuu5ONT230g==}
+  '@jsonjoy.com/fs-node-utils@4.58.0':
+    resolution: {integrity: sha512-IrsAFMFBFQXjpS/u3jOY4DMIbRDg94KxzadddDlJv9xodxZ6/Y3ji91uMwrRqklyu+KoquO/Vxihf3/QrQiuOA==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-node@4.57.8':
-    resolution: {integrity: sha512-IPEOlDYSnTDYpjQlQg2F8h+eqxKQN3sdbroI0WrteRiQZ462HzVpBo9ZZX485njz4nAacoe3fd4iDiIhk+k5Hg==}
+  '@jsonjoy.com/fs-node@4.58.0':
+    resolution: {integrity: sha512-bOqoLND5b5xyM+1zro63kClBnB05HTIX0RzOSHy4kAjfnec+CTdV742H/nsDmbkDaaDLHMmYqxAw09NQ8yVIrQ==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-print@4.57.8':
-    resolution: {integrity: sha512-DfzhOBpmvNu5P/KSe4NNQaOnvNliTdcf0qrh/4EReErF/XUQXYkd0vZl/OiJCm/qjEEo8DWRstliw2/JNS84dA==}
+  '@jsonjoy.com/fs-print@4.58.0':
+    resolution: {integrity: sha512-jbAYbeuzPXIzvWOuuFMoQgrWaQU5hBqevloebLaiAimoBYLjrjiLPdOaaLHepWcZzOq/7Us8x2F22YlsTPbwmw==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
 
-  '@jsonjoy.com/fs-snapshot@4.57.8':
-    resolution: {integrity: sha512-L+eqKaWOHLDaiMv1dh/EWQ4hA+o6xAhWSumTo3Teg7OM18jU/KE13/e8Mfal+eAZ/pSl4wIhKHcDiwapJzC8Wg==}
+  '@jsonjoy.com/fs-snapshot@4.58.0':
+    resolution: {integrity: sha512-DkozLuMgzfpWZO8o8tSlFJIpUQauG7/sgjH0JrqsbLkmjdoInn/o1W7P9FZQSZlR9lOjDgSXs2MfE/sAUi2JRQ==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
@@ -2346,8 +2346,8 @@ packages:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
 
-  baseline-browser-mapping@2.10.40:
-    resolution: {integrity: sha512-BSSLZ9/Cjjv7Gtj5B68ZzXcXUg8iOf3fme+FCuh8rC/Go+Kmh8cox7M3A8dolou16s64QjLPOSdngh7GxXvkSw==}
+  baseline-browser-mapping@2.10.42:
+    resolution: {integrity: sha512-c/jurFrDLyui7o1J86yLkRu4LMsTYcBohveus7/I2Hzdn9KIP2bdJPTue/lR1KH46enoPbD77GKeSYNdyPoD3Q==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -2398,8 +2398,8 @@ packages:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
 
-  browserslist@4.28.4:
-    resolution: {integrity: sha512-MTc8i/x9jBQd1iMw2CFGS+rwMa07eYjLR0CCTLDACl9xhxy+nIs3KeML/biicXtk9JrZ6dnnTatmc7ErPXIxqw==}
+  browserslist@4.28.5:
+    resolution: {integrity: sha512-Cu2E6QejHWzuDMTkuwgpABFgDfZrXLQq5V13YOACZx4mFAG4IwGTbTfHPMr4WtxlHoXSM8FIuRwYYCz5XiabaQ==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
@@ -2441,8 +2441,8 @@ packages:
     resolution: {integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==}
     engines: {node: '>=6'}
 
-  caniuse-lite@1.0.30001799:
-    resolution: {integrity: sha512-hG1bReV+OUU+MOqK4t/ZWI0tZOyz3rqS9XuhOUz1cIcbwBKjOyJEJuw9ER5JuNyqxNk8u/JUVbGibBOL1yrjFw==}
+  caniuse-lite@1.0.30001802:
+    resolution: {integrity: sha512-vmv8ub2xwTNmljSKf82mtCk5JH7hC+YgzLj3P5zotvA0tPQ9016tdNNOG8WRca1IxOnhSsivB+J0z5FeE5LOUw==}
 
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
@@ -2749,8 +2749,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.381:
-    resolution: {integrity: sha512-n9Wa6yB+vDsGuA8AKbl/0z7HbvWqt5jxIdvr1IUicd0ryPrk7/xzwqLv8D9AbbvZ6avVNtXYLTfmgFHkwkyelg==}
+  electron-to-chromium@1.5.387:
+    resolution: {integrity: sha512-TaxwufTFDufvPEoXdhwVrA3UdFWBeWGkYoJ1K8ldF1xe6gKfth6iRNS5lTQ5JPNOHdGQm8PT1QYKUqFLCiUefQ==}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -2766,8 +2766,8 @@ packages:
     resolution: {integrity: sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==}
     engines: {node: '>= 0.8'}
 
-  enhanced-resolve@5.24.1:
-    resolution: {integrity: sha512-7DdUaTjmNwMcH2gLr1qycesKII3BK4RLy/mdAb7x10Lq7bR4aNKHt1BR1ZALSv0rPM/hF5wYF0PhGop/rJm8vw==}
+  enhanced-resolve@5.24.2:
+    resolution: {integrity: sha512-rpsZEGT1jFuve6QlpyRp9ckQ+kN61hvF9BzCPyMdaKTm8UJce96KBn3sorXOFXlzjPrs3Vc4T1NsSroZ3PxlFw==}
     engines: {node: '>=10.13.0'}
 
   entities@4.5.0:
@@ -2805,8 +2805,8 @@ packages:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
 
-  es-module-lexer@2.2.0:
-    resolution: {integrity: sha512-3lGxdTXCLfe1MYfTz1y2ksAAUM4NAOP6rPEjxGJVKO7TZ5+tvHCaQWGpC4Y3IXvW3ece0Cz1cIP4FWBxOnGCTQ==}
+  es-module-lexer@2.3.0:
+    resolution: {integrity: sha512-KLdwQm2NvGLDkQDCGvmiQrhkd0JbMzXthwQAUgWjQuQdBLFa3eiBP5arXZyA+f8x+x7OXgud6bq2rxjGtHV2tw==}
 
   es-object-atoms@1.1.2:
     resolution: {integrity: sha512-HWcBoN6NileqtSydK2FqHbS/LoDd2pqrnQHLyJzBj4kOp/ky2MWMN694xOfkK8/SnUsW2DH7EfyVlydKCsm1Zw==}
@@ -3102,8 +3102,8 @@ packages:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
-  hono@4.12.27:
-    resolution: {integrity: sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q==}
+  hono@4.12.28:
+    resolution: {integrity: sha512-YwUvVpSF7m1yOblFPrU3Hbo8XhPheBoiyfGuII6z19LnOr6JpDnyyp7LFNrfV56wS8tpvtBFGRISHN02pDdLOA==}
     engines: {node: '>=16.9.0'}
 
   hosted-git-info@9.0.3:
@@ -3182,8 +3182,8 @@ packages:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
     engines: {node: '>=0.10.0'}
 
-  iconv-lite@0.7.2:
-    resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
+  iconv-lite@0.7.3:
+    resolution: {integrity: sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==}
     engines: {node: '>=0.10.0'}
 
   icss-utils@5.1.0:
@@ -3204,8 +3204,8 @@ packages:
   immediate@3.0.6:
     resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
 
-  immutable@5.1.8:
-    resolution: {integrity: sha512-TM5YqrGeTsVIPPpILzeqZ8D2Zc2TvNgSDi88zPF2a4cyqQdWV/wVWBDRDbNzzrLeRWScrFcOX9lW2iX6GOtUDw==}
+  immutable@5.1.9:
+    resolution: {integrity: sha512-m8nVez3rwrgmWxtLMt1ZYXB2Lv7OKYn/disyxAlSDYAlKSlFoPPfIAmAM/M5xqL4m4C/wAPw7S2/CNaUii1Hxg==}
 
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
@@ -3555,8 +3555,8 @@ packages:
     resolution: {integrity: sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==}
     engines: {node: '>= 0.8'}
 
-  memfs@4.57.8:
-    resolution: {integrity: sha512-bApYhn8BLpFAnAQmFfEl/NPN+8qx5Ar3V4Qt3ek23mVwBEElzV7c6XoPkb/PCG8ZFpowCEpHcPwMFTwHS7tSMA==}
+  memfs@4.58.0:
+    resolution: {integrity: sha512-0n6CDBqIT/eGrbWdDVNkLjasjupnEpOFjFOtXrS5p6EYYXGXBn5ZIMLetBlVdQYpP0hGK2MEOgYAC0/+NOr91w==}
     peerDependencies:
       tslib: '2'
 
@@ -3827,8 +3827,8 @@ packages:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
 
-  p-map@7.0.4:
-    resolution: {integrity: sha512-tkAQEw8ysMzmkhgw8k+1U/iPhWNhykKnSk4Rd5zLoPJCuJaGRPo6YposrZgaxHKzDHdDWWZvE/Sk7hsL2X/CpQ==}
+  p-map@7.0.5:
+    resolution: {integrity: sha512-e8vJF4XdVkzqqSHguEMz41mQO1wKwxKm5ENrUJQUu9kLDCtn83cxbyHZcszr4QC5zEA7WffRRC4gsTecC7J9oA==}
     engines: {node: '>=18'}
 
   p-retry@6.2.1:
@@ -3912,6 +3912,10 @@ packages:
 
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
+    engines: {node: '>=12'}
+
+  picomatch@4.0.5:
+    resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
     engines: {node: '>=12'}
 
   pify@2.3.0:
@@ -4258,8 +4262,8 @@ packages:
     resolution: {integrity: sha512-1gnZf7DFcoIcajTjTwjwuDjzuz4PPcY2StKPlsGAQ1+YH20IRVrBaXSWmdjowTJ6u8Rc01PoYOGHXfP1mYcZNQ==}
     engines: {node: '>= 18'}
 
-  serialize-javascript@7.0.6:
-    resolution: {integrity: sha512-ATTK5Q4gFVg0YDp1my2vqygyvhcklD/UV5GIlYHooGTn/NogJqIzpetkD6E5kmuVULqz/S9inUL25XcAgDRJQg==}
+  serialize-javascript@7.0.7:
+    resolution: {integrity: sha512-YAy8Od6KV+uuwUuU50np8fGB/Aues6Y0nAhA9y/hId74PlKUcme4pXcBD46NWKr1Q4osN/iseZ17YqO1XfmI8g==}
     engines: {node: '>=20.0.0'}
 
   serve-index@1.9.2:
@@ -4776,8 +4780,8 @@ packages:
     resolution: {integrity: sha512-hXXvrjtx2PLYx4qruKl+kyRSLc52V+cCvMxRjmKwoA+CBbbF5GfIBtR6kCvl0fYGqTUPKB+1ktVmTHqMOzgCBg==}
     engines: {node: '>=18.0.0'}
 
-  webpack-sources@3.5.0:
-    resolution: {integrity: sha512-HPuy+uuoTCaaoEoI1LQ3JN9+vrPBvEesnnX1jADHy728cHSMlq4wUc4afYqahq2B1mhQVZxCXOkNTnXltr+2vQ==}
+  webpack-sources@3.5.1:
+    resolution: {integrity: sha512-jyuiGJdtvY434z5bUZrjz67v76/ePNvFZTp9Mdz29IlH4+GPsgyGjiv0fKI+M7BdkU6ADjulUcKAd3tUK3WlEw==}
     engines: {node: '>=10.13.0'}
 
   webpack-subresource-integrity@5.1.0:
@@ -5055,7 +5059,7 @@ snapshots:
       ansi-colors: 4.1.3
       autoprefixer: 10.5.0(postcss@8.5.13)
       babel-loader: 10.1.1(@babel/core@7.29.0)(webpack@5.106.2(esbuild@0.28.1)(postcss@8.5.13))
-      browserslist: 4.28.4
+      browserslist: 4.28.5
       copy-webpack-plugin: 14.0.0(webpack@5.106.2(esbuild@0.28.1)(postcss@8.5.13))
       css-loader: 7.1.4(webpack@5.106.2(esbuild@0.28.1)(postcss@8.5.13))
       esbuild-wasm: 0.28.1
@@ -5166,7 +5170,7 @@ snapshots:
       '@inquirer/confirm': 6.0.12(@types/node@20.19.43)
       '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.2))
       beasties: 0.4.2
-      browserslist: 4.28.4
+      browserslist: 4.28.5
       esbuild: 0.28.1
       https-proxy-agent: 9.0.0
       jsonc-parser: 3.3.1
@@ -5219,7 +5223,7 @@ snapshots:
       '@inquirer/confirm': 6.0.12(@types/node@20.19.43)
       '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.2(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.2))
       beasties: 0.4.2
-      browserslist: 4.28.4
+      browserslist: 4.28.5
       esbuild: 0.28.1
       https-proxy-agent: 9.0.0
       jsonc-parser: 3.3.1
@@ -5351,7 +5355,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/helper-validator-option': 7.29.7
-      browserslist: 4.28.4
+      browserslist: 4.28.5
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -6153,9 +6157,9 @@ snapshots:
   '@harperfast/extended-iterable@1.0.3':
     optional: true
 
-  '@hono/node-server@1.19.14(hono@4.12.27)':
+  '@hono/node-server@1.19.14(hono@4.12.28)':
     dependencies:
-      hono: 4.12.27
+      hono: 4.12.28
 
   '@inquirer/ansi@2.0.7': {}
 
@@ -6212,7 +6216,7 @@ snapshots:
   '@inquirer/external-editor@3.0.3(@types/node@20.19.43)':
     dependencies:
       chardet: 2.2.0
-      iconv-lite: 0.7.2
+      iconv-lite: 0.7.3
     optionalDependencies:
       '@types/node': 20.19.43
 
@@ -6342,58 +6346,58 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-core@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-core@4.58.0(tslib@2.8.1)':
     dependencies:
-      '@jsonjoy.com/fs-node-builtins': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.58.0(tslib@2.8.1)
       thingies: 2.6.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-fsa@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-fsa@4.58.0(tslib@2.8.1)':
     dependencies:
-      '@jsonjoy.com/fs-core': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-core': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.58.0(tslib@2.8.1)
       thingies: 2.6.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-node-builtins@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-node-builtins@4.58.0(tslib@2.8.1)':
     dependencies:
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-node-to-fsa@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-node-to-fsa@4.58.0(tslib@2.8.1)':
     dependencies:
-      '@jsonjoy.com/fs-fsa': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-fsa': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.58.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-node-utils@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-node-utils@4.58.0(tslib@2.8.1)':
     dependencies:
-      '@jsonjoy.com/fs-node-builtins': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.58.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-node@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-node@4.58.0(tslib@2.8.1)':
     dependencies:
-      '@jsonjoy.com/fs-core': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-print': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-snapshot': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-core': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-print': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-snapshot': 4.58.0(tslib@2.8.1)
       glob-to-regex.js: 1.2.0(tslib@2.8.1)
       thingies: 2.6.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-print@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-print@4.58.0(tslib@2.8.1)':
     dependencies:
-      '@jsonjoy.com/fs-node-utils': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.58.0(tslib@2.8.1)
       tree-dump: 1.1.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jsonjoy.com/fs-snapshot@4.57.8(tslib@2.8.1)':
+  '@jsonjoy.com/fs-snapshot@4.58.0(tslib@2.8.1)':
     dependencies:
       '@jsonjoy.com/buffers': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.58.0(tslib@2.8.1)
       '@jsonjoy.com/json-pack': 17.67.0(tslib@2.8.1)
       '@jsonjoy.com/util': 17.67.0(tslib@2.8.1)
       tslib: 2.8.1
@@ -6478,7 +6482,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.29.0(zod@4.4.2)':
     dependencies:
-      '@hono/node-server': 1.19.14(hono@4.12.27)
+      '@hono/node-server': 1.19.14(hono@4.12.28)
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
       content-type: 1.0.5
@@ -6488,7 +6492,7 @@ snapshots:
       eventsource-parser: 3.1.0
       express: 5.2.1
       express-rate-limit: 8.5.2(express@5.2.1)
-      hono: 4.12.27
+      hono: 4.12.28
       jose: 6.2.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -7279,8 +7283,8 @@ snapshots:
 
   autoprefixer@10.5.0(postcss@8.5.13):
     dependencies:
-      browserslist: 4.28.4
-      caniuse-lite: 1.0.30001799
+      browserslist: 4.28.5
+      caniuse-lite: 1.0.30001802
       fraction.js: 5.3.4
       picocolors: 1.1.1
       postcss: 8.5.13
@@ -7333,7 +7337,7 @@ snapshots:
 
   balanced-match@4.0.4: {}
 
-  baseline-browser-mapping@2.10.40: {}
+  baseline-browser-mapping@2.10.42: {}
 
   batch@0.6.1: {}
 
@@ -7384,7 +7388,7 @@ snapshots:
       content-type: 2.0.0
       debug: 4.4.3
       http-errors: 2.0.1
-      iconv-lite: 0.7.2
+      iconv-lite: 0.7.3
       on-finished: 2.4.1
       qs: 6.15.3
       raw-body: 3.0.2
@@ -7412,13 +7416,13 @@ snapshots:
     dependencies:
       fill-range: 7.1.1
 
-  browserslist@4.28.4:
+  browserslist@4.28.5:
     dependencies:
-      baseline-browser-mapping: 2.10.40
-      caniuse-lite: 1.0.30001799
-      electron-to-chromium: 1.5.381
+      baseline-browser-mapping: 2.10.42
+      caniuse-lite: 1.0.30001802
+      electron-to-chromium: 1.5.387
       node-releases: 2.0.50
-      update-browserslist-db: 1.2.3(browserslist@4.28.4)
+      update-browserslist-db: 1.2.3(browserslist@4.28.5)
 
   browserstack@1.6.1:
     dependencies:
@@ -7446,7 +7450,7 @@ snapshots:
       minipass-collect: 2.0.1
       minipass-flush: 1.0.7
       minipass-pipeline: 1.2.4
-      p-map: 7.0.4
+      p-map: 7.0.5
       ssri: 13.0.1
 
   call-bind-apply-helpers@1.0.2:
@@ -7463,7 +7467,7 @@ snapshots:
 
   camelcase@5.3.1: {}
 
-  caniuse-lite@1.0.30001799: {}
+  caniuse-lite@1.0.30001802: {}
 
   caseless@0.12.0: {}
 
@@ -7615,13 +7619,13 @@ snapshots:
       glob-parent: 6.0.2
       normalize-path: 3.0.0
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.6
+      serialize-javascript: 7.0.7
       tinyglobby: 0.2.16
       webpack: 5.106.2(esbuild@0.28.1)(postcss@8.5.13)
 
   core-js-compat@3.49.0:
     dependencies:
-      browserslist: 4.28.4
+      browserslist: 4.28.5
 
   core-util-is@1.0.2: {}
 
@@ -7761,7 +7765,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.381: {}
+  electron-to-chromium@1.5.387: {}
 
   emoji-regex@10.6.0: {}
 
@@ -7771,7 +7775,7 @@ snapshots:
 
   encodeurl@2.0.0: {}
 
-  enhanced-resolve@5.24.1:
+  enhanced-resolve@5.24.2:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.3.3
@@ -7799,7 +7803,7 @@ snapshots:
 
   es-errors@1.3.0: {}
 
-  es-module-lexer@2.2.0: {}
+  es-module-lexer@2.3.0: {}
 
   es-object-atoms@1.1.2:
     dependencies:
@@ -8012,6 +8016,10 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.4
 
+  fdir@6.5.0(picomatch@4.0.5):
+    optionalDependencies:
+      picomatch: 4.0.5
+
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
@@ -8173,7 +8181,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.12.27: {}
+  hono@4.12.28: {}
 
   hosted-git-info@9.0.3:
     dependencies:
@@ -8290,7 +8298,7 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  iconv-lite@0.7.2:
+  iconv-lite@0.7.3:
     dependencies:
       safer-buffer: 2.1.2
 
@@ -8307,7 +8315,7 @@ snapshots:
 
   immediate@3.0.6: {}
 
-  immutable@5.1.8: {}
+  immutable@5.1.9: {}
 
   import-fresh@3.3.1:
     dependencies:
@@ -8521,7 +8529,7 @@ snapshots:
 
   license-webpack-plugin@4.0.2(webpack@5.106.2(esbuild@0.28.1)(postcss@8.5.13)):
     dependencies:
-      webpack-sources: 3.5.0
+      webpack-sources: 3.5.1
     optionalDependencies:
       webpack: 5.106.2(esbuild@0.28.1)(postcss@8.5.13)
 
@@ -8631,16 +8639,16 @@ snapshots:
 
   media-typer@1.1.0: {}
 
-  memfs@4.57.8(tslib@2.8.1):
+  memfs@4.58.0(tslib@2.8.1):
     dependencies:
-      '@jsonjoy.com/fs-core': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-fsa': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-to-fsa': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-print': 4.57.8(tslib@2.8.1)
-      '@jsonjoy.com/fs-snapshot': 4.57.8(tslib@2.8.1)
+      '@jsonjoy.com/fs-core': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-fsa': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-to-fsa': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-print': 4.58.0(tslib@2.8.1)
+      '@jsonjoy.com/fs-snapshot': 4.58.0(tslib@2.8.1)
       '@jsonjoy.com/json-pack': 1.21.0(tslib@2.8.1)
       '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
       glob-to-regex.js: 1.2.0(tslib@2.8.1)
@@ -8705,7 +8713,7 @@ snapshots:
       minipass-sized: 2.0.0
       minizlib: 3.1.0
     optionalDependencies:
-      iconv-lite: 0.7.2
+      iconv-lite: 0.7.3
 
   minipass-flush@1.0.7:
     dependencies:
@@ -8923,7 +8931,7 @@ snapshots:
     dependencies:
       p-limit: 3.1.0
 
-  p-map@7.0.4: {}
+  p-map@7.0.5: {}
 
   p-retry@6.2.1:
     dependencies:
@@ -9012,6 +9020,8 @@ snapshots:
   picomatch@2.3.2: {}
 
   picomatch@4.0.4: {}
+
+  picomatch@4.0.5: {}
 
   pify@2.3.0: {}
 
@@ -9166,7 +9176,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       http-errors: 2.0.1
-      iconv-lite: 0.7.2
+      iconv-lite: 0.7.3
       unpipe: 1.0.0
 
   readable-stream@2.3.8:
@@ -9340,7 +9350,7 @@ snapshots:
   sass@1.99.0:
     dependencies:
       chokidar: 4.0.3
-      immutable: 5.1.8
+      immutable: 5.1.9
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.5.6
@@ -9421,7 +9431,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serialize-javascript@7.0.6: {}
+  serialize-javascript@7.0.7: {}
 
   serve-index@1.9.2:
     dependencies:
@@ -9710,8 +9720,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
 
   tmp@0.0.30:
     dependencies:
@@ -9806,9 +9816,9 @@ snapshots:
 
   unpipe@1.0.0: {}
 
-  update-browserslist-db@1.2.3(browserslist@4.28.4):
+  update-browserslist-db@1.2.3(browserslist@4.28.5):
     dependencies:
-      browserslist: 4.28.4
+      browserslist: 4.28.5
       escalade: 3.2.0
       picocolors: 1.1.1
 
@@ -9890,7 +9900,7 @@ snapshots:
   webpack-dev-middleware@7.4.5(tslib@2.8.1)(webpack@5.106.2(postcss@8.5.16)):
     dependencies:
       colorette: 2.0.20
-      memfs: 4.57.8(tslib@2.8.1)
+      memfs: 4.58.0(tslib@2.8.1)
       mime-types: 3.0.2
       on-finished: 2.4.1
       range-parser: 1.3.0
@@ -9902,7 +9912,7 @@ snapshots:
 
   webpack-dev-middleware@8.0.3(tslib@2.8.1)(webpack@5.106.2(esbuild@0.28.1)(postcss@8.5.13)):
     dependencies:
-      memfs: 4.57.8(tslib@2.8.1)
+      memfs: 4.58.0(tslib@2.8.1)
       mime-types: 3.0.2
       on-finished: 2.4.1
       range-parser: 1.3.0
@@ -9957,7 +9967,7 @@ snapshots:
       flat: 5.0.2
       wildcard: 2.0.1
 
-  webpack-sources@3.5.0: {}
+  webpack-sources@3.5.1: {}
 
   webpack-subresource-integrity@5.1.0(webpack@5.106.2(esbuild@0.28.1)(postcss@8.5.13)):
     dependencies:
@@ -9974,10 +9984,10 @@ snapshots:
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.17.0
       acorn-import-phases: 1.0.4(acorn@8.17.0)
-      browserslist: 4.28.4
+      browserslist: 4.28.5
       chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.24.1
-      es-module-lexer: 2.2.0
+      enhanced-resolve: 5.24.2
+      es-module-lexer: 2.3.0
       eslint-scope: 5.1.1
       events: 3.3.0
       glob-to-regexp: 0.4.1
@@ -9989,7 +9999,7 @@ snapshots:
       tapable: 2.3.3
       terser-webpack-plugin: 5.6.1(esbuild@0.28.1)(postcss@8.5.13)(webpack@5.106.2(postcss@8.5.16))
       watchpack: 2.5.2
-      webpack-sources: 3.5.0
+      webpack-sources: 3.5.1
     transitivePeerDependencies:
       - '@minify-html/node'
       - '@swc/core'
