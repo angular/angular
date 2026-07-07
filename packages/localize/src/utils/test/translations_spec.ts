@@ -137,6 +137,17 @@ describe('utils', () => {
       );
     });
 
+    it('should substitute a placeholder whose name shadows an Object.prototype member', () => {
+      // A placeholder legitimately named `hasOwnProperty` puts that key on the
+      // substitutions object, so calling it as a method would throw a TypeError.
+      expect(
+        doTranslate(
+          {'abc{$hasOwnProperty}def': 'abc{$hasOwnProperty}def'},
+          parts`abc${1 + 2}:hasOwnProperty:def`,
+        ),
+      ).toEqual(parts`abc${3}def`);
+    });
+
     it('(with identity translations) should render template literals as-is', () => {
       const translations = {
         'abc': 'abc',
