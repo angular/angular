@@ -1961,7 +1961,10 @@ function ingestControlFlowInsertionPoint(
     }
 
     // Root nodes can only elements or templates with a tag name (e.g. `<div *foo></div>`).
-    if (child instanceof t.Element || (child instanceof t.Template && child.tagName !== null)) {
+    if (
+      (child instanceof t.Element && unit.job.getForeignComponent(child) === null) ||
+      (child instanceof t.Template && child.tagName !== null)
+    ) {
       root = child;
     } else {
       return null;
