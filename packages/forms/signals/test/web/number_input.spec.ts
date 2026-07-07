@@ -326,6 +326,36 @@ describe('text input with numeric model', () => {
     expect(input.value).toBe('-0.5');
   });
 
+  it('should not parse non-decimal numeric text', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(42);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    setInputValue(input, '0b0101');
+
+    expect(fixture.componentInstance.f().value()).toBe(42);
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+    expect(input.value).toBe('0b0101');
+
+    setInputValue(input, '0x22');
+
+    expect(fixture.componentInstance.f().value()).toBe(42);
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+    expect(input.value).toBe('0x22');
+  });
+
   it('should produce a parse error when user types non-numeric text', () => {
     @Component({
       imports: [FormField],
