@@ -150,8 +150,18 @@ dialog {
 
 .docs-search-results__start-typing,
 .docs-search-results__no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 0.75rem;
   color: var(--quaternary-contrast);
+}
+
+.docs-search-angie {
+  width: 210px;
+  height: auto;
+  aspect-ratio: 1;
+  margin-block: -1rem -0.5rem;
 }
 
 .docs-search-footer {

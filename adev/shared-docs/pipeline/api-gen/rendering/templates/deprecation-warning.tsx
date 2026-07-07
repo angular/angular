@@ -18,9 +18,16 @@ export function DeprecationWarning(props: {
   return (
     'deprecationMessage' in entry &&
     entry.deprecationMessage && (
-      <div class="docs-alert docs-alert-important">
-        <p>Deprecation warning</p>
-        <DeprecatedLabel entry={entry} hideLabel={true} />
+      <div className="docs-alert docs-alert-important docs-deprecation-warning">
+        <div className="docs-deprecation-warning__body">
+          <p>Deprecation warning</p>
+          <DeprecatedLabel entry={entry} hideLabel={true} />
+        </div>
+        <img
+          src="assets/images/angie/orthos-back.svg"
+          className="docs-deprecation-angie"
+          aria-hidden="true"
+        />
       </div>
     )
   );
