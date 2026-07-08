@@ -1,3 +1,35 @@
+<a name="20.3.26"></a>
+
+# 20.3.26 (2026-07-08)
+
+### compiler-cli
+
+| Commit                                                                                           | Type | Description                            |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------- |
+| [406aaa31e6](https://github.com/angular/angular/commit/406aaa31e6ac4d3c155f5ab76e315ccd8d0387fe) | fix  | update babel dependencies to latest v7 |
+
+### core
+
+| Commit                                                                                           | Type | Description                         |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------- |
+| [26831d0cbd](https://github.com/angular/angular/commit/26831d0cbd7e692210ca0799a203a7a5a0e741cd) | fix  | avoid caching missing locale data   |
+| [8eb7aea08b](https://github.com/angular/angular/commit/8eb7aea08b27c0f1bcdeec3171880a6fcf28aa9a) | fix  | reject dynamic script host elements |
+
+### http
+
+| Commit                                                                                           | Type | Description                                          |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------- |
+| [b963f61028](https://github.com/angular/angular/commit/b963f61028c747843db48c6fb82965123365fd4a) | fix  | prevent caching of responses with Set-Cookie headers |
+
+### service-worker
+
+| Commit                                                                                           | Type | Description                                |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------ |
+| [1fdf234168](https://github.com/angular/angular/commit/1fdf2341684a0f528d1d31005bd48d882c0a47d1) | fix  | preserve referrer in asset requests        |
+| [baa093ba68](https://github.com/angular/angular/commit/baa093ba68c1d5ca7c35c562568c6021eb409b4c) | fix  | preserve referrer policy in asset requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.25"></a>
 
 # 20.3.25 (2026-06-10)
