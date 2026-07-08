@@ -120,6 +120,7 @@ export {
   ɵɵconditional,
   ɵɵconditionalCreate,
   ɵɵconditionalBranchCreate,
+  ɵɵconditionalMetadata,
   ɵɵdefer,
   ɵɵdeferWhen,
   ɵɵdeferOnIdle,
