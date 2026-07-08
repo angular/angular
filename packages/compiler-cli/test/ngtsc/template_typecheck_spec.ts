@@ -4212,6 +4212,139 @@ runInEachFileSystem(() => {
         );
       });
 
+      describe('strictNgTemplateTypes', () => {
+        beforeEach(() => env.tsconfig({strictNgTemplateTypes: true}));
+
+        it('should check for unknown properties on an ng-template', () => {
+        env.write(
+          'test.ts',
+          `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template [foo]="1"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+          .toBe(`Can't bind to 'foo' since it isn't a known property of 'ng-template'.
+1. If 'foo' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
+2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
+      });
+
+      it('should not report properties on an ng-template that are claimed by a directive', () => {
+        env.write(
+          'test.ts',
+          `
+        import {Component, Directive, Input} from '@angular/core';
+        @Directive({selector: '[foo]'})
+        export class FooDir {
+          @Input() foo: number = 0;
+        }
+        @Component({
+          selector: 'blah',
+          imports: [FooDir],
+          template: '<ng-template [foo]="1"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report a binding that matches a directive selector without a corresponding input', () => {
+        env.write(
+          'test.ts',
+          `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[foobar]'})
+        export class FoobarDirective {}
+        @Component({
+          selector: 'blah',
+          imports: [FoobarDirective],
+          template: '<ng-template #foo [foobar]>foo</ng-template>',
+        })
+        export class FooCmp {}
+      `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report unclaimed properties on an ng-template that matches a directive', () => {
+        env.write(
+          'test.ts',
+          `
+        import {Component, Directive, Input} from '@angular/core';
+        @Directive({selector: '[foo]'})
+        export class FooDir {
+          @Input() foo: number = 0;
+        }
+        @Component({
+          selector: 'blah',
+          imports: [FooDir],
+          template: '<ng-template [foo]="1" [bar]="2"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report properties on an ng-template inside an explicitly namespaced element', () => {
+        env.write(
+          'test.ts',
+          `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          selector: 'blah',
+          imports: [CommonModule],
+          template: \`
+            <ng-template>
+              <xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml">
+                <ng-template [ngIf]="true"> </ng-template>
+              </xhtml:div>
+            </ng-template>
+          \`,
+        })
+        export class FooCmp {}
+      `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => d.messageText)).toEqual([]);
+      });
+
+      it('should not report properties on an ng-template inside an svg element', () => {
+        env.write(
+          'test.ts',
+          `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          selector: 'blah',
+          imports: [CommonModule],
+          template: \`
+            <ng-template #foo>foo</ng-template>
+            <svg>
+              <ng-template [ngTemplateOutlet]="foo"></ng-template>
+            </svg>
+          \`,
+        })
+        export class FooCmp {}
+      `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => d.messageText)).toEqual([]);
+      });
+
+      });
+
       it('should convert property names when binding special properties', () => {
         env.write(
           'test.ts',
