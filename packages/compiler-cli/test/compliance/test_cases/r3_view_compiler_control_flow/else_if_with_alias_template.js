@@ -22,6 +22,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdomElementStart(0, "div");
     $r3$.ɵɵtext(1);
     $r3$.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 1)(3, MyApp_Conditional_3_Template, 1, 2);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(2, "if", 2, null, "one", ["one", "value()"]);
     $r3$.ɵɵdomElementEnd();
   }
   if (rf & 2) {
