@@ -800,13 +800,15 @@ runInEachFileSystem((os) => {
         import {Component, Directive, Input, Output, EventEmitter, Pipe, NgModule} from '@angular/core';
 
         @Directive({
-          selector: '[ngModel],[attr],[ngModelChange]',
+          selector: '[ngModel],[attr],[ngModelChange],[ngIf],[ngForOf]',
           standalone: false,
         })
         export class AllDirective {
           @Input() ngModel!: any;
           @Output() ngModelChange = new EventEmitter<any>();
           @Input() attr!: any;
+          @Input() ngIf!: any;
+          @Input() ngForOf!: any;
         }
 
         @Pipe({
@@ -826,6 +828,7 @@ runInEachFileSystem((os) => {
           name = '';
           isInitial = false;
           doSomething() {}
+          showMessage() { return true; }
           items: any[] = [];
           greeting = '';
         }

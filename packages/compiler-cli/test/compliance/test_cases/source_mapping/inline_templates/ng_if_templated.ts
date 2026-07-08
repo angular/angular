@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 
 @Component({
     selector: 'test-cmp',
@@ -10,4 +10,9 @@ import {Component} from '@angular/core';
     standalone: false
 })
 export class TestCmp {
+  declare showMessage: () => boolean;
+}
+
+@NgModule({declarations: [TestCmp], schemas: [NO_ERRORS_SCHEMA]})
+export class TestCmpModule {
 }

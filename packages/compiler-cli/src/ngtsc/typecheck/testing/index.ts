@@ -204,6 +204,7 @@ export function tcb(
     allowSignalsInTwoWayBindings: true,
     allowDomEventAssertion: true,
     checkUnknownElements: true,
+    checkTypeOfNgTemplateBindings: true,
     ...config,
   };
   options = options || {emitSpans: false};
