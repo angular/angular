@@ -105,9 +105,9 @@ export class CardBody {}
   selector: 'custom-card',
   template: `
   <div class="card-shadow">
-    <ng-content select="card-title"></ng-content>
+    <ng-content select="card-title" />
     <div class="card-divider"></div>
-    <ng-content select="card-body"></ng-content>
+    <ng-content select="card-body" />
   </div>
   `,
 })
@@ -150,10 +150,10 @@ did not match a `select` attribute:
 ```angular-html
 <!-- Component template -->
 <div class="card-shadow">
-  <ng-content select="card-title"></ng-content>
+  <ng-content select="card-title" />
   <div class="card-divider"></div>
   <!-- capture anything except "card-title" -->
-  <ng-content></ng-content>
+  <ng-content />
 </div>
 ```
 
@@ -222,7 +222,7 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
 ```angular-html
 <!-- Component template -->
 <div class="card-shadow">
-  <ng-content select="card-title"></ng-content>
+  <ng-content select="card-title" />
   <div class="card-divider"></div>
   <ng-content />
 </div>
