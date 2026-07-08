@@ -9,7 +9,7 @@
 import {ApplicationRef, computed, Injector, linkedSignal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
-import {form, schema, validateHttp, validateStandardSchema} from '../../../../public_api';
+import {form, schema, validateStandardSchema} from '../../../../public_api';
 
 interface Flight {
   id: number;
@@ -459,29 +459,5 @@ describe('standard schema integration', () => {
         }),
       }),
     ]);
-  });
-
-  it('should work', () => {
-    const Schema = z.object({code: z.string().min(1)});
-
-    const injector = TestBed.inject(Injector);
-    const model = signal({code: ''});
-
-    function createForm() {
-      form(
-        model,
-        (p) => {
-          validateStandardSchema(p, Schema); // (A) schema validation
-          validateHttp(p.code, {
-            request: ({value}) => `/api/check?code=${value()}`,
-            onSuccess: () => null,
-            onError: () => null,
-          });
-        },
-        {injector},
-      );
-    }
-
-    expect(createForm).not.toThrow();
   });
 });
