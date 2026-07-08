@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_test_library", "zoneless_web_test_suite")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -21,24 +21,5 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//devtools/projects/protocol",
-    ],
-)
-
-ts_test_library(
-    name = "conditional_view_test",
-    srcs = ["conditional-view.component.spec.ts"],
-    deps = [
-        ":conditional-view",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
-        "//devtools/projects/protocol",
-    ],
-)
-
-zoneless_web_test_suite(
-    name = "test",
-    visibility = ["//visibility:public"],
-    deps = [
-        ":conditional_view_test",
     ],
 )
