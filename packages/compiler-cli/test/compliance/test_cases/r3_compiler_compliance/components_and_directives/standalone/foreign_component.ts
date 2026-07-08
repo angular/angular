@@ -64,11 +64,14 @@ export class TestCmpRenderProps {
   title = 'Submit';
 }
 
+// Nest @if to demonstrate that multiple `nextContext()` calls are correctly merged into one.
 @Component({
   selector: 'main-conditional',
   template: `
-    @if (condition) {
-      <FancyButton [label]="title" />
+    @if (outerCondition) {
+      @if (innerCondition) {
+        <FancyButton [label]="title" />
+      }
     }
   `,
   // @ts-ignore: @angular/core does not expose the `foreignImports` property.
@@ -79,5 +82,6 @@ export class TestCmpRenderProps {
 })
 export class TestCmpConditional {
   title = 'Submit';
-  condition = true;
+  innerCondition = true;
+  outerCondition = true;
 }

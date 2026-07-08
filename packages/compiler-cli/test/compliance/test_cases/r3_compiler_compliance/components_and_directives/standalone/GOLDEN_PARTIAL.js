@@ -472,13 +472,17 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     ],
                 }]
         }] });
+// Nest @if to demonstrate that multiple `nextContext()` calls are correctly merged into one.
 export class TestCmpConditional {
     title = 'Submit';
-    condition = true;
+    innerCondition = true;
+    outerCondition = true;
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpConditional, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpConditional, isStandalone: true, selector: "main-conditional", ngImport: i0, template: `
-    @if (condition) {
-      <FancyButton [label]="title" />
+    @if (outerCondition) {
+      @if (innerCondition) {
+        <FancyButton [label]="title" />
+      }
     }
   `, isInline: true });
 }
@@ -487,8 +491,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'main-conditional',
                     template: `
-    @if (condition) {
-      <FancyButton [label]="title" />
+    @if (outerCondition) {
+      @if (innerCondition) {
+        <FancyButton [label]="title" />
+      }
     }
   `,
                     // @ts-ignore: @angular/core does not expose the `foreignImports` property.
@@ -521,7 +527,8 @@ export declare class TestCmpRenderProps {
 }
 export declare class TestCmpConditional {
     title: string;
-    condition: boolean;
+    innerCondition: boolean;
+    outerCondition: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpConditional, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmpConditional, "main-conditional", never, {}, {}, never, never, true, never>;
 }

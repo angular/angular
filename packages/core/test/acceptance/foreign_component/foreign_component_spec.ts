@@ -673,6 +673,237 @@ describe('foreign components', () => {
       expect(button).toBeTruthy();
       expect(button.textContent).toBe('Submit');
     });
+
+    it('should support foreign components in @if, @else if, and @else blocks', async () => {
+      function StatusBadge(props: {text: () => string}): Node[] {
+        const badge = document.createElement('span');
+        badge.textContent = props.text();
+        return [badge];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          @if (status() === 'success') {
+            <StatusBadge [text]="successText" />
+          } @else if (status() === 'warning') {
+            <StatusBadge [text]="warningText" />
+          } @else {
+            <StatusBadge [text]="errorText" />
+          }
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(StatusBadge)],
+      })
+      class TestForeignInIfElse {
+        readonly status = signal('success');
+        readonly successText = signal('Success');
+        readonly warningText = signal('Warning');
+        readonly errorText = signal('Error');
+      }
+
+      const fixture = TestBed.createComponent(TestForeignInIfElse);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Success');
+
+      fixture.componentInstance.status.set('warning');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Warning');
+
+      fixture.componentInstance.status.set('other');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Error');
+
+      fixture.componentInstance.status.set('success');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Success');
+    });
+
+    it('should support foreign components in @for blocks', async () => {
+      function ItemCard(props: {title: string}): Node[] {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.textContent = props.title;
+        return [div];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          @for (item of items(); track item.id) {
+            <ItemCard [title]="item.name" />
+          } @empty {
+            <ItemCard [title]="emptyText" />
+          }
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(ItemCard)],
+      })
+      class TestForeignInFor {
+        readonly items = signal([
+          {id: 1, name: 'First'},
+          {id: 2, name: 'Second'},
+        ]);
+        readonly emptyText = 'No Items';
+      }
+
+      const fixture = TestBed.createComponent(TestForeignInFor);
+      await fixture.whenStable();
+
+      let cards = fixture.nativeElement.querySelectorAll('.item-card');
+      expect(cards.length).toBe(2);
+      expect(cards[0].textContent).toBe('First');
+      expect(cards[1].textContent).toBe('Second');
+
+      // Reorder existing and add a new item
+      fixture.componentInstance.items.set([
+        {id: 2, name: 'Second'},
+        {id: 1, name: 'First'},
+        {id: 3, name: 'Third'},
+      ]);
+      await fixture.whenStable();
+
+      cards = fixture.nativeElement.querySelectorAll('.item-card');
+      expect(cards.length).toBe(3);
+      expect(cards[0].textContent).toBe('Second');
+      expect(cards[1].textContent).toBe('First');
+      expect(cards[2].textContent).toBe('Third');
+
+      // Remove an item
+      fixture.componentInstance.items.set([
+        {id: 3, name: 'Third'},
+        {id: 1, name: 'First'},
+      ]);
+      await fixture.whenStable();
+
+      cards = fixture.nativeElement.querySelectorAll('.item-card');
+      expect(cards.length).toBe(2);
+      expect(cards[0].textContent).toBe('Third');
+      expect(cards[1].textContent).toBe('First');
+
+      // Remove all items (trigger @empty block)
+      fixture.componentInstance.items.set([]);
+      await fixture.whenStable();
+
+      cards = fixture.nativeElement.querySelectorAll('.item-card');
+      expect(cards.length).toBe(1);
+      expect(cards[0].textContent).toBe('No Items');
+    });
+
+    it('should support foreign components in @switch blocks', async () => {
+      function RoleBadge(props: {role: string}): Node[] {
+        const span = document.createElement('span');
+        span.textContent = props.role;
+        return [span];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          @switch (role()) {
+            @case ('admin') {
+              <RoleBadge role="Admin" />
+            }
+            @case ('editor') {
+              <RoleBadge role="Editor" />
+            }
+            @default {
+              <RoleBadge role="Guest" />
+            }
+          }
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(RoleBadge)],
+      })
+      class TestForeignInSwitch {
+        readonly role = signal('admin');
+      }
+
+      const fixture = TestBed.createComponent(TestForeignInSwitch);
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Admin');
+
+      fixture.componentInstance.role.set('editor');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Editor');
+
+      fixture.componentInstance.role.set('viewer');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Guest');
+
+      fixture.componentInstance.role.set('admin');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toBe('Admin');
+    });
+
+    it('should support nested control flow with foreign components', async () => {
+      function UserTag(props: {name: string}): Node[] {
+        const span = document.createElement('span');
+        span.className = 'user-tag';
+        span.textContent = props.name;
+        return [span];
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          @if (sectionVisible()) {
+            @for (user of users; track user.id) {
+              @if (user.active()) {
+                <UserTag [name]="user.name" />
+              }
+            }
+          }
+        `,
+        // @ts-ignore
+        foreignImports: [frameworkImport(UserTag)],
+      })
+      class TestNestedControlFlow {
+        readonly sectionVisible = signal(true);
+        readonly users = [
+          {id: 1, name: 'Alice', active: signal(true)},
+          {id: 2, name: 'Bob', active: signal(false)},
+          {id: 3, name: 'Charlie', active: signal(true)},
+        ];
+      }
+
+      const fixture = TestBed.createComponent(TestNestedControlFlow);
+      await fixture.whenStable();
+
+      let tags = fixture.nativeElement.querySelectorAll('.user-tag');
+      expect(tags.length).toBe(2);
+      expect(tags[0].textContent).toBe('Alice');
+      expect(tags[1].textContent).toBe('Charlie');
+
+      fixture.componentInstance.users[1].active.set(true);
+      await fixture.whenStable();
+
+      tags = fixture.nativeElement.querySelectorAll('.user-tag');
+      expect(tags.length).toBe(3);
+      expect(tags[0].textContent).toBe('Alice');
+      expect(tags[1].textContent).toBe('Bob');
+      expect(tags[2].textContent).toBe('Charlie');
+
+      fixture.componentInstance.sectionVisible.set(false);
+      await fixture.whenStable();
+
+      tags = fixture.nativeElement.querySelectorAll('.user-tag');
+      expect(tags.length).toBe(0);
+
+      fixture.componentInstance.sectionVisible.set(true);
+      await fixture.whenStable();
+
+      tags = fixture.nativeElement.querySelectorAll('.user-tag');
+      expect(tags.length).toBe(3);
+    });
   });
 
   describe('queries', () => {
