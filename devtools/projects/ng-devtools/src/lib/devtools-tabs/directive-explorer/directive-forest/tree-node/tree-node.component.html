@@ -51,6 +51,30 @@
         ({{ forLoop.items.length }} {{ forLoop.items.length === 1 ? 'item' : 'items' }})
       </span>
     }
+  } @else if (BlockType.isIfBlock(block)) {
+    @let ifBlock = block;
+
+    @if (ifBlock) {
+      @if (ifBlock.activeBranchIndex === null) {
+        <span class="trait">(non-rendered)</span>
+      } @else if (ifBlock.activeBranchIndex === ifBlock.branchCount - 1 && ifBlock.hasElseBlock) {
+        <span class="trait">(&#64;else)</span>
+      } @else if (ifBlock.activeBranchIndex > 0) {
+        <span class="trait">(&#64;else if)</span>
+      }
+    }
+  } @else if (BlockType.isSwitchBlock(block)) {
+    @let switchBlock = block;
+
+    @if (switchBlock) {
+      @if (switchBlock.activeCaseIndex === null) {
+        <span class="trait">(no match)</span>
+      } @else if (switchBlock.activeCaseIndex === switchBlock.defaultCaseIndex) {
+        <span class="trait">(&#64;default)</span>
+      } @else {
+        <span class="trait">(&#64;case {{ switchBlock.activeCaseIndex + 1 }})</span>
+      }
+    }
   } @else if (!hydration || hydration.status !== 'dehydrated') {
     <!-- Shown/hidden via CSS -->
     <span class="console-reference trait"> == $ng0 </span>
