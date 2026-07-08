@@ -1,3 +1,47 @@
+<a name="22.1.0-next.5"></a>
+# 22.1.0-next.5 (2026-07-08)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [af5e4e1131](https://github.com/angular/angular/commit/af5e4e113130427ba8152166b4d904dd177c982e) | feat | Add an error for --global-foo cases ([#68846](https://github.com/angular/angular/pull/68846)) |
+| [d579ecaf73](https://github.com/angular/angular/commit/d579ecaf733db325f628cc11a28688fa0dad85ee) | feat | Disable &apos;--global-&apos; error outside of g3 ([#68846](https://github.com/angular/angular/pull/68846)) |
+| [f98547675c](https://github.com/angular/angular/commit/f98547675cd2026bb755671b28dea4e6d48eb7bb) | feat | Namespace CSS variables to the app ([#68846](https://github.com/angular/angular/pull/68846)) |
+| [8c8b2f7783](https://github.com/angular/angular/commit/8c8b2f77831236b23ca99ccb62e6197ff43b400d) | feat | Support css var namespacing in properties ([#68846](https://github.com/angular/angular/pull/68846)) |
+| [997b772f28](https://github.com/angular/angular/commit/997b772f28f92de64b416263bb6dc02dc9e7598d) | fix | use regular optional chaining expression for safe function calls in TCBs |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eb2a8ff63f](https://github.com/angular/angular/commit/eb2a8ff63f858110c6c77289f3c0150e49216624) | fix | apply debugName transform to required signal queries |
+| [eac363e92e](https://github.com/angular/angular/commit/eac363e92e00d26137a93d91ab3e2127f3519b1d) | fix | detect uninvoked signals in bound expressions using ternary |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eab4847a8b](https://github.com/angular/angular/commit/eab4847a8bd1b47ba630ca9b20c85770f990c717) | feat | Adds deep linking from Performance panel to DevTools |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [953cdfd66a](https://github.com/angular/angular/commit/953cdfd66a08e0234f7db80ba7ecaab5e3067c62) | fix | allow multiple async validators |
+### forms/signals
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b542302a23](https://github.com/angular/angular/commit/b542302a23c74a131ebcef064cc73d8693c696a1) | fix | make extractValue reactive for compat AbstractControl values |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e3630c23c5](https://github.com/angular/angular/commit/e3630c23c59445fc8bace5117283f20d6379dded) | feat | add options to allow caching of credentialed and non-cacheable HTTP requests |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0a5a2b768c](https://github.com/angular/angular/commit/0a5a2b768c5f7f17c65488c5279549d22785488c) | fix | preserve transitive NgModule references when pruning |
+| [fbb705e6fd](https://github.com/angular/angular/commit/fbb705e6fd1f217a9576dfb76b193d08da1a2195) | fix | remove stale model import in model-output migration |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cbbb1d8ba1](https://github.com/angular/angular/commit/cbbb1d8ba12ca36d27a2523edfbd1466458c5036) | fix | handle outlet named __proto__ in segment group maps |
+| [e5c37f21de](https://github.com/angular/angular/commit/e5c37f21de3d9801859641b2ffb180d90b3bc00d) | fix | use safe hasOwnProperty when parsing query params |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.6"></a>
 # 22.0.6 (2026-07-08)
 ### compiler
