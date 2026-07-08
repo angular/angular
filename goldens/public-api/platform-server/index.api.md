@@ -76,7 +76,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PROTOCOL_RELATIVE_URL_NOT_ALLOWED = 5702,
     // (undocumented)
-    SUSPICIOUS_URL_CHANGE_ORIGIN = 5703,
+    SUSPICIOUS_URL_CHANGE_ORIGIN = -5703,
     // (undocumented)
     XHR_NOT_LOADED = 5705
 }

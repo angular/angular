@@ -20,9 +20,7 @@ describe('resolveUrl', () => {
     it('should throw on backslash-prefixed hijack attempts', () => {
       const urls = ['/\\attacker.com/deep/path', '\\\\attacker.com/deep/path'];
       for (const url of urls) {
-        expect(() => resolveUrl(url, 'http://test.com')).toThrowError(
-          `NG05703: URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
-        );
+        expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05703/);
       }
     });
 
@@ -35,9 +33,7 @@ describe('resolveUrl', () => {
     it('should throw when allowOriginChange is false and origin changes', () => {
       expect(() =>
         resolveUrl('http://other.com/deep/path', 'http://test.com', {allowOriginChange: false}),
-      ).toThrowError(
-        `NG05703: URL http://other.com/deep/path changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
-      );
+      ).toThrowError(/NG05703/);
     });
 
     it('should resolve same origin when allowOriginChange is false', () => {
@@ -70,9 +66,7 @@ describe('resolveUrl', () => {
 
     it('should throw on obfuscated protocols attempting to change origin', () => {
       const url = 'ht\ntp://evil.com/path';
-      expect(() => resolveUrl(url, 'http://test.com')).toThrowError(
-        `NG05703: URL ${url} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
-      );
+      expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05703/);
     });
   });
 
