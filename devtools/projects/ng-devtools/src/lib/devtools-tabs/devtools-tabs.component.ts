@@ -60,6 +60,9 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
     ButtonComponent,
   ],
   providers: [TabUpdate],
+  host: {
+    '(document:keydown.Escape)': 'stopInspecting()',
+  },
 })
 export class DevToolsTabsComponent {
   public readonly frameManager = inject(FrameManager);
@@ -163,6 +166,12 @@ export class DevToolsTabsComponent {
   toggleInspector(): void {
     this.toggleInspectorState();
     this.emitInspectorEvent();
+  }
+
+  stopInspecting(): void {
+    if (this.inspectorRunning()) {
+      this.toggleInspector();
+    }
   }
 
   emitInspectorEvent(): void {
