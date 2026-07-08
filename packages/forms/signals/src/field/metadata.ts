@@ -9,10 +9,8 @@
 import {
   computed,
   runInInjectionContext,
-  ɵRuntimeError as RuntimeError,
   untracked,
-  ɵisInParamsFunction,
-  ɵsetInParamsFunction,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {MetadataKey} from '../api/rules/metadata';
 import {RuntimeErrorCode} from '../errors';
@@ -36,26 +34,20 @@ export class FieldMetadataState {
       return;
     }
 
-    const wasInParams = ɵisInParamsFunction();
-    if (wasInParams) ɵsetInParamsFunction(false);
-    try {
-      untracked(() =>
-        runInInjectionContext(this.node.structure.injector, () => {
-          for (const key of this.node.logicNode.logic.getMetadataKeys()) {
-            if (key.create) {
-              const logic = this.node.logicNode.logic.getMetadata(key);
-              const result = key.create!(
-                this.node,
-                computed(() => logic.compute(this.node.context)),
-              );
-              this.metadata.set(key, result);
-            }
+    untracked(() =>
+      runInInjectionContext(this.node.structure.injector, () => {
+        for (const key of this.node.logicNode.logic.getMetadataKeys()) {
+          if (key.create) {
+            const logic = this.node.logicNode.logic.getMetadata(key);
+            const result = key.create!(
+              this.node,
+              computed(() => logic.compute(this.node.context)),
+            );
+            this.metadata.set(key, result);
           }
-        }),
-      );
-    } finally {
-      if (wasInParams) ɵsetInParamsFunction(true);
-    }
+        }
+      }),
+    );
   }
 
   /** Gets the value of an `MetadataKey` for the field. */

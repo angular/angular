@@ -507,32 +507,4 @@ describe('resources', () => {
 
     expect(success).toBeTrue();
   });
-
-  it('should not throw NG0992 when using validateAsync on parent and lazily-created child', () => {
-    const model = signal({child: ''});
-    const injector = TestBed.inject(Injector);
-    function createForm() {
-      form(
-        model,
-        (p) => {
-          validateAsync(p, {
-            params: () => 1,
-            factory: () => resource({loader: async () => []}),
-            onSuccess: () => null,
-            onError: () => null,
-          });
-
-          validateAsync(p.child, {
-            params: () => 1,
-            factory: () => resource({loader: async () => []}),
-            onSuccess: () => null,
-            onError: () => null,
-          });
-        },
-        {injector},
-      );
-    }
-
-    expect(() => createForm()).not.toThrow();
-  });
 });
