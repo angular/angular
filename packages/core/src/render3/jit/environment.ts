@@ -117,6 +117,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵboundaryCreate': r3.ɵɵboundaryCreate,
   'ɵɵboundaryUpdate': r3.ɵɵboundaryUpdate,
   'ɵɵgetBoundary': r3.ɵɵgetBoundary,
+  'ɵɵconditionalMetadata': r3.ɵɵconditionalMetadata,
   'ɵɵdefer': r3.ɵɵdefer,
   'ɵɵdeferWhen': r3.ɵɵdeferWhen,
   'ɵɵdeferOnIdle': r3.ɵɵdeferOnIdle,
