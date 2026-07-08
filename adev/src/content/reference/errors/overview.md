@@ -46,6 +46,7 @@
 | `NG02825` | [Fetch response body exceeds the configured limit](errors/NG02825)                   |
 | `NG05000` | [Hydration with unsupported Zone.js instance.](errors/NG05000)                       |
 | `NG05104` | [Root element was not found.](errors/NG05104)                                        |
+| `NG05703` | [Suspicious URL origin change during SSR](errors/NG05703)                            |
 
 ## Compiler errors
 
