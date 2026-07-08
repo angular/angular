@@ -1194,6 +1194,7 @@ describe('type check blocks', () => {
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
       allowDomEventAssertion: true,
+      checkTypeOfNgTemplateBindings: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -1225,6 +1226,18 @@ describe('type check blocks', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTemplateBodies: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).not.toContain('((this).a)');
+      });
+
+      it('should still check explicit ng-template bindings when schema checks are forced', () => {
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTemplateBodies: false,
+          alwaysCheckSchemaInTemplateBodies: true,
+        };
+        const TEMPLATE = `<ng-template [foo]="a">{{b}}</ng-template>`;
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).toContain('((this).a)');
+        expect(block).not.toContain('((this).b)');
       });
 
       it('generates a references var when enabled', () => {
