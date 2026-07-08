@@ -46,6 +46,7 @@ function TestCmpConditional_Conditional_0_Conditional_0_Template(rf, ctx) {
 function TestCmpConditional_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
     i0.ɵɵconditionalCreate(0, TestCmpConditional_Conditional_0_Conditional_0_Template, 1, 0);
+    (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵɵconditionalMetadata(0, "if", 1, null, "innerCondition", ["innerCondition"]);
   }
   if (rf & 2) {
     const ctx_r0 = i0.ɵɵnextContext();
@@ -125,6 +126,7 @@ export class TestCmpConditional {
     template: function TestCmpConditional_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵconditionalCreate(0, TestCmpConditional_Conditional_0_Template, 1, 1);
+        (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵɵconditionalMetadata(0, "if", 1, null, "outerCondition", ["outerCondition"]);
       }
       if (rf & 2) {
         i0.ɵɵconditional(ctx.outerCondition ? 0 : -1);
@@ -133,5 +135,4 @@ export class TestCmpConditional {
     encapsulation: 2
   });
 }
-
 
