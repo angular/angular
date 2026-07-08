@@ -53,7 +53,7 @@ TIP: Avoid using `httpResource` for _mutations_ like `POST` or `PUT`. Instead, p
 The signals of the `httpResource` can be used in the template to control which elements should be displayed.
 
 ```angular-html
-@if(user.hasValue()) {
+@if (user.hasValue()) {
   <user-details [user]="user.value()" />
 } @else if (user.error()) {
   <div>Could not load user information</div>
