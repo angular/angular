@@ -163,11 +163,14 @@ export class AppComponent {
 
 When the switched expression is nested within a union, you must explicitly specify the expression to check for exhaustiveness.
 
+<!-- prettier-ignore -->
 ```angular-ts
 @Component({
   template: `
     @switch (state.mode) {
-      @case ('show') { {{ state.menu }}; }
+      @case ('show') {
+        {{ state.menu }};
+      }
       @case ('hide') {}
       @default never(state);
     }
