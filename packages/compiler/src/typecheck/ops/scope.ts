@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector} from '../../directive_matching';
+import {isNgTemplate} from '../../ml_parser/tags';
 import {
   BoundaryBlock,
   BoundaryErrorBlock,
@@ -595,6 +597,18 @@ export class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
           );
         }
+      } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
+        // `ng-template` has no DOM properties, so if no directive matched the node at all,
+        // its bindings cannot have any effect and are reported against the schema (e.g. a
+        // directive that is missing from the component's `imports`). If any directive matched,
+        // the node is not checked, since a binding may exist solely to trigger directive
+        // matching via its selector.
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+        );
+        this.opQueue.push(
+          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, claimedInputs),
+        );
       }
       return;
     }
@@ -655,11 +669,24 @@ export class Scope {
 
     // After expanding the directives, we might need to queue an operation to check any unclaimed
     // inputs.
-    if (node instanceof Element) {
+    if (
+      node instanceof Element ||
+      (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings)
+    ) {
+      const explicitNgTemplate = isExplicitNgTemplate(node);
+
       // Go through the directives and remove any inputs that it claims from `elementInputs`.
       for (const dir of directives) {
         for (const propertyName of dir.inputs.propertyNames) {
           claimedInputs.add(propertyName);
+        }
+        if (explicitNgTemplate && dir.selector !== null) {
+          const selectors = CssSelector.parse(dir.selector);
+          for (const selector of selectors) {
+            for (let i = 0; i < selector.attrs.length; i += 2) {
+              claimedInputs.add(selector.attrs[i]);
+            }
+          }
         }
       }
 
@@ -668,7 +695,7 @@ export class Scope {
       // web component), and should be checked against the DOM schema. If any directives match,
       // we must assume that the element could be custom (either a component, or a directive like
       // <router-outlet>) and shouldn't validate the element name itself.
-      const checkElement = directives.length === 0;
+      const checkElement = node instanceof Element && directives.length === 0;
       this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
     }
   }
@@ -905,6 +932,16 @@ export class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
           );
         }
+      } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
+        // Only check `ng-template` bindings if no directive matched the node at all. A binding
+        // may be used solely to trigger directive matching via its selector, which is valid at
+        // runtime since `ng-template` has no underlying DOM element.
+        const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+        if (directives === null || directives.length === 0) {
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, new Set<string>()),
+          );
+        }
       }
 
       this.appendDeepSchemaChecks(node.children);
@@ -1109,4 +1146,11 @@ export class Scope {
       }
     }
   }
+}
+
+// Identifies a node as an explicitly written `<ng-template>` element (as opposed to a structural
+// directive's microsyntax which also gets converted into a Template node). This check is robust
+// against implicit namespaces like `:svg:ng-template`.
+function isExplicitNgTemplate(node: Node): node is Template {
+  return node instanceof Template && node.tagName !== null && isNgTemplate(node.tagName);
 }
