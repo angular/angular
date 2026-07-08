@@ -573,6 +573,18 @@ export class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
           );
         }
+      } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
+        // `ng-template` has no DOM properties, so if no directive matched the node at all,
+        // its bindings cannot have any effect and are reported against the schema (e.g. a
+        // directive that is missing from the component's `imports`). If any directive matched,
+        // the node is not checked, since a binding may exist solely to trigger directive
+        // matching via its selector.
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+        );
+        this.opQueue.push(
+          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, claimedInputs),
+        );
       }
       return;
     }
@@ -608,7 +620,10 @@ export class Scope {
     this.directiveOpMap.set(node, dirMap);
 
     // After expanding the directives, we might need to queue an operation to check any unclaimed
-    // inputs.
+    // inputs. Note that `ng-template` nodes that matched at least one directive are deliberately
+    // not checked: a binding may be used solely to trigger directive matching via its selector
+    // (e.g. `<ng-template [foo]>` where `[foo]` matches a directive without a `foo` input),
+    // which is valid at runtime since `ng-template` has no underlying DOM element.
     if (node instanceof Element) {
       // Go through the directives and remove any inputs that it claims from `elementInputs`.
       for (const dir of directives) {
@@ -859,6 +874,16 @@ export class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
           );
         }
+      } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
+        // Only check `ng-template` bindings if no directive matched the node at all. A binding
+        // may be used solely to trigger directive matching via its selector, which is valid at
+        // runtime since `ng-template` has no underlying DOM element.
+        const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+        if (directives === null || directives.length === 0) {
+          this.opQueue.push(
+            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, new Set<string>()),
+          );
+        }
       }
 
       this.appendDeepSchemaChecks(node.children);
@@ -1063,4 +1088,11 @@ export class Scope {
       }
     }
   }
+}
+
+// Note: namespaced ng-template tags (e.g. `:svg:ng-template`) are deliberately excluded,
+// because directive matching does not claim their inputs (see `getAttrsForDirectiveMatching`)
+// which would lead to false positives for correctly-imported structural directives.
+function isExplicitNgTemplate(node: Node): node is Template {
+  return node instanceof Template && node.tagName === 'ng-template';
 }
