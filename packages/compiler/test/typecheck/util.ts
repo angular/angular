@@ -137,6 +137,7 @@ const DEFAULT_CONFIG: TypeCheckingConfig = {
   allowSignalsInTwoWayBindings: true,
   allowDomEventAssertion: true,
   checkUnknownElements: true,
+  checkTypeOfNgTemplateBindings: true,
 };
 
 export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {

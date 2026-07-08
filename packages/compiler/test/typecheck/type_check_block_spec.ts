@@ -1156,6 +1156,7 @@ describe('type check blocks', () => {
       allowSignalsInTwoWayBindings: true,
       allowDomEventAssertion: true,
       checkUnknownElements: true,
+      checkTypeOfNgTemplateBindings: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {

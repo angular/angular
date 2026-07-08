@@ -7,12 +7,13 @@
  */
 
 import {BindingType} from '../../expression_parser/ast';
-import {Element, HostElement} from '../../render3/r3_ast';
+import {splitNsName} from '../../ml_parser/tags';
+import {Element, HostElement, Template} from '../../render3/r3_ast';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
-const REGISTRY = new DomElementSchemaRegistry();
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {Context} from './context';
+const REGISTRY = new DomElementSchemaRegistry();
 
 /**
  * A `TcbOp` which feeds elements and unclaimed properties to the `DomSchemaChecker`.
@@ -27,7 +28,7 @@ import {Context} from './context';
 export class TcbDomSchemaCheckerOp extends TcbOp {
   constructor(
     private tcb: Context,
-    private element: Element | HostElement,
+    private element: Element | Template | HostElement,
     private checkElement: boolean,
     private claimedInputs: Set<string> | null,
   ) {
@@ -40,13 +41,13 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
 
   override execute(): TcbExpr | null {
     const element = this.element;
-    const isTemplateElement = element instanceof Element;
+    const isTemplateElement = element instanceof Element || element instanceof Template;
     const bindings = isTemplateElement ? element.inputs : element.bindings;
 
     if (this.checkElement && isTemplateElement) {
       this.tcb.domSchemaChecker.checkElement(
         this.tcb.id,
-        element.name,
+        this.getTagName(element),
         element.startSourceSpan,
         this.tcb.schemas,
         this.tcb.hostIsStandalone,
@@ -70,7 +71,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
         if (isTemplateElement) {
           this.tcb.domSchemaChecker.checkTemplateElementProperty(
             this.tcb.id,
-            element.name,
+            this.getTagName(element),
             propertyName,
             binding.sourceSpan,
             this.tcb.schemas,
@@ -88,5 +89,13 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
       }
     }
     return null;
+  }
+
+  private getTagName(node: Element | Template): string {
+    if (node instanceof Element) {
+      return node.name;
+    }
+
+    return splitNsName(node.tagName!)[1];
   }
 }
