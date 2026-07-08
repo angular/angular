@@ -28,6 +28,8 @@ function MyApp_Case_3_Template(rf, ctx) {
       1,
       0
     )(2, MyApp_Case_3_Case_2_Template, 1, 0);
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵɵconditionalMetadata(0, "switch", 3, null, "nestedValue()", [["0"], ["1"], ["2"]]);
   }
   if (rf & 2) {
     let tmp_1_0;
@@ -65,6 +67,8 @@ export class MyApp {
           1,
           0
         );
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "switch", 3, null, "value()", [["0"], ["1"], ["2"]]);
         i0.ɵɵelementEnd();
       }
       if (rf & 2) {

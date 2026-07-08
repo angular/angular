@@ -313,6 +313,11 @@ export enum OpKind {
   SourceLocation,
 
   /**
+   * Creation op that attaches debug metadata to a conditional control flow block.
+   */
+  ConditionalMetadata,
+
+  /**
    * An operation to bind animation css classes to an element.
    */
   Animation,

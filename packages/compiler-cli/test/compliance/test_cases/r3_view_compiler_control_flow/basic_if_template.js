@@ -22,6 +22,8 @@ export class MyApp {
         i0.ɵɵelementStart(0, "div");
         i0.ɵɵtext(1);
         i0.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 0);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "if", 1, null, "value()", ["value()"]);
         i0.ɵɵelementEnd();
       }
       if (rf & 2) {

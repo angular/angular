@@ -95,6 +95,8 @@ export class MyApp {
           "div",
           1
         )(2, MyApp_Case_2_Template, 2, 2, "div", 2);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(0, "switch", 3, 2, "expr", [["0"], ["1"], []]);
       }
       if (rf & 2) {
         let tmp_0_0;

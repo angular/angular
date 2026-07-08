@@ -89,6 +89,8 @@ export class MyApp {
           2,
           0
         );
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "switch", 3, 2, "count", [["0"], ["1"], []]);
         i0.ɵɵi18nEnd();
         i0.ɵɵelementEnd();
       }

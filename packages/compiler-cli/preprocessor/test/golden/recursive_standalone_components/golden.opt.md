@@ -213,6 +213,8 @@ export class TreeComponent {
       template: function TreeComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵconditionalCreate(0, TreeComponent_Conditional_0_Template, 1, 1, 'app-tree', 0);
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            i0.ɵɵconditionalMetadata(0, 'if', 1, null, 'child', ['child']);
         }
         if (rf & 2) {
           i0.ɵɵconditional(ctx.child ? 0 : -1);
@@ -292,6 +294,8 @@ export class ForwardTreeComponent {
             'app-forward-tree',
             0,
           );
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            i0.ɵɵconditionalMetadata(0, 'if', 1, null, 'child', ['child']);
         }
         if (rf & 2) {
           i0.ɵɵconditional(ctx.child ? 0 : -1);

@@ -21,6 +21,8 @@ export class MyApp {
     template: function MyApp_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵconditionalCreate(0, MyApp_Conditional_0_Template, 1, 1);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(0, "if", 1, null, "true", ["true"]);
       }
       if (rf & 2) {
         ("parent");
