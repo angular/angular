@@ -1,3 +1,26 @@
+<a name="21.2.18"></a>
+# 21.2.18 (2026-07-08)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8d22cc953b](https://github.com/angular/angular/commit/8d22cc953bb9f970c6f86fb0f6e4d0665b874bfa) | fix | update babel dependencies to latest v7 |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6bcce117fb](https://github.com/angular/angular/commit/6bcce117fbc616e4e721f351e9e038202e916522) | fix | avoid caching missing locale data |
+| [5a693bafcd](https://github.com/angular/angular/commit/5a693bafcd49ef11ce687bd91a209e1a46652f42) | fix | reject dynamic script host elements |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [91df739b80](https://github.com/angular/angular/commit/91df739b8022e2177bcc7214ed9a4e94098a4831) | fix | prevent caching of responses with Set-Cookie headers |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1804f73bec](https://github.com/angular/angular/commit/1804f73becf425b5b1ccee9751d6e3fbd10e1f0b) | fix | preserve referrer in asset requests |
+| [e86c31bf26](https://github.com/angular/angular/commit/e86c31bf26359aacce814167506dbdae585a7eb8) | fix | preserve referrer policy in asset requests |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.17"></a>
 # 21.2.17 (2026-06-10)
 ## Deprecations
