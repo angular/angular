@@ -16,7 +16,9 @@ import {
   ControlFlowBlockType,
   ForLoopBlock,
   DeferBlock,
+  IfBlock,
   RenderedDeferBlock,
+  SwitchBlock,
 } from '../../../../../protocol';
 import {ComponentTreeNode} from '../../shared/interfaces';
 import {serializeValue} from '../../shared/state-serializer/state-serializer';
@@ -24,6 +26,8 @@ import {serializeValue} from '../../shared/state-serializer/state-serializer';
 const ELEMENT_NAME_MAP: {[key in ControlFlowBlockType]: string} = {
   [ControlFlowBlockType.Defer]: '@defer',
   [ControlFlowBlockType.For]: '@for',
+  [ControlFlowBlockType.If]: '@if',
+  [ControlFlowBlockType.Switch]: '@switch',
 };
 
 export function isControlFlowBlock(node: Node, iterator: ControlFlowBlocksIterator) {
@@ -64,11 +68,49 @@ export function mapToDevtoolsControlFlowModel(
           loadingBlock: block.loadingBlock,
         },
       } satisfies DeferBlock as DeferBlock;
+
+    case ControlFlowBlockTypeInternal.If:
+      return {
+        id: `ifId-${rootId}-${iteratorCurrentIdx}`,
+        type: ControlFlowBlockType.If,
+        branchCount: block.branchCount,
+        activeBranchIndex: block.activeBranchIndex,
+        hasElseBlock: block.defaultBranchIndex !== null,
+        conditionExpressions: normalizeBranchExpressions<string | null>(
+          block.conditionExpressions,
+          block.branchCount,
+          () => null,
+        ),
+      } satisfies IfBlock as IfBlock;
+
+    case ControlFlowBlockTypeInternal.Switch:
+      return {
+        id: `switchId-${rootId}-${iteratorCurrentIdx}`,
+        type: ControlFlowBlockType.Switch,
+        caseCount: block.branchCount,
+        activeCaseIndex: block.activeBranchIndex,
+        defaultCaseIndex: block.defaultBranchIndex,
+        expression: block.expression ?? null,
+        caseExpressions: normalizeBranchExpressions<string[]>(
+          block.caseExpressions,
+          block.branchCount,
+          () => [],
+        ),
+        hasExhaustiveCheck: !!block.hasExhaustiveCheck,
+      } satisfies SwitchBlock as SwitchBlock;
   }
 }
 
+function normalizeBranchExpressions<T>(
+  expressions: ReadonlyArray<T | null | undefined> | undefined,
+  branchCount: number,
+  defaultValue: () => T,
+): T[] {
+  return Array.from({length: branchCount}, (_, index) => expressions?.[index] ?? defaultValue());
+}
+
 /**
- * Creates a synthetic ComponentTreeNode for control flow blocks (@defer, @for).
+ * Creates a synthetic ComponentTreeNode for control flow blocks.
  */
 export function createControlFlowTreeNode(
   controlFlowBlock: ControlFlowBlockInternal,
