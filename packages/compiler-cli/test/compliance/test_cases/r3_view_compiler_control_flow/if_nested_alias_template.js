@@ -14,6 +14,7 @@ function MyApp_Conditional_0_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵtext(0);
     $r3$.ɵɵconditionalCreate(1, MyApp_Conditional_0_Conditional_1_Conditional_1_Template, 1, 4);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 1, null, "value()", ["value()"]);
   }
   if (rf & 2) {
     // NOTE: TODO: These ellipses were added because of a different variable order between
@@ -33,6 +34,7 @@ function MyApp_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵtext(0);
     $r3$.ɵɵconditionalCreate(1, MyApp_Conditional_0_Conditional_1_Template, 2, 4);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 1, null, "value()", ["value()"]);
   }
   if (rf & 2) {
     …
@@ -47,6 +49,7 @@ function MyApp_Conditional_0_Template(rf, ctx) {
 function MyApp_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵconditionalCreate(0, MyApp_Conditional_0_Template, 2, 3);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(0, "if", 1, null, "value()", ["value()"]);
   }
   if (rf & 2) {
     let $MyApp_contFlowTmp$;

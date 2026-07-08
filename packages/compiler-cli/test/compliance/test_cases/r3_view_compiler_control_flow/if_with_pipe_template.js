@@ -24,6 +24,7 @@ function $MyApp_Conditional_3_Template$(rf, ctx) {
 	  $r3$.ɵɵpipe(3, "test");
 	  $r3$.ɵɵpipe(4, "test");
 	  $r3$.ɵɵconditionalBranchCreate(5, MyApp_Conditional_5_Template, 1, 0)(6, MyApp_Conditional_6_Template, 1, 0);
+	  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(2, "if", 3, 2, "(val | test) === 1", ["(val | test) === 1", "(val | test) === 2", null]);
 	  $r3$.ɵɵdomElementEnd();
 	}
 	if (rf & 2) {
