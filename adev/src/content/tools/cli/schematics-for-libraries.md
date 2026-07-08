@@ -36,10 +36,17 @@ A schematic for the `ng add` command can enhance the initial installation proces
 The following steps define this type of schematic.
 
 1. Go to the `<lib-root>/schematics/ng-add` folder.
-1. Create the main file, `index.ts`.
-1. Open `index.ts` and add the source code for your schematic factory function.
+1. Create a `schema.json` file to define the options that the schematic accepts.
 
-<docs-code header="projects/my-lib/schematics/ng-add/index.ts (ng-add Rule Factory)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts"/>
+   <docs-code header="projects/my-lib/schematics/ng-add/schema.json (ng-add Schema)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/schema.json"/>
+
+1. Create a `schema.ts` file to define an interface for the options defined in the `schema.json` file.
+
+   <docs-code header="projects/my-lib/schematics/ng-add/schema.ts (ng-add Schema Interface)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/schema.ts"/>
+
+1. Create the main file, `index.ts`, and add the source code for your schematic factory function.
+
+   <docs-code header="projects/my-lib/schematics/ng-add/index.ts (ng-add Rule Factory)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts"/>
 
 The Angular CLI will install the latest version of the library automatically, and this example is taking it a step further by adding the `MyLibModule` to the root of the application. The `addRootImport` function accepts a callback that needs to return a code block. You can write any code inside of the string tagged with the `code` function and any external symbol have to be wrapped with the `external` function to ensure that the appropriate import statements are generated.
 
