@@ -583,6 +583,9 @@ function ingestBoundText(
  */
 function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   let firstXref: ir.XrefId | null = null;
+  let firstConditionalCreateOp: ir.ConditionalCreateOp | ir.ConditionalBranchCreateOp | null = null;
+  let defaultBranchIndex: number | null = null;
+  const branchExpressions: Array<string | null> = [];
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (let i = 0; i < ifBlock.branches.length; i++) {
     const ifCase = ifBlock.branches[i];
@@ -617,9 +620,14 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
 
     if (firstXref === null) {
       firstXref = cView.xref;
+      firstConditionalCreateOp = conditionalCreateOp;
     }
 
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
+    if (caseExpr === null) {
+      defaultBranchIndex = i;
+    }
+    branchExpressions.push(getExpressionSource(ifCase.expression));
     const conditionalCaseExpr = new ir.ConditionalCaseExpr(
       caseExpr,
       conditionalCreateOp.xref,
@@ -629,6 +637,17 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, ifCase.children);
   }
+  unit.create.push(
+    ir.createConditionalMetadataOp(
+      firstConditionalCreateOp!.handle,
+      'if',
+      ifBlock.branches.length,
+      defaultBranchIndex,
+      branchExpressions[0] ?? null,
+      branchExpressions,
+      ifBlock.sourceSpan,
+    ),
+  );
   unit.update.push(ir.createConditionalOp(firstXref!, null, conditions, ifBlock.sourceSpan));
 }
 
@@ -642,6 +661,9 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   }
 
   let firstXref: ir.XrefId | null = null;
+  let firstConditionalCreateOp: ir.ConditionalCreateOp | ir.ConditionalBranchCreateOp | null = null;
+  let defaultBranchIndex: number | null = null;
+  const caseExpressions: string[][] = [];
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (let i = 0; i < switchBlock.groups.length; i++) {
     const switchCaseGroup = switchBlock.groups[i];
@@ -673,12 +695,16 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
 
     if (firstXref === null) {
       firstXref = cView.xref;
+      firstConditionalCreateOp = conditionalCreateOp;
     }
 
     for (const switchCase of switchCaseGroup.cases) {
       const caseExpr = switchCase.expression
         ? convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan)
         : null;
+      if (caseExpr === null) {
+        defaultBranchIndex = i;
+      }
       const conditionalCaseExpr = new ir.ConditionalCaseExpr(
         caseExpr,
         conditionalCreateOp.xref,
@@ -686,8 +712,26 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       );
       conditions.push(conditionalCaseExpr);
     }
+    caseExpressions.push(
+      switchCaseGroup.cases.flatMap((switchCase) => {
+        const expression = getExpressionSource(switchCase.expression);
+        return expression === null ? [] : [expression];
+      }),
+    );
     ingestNodes(cView, switchCaseGroup.children);
   }
+  unit.create.push(
+    ir.createConditionalMetadataOp(
+      firstConditionalCreateOp!.handle,
+      'switch',
+      switchBlock.groups.length,
+      defaultBranchIndex,
+      getExpressionSource(switchBlock.expression),
+      caseExpressions,
+      switchBlock.sourceSpan,
+      switchBlock.exhaustiveCheck !== null,
+    ),
+  );
   unit.update.push(
     ir.createConditionalOp(
       firstXref!,
@@ -696,6 +740,10 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       switchBlock.sourceSpan,
     ),
   );
+}
+
+function getExpressionSource(expression: e.AST | null): string | null {
+  return expression instanceof e.ASTWithSource ? expression.source : null;
 }
 
 function ingestDeferView(

@@ -72,7 +72,7 @@ export function devOnlyGuardedExpression(expr: o.Expression): o.Expression {
 }
 
 export function guardedExpression(guard: string, expr: o.Expression): o.Expression {
-  const guardExpr = new o.ExternalExpr({name: guard, moduleName: null});
+  const guardExpr = o.variable(guard);
   const guardNotDefined = new o.BinaryOperatorExpr(
     o.BinaryOperator.Identical,
     new o.TypeofExpr(guardExpr),

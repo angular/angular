@@ -85,7 +85,9 @@ export class MyApp {
       $r3$.ɵɵelementStart(0, "div");
       $r3$.ɵɵi18nStart(1, 0);
       $r3$.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 2, 0)(3, MyApp_Conditional_3_Template, 2, 0)(4, MyApp_Conditional_4_Template, 2, 0);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(2, "if", 3, 2, "count === 0", ["count === 0", "count === 1", null]);
       $r3$.ɵɵconditionalCreate(5, MyApp_Conditional_5_Template, 2, 0);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(5, "if", 1, null, "count === 7", ["count === 7"]);
       $r3$.ɵɵi18nEnd();
       $r3$.ɵɵelementEnd();
     }
