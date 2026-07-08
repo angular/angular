@@ -19,6 +19,7 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/conditional-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/defer-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/for-loop-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/property-pane-header",
