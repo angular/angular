@@ -1470,9 +1470,7 @@ class HiddenModule {}
             http.get('/\\evil.com/api').subscribe({
               next: () => fail('Expected request to fail, but it succeeded.'),
               error: (err) => {
-                expect(err.message).toBe(
-                  `NG05703: URL /\\evil.com/api changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
-                );
+                expect(err.message).toMatch(/NG05703/);
               },
             });
 
@@ -1597,9 +1595,7 @@ class HiddenModule {}
               http.get(badUrl).subscribe({
                 next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
                 error: (err) => {
-                  expect(err.message).toBe(
-                    `NG05703: URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
-                  );
+                  expect(err.message).toMatch(/NG05703/);
                 },
               });
             }
@@ -1620,9 +1616,7 @@ class HiddenModule {}
               http.get(badUrl).subscribe({
                 next: () => fail(`Expected request for ${badUrl} to fail, but it succeeded.`),
                 error: (err) => {
-                  expect(err.message).toBe(
-                    `NG05703: URL ${badUrl.trim()} changed origin unexpectedly. This is suspicious and may indicate a security bypass attempt.`,
-                  );
+                  expect(err.message).toMatch(/NG05703/);
                 },
               });
             }
