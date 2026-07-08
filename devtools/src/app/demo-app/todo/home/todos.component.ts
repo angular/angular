@@ -23,6 +23,7 @@ import {SamplePipe} from './sample.pipe';
 import {TooltipDirective} from './tooltip.directive';
 import {TodoComponent} from './todo.component';
 import {RouterLink} from '@angular/router';
+import {ControlFlowCasesComponent} from './control-flow-cases.component';
 
 const fib = (n: number): number => {
   if (n === 1 || n === 2) {
@@ -75,6 +76,7 @@ export class SvgDemoComponent {}
     TodosFilter,
     RecursiveComponent,
     SvgDemoComponent,
+    ControlFlowCasesComponent,
   ],
 })
 export class TodosComponent implements OnInit, OnDestroy {
