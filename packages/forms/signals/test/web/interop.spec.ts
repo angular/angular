@@ -56,6 +56,7 @@ import {
   WithOptionalFieldTree,
   transformedValue,
 } from '@angular/forms/signals';
+import {promiseWithResolvers} from '@angular/private/testing';
 
 describe('ControlValueAccessor', () => {
   beforeEach(() => {
@@ -1456,26 +1457,4 @@ async function actAsync<T>(fn: () => T): Promise<T> {
   } finally {
     await TestBed.inject(ApplicationRef).whenStable();
   }
-}
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-// TODO: share this with submit.spec.ts
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
 }

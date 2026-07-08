@@ -19,25 +19,12 @@ import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angul
 import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
 import {SchemaFn} from '../../../src/api/types';
 import {SignalFormControl} from '../../../compat';
+import {promiseWithResolvers} from '@angular/private/testing';
 
 function createSignalFormControl<T>(initialValue: T, schema?: SchemaFn<T>) {
   const injector = TestBed.inject(Injector);
 
   return new SignalFormControl(initialValue, schema, {injector});
-}
-
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return {promise, resolve, reject};
 }
 
 describe('SignalFormControl', () => {

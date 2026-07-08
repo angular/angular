@@ -69,6 +69,7 @@ import {
 } from '../../public_api';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
 import {TestInputValidityMonitor} from './test_input_validity_monitor';
+import {promiseWithResolvers} from '@angular/private/testing';
 
 function configureTestValidityMonitor() {
   TestBed.configureTestingModule({
@@ -6489,26 +6490,4 @@ function act<T>(fn: () => T): T {
   } finally {
     TestBed.tick();
   }
-}
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-// TODO: share this with submit.spec.ts
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
 }

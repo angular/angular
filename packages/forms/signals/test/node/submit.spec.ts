@@ -19,6 +19,7 @@ import {
   validateAsync,
   ValidationError,
 } from '../../public_api';
+import {promiseWithResolvers} from '@angular/private/testing';
 
 describe('submit', () => {
   let injector: Injector;
@@ -142,7 +143,7 @@ describe('submit', () => {
     it('should resolve pending validation after successful submit', async () => {
       const appRef = TestBed.inject(ApplicationRef);
       const data = signal('foo');
-      const {promise, resolve} = promiseWithResolvers();
+      const {promise, resolve} = promiseWithResolvers<boolean>();
       const f = form(
         data,
         (p) => {
@@ -642,24 +643,3 @@ describe('submit', () => {
     expect(submitSpy).toHaveBeenCalledWith({name: 'Alice'}, {name: 'Alice'}, 'Alice');
   });
 });
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-function promiseWithResolvers<T>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
-}
