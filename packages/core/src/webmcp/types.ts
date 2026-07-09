@@ -90,11 +90,4 @@ export interface ModelContext {
     tool: ToolDescriptor<InputSchema>,
     options?: ToolRegistrationOptions,
   ): Promise<void>;
-
-  /**
-   * Unregister a tool.
-   *
-   * @deprecated Only exists for out-of-date `@mcp-b/webmcp-polyfill` testing tool.
-   */
-  unregisterTool(tool: {name: string}): void;
 }
