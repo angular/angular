@@ -56,6 +56,8 @@ All validation rules run on every change - validation doesn't short-circuit afte
 
 Signal Forms provides validation rules for common validation scenarios. All built-in validation rules accept an options object for custom error messages and conditional logic.
 
+NOTE: Signal Forms validation is independent of the browser's native HTML constraint validation. `FormRoot` sets `novalidate` on the `form` element, and Signal Forms never updates an input's native validity state — the `:valid` and `:invalid` CSS pseudo-classes, the `validity` object, and `validationMessage`. Any native `:invalid` styling you observe, such as on a `type="number"` input constrained by `min()` or `max()`, comes from the browser evaluating the reflected attribute rather than from Signal Forms, so it is not consistent across rules. To reflect validation state in your UI, read the field's `invalid()` and `errors()` signals instead of relying on native CSS pseudo-classes.
+
 ### required()
 
 The `required()` validation rule ensures a field has a value:
