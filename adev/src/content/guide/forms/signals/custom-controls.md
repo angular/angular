@@ -268,7 +268,7 @@ import {
           [readonly]="readonly()"
           [class.invalid]="invalid()"
           [attr.aria-invalid]="invalid()"
-          (blur)="touch.emit()"
+          (blur)="touchedChange.emit(true)"
         />
 
         @if (invalid()) {
@@ -296,7 +296,7 @@ export class StatefulInput implements FormValueControl<string> {
 
   // Writable interaction state - control updates these
   touched = input<boolean>(false);
-  touch = output<void>();
+  touchedChange = output<boolean>();
 
   // Read-only state - form system manages these
   disabled = input<boolean>(false);
@@ -344,7 +344,7 @@ Most state properties use `input()` (read-only from the form). Use `model()` for
 
 ### Working with `debounce('blur')`
 
-The [`debounce('blur')`](api/forms/signals/debounce) rule delays updates from the UI to the form model until the field is blurred, instead of applying them on every keystroke. Built-in controls report a blur to the form automatically. A custom control only participates if it emits its `touch` output in response to the native [`blur` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event):
+The [`debounce('blur')`](api/forms/signals/debounce) rule delays updates from the UI to the form model until the field is blurred, instead of applying them on every keystroke. Built-in controls report a blur to the form automatically. A custom control only participates if it emits its `touchedChange` output in response to the native [`blur` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event):
 
 ```angular-ts
 import {Component, model, output} from '@angular/core';
@@ -357,17 +357,17 @@ import {FormValueControl} from '@angular/forms/signals';
       type="text"
       [value]="value()"
       (input)="value.set($event.target.value)"
-      (blur)="touch.emit()"
+      (blur)="touchedChange.emit(true)"
     />
   `,
 })
 export class CustomInput implements FormValueControl<string> {
   value = model('');
-  touch = output<void>();
+  touchedChange = output<boolean>();
 }
 ```
 
-With the `touch` output in place, `debounce('blur')` behaves the same for your control as it does for built-in inputs:
+With the `touchedChange` output in place, `debounce('blur')` behaves the same for your control as it does for built-in inputs:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -388,7 +388,7 @@ export class App {
 }
 ```
 
-IMPORTANT: Emit `touch` on `blur` (when focus leaves the control), not on `focus`. Without the `touch` output the field never registers as blurred, so `debounce('blur')` has no effect on your control.
+IMPORTANT: Emit `touchedChange` on `blur` (when focus leaves the control), not on `focus`. Without the `touchedChange` output the field never registers as blurred, so `debounce('blur')` has no effect on your control.
 
 ## Value transformation
 
