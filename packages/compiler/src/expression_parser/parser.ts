@@ -1646,9 +1646,8 @@ class _ParseAST {
         const expression = this.parsePipe();
         if (expression instanceof EmptyExpr) {
           this.error('Template literal interpolation cannot be empty');
-        } else {
-          expressions.push(expression);
         }
+        expressions.push(expression);
         this.rbracesExpected--;
       } else {
         this.advance();
